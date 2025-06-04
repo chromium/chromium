@@ -261,8 +261,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 
   void CleanUpIbanImageResources() {
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(
-        original_resource_bundle_.ExtractAsDangling());
+    resource_bundle_swapper_.reset();
   }
 
   bool VerifyCardArtImageExpectation(Suggestion& suggestion,
@@ -300,7 +299,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 
  protected:
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
+      resource_bundle_swapper_;
   // Tracks whether SetUpIbanImageResources() has been called, so that the
   // created images can be cleaned up when the test has finished.
   bool did_set_up_image_resource_for_test_ = false;
@@ -2057,8 +2057,8 @@ class AutofillIbanSuggestionContentTest
   ~AutofillIbanSuggestionContentTest() override = default;
 
   void SetUpIbanImageResources() {
-    original_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+    resource_bundle_swapper_ =
+        std::make_unique<ui::ResourceBundle::SharedInstanceSwapperForTesting>();
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &mock_resource_delegate_,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);

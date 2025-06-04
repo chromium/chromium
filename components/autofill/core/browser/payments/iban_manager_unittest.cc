@@ -77,8 +77,6 @@ class IbanManagerTest : public testing::Test,
         {{features::kAutofillEnableNewFopDisplayDesktop,
           IsNewFopDisplayEnabled()}});
     payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
-    original_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     form_structure_ = std::make_unique<FormStructure>(
         test::CreateTestIbanFormData(/*value=*/""));
     test_api(*form_structure_).SetFieldTypes({IBAN_VALUE});
@@ -110,7 +108,6 @@ class IbanManagerTest : public testing::Test,
 
   void TearDown() override {
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(original_resource_bundle_);
   }
 
   // Sets up the TestPersonalDataManager with a local IBAN.
@@ -195,7 +192,7 @@ class IbanManagerTest : public testing::Test,
   IbanManager iban_manager_{
       &autofill_client_.GetPersonalDataManager().payments_data_manager()};
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
   base::test::ScopedFeatureList feature_list_metadata_;
 };
 

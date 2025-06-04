@@ -222,8 +222,7 @@ TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
 }
 
 TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
-  ResourceBundle* orig_instance =
-      ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+  ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper;
   ResourceBundle::InitSharedInstance(&delegate_);
 
   std::string locale = "en-US";
@@ -246,7 +245,6 @@ TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
                         locale, /*crash_on_failure=*/false));
 
   ResourceBundle::CleanupSharedInstance();
-  ResourceBundle::SwapSharedInstanceForTesting(orig_instance);
 }
 
 TEST_F(ResourceBundleTest, DelegateGetImageNamed) {

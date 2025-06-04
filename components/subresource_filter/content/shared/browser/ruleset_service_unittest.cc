@@ -334,8 +334,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     EXPECT_CALL(resource_bundle_delegate, GetPathForLocalePack(_, _))
         .WillRepeatedly(Return(base::FilePath()));
 
-    ui::ResourceBundle* orig_resource_bundle =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+    ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper;
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &resource_bundle_delegate,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
@@ -349,7 +348,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     RunBlockingUntilIdle();
 
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);
   }
 
   // Mark the initialization complete and run task queues until all are empty.

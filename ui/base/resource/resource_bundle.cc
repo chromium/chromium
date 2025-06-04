@@ -271,6 +271,26 @@ bool ResourceBundle::FontDetails::operator<(const FontDetails& rhs) const {
          std::tie(rhs.typeface, rhs.size_delta, rhs.weight);
 }
 
+ResourceBundle::SharedInstanceSwapperForTesting::
+    SharedInstanceSwapperForTesting() {
+  instance_ = SwapSharedInstanceForTesting(nullptr  // IN-TEST
+#if BUILDFLAG(IS_ANDROID)
+                                           ,
+                                           {}, &android_locale_packs_
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
+}
+
+ResourceBundle::SharedInstanceSwapperForTesting::
+    ~SharedInstanceSwapperForTesting() {
+  SwapSharedInstanceForTesting(instance_  // IN-TEST
+#if BUILDFLAG(IS_ANDROID)
+                               ,
+                               android_locale_packs_, nullptr
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
+}
+
 // static
 std::string ResourceBundle::InitSharedInstanceWithLocale(
     const std::string& pref_locale,
@@ -294,7 +314,7 @@ void ResourceBundle::InitSharedInstanceWithBuffer(
 
   auto data_pack = std::make_unique<DataPack>(scale_factor);
   if (data_pack->LoadFromBuffer(buffer)) {
-    g_shared_instance_->locale_resources_data_ = std::move(data_pack);
+    g_shared_instance_->locale_resources_data_.push_back(std::move(data_pack));
   } else {
     LOG(ERROR) << "Failed to load locale resource from buffer";
   }
@@ -309,7 +329,7 @@ void ResourceBundle::InitSharedInstanceWithPakFileRegion(
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   CHECK(data_pack->LoadFromFileRegion(std::move(pak_file), region))
       << "failed to load pak file";
-  g_shared_instance_->locale_resources_data_ = std::move(data_pack);
+  g_shared_instance_->locale_resources_data_.push_back(std::move(data_pack));
   g_shared_instance_->InitDefaultFontList();
 }
 
@@ -325,11 +345,28 @@ void ResourceBundle::InitSharedInstanceWithPakPath(const base::FilePath& path) {
 void ResourceBundle::CleanupSharedInstance() {
   delete g_shared_instance_;
   g_shared_instance_ = nullptr;
+
+#if BUILDFLAG(IS_ANDROID)
+  UnloadAndroidLocaleResources();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
 ResourceBundle* ResourceBundle::SwapSharedInstanceForTesting(
-    ResourceBundle* instance) {
+    ResourceBundle* instance
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    const std::vector<ResourceBundle::FdAndRegion>& new_android_locale_packs,
+    std::vector<ResourceBundle::FdAndRegion>* old_android_locale_packs
+#endif  // BUILDFLAG(IS_ANDROID)
+) {
+#if BUILDFLAG(IS_ANDROID)
+  const std::vector<ResourceBundle::FdAndRegion> tmp =
+      SwapAndroidGlobalsForTesting(new_android_locale_packs);  // IN-TEST
+  if (old_android_locale_packs != nullptr) {
+    *old_android_locale_packs = tmp;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   ResourceBundle* ret = g_shared_instance_;
   g_shared_instance_ = instance;
   return ret;
@@ -353,7 +390,7 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   CHECK(data_pack->LoadFromFileRegion(std::move(pak_file), region))
       << "failed to load secondary pak file";
-  secondary_locale_resources_data_ = std::move(data_pack);
+  locale_resources_data_.push_back(std::move(data_pack));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -471,7 +508,7 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 #if !BUILDFLAG(IS_ANDROID)
 std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                                                 bool crash_on_failure) {
-  DCHECK(!locale_resources_data_.get()) << "locale.pak already loaded";
+  DCHECK_EQ(locale_resources_data_.size(), 0u) << "locale.pak already loaded";
   std::string app_locale = l10n_util::GetApplicationLocale(pref_locale);
   base::FilePath locale_file_path = GetOverriddenPakPath();
   if (locale_file_path.empty())
@@ -529,7 +566,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     NOTREACHED();
   }
 
-  locale_resources_data_ = std::move(data_pack);
+  locale_resources_data_.push_back(std::move(data_pack));
   loaded_locale_ = pref_locale;
   return app_locale;
 }
@@ -550,9 +587,10 @@ void ResourceBundle::LoadTestResources(const base::FilePath& path,
 
   auto data_pack = std::make_unique<DataPack>(ui::kScaleFactorNone);
   if (!locale_path.empty() && data_pack->LoadFromPath(locale_path)) {
-    locale_resources_data_ = std::move(data_pack);
+    locale_resources_data_.push_back(std::move(data_pack));
   } else {
-    locale_resources_data_ = std::make_unique<DataPack>(ui::kScaleFactorNone);
+    locale_resources_data_.push_back(
+        std::make_unique<DataPack>(ui::kScaleFactorNone));
   }
 
   // This is necessary to initialize ICU since we won't be calling
@@ -561,8 +599,11 @@ void ResourceBundle::LoadTestResources(const base::FilePath& path,
 }
 
 void ResourceBundle::UnloadLocaleResources() {
-  locale_resources_data_.reset();
-  secondary_locale_resources_data_.reset();
+  locale_resources_data_.clear();
+
+#if BUILDFLAG(IS_ANDROID)
+  UnloadAndroidLocaleResources();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ResourceBundle::OverrideLocalePakForTest(const base::FilePath& pak_path) {
@@ -815,15 +856,12 @@ std::string ResourceBundle::LoadDataResourceStringForScale(
 std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   base::AutoLock lock_scope(*locale_resources_data_lock_);
   std::string_view data;
-  if (locale_resources_data_.get()) {
-    data = locale_resources_data_
-               ->GetStringView(static_cast<uint16_t>(resource_id))
+  for (auto& locale_data : locale_resources_data_) {
+    data = locale_data->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
-  }
-  if (data.empty() && secondary_locale_resources_data_.get()) {
-    data = secondary_locale_resources_data_
-               ->GetStringView(static_cast<uint16_t>(resource_id))
-               .value_or(std::string_view());
+    if (!data.empty()) {
+      break;
+    }
   }
   if (data.empty()) {
     data = GetRawDataResource(resource_id);
@@ -869,18 +907,10 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
 
-    if (locale_resources_data_.get()) {
-      if (auto data = locale_resources_data_->GetStringView(
-              static_cast<uint16_t>(resource_id));
-          data.has_value() && !data->empty()) {
-        return new base::RefCountedStaticMemory(base::as_byte_span(*data));
-      }
-    }
-
-    if (secondary_locale_resources_data_.get()) {
-      if (auto data = secondary_locale_resources_data_->GetStringView(
-              static_cast<uint16_t>(resource_id));
-          data.has_value() && !data->empty()) {
+    for (auto& locale_data : locale_resources_data_) {
+      auto data =
+          locale_data->GetStringView(static_cast<uint16_t>(resource_id));
+      if (data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
       }
     }
@@ -1238,35 +1268,32 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
 
   // If for some reason we were unable to load the resources , return an empty
   // string (better than crashing).
-  if (!locale_resources_data_.get()) {
+  if (locale_resources_data_.empty()) {
     LOG(WARNING) << "locale resources are not loaded";
     return std::u16string();
   }
 
   std::optional<std::string_view> data;
   ResourceHandle::TextEncodingType encoding =
-      locale_resources_data_->GetTextEncodingType();
-  if (!(data = locale_resources_data_->GetStringView(
-            static_cast<uint16_t>(resource_id)))
-           .has_value()) {
-    if (secondary_locale_resources_data_.get() &&
-        (data = secondary_locale_resources_data_->GetStringView(
-             static_cast<uint16_t>(resource_id)))
-            .has_value()) {
-      // Fall back on the secondary locale pak if it exists.
-      encoding = secondary_locale_resources_data_->GetTextEncodingType();
-    } else {
-      // Fall back on the main data pack (shouldn't be any strings here except
-      // in unittests).
-      data = GetRawDataResource(resource_id);
-      CHECK(!data->empty())
-          << "Unable to find resource: " << resource_id
-          << ". If this happens in a browser test running on Windows, it may "
-             "be that dead-code elimination stripped out the code that uses the"
-             " resource, causing the resource to be stripped out because the "
-             "resource is not used by chrome.dll. See "
-             "https://crbug.com/1181150.";
+      locale_resources_data_.at(0)->GetTextEncodingType();
+  for (auto& locale_data : locale_resources_data_) {
+    data = locale_data->GetStringView(static_cast<uint16_t>(resource_id));
+    if (data.has_value()) {
+      encoding = locale_data->GetTextEncodingType();
+      break;
     }
+  }
+  if (!data.has_value()) {
+    // Fall back on the main data pack (shouldn't be any strings here except
+    // in unittests).
+    data = GetRawDataResource(resource_id);
+    CHECK(!data->empty())
+        << "Unable to find resource: " << resource_id
+        << ". If this happens in a browser test running on Windows, it may "
+           "be that dead-code elimination stripped out the code that uses the"
+           " resource, causing the resource to be stripped out because the "
+           "resource is not used by chrome.dll. See "
+           "https://crbug.com/1181150.";
   }
 
   // Strings should not be loaded from a data pack that contains binary data.

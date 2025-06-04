@@ -22,8 +22,6 @@ using ::testing::ElementsAre;
 class AddressFormattingTest : public ::testing::Test {
  public:
   void SetUp() override {
-    orig_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         GetLocale(), /*delegate=*/nullptr,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
@@ -31,13 +29,12 @@ class AddressFormattingTest : public ::testing::Test {
 
   void TearDown() override {
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle_);
   }
 
   std::string GetLocale() { return "en-US"; }
 
  private:
-  raw_ptr<ui::ResourceBundle> orig_resource_bundle_;
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
 };
 
 // This is a regression test from crbug.com/1259928. Address formats of

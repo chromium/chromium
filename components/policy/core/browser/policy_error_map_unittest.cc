@@ -19,15 +19,8 @@ class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
  public:
   PolicyErrorMapTestResourceBundle() : has_resource_bundle_(GetParam()) {
     if (!has_resource_bundle_) {
-      original_resource_bundle_ =
-          ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
-    }
-  }
-
-  void TearDown() override {
-    if (!has_resource_bundle_) {
-      ui::ResourceBundle::SwapSharedInstanceForTesting(
-          original_resource_bundle_);
+      resource_bundle_swapper_ = std::make_unique<
+          ui::ResourceBundle::SharedInstanceSwapperForTesting>();
     }
   }
 
@@ -35,7 +28,8 @@ class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
 
  private:
   bool has_resource_bundle_;
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
+      resource_bundle_swapper_;
 };
 
 TEST_P(PolicyErrorMapTestResourceBundle, CheckForErrorsWithoutFatalErrors) {

@@ -319,13 +319,14 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
           source;
 
       NiceMock<ui::MockResourceBundleDelegate> delegate;
-      ui::ResourceBundle* orig_resource_bundle = nullptr;
+      std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
+          resource_bundle_swapper;
 
       gfx::Image network_image;
       if (!make_image_present) {
         network_image = gfx::test::CreateImage(32, 30);
-        orig_resource_bundle =
-            ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+        resource_bundle_swapper = std::make_unique<
+            ui::ResourceBundle::SharedInstanceSwapperForTesting>();
         SetNetworkImageInResourceBundle(
             &delegate,
             state->virtual_card_enrollment_fields.credit_card.network(),
@@ -376,7 +377,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
           ->ResetVirtualCardEnrollmentProcessState();
       if (!make_image_present) {
         ui::ResourceBundle::CleanupSharedInstance();
-        ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);
       }
     }
   }

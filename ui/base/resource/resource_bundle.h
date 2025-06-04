@@ -68,6 +68,13 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     LargeFont,
   };
 
+#if BUILDFLAG(IS_ANDROID)
+  struct FdAndRegion {
+    int fd;
+    base::MemoryMappedFile::Region region;
+  };
+#endif  // BUILDFLAG(IS_ANDROID)
+
   struct COMPONENT_EXPORT(UI_BASE) FontDetails {
     explicit FontDetails(std::string typeface = std::string(),
                          int size_delta = 0,
@@ -156,6 +163,21 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+  // RAII object for tests that wraps SwapSharedInstanceForTesting() to swap out
+  // (and then back in) the current shared instance and, on Android, also the
+  // Android global locale packs.
+  class COMPONENT_EXPORT(UI_BASE) SharedInstanceSwapperForTesting {
+   public:
+    SharedInstanceSwapperForTesting();
+    ~SharedInstanceSwapperForTesting();
+
+   private:
+    raw_ptr<ResourceBundle> instance_;
+#if BUILDFLAG(IS_ANDROID)
+    std::vector<ResourceBundle::FdAndRegion> android_locale_packs_;
+#endif  // BUILDFLAG(IS_ANDROID)
+  };
+
   using LottieData = std::vector<uint8_t>;
   using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
   using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
@@ -196,8 +218,21 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Delete the ResourceBundle for this process if it exists.
   static void CleanupSharedInstance();
 
-  // Returns the existing shared instance and sets it to the given instance.
-  static ResourceBundle* SwapSharedInstanceForTesting(ResourceBundle* instance);
+  // Returns the existing shared instance and sets it to the given instance. On
+  // Android, it also sets the global android locale pack data to
+  // |new_android_locale_packs| and returns the original data in
+  // |old_android_locale_packs|.
+  //
+  // Prefer to use the RAII class SharedInstanceSwapperForTesting instead of
+  // calling this directly when possible.
+  static ResourceBundle* SwapSharedInstanceForTesting(
+      ResourceBundle* instance
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      const std::vector<ResourceBundle::FdAndRegion>& new_android_locale_packs,
+      std::vector<ResourceBundle::FdAndRegion>* old_android_locale_packs
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 
   // Returns true after the global resource loader instance has been created.
   static bool HasSharedInstance();
@@ -521,8 +556,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   std::unique_ptr<base::Lock> locale_resources_data_lock_;
 
   // Handles for data sources.
-  std::unique_ptr<ResourceHandle> locale_resources_data_;
-  std::unique_ptr<ResourceHandle> secondary_locale_resources_data_;
+  std::vector<std::unique_ptr<ResourceHandle>> locale_resources_data_;
   std::vector<std::unique_ptr<ResourceHandle>> resource_handles_;
 
   // The maximum scale factor currently loaded.

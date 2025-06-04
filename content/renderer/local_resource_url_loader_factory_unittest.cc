@@ -82,8 +82,6 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
     // Swap in mock ResourceBundle.
-    original_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &resource_bundle_delegate_,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
@@ -99,7 +97,6 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
 
   void TearDown() override {
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(original_resource_bundle_);
   }
 
  protected:
@@ -157,7 +154,7 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
 
   // Temporary storage of original ResourceBundle while we swap in the test
   // mock.
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
 
   // For CreateLoaderAndStart, which posts a task.
   base::test::TaskEnvironment task_environment_;

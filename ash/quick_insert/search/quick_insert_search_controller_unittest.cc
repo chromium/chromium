@@ -116,8 +116,6 @@ class ScopedFakeResourceBundleDelegate {
  public:
   explicit ScopedFakeResourceBundleDelegate(
       base::span<const FakeResource> resources) {
-    original_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &delegate_, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
 
@@ -129,12 +127,11 @@ class ScopedFakeResourceBundleDelegate {
 
   ~ScopedFakeResourceBundleDelegate() {
     ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(original_resource_bundle_);
   }
 
  private:
   testing::NiceMock<ui::MockResourceBundleDelegate> delegate_;
-  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
 };
 
 TEST_F(QuickInsertSearchControllerTest, SendsQueryToCrosSearchImmediately) {

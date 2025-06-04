@@ -5035,13 +5035,28 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   fd = ui::GetCommonResourcesPackFd(&region);
   mappings->ShareWithRegion(kAndroidChrome100PercentPakDescriptor, fd, region);
 
-  fd = ui::GetLocalePackFd(&region);
-  mappings->ShareWithRegion(kAndroidLocalePakDescriptor, fd, region);
+  // There are (up to) 2 locale paks for Clank. One contains all the strings
+  // that exist in WebView, and is shared with WebView. The other contains all
+  // the strings that are present in Clank but not WebView.
+  //
+  // Note that in the near future when we introduce gendered locales, we will
+  // have up to 4 locale paks here: WebView-gendered, non-WebView-gendered,
+  // WebView-fallback, and non-WebView-fallback. The "fallback" paks are for the
+  // default gender, and will be read from if a particular string doesn't exist
+  // in the corresponding gendered pak.
+  const std::vector<ui::ResourceBundle::FdAndRegion>& locale_paks =
+      ui::GetLocalePaks();
+  CHECK_GE(locale_paks.size(), 1u);
+  CHECK_LE(locale_paks.size(), 2u);
+
+  mappings->ShareWithRegion(kAndroidLocalePakDescriptor, locale_paks.at(0).fd,
+                            locale_paks.at(0).region);
 
   // Optional secondary locale .pak file.
-  fd = ui::GetSecondaryLocalePackFd(&region);
-  if (fd != -1) {
-    mappings->ShareWithRegion(kAndroidSecondaryLocalePakDescriptor, fd, region);
+  if (locale_paks.size() == 2) {
+    CHECK_GE(locale_paks.at(1).fd, 0);
+    mappings->ShareWithRegion(kAndroidSecondaryLocalePakDescriptor,
+                              locale_paks.at(1).fd, locale_paks.at(1).region);
   }
 
   base::FilePath app_data_path;
