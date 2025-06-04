@@ -117,11 +117,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void UnregisterMemoryMetric(const PreFreezeMetric* metric)
       LOCKS_EXCLUDED(lock());
 
-  // If we are currently running self compaction, cancel it. If it was running,
-  // record a metric with the reason for the cancellation.
-  static void MaybeCancelCompaction(
-      CompactCancellationReason cancellation_reason) LOCKS_EXCLUDED(lock());
-
   static void SetSupportsModernTrimForTesting(bool is_supported);
   static void ClearMetricsForTesting() LOCKS_EXCLUDED(lock());
   size_t GetNumberOfPendingBackgroundTasksForTesting() const
@@ -136,10 +131,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock());
-
-  static void OnSelfFreeze() LOCKS_EXCLUDED(lock());
-
-  static void OnRunningCompact() LOCKS_EXCLUDED(lock());
 
   static bool SupportsModernTrim();
   static bool ShouldUseModernTrim();
@@ -156,8 +147,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Disabled);
-  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Cancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, TimeoutCancel);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Cancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, SimpleCancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
@@ -285,17 +276,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   template <class State>
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
 
-  void MaybeRunOnSelfCompactCallback() EXCLUSIVE_LOCKS_REQUIRED(lock());
-
-  void StartCompaction(std::unique_ptr<CompactionState> state)
-      LOCKS_EXCLUDED(lock());
-  static base::TimeDelta GetDelayBetweenCompaction();
-  void MaybePostCompactionTask(std::unique_ptr<CompactionState> state,
-                               scoped_refptr<CompactionMetric> metric)
-      LOCKS_EXCLUDED(lock());
-  void CompactionTask(std::unique_ptr<CompactionState> state,
-                      scoped_refptr<CompactionMetric> metric)
-      LOCKS_EXCLUDED(lock());
   void FinishCompaction(std::unique_ptr<CompactionState> state,
                         scoped_refptr<CompactionMetric> metric)
       LOCKS_EXCLUDED(lock());
@@ -305,11 +285,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       LOCKS_EXCLUDED(lock());
   static bool ShouldContinueCompaction(base::TimeTicks compaction_triggered_at)
       LOCKS_EXCLUDED(lock());
-  static bool TimeoutExceeded();
-
-  static std::optional<uint64_t> CompactMemory(
-      std::vector<debug::MappedMemoryRegion>* regions,
-      const uint64_t max_bytes);
 
   void RegisterMemoryMetricInternal(const PreFreezeMetric* metric)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
@@ -343,7 +318,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   void RunPreFreezeTasks() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void MaybeCancelCompactionInternal(
-      CompactCancellationReason cancellation_reason) LOCKS_EXCLUDED(lock());
+      CompactCancellationReason cancellation_reason)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void PostMetricsTasksIfModern() EXCLUSIVE_LOCKS_REQUIRED(lock());
   void PostMetricsTask() EXCLUSIVE_LOCKS_REQUIRED(lock());
@@ -372,16 +348,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // When we last triggered self compaction. Used to record metrics.
   base::TimeTicks compaction_last_triggered_ GUARDED_BY(lock()) =
       base::TimeTicks::Min();
-  // When we last started self compaction. Used to know if we should cancel
-  // compaction due to it taking too long.
-  base::TimeTicks compaction_last_started_ GUARDED_BY(lock()) =
-      base::TimeTicks::Min();
   // When we last finished self compaction (either successfully, or from
   // being cancelled). Used to record metrics.
   base::TimeTicks compaction_last_finished_ GUARDED_BY(lock()) =
       base::TimeTicks::Min();
-  std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
-      GUARDED_BY(lock());
   bool supports_modern_trim_;
 };
 
@@ -411,6 +381,8 @@ class BASE_EXPORT SelfCompactionManager {
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Disabled);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, TimeoutCancel);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Cancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
 
@@ -425,16 +397,28 @@ class BASE_EXPORT SelfCompactionManager {
   static bool ShouldContinueCompaction(
       const PreFreezeBackgroundMemoryTrimmer::CompactionState& state)
       LOCKS_EXCLUDED(lock());
+  static bool TimeoutExceeded();
+  static base::TimeDelta GetDelayBetweenCompaction();
 
   // Compacts the memory for the process.
   static void CompactSelf(std::unique_ptr<CompactionState> state);
   void OnTriggerCompact(std::unique_ptr<CompactionState> state)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
+  void StartCompaction(std::unique_ptr<CompactionState> state)
+      LOCKS_EXCLUDED(lock());
+  void MaybePostCompactionTask(std::unique_ptr<CompactionState> state,
+                               scoped_refptr<CompactionMetric> metric)
+      LOCKS_EXCLUDED(lock());
+  void CompactionTask(std::unique_ptr<CompactionState> state,
+                      scoped_refptr<CompactionMetric> metric)
+      LOCKS_EXCLUDED(lock());
   static std::optional<uint64_t> CompactMemory(
       std::vector<debug::MappedMemoryRegion>* regions,
       const uint64_t max_bytes);
   static std::optional<uint64_t> CompactRegion(
       debug::MappedMemoryRegion region);
+
+  void MaybeRunOnSelfCompactCallback() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   static std::unique_ptr<CompactionState> GetSelfCompactionStateForTesting(
       scoped_refptr<SequencedTaskRunner> task_runner,
@@ -443,7 +427,13 @@ class BASE_EXPORT SelfCompactionManager {
       scoped_refptr<SequencedTaskRunner> task_runner,
       const TimeTicks& triggered_at);
 
+  // When we last started self compaction. Used to know if we should cancel
+  // compaction due to it taking too long.
+  base::TimeTicks compaction_last_started_ GUARDED_BY(lock()) =
+      base::TimeTicks::Min();
   base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
+  std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
+      GUARDED_BY(lock());
 };
 
 }  // namespace base::android

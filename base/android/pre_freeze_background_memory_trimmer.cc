@@ -581,7 +581,7 @@ bool SelfCompactionManager::ShouldContinueCompaction(
 }
 
 // static
-bool PreFreezeBackgroundMemoryTrimmer::TimeoutExceeded() {
+bool SelfCompactionManager::TimeoutExceeded() {
   base::AutoLock locker(lock());
   return Instance().compaction_last_started_ + kCompactionTimeout <=
          base::TimeTicks::Now();
@@ -594,7 +594,7 @@ bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueCompaction(
   return Instance().compaction_last_cancelled_ < compaction_triggered_at;
 }
 
-void PreFreezeBackgroundMemoryTrimmer::MaybePostCompactionTask(
+void SelfCompactionManager::MaybePostCompactionTask(
     std::unique_ptr<CompactionState> state,
     scoped_refptr<CompactionMetric> metric) {
   TRACE_EVENT0("base", "MaybePostCompactionTask");
@@ -611,16 +611,17 @@ void PreFreezeBackgroundMemoryTrimmer::MaybePostCompactionTask(
     task_runner->PostDelayedTask(
         FROM_HERE,
         // |base::Unretained| is safe here because we never destroy |this|.
-        base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::CompactionTask,
+        base::BindOnce(&SelfCompactionManager::CompactionTask,
                        base::Unretained(this), std::move(state),
                        std::move(metric)),
         GetDelayBetweenCompaction());
   } else {
-    FinishCompaction(std::move(state), std::move(metric));
+    PreFreezeBackgroundMemoryTrimmer::Instance().FinishCompaction(
+        std::move(state), std::move(metric));
   }
 }
 
-void PreFreezeBackgroundMemoryTrimmer::CompactionTask(
+void SelfCompactionManager::CompactionTask(
     std::unique_ptr<CompactionState> state,
     scoped_refptr<CompactionMetric> metric) {
   if (!ShouldContinueCompaction(*state)) {
@@ -634,14 +635,13 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionTask(
   MaybePostCompactionTask(std::move(state), std::move(metric));
 }
 
-void PreFreezeBackgroundMemoryTrimmer::MaybeRunOnSelfCompactCallback() {
-  auto& instance = SelfCompactionManager::Instance();
-  if (instance.on_self_compact_callback_) {
-    instance.on_self_compact_callback_.Run();
+void SelfCompactionManager::MaybeRunOnSelfCompactCallback() {
+  if (on_self_compact_callback_) {
+    on_self_compact_callback_.Run();
   }
 }
 
-void PreFreezeBackgroundMemoryTrimmer::StartCompaction(
+void SelfCompactionManager::StartCompaction(
     std::unique_ptr<CompactionState> state) {
   scoped_refptr<CompactionMetric> metric;
   {
@@ -676,22 +676,14 @@ void PreFreezeBackgroundMemoryTrimmer::FinishCompaction(
 }
 
 // static
-base::TimeDelta PreFreezeBackgroundMemoryTrimmer::GetDelayBetweenCompaction() {
+base::TimeDelta SelfCompactionManager::GetDelayBetweenCompaction() {
   // We choose a random, small amount of time here, so that we are not trying
   // to compact in every process at the same time.
   return base::Milliseconds(base::RandInt(100, 300));
 }
 
-// static
-void PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-    CompactCancellationReason cancellation_reason) {
-  Instance().MaybeCancelCompactionInternal(cancellation_reason);
-}
-
 void PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompactionInternal(
     CompactCancellationReason cancellation_reason) {
-  base::AutoLock locker(lock());
-  process_compacted_metadata_.reset();
   // Check for the last time cancelled here in order to avoid recording this
   // metric multiple times. Also, only record this metric if a compaction is
   // currently running.
@@ -748,8 +740,7 @@ void SelfCompactionManager::CompactSelf(
   state->MaybeReadProcMaps();
 
   // We still start the task in the control group, in order to record metrics.
-  PreFreezeBackgroundMemoryTrimmer::Instance().StartCompaction(
-      std::move(state));
+  Instance().StartCompaction(std::move(state));
 }
 
 // static
@@ -797,13 +788,6 @@ std::optional<uint64_t> SelfCompactionManager::CompactRegion(
 }
 
 // static
-std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactMemory(
-    std::vector<debug::MappedMemoryRegion>* regions,
-    const uint64_t max_bytes) {
-  return SelfCompactionManager::CompactMemory(regions, max_bytes);
-}
-
-// static
 std::optional<uint64_t> SelfCompactionManager::CompactMemory(
     std::vector<debug::MappedMemoryRegion>* regions,
     const uint64_t max_bytes) {
@@ -832,12 +816,13 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
+void SelfCompactionManager::OnSelfFreeze() {
   TRACE_EVENT0("base", "OnSelfFreeze");
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, MayBlock()});
-  Instance().OnTriggerCompact<SelfCompactionState>(std::move(task_runner));
+  PreFreezeBackgroundMemoryTrimmer::Instance()
+      .OnTriggerCompact<SelfCompactionState>(std::move(task_runner));
 }
 
 template <class State>
@@ -865,12 +850,13 @@ void SelfCompactionManager::OnTriggerCompact(
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::OnRunningCompact() {
+void SelfCompactionManager::OnRunningCompact() {
   TRACE_EVENT0("base", "OnRunningCompact");
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, MayBlock()});
-  Instance().OnTriggerCompact<RunningCompactionState>(std::move(task_runner));
+  PreFreezeBackgroundMemoryTrimmer::Instance()
+      .OnTriggerCompact<RunningCompactionState>(std::move(task_runner));
 }
 
 // static
@@ -878,7 +864,8 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreeze() {
   // If we have scheduled a self compaction task, cancel it, since App Freezer
   // will handle the compaction for us, and we don't want to potentially run
   // self compaction after we have resumed.
-  MaybeCancelCompaction(CompactCancellationReason::kAppFreezer);
+  SelfCompactionManager::MaybeCancelCompaction(
+      CompactCancellationReason::kAppFreezer);
   Instance().OnPreFreezeInternal();
 }
 
@@ -1140,17 +1127,12 @@ bool SelfCompactionManager::CompactionIsSupported() {
   return IsMadvisePageoutSupported();
 }
 
-void SelfCompactionManager::OnSelfFreeze() {
-  PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze();
-}
-
-void SelfCompactionManager::OnRunningCompact() {
-  PreFreezeBackgroundMemoryTrimmer::OnRunningCompact();
-}
-
 void SelfCompactionManager::MaybeCancelCompaction(
     base::android::CompactCancellationReason cancellation_reason) {
-  PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(cancellation_reason);
+  base::AutoLock locker(lock());
+  Instance().process_compacted_metadata_.reset();
+  PreFreezeBackgroundMemoryTrimmer::Instance().MaybeCancelCompactionInternal(
+      cancellation_reason);
 }
 
 std::unique_ptr<SelfCompactionManager::CompactionState>
