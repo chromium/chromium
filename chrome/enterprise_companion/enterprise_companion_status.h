@@ -11,11 +11,11 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "chrome/enterprise_companion/constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace enterprise_companion {
 
@@ -79,9 +79,9 @@ class EnterpriseCompanionStatus {
 
   int code() const {
     return std::visit(
-        base::Overloaded{[](std::monostate) { return 0; },
-                         [](const PersistedError& error) { return error.code; },
-                         [](auto&& x) { return static_cast<int>(x); }},
+        absl::Overload{[](std::monostate) { return 0; },
+                       [](const PersistedError& error) { return error.code; },
+                       [](auto&& x) { return static_cast<int>(x); }},
         status_variant_);
   }
 

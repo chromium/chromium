@@ -7,10 +7,10 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/posix/safe_strerror.h"
@@ -130,7 +130,7 @@ PersistedError& PersistedError::operator=(PersistedError&&) = default;
 
 std::string EnterpriseCompanionStatus::description() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](std::monostate) { return std::string("Success"); },
           [](const PersistedError& error) { return error.description; },
           [](policy::DeviceManagementStatus status) {
