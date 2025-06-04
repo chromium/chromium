@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 
 const char kActionOnBestFeaturesMainScreenHistogram[] =
     "IOS.FirstRun.BestFeatures.MainScreen.Action";

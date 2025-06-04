@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/feature_highlight_screenshot_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"

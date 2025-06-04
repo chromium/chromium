@@ -5,9 +5,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/sharing_status_coordinator.h"
 
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/recipient_info.h"
@@ -128,7 +127,7 @@
 - (void)startPasswordSharing {
   [self.delegate startPasswordSharing];
   // Notify Welcome Back to remove Share Passwords from the eligible features.
-  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackInFirstRunEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kSharePasswordsWithFamily);
   }
 }

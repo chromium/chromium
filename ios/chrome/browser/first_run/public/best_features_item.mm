@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"

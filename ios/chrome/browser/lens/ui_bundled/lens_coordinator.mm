@@ -13,9 +13,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -352,7 +351,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
 
   // Notify Welcome Back to remove Lens from the eligible features.
-  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackInFirstRunEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
   }
 }

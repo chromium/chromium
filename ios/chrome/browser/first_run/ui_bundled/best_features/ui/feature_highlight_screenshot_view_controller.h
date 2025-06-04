@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 
 @protocol ConfirmationAlertActionHandler;
 

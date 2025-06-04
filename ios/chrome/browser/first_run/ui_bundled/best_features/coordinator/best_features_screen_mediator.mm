@@ -10,7 +10,7 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_screen_consumer.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

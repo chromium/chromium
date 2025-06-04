@@ -12,11 +12,11 @@
 class PrefRegistrySimple;
 enum class BestFeaturesItemType;
 
+// Pref to store the eligible items for Welcome Back.
+extern const char kWelcomeBackEligibleItems[];
+
 // Registers the prefs associated with Welcome Back.
 void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry);
-
-// Erases an item from `kWelcomeBackEligibleItems`.
-void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type);
 
 // Returns a vector of `kWelcomeBackEligibleItems`. This is used to check the
 // current eligible items.

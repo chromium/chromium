@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

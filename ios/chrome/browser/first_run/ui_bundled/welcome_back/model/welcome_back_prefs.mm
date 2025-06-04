@@ -6,7 +6,7 @@
 
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace {
@@ -38,7 +38,7 @@ std::optional<BestFeaturesItemType> IntToBestFeaturesItemType(
   }
   return std::nullopt;
 }
-// LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h:BestFeaturesItemType)
+// LINT.ThenChange(/ios/chrome/browser/first_run/public/best_features_item.h:BestFeaturesItemType)
 }  // anonymous namespace
 
 const char kWelcomeBackEligibleItems[] = "ios.welcomeback.eligible_items";
@@ -66,13 +66,6 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterListPref(kWelcomeBackEligibleItems,
                              std::move(default_welcome_back_items));
-}
-
-void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type) {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  int pref = static_cast<int>(item_type);
-  ScopedListPrefUpdate update(local_state, kWelcomeBackEligibleItems);
-  update->EraseValue(base::Value(pref));
 }
 
 std::vector<BestFeaturesItemType> GetWelcomeBackEligibleItems() {

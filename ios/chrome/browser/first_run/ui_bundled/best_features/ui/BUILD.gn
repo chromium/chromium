@@ -10,22 +10,6 @@ source_set("constants") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("best_features_item") {
-  sources = [
-    "best_features_item.h",
-    "best_features_item.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/app/strings:ios_branded_strings_grit",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/common/ui/colors",
-    "//ui/base",
-    "//ui/strings",
-  ]
-}
 source_set("ui") {
   sources = [
     "best_features_cell.h",
@@ -40,10 +24,10 @@ source_set("ui") {
     "metrics_util.mm",
   ]
   deps = [
-    ":best_features_item",
     ":constants",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/resources:animation_files",
