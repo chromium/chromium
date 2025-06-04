@@ -47,6 +47,7 @@ static_library("filters") {
   ]
   public_deps = [ ":bloomfilter" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  visibility = [ ":*" ]
 }
 
 static_library("model_executor") {
@@ -149,7 +150,6 @@ component("features") {
     "feature_registry/mqls_feature_registry.h",
     "feature_registry/settings_ui_registry.cc",
     "feature_registry/settings_ui_registry.h",
-    "hints/insertion_ordered_set.h",
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
@@ -185,10 +185,8 @@ component("features") {
 
 output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
 
-static_library("core") {
+source_set("hints") {
   sources = [
-    "access_token_helper.cc",
-    "access_token_helper.h",
     "hints/command_line_top_host_provider.cc",
     "hints/command_line_top_host_provider.h",
     "hints/hint_cache.cc",
@@ -201,6 +199,7 @@ static_library("core") {
     "hints/hints_manager.h",
     "hints/hints_processing_util.cc",
     "hints/hints_processing_util.h",
+    "hints/insertion_ordered_set.h",
     "hints/memory_hint.cc",
     "hints/memory_hint.h",
     "hints/optimization_guide_decider.h",
@@ -219,11 +218,126 @@ static_library("core") {
     "hints/top_host_provider.h",
     "hints/url_pattern_with_wildcards.cc",
     "hints/url_pattern_with_wildcards.h",
+  ]
+  deps = [
+    ":core_util",
+    ":features",
+    ":filters",
+    ":interfaces",
+    ":model_executor",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/variations/net",
+    "//google_apis",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+
+  # TODO: crbug.com/421262905 - Some utilities should be extracted from
+  # core_util files.
+  allow_circular_includes_from = [ ":core_util" ]
+  visibility = [ ":*" ]
+}
+
+source_set("core_util") {
+  sources = [
+    "access_token_helper.cc",
+    "access_token_helper.h",
+    "optimization_guide_logger.cc",
+    "optimization_guide_logger.h",
+    "optimization_guide_permissions_util.cc",
+    "optimization_guide_permissions_util.h",
+    "optimization_guide_proto_util.cc",
+    "optimization_guide_proto_util.h",
+    "optimization_guide_util.cc",
+    "optimization_guide_util.h",
+  ]
+  deps = [
+    ":features",
+    ":interfaces",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/unified_consent",
+    "//google_apis",
+    "//google_apis/common:request_util",
+    "//net",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
+    "//url",
+  ]
+  visibility = [ ":*" ]
+}
+
+# TODO: crbug.com/421262905 - Eliminate this target
+source_set("core_unsorted") {
+  sources = [
+    "model_handler.h",
+    "optimization_guide_model_provider.h",
+    "optimization_target_model_observer.h",
+    "prediction_model_fetcher.h",
+    "prediction_model_fetcher_impl.cc",
+    "prediction_model_fetcher_impl.h",
+  ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "bert_model_handler.cc",
+      "bert_model_handler.h",
+      "model_validator.cc",
+      "model_validator.h",
+    ]
+  }
+  deps = [
+    ":core_util",
+    ":features",
+    ":interfaces",
+    ":model_executor",
+    "//base",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//components/variations",
+    "//components/variations/net",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//services/on_device_model/public/cpp",
+    "//services/on_device_model/public/mojom",
+    "//third_party/tflite:buildflags",
+    "//url:url",
+  ]
+
+  if (build_with_tflite_lib) {
+    deps += [
+      ":machine_learning",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+      "//third_party/zlib/google:compression_utils",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  visibility = [
+    ":core",
+    ":model_execution",
+  ]
+}
+
+source_set("model_execution") {
+  # TODO: crbug.com/421262905 - Should not need these without model_execution
+  sources = [
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
     "model_execution/performance_class.cc",
     "model_execution/performance_class.h",
-    "model_handler.h",
     "model_quality/model_execution_logging_wrappers.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
@@ -231,24 +345,21 @@ static_library("core") {
     "model_quality/model_quality_logs_uploader_service.h",
     "model_quality/model_quality_util.cc",
     "model_quality/model_quality_util.h",
-    "noisy_metrics_recorder.cc",
-    "noisy_metrics_recorder.h",
-    "optimization_guide_logger.cc",
-    "optimization_guide_logger.h",
     "optimization_guide_model_executor.cc",
     "optimization_guide_model_executor.h",
-    "optimization_guide_model_provider.h",
     "optimization_guide_on_device_capability_provider.h",
-    "optimization_guide_permissions_util.cc",
-    "optimization_guide_permissions_util.h",
-    "optimization_guide_proto_util.cc",
-    "optimization_guide_proto_util.h",
-    "optimization_guide_util.cc",
-    "optimization_guide_util.h",
-    "optimization_target_model_observer.h",
-    "prediction_model_fetcher.h",
-    "prediction_model_fetcher_impl.cc",
-    "prediction_model_fetcher_impl.h",
+  ]
+  deps = [
+    ":core_util",
+    ":features",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
+    "//components/prefs",
+    "//components/variations/net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/on_device_model/public/mojom",
   ]
   if (build_with_model_execution) {
     sources += [
@@ -328,19 +439,41 @@ static_library("core") {
       "model_execution/value_converter.h",
       output_proto_descriptors_cc_file,
     ]
-  }
-  if (build_with_tflite_lib) {
-    sources += [
-      "bert_model_handler.cc",
-      "bert_model_handler.h",
-      "model_validator.cc",
-      "model_validator.h",
+    deps += [
+      ":core_unsorted",
+      ":core_util",
+      ":model_executor",
+      ":on_device_model_execution_proto_generator",
+      "//components/component_updater",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/optimization_guide/public/mojom",
+      "//components/prefs",
+      "//components/signin/public/identity_manager:identity_manager",
+      "//components/variations/net",
+      "//components/version_info",
+      "//google_apis",
+      "//services/data_decoder/public/cpp",
+      "//services/network/public/cpp",
+      "//services/on_device_model/public/cpp",
+      "//third_party/re2",
+      "//third_party/tflite:buildflags",
     ]
   }
+}
 
+static_library("core") {
+  sources = [
+    "noisy_metrics_recorder.cc",
+    "noisy_metrics_recorder.h",
+  ]
+  deps = [ "//base" ]
   public_deps = [
+    ":core_unsorted",
+    ":core_util",
     ":features",
     ":filters",
+    ":hints",
+    ":model_execution",
     ":model_executor",
     "//components/autofill/core/common",
     "//components/leveldb_proto",
@@ -360,39 +493,6 @@ static_library("core") {
       "//third_party/zlib/google:compression_utils",
     ]
   }
-
-  deps = [
-    ":bloomfilter",
-    "//base",
-    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
-    "//components/optimization_guide/public/mojom",
-    "//components/prefs",
-    "//components/signin/public/identity_manager:identity_manager",
-    "//components/unified_consent",
-    "//components/variations",
-    "//components/variations/net",
-    "//google_apis",
-    "//google_apis/common:request_util",
-    "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/public/cpp",
-    "//services/on_device_model/public/cpp",
-    "//services/on_device_model/public/mojom",
-    "//third_party/tflite:buildflags",
-    "//url:url",
-  ]
-
-  if (build_with_model_execution) {
-    deps += [
-      ":on_device_model_execution_proto_generator",
-      "//components/component_updater",
-      "//components/version_info",
-      "//services/data_decoder/public/cpp",
-      "//third_party/re2",
-    ]
-  }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("prediction") {
@@ -447,7 +547,7 @@ source_set("filters_test_support") {
   ]
 }
 
-static_library("test_support") {
+source_set("hints_test_support") {
   testonly = true
   sources = [
     "hints/mock_optimization_guide_decider.cc",
@@ -456,6 +556,20 @@ static_library("test_support") {
     "hints/mock_push_notification_manager.h",
     "hints/test_optimization_guide_decider.cc",
     "hints/test_optimization_guide_decider.h",
+  ]
+  deps = [
+    ":hints",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
     "mock_optimization_guide_on_device_capability_provider.cc",
     "mock_optimization_guide_on_device_capability_provider.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
@@ -472,7 +586,10 @@ static_library("test_support") {
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]
-  public_deps = [ ":filters_test_support" ]
+  public_deps = [
+    ":filters_test_support",
+    ":hints_test_support",
+  ]
   deps = [
     ":core",
     ":filters",
@@ -563,12 +680,9 @@ source_set("filters_unit_tests") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("hints_unit_tests") {
   testonly = true
   sources = [
-    "feature_registry/enterprise_policy_registry_unittest.cc",
-    "feature_registry/mqls_feature_registry_unittest.cc",
-    "feature_registry/settings_ui_registry_unittest.cc",
     "hints/command_line_top_host_provider_unittest.cc",
     "hints/hint_cache_unittest.cc",
     "hints/hints_fetcher_unittest.cc",
@@ -581,6 +695,37 @@ source_set("unit_tests") {
     "hints/push_notification_manager_unittest.cc",
     "hints/store_update_data_unittest.cc",
     "hints/url_pattern_with_wildcards_unittest.cc",
+  ]
+  deps = [
+    ":core",
+    ":features",
+    ":filters",
+    ":hints",
+    ":hints_test_support",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
+    "//components/unified_consent:unified_consent",
+    "//components/variations:test_support",
+    "//google_apis",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feature_registry/enterprise_policy_registry_unittest.cc",
+    "feature_registry/mqls_feature_registry_unittest.cc",
+    "feature_registry/settings_ui_registry_unittest.cc",
     "model_execution/performance_class_unittest.cc",
     "model_handler_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
@@ -651,6 +796,7 @@ source_set("unit_tests") {
     ":core",
     ":features",
     ":filters_unit_tests",
+    ":hints_unit_tests",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",
