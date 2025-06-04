@@ -94,11 +94,6 @@ class OmniboxControllerIOS;
 /// Notifies thumbnail update.
 - (void)setHasThumbnail:(BOOL)hasThumbnail;
 
-#pragma mark - OmniboxAutocomplete event
-
-/// Updates the omnibox popup with sorted`result`.
-- (void)updateWithSortedResults:(const AutocompleteResult&)results;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_H_

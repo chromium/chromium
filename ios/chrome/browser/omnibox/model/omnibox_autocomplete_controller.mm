@@ -182,6 +182,15 @@ using base::UserMetricsAction;
   }
 }
 
+#pragma mark - AutocompleteResultWrapperDelegate
+
+- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
+              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                      nonPedalSuggestionsGroups {
+  [self.delegate omniboxAutocompleteController:self
+                    didUpdateSuggestionsGroups:nonPedalSuggestionsGroups];
+}
+
 #pragma mark - Boolean Observer
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
@@ -331,24 +340,6 @@ using base::UserMetricsAction;
                                   isFirstUpdate:isFirstUpdate];
 }
 
-#pragma mark - OmniboxAutocomplete event
-
-- (void)updateWithSortedResults:(const AutocompleteResult&)results {
-  NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
-      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
-  [self.delegate omniboxAutocompleteController:self
-                    didUpdateSuggestionsGroups:suggestionGroups];
-}
-
-#pragma mark - AutocompleteResultWrapperDelegate
-
-- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
-              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
-                                      nonPedalSuggestionsGroups {
-  [self.delegate omniboxAutocompleteController:self
-                    didUpdateSuggestionsGroups:nonPedalSuggestionsGroups];
-}
-
 #pragma mark - Private
 
 /// Opens a match created outside of autocomplete controller.
@@ -362,6 +353,14 @@ using base::UserMetricsAction;
   OmniboxPopupSelection selection(
       autocompleteController->InjectAdHocMatch(match.value()));
   _omniboxEditModel->OpenSelection(selection, timestamp, disposition);
+}
+
+/// Wraps the suggestions and send them to the delegate.
+- (void)updateWithSortedResults:(const AutocompleteResult&)results {
+  NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
+      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
+  [self.delegate omniboxAutocompleteController:self
+                    didUpdateSuggestionsGroups:suggestionGroups];
 }
 
 #pragma mark Clipboard match handling
