@@ -443,10 +443,6 @@
 // - external/xnnpack+/src/f32-vlrelu/gen/f32-vlrelu-sse41-u8.c
 // - external/xnnpack+/src/f32-vmulcaddc/gen/f32-vmulcaddc-c1-minmax-scalar-2x.c
 // - external/xnnpack+/src/f32-vmulcaddc/gen/f32-vmulcaddc-c4-minmax-sse-2x.c
-// - external/xnnpack+/src/f32-vrelu/gen/f32-vrelu-avx.c
-// - external/xnnpack+/src/f32-vrelu/gen/f32-vrelu-avx512f.c
-// - external/xnnpack+/src/f32-vrelu/gen/f32-vrelu-scalar.c
-// - external/xnnpack+/src/f32-vrelu/gen/f32-vrelu-sse2.c
 // - external/xnnpack+/src/f32-vrnd/gen/f32-vrndd-avx-u16.c
 // - external/xnnpack+/src/f32-vrnd/gen/f32-vrndd-avx512f-u16.c
 // - external/xnnpack+/src/f32-vrnd/gen/f32-vrndd-scalar-libm-u1.c
@@ -508,9 +504,7 @@
 // - external/xnnpack+/src/f32-vunary/gen/f32-vsqr-scalar.c
 // - external/xnnpack+/src/f32-vunary/gen/f32-vsqr-sse2.c
 // - external/xnnpack+/src/log.c
-// - external/xnnpack+/src/memory.c
 // - external/xnnpack+/src/microparams-init.c
-// - external/xnnpack+/src/mutex.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-1x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-3x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qc4w-gemm/gen/qd8-f16-qc4w-gemm-1x8c8-minmax-avx2-madd-prfm.c
@@ -961,10 +955,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  148,   5, 105, 197, 100, 103, 237,  68,
-  187, 178, 174, 198, 125, 155, 232,  30,
-  119, 251, 111, 140, 128, 138, 239, 243,
-  255, 126,  27, 130, 105, 187, 194, 112
+   12,  22, 222,  18, 189, 150, 218, 146,
+  154, 210,  20,  25,  31,  16, 206, 242,
+   49,  58,  83,   0,  18,  91, 126,  53,
+  116, 131,  35, 169, 153, 175, 107,  45
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
