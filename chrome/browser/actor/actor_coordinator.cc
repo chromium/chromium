@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -126,7 +127,7 @@ void ActorCoordinator::Act(const BrowserAction& action,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (tab_scoped_actions_deprecated_ && !tab_) {
-    VLOG(1) << "Unable to perform action: tab has been destroyed";
+    ACTOR_LOG() << "Unable to perform action: tab has been destroyed";
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
@@ -134,7 +135,8 @@ void ActorCoordinator::Act(const BrowserAction& action,
 
   // NOTE: Improve this API by queuing the action instead.
   if (actions_) {
-    VLOG(1) << "Unable to perform action: task already has action in progress";
+    ACTOR_LOG()
+        << "Unable to perform action: task already has action in progress";
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
                                       "Task already has action in progress"));
@@ -163,7 +165,7 @@ void ActorCoordinator::OnMayActOnTabResponse(
   }
 
   if (tab_scoped_actions_deprecated_ && !tab_.get()) {
-    VLOG(1)
+    ACTOR_LOG()
         << "Unable to perform action: Tab closed while checking site policy";
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "Tab closed while checking site policy"));
@@ -254,6 +256,10 @@ void ActorCoordinator::FinishOneAction(TaskId task_id,
 void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   if (!actions_) {
     return;
+  }
+
+  if (!IsOk(*result)) {
+    ACTOR_LOG() << "Action Failed: " << ToDebugString(*result);
   }
 
   PostTaskForActCallback(std::move(actions_->callback), std::move(result));
