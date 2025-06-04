@@ -100,7 +100,6 @@ class ChromeStdlib(TestSuite):
         "Net.URLLoaderThrottleExecutionTime.WillProcessResponse",1773
         "UMA.StackProfiler.SampleInOrder",1534
         "GPU.SharedImage.ContentConsumed",1037
-        "Gpu.Rasterization.Raster.MSAASampleCountLog2",825
         "Scheduling.Renderer.DeadlineMode",637
         "Blink.CullRect.UpdateTime",622
         "Scheduling.Renderer.BeginImplFrameLatency2",591

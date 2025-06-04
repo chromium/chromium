@@ -1230,17 +1230,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
-    expires_after="2025-07-13">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    log2() of MSAA sample count of a raster task. Value is in [log2(1),log2(64)]
-    or [0,6] range. If log2() of the MSAA sample count is 0 (MSAA sample count
-    is 1), it means MSAA is disabled.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2025-11-30">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
