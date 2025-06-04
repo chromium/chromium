@@ -5,6 +5,7 @@
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"

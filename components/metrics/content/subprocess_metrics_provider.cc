@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"

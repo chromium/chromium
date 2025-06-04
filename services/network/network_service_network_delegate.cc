@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"

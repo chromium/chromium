@@ -41,6 +41,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/types/cxx23_to_underlying.h"

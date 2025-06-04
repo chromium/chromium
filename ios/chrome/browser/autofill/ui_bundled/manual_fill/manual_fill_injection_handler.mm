@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/crash_logging.h"
 #import "base/functional/bind.h"
 #import "base/json/string_escape.h"
 #import "base/metrics/histogram_functions.h"

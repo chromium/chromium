@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"

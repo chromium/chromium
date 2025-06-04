@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

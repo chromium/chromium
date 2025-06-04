@@ -36,6 +36,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
