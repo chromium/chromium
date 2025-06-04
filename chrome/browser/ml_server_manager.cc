@@ -128,7 +128,7 @@ void MLServerManager::StartMLServerIfEnabled() {
     base::CommandLine build_cmdline(base::FilePath("podman"));
     build_cmdline.AppendArg("build");
     build_cmdline.AppendArg("-t");
-    build_cmdline.AppendArg("malabr-model-server");
+    build_cmdline.AppendArg("mycppserver");
     build_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/src/addition_malabr");
 
     // Launch the build process.
@@ -155,8 +155,8 @@ void MLServerManager::StartMLServerIfEnabled() {
     run_cmdline.AppendArg("-v");
     run_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/src/addition_malabr/uploads:/app/uploads:rw");
     run_cmdline.AppendArg("--name");
-    run_cmdline.AppendArg("malabr-model-server-container");
-    run_cmdline.AppendArg("malabr-model-server");
+    run_cmdline.AppendArg("cpp-server-container");
+    run_cmdline.AppendArg("mycppserver");
 
     // Launch the container (in detached mode).
     base::Process run_process = base::LaunchProcess(run_cmdline, options);
@@ -179,7 +179,7 @@ void MLServerManager::StopMLServer() {
   {
     base::CommandLine stop_cmdline(base::FilePath("podman"));
     stop_cmdline.AppendArg("stop");
-    stop_cmdline.AppendArg("malabr-model-server-container");
+    stop_cmdline.AppendArg("cpp-server-container");
 
     base::Process stop_process = base::LaunchProcess(stop_cmdline, options);
     if (!stop_process.IsValid()) {
@@ -197,7 +197,7 @@ void MLServerManager::StopMLServer() {
   {
     base::CommandLine rm_cmdline(base::FilePath("podman"));
     rm_cmdline.AppendArg("rm");
-    rm_cmdline.AppendArg("malabr-model-server-container");
+    rm_cmdline.AppendArg("cpp-server-container");
 
     base::Process rm_process = base::LaunchProcess(rm_cmdline, options);
     if (!rm_process.IsValid()) {
