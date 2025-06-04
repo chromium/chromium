@@ -100,8 +100,12 @@ UnpackedInstaller::~UnpackedInstaller() {
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());
   extension_path_ = path_in;
+  if (!profile_ || browser_terminating_) {
+    return;
+  }
   GetExtensionFileTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&UnpackedInstaller::GetAbsolutePath, this));
+      FROM_HERE,
+      base::BindOnce(&UnpackedInstaller::GetAbsolutePathOnFileThread, this));
 }
 
 bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
@@ -110,7 +114,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(extension_path_.empty());
 
-  if (!profile_) {
+  if (!profile_ || browser_terminating_) {
     return false;
   }
   // Load extensions from the command line synchronously to avoid a race
@@ -157,7 +161,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
 
 void UnpackedInstaller::StartInstallChecks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile_) {
+  if (!profile_ || browser_terminating_) {
     return;
   }
 
@@ -167,10 +171,6 @@ void UnpackedInstaller::StartInstallChecks() {
   // dependencies between the extensions loaded by the command line.
   if (extension()->manifest()->location() !=
       mojom::ManifestLocation::kCommandLine) {
-    if (browser_terminating_) {
-      return;
-    }
-
     // TODO(crbug.com/40387578): Move this code to a utility class to avoid
     // duplication of SharedModuleService::CheckImports code.
     if (SharedModuleInfo::ImportsModules(extension())) {
@@ -214,6 +214,9 @@ void UnpackedInstaller::StartInstallChecks() {
 void UnpackedInstaller::OnInstallChecksComplete(
     const PreloadCheck::Errors& errors) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!profile_ || browser_terminating_) {
+    return;
+  }
 
   if (errors.empty()) {
     InstallExtension();
@@ -231,6 +234,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
 }
 
 int UnpackedInstaller::GetFlags() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
       Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
@@ -298,7 +302,7 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
 }
 
 bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
-  if (!profile_) {
+  if (!profile_ || browser_terminating_) {
     return true;
   }
   // If there is a "*" in the extension blocklist, then no extensions should be
@@ -307,7 +311,7 @@ bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
               ->BlocklistedByDefault();
 }
 
-void UnpackedInstaller::GetAbsolutePath() {
+void UnpackedInstaller::GetAbsolutePathOnFileThread() {
   extension_path_ = base::MakeAbsoluteFilePath(extension_path_);
 
   // Set priority explicitly to avoid unwanted task priority inheritance.
@@ -319,7 +323,7 @@ void UnpackedInstaller::GetAbsolutePath() {
 
 void UnpackedInstaller::CheckExtensionFileAccess() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile_) {
+  if (!profile_ || browser_terminating_) {
     return;
   }
 
@@ -330,10 +334,11 @@ void UnpackedInstaller::CheckExtensionFileAccess() {
 
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&UnpackedInstaller::LoadWithFileAccess, this, GetFlags()));
+      base::BindOnce(&UnpackedInstaller::LoadWithFileAccessOnFileThread, this,
+                     GetFlags()));
 }
 
-void UnpackedInstaller::LoadWithFileAccess(int flags) {
+void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
   std::string error;
   if (!LoadExtension(mojom::ManifestLocation::kUnpacked, flags, &error)) {
     // Set priority explicitly to avoid unwanted task priority inheritance.
@@ -365,7 +370,7 @@ void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
 void UnpackedInstaller::InstallExtension() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!profile_) {
+  if (!profile_ || browser_terminating_) {
     callback_.Reset();
     return;
   }

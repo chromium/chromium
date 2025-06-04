@@ -188,19 +188,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   }
 }
 
-// TODO(crbug.com/412462104): Flaky on Android. Crashes with a sequence checker
-// assert from ~UnpackedInstaller.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_OverridingExtensionUnloadedWithPageOpen \
-  DISABLED_OverridingExtensionUnloadedWithPageOpen
-#else
-#define MAYBE_OverridingExtensionUnloadedWithPageOpen \
-  OverridingExtensionUnloadedWithPageOpen
-#endif
 // Test that unloading an extension overriding the page reloads the page with
 // the proper url.
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
-                       MAYBE_OverridingExtensionUnloadedWithPageOpen) {
+                       OverridingExtensionUnloadedWithPageOpen) {
   // Prefer IDs because loading/unloading invalidates the extension ptrs.
   const std::string extension1_id =
       LoadExtension(data_dir().AppendASCII("newtab"))->id();

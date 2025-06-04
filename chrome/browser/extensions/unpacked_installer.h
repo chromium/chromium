@@ -146,9 +146,9 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // file thread with LoadWithFileAccess.
   // TODO(yoz): It would be nice to remove this ping-pong, but we need to know
   // what file access flags to pass to file_util::LoadExtension.
-  void GetAbsolutePath();
+  void GetAbsolutePathOnFileThread();
   void CheckExtensionFileAccess();
-  void LoadWithFileAccess(int flags);
+  void LoadWithFileAccessOnFileThread(int flags);
 
   // Notify the frontend that an attempt to retry will not be necessary.
   void UnregisterLoadRetryListener();
