@@ -371,7 +371,7 @@ AudioParamTimeline::ParamEvent::ParamEvent(ParamEvent::Type type,
 
 // Create a linear or exponential ramp that requires an initial value and
 // time in case
-// there is no actual event that preceeds this event.
+// there is no actual event that precedes this event.
 AudioParamTimeline::ParamEvent::ParamEvent(ParamEvent::Type type,
                                            float value,
                                            double time,
@@ -590,7 +590,7 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
        event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
     // There are no events preceding these ramps.  Insert a new
     // setValueAtTime event to set the starting point for these
-    // events.  Use a time of 0 to make sure it preceeds all other
+    // events.  Use a time of 0 to make sure it precedes all other
     // events.  This will get fixed when when handle new events.
     events_.insert(0, AudioParamTimeline::ParamEvent::CreateSetValueEvent(
                           event->InitialValue(), 0));
@@ -667,7 +667,7 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
         // or `kCancelValues` that starts before the new event of type
         // `kSetValueCurve` that we want to insert. No earlier existing event
         // can overlap with the new event. An overlapping `kSetValueCurve` would
-        // have ovelapped with E too, so one of them would not be inserted.
+        // have overlapped with E too, so one of them would not be inserted.
         // Other event types overlap with the new `kSetValueCurve` event only if
         // they start in the middle of the new event, which is not the case.
         break;
@@ -1305,7 +1305,7 @@ void AudioParamTimeline::ClampNewEventsToCurrentTime(double current_time) {
   if (clamped_some_event_time) {
     // If we clamped some event time to current time, we need to sort
     // the event list in time order again, but it must be stable!
-    std::stable_sort(events_.begin(), events_.end(), ParamEvent::EventPreceeds);
+    std::stable_sort(events_.begin(), events_.end(), ParamEvent::EventPrecedes);
   }
 
   new_events_.clear();

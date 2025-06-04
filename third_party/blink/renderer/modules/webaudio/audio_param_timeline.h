@@ -163,7 +163,7 @@ class AudioParamTimeline {
         float curve_end_value,
         std::unique_ptr<ParamEvent> saved_event);
 
-    static bool EventPreceeds(const std::unique_ptr<ParamEvent>& a,
+    static bool EventPrecedes(const std::unique_ptr<ParamEvent>& a,
                               const std::unique_ptr<ParamEvent>& b) {
       return a->Time() < b->Time();
     }
@@ -206,7 +206,7 @@ class AudioParamTimeline {
     ParamEvent(Type, float value, double time);
 
     // Create a linear or exponential ramp that requires an initial
-    // value and time in case there is no actual event that preceeds
+    // value and time in case there is no actual event that precedes
     // this event.
     ParamEvent(Type,
                float value,
@@ -317,7 +317,7 @@ class AudioParamTimeline {
   // Produce a nice string describing the event in human-readable form.
   String EventToString(const ParamEvent&) const;
 
-  // Automation functions that compute the vlaue of the specified
+  // Automation functions that compute the value of the specified
   // automation at the specified time.
   float LinearRampAtTime(double t,
                          float value1,
