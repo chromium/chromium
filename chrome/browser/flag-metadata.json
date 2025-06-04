@@ -8136,7 +8136,7 @@
   {
     "name": "quick-share-v2",
     "owners": [ "brandosocarras@google.com", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 140
   },
   {
     "name": "read-aloud",
