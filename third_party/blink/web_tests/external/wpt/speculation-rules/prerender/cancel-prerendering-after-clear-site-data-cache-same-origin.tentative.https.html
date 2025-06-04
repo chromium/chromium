@@ -9,25 +9,25 @@ This file is marked as "tentative" until:
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/speculation-rules/resources/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
 // Test that Clear-Site-Data header value "prerenderCache" clears prerender cache
 promise_test(async t => {
 
-  const rcHelper = new RemoteContextHelper();
+  const rcHelper = new PrerenderingRemoteContextHelper();
   const referrerRC = await rcHelper.addWindow({
     origin: 'HTTPS_ORIGIN'
   }, {
     features: 'noopener'
   });
-  const prerenderedRC = await addPrerenderRC(referrerRC, {
+  const prerenderedRC = await referrerRC.addPrerender({
     origin: 'HTTPS_ORIGIN'
   });
 
@@ -55,13 +55,13 @@ promise_test(async t => {
 // Test that Clear-Site-Data header value "cache" clears prerender cache
 promise_test(async t => {
 
-  const rcHelper = new RemoteContextHelper();
+  const rcHelper = new PrerenderingRemoteContextHelper();
   const referrerRC = await rcHelper.addWindow({
     origin: 'HTTPS_ORIGIN'
   }, {
     features: 'noopener'
   });
-  const prerenderedRC = await addPrerenderRC(referrerRC, {
+  const prerenderedRC = await referrerRC.addPrerender({
     origin: 'HTTPS_ORIGIN'
   });
 
@@ -83,7 +83,7 @@ promise_test(async t => {
   // Because Clear-Site-Data response header is sent, the existing prerender
   // is expected to be canceled.
   // And the navigation is expected to create another page instead of activation.
-  referrerRC.navigateTo(prerenderedRC.url);
+  await referrerRC.navigateTo(prerenderedRC.url);
   assert_equals(await getActivationStart(prerenderedRC), 0);
 }, "clear-site-data cache headers should prevent it from being activated");
 </script>
