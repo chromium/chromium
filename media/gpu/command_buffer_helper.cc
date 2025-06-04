@@ -30,8 +30,8 @@ class CommandBufferHelperImpl
   explicit CommandBufferHelperImpl(gpu::CommandBufferStub* stub)
       : CommandBufferHelper(stub->channel()->task_runner()),
         stub_(stub),
-        memory_tracker_(this),
-        memory_type_tracker_(&memory_tracker_) {
+        memory_type_tracker_(
+            stub_->channel()->shared_image_stub()->memory_tracker()) {
     DVLOG(1) << __func__;
     DCHECK(stub_->channel()->task_runner()->BelongsToCurrentThread());
 
@@ -94,53 +94,6 @@ class CommandBufferHelperImpl
 #endif
 
  private:
-  // Helper class to forward memory tracking calls to shared image stub.
-  // Necessary because the underlying stub and channel can get destroyed before
-  // the CommandBufferHelper and its clients.
-  class MemoryTrackerImpl : public gpu::MemoryTracker {
-   public:
-    explicit MemoryTrackerImpl(CommandBufferHelperImpl* helper)
-        : helper_(helper) {
-      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
-        // We assume these don't change after initialization.
-        client_id_ = tracker->ClientId();
-        client_tracing_id_ = tracker->ClientTracingId();
-        context_group_tracing_id_ = tracker->ContextGroupTracingId();
-      }
-    }
-    ~MemoryTrackerImpl() override = default;
-
-    MemoryTrackerImpl(const MemoryTrackerImpl&) = delete;
-    MemoryTrackerImpl& operator=(const MemoryTrackerImpl&) = delete;
-
-    void TrackMemoryAllocatedChange(int64_t delta) override {
-      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
-        tracker->TrackMemoryAllocatedChange(delta);
-      }
-    }
-
-    uint64_t GetSize() const override {
-      if (auto* tracker = helper_->shared_image_stub_memory_tracker()) {
-        return tracker->GetSize();
-      }
-      return 0;
-    }
-
-    int ClientId() const override { return client_id_; }
-
-    uint64_t ClientTracingId() const override { return client_tracing_id_; }
-
-    uint64_t ContextGroupTracingId() const override {
-      return context_group_tracing_id_;
-    }
-
-   private:
-    const raw_ptr<CommandBufferHelperImpl> helper_;
-    int client_id_ = 0;
-    uint64_t client_tracing_id_ = 0;
-    uint64_t context_group_tracing_id_ = 0;
-  };
-
   ~CommandBufferHelperImpl() override {
     DVLOG(1) << __func__;
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -178,7 +131,10 @@ class CommandBufferHelperImpl
   // block the command buffer.
   gpu::SequenceId wait_sequence_id_;
 
-  MemoryTrackerImpl memory_tracker_;
+  // MemoryTypeTracker's memory_tracker is a scoped_refptr. Therefore, invoking
+  // memory_tracker->TrackMemoryAllocatedChange() is safe even if the underlying
+  // stub and channel are destroyed before the CommandBufferHelper and its
+  // clients.
   gpu::MemoryTypeTracker memory_type_tracker_;
 
   THREAD_CHECKER(thread_checker_);

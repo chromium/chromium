@@ -21,10 +21,13 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace gpu {
+class MockMemoryTracker;
 
 // A MemoryTracker is used to propagate per-ContextGroup memory usage
 // statistics to the global GpuMemoryManager.
-class GPU_EXPORT MemoryTracker {
+// MemoryTracker is thread safe.
+class GPU_EXPORT MemoryTracker
+    : public base::RefCountedThreadSafe<MemoryTracker> {
  public:
   // Observe all changes in memory notified to this MemoryTracker.
   // Used by GpuChannelManager::GpuPeakMemoryMonitor only.
@@ -46,7 +49,6 @@ class GPU_EXPORT MemoryTracker {
     virtual ~Observer() = default;
   };
 
-  virtual ~MemoryTracker();
 
   MemoryTracker(CommandBufferId command_buffer_id,
                 uint64_t client_tracing_id,
@@ -70,6 +72,12 @@ class GPU_EXPORT MemoryTracker {
   // Returns an ID that uniquely identifies the context group.
   virtual uint64_t ContextGroupTracingId() const;
 
+ protected:
+  friend class base::RefCountedThreadSafe<MemoryTracker>;
+  friend class MemoryTypeTracker;
+  friend class MockMemoryTracker;
+  virtual ~MemoryTracker();
+
  private:
   const CommandBufferId command_buffer_id_;
   const uint64_t client_tracing_id_;
@@ -88,9 +96,10 @@ class GPU_EXPORT MemoryTracker {
 // task runner specified (for testing).
 class GPU_EXPORT MemoryTypeTracker {
  public:
-  explicit MemoryTypeTracker(MemoryTracker* memory_tracker);
+  explicit MemoryTypeTracker(scoped_refptr<MemoryTracker> memory_tracker);
+
   // For testing.
-  MemoryTypeTracker(MemoryTracker* memory_tracker,
+  MemoryTypeTracker(scoped_refptr<MemoryTracker> memory_tracker,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   MemoryTypeTracker(const MemoryTypeTracker&) = delete;
@@ -98,7 +107,7 @@ class GPU_EXPORT MemoryTypeTracker {
 
   ~MemoryTypeTracker();
 
-  const MemoryTracker* memory_tracker() const { return memory_tracker_; }
+  const MemoryTracker* memory_tracker() const { return memory_tracker_.get(); }
 
   void TrackMemAlloc(size_t bytes);
   void TrackMemFree(size_t bytes);
@@ -107,7 +116,7 @@ class GPU_EXPORT MemoryTypeTracker {
  private:
   void TrackMemoryAllocatedChange(int64_t delta);
 
-  const raw_ptr<MemoryTracker, DanglingUntriaged> memory_tracker_;
+  const scoped_refptr<MemoryTracker> memory_tracker_;
 
   size_t mem_represented_ GUARDED_BY(lock_) = 0;
   mutable base::Lock lock_;

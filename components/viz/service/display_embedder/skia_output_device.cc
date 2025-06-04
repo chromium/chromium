@@ -92,14 +92,14 @@ bool SkiaOutputDevice::ScopedPaint::Draw(
 SkiaOutputDevice::SkiaOutputDevice(
     GrDirectContext* gr_context,
     gpu::GraphiteSharedContext* graphite_shared_context,
-    gpu::MemoryTracker* memory_tracker,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     ReleaseOverlaysCallback release_overlays_callback)
     : did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
-          std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)) {
+          std::make_unique<gpu::MemoryTypeTracker>(std::move(memory_tracker))) {
   if (gr_context) {
     CHECK(!graphite_shared_context);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();

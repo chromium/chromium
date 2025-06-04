@@ -105,7 +105,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   SkiaOutputDevice(
       GrDirectContext* gr_context,
       gpu::GraphiteSharedContext* graphite_shared_context,
-      gpu::MemoryTracker* memory_tracker,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       ReleaseOverlaysCallback release_overlays_callback = base::DoNothing());
 

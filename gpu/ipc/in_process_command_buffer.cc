@@ -233,13 +233,13 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   GpuDriverBugWorkarounds workarounds(
       task_executor_->gpu_feature_info().enabled_gpu_driver_bug_workarounds);
 
-  std::unique_ptr<MemoryTracker> memory_tracker;
+  scoped_refptr<MemoryTracker> memory_tracker;
   // Android WebView won't have a memory tracker.
   if (task_executor_->ShouldCreateMemoryTracker()) {
     const uint64_t client_tracing_id =
         base::trace_event::MemoryDumpManager::GetInstance()
             ->GetTracingProcessId();
-    memory_tracker = std::make_unique<MemoryTracker>(
+    memory_tracker = base::MakeRefCounted<MemoryTracker>(
         GetCommandBufferID(), client_tracing_id,
         /*peak_memory_monitor=*/nullptr,
         GpuPeakMemoryAllocationSource::COMMAND_BUFFER);

@@ -23,8 +23,10 @@
 
 namespace gpu {
 
-TransferBufferManager::TransferBufferManager(MemoryTracker* memory_tracker)
-    : shared_memory_bytes_allocated_(0), memory_tracker_(memory_tracker) {
+TransferBufferManager::TransferBufferManager(
+    scoped_refptr<MemoryTracker> memory_tracker)
+    : shared_memory_bytes_allocated_(0),
+      memory_tracker_(std::move(memory_tracker)) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
   if (memory_tracker_) {
@@ -101,10 +103,13 @@ bool TransferBufferManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
+  const int client_id = memory_tracker_ ? memory_tracker_->ClientId() : 0;
+  const uint64_t client_tracking_id =
+      memory_tracker_ ? memory_tracker_->ClientTracingId() : 0;
 
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
-    std::string dump_name = base::StringPrintf("gpu/transfer_memory/client_%d",
-                                               memory_tracker_->ClientId());
+    std::string dump_name =
+        base::StringPrintf("gpu/transfer_memory/client_%d", client_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
@@ -117,9 +122,8 @@ bool TransferBufferManager::OnMemoryDump(
   for (const auto& buffer_entry : registered_buffers_) {
     int32_t buffer_id = buffer_entry.first;
     const Buffer* buffer = buffer_entry.second.get();
-    std::string dump_name =
-        base::StringPrintf("gpu/transfer_memory/client_%d/buffer_%d",
-                           memory_tracker_->ClientId(), buffer_id);
+    std::string dump_name = base::StringPrintf(
+        "gpu/transfer_memory/client_%d/buffer_%d", client_id, buffer_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, buffer->size());
@@ -129,8 +133,7 @@ bool TransferBufferManager::OnMemoryDump(
       pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shared_memory_guid,
                                            0 /* importance */);
     } else {
-      auto guid = GetBufferGUIDForTracing(memory_tracker_->ClientTracingId(),
-                                          buffer_id);
+      auto guid = GetBufferGUIDForTracing(client_tracking_id, buffer_id);
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid);
     }

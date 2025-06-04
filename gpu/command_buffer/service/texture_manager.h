@@ -740,7 +740,7 @@ class GPU_GLES2_EXPORT TextureManager
     kNumDefaultTextures
   };
 
-  TextureManager(MemoryTracker* memory_tracker,
+  TextureManager(scoped_refptr<MemoryTracker> memory_tracker,
                  FeatureInfo* feature_info,
                  GLsizei max_texture_size,
                  GLsizei max_cube_map_texture_size,
@@ -1201,7 +1201,6 @@ class GPU_GLES2_EXPORT TextureManager
 
   MemoryTypeTracker* GetMemTracker();
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  raw_ptr<MemoryTracker> memory_tracker_;
 
   scoped_refptr<FeatureInfo> feature_info_;
 

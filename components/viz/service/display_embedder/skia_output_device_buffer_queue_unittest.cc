@@ -294,19 +294,19 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
   void SetUpOnGpu() override {
     presenter_ = base::MakeRefCounted<MockPresenter>();
-    memory_tracker_ = std::make_unique<gpu::MemoryTracker>();
+    memory_tracker_ = base::MakeRefCounted<gpu::MemoryTracker>();
     shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
         dependency_->GetGpuPreferences(),
         dependency_->GetGpuDriverBugWorkarounds(),
         dependency_->GetGpuFeatureInfo(),
         dependency_->GetSharedContextState().get(),
-        dependency_->GetSharedImageManager(), memory_tracker_.get(),
+        dependency_->GetSharedImageManager(), memory_tracker_,
         /*is_for_display_compositor=*/true),
     shared_image_factory_->RegisterSharedImageBackingFactoryForTesting(
         &test_backing_factory_);
     shared_image_representation_factory_ =
         std::make_unique<gpu::SharedImageRepresentationFactory>(
-            dependency_->GetSharedImageManager(), memory_tracker_.get());
+            dependency_->GetSharedImageManager(), memory_tracker_);
 
     auto present_callback = GetDidSwapBuffersCompleteCallback();
     auto release_callback = GetReleaseOverlaysCallback();
@@ -314,7 +314,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(presenter_, dependency_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback, release_callback);
+        memory_tracker_, present_callback, release_callback);
   }
 
   void TearDownOnGpu() override {
@@ -333,8 +333,6 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   std::vector<gpu::Mailbox> committed_overlay_mailboxes() {
     return output_device_->committed_overlay_mailboxes_;
   }
-
-  const gpu::MemoryTracker& memory_tracker() { return *memory_tracker_; }
 
   virtual void Present() {
     // SkiaOutputDeviceBuffer queue doesn't care about rect, so we can pass
@@ -377,7 +375,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
   scoped_refptr<MockPresenter> presenter_;
-  std::unique_ptr<gpu::MemoryTracker> memory_tracker_;
+  scoped_refptr<gpu::MemoryTracker> memory_tracker_;
   TestImageBackingFactory test_backing_factory_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>

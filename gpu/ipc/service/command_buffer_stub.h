@@ -157,7 +157,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   bool ShouldYield() override;
 
   using MemoryTrackerFactory =
-      base::RepeatingCallback<std::unique_ptr<MemoryTracker>()>;
+      base::RepeatingCallback<scoped_refptr<MemoryTracker>()>;
 
   // Overrides the way CreateMemoryTracker() uses to create a MemoryTracker.
   // This is intended for mocking the MemoryTracker in tests.
@@ -236,7 +236,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                                                   bool needs_depth,
                                                   bool needs_stencil) {}
 
-  std::unique_ptr<MemoryTracker> CreateMemoryTracker() const;
+  scoped_refptr<MemoryTracker> CreateMemoryTracker() const;
 
   // Must be called during Initialize(). Takes ownership to co-ordinate
   // teardown in Destroy().
@@ -268,7 +268,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // ensure that the memory tracker outlives the objects that uses it, for
   // example the ContextGroup referenced both in the Decoder and the
   // CommandBufferStub.
-  std::unique_ptr<gpu::MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
 
   scoped_refptr<gl::GLSurface> surface_;
   ScopedSyncPointClientState scoped_sync_point_client_state_;

@@ -212,7 +212,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       new FeatureInfo(workarounds, gpu_feature_info);
 
   group_ = scoped_refptr<ContextGroup>(new ContextGroup(
-      gpu_preferences_, std::move(memory_tracker_), &shader_translator_cache_,
+      gpu_preferences_, memory_tracker_, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
       normalized_init.bind_generates_resource, /*progress_reporter=*/nullptr,
       gpu_feature_info, &discardable_manager_, nullptr,

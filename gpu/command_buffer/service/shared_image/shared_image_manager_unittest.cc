@@ -199,13 +199,16 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
 TEST(SharedImageManagerTest, TransferRefCrossThread) {
   const size_t kSizeBytes = 1024;
   SharedImageManager manager;
-  MemoryTracker memory_tracker1;
-  MemoryTracker memory_tracker2;
 
-  auto memory_type_tracker1 = std::make_unique<MemoryTypeTracker>(
-      &memory_tracker1, base::ThreadPool::CreateSequencedTaskRunner({}));
-  auto memory_type_tracker2 = std::make_unique<MemoryTypeTracker>(
-      &memory_tracker2, base::ThreadPool::CreateSequencedTaskRunner({}));
+  scoped_refptr<MemoryTracker> memory_tracker1 =
+      base::MakeRefCounted<MemoryTracker>();
+  scoped_refptr<MemoryTracker> memory_tracker2 =
+      base::MakeRefCounted<MemoryTracker>();
+
+  std::unique_ptr<MemoryTypeTracker> memory_type_tracker1 =
+      std::make_unique<MemoryTypeTracker>(memory_tracker1);
+  std::unique_ptr<MemoryTypeTracker> memory_type_tracker2 =
+      std::make_unique<MemoryTypeTracker>(memory_tracker2);
 
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
@@ -223,7 +226,7 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
       manager.Register(std::move(backing), memory_type_tracker1.get());
   EXPECT_EQ(kSizeBytes, memory_type_tracker1->GetMemRepresented());
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  EXPECT_EQ(kSizeBytes, memory_tracker1.GetSize());
+  EXPECT_EQ(kSizeBytes, memory_tracker1->GetSize());
 
   // Take an additional ref/representation with a new tracker. Memory should
   // stay accounted to the original tracker.
@@ -232,16 +235,16 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   EXPECT_EQ(kSizeBytes, memory_type_tracker1->GetMemRepresented());
   EXPECT_EQ(0u, memory_type_tracker2->GetMemRepresented());
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  EXPECT_EQ(kSizeBytes, memory_tracker1.GetSize());
-  EXPECT_EQ(0u, memory_tracker2.GetSize());
+  EXPECT_EQ(kSizeBytes, memory_tracker1->GetSize());
+  EXPECT_EQ(0u, memory_tracker2->GetSize());
 
   // Releasing the original should transfer memory to the new tracker.
   factory_ref.reset();
   EXPECT_EQ(0u, memory_type_tracker1->GetMemRepresented());
   EXPECT_EQ(kSizeBytes, memory_type_tracker2->GetMemRepresented());
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  EXPECT_EQ(0u, memory_tracker1.GetSize());
-  EXPECT_EQ(kSizeBytes, memory_tracker2.GetSize());
+  EXPECT_EQ(0u, memory_tracker1->GetSize());
+  EXPECT_EQ(kSizeBytes, memory_tracker2->GetSize());
 
   // We can now safely destroy the original tracker.
   memory_type_tracker1.reset();
@@ -249,7 +252,7 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   gl_representation.reset();
   EXPECT_EQ(0u, memory_type_tracker2->GetMemRepresented());
   base::ThreadPoolInstance::Get()->FlushForTesting();
-  EXPECT_EQ(0u, memory_tracker2.GetSize());
+  EXPECT_EQ(0u, memory_tracker2->GetSize());
 }
 
 TEST(SharedImageManagerTest, GetUsageForMailbox) {

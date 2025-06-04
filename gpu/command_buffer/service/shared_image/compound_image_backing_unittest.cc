@@ -102,6 +102,10 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 
 class CompoundImageBackingTest : public testing::Test {
  public:
+  CompoundImageBackingTest()
+      : memory_tracker_(base::MakeRefCounted<MemoryTracker>()),
+        memory_type_tracker_(memory_tracker_) {}
+
   bool HasGpuBacking(CompoundImageBacking* backing) {
     return !!backing->elements_[1].backing;
   }
@@ -171,10 +175,10 @@ class CompoundImageBackingTest : public testing::Test {
   }
 
  protected:
+  scoped_refptr<MemoryTracker> memory_tracker_;
+  MemoryTypeTracker memory_type_tracker_;
   SharedImageManager manager_;
   TestSharedImageBackingFactory test_factory_;
-  MemoryTracker memory_tracker_;
-  MemoryTypeTracker tracker_{&memory_tracker_};
 };
 
 TEST_F(CompoundImageBackingTest, References) {
@@ -189,11 +193,12 @@ TEST_F(CompoundImageBackingTest, References) {
   EXPECT_FALSE(compound_backing->HasAnyRefs());
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // When the compound backing is first registered it will get a reference
   // and add shared memory backing size to the memory tracker.
-  EXPECT_EQ(memory_tracker_.GetSize(), kTestBackingSize);
+  EXPECT_EQ(memory_tracker_->GetSize(), kTestBackingSize);
 
   // After register compound backing it should have a reference. The GPU
   // backing should never have any reference as it's owned by the compound
@@ -201,13 +206,13 @@ TEST_F(CompoundImageBackingTest, References) {
   EXPECT_TRUE(compound_backing->HasAnyRefs());
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 
-  auto overlay_rep =
-      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+  auto overlay_rep = manager_.ProduceOverlay(compound_backing->mailbox(),
+                                             &memory_type_tracker_);
 
 #if !BUILDFLAG(IS_WIN)
   // On overlay access a GPU backing will be allocated and the recorded size
   // will increase.
-  EXPECT_EQ(memory_tracker_.GetSize(), kTestBackingSize * 2);
+  EXPECT_EQ(memory_tracker_->GetSize(), kTestBackingSize * 2);
 
   ASSERT_TRUE(HasGpuBacking(compound_backing));
   auto* gpu_backing = GetGpuBacking(compound_backing);
@@ -217,7 +222,7 @@ TEST_F(CompoundImageBackingTest, References) {
   EXPECT_FALSE(gpu_backing->HasAnyRefs());
 #else
   // On Windows, no GPU backing is needed for overlays.
-  EXPECT_EQ(memory_tracker_.GetSize(), kTestBackingSize);
+  EXPECT_EQ(memory_tracker_->GetSize(), kTestBackingSize);
   EXPECT_FALSE(HasGpuBacking(compound_backing));
   {
     auto access = overlay_rep->BeginScopedReadAccess();
@@ -236,7 +241,7 @@ TEST_F(CompoundImageBackingTest, References) {
 
   // When all references are dropped the total size of shared memory and gpu
   // backings will be subtracted from memory tracker.
-  EXPECT_EQ(memory_tracker_.GetSize(), 0u);
+  EXPECT_EQ(memory_tracker_->GetSize(), 0u);
 }
 
 TEST_F(CompoundImageBackingTest, UploadOnAccess) {
@@ -245,10 +250,11 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
        SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_DISPLAY_WRITE});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  auto overlay_rep =
-      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+  auto overlay_rep = manager_.ProduceOverlay(compound_backing->mailbox(),
+                                             &memory_type_tracker_);
 
   if constexpr (!BUILDFLAG(IS_WIN)) {
     ASSERT_TRUE(HasGpuBacking(compound_backing));
@@ -295,7 +301,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
 
   // Test that GLTexturePassthrough access causes upload.
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
-      compound_backing->mailbox(), &tracker_);
+      compound_backing->mailbox(), &memory_type_tracker_);
   compound_backing->Update(nullptr);
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
@@ -304,8 +310,8 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // Test that GLTexture access causes upload.
-  auto gl_rep =
-      manager_.ProduceGLTexture(compound_backing->mailbox(), &tracker_);
+  auto gl_rep = manager_.ProduceGLTexture(compound_backing->mailbox(),
+                                          &memory_type_tracker_);
   compound_backing->Update(nullptr);
   gl_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
@@ -314,8 +320,8 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   // Test that both read and write access by Skia triggers upload.
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  auto skia_rep =
-      manager_.ProduceSkia(compound_backing->mailbox(), &tracker_, nullptr);
+  auto skia_rep = manager_.ProduceSkia(compound_backing->mailbox(),
+                                       &memory_type_tracker_, nullptr);
 
   compound_backing->Update(nullptr);
 
@@ -341,10 +347,11 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
-      compound_backing->mailbox(), &tracker_);
+      compound_backing->mailbox(), &memory_type_tracker_);
   compound_backing->Update(nullptr);
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
@@ -371,7 +378,8 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // The compound backing shouldn't have GPU backing yet and should have
   // a valid factory to create one.
@@ -381,7 +389,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   test_factory_.SetAllocationsShouldFail(true);
 
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
-      compound_backing->mailbox(), &tracker_);
+      compound_backing->mailbox(), &memory_type_tracker_);
 
   // Creating the GPU backing should fail so representation should be null.
   EXPECT_FALSE(gl_passthrough_rep);
@@ -396,7 +404,8 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // The compound backing shouldn't have GPU backing yet and should have
   // a valid factory to create one.
@@ -406,7 +415,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   test_factory_.InvalidateWeakPtrsForTesting();
 
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
-      compound_backing->mailbox(), &tracker_);
+      compound_backing->mailbox(), &memory_type_tracker_);
 
   // Creating the GPU backing should fail so representation should be null.
   EXPECT_FALSE(gl_passthrough_rep);
@@ -421,14 +430,15 @@ TEST_F(CompoundImageBackingTest, Multiplanar) {
   auto backing = CreateMultiplanarCompoundBacking();
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
 
   // There should be two planes stored in shared memory backing.
   auto* shm_backing = GetShmImageBacking(compound_backing);
   EXPECT_EQ(shm_backing->pixmaps().size(), 2u);
 
-  auto overlay_rep =
-      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+  auto overlay_rep = manager_.ProduceOverlay(compound_backing->mailbox(),
+                                             &memory_type_tracker_);
   if constexpr (!BUILDFLAG(IS_WIN)) {
     ASSERT_TRUE(HasGpuBacking(compound_backing));
     auto* gpu_backing = GetGpuBacking(compound_backing);

@@ -47,7 +47,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                      const GpuFeatureInfo& gpu_feature_info,
                      SharedContextState* context_state,
                      SharedImageManager* manager,
-                     MemoryTracker* tracker,
+                     scoped_refptr<MemoryTracker> memory_tracker,
                      bool is_for_display_compositor);
   ~SharedImageFactory();
 
@@ -180,7 +180,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   raw_ptr<SharedImageManager> shared_image_manager_;
   const scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<MemoryTypeTracker> memory_tracker_;
+  std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
 
   // This is used if the factory is created on display compositor to check for
   // sharing between threads.
@@ -227,14 +227,14 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
  public:
   // All arguments must outlive this object.
   SharedImageRepresentationFactory(SharedImageManager* manager,
-                                   MemoryTracker* tracker);
+                                   scoped_refptr<MemoryTracker> memory_tracker);
   ~SharedImageRepresentationFactory();
 
   // Helpers which call similar classes on SharedImageManager, providing a
   // MemoryTypeTracker.
   // NOTE: This object *must* outlive all objects created via the below methods,
-  // as the |tracker_| instance variable that it supplies to them is used in
-  // their destruction process.
+  // as the |memory_type_tracker_| instance variable that it supplies to them is
+  // used in their destruction process.
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       const Mailbox& mailbox);
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -274,7 +274,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
 
  private:
   const raw_ptr<SharedImageManager> manager_;
-  std::unique_ptr<MemoryTypeTracker> tracker_;
+  std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
 };
 
 }  // namespace gpu

@@ -466,7 +466,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                     gles2::Outputter* outputter,
                     const GpuFeatureInfo& gpu_feature_info,
                     const GpuPreferences& gpu_preferences,
-                    MemoryTracker* memory_tracker,
+                    scoped_refptr<MemoryTracker> memory_tracker,
                     SharedImageManager* shared_image_manager,
                     scoped_refptr<SharedContextState> shared_context_state,
                     bool is_privileged);
@@ -941,13 +941,13 @@ RasterDecoder* RasterDecoder::Create(
     gles2::Outputter* outputter,
     const GpuFeatureInfo& gpu_feature_info,
     const GpuPreferences& gpu_preferences,
-    MemoryTracker* memory_tracker,
+    scoped_refptr<MemoryTracker> memory_tracker,
     SharedImageManager* shared_image_manager,
     scoped_refptr<SharedContextState> shared_context_state,
     bool is_privileged) {
   return new RasterDecoderImpl(client, command_buffer_service, outputter,
                                gpu_feature_info, gpu_preferences,
-                               memory_tracker, shared_image_manager,
+                               std::move(memory_tracker), shared_image_manager,
                                std::move(shared_context_state), is_privileged);
 }
 
@@ -998,7 +998,7 @@ RasterDecoderImpl::RasterDecoderImpl(
     gles2::Outputter* outputter,
     const GpuFeatureInfo& gpu_feature_info,
     const GpuPreferences& gpu_preferences,
-    MemoryTracker* memory_tracker,
+    scoped_refptr<MemoryTracker> memory_tracker,
     SharedImageManager* shared_image_manager,
     scoped_refptr<SharedContextState> shared_context_state,
     bool is_privileged)
@@ -1015,7 +1015,7 @@ RasterDecoderImpl::RasterDecoderImpl(
       shared_context_state_(std::move(shared_context_state)),
       validators_(new Validators),
       shared_image_representation_factory_(shared_image_manager,
-                                           memory_tracker),
+                                           std::move(memory_tracker)),
       gpu_decoder_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
           TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))),
       font_manager_(base::MakeRefCounted<ServiceFontManager>(

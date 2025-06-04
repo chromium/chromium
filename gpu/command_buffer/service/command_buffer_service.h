@@ -75,7 +75,7 @@ class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
   static const int kParseCommandsSliceLarge = 100;
 
   CommandBufferService(CommandBufferServiceClient* client,
-                       MemoryTracker* memory_tracker);
+                       scoped_refptr<MemoryTracker> memory_tracker);
 
   CommandBufferService(const CommandBufferService&) = delete;
   CommandBufferService& operator=(const CommandBufferService&) = delete;

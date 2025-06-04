@@ -246,7 +246,8 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
 class GPU_GLES2_EXPORT BufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
-  BufferManager(MemoryTracker* memory_tracker, FeatureInfo* feature_info);
+  BufferManager(scoped_refptr<MemoryTracker> memory_tracker,
+                FeatureInfo* feature_info);
 
   BufferManager(const BufferManager&) = delete;
   BufferManager& operator=(const BufferManager&) = delete;
@@ -447,7 +448,6 @@ class GPU_GLES2_EXPORT BufferManager
                             va_list varargs);
 
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
-  raw_ptr<MemoryTracker> memory_tracker_;
   scoped_refptr<FeatureInfo> feature_info_;
 
   // Info for each buffer in the system.

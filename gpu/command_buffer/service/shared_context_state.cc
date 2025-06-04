@@ -274,13 +274,13 @@ SharedContextState::SharedContextState(
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
-      memory_tracker_shared_context_state_(std::make_unique<MemoryTracker>(
+      memory_tracker_shared_context_state_(base::MakeRefCounted<MemoryTracker>(
           CommandBufferId(), /*client_tracing_id=*/
           base::trace_event::MemoryDumpManager::GetInstance()
               ->GetTracingProcessId(),
           peak_memory_monitor,
           GpuPeakMemoryAllocationSource::SHARED_CONTEXT_STATE)),
-      memory_tracker_(std::make_unique<MemoryTracker>(
+      memory_tracker_(base::MakeRefCounted<MemoryTracker>(
           /*command_buffer_id=*/gpu::CommandBufferId::FromUnsafeValue(
               g_next_command_buffer_id.GetNext() + 1),
           /*client_tracing_id=*/

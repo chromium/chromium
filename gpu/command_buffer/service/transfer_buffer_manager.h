@@ -21,7 +21,7 @@ class MemoryTracker;
 class GPU_EXPORT TransferBufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
-  explicit TransferBufferManager(MemoryTracker* memory_tracker);
+  explicit TransferBufferManager(scoped_refptr<MemoryTracker> memory_tracker);
 
   TransferBufferManager(const TransferBufferManager&) = delete;
   TransferBufferManager& operator=(const TransferBufferManager&) = delete;
@@ -44,7 +44,7 @@ class GPU_EXPORT TransferBufferManager
   typedef base::flat_map<int32_t, scoped_refptr<Buffer>> BufferMap;
   BufferMap registered_buffers_;
   size_t shared_memory_bytes_allocated_;
-  raw_ptr<MemoryTracker, AcrossTasksDanglingUntriaged> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
 };
 
 }  // namespace gpu

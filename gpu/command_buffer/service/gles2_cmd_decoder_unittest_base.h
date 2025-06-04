@@ -213,7 +213,7 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
                            GLsizei count_in_header,
                            char str_end);
 
-  void set_memory_tracker(std::unique_ptr<MemoryTracker> memory_tracker) {
+  void set_memory_tracker(scoped_refptr<MemoryTracker> memory_tracker) {
     memory_tracker_ = std::move(memory_tracker);
   }
 
@@ -703,7 +703,7 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   TraceOutputter outputter_;
   std::unique_ptr<MockGLES2Decoder> mock_decoder_;
   std::unique_ptr<GLES2Decoder> decoder_;
-  std::unique_ptr<MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   GLuint client_buffer_id_;

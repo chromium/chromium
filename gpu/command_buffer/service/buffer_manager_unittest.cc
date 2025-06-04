@@ -33,17 +33,17 @@ namespace gles2 {
 
 class BufferManagerTestBase : public GpuServiceTest {
  protected:
-  void SetUpBase(
-      MemoryTracker* memory_tracker,
-      FeatureInfo* feature_info,
-      const char* extensions) {
+  void SetUpBase(scoped_refptr<MemoryTracker> memory_tracker,
+                 FeatureInfo* feature_info,
+                 const char* extensions) {
     GpuServiceTest::SetUp();
     if (feature_info) {
       TestHelper::SetupFeatureInfoInitExpectations(gl_.get(), extensions);
       feature_info->InitializeForTesting();
     }
     error_state_ = std::make_unique<MockErrorState>();
-    manager_ = std::make_unique<BufferManager>(memory_tracker, feature_info);
+    manager_ = std::make_unique<BufferManager>(std::move(memory_tracker),
+                                               feature_info);
   }
 
   void TearDown() override {
@@ -244,9 +244,14 @@ class BufferManagerTest : public BufferManagerTestBase {
 
 class BufferManagerMemoryTrackerTest : public BufferManagerTestBase {
  protected:
-  void SetUp() override { SetUpBase(&mock_memory_tracker_, nullptr, ""); }
+  void SetUp() override {
+    mock_memory_tracker_ =
+        base::MakeRefCounted<StrictMock<MockMemoryTracker>>();
 
-  StrictMock<MockMemoryTracker> mock_memory_tracker_;
+    SetUpBase(mock_memory_tracker_, nullptr, "");
+  }
+
+  scoped_refptr<StrictMock<MockMemoryTracker>> mock_memory_tracker_;
 };
 
 class BufferManagerClientSideArraysTest : public BufferManagerTestBase {
@@ -264,7 +269,7 @@ class BufferManagerClientSideArraysTest : public BufferManagerTestBase {
 };
 
 #define EXPECT_MEMORY_ALLOCATION_CHANGE(old_size, new_size)    \
-  EXPECT_CALL(mock_memory_tracker_,                            \
+  EXPECT_CALL(*mock_memory_tracker_,                           \
               TrackMemoryAllocatedChange(new_size - old_size)) \
       .Times(1)                                                \
       .RetiresOnSaturation()

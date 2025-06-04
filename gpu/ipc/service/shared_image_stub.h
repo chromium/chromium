@@ -156,7 +156,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
 
-  std::unique_ptr<MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
 
   // Holds shared memory used in initial data uploads.
   base::ReadOnlySharedMemoryRegion upload_memory_;

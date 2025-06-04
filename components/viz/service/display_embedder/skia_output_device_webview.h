@@ -27,7 +27,7 @@ class SkiaOutputDeviceWebView : public SkiaOutputDevice {
   SkiaOutputDeviceWebView(
       gpu::SharedContextState* context_state,
       scoped_refptr<gl::GLSurface> gl_surface,
-      gpu::MemoryTracker* memory_tracker,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
   SkiaOutputDeviceWebView(const SkiaOutputDeviceWebView&) = delete;
   SkiaOutputDeviceWebView& operator=(const SkiaOutputDeviceWebView&) = delete;

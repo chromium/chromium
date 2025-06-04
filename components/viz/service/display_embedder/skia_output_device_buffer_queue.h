@@ -38,7 +38,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       std::unique_ptr<OutputPresenter> presenter,
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageRepresentationFactory* representation_factory,
-      gpu::MemoryTracker* memory_tracker,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
       const ReleaseOverlaysCallback& release_overlays_callback);
 

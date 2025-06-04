@@ -50,7 +50,7 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
                                                channel_->task_runner(),
                                                CommandBufferNamespace::GPU_IO,
                                                command_buffer_id_)),
-      memory_tracker_(std::make_unique<MemoryTracker>(
+      memory_tracker_(base::MakeRefCounted<MemoryTracker>(
           command_buffer_id_,
           channel_->client_tracing_id(),
           channel_->gpu_channel_manager()->peak_memory_monitor(),

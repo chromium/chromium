@@ -83,7 +83,6 @@ void GLES2DecoderManualInitTest::EnableDisableTest(GLenum cap,
   }
 }
 
-
 TEST_P(GLES3DecoderTest, Basic) {
   // Make sure the setup is correct for ES3.
   EXPECT_TRUE(feature_info()->IsWebGL2OrES3Context());
@@ -1117,6 +1116,7 @@ TEST_P(GLES2DecoderTest, IsEnabledReturnsCachedValue) {
 }
 
 namespace {
+
 // Account for the 7 default textures. 1 for TEXTURE_2D and 6 faces for
 // TEXTURE_CUBE_MAP. Each is 1x1, with 4 bytes per channel.
 // The tests only checks the allocated size beyond the base, which is 28.
@@ -1125,38 +1125,35 @@ constexpr uint64_t kInitialSize = 28;
 }  // anonymous namespace.
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerInitialSize) {
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
+
   InitState init;
   init.bind_generates_resource = true;
   InitDecoder(init);
 
   // Expect that initial size - size is 0.
-  EXPECT_EQ(0u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(0u, memory_tracker_->GetSize() - kInitialSize);
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerTexImage2D) {
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
+
   InitState init;
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 8, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                shared_memory_id_, kSharedMemoryOffset);
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(128u, memory_tracker_->GetSize() - kInitialSize);
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                shared_memory_id_, kSharedMemoryOffset);
-  EXPECT_EQ(64u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(64u, memory_tracker_->GetSize() - kInitialSize);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerTexStorage2DEXT) {
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
+
   InitState init;
   init.extensions = "GL_EXT_texture_storage";
   init.bind_generates_resource = true;
@@ -1168,7 +1165,7 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerTexStorage2DEXT) {
   cmds::TexStorage2DEXT cmd;
   cmd.Init(GL_TEXTURE_2D, 1, GL_RGBA8, 8, 4);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(128u, memory_tracker_->GetSize() - kInitialSize);
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerCopyTexImage2D) {
@@ -1178,9 +1175,8 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerCopyTexImage2D) {
   GLsizei width = 4;
   GLsizei height = 8;
   GLint border = 0;
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
   InitState init;
   init.has_alpha = true;
   init.request_alpha = true;
@@ -1199,7 +1195,7 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerCopyTexImage2D) {
   cmds::CopyTexImage2D cmd;
   cmd.Init(target, level, internal_format, 0, 0, width, height);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(128u, memory_tracker_->GetSize() - kInitialSize);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
@@ -1209,9 +1205,7 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
   const GLenum kFormat = GL_RGBA4;
   const size_t kNumOfBytesPerPixel = 2;
 
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
   InitState init;
   init.bind_generates_resource = true;
   InitDecoder(init);
@@ -1231,17 +1225,16 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(kWidth * kHeight * kNumOfBytesPerPixel,
-            memory_tracker_ptr->GetSize() - kInitialSize);
+            memory_tracker_->GetSize() - kInitialSize);
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerBufferData) {
-  auto memory_tracker = std::make_unique<MemoryTracker>();
-  auto* memory_tracker_ptr = memory_tracker.get();
-  set_memory_tracker(std::move(memory_tracker));
+  set_memory_tracker(base::MakeRefCounted<MemoryTracker>());
+
   InitState init;
   init.bind_generates_resource = true;
   InitDecoder(init);
-  EXPECT_EQ(0u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(0u, memory_tracker_->GetSize() - kInitialSize);
   DoBindBuffer(GL_ARRAY_BUFFER, client_buffer_id_, kServiceBufferId);
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
@@ -1254,7 +1247,7 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerBufferData) {
   cmd.Init(GL_ARRAY_BUFFER, 128, 0, 0, GL_STREAM_DRAW);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize() - kInitialSize);
+  EXPECT_EQ(128u, memory_tracker_->GetSize() - kInitialSize);
 }
 
 TEST_P(GLES2DecoderManualInitTest, ImmutableCopyTexImage2D) {

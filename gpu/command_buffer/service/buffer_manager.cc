@@ -37,10 +37,9 @@ namespace {
 static const GLsizeiptr kDefaultMaxBufferSize = 1u << 30;  // 1GB
 }
 
-BufferManager::BufferManager(MemoryTracker* memory_tracker,
+BufferManager::BufferManager(scoped_refptr<MemoryTracker> memory_tracker,
                              FeatureInfo* feature_info)
-    : memory_type_tracker_(new MemoryTypeTracker(memory_tracker)),
-      memory_tracker_(memory_tracker),
+    : memory_type_tracker_(new MemoryTypeTracker(std::move(memory_tracker))),
       feature_info_(feature_info),
       max_buffer_size_(kDefaultMaxBufferSize),
       allow_buffers_on_multiple_targets_(false),
@@ -54,7 +53,7 @@ BufferManager::BufferManager(MemoryTracker* memory_tracker,
                        : false) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
-  if (memory_tracker_) {
+  if (memory_type_tracker_->memory_tracker()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "gpu::BufferManager",
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -752,11 +751,14 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                                  base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
   using base::trace_event::MemoryDumpLevelOfDetail;
+  const uint64_t context_group_tracing_id =
+      memory_type_tracker_->memory_tracker()
+          ? memory_type_tracker_->memory_tracker()->ContextGroupTracingId()
+          : 0;
 
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
-    std::string dump_name =
-        base::StringPrintf("gpu/gl/buffers/context_group_0x%" PRIX64 "",
-                           memory_tracker_->ContextGroupTracingId());
+    std::string dump_name = base::StringPrintf(
+        "gpu/gl/buffers/context_group_0x%" PRIX64 "", context_group_tracing_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, mem_represented());
@@ -771,7 +773,7 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
     std::string dump_name = base::StringPrintf(
         "gpu/gl/buffers/context_group_0x%" PRIX64 "/buffer_0x%" PRIX32,
-        memory_tracker_->ContextGroupTracingId(), client_buffer_id);
+        context_group_tracing_id, client_buffer_id);
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
@@ -785,8 +787,8 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
       pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shared_memory_guid,
                                            0 /* importance */);
     } else {
-      auto guid = gl::GetGLBufferGUIDForTracing(
-          memory_tracker_->ContextGroupTracingId(), client_buffer_id);
+      auto guid = gl::GetGLBufferGUIDForTracing(context_group_tracing_id,
+                                                client_buffer_id);
       pmd->CreateSharedGlobalAllocatorDump(guid);
       pmd->AddOwnershipEdge(dump->guid(), guid);
     }

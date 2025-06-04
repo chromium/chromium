@@ -103,8 +103,8 @@ struct ExpectedCacheEntry {
   SkISize dimensions;
 };
 
-std::unique_ptr<MemoryTracker> CreateMockMemoryTracker() {
-  return std::make_unique<NiceMock<gles2::MockMemoryTracker>>();
+scoped_refptr<MemoryTracker> CreateMockMemoryTracker() {
+  return base::MakeRefCounted<NiceMock<gles2::MockMemoryTracker>>();
 }
 
 scoped_refptr<Buffer> MakeBufferForTesting() {

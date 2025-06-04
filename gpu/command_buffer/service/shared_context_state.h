@@ -304,9 +304,6 @@ class GPU_GLES2_EXPORT SharedContextState
   FRIEND_TEST_ALL_PREFIXES(SharedContextStateTest,
                            VulkanOptionsProviderSetsCustomOptions);
 
-  // MemoryTracker implementation used to track SharedImages owned by
-  // SkiaOutputSurfaceImpl.
-
   ~SharedContextState() override;
 
   bool InitializeGanesh(
@@ -348,9 +345,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
   const GrContextType gr_context_type_;
-  // Change back to scoped_refptr<MemoryTracker>
-  std::unique_ptr<MemoryTracker> memory_tracker_shared_context_state_;
-  std::unique_ptr<MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_shared_context_state_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;

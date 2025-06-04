@@ -86,12 +86,6 @@ class DawnCachingInterfaceFactory;
 class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     : public raster::GrShaderCache::Client {
  public:
-  using OnMemoryAllocatedChangeCallback =
-      base::OnceCallback<void(gpu::CommandBufferId id,
-                              uint64_t old_size,
-                              uint64_t new_size,
-                              gpu::GpuPeakMemoryAllocationSource source)>;
-
   GpuChannelManager(
       const GpuPreferences& gpu_preferences,
       GpuChannelManagerDelegate* delegate,

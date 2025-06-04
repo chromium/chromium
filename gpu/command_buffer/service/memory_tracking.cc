@@ -66,16 +66,17 @@ uint64_t MemoryTracker::ContextGroupTracingId() const {
 // This can be created on the render thread on Andorid Webview which is managed
 // by the OS and doesn't have a task runner associated with it in which case
 // base::SequencedTaskRunner::GetCurrentDefault() will trigger a DCHECK.
-MemoryTypeTracker::MemoryTypeTracker(MemoryTracker* memory_tracker)
+MemoryTypeTracker::MemoryTypeTracker(
+    scoped_refptr<MemoryTracker> memory_tracker)
     : MemoryTypeTracker(memory_tracker,
                         base::SequencedTaskRunner::HasCurrentDefault()
                             ? base::SequencedTaskRunner::GetCurrentDefault()
                             : nullptr) {}
 
 MemoryTypeTracker::MemoryTypeTracker(
-    MemoryTracker* memory_tracker,
+    scoped_refptr<MemoryTracker> memory_tracker,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : memory_tracker_(memory_tracker),
+    : memory_tracker_(std::move(memory_tracker)),
       task_runner_(std::move(task_runner)),
       weak_ptr_factory_(this) {}
 

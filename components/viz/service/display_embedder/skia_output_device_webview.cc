@@ -27,11 +27,11 @@ constexpr auto kSurfaceColorType = kRGBA_8888_SkColorType;
 SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
     gpu::SharedContextState* context_state,
     scoped_refptr<gl::GLSurface> gl_surface,
-    gpu::MemoryTracker* memory_tracker,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
                        context_state->graphite_shared_context(),
-                       memory_tracker,
+                       std::move(memory_tracker),
                        std::move(did_swap_buffer_complete_callback)),
       context_state_(context_state),
       gl_surface_(std::move(gl_surface)) {

@@ -59,7 +59,7 @@ DisallowedFeatures AdjustDisallowedFeatures(
 class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
  public:
   ContextGroup(const GpuPreferences& gpu_preferences,
-               std::unique_ptr<MemoryTracker> memory_tracker,
+               scoped_refptr<MemoryTracker> memory_tracker,
                ShaderTranslatorCache* shader_translator_cache,
                FramebufferCompletenessCache* framebuffer_completeness_cache,
                const scoped_refptr<FeatureInfo>& feature_info,
@@ -256,7 +256,7 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // It's safer to make a copy of the GpuPreferences struct rather
   // than refer to the one passed in to the constructor.
   const GpuPreferences gpu_preferences_;
-  std::unique_ptr<MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
   raw_ptr<ShaderTranslatorCache> shader_translator_cache_;
   raw_ptr<FramebufferCompletenessCache> framebuffer_completeness_cache_;
 

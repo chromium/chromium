@@ -41,7 +41,7 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
       gles2::Outputter* outputter,
       const GpuFeatureInfo& gpu_feature_info,
       const GpuPreferences& gpu_preferences,
-      MemoryTracker* memory_tracker,
+      scoped_refptr<MemoryTracker> memory_tracker,
       SharedImageManager* shared_image_manager,
       scoped_refptr<SharedContextState> shared_context_state,
       bool is_priviliged);
