@@ -30,10 +30,10 @@ import optparse
 import unittest
 
 from blinkpy.common.system.system_host_mock import MockSystemHost
+from blinkpy.web_tests.command_line import command_wrapper
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import Driver
 from blinkpy.web_tests.port.driver import coalesce_repeated_switches
-from blinkpy.web_tests.port.factory import command_wrapper
 from blinkpy.web_tests.port.server_process_mock import MockServerProcess
 
 

@@ -35,10 +35,9 @@ import traceback
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
-from blinkpy.common.system import command_line
+from blinkpy.web_tests import command_line
 from blinkpy.web_tests.controllers.manager import Manager
 from blinkpy.web_tests.models import test_run_results
-from blinkpy.web_tests.port import factory
 from blinkpy.web_tests.views import printing
 
 _log = logging.getLogger(__name__)
@@ -91,8 +90,8 @@ def parse_args(args):
         description=('Runs Blink web tests as described in '
                      '//docs/testing/web_tests.md'))
 
-    factory.add_platform_options_group(parser)
-    factory.add_configuration_options_group(parser)
+    command_line.add_platform_options_group(parser)
+    command_line.add_configuration_options_group(parser)
     printing.add_print_options_group(parser)
 
     fuchsia_group = parser.add_argument_group('Fuchsia-specific Options')
@@ -107,8 +106,8 @@ def parse_args(args):
     fuchsia_group.add_argument('--logs-dir',
                                help='Location of diagnostics logs')
 
-    factory.add_results_options_group(parser)
-    factory.add_testing_options_group(parser)
+    command_line.add_results_options_group(parser)
+    command_line.add_testing_options_group(parser)
 
     # FIXME: Move these into json_results_generator.py.
     json_group = parser.add_argument_group('Result JSON Options')

@@ -64,10 +64,10 @@ from blinkpy.tool.commands.command import (
     check_file_option,
 )
 from blinkpy.tool.grammar import pluralize
+from blinkpy.web_tests import command_line
 from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
-from blinkpy.web_tests.port import factory
 from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
@@ -86,8 +86,8 @@ class AbstractRebaseliningCommand(Command):
     # pylint: disable=abstract-method; not overriding `execute()`
 
     # Generic option groups (list of options):
-    platform_options = factory.platform_options(use_globs=True)
-    wpt_options = factory.wpt_options()
+    platform_options = command_line.platform_options(use_globs=True)
+    wpt_options = command_line.wpt_options()
 
     no_optimize_option = optparse.make_option(
         '--no-optimize',

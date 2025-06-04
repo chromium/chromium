@@ -39,11 +39,11 @@ from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.web_tests.command_line import platform_options
 from blinkpy.web_tests.models.test_expectations import (TestExpectations,
                                                         ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
-from blinkpy.web_tests.port.factory import platform_options
 
 _log = logging.getLogger(__name__)
 

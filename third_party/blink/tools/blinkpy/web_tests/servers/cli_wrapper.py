@@ -40,8 +40,8 @@ import signal
 
 from blinkpy.common.host import Host
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.web_tests.command_line import configuration_options
 from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
-from blinkpy.web_tests.port.factory import configuration_options
 from blinkpy.web_tests.servers.server_base import ServerError
 
 _log = logging.getLogger(__name__)

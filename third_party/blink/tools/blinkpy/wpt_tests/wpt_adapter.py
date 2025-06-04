@@ -20,12 +20,11 @@ from typing import List, Optional
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
-from blinkpy.common.system import command_line
 from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
+from blinkpy.web_tests import command_line
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
-from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests import product
 from blinkpy.wpt_tests.logging import (
     GroupingFormatter,
@@ -653,15 +652,15 @@ def handle_interrupt_signals():
 def parse_arguments(argv):
     parser = command_line.ArgumentParser(usage='%(prog)s [options] [tests]',
                                          description=__doc__.splitlines()[0])
-    factory.add_configuration_options_group(
+    command_line.add_configuration_options_group(
         parser,
         rwt=False,
         product_choices=list(product.make_product_registry()))
-    factory.add_logging_options_group(parser)
-    factory.add_results_options_group(parser, rwt=False)
-    factory.add_testing_options_group(parser, rwt=False)
-    factory.add_android_options_group(parser)
-    factory.add_ios_options_group(parser)
+    command_line.add_logging_options_group(parser)
+    command_line.add_results_options_group(parser, rwt=False)
+    command_line.add_testing_options_group(parser, rwt=False)
+    command_line.add_android_options_group(parser)
+    command_line.add_ios_options_group(parser)
 
     parser.add_argument('tests',
                         nargs='*',

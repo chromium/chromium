@@ -38,8 +38,8 @@ from optparse import make_option
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.system.crash_logs import CrashLogs
 from blinkpy.tool.commands.command import Command
+from blinkpy.web_tests.command_line import platform_options
 from blinkpy.web_tests.models.test_expectations import TestExpectations
-from blinkpy.web_tests.port.factory import platform_options
 
 
 class CrashLog(Command):
