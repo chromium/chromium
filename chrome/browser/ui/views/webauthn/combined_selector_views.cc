@@ -237,10 +237,12 @@ CombinedSelectorListView::CombinedSelectorListView(
       /*between_child_spacing=*/kRowGap));
 
   for (size_t i = 0; i < model->dialog_model()->mechanisms.size(); i++) {
+    if (i > 0) {
+      wrapper->AddChildView(std::make_unique<views::Separator>());
+    }
     const auto& mechanism = model->dialog_model()->mechanisms[i];
     auto image_model =
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
-    wrapper->AddChildView(std::make_unique<views::Separator>());
     auto* row = wrapper->AddChildView(std::make_unique<CombinedSelectorRowView>(
         image_model,
         std::vector<std::u16string_view>{mechanism.name, mechanism.description},
@@ -251,7 +253,6 @@ CombinedSelectorListView::CombinedSelectorListView(
       selected_view_ = row;
     }
   }
-  wrapper->AddChildView(std::make_unique<views::Separator>());
 
   scroll_view->SetContents(std::move(wrapper));
   scroll_view->ClipHeightTo(kMaxRowHeight, 3 * kMaxRowHeight + 2 * kRowGap);
