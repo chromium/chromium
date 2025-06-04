@@ -355,6 +355,9 @@
       <message name="IDS_CANCEL" desc="Used for Cancel on buttons">
         Cancel
       </message>
+      <message name="IDS_CONTINUE" desc="Used for Continue on buttons">
+        Continue
+      </message>
       <message name="IDS_CLOSE" desc="A generic term for Close on buttons and menus.">
         Close
       </message>

@@ -42,6 +42,10 @@ class DataControlsDialog {
     kClipboardPasteWarn,
     kClipboardCopyBlock,
     kClipboardCopyWarn,
+    kClipboardShareBlock,
+    kClipboardShareWarn,
+    kClipboardActionBlock,
+    kClipboardActionWarn
   };
 
   ~DataControlsDialog();

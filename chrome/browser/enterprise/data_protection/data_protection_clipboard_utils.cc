@@ -427,7 +427,9 @@ void IsCopyRestrictedByDialog(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
-    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
+    data_controls::DataControlsDialog::Type block_dialog_type,
+    data_controls::DataControlsDialog::Type warn_dialog_type) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
@@ -442,9 +444,7 @@ void IsCopyRestrictedByDialog(
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
     if (factory) {
-      factory->ShowDialogIfNeeded(
-          source.web_contents(),
-          data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+      factory->ShowDialogIfNeeded(source.web_contents(), block_dialog_type);
     }
     return;
   }
@@ -463,8 +463,7 @@ void IsCopyRestrictedByDialog(
     MaybeReportDataControlsCopy(source, metadata, verdict);
     if (factory) {
       factory->ShowDialogIfNeeded(
-          source.web_contents(),
-          data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+          source.web_contents(), warn_dialog_type,
           base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
                          std::move(verdict), std::move(callback)));
     }
@@ -573,8 +572,63 @@ void IsClipboardCopyAllowedByPolicy(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  IsCopyRestrictedByDialog(source, metadata, data, std::move(callback));
+  IsCopyRestrictedByDialog(
+      source, metadata, data, std::move(callback),
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock,
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void IsClipboardShareAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
+  DCHECK(source.web_contents());
+  DCHECK(source.browser_context());
+
+  IsCopyRestrictedByDialog(
+      source, metadata, data, std::move(callback),
+      data_controls::DataControlsDialog::Type::kClipboardShareBlock,
+      data_controls::DataControlsDialog::Type::kClipboardShareWarn);
+}
+
+void IsClipboardGenericCopyActionAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
+  DCHECK(source.web_contents());
+  DCHECK(source.browser_context());
+
+  IsCopyRestrictedByDialog(
+      source, metadata, data, std::move(callback),
+      data_controls::DataControlsDialog::Type::kClipboardActionBlock,
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ReplaceSameTabClipboardDataIfRequiredByPolicy(
     ui::ClipboardSequenceNumberToken seqno,

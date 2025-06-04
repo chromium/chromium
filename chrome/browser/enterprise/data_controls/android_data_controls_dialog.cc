@@ -32,63 +32,68 @@ std::unique_ptr<ui::DialogModel> AndroidDataControlsDialog::CreateDialogModel(
   dialog_builder.SetTitle(GetDialogTitle())
       .AddParagraph(ui::DialogModelLabel(GetDialogLabel()));
 
+  // For the "Warn" dialogs, "Cancel" and "Ok" buttons have their labels /
+  // callbacks seemingly flipped - this is because the cancelling the action
+  // that is warned against should be the desired / "default" response from
+  // the user.
+  int cancel_button_label_id;
+  int ok_button_label_id;
   switch (type_) {
-    case Type::kClipboardPasteBlock:
-      // TODO (crbug.com/385163723): Remove callbacks for copy/paste block
-      dialog_builder.AddOkButton(
-          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
-                         base::Unretained(this),
-                         /*bypassed=*/false),
-          ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetStringUTF16(IDS_OK)));
-      break;
-
-    case Type::kClipboardCopyBlock:
-      // TODO (crbug.com/385163723): Remove callbacks for copy/paste block
-      dialog_builder.AddOkButton(
-          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
-                         base::Unretained(this),
-                         /*bypassed=*/false),
-          ui::DialogModel::Button::Params().SetLabel(
-              l10n_util::GetStringUTF16(IDS_OK)));
-      break;
-
-      // For the "Warn" dialogs, "Cancel" and "Ok" buttons have their labels /
-      // callbacks seemingly flipped - this is because the cancelling the action
-      // that is warned against should be the desired / "default" response from
-      // the user.
-
     case Type::kClipboardPasteWarn:
-      dialog_builder.AddCancelButton(
-          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
-                         base::Unretained(this),
-                         /*bypassed=*/true),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)));
-      dialog_builder.AddOkButton(
-          base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
-                         base::Unretained(this),
-                         /*bypassed=*/false),
-          ui::DialogModel::Button::Params()
-              .SetLabel(l10n_util::GetStringUTF16(
-                  IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON))
-              .SetStyle(ui::ButtonStyle::kProminent));
+      cancel_button_label_id = IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON;
+      ok_button_label_id = IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON;
       break;
 
     case Type::kClipboardCopyWarn:
+      cancel_button_label_id = IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON;
+      ok_button_label_id = IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON;
+      break;
+
+    case Type::kClipboardShareWarn:
+      cancel_button_label_id = IDS_DATA_CONTROLS_SHARE_WARN_CONTINUE_BUTTON;
+      ok_button_label_id = IDS_DATA_CONTROLS_SHARE_WARN_CANCEL_BUTTON;
+      break;
+
+    case Type::kClipboardActionWarn:
+      cancel_button_label_id = IDS_CONTINUE;
+      ok_button_label_id = IDS_CANCEL;
+      break;
+
+    case Type::kClipboardPasteBlock:
+    case Type::kClipboardCopyBlock:
+    case Type::kClipboardShareBlock:
+    case Type::kClipboardActionBlock:
+      // This case should not be reachable in practice.
+      NOTREACHED();
+      cancel_button_label_id = IDS_CANCEL;
+      ok_button_label_id = IDS_OK;
+      break;
+  }
+
+  switch (type_) {
+    case Type::kClipboardPasteBlock:
+    case Type::kClipboardCopyBlock:
+    case Type::kClipboardShareBlock:
+    case Type::kClipboardActionBlock:
+      // This case should not be reachable in practice.
+      NOTREACHED();
+
+    case Type::kClipboardPasteWarn:
+    case Type::kClipboardCopyWarn:
+    case Type::kClipboardShareWarn:
+    case Type::kClipboardActionWarn:
       dialog_builder.AddCancelButton(
           base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
                          base::Unretained(this),
                          /*bypassed=*/true),
-          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)));
+          ui::DialogModel::Button::Params().SetLabel(
+              l10n_util::GetStringUTF16(cancel_button_label_id)));
       dialog_builder.AddOkButton(
           base::BindOnce(&AndroidDataControlsDialog::OnDialogButtonClicked,
                          base::Unretained(this),
                          /*bypassed=*/false),
           ui::DialogModel::Button::Params()
-              .SetLabel(l10n_util::GetStringUTF16(
-                  IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON))
+              .SetLabel(l10n_util::GetStringUTF16(ok_button_label_id))
               .SetStyle(ui::ButtonStyle::kProminent));
       break;
   }
@@ -103,11 +108,12 @@ std::u16string AndroidDataControlsDialog::GetDialogTitle() const {
   int id;
   switch (type_) {
     case Type::kClipboardPasteBlock:
-      id = IDS_DATA_CONTROLS_CLIPBOARD_PASTE_BLOCK_TITLE;
-      break;
-
     case Type::kClipboardCopyBlock:
-      id = IDS_DATA_CONTROLS_CLIPBOARD_COPY_BLOCK_TITLE;
+    case Type::kClipboardShareBlock:
+    case Type::kClipboardActionBlock:
+      // This case should not be reachable in practice.
+      NOTREACHED();
+      id = IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION;
       break;
 
     case Type::kClipboardPasteWarn:
@@ -116,6 +122,14 @@ std::u16string AndroidDataControlsDialog::GetDialogTitle() const {
 
     case Type::kClipboardCopyWarn:
       id = IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE;
+      break;
+
+    case Type::kClipboardShareWarn:
+      id = IDS_DATA_CONTROLS_CLIPBOARD_SHARE_WARN_TITLE;
+      break;
+
+    case Type::kClipboardActionWarn:
+      id = IDS_DATA_CONTROLS_CLIPBOARD_ACTION_WARN_TITLE;
       break;
   }
   return l10n_util::GetStringUTF16(id);
@@ -126,11 +140,17 @@ std::u16string AndroidDataControlsDialog::GetDialogLabel() const {
   switch (type_) {
     case Type::kClipboardPasteBlock:
     case Type::kClipboardCopyBlock:
+    case Type::kClipboardShareBlock:
+    case Type::kClipboardActionBlock:
+      // This case should not be reachable in practice.
+      NOTREACHED();
       id = IDS_DATA_CONTROLS_BLOCKED_LABEL;
       break;
 
     case Type::kClipboardPasteWarn:
     case Type::kClipboardCopyWarn:
+    case Type::kClipboardShareWarn:
+    case Type::kClipboardActionWarn:
       id = IDS_DATA_CONTROLS_WARNED_LABEL;
       break;
   }

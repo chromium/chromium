@@ -30,7 +30,9 @@ void AndroidDataControlsDialogFactory::ShowDialogIfNeeded(
     DataControlsDialog::Type type,
     base::OnceCallback<void(bool bypassed)> callback) {
   if (type == DataControlsDialog::Type::kClipboardPasteBlock ||
-      type == DataControlsDialog::Type::kClipboardCopyBlock) {
+      type == DataControlsDialog::Type::kClipboardCopyBlock ||
+      type == DataControlsDialog::Type::kClipboardShareBlock ||
+      type == DataControlsDialog::Type::kClipboardActionBlock) {
     // Show a toast on Clank for blocked actions instead of a dialog to be less
     // disruptive.
     web_contents->GetTopLevelNativeWindow()->ShowToast(

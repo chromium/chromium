@@ -48,6 +48,24 @@ IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardShareWarn) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardShareWarn);
+  EXPECT_NE(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardActionWarn) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+  EXPECT_NE(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
                        SmokeTest_ClipboardCopyBlock) {
   EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
   AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
@@ -62,6 +80,24 @@ IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
   AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
       web_contents(),
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardShareBlock) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardShareBlock);
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidDataControlsDialogUiTest,
+                       SmokeTest_ClipboardActionBlock) {
+  EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
+  AndroidDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      web_contents(),
+      data_controls::DataControlsDialog::Type::kClipboardActionBlock);
   EXPECT_EQ(nullptr, ui::ModalDialogWrapper::GetDialogForTesting());
 }
 

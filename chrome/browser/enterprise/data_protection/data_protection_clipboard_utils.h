@@ -44,6 +44,32 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
+#if BUILDFLAG(IS_ANDROID)
+// This function checks if data being shared from a browser tab is allowed to
+// be written to the OS clipboard according to the following policies:
+// - DataControlsRules
+//
+// If the copy would not be allowed, `callback` is called with a replacement
+// string that should instead be put into the OS clipboard.
+void IsClipboardShareAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
+
+// This function checks if the generic action is allowed to continue according
+// to the following policies:
+// - DataControlsRules
+//
+// If the copy would not be allowed, `callback` is called with a replacement
+// string that should instead be put into the OS clipboard.
+void IsClipboardGenericCopyActionAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
+#endif  //  BUILDFLAG(IS_ANDROID)
+
 // This function replaces sub-fields in `data` depending internally tracked
 // clipboard data that's been replaced due to the "DataControlsRules" policy.
 // This should only be called for clipboard pastes within the same tab. If

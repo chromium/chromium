@@ -85,6 +85,12 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
                        l10n_util::GetStringUTF16(
                            IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON));
         break;
+      case DataControlsDialog::Type::kClipboardShareWarn:
+      case DataControlsDialog::Type::kClipboardActionWarn:
+      case DataControlsDialog::Type::kClipboardShareBlock:
+      case DataControlsDialog::Type::kClipboardActionBlock:
+        // These flows are exclusive to mobile.
+        NOTREACHED();
     }
     SetButtonStyle(ui::mojom::DialogButton::kOk, ui::ButtonStyle::kProminent);
     SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
@@ -116,6 +122,15 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
       case DataControlsDialog::Type::kClipboardCopyWarn:
         id = IDS_DATA_CONTROLS_CLIPBOARD_COPY_WARN_TITLE;
         break;
+
+      case DataControlsDialog::Type::kClipboardShareWarn:
+      case DataControlsDialog::Type::kClipboardActionWarn:
+      case DataControlsDialog::Type::kClipboardShareBlock:
+      case DataControlsDialog::Type::kClipboardActionBlock:
+        // These flows are exclusive to mobile.
+        NOTREACHED();
+        id = IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION;
+        break;
     }
     return l10n_util::GetStringUTF16(id);
   }
@@ -125,10 +140,14 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
     switch (type_) {
       case DataControlsDialog::Type::kClipboardPasteBlock:
       case DataControlsDialog::Type::kClipboardCopyBlock:
+      case DataControlsDialog::Type::kClipboardShareBlock:
+      case DataControlsDialog::Type::kClipboardActionBlock:
         id = IDS_DATA_CONTROLS_BLOCKED_LABEL;
         break;
       case DataControlsDialog::Type::kClipboardPasteWarn:
       case DataControlsDialog::Type::kClipboardCopyWarn:
+      case DataControlsDialog::Type::kClipboardShareWarn:
+      case DataControlsDialog::Type::kClipboardActionWarn:
         id = IDS_DATA_CONTROLS_WARNED_LABEL;
         break;
     }
