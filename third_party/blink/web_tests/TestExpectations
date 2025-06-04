@@ -5478,11 +5478,6 @@ crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-ifr
 # DevTools roll
 crbug.com/40118109 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
 
-# Flaky test
-
-# Temporarily disabled to unblock https://crrev.com/c/2979697
-crbug.com/40773821 http/tests/devtools/console/console-dir.js [ Failure Pass ]
-
 # Expected to fail with SuppressDifferentOriginSubframeJSDialogs feature disabled, tested in VirtualTestSuite
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html [ Failure ]
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html [ Failure ]
