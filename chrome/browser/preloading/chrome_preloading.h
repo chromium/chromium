@@ -197,7 +197,13 @@ enum class ChromePreloadingEligibility {
           content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
       6,
 
-  kMaxValue = kPreloadingErrorBackOff,
+  // Search urls are not eligible for certain types of preloading triggers.
+  KDisallowSearchUrl =
+      static_cast<int>(
+          content::PreloadingEligibility::kPreloadingEligibilityContentEnd) +
+      7,
+
+  kMaxValue = KDisallowSearchUrl,
 };
 // LINT.ThenChange()
 
