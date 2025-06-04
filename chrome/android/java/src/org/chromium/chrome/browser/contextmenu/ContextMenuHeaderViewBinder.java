@@ -12,10 +12,12 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class ContextMenuHeaderViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == ContextMenuHeaderProperties.TITLE) {

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.listmenu.ContextMenuCheckItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX}, with property keys {@link
  * ContextMenuCheckItemProperties}).
  */
+@NullMarked
 class ContextMenuItemWithCheckboxViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         CheckBox checkBox = view.findViewById(R.id.checkbox);

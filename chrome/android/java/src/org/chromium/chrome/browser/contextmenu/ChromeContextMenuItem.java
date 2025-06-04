@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -20,6 +23,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -27,6 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** List of all predefined Context Menu Items available in Chrome. */
+@NullMarked
 class ChromeContextMenuItem {
     @IntDef({
         Item.OPEN_IN_NEW_CHROME_TAB,
@@ -253,11 +258,11 @@ class ChromeContextMenuItem {
             case Item.OPEN_IN_BROWSER_ID:
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
-                return context.getString(
-                        getStringId(item),
+                TemplateUrl templateUrl =
                         TemplateUrlServiceFactory.getForProfile(profile)
-                                .getDefaultSearchEngineTemplateUrl()
-                                .getShortName());
+                                .getDefaultSearchEngineTemplateUrl();
+                assumeNonNull(templateUrl);
+                return context.getString(getStringId(item), templateUrl.getShortName());
             case Item.READ_LATER:
                 return addOrRemoveNewLabel(context, item, null, showInProductHelp);
             case Item.OPEN_IN_EPHEMERAL_TAB:
