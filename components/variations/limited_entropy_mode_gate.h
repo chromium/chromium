@@ -8,6 +8,8 @@
 #include "base/component_export.h"
 #include "components/version_info/channel.h"
 
+// TODO(crbug.com/40948861): Remove these functions.
+
 namespace variations {
 
 // Returns true iff the given |channel| is eligible to randomize field trials
