@@ -21843,6 +21843,21 @@
             ]
         }
     ],
+    "ScreenAIPartitionAllocAdvancedChecksEnabled": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenCaptureKitMacScreen": [
         {
             "platforms": [
