@@ -15,11 +15,14 @@
 // presented.
 - (BOOL)maybePresentBWGFRE;
 
-// Dismisses the BWG consent UI.
-- (void)dismissBWGConsentUI;
+// Dismisses the BWG consent UI and calls `completion` when fully dismissed.
+- (void)dismissBWGConsentUIWithCompletion:(void (^)())completion;
 
 // Decides whether BWG consent should be shown.
 - (BOOL)shouldShowBWGConsent;
+
+// Dismisses the BWG flow.
+- (void)dismissBWGFlow;
 
 @end
 

@@ -75,23 +75,25 @@
 // Did consent to BWG.
 - (void)didConsentBWG {
   _prefService->SetBoolean(prefs::kIOSBwgConsent, YES);
-  [_delegate dismissBWGConsentUI];
+  __weak __typeof(self) weakSelf = self;
+  [_delegate dismissBWGConsentUIWithCompletion:^{
+    [weakSelf prepareBWGOverlay];
+  }];
 }
 
 // Did dismisses the Consent UI.
 - (void)didRefuseBWGConsent {
-  [_delegate dismissBWGConsentUI];
+  [_delegate dismissBWGFlow];
 }
 
 // Did close BWG Promo UI.
 - (void)didCloseBWGPromo {
-  [_delegate dismissBWGConsentUI];
+  [_delegate dismissBWGFlow];
 }
 
 #pragma mark - Private
 
 // Prepares BWG overlay.
-// TODO(crbug.com/419064727): Add entry point to call this function.
 - (void)prepareBWGOverlay {
   // Cancel any ongoing page context operation.
   if (_pageContextWrapper) {

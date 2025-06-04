@@ -75,6 +75,10 @@
 }
 
 - (void)stop {
+  [self dismissPresentedViewWithCompletion:nil];
+  _navigationController = nil;
+  _handler = nil;
+  _mediator = nil;
   [super stop];
 }
 
@@ -100,6 +104,21 @@
   return YES;
 }
 
+- (void)dismissBWGConsentUIWithCompletion:(void (^)())completion {
+  [self dismissPresentedViewWithCompletion:completion];
+  _navigationController = nil;
+}
+
+- (BOOL)shouldShowBWGConsent {
+  PrefService* prefService = self.profile->GetPrefs();
+  CHECK(prefService);
+  return !prefService->GetBoolean(prefs::kIOSBwgConsent);
+}
+
+- (void)dismissBWGFlow {
+  [_handler dismissBWGFlow];
+}
+
 #pragma mark - UISheetPresentationControllerDelegate
 
 // Handles the dismissal of the UI.
@@ -109,24 +128,21 @@
   [_handler dismissBWGFlow];
 }
 
-#pragma mark - BWGConsentMediatorDelegate
-
-// Dismisses the UI by stopping the coordinator.
-- (void)dismissBWGConsentUI {
-  [_handler dismissBWGFlow];
-}
-
-- (BOOL)shouldShowBWGConsent {
-  PrefService* prefService = self.profile->GetPrefs();
-  CHECK(prefService);
-  return !prefService->GetBoolean(prefs::kIOSBwgConsent);
-}
-
 #pragma mark - BWGNavigationControllerDelegate
 
 - (void)promoWasDismissed:(BWGNavigationController*)navigationController {
   if (_entryPoint == bwg::EntryPointPromo) {
     [self.promosUIHandler promoWasDismissed];
+  }
+}
+
+#pragma mark - Private
+
+// Dismisses presented view.
+- (void)dismissPresentedViewWithCompletion:(void (^)())completion {
+  if (self.baseViewController.presentedViewController) {
+    [self.baseViewController dismissViewControllerAnimated:YES
+                                                completion:completion];
   }
 }
 
