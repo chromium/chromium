@@ -326,11 +326,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ExternalMessageToWorker) {
       << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests chrome.runtime.onConnectExternal between two Service Worker based
 // extensions.
-// TODO(crbug.com/419921217): Flaky on Android due to some problem with
-// threading in ~UnpackedInstaller.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectExternalToWorker) {
   const std::string kTargetExtensionId = "pkplfbidichfdicaijlchgnapepdginl";
 
@@ -345,7 +342,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectExternalToWorker) {
       RunExtensionTest("service_worker/messaging/connect_external/initiator"))
       << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that an extension's message port isn't affected by an unrelated
 // extension's service worker.
@@ -400,11 +396,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests ActiviyLog from SW based extension.
 // Regression test for https://crbug.com/1213074, https://crbug.com/1217343.
-// TODO(crbug.com/419921217): Flaky on Android due to some problem with
-// threading in ~UnpackedInstaller.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -423,7 +416,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
   // |friend_extension|.
   ASSERT_TRUE(RunExtensionTest("service_worker/messaging/activity_log/"));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests port creation (chrome.runtime.connect) from content script to an
 // extension SW should not, by itself, create an external request that keeps the
