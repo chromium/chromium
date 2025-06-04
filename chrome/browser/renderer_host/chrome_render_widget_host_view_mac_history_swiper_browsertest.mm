@@ -635,10 +635,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   EXPECT_EQ(url_iframe_, GetWebContents()->GetURL());
 }
 
-// TODO(https://crbug.com/40126320): Disabled due to flakiness; fix.
-IN_PROC_BROWSER_TEST_F(
-    ChromeRenderWidgetHostViewMacHistorySwiperTest,
-    DISABLED_InnerScrollersOverscrollBehaviorPreventsNavigation) {
+IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
+                       InnerScrollersOverscrollBehaviorPreventsNavigation) {
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
