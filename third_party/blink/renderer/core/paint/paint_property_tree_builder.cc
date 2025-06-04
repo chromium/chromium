@@ -618,14 +618,6 @@ static bool NeedsPaintOffsetTranslation(
   return false;
 }
 
-static bool IsViewTransitionGroupWithNesting(const LayoutObject& object) {
-  const Node* node = object.GetNode();
-  if (!node || !node->IsViewTransitionGroupPseudoElement()) {
-    return false;
-  }
-  return To<Element>(node)->HasViewTransitionGroupChildren();
-}
-
 std::pair<bool, bool>
 FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation() const {
   if (!object_.HasLayer())
@@ -2644,15 +2636,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
     } else {
       OnClearClip(properties_->ClearInnerBorderRadiusClip());
     }
-  }
-
-  // TODO(crbug.com/401543213): This is a workaround. The proper fix is to
-  // figure out how to construct an effect tree referencing a proper
-  // transform node without also breaking crbug.com/328339028.
-  // Note that this is intentionally triggering an update whether or not
-  // NeedsPaintPropertyUpdate is true.
-  if (IsViewTransitionGroupWithNesting(object_)) {
-    OnUpdateClip(PaintPropertyChangeType::kChangedOnlyNonRerasterValues);
   }
 
   if (auto* border_radius_clip = properties_->InnerBorderRadiusClip())

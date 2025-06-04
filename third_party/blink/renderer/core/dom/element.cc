@@ -9200,11 +9200,6 @@ PseudoElement* Element::GetPseudoElement(
   return nullptr;
 }
 
-bool Element::HasViewTransitionGroupChildren() const {
-  ElementRareDataVector* data = GetElementRareData();
-  return data && data->HasViewTransitionGroupPseudoElement();
-}
-
 bool Element::HasScrollButtonOrMarkerGroupPseudos() const {
   ElementRareDataVector* data = GetElementRareData();
   return data && data->HasScrollButtonOrMarkerGroupPseudos();

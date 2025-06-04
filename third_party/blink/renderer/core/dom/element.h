@@ -1282,9 +1282,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const AtomicString& view_transition_name = g_null_atom) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
-  // Returns true if this element has ::view-transition-group children.
-  bool HasViewTransitionGroupChildren() const;
-
   // Returns true if this element contains any ::scroll-button or
   // ::scroll-marker-group pseudos.
   bool HasScrollButtonOrMarkerGroupPseudos() const;

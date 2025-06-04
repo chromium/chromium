@@ -41,10 +41,6 @@ class TransitionPseudoElementData final
     visitor->Trace(transition_containers_);
   }
 
-  bool HasViewTransitionGroupPseudoElement() const {
-    return !transition_containers_.empty();
-  }
-
  private:
   Member<PseudoElement> transition_;
   Member<PseudoElement> transition_outgoing_image_;
