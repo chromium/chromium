@@ -451,6 +451,15 @@ class GpuImageDecodeCacheTest
     do_yuv_decode_ = std::get<2>(GetParam());
   }
 
+  void TearDown() override {
+    // Clear the transfer cache helper's context pointer before
+    // context_provider_ destruction to prevent dangling pointer. The
+    // transfer_cache_helper_ holds a raw_ptr to the GrDirectContext owned by
+    // context_provider_. But, context_provider_ has a construction dependency
+    // on transfer_cache_helper_ so we can't just reorder the members.
+    transfer_cache_helper_.SetGrContext(nullptr);
+  }
+
   std::unique_ptr<GpuImageDecodeCache> CreateCache(
       size_t memory_limit_bytes = kGpuMemoryLimitBytes,
       RasterDarkModeFilter* const dark_mode_filter = nullptr) {
