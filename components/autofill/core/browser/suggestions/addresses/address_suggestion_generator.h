@@ -65,7 +65,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
-    uint64_t trigger_field_max_length,
     const std::string& app_locale = "en-US",
     std::optional<std::string> plus_address_email_override = std::nullopt,
     const std::string& gaia_email = "");

@@ -474,7 +474,6 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
-    uint64_t trigger_field_max_length,
     std::optional<std::string> plus_address_email_override,
     const std::string& app_locale) {
   if (profiles.empty()) {
@@ -724,8 +723,8 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
           .email;
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
-      trigger_field_type, trigger_field.max_length(),
-      std::move(plus_address_email_override), client.GetAppLocale());
+      trigger_field_type, std::move(plus_address_email_override),
+      client.GetAppLocale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
@@ -767,14 +766,12 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     const FieldTypeSet& field_types,
     SuggestionType suggestion_type,
     FieldType trigger_field_type,
-    uint64_t trigger_field_max_length,
     const std::string& app_locale,
     std::optional<std::string> plus_address_email_override,
     const std::string& gaia_email) {
   return CreateSuggestionsFromProfiles(
       std::move(profiles), gaia_email, field_types, suggestion_type,
-      trigger_field_type, trigger_field_max_length, plus_address_email_override,
-      app_locale);
+      trigger_field_type, plus_address_email_override, app_locale);
 }
 
 }  // namespace autofill

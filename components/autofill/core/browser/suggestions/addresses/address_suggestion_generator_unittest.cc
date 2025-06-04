@@ -711,8 +711,7 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile}, {ADDRESS_HOME_STREET_ADDRESS}, SuggestionType::kAddressEntry,
-      ADDRESS_HOME_STREET_ADDRESS,
-      /*trigger_field_max_length=*/0);
+      ADDRESS_HOME_STREET_ADDRESS);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
             suggestions[0].main_text.value);
@@ -724,8 +723,7 @@ TEST_F(AddressSuggestionGeneratorTest, CreateSuggestionsUsingEmailOverride) {
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile1, profile2}, {EMAIL_ADDRESS}, SuggestionType::kAddressEntry,
-      EMAIL_ADDRESS, /*trigger_field_max_length=*/0, "en-US",
-      "plus-address-override@me.com",
+      EMAIL_ADDRESS, "en-US", "plus-address-override@me.com",
       base::UTF16ToUTF8(profile2.GetRawInfo(EMAIL_ADDRESS)));
   ASSERT_EQ(suggestions.size(), 2u);
   EXPECT_EQ(profile1.GetRawInfo(EMAIL_ADDRESS), suggestions[0].main_text.value);
@@ -742,8 +740,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile}, {PHONE_HOME_WHOLE_NUMBER}, SuggestionType::kAddressEntry,
-      PHONE_HOME_WHOLE_NUMBER,
-      /*trigger_field_max_length=*/0);
+      PHONE_HOME_WHOLE_NUMBER);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"+1 234-567-8910", suggestions[0].main_text.value);
 }
@@ -833,8 +830,7 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, NAME_FIRST,
-      /*trigger_field_max_length=*/0);
+      SuggestionType::kAddressEntry, NAME_FIRST);
 
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
@@ -847,8 +843,7 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
 
   suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, EMAIL_ADDRESS,
-      /*trigger_field_max_length=*/0);
+      SuggestionType::kAddressEntry, EMAIL_ADDRESS);
 
   // If trigger field is email address, don't show home and work icons.
   EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kEmail),
@@ -873,8 +868,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, NAME_FIRST,
-      /*trigger_field_max_length=*/0);
+      SuggestionType::kAddressEntry, NAME_FIRST);
 
   // Default icons are expected.
   EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kAccount),
@@ -973,8 +967,7 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest({profile}, {NAME_FIRST, NAME_LAST},
                                            SuggestionType::kAddressEntry,
-                                           NAME_FIRST,
-                                           /*trigger_field_max_length=*/0),
+                                           NAME_FIRST),
       SuggestionVectorMainTextsAre(Suggestion::Text(
           profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
 }
@@ -999,8 +992,7 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
   // as the main text.
   EXPECT_THAT(CreateSuggestionsFromProfilesForTest(
                   {profile}, {ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FAMILY_NAME},
-                  SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME,
-                  /*trigger_field_max_length=*/0),
+                  SuggestionType::kAddressEntry, ALTERNATIVE_GIVEN_NAME),
               SuggestionVectorMainTextsAre(
                   Suggestion::Text(profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
                                    Suggestion::Text::IsPrimary(true))));
@@ -1019,8 +1011,7 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
+          SuggestionType::kAddressEntry, triggering_field_type),
       ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
 }
 
@@ -1042,8 +1033,7 @@ TEST_P(
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
+          SuggestionType::kAddressEntry, triggering_field_type),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
@@ -1068,8 +1058,7 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
   EXPECT_THAT(
       CreateSuggestionsFromProfilesForTest(
           {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type,
-          /*trigger_field_max_length=*/0),
+          SuggestionType::kAddressEntry, triggering_field_type),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
           AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
