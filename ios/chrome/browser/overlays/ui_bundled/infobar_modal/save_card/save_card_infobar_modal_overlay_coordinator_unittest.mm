@@ -57,6 +57,7 @@ class SaveCardInfobarModalOverlayCoordinatorTest : public PlatformTest {
   ~SaveCardInfobarModalOverlayCoordinatorTest() override {
     [modalMediator_ stopMocking];
     PlatformTest::TearDown();
+    EXPECT_OCMOCK_VERIFY(modalMediator_);
   }
 
  protected:
