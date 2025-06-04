@@ -8,12 +8,15 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "cached_device_policy_updater.cc",
+    "cached_device_policy_updater.h",
     "device_policy_builder.cc",
     "device_policy_builder.h",
   ]
 
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/session_manager",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",

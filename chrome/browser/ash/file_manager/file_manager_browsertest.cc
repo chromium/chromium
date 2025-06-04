@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -40,6 +39,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/device_settings_cache_test_support.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -150,10 +150,10 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
           local_state,
           [&](em::PolicyData& policy) { policy.set_username(owner_email); });
 
-      policy_helper_.device_policy()->policy_data().set_username(owner_email);
-      policy_helper_.device_policy()->policy_data().set_management_mode(
-          em::PolicyData::LOCAL_OWNER);
-      policy_helper_.RefreshDevicePolicy();
+      policy::CachedDevicePolicyUpdater updater;
+      updater.policy_data().set_username(owner_email);
+      updater.policy_data().set_management_mode(em::PolicyData::LOCAL_OWNER);
+      updater.Commit();
     }
   }
 
@@ -182,8 +182,6 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
 
   std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
   std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
-
-  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
 IN_PROC_BROWSER_TEST_P(LoggedInUserFilesAppBrowserTest, Test) {
