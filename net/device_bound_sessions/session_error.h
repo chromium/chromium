@@ -50,6 +50,9 @@ struct NET_EXPORT SessionError {
 
   bool IsFatal() const;
 
+  // Whether the error is due to server-side behavior.
+  bool IsServerError() const;
+
   ErrorType type;
   net::SchemefulSite site;
   std::optional<std::string> session_id;

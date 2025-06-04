@@ -732,9 +732,7 @@ TEST_F(SessionTest, Backoff) {
       session->InformOfRefreshResult(test_case.error_type);
     }
 
-    EXPECT_EQ(
-        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()),
-        !test_case.expect_backoff);
+    EXPECT_EQ(session->ShouldBackoff(), test_case.expect_backoff);
   }
 }
 

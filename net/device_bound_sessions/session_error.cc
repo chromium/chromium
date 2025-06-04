@@ -44,4 +44,30 @@ bool SessionError::IsFatal() const {
   }
 }
 
+bool SessionError::IsServerError() const {
+  using enum ErrorType;
+
+  switch (type) {
+    case kSuccess:
+    case kKeyError:
+    case kSigningError:
+    case kNetError:
+      return false;
+    case kServerRequestedTermination:
+    case kInvalidConfigJson:
+    case kInvalidSessionId:
+    case kInvalidCredentials:
+    case kInvalidChallenge:
+    case kTooManyChallenges:
+    case kInvalidFetcherUrl:
+    case kInvalidRefreshUrl:
+    case kPersistentHttpError:
+    case kScopeOriginSameSiteMismatch:
+    case kRefreshUrlSameSiteMismatch:
+    case kInvalidScopeOrigin:
+    case kTransientHttpError:
+      return true;
+  }
+}
+
 }  // namespace net::device_bound_sessions

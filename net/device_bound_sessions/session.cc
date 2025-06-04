@@ -258,10 +258,6 @@ proto::Session Session::ToProto() const {
 bool Session::ShouldDeferRequest(
     URLRequest* request,
     const net::FirstPartySetMetadata& first_party_set_metadata) const {
-  if (backoff_.ShouldRejectRequest()) {
-    return false;
-  }
-
   if (request->device_bound_session_usage() < SessionUsage::kNoUsage) {
     request->set_device_bound_session_usage(SessionUsage::kNoUsage);
   }
@@ -416,6 +412,10 @@ void Session::RecordAccess() {
 bool Session::IncludesUrl(const GURL& url) const {
   return inclusion_rules_.EvaluateRequestUrl(url) ==
          SessionInclusionRules::kInclude;
+}
+
+bool Session::ShouldBackoff() const {
+  return backoff_.ShouldRejectRequest();
 }
 
 void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {

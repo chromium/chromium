@@ -40,6 +40,8 @@ class NET_EXPORT SessionService {
     kUnreachable,         // Refresh endpoint was unreachable.
     kServerError,         // Refresh endpoint eserved a transient error.
     kQuotaExceeded,       // Refresh quota exceeded.
+    kFatalError,          // Refresh failed and session was terminated. No
+                          // further refresh needed.
   };
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
 

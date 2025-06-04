@@ -99,6 +99,8 @@ class NET_EXPORT Session {
   // Whether the URL is in-scope for the session.
   bool IncludesUrl(const GURL& url) const;
 
+  bool ShouldBackoff() const;
+
   // Inform the session about a refresh so it can decide whether to
   // enter backoff mode.
   void InformOfRefreshResult(SessionError::ErrorType error_type);

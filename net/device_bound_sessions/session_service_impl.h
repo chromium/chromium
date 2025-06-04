@@ -139,7 +139,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
   void UnblockDeferredRequests(const Session::Id& session_id,
-                               bool is_cookie_refreshed);
+                               RefreshResult result);
 
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
@@ -178,10 +178,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const Session::Id& session_id,
       base::expected<SessionParams, SessionError> params_or_error);
 
-  // Callback after unwrapping a session key
+  // Callback after unwrapping a session key. `on_access_callback` is
+  // used to notify the browser that this request led to usage of a
+  // session.
   void OnSessionKeyRestored(URLRequest* request,
                             const SchemefulSite& site,
                             const Session::Id& session_id,
+                            OnAccessCallback on_access_callback,
                             Session::KeyIdOrError key_id_or_error);
 
   // Helper function for starting a refresh

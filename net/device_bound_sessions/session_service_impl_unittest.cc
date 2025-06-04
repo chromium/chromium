@@ -522,7 +522,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
                                 SessionKey(site_1, Session::Id(kSessionId)),
                                 std::vector<std::string>{"test_cookie"}}));
 
-  EXPECT_EQ(future_2.Take(), SessionService::RefreshResult::kUnreachable);
+  EXPECT_EQ(future_2.Take(), SessionService::RefreshResult::kFatalError);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
@@ -607,7 +607,7 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
 
   // Check that refresh fails since the session wasn't supposed to be
   // deferred.
-  EXPECT_EQ(future_3.Take(), SessionService::RefreshResult::kUnreachable);
+  EXPECT_EQ(future_3.Take(), SessionService::RefreshResult::kFatalError);
 }
 
 TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
@@ -712,8 +712,9 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
                   SessionAccess{SessionAccess::AccessType::kTermination,
                                 SessionKey(site, Session::Id(kSessionId)),
                                 std::vector<std::string>{"test_cookie"}}));
+
   // Check the session refresh fails.
-  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kFatalError);
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
 }
 
@@ -817,7 +818,7 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
         future.GetCallback());
-    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kQuotaExceeded);
   }
 
   // After five minutes, the quota is restored and the fourth refresh
@@ -871,13 +872,15 @@ TEST_F(SessionServiceImplTest, SessionBackoff) {
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
         future.GetCallback());
-    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kServerError);
   }
 
   // Backoff should prevent us from deferring anymore.
-  std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(maybe_deferral);
+  base::test::TestFuture<SessionService::RefreshResult> future;
+  service().DeferRequestForRefresh(
+      request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
 }
 
 TEST_F(SessionServiceImplTest, RepeatedDeferral) {
