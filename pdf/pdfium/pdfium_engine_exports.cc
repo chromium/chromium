@@ -13,14 +13,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_metadata.h"
-#include "pdf/loader/document_loader.h"
-#include "pdf/loader/url_loader_wrapper.h"
+#include "pdf/loader/data_document_loader.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_document.h"
@@ -55,39 +52,6 @@
 namespace chrome_pdf {
 
 namespace {
-
-class DataDocumentLoader : public DocumentLoader {
- public:
-  explicit DataDocumentLoader(base::span<const uint8_t> pdf_data)
-      : pdf_data_(pdf_data) {}
-  ~DataDocumentLoader() override = default;
-
-  // DocumentLoader:
-  bool Init(std::unique_ptr<URLLoaderWrapper> loader,
-            const std::string& url) override {
-    NOTREACHED() << "PDFiumDocument doesn't call this";
-  }
-  bool GetBlock(uint32_t position, base::span<uint8_t> buf) const override {
-    if (!IsDataAvailable(position, buf.size())) {
-      return false;
-    }
-    buf.copy_from(pdf_data_.subspan(position, buf.size()));
-    return true;
-  }
-  bool IsDataAvailable(uint32_t position, uint32_t size) const override {
-    CHECK_LE(position, GetDocumentSize());
-    CHECK_LE(size, GetDocumentSize() - position);
-    return true;
-  }
-  void RequestData(uint32_t position, uint32_t size) override {}
-  bool IsDocumentComplete() const override { return true; }
-  uint32_t GetDocumentSize() const override { return pdf_data_.size(); }
-  uint32_t BytesReceived() const override { return pdf_data_.size(); }
-  void ClearPendingRequests() override {}
-
- private:
-  const base::raw_span<const uint8_t> pdf_data_;
-};
 
 ScopedFPDFDocument CreatePdfDoc(
     std::vector<base::span<const uint8_t>> input_buffers) {

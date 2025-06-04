@@ -23,6 +23,7 @@ source_set("loader") {
 
   sources = [
     "chunk_stream.h",
+    "data_document_loader.cc",
     "document_loader_impl.cc",
     "range_set.cc",
     "range_set.h",
@@ -34,6 +35,7 @@ source_set("loader") {
   configs += [ "//pdf:strict" ]
 
   public = [
+    "data_document_loader.h",
     "document_loader.h",
     "document_loader_impl.h",
     "result_codes.h",
