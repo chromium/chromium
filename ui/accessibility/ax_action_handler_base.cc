@@ -20,12 +20,16 @@ AXActionHandlerBase::AXActionHandlerBase(const AXTreeID& ax_tree_id)
     : tree_id_(ax_tree_id) {}
 
 AXActionHandlerBase::~AXActionHandlerBase() {
-  AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
+  if (tree_id_ != AXTreeIDUnknown()) {
+    AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
+  }
 }
 
 void AXActionHandlerBase::SetAXTreeID(AXTreeID new_ax_tree_id) {
   DCHECK_NE(new_ax_tree_id, AXTreeIDUnknown());
-  AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
+  if (tree_id_ != AXTreeIDUnknown()) {
+    AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
+  }
   tree_id_ = new_ax_tree_id;
   AXActionHandlerRegistry::GetInstance()->SetAXTreeID(tree_id_, this);
 }
