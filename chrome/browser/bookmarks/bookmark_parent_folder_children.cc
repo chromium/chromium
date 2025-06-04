@@ -7,9 +7,9 @@
 #include <cstddef>
 
 #include "base/check_op.h"
-#include "base/functional/overloaded.h"
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 using bookmarks::BookmarkNode;
 
@@ -46,7 +46,7 @@ const BookmarkNode* BookmarkParentFolderChildren::operator[](
     size_t index) const {
   CHECK_LT(index, size());
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [index](const BookmarkNode* parent) -> const BookmarkNode* {
             return parent->children()[index].get();
           },
@@ -58,7 +58,7 @@ const BookmarkNode* BookmarkParentFolderChildren::operator[](
 
 size_t BookmarkParentFolderChildren::size() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const BookmarkNode* parent) { return parent->children().size(); },
           [](const PermanentFolderOrderingTracker* tracker) {
             return tracker->GetChildrenCount();
