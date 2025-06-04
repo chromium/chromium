@@ -210,6 +210,11 @@ void IdentityDialogController::OnAccountSelected(
     const GURL& idp_config_url,
     const std::string& account_id,
     const content::IdentityRequestAccount::LoginState& login_state) {
+  // Do nothing if |OnAccountSelected| is called after |OnDismiss|, which sets
+  // the callback to null.
+  if (!on_dismiss_) {
+    return;
+  }
   CHECK(on_account_selection_);
 
   CollectTrainingData(UserAction::kSuccess);
