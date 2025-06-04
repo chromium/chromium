@@ -26,6 +26,10 @@ namespace switches {
 // letter code from ISO-639.
 const char kAcceptLang[] = "accept-lang";
 
+//Displayfile feature
+// const char kEnableDisplayFileContent[] = "enable-display-file-content";
+// const char kEnableDisplayFileContentFeature[] = "enable-display-file-content-feature";
+
 // Allows third-party content included on a page to prompt for a HTTP basic
 // auth username/password pair.
 const char kAllowCrossOriginAuthPrompt[] = "allow-cross-origin-auth-prompt";

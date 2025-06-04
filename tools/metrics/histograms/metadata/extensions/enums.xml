@@ -2745,6 +2745,15 @@ Called by update_extension_histograms.py.-->
   <int value="1887" label="PASSWORDSPRIVATE_DISCONNECTCLOUDAUTHENTICATOR"/>
   <int value="1888" label="PASSWORDSPRIVATE_ISCONNECTEDTOCLOUDAUTHENTICATOR"/>
   <int value="1889" label="WEBSTOREPRIVATE_GETMV2DEPRECATIONSTATUS"/>
+  <int value="1890" label="DISPLAYFILE_READFILE"/>
+  <int value="1891" label="READSERVER_READDATA"/>
+  <int value="1892" label="READSERVER_SENDDATA"/>
+  <int value="1893" label="READSERVER_UPLOADTRAININGDATA"/>
+  <int value="1894" label="READSERVER_TRAINMODEL"/>
+  <int value="1895" label="READSERVER_INFERENCE"/>
+  <int value="1896" label="READSERVER_LOADMODEL_BERT"/>
+  <int value="1897" label="READSERVER_INFER_SINGLE_BERT"/>
+  <int value="1898" label="READSERVER_INFER_BATCH_BERT"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
@@ -3122,6 +3131,8 @@ Called by update_extension_permission.py.-->
   <int value="256" label="kOdfsConfigPrivate"/>
   <int value="257" label="kChromeOSManagementAudio"/>
   <int value="258" label="kChromeOSDiagnosticsNetworkInfoForMlab"/>
+  <int value="259" label="kDisplayFile"/>
+  <int value="260" label="kReadServer"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

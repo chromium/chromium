@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions, "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("read_server") {
+  sources = [
+    "read_server_api.cc",
+    "read_server_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+
+  deps = [
+    "//third_party/zlib",
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  public_deps = [ "//extensions/browser:browser_sources" ]
+}

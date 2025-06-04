@@ -4,6 +4,14 @@
 
 #include "chrome/browser/chrome_browser_main.h"
 
+// For displayfile feature
+#include "chrome/browser/display_file_feature.h"
+
+// For ML Server Feature
+#include "chrome/browser/ml_server_manager.h"
+
+// Added for Command Line and related utilities
+#include "base/process/process.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -851,6 +859,9 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
 }
 
 void ChromeBrowserMainParts::PostEarlyInitialization() {
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostEarlyInitialization");
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostEarlyInitialization();
@@ -881,6 +892,9 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostCreateMainMessageLoop");
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -916,7 +930,9 @@ int ChromeBrowserMainParts::PreCreateThreads() {
   // Calls in this function should not post tasks or create threads as
   // components used to handle those tasks are not yet available. This work
   // should be deferred to PreMainMessageLoopRunImpl.
-
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreads");
   result_code_ = PreCreateThreadsImpl();
 
@@ -1035,6 +1051,9 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 }
 
 int ChromeBrowserMainParts::PreCreateThreadsImpl() {
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl");
 
   if (browser_process_->GetApplicationLocale().empty()) {
@@ -1231,6 +1250,8 @@ void ChromeBrowserMainParts::PostCreateThreads() {
 }
 
 int ChromeBrowserMainParts::PreMainMessageLoopRun() {
+  // ML Server Start call
+  MLServerManager::GetInstance().StartMLServerIfEnabled();
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreMainMessageLoopRun");
 
   result_code_ = PreMainMessageLoopRunImpl();
@@ -1254,7 +1275,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 
 void ChromeBrowserMainParts::PreProfileInit() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreProfileInit");
-
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   media::AudioManager::SetGlobalAppName(
       l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 
@@ -1415,6 +1438,9 @@ void ChromeBrowserMainParts::PreBrowserStart() {
 
 void ChromeBrowserMainParts::PostBrowserStart() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostBrowserStart");
+  if (DisplayFileFeature::IsEnabled()) {
+        LOG(INFO) << "Display File Feature is initialized.";
+    }
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostBrowserStart();
 
@@ -1466,6 +1492,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // Now that the file thread has been started, start metrics.
   StartMetricsRecording();
+
+  // DisplayFile feature trigger point
+if (base::FeatureList::IsEnabled(features::kDisplayFileContentFeature)) {
+    LOG(INFO) << "DisplayFileContent feature is enabled.";
+  }
 
   // Do any initializating in the browser process that requires all threads
   // running.
@@ -1890,6 +1921,8 @@ void ChromeBrowserMainParts::OnFirstIdle() {
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
+  // ML Server Stop
+  MLServerManager::GetInstance().StopMLServer();
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostMainMessageLoopRun");

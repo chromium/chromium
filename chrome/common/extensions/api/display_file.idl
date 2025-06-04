@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The displayFile API allows extensions to read JSON data from a specific Flask server endpoint.
+[platforms=("win", "mac", "linux", "chromeos"),
+ implemented_in="extensions/browser/api/display_file/display_file_api.h"]
+namespace displayFile {
+  // Callback function for receiving the JSON data.
+  // |data|: The JSON data received from the server.
+  callback JsonDataCallback = void(object data);
+
+  interface Functions {
+    // Retrieves JSON data from a predetermined Flask server endpoint.
+    // The server URL and endpoint are fixed for security reasons.
+    // |callback|: Called with the JSON data when the operation is complete.
+    static void readFile(JsonDataCallback callback);
+  };
+};

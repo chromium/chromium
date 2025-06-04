@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 
 extensions_api_schema_files_ = [
+  "display_file.idl",
+  "read_server.idl",
   "alarms.idl",
   "app_current_window_internal.idl",
   "app_runtime.idl",

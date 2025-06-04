@@ -32,6 +32,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "display-file-content-feature",
+    "owners": [ "sauravgahlawat@gmail.com" ],
+    "expiry_milestone": -1
+  },  
+  {
     "name": "account-passwords-on-signin",
     "owners": [ "victorvianna@google.com", "chrome-sync-dev+finch@google.com"],
     "expiry_milestone":130

@@ -28,6 +28,9 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+// ML Server Feature
+COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kMLServerFeature);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kActivityReportingSessionType);

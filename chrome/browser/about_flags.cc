@@ -381,6 +381,13 @@ const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros;
 const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS | kOsLacros;
 #endif  // USE_AURA
 
+// Choices for DisplayFileContentFeature
+const FeatureEntry::Choice kDisplayFileContentFeatureChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kEnableDisplayFileContentFeature, "", "Enabled"},
+    {flag_descriptions::kDisableDisplayFileContentFeature, "", "Disabled"},
+};
+
 #if defined(USE_AURA)
 const FeatureEntry::Choice kPullToRefreshChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -3948,6 +3955,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableBenchmarkingName,
      flag_descriptions::kEnableBenchmarkingDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableBenchmarkingChoices)},
+    {"display-file-content-feature",  // Internal name for the flag
+     flag_descriptions::kDisplayFileContentFeatureName,  // Human-readable name
+     flag_descriptions::kDisplayFileContentFeatureDescription,  // Description
+     kOsAll,  // Supported OSes
+     MULTI_VALUE_TYPE(kDisplayFileContentFeatureChoices)},
+     // ML Server
+    {
+    "enable-ml-server",
+    flag_descriptions::kMLServerFeatureName,
+    flag_descriptions::kMLServerFeatureDescription,
+    kOsLinux,  // Supports Linux
+    FEATURE_VALUE_TYPE(features::kMLServerFeature),
+    },
     {"ignore-gpu-blocklist", flag_descriptions::kIgnoreGpuBlocklistName,
      flag_descriptions::kIgnoreGpuBlocklistDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIgnoreGpuBlocklist)},

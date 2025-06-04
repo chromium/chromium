@@ -4,6 +4,9 @@
 
 #include "content/public/common/content_features.h"
 
+// Displayfile feature
+#include "chrome/browser/display_file_feature.h"
+
 #include <string>
 
 #include "base/feature_list.h"
@@ -18,6 +21,11 @@ namespace features {
 
 // All features in alphabetical order.
 
+// Displayfile
+BASE_FEATURE(kDisplayFileContentFeature,
+             "DisplayFileContentFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+             
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

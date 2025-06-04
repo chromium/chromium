@@ -1,0 +1,23 @@
+import("//extensions/buildflags/buildflags.gni")
+assert(enable_extensions, "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("display_file") {
+  sources = [
+    "display_file_api.cc",
+    "display_file_api.h",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",  
+    "//components/keyed_service/content",  
+    "//content/public/browser",  
+    "//extensions/common",  
+    "//extensions/common/api",
+    "//services/network/public/cpp",
+    "//net",
+  ]
+
+  public_deps = [
+    "//extensions/browser:browser_sources"
+  ]
+}

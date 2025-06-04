@@ -116,16 +116,52 @@ buildflag_header("buildflags") {
   }
 }
 
+# ML Server Flag Files
+
+source_set("ml_server_feature") {
+  sources = [
+    "ml_server_manager.cc",
+    "ml_server_manager.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+
+source_set("display_file_feature") {
+  sources = [
+    "display_file_feature.cc",
+    "display_file_feature.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/common",
+    "//components/policy/proto",
+    "//chrome/common:non_code_constants",
+  ]
+}
+
 source_set("browser_process") {
   sources = [
     "browser_process.cc",
     "browser_process.h",
+    "chrome_browser_main.cc",
   ]
-  deps = [ "//base" ]
-  public_deps = [
-    "//build:chromeos_buildflags",
-    "//chrome/common:buildflags",
+  deps = [
+    "//base",
+    ":display_file_feature",
+    ":ml_server_feature", 
     "//media:media_buildflags",
+    "//components/policy/proto",
+    "//third_party/leveldatabase",
+    "//net/third_party/quiche",
+  ]
+
+  include_dirs = [
+    "//third_party/leveldatabase/src/include",
+    "//net/third_party/quiche/src/quiche/quic/core/proto/",
   ]
 }
 

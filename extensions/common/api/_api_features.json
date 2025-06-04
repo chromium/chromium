@@ -159,6 +159,12 @@
     "extension_types": ["platform_app"],
     "contexts": ["privileged_extension"]
   },
+  "displayFile": {
+    "channel": "stable",
+    "contexts": ["privileged_extension"],
+    "extension_types": ["extension"],
+    "dependencies": ["permission:displayFile"]
+  },  
   "dns": {
     "dependencies": ["permission:dns"],
     "contexts": ["privileged_extension"]
@@ -500,6 +506,11 @@
     "internal": true,
     "dependencies": ["permission:printerProvider"],
     "contexts": ["privileged_extension"]
+  },
+  "readServer": {
+    "contexts": ["privileged_extension"],
+    "extension_types": ["extension"],
+    "dependencies": ["permission:readServer"]
   },
   "runtime": {
     "channel": "stable",

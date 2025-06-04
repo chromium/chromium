@@ -17,6 +17,11 @@ namespace features {
 
 // All features in alphabetical order.
 
+// ML Server Feature
+BASE_FEATURE(kMLServerFeature,
+             "MLServerFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // If enabled device status collector will add the type of session (Affiliated
 // User, Kiosks, Managed Guest Sessions) to the device status report.

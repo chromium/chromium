@@ -65,6 +65,8 @@ group("api_implementations") {
     "//extensions/browser/api/test",
     "//extensions/browser/api/user_scripts",
     "//extensions/browser/api/virtual_keyboard_private",
+    "//extensions/browser/api/display_file",
+    "//extensions/browser/api/read_server",
   ]
 
   if (is_chromeos) {

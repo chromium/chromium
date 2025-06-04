@@ -10,6 +10,7 @@ import("//pdf/features.gni")
 assert(enable_extensions)
 
 schema_sources_ = [
+  "display_file.idl",
   "accessibility_features.json",
   "activity_log_private.json",
   "autofill_private.idl",

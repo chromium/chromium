@@ -14,6 +14,17 @@
 
 namespace flag_descriptions {
 
+const char kDisplayFileContentFeatureName[] = "Enable Display File Content";
+const char kDisplayFileContentFeatureDescription[] = 
+    "Allows extensions to read content from a predefined file in the file system.";
+const char kEnableDisplayFileContentFeature[] = "Enable reading from the file";
+const char kDisableDisplayFileContentFeature[] = "Disable reading from the file";
+
+// ML Server
+const char kMLServerFeatureName[] = "ML Server";
+const char kMLServerFeatureDescription[] = 
+    "Enables experimental machine learning server. Requires browser restart.";
+
 const char kAccelerated2dCanvasName[] = "Accelerated 2D canvas";
 const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "

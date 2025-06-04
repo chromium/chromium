@@ -31,6 +31,8 @@ std::unique_ptr<APIPermission> CreateAPIPermission(
 // ChromePermissionMessageRule::GetAllRules as well.
 constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kActiveTab, "activeTab"},
+    {APIPermissionID::kDisplayFile, "displayFile", APIPermissionInfo::kFlagNone},
+    {APIPermissionID::kReadServer, "readServer", APIPermissionInfo::kFlagNone},
     {APIPermissionID::kAlarms, "alarms",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kAlphaEnabled, "app.window.alpha",

@@ -45,6 +45,18 @@ namespace flag_descriptions {
 
 // Cross-platform -------------------------------------------------------------
 
+// Displayfile entry
+extern const char kDisplayFileContentFeatureName[];
+extern const char kDisplayFileContentFeatureDescription[];
+extern const char kEnableDisplayFileContentFeature[];
+extern const char kDisableDisplayFileContentFeature[];
+
+// ML Server
+// Flag name (displayed in flags UI)
+extern const char kMLServerFeatureName[];
+// Flag description
+extern const char kMLServerFeatureDescription[];
+
 extern const char kAccelerated2dCanvasName[];
 extern const char kAccelerated2dCanvasDescription[];
 

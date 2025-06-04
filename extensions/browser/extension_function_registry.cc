@@ -36,8 +36,10 @@ bool ExtensionFunctionRegistry::OverrideFunctionForTesting(
 
 scoped_refptr<ExtensionFunction> ExtensionFunctionRegistry::NewFunction(
     const std::string& name) {
+  LOG(INFO) << "Registering function: " << name;
   auto iter = factories_.find(name);
   if (iter == factories_.end()) {
+    LOG(ERROR) << "Function not found in registry: " << name << "\n";
     return nullptr;
   }
   scoped_refptr<ExtensionFunction> function = iter->second.factory_();
