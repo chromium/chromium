@@ -83,36 +83,6 @@ class GnConfigsImpl:
             'target_cpu="x64"',
             'target_os="linux"',
         ] + current_exec
-        self.linux_configs["linux-cast-arm-rel"] = [
-            'cast_is_debug=false',
-            'cast_streaming_enable_remoting=true',
-            'chrome_pgo_phase=0',
-            'dcheck_always_on=false',
-            'enable_arcore=false',
-            'enable_cardboard=false',
-            'enable_cast_receiver=true',
-            'enable_extensions=true',
-            'enable_guest_view=true',
-            'enable_openxr=false',
-            'enable_pdf=true',
-            'enable_plugins=true',
-            'enable_printing=true',
-            'enable_vr=false',
-            'enable_widevine=true',
-            'ffmpeg_branding="Chrome"',
-            'is_cast_desktop_build=true',
-            'is_castos=true',
-            'is_clang=true',
-            'is_component_build=false',
-            'is_debug=false',
-            'media_use_ffmpeg=true',
-            'proprietary_codecs=true',
-            'symbol_level=1',
-            'target_cpu="arm"',
-            'target_os="linux"',
-            'use_chromecast_cdms=false',
-            'use_dummy_lastchange=false',
-        ] + current_exec
         # Finally Official linux builder args
         # See https://ci.chromium.org/ui/p/chrome/builders/official/linux64
         self.linux_configs["linux-official"] = [
@@ -184,7 +154,7 @@ class GnConfigsImpl:
             'is_debug=true',
             'proprietary_codecs=true',
             'symbol_level=0',
-            'target_cpu="x64"',
+            'target_cpu="x86"',
             'target_os="win"',
         ] + current_exec
 
@@ -199,8 +169,7 @@ class GnConfigsImpl:
             #'android_static_analysis="off"', gn warns this has no effect.
             # Coverage file is removed
             'dcheck_always_on=true',
-            # For local builds this generates a warning saying it has no effect.
-            #'debuggable_apks=false',
+            'debuggable_apks=false',
             'enable_android_secondary_abi=true',
             'fail_on_android_expectations=true',
             'ffmpeg_branding="Chrome"',
@@ -211,7 +180,7 @@ class GnConfigsImpl:
             'symbol_level=0',
             'system_webview_package_name="com.google.android.chrome"',
             'target_cpu="arm64"',
-            'use_clange_coverage=true',
+            'use_clang_coverage=true',
         ] + current_exec
         self.android_configs['android-binary-size'] = [
             'android_channel="stable"',
@@ -264,7 +233,7 @@ class GnConfigsImpl:
             'is_component_build=false',
             'is_debug=false',
             'is_high_end_android=false',
-            #'is_official_build=true', Disabled to save compile time.
+            'is_official_build=true',
             'proprietary_codecs=true',
             # locally 2 generates to many debug symbols.
             'symbol_level=0',
@@ -304,7 +273,7 @@ class GnConfigsImpl:
             'is_chrome_branded=true',
             #'is_chromeos_device=true', Not building on a chromeos device.
             'is_debug=false',
-            # 'is_official_build=true', Disabled for build speed
+            'is_official_build=true',
             'use_cfi_cast=true',
             'enable_nacl=true',
             'enable_pseudolocales=true',

@@ -206,7 +206,7 @@ def AddPragmasUntilTargetCompiles(target, args, files_that_had_pragma) -> bool:
         # Clean empty strings.
         unsafe_buffers_files = [file for file in unsafe_buffers_files if file]
 
-        rewrittens = addPragmasToFiles(unsafe_buffer_files,
+        rewrittens = AddPragmasToFiles(unsafe_buffers_files,
                                        files_that_had_pragma)
 
         if not rewrittens:
