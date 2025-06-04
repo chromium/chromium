@@ -140,9 +140,20 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(dialog.$.cancelButton.disabled);
     assertFalse(isVisible(dialog.$.spinner));
 
-    // The button should be enabled if a checkbox is selected.
+    // Verify that checkboxes in the expanded and more lists are initially
+    // enabled.
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
     assertTrue(!!historyCheckbox);
+    assertFalse(historyCheckbox.$.checkbox.disabled);
+
+    dialog.$.showMoreButton.click();
+    await flushTasks();
+
+    const formDataCheckbox = getCheckboxForDataType(BrowsingDataType.FORM_DATA);
+    assertTrue(!!formDataCheckbox);
+    assertFalse(formDataCheckbox.$.checkbox.disabled);
+
+    // The Delete button should be enabled if a checkbox is selected.
     historyCheckbox.$.checkbox.click();
     await flushTasks();
     assertFalse(dialog.$.deleteButton.disabled);
@@ -151,14 +162,16 @@ suite('DeleteBrowsingDataDialog', function() {
     testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
         promiseResolver.promise);
 
-    // While the deletion is in progress, the Cancel and Delete button should be
-    // disabled and the spinner should be visible.
+    // While the deletion is in progress, the checkboxes, Cancel and Delete
+    // button should be disabled and the spinner should be visible.
     dialog.$.deleteButton.click();
     await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
     await flushTasks();
     assertTrue(dialog.$.deleteButton.disabled);
     assertTrue(dialog.$.cancelButton.disabled);
     assertTrue(isVisible(dialog.$.spinner));
+    assertTrue(historyCheckbox.$.checkbox.disabled);
+    assertTrue(formDataCheckbox.$.checkbox.disabled);
 
     promiseResolver.resolve(
         {showHistoryNotice: false, showPasswordsNotice: false});

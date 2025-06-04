@@ -77,14 +77,15 @@
       <template is="dom-repeat"
           items="[[expandedBrowsingDataTypeOptionsList_]]">
         <settings-checkbox pref="[[item.pref]]" no-set-pref
-            sub-label="[[item.subLabel]]">
+            sub-label="[[item.subLabel]]" disabled="[[isDeletionInProgress_]]">
           <div class="checkbox-title">[[item.label]]</div>
         </settings-checkbox>
       </template>
       <template is="dom-if" if="[[dataTypesExpanded_]]">
         <template is="dom-repeat" items="[[moreBrowsingDataTypeOptionsList_]]">
           <settings-checkbox pref="[[item.pref]]" no-set-pref
-              sub-label="[[item.subLabel]]">
+              sub-label="[[item.subLabel]]"
+              disabled="[[isDeletionInProgress_]]">
             <div class="checkbox-title">[[item.label]]</div>
           </settings-checkbox>
         </template>
