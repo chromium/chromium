@@ -835,7 +835,7 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // buffered.
   // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
   // whether the CRP is guaranteed to always be present).
-  if (!IsWebGL() && LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
+  if (IsRenderingContext2D() && LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
     GetOrCreateCanvasResourceProvider();
   }
 }
@@ -859,8 +859,9 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
       }
       dirty_rect_ = gfx::Rect();
     }
-  } else if (LowLatencyEnabled() && frame_dispatcher_ &&
-             !dirty_rect_.IsEmpty() && GetOrCreateCanvasResourceProvider()) {
+  } else if (IsRenderingContext2D() && LowLatencyEnabled() &&
+             frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
+             GetOrCreateCanvasResourceProvider()) {
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
       const gfx::Rect src_rect(Size());
