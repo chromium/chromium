@@ -39,9 +39,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       override {
     return GetOrCreateCanvasResourceProviderImpl();
   }
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override {
-    return GetOrCreateCanvasResourceProviderImpl();
-  }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() override {
     if (ResourceProvider())
       return ResourceProvider();

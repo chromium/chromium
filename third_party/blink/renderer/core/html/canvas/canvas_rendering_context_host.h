@@ -101,7 +101,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // Partial CanvasResourceHost implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override;
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
       override;
   void PageVisibilityChanged() override;
@@ -149,7 +148,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() final;
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() override;
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 

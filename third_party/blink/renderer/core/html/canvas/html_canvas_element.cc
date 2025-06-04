@@ -2225,7 +2225,8 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
   UpdateMemoryUsage();
 }
 
-CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
+CanvasResourceProvider*
+HTMLCanvasElement::GetOrCreateCanvasResourceProviderImpl() {
   if (IsRenderingContext2D()) {
     CanvasResourceProvider* resource_provider =
         GetResourceProviderForCanvas2D();
@@ -2282,7 +2283,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
     return resource_provider;
   }
 
-  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider();
+  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl();
 }
 
 CanvasResourceProvider*
@@ -2291,7 +2292,7 @@ HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack.
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProviderImpl();
+      CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl();
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }

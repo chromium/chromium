@@ -101,7 +101,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
  private:

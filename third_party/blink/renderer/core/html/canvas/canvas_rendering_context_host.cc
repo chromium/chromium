@@ -148,25 +148,21 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
 
   // NOTE: When further reorganizing this code, it is important to preserve the
-  // flow of HTMLCanvasElement overriding GetOrCreateCanvasResourceProvider()
-  // to customize the creation of Canvas2D resource providers.
-  return GetOrCreateCanvasResourceProvider();
+  // flow of HTMLCanvasElement overriding
+  // GetOrCreateCanvasResourceProviderImpl() to customize the creation of
+  // Canvas2D resource providers.
+  return GetOrCreateCanvasResourceProviderImpl();
 }
 
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
   CHECK(IsWebGL());
-  return GetOrCreateCanvasResourceProvider();
+  return GetOrCreateCanvasResourceProviderImpl();
 }
 
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   CHECK(IsWebGPU());
-  return GetOrCreateCanvasResourceProvider();
-}
-
-CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
   return GetOrCreateCanvasResourceProviderImpl();
 }
 
