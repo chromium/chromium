@@ -11,7 +11,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize ToJniType()/FromJniType()
-#include "components/payments/content/android/browser_binding_jni/BrowserBoundKeyStore_jni.h"
+#include "components/payments/content/android/spc/browser_binding_jni/BrowserBoundKeyStore_jni.h"
 
 namespace payments {
 namespace {

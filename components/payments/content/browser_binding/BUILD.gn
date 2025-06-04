@@ -90,7 +90,7 @@ if (is_android) {
     deps = [
       ":interface",
       "//base",
-      "//components/payments/content/android:browser_binding_jni",
+      "//components/payments/content/android/spc:browser_binding_jni",
       "//device/fido",
       "//third_party/jni_zero",
     ]
@@ -103,7 +103,7 @@ if (is_android) {
       ":android",
       ":interface",
       "//base",
-      "//components/payments/content/android:browser_binding_jni",
+      "//components/payments/content/android/spc:browser_binding_jni",
       "//testing/gmock",
       "//testing/gtest",
     ]

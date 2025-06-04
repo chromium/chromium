@@ -4,7 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_android\.(cc|h)": [
-    "+components/payments/content/android/browser_binding_jni",
+    "+components/payments/content/android/spc/browser_binding_jni",
     "+third_party/jni_zero",
   ]
 }

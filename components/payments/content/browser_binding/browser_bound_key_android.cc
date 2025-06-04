@@ -10,7 +10,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that sepcialize ToJniType()/FromJniType()
-#include "components/payments/content/android/browser_binding_jni/BrowserBoundKey_jni.h"
+#include "components/payments/content/android/spc/browser_binding_jni/BrowserBoundKey_jni.h"
 
 namespace payments {
 

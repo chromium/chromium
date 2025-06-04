@@ -202,7 +202,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
   ]
   deps = [
-    ":browser_binding_java",
     ":feature_list_java",
     ":minimal_java",
     ":service_java",
@@ -229,54 +228,6 @@ android_library("full_java") {
     ":jni_headers",
     ":payments_journey_logger_enum_javagen",
     ":prefs_strings_generated_srcjar",
-  ]
-}
-
-generate_jni("browser_binding_jni") {
-  sources = [
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKey.java",
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStore.java",
-  ]
-}
-
-android_library("browser_binding_java") {
-  sources = [
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKey.java",
-    "java/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStore.java",
-  ]
-  deps = [
-    "//base:base_java",
-    "//build/android:build_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
-}
-
-robolectric_library("browser_binding_junit_test") {
-  sources = [ "junit/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyTest.java" ]
-  deps = [
-    ":browser_binding_java",
-    "//base:base_junit_test_support",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
-  ]
-}
-
-android_library("browser_binding_unit_device_javatests") {
-  testonly = true
-  sources = [ "javatests/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStoreTest.java" ]
-  deps = [
-    ":browser_binding_java",
-    "//base:base_java_test_support",
-    "//components/payments/content/android/spc:unit_device_javatests",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java_test_support",
   ]
 }
 
@@ -406,7 +357,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverterTest.java",
   ]
   deps = [
-    ":browser_binding_junit_test",
     ":java",
     ":junit_test_support",
     "//base:base_java",
@@ -434,7 +384,6 @@ android_library("unit_device_javatests") {
   testonly = true
   sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
   deps = [
-    ":browser_binding_unit_device_javatests",
     ":java",
     ":service_java",
     "//base:base_java_test_support",
