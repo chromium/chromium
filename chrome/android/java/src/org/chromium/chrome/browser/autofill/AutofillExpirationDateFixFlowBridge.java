@@ -13,12 +13,15 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillExpirationDateFixFlowPrompt.AutofillExpirationDateFixFlowPromptDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** JNI call glue for AutofillExpirationDateFixFlowPrompt C++ and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 final class AutofillExpirationDateFixFlowBridge
         implements AutofillExpirationDateFixFlowPromptDelegate {
     private long mNativeCardExpirationDateFixFlowViewAndroid;
@@ -26,7 +29,7 @@ final class AutofillExpirationDateFixFlowBridge
     private final String mConfirmButtonLabel;
     private final int mIconId;
     private final String mCardLabel;
-    private AutofillExpirationDateFixFlowPrompt mExpirationDateFixFlowPrompt;
+    private @Nullable AutofillExpirationDateFixFlowPrompt mExpirationDateFixFlowPrompt;
 
     private AutofillExpirationDateFixFlowBridge(
             long nativeCardExpirationDateFixFlowViewAndroid,

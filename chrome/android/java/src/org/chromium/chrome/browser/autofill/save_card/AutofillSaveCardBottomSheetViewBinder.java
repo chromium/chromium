@@ -11,10 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 /*package*/ class AutofillSaveCardBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AutofillSaveCardBottomSheetView view, PropertyKey propertyKey) {

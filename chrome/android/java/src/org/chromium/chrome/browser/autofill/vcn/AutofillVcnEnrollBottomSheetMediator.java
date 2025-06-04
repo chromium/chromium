@@ -8,12 +8,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The mediator controller for the virtual card number (VCN) enrollment bottom sheet. */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetMediator {
     @VisibleForTesting
     static final String LOADING_SHOWN_HISTOGRAM = "Autofill.VirtualCardEnrollBubble.LoadingShown";
@@ -23,7 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
     private final AutofillVcnEnrollBottomSheetContent mContent;
     private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
-    private BottomSheetController mBottomSheetController;
+    private @Nullable BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
     private @VirtualCardEnrollmentBubbleResult int mLoadingResult;
 
