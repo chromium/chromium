@@ -1206,6 +1206,7 @@ standalone_trybot_excluded_builders = [
     "win_optional_gpu_tests_rel",
     # The UTR-tester recipe doesn't currently support real CI-try mirroring.
     "linux-utr-tester",
+    "mac-utr-tester",
     "win-utr-tester",
 ]
 

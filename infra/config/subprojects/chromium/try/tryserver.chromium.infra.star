@@ -243,3 +243,50 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "mac-utr-tester",
+    description_html = "Tests the {} against cli and recipe changes.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md",
+            "Universal Test Runner",
+        ),
+    ),
+    executable = "recipe:chromium/universal_test_runner_test",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-dev-infra-team@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "builder_suites": [
+            {
+                "bucket": "try",
+                "builder_name": "mac-rel",
+                "test_names": [
+                    "url_unittests",
+                ],
+            },
+        ],
+    },
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+)
