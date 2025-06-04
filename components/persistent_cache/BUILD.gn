@@ -86,6 +86,7 @@ source_set("unit_tests") {
     sources += [
       "persistent_cache_collection_unittest.cc",
       "persistent_cache_unittest.cc",
+      "sqlite/vfs/sandboxed_file_unittest.cc",
       "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc",
     ]
   }

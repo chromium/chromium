@@ -47,16 +47,16 @@ SqliteBackendImpl::SqliteBackendImpl(BackendParams backend_params)
 
 SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
     : database_path_(vfs_file_set.GetDbVirtualFilePath()),
+      unregister_runner_(
+          SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
+              std::move(vfs_file_set))),
       db_(sql::DatabaseOptions()
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does
               // not currently support this.
               .set_mmap_enabled(false),
-          kSqliteHistogramTag),
-      unregister_runner_(
-          SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-              std::move(vfs_file_set))) {}
+          kSqliteHistogramTag) {}
 
 SqliteBackendImpl::~SqliteBackendImpl() = default;
 

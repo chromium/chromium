@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -21,8 +21,6 @@
 #include "sql/sandboxed_vfs_file.h"
 
 namespace persistent_cache {
-
-using SandboxedFileMap = base::flat_map<std::string, SandboxedFile>;
 
 // Implements an sql::SandboxedVfs::Delegate which operates on registered
 // base::File objects. Use this in processes that cannot directly open files but
@@ -101,7 +99,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
 
   // Provides exclusive access to the underlying data structure.
   base::Lock files_map_lock_;
-  base::flat_map<base::FilePath, SandboxedFile> sandboxed_files_map_
+  std::map<base::FilePath, SandboxedFile> sandboxed_files_map_
       GUARDED_BY(files_map_lock_);
 };
 

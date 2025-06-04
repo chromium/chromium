@@ -41,8 +41,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
   base::FilePath database_path_;
-  sql::Database db_;
   SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_;
+  // Defined after `unregister_runner_` to ensure that files remain available
+  // through the VFS throughout the database's lifetime.
+  sql::Database db_;
   bool initialized_ = false;
 };
 
