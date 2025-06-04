@@ -665,7 +665,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 35.
+// Next ID: 37.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -774,6 +774,25 @@ message DlpSensitiveDataEvent {
       // ]
       // copybara:datapol_end
       ;
+
+  // The web app signed-in account email. Only populated for Workspace sites.
+  string web_app_signed_in_account = 35
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Copy origin webp app signed-in account for paste event only. Only populated for
+  // Workspace sites.
+  string source_web_app_signed_in_account = 36
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
 }
 
 // Event where a large file could not be scanned for analysis e.g. malware or
@@ -867,7 +886,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 24.
+// Next ID: 26.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -974,6 +993,25 @@ message ContentTransferEvent {
       // copybara:datapol_begin
       // [
       //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // The web app signed-in account email. Only populated for Workspace sites.
+  string web_app_signed_in_account = 24
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Copy origin webp app signed-in account for paste event only. Only populated for
+  // Workspace sites.
+  string source_web_app_signed_in_account = 25
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
       // ]
       // copybara:datapol_end
       ;
