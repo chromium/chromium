@@ -95,7 +95,6 @@ constexpr uint32_t kProtocolVersion = 0;
 // structures are used safely by the ipcz implementation.
 
 {% for m in messages %}
-struct {{m.message}}_Versions;
 struct IPCZ_ALIGN(8) {{m.message}}_Params {
   friend class {{m.message}}_Base;
   using TheseParams = {{m.message}}_Params;

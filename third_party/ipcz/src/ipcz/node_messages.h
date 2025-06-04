@@ -100,7 +100,6 @@ constexpr uint32_t kProtocolVersion = 0;
 // Hiding versions >= 1 behind the above accessors ensures that versioned
 // structures are used safely by the ipcz implementation.
 
-struct ConnectFromBrokerToNonBroker_Versions;
 struct IPCZ_ALIGN(8) ConnectFromBrokerToNonBroker_Params {
   friend class ConnectFromBrokerToNonBroker_Base;
   using TheseParams = ConnectFromBrokerToNonBroker_Params;
@@ -149,7 +148,6 @@ struct IPCZ_ALIGN(8) ConnectFromBrokerToNonBroker_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct ConnectFromNonBrokerToBroker_Versions;
 struct IPCZ_ALIGN(8) ConnectFromNonBrokerToBroker_Params {
   friend class ConnectFromNonBrokerToBroker_Base;
   using TheseParams = ConnectFromNonBrokerToBroker_Params;
@@ -194,7 +192,6 @@ struct IPCZ_ALIGN(8) ConnectFromNonBrokerToBroker_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct ReferNonBroker_Versions;
 struct IPCZ_ALIGN(8) ReferNonBroker_Params {
   friend class ReferNonBroker_Base;
   using TheseParams = ReferNonBroker_Params;
@@ -223,7 +220,6 @@ struct IPCZ_ALIGN(8) ReferNonBroker_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct ConnectToReferredBroker_Versions;
 struct IPCZ_ALIGN(8) ConnectToReferredBroker_Params {
   friend class ConnectToReferredBroker_Base;
   using TheseParams = ConnectToReferredBroker_Params;
@@ -268,7 +264,6 @@ struct IPCZ_ALIGN(8) ConnectToReferredBroker_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct ConnectToReferredNonBroker_Versions;
 struct IPCZ_ALIGN(8) ConnectToReferredNonBroker_Params {
   friend class ConnectToReferredNonBroker_Base;
   using TheseParams = ConnectToReferredNonBroker_Params;
@@ -321,7 +316,6 @@ struct IPCZ_ALIGN(8) ConnectToReferredNonBroker_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct NonBrokerReferralAccepted_Versions;
 struct IPCZ_ALIGN(8) NonBrokerReferralAccepted_Params {
   friend class NonBrokerReferralAccepted_Base;
   using TheseParams = NonBrokerReferralAccepted_Params;
@@ -370,7 +364,6 @@ struct IPCZ_ALIGN(8) NonBrokerReferralAccepted_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct NonBrokerReferralRejected_Versions;
 struct IPCZ_ALIGN(8) NonBrokerReferralRejected_Params {
   friend class NonBrokerReferralRejected_Base;
   using TheseParams = NonBrokerReferralRejected_Params;
@@ -397,7 +390,6 @@ struct IPCZ_ALIGN(8) NonBrokerReferralRejected_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct ConnectFromBrokerToBroker_Versions;
 struct IPCZ_ALIGN(8) ConnectFromBrokerToBroker_Params {
   friend class ConnectFromBrokerToBroker_Base;
   using TheseParams = ConnectFromBrokerToBroker_Params;
@@ -445,7 +437,6 @@ struct IPCZ_ALIGN(8) ConnectFromBrokerToBroker_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct RequestIntroduction_Versions;
 struct IPCZ_ALIGN(8) RequestIntroduction_Params {
   friend class RequestIntroduction_Base;
   using TheseParams = RequestIntroduction_Params;
@@ -472,7 +463,6 @@ struct IPCZ_ALIGN(8) RequestIntroduction_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AcceptIntroduction_Versions;
 struct IPCZ_ALIGN(8) AcceptIntroduction_Params {
   friend class AcceptIntroduction_Base;
   using TheseParams = AcceptIntroduction_Params;
@@ -522,7 +512,6 @@ struct IPCZ_ALIGN(8) AcceptIntroduction_Params {
   const V1* v1() const { return LargeEnoughForV1version() ? &v1_ : nullptr; }
 };
 
-struct RejectIntroduction_Versions;
 struct IPCZ_ALIGN(8) RejectIntroduction_Params {
   friend class RejectIntroduction_Base;
   using TheseParams = RejectIntroduction_Params;
@@ -549,7 +538,6 @@ struct IPCZ_ALIGN(8) RejectIntroduction_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct RequestIndirectIntroduction_Versions;
 struct IPCZ_ALIGN(8) RequestIndirectIntroduction_Params {
   friend class RequestIndirectIntroduction_Base;
   using TheseParams = RequestIndirectIntroduction_Params;
@@ -577,7 +565,6 @@ struct IPCZ_ALIGN(8) RequestIndirectIntroduction_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AddBlockBuffer_Versions;
 struct IPCZ_ALIGN(8) AddBlockBuffer_Params {
   friend class AddBlockBuffer_Base;
   using TheseParams = AddBlockBuffer_Params;
@@ -606,7 +593,6 @@ struct IPCZ_ALIGN(8) AddBlockBuffer_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AcceptParcel_Versions;
 struct IPCZ_ALIGN(8) AcceptParcel_Params {
   friend class AcceptParcel_Base;
   using TheseParams = AcceptParcel_Params;
@@ -642,7 +628,6 @@ struct IPCZ_ALIGN(8) AcceptParcel_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AcceptParcelDriverObjects_Versions;
 struct IPCZ_ALIGN(8) AcceptParcelDriverObjects_Params {
   friend class AcceptParcelDriverObjects_Base;
   using TheseParams = AcceptParcelDriverObjects_Params;
@@ -671,7 +656,6 @@ struct IPCZ_ALIGN(8) AcceptParcelDriverObjects_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct RouteClosed_Versions;
 struct IPCZ_ALIGN(8) RouteClosed_Params {
   friend class RouteClosed_Base;
   using TheseParams = RouteClosed_Params;
@@ -699,7 +683,6 @@ struct IPCZ_ALIGN(8) RouteClosed_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct RouteDisconnected_Versions;
 struct IPCZ_ALIGN(8) RouteDisconnected_Params {
   friend class RouteDisconnected_Base;
   using TheseParams = RouteDisconnected_Params;
@@ -726,7 +709,6 @@ struct IPCZ_ALIGN(8) RouteDisconnected_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct BypassPeer_Versions;
 struct IPCZ_ALIGN(8) BypassPeer_Params {
   friend class BypassPeer_Base;
   using TheseParams = BypassPeer_Params;
@@ -756,7 +738,6 @@ struct IPCZ_ALIGN(8) BypassPeer_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AcceptBypassLink_Versions;
 struct IPCZ_ALIGN(8) AcceptBypassLink_Params {
   friend class AcceptBypassLink_Base;
   using TheseParams = AcceptBypassLink_Params;
@@ -787,7 +768,6 @@ struct IPCZ_ALIGN(8) AcceptBypassLink_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct StopProxying_Versions;
 struct IPCZ_ALIGN(8) StopProxying_Params {
   friend class StopProxying_Base;
   using TheseParams = StopProxying_Params;
@@ -816,7 +796,6 @@ struct IPCZ_ALIGN(8) StopProxying_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct ProxyWillStop_Versions;
 struct IPCZ_ALIGN(8) ProxyWillStop_Params {
   friend class ProxyWillStop_Base;
   using TheseParams = ProxyWillStop_Params;
@@ -844,7 +823,6 @@ struct IPCZ_ALIGN(8) ProxyWillStop_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct BypassPeerWithLink_Versions;
 struct IPCZ_ALIGN(8) BypassPeerWithLink_Params {
   friend class BypassPeerWithLink_Base;
   using TheseParams = BypassPeerWithLink_Params;
@@ -874,7 +852,6 @@ struct IPCZ_ALIGN(8) BypassPeerWithLink_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct StopProxyingToLocalPeer_Versions;
 struct IPCZ_ALIGN(8) StopProxyingToLocalPeer_Params {
   friend class StopProxyingToLocalPeer_Base;
   using TheseParams = StopProxyingToLocalPeer_Params;
@@ -902,7 +879,6 @@ struct IPCZ_ALIGN(8) StopProxyingToLocalPeer_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct FlushRouter_Versions;
 struct IPCZ_ALIGN(8) FlushRouter_Params {
   friend class FlushRouter_Base;
   using TheseParams = FlushRouter_Params;
@@ -929,7 +905,6 @@ struct IPCZ_ALIGN(8) FlushRouter_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct RequestMemory_Versions;
 struct IPCZ_ALIGN(8) RequestMemory_Params {
   friend class RequestMemory_Base;
   using TheseParams = RequestMemory_Params;
@@ -957,7 +932,6 @@ struct IPCZ_ALIGN(8) RequestMemory_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct ProvideMemory_Versions;
 struct IPCZ_ALIGN(8) ProvideMemory_Params {
   friend class ProvideMemory_Base;
   using TheseParams = ProvideMemory_Params;
@@ -985,7 +959,6 @@ struct IPCZ_ALIGN(8) ProvideMemory_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct RelayMessage_Versions;
 struct IPCZ_ALIGN(8) RelayMessage_Params {
   friend class RelayMessage_Base;
   using TheseParams = RelayMessage_Params;
@@ -1015,7 +988,6 @@ struct IPCZ_ALIGN(8) RelayMessage_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct AcceptRelayedMessage_Versions;
 struct IPCZ_ALIGN(8) AcceptRelayedMessage_Params {
   friend class AcceptRelayedMessage_Base;
   using TheseParams = AcceptRelayedMessage_Params;

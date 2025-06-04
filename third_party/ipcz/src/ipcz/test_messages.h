@@ -87,7 +87,6 @@ namespace ipcz::test::msg {
 // Hiding versions >= 1 behind the above accessors ensures that versioned
 // structures are used safely by the ipcz implementation.
 
-struct BasicTestMessage_Versions;
 struct IPCZ_ALIGN(8) BasicTestMessage_Params {
   friend class BasicTestMessage_Base;
   using TheseParams = BasicTestMessage_Params;
@@ -115,7 +114,6 @@ struct IPCZ_ALIGN(8) BasicTestMessage_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct MessageWithDataArray_Versions;
 struct IPCZ_ALIGN(8) MessageWithDataArray_Params {
   friend class MessageWithDataArray_Base;
   using TheseParams = MessageWithDataArray_Params;
@@ -142,7 +140,6 @@ struct IPCZ_ALIGN(8) MessageWithDataArray_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct MessageWithDriverObject_Versions;
 struct IPCZ_ALIGN(8) MessageWithDriverObject_Params {
   friend class MessageWithDriverObject_Base;
   using TheseParams = MessageWithDriverObject_Params;
@@ -169,7 +166,6 @@ struct IPCZ_ALIGN(8) MessageWithDriverObject_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct MessageWithDriverObjectArray_Versions;
 struct IPCZ_ALIGN(8) MessageWithDriverObjectArray_Params {
   friend class MessageWithDriverObjectArray_Base;
   using TheseParams = MessageWithDriverObjectArray_Params;
@@ -196,7 +192,6 @@ struct IPCZ_ALIGN(8) MessageWithDriverObjectArray_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct MessageWithDriverArrayAndExtraObject_Versions;
 struct IPCZ_ALIGN(8) MessageWithDriverArrayAndExtraObject_Params {
   friend class MessageWithDriverArrayAndExtraObject_Base;
   using TheseParams = MessageWithDriverArrayAndExtraObject_Params;
@@ -224,7 +219,6 @@ struct IPCZ_ALIGN(8) MessageWithDriverArrayAndExtraObject_Params {
   const V0* v0() const { return LargeEnoughForV0version() ? &v0_ : nullptr; }
 };
 
-struct MessageWithMultipleVersions_Versions;
 struct IPCZ_ALIGN(8) MessageWithMultipleVersions_Params {
   friend class MessageWithMultipleVersions_Base;
   using TheseParams = MessageWithMultipleVersions_Params;
