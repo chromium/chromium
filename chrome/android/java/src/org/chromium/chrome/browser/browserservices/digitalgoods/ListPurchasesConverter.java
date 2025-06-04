@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.checkField;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertParcelableArray;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsConverter.convertResponseCode;
@@ -11,17 +12,18 @@ import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGo
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.PurchaseReference;
 
 /** A converter that deals with the results of ListPurchases calls. */
+@NullMarked
 class ListPurchasesConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -41,7 +43,7 @@ class ListPurchasesConverter {
     static TrustedWebActivityCallback convertCallback(ListPurchases_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
-            public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_COMMAND.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
                     returnClientAppError(callback);
@@ -62,6 +64,7 @@ class ListPurchasesConverter {
 
                 int code = args.getInt(KEY_RESPONSE_CODE);
                 Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
+                assert array != null;
 
                 PurchaseReference[] reference =
                         convertParcelableArray(
@@ -73,14 +76,14 @@ class ListPurchasesConverter {
     }
 
     /** Convert a Bundle into a PurchaseReference object. */
-    static PurchaseReference convertPurchaseReference(Bundle purchase) {
+    static @Nullable PurchaseReference convertPurchaseReference(Bundle purchase) {
         if (!checkField(purchase, KEY_ITEM_ID, String.class)) return null;
         if (!checkField(purchase, KEY_PURCHASE_TOKEN, String.class)) return null;
 
         PurchaseReference result = new PurchaseReference();
 
-        result.itemId = purchase.getString(KEY_ITEM_ID);
-        result.purchaseToken = purchase.getString(KEY_PURCHASE_TOKEN);
+        result.itemId = assumeNonNull(purchase.getString(KEY_ITEM_ID));
+        result.purchaseToken = assumeNonNull(purchase.getString(KEY_PURCHASE_TOKEN));
 
         return result;
     }

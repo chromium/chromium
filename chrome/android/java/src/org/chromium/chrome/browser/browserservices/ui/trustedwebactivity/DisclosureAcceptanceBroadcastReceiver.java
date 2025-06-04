@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
@@ -27,6 +30,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
  *
  * Thread safety: {@link #onReceive} is called on the main thread by the Android framework.
  */
+@NullMarked
 public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "TWADisclosureRec";
 
@@ -59,6 +63,8 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
         String tag = intent.getStringExtra(TAG_EXTRA);
         int id = intent.getIntExtra(ID_EXTRA, -1);
         String packageName = intent.getStringExtra(PACKAGE_EXTRA);
+        assumeNonNull(tag);
+        assumeNonNull(packageName);
 
         mNotificationManager.cancel(tag, id);
         BrowserServicesStore.setUserAcceptedTwaDisclosureForPackage(packageName);
