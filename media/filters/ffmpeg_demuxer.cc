@@ -1136,15 +1136,41 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
     seek_time = std::max(start_time_, time);
   }
 
-  // When seeking in an opus stream we need to ensure we deliver enough data to
-  // satisfy the seek preroll; otherwise the audio at the actual seek time will
-  // not be entirely accurate.
   FFmpegDemuxerStream* audio_stream =
       GetFirstEnabledFFmpegStream(DemuxerStream::AUDIO);
   if (audio_stream) {
     const AudioDecoderConfig& config = audio_stream->audio_decoder_config();
-    if (config.codec() == AudioCodec::kOpus)
+
+    // When seeking in an opus stream we need to ensure we deliver enough data
+    // to satisfy the seek preroll; otherwise the audio at the actual seek time
+    // will not be entirely accurate.
+    if (config.codec() == AudioCodec::kOpus) {
       seek_time = std::max(start_time_, seek_time - config.seek_preroll());
+    }
+
+    // Seeking in MP3s is not precise due to our usage of AVFMT_FLAG_FAST_SEEK;
+    // which works by looking for 3 contiguous MP3 packets since MP3 headers
+    // are simple enough they can occur by random chance in a byte stream.
+    //
+    // Bytes early in the stream often look enough like an MP3 header to trip up
+    // ffmpeg's seeking logic. As a workaround, round seeks within the first
+    // frame to zero. The audio renderer will trim off the excess later.
+    //
+    // Technically these issues can happen anywhere in the stream since the MP3
+    // header is not complex enough to avoid it happening by chance. We could
+    // also fix this by not using AVFMT_FLAG_FAST_SEEK, but that hurts seeking
+    // performance on large files too much.
+    //
+    // 1152 is the number of frame in a MPEG1 packet. Though packets of size 576
+    // may occur with MPEG 2.5 streams we use 1152 here since the problematic
+    // boundary was 0.1 and 576/48000 = 0.012, so 0.024 provide more margin of
+    // error for this workaround.
+    //
+    // See https://crbug.com/415092041
+    if (config.codec() == AudioCodec::kMP3 &&
+        seek_time < base::Seconds(1152.0 / config.samples_per_second())) {
+      seek_time = start_time_;
+    }
   }
 
   // Choose the seeking stream based on whether it contains the seek time, if
