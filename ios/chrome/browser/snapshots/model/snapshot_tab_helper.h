@@ -10,7 +10,6 @@
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
@@ -72,9 +71,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();
-
-  // Returns the ID to use for the snapshot.
-  SnapshotID GetSnapshotID() const;
 
  private:
   friend class web::WebStateUserData<SnapshotTabHelper>;

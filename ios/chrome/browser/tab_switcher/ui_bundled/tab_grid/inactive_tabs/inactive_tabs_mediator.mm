@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
@@ -74,6 +74,19 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                            WebStateList* web_state_list) {
   [consumer populateItems:CreateItemsOrderedByRecency(web_state_list)
       selectedItemIdentifier:nil];
+}
+
+// Returns the WebState with the given SnapshotID (if it exists) or null.
+web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
+                                      SnapshotID snapshot_id) {
+  const int count = web_state_list.count();
+  for (int i = 0; i < count; ++i) {
+    web::WebState* const web_state = web_state_list.GetWebStateAt(i);
+    if (snapshot_id == SnapshotID(web_state->GetUniqueIdentifier())) {
+      return web_state;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -222,15 +235,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 #pragma mark - SnapshotStorageObserver
 
 - (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
-  web::WebState* webState = nullptr;
-  for (int i = 0; i < _webStateList->count(); i++) {
-    SnapshotTabHelper* snapshotTabHelper =
-        SnapshotTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    if (snapshotID.snapshot_id == snapshotTabHelper->GetSnapshotID()) {
-      webState = _webStateList->GetWebStateAt(i);
-      break;
-    }
-  }
+  web::WebState* webState =
+      WebStateWithSnapshotID(*_webStateList, snapshotID.snapshot_id);
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the

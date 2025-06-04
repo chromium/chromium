@@ -160,7 +160,7 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     [stable_identifiers addObject:web_state->GetStableIdentifier()];
     snapshot_identifiers.push_back(
-        SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID());
+        SnapshotID(web_state->GetUniqueIdentifier()));
   }
 
   [snapshot_storage_ renameSnapshotsWithIDs:stable_identifiers
@@ -185,8 +185,7 @@ std::vector<SnapshotID> SnapshotBrowserAgent::GetSnapshotIDs() {
 
   for (int index = 0; index < web_state_list_count; ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    snapshot_ids.push_back(
-        SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID());
+    snapshot_ids.push_back(SnapshotID(web_state->GetUniqueIdentifier()));
   }
   return snapshot_ids;
 }

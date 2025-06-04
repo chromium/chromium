@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
@@ -32,16 +33,6 @@ enum class PageLoadedSnapshotResult {
   // kMaxValue should share the value of the highest enumerator.
   kMaxValue = kSnapshotSucceeded,
 };
-
-// Generates an ID for WebState's snapshot.
-SnapshotID GenerateSnapshotID(const web::WebState* web_state) {
-  DCHECK(web_state->GetUniqueIdentifier().valid());
-  DCHECK_GT(web_state->GetUniqueIdentifier().identifier(), 0);
-
-  static_assert(sizeof(decltype(web::WebStateID().identifier())) ==
-                sizeof(int32_t));
-  return SnapshotID(web_state->GetUniqueIdentifier().identifier());
-}
 
 }  // namespace
 
@@ -175,19 +166,10 @@ void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }
 
-SnapshotID SnapshotTabHelper::GetSnapshotID() const {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    return snapshot_manager_.snapshotID.snapshot_id;
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    return legacy_snapshot_manager_.snapshotID;
-  }
-}
-
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
+  const SnapshotID snapshot_id(web_state_->GetUniqueIdentifier());
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
     snapshot_manager_ = [[SnapshotManager alloc]
         initWithGenerator:
@@ -195,13 +177,12 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
                 initWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                          initWithWebState:web_state_]]
                snapshotID:[[SnapshotIDWrapper alloc]
-                              initWithSnapshotID:GenerateSnapshotID(
-                                                     web_state_)]];
+                              initWithSnapshotID:snapshot_id]];
   } else {
     legacy_snapshot_manager_ = [[LegacySnapshotManager alloc]
         initWithGenerator:[[LegacySnapshotGenerator alloc]
                               initWithWebState:web_state_]
-               snapshotID:GenerateSnapshotID(web_state_)];
+               snapshotID:snapshot_id];
   }
 
   web_state_observation_.Observe(web_state_.get());

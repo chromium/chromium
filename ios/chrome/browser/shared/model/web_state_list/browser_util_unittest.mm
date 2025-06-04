@@ -211,9 +211,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   ASSERT_NE(nil, snapshot_storage);
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   ASSERT_NE(nil, snapshot);
-  SnapshotTabHelper* snapshot_tab_helper =
-      SnapshotTabHelper::FromWebState(web_state);
-  SnapshotID snapshot_id = snapshot_tab_helper->GetSnapshotID();
+  const SnapshotID snapshot_id(web_state->GetUniqueIdentifier());
   [snapshot_storage setImage:snapshot withSnapshotID:snapshot_id];
   ASSERT_TRUE(
       UIImagesAreEqual(snapshot, GetSnapshot(snapshot_storage, snapshot_id)));

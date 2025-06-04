@@ -10,6 +10,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_deref.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
@@ -64,9 +65,9 @@
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
@@ -113,6 +114,19 @@ void LogPriceDropMetrics(web::WebState* web_state) {
       base::StringPrintf("Commerce.TabGridSwitched.%s",
                          has_price_drop ? "HasPriceDrop" : "NoPriceDrop")
           .c_str()));
+}
+
+// Returns the pinned WebState with the given SnapshotID (if it exists) or null.
+web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
+                                      SnapshotID snapshot_id) {
+  const int count = web_state_list.count();
+  for (int i = web_state_list.pinned_tabs_count(); i < count; ++i) {
+    web::WebState* const web_state = web_state_list.GetWebStateAt(i);
+    if (snapshot_id == SnapshotID(web_state->GetUniqueIdentifier())) {
+      return web_state;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -828,17 +842,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 #pragma mark - SnapshotStorageObserver
 
 - (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
-  web::WebState* webState = nullptr;
-  WebStateList* webStateList = self.webStateList;
-  for (int i = webStateList->pinned_tabs_count(); i < webStateList->count();
-       i++) {
-    SnapshotTabHelper* snapshotTabHelper =
-        SnapshotTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    if (snapshotID.snapshot_id == snapshotTabHelper->GetSnapshotID()) {
-      webState = webStateList->GetWebStateAt(i);
-      break;
-    }
-  }
+  web::WebState* webState = WebStateWithSnapshotID(
+      CHECK_DEREF(self.webStateList), snapshotID.snapshot_id);
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the

@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -50,10 +50,8 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
   }
   std::unique_ptr<web::WebState> web_state =
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
-  SnapshotTabHelper* snapshot_tab_helper =
-      SnapshotTabHelper::FromWebState(web_state.get());
-  MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
-               destination_browser);
+  const SnapshotID snapshot_identifier(web_state->GetUniqueIdentifier());
+  MoveSnapshot(snapshot_identifier, source_browser, destination_browser);
 
   // TODO(crbug.com/40203375): Remove this workaround when it will no longer be
   // required to have an active WebState in the WebStateList.

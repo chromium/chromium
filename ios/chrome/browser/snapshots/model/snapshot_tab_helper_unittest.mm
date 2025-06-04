@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -114,8 +115,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   ~SnapshotTabHelperTest() override { [snapshot_storage_ shutdown]; }
 
   void SetCachedSnapshot(UIImage* image) {
-    SnapshotID snapshot_id =
-        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotID();
+    const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
     [snapshot_storage_ setImage:image withSnapshotID:snapshot_id];
   }
 
@@ -124,8 +124,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    SnapshotID snapshot_id =
-        SnapshotTabHelper::FromWebState(&web_state_)->GetSnapshotID();
+    const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
     [snapshot_storage_ retrieveImageForSnapshotID:snapshot_id
                                          callback:^(UIImage* cached_snapshot) {
                                            snapshot = cached_snapshot;
@@ -390,8 +389,7 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   auto web_state = std::make_unique<web::FakeWebState>();
 
   SnapshotTabHelper::CreateForWebState(web_state.get());
-  SnapshotID snapshot_id =
-      SnapshotTabHelper::FromWebState(web_state.get())->GetSnapshotID();
+  const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());
   [(SnapshotStorageWrapper*)[partialMock reject]
       removeImageWithSnapshotID:snapshot_id];
 
