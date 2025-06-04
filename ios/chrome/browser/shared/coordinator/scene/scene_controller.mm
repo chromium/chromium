@@ -2041,21 +2041,8 @@ using UserFeedbackDataCallback =
             (SigninCoordinatorCompletionCallback)completion
                              baseViewController:
                                  (UIViewController*)baseViewController
-                           skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
                                     accessPoint:(signin_metrics::AccessPoint)
                                                     accessPoint {
-  // Calling this method when there is a signinCoordinator alive is incorrect
-  // as there should not be 2 signinCoordinators alive at the same time (note
-  // that allocating the second one will dealloc the first and this crashes in
-  // various ways).
-  if (skipIfUINotAvailable && (baseViewController.presentedViewController ||
-                               ![self isTabAvailableToPresentViewController])) {
-    // Make sure the UI is available to present the sign-in view.
-    if (completion) {
-      completion(SigninCoordinatorUINotAvailable, nil);
-    }
-    return NO;
-  }
   if (self.signinCoordinator) {
     // As of M121, the CHECK bellow is known to fire in various cases. The goal
     // of the histograms below is to detect the number of incorrect cases and
@@ -2093,7 +2080,6 @@ using UserFeedbackDataCallback =
   if (![self
           canPresentSigninCoordinatorOrCompletion:command.completion
                                baseViewController:baseViewController
-                             skipIfUINotAvailable:command.skipIfUINotAvailable
                                       accessPoint:command.accessPoint]) {
     return;
   }

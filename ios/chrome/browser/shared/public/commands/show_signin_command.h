@@ -110,11 +110,6 @@ enum class AuthenticationOperation {
 // `completion`.
 - (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion;
 
-// If YES, the sign-in command will not be presented and ignored if there is
-// any dialog already presented on the NTP.
-// Default value: NO.
-@property(nonatomic, assign) BOOL skipIfUINotAvailable;
-
 // Whether the history opt in sync should always be shown when the user hasn't
 // approved it before. Default: YES
 @property(nonatomic, assign) BOOL optionalHistorySync;
