@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom-forward.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"

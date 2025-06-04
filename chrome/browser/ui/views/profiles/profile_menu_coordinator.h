@@ -10,6 +10,10 @@
 
 class ProfileMenuViewBase;
 
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+
 // Handles the lifetime and showing/hidden state of the profile menu bubble.
 // Owned by the associated browser.
 class ProfileMenuCoordinator : public BrowserUserData<ProfileMenuCoordinator> {

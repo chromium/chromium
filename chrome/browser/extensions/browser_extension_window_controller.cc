@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"

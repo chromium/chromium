@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
 #include "ui/views/widget/widget.h"
 #if BUILDFLAG(IS_MAC)

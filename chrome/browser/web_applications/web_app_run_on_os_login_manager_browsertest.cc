@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"

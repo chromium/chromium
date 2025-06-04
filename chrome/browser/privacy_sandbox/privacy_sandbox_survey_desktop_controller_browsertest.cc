@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"

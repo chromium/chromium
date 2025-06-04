@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

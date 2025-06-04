@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/views/tabs",
   "+chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h",
+  "+chrome/common/webui_url_constants.h",
   "+chrome/test",
   "+gmock/gmock.h",
 ]

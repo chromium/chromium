@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"

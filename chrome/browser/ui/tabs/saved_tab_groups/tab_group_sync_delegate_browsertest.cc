@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
