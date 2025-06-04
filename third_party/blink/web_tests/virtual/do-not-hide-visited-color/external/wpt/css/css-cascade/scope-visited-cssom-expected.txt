@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] :link as scoped selector
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :visited as scoped selector
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :not(:link) as scoped selector
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :not(:visited) as scoped selector
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :link as scoping root
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :visited as scoping root
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :not(:visited) as scoping root
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :not(:link) as scoping root
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :link as scoping root, :scope
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :visited as scoping root, :scope
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :not(:visited) as scoping root, :scope
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :not(:link) as scoping root, :scope
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :link as scoping limit
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+[FAIL] :visited as scoping limit
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :not(:link) as scoping limit
+  assert_equals: visited expected "rgb(0, 128, 0)" but got "rgb(255, 255, 255)"
+[FAIL] :not(:visited) as scoping limit
+  assert_equals: visited expected "rgb(255, 255, 255)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.
+

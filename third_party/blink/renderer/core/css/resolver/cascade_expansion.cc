@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -41,11 +42,24 @@ CascadeFilter AddLinkFilter(CascadeFilter filter,
                             const MatchedProperties& matched_properties) {
   switch (matched_properties.data_.link_match_type) {
     case CSSSelector::kMatchVisited:
-      return filter.Add(CSSProperty::kVisited);
+      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
+        // For web-compat reasons, we cannot have e.g. font-size
+        // properties in :visited selectors.
+        return filter.Add(CSSProperty::kValidForVisited);
+      } else {
+        return filter.Add(CSSProperty::kVisited);
+      }
     case CSSSelector::kMatchLink:
       return filter.Add(CSSProperty::kNotVisited);
     case CSSSelector::kMatchAll:
-      return filter;
+      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
+        // We don't have any use for the -internal-visited properties
+        // with this flag on (they should never be read), so filter
+        // them out for performance.
+        return filter.Add(CSSProperty::kNotVisited);
+      } else {
+        return filter;
+      }
     default:
       return filter.Add(CSSProperty::kVisited).Add(CSSProperty::kNotVisited);
   }

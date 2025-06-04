@@ -503,12 +503,18 @@ bool SlowMatchWithNoResultFlags(
     SelectorChecker::SelectorCheckingContext& context,
     const CSSSelector& selector,
     const RuleData& rule_data,
+    EInsideLink inside_link,
     bool suppress_visited,
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
-  context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
-                                                   CSSSelector::kMatchVisited;
+  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
+    // Match :visited only when we're actually inside a :visited link.
+    context.match_visited = inside_link == EInsideLink::kInsideVisitedLink;
+  } else {
+    context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
+                                                     CSSSelector::kMatchVisited;
+  }
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
   DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
@@ -595,7 +601,8 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
 #if DCHECK_IS_ON()
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
-                                        suppress_visited_, result.proximity));
+                                        inside_link_, suppress_visited_,
+                                        result.proximity));
 #endif
     } else if (can_use_easy_selector_matching && rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
@@ -603,9 +610,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
       bool easy_match = EasySelectorChecker::Match(&selector, context.element);
 #if DCHECK_IS_ON()
-      DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
-                                checker, context, selector, rule_data,
-                                suppress_visited_, result.proximity))
+      DCHECK_EQ(easy_match,
+                SlowMatchWithNoResultFlags(checker, context, selector,
+                                           rule_data, inside_link_,
+                                           suppress_visited_, result.proximity))
           << "Mismatch for selector " << selector.SelectorText()
           << " on element " << context.element;
 #endif
@@ -614,9 +622,15 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
     } else {
       context.selector = &selector;
-      context.match_visited =
-          !suppress_visited_ &&
-          rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+      if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
+        // Match :visited only when we're actually inside a :visited link.
+        context.match_visited = inside_link_ == EInsideLink::kInsideVisitedLink;
+      } else {
+        context.match_visited =
+            !suppress_visited_ &&
+            rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+      }
+
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
       if (!match) {
@@ -1149,9 +1163,11 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   // rules may appear to match from ElementRuleCollector's output. This behavior
   // is not correct for Inspector purposes, hence we explicitly filter out
   // rules that don't match the current link state here.
-  if (!(matched_rule.LinkMatchType() &
-        LinkMatchTypeFromInsideLink(inside_link_))) {
-    return;
+  if (!RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
+    if (!(matched_rule.LinkMatchType() &
+          LinkMatchTypeFromInsideLink(inside_link_))) {
+      return;
+    }
   }
 
   CSSRule* css_rule = nullptr;

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Important rules do not override animations on :visited as seen from JS
+  assert_equals: expected "rgb(15, 15, 15)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.
+

@@ -371,6 +371,12 @@ class CSSProperties(object):
         assert not unvisited_property.visited_property, \
             'A property may not have multiple visited properties'
         unvisited_property.visited_property = property_
+        # NOTE: Currently, we note that a property is valid for :visited
+        # iff it has a corresponding -internal-visited-* property
+        # (i.e., some other property is visited_property_for it). Once
+        # those properties go away, we will need to make this flag explicit
+        # on the (unvisited) property instead.
+        unvisited_property.valid_for_visited = True
 
     def set_derived_surrogate_attributes(self, property_):
         if not property_.surrogate_for:

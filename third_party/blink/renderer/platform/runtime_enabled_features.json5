@@ -1230,6 +1230,11 @@
       status: "experimental",
     },
     {
+      // Allows getComputedStyle() and similar to get information about :visited colors.
+      // Only safe if PartitionVisitedLinkDatabaseWithSelfLinks is enabled.
+      name: "CSSDoNotHideVisitedColor",
+    },
+    {
       name: "CSSDynamicRangeLimit",
       status: "stable",
     },

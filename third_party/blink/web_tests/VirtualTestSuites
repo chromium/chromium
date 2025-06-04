@@ -4393,6 +4393,20 @@
       "--enable-features=RemovePurposeHeaderForPrefetch"
     ],
     "expires": "Nov 27, 2025"
+  },
+  {
+    "prefix": "do-not-hide-visited-color",
+    "owners": ["sesse@google.com"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-animations/",
+      "external/wpt/css/css-cascade/",
+      "external/wpt/css/css-color/",
+      "external/wpt/css/css-pseudo/"
+    ],
+    "args": [
+      "--enable-features=CSSDoNotHideVisitedColor"
+    ],
+    "expires": "Jun 3, 2026"
   }
-
 ]

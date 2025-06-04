@@ -1596,6 +1596,23 @@ bool CSSSelector::HasLinkOrVisited() const {
   return false;
 }
 
+bool CSSSelector::HasVisited() const {
+  for (const CSSSelector* current = this; current;
+       current = current->NextSimpleSelector()) {
+    CSSSelector::PseudoType pseudo = current->GetPseudoType();
+    if (pseudo == CSSSelector::kPseudoVisited) {
+      return true;
+    }
+    for (const CSSSelector* sub_selector = current->SelectorListOrParent();
+         sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
+      if (sub_selector->HasVisited()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void CSSSelector::SetNth(int a, int b, CSSSelectorList* sub_selectors) {
   CreateRareData();
   data_.rare_data_->bits_.nth_.a_ = a;
