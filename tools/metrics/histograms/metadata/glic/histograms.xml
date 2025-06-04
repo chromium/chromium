@@ -462,6 +462,26 @@ chromium-metrics-reviews@google.com.
   <summary>Record the current state when the the panel is closed.</summary>
 </histogram>
 
+<histogram name="Glic.PositionOnDisplay.OnClose" enum="DisplayPosition"
+    expires_after="2026-01-15">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Record the position of the glic window on close relative to the current
+    display. The value Unknown is not expected to be recorded but is a backup.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PositionOnDisplay.OnOpen" enum="DisplayPosition"
+    expires_after="2026-01-15">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Record the position of the glic window on open relative to the display glic
+    opens in. The value Unknown is not expected to be recorded but is a backup.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.Attached" enum="Boolean"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/display/display.h"
 
 class Profile;
 
@@ -24,6 +25,23 @@ class GlicEnabling;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+
+// LINT.IfChange(DisplayPosition)
+enum class DisplayPosition {
+  kTopLeft = 0,
+  kCenterLeft = 1,
+  kBottomLeft = 2,
+  kTopCenter = 3,
+  kCenterCenter = 4,
+  kBottomCenter = 5,
+  kTopRight = 6,
+  kCenterRight = 7,
+  kBottomRight = 8,
+  kUnknown = 9,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DisplayPosition)
+
 // LINT.IfChange(Error)
 enum class Error {
   kResponseStartWithoutInput = 0,
@@ -179,7 +197,8 @@ class GlicMetrics {
   // Called when the glic window is open and ready.
   void OnGlicWindowOpenAndReady();
   // Called just after the the glic window has been loaded into the UI.
-  void OnGlicWindowShown();
+  void OnGlicWindowShown(std::optional<display::Display> display,
+                         const gfx::Point& glic_center_point);
   // Called when the glic window is resized.
   void OnGlicWindowResize();
   // Called when the glic window starts being resized by the user.
@@ -187,7 +206,8 @@ class GlicMetrics {
   // Called when the glic window stops being resized by the user.
   void OnWidgetUserResizeEnded();
   // Called when the glic window finishes closing.
-  void OnGlicWindowClose();
+  void OnGlicWindowClose(std::optional<display::Display> display,
+                         const gfx::Point& glic_center_point);
   // Called when glic requests a scroll.
   void OnGlicScrollAttempt();
   // Called when scrolling starts (after glic requests to scroll) or if
@@ -226,6 +246,11 @@ class GlicMetrics {
 
   // Resets the window timing state variables.
   void ResetGlicWindowPresentationTimingState();
+
+  // Returns the area in the display a given center point is.
+  DisplayPosition GetDisplayPositionOfPoint(
+      std::optional<display::Display> display,
+      const gfx::Point& glic_center_point);
 
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;

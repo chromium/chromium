@@ -280,12 +280,16 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   ResetGlicWindowPresentationTimingState();
 }
 
-void GlicMetrics::OnGlicWindowShown() {
+void GlicMetrics::OnGlicWindowShown(std::optional<display::Display> display,
+                                    const gfx::Point& glic_center_point) {
   GlicMetrics::OnGlicWindowSizeTimerFired();
   glic_window_size_timer_.Start(
       FROM_HERE, kLogSizeMetricsDelay,
       base::BindRepeating(&GlicMetrics::OnGlicWindowSizeTimerFired,
                           base::Unretained(this)));
+  base::UmaHistogramEnumeration(
+      "Glic.PositionOnDisplay.OnOpen",
+      GetDisplayPositionOfPoint(display, glic_center_point));
 }
 
 void GlicMetrics::OnGlicWindowResize() {
@@ -312,8 +316,12 @@ void GlicMetrics::OnWidgetUserResizeEnded() {
                                 size_on_user_resize_ended.height());
 }
 
-void GlicMetrics::OnGlicWindowClose() {
+void GlicMetrics::OnGlicWindowClose(std::optional<display::Display> display,
+                                    const gfx::Point& glic_center_point) {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
+  base::UmaHistogramEnumeration(
+      "Glic.PositionOnDisplay.OnClose",
+      GetDisplayPositionOfPoint(display, glic_center_point));
   base::UmaHistogramCounts1000("Glic.Session.ResponseCount",
                                session_responses_);
   if (session_start_time_.is_null()) {
@@ -504,6 +512,41 @@ void GlicMetrics::OnPinningPrefChanged() {
 void GlicMetrics::ResetGlicWindowPresentationTimingState() {
   show_start_time_ = base::TimeTicks();
   starting_mode_ = mojom::WebClientMode::kUnknown;
+}
+
+DisplayPosition GlicMetrics::GetDisplayPositionOfPoint(
+    std::optional<display::Display> display,
+    const gfx::Point& glic_center_point) {
+  if (!display) {
+    return DisplayPosition::kUnknown;
+  }
+  gfx::Rect work_area_bounds = display->work_area();
+  if (!work_area_bounds.Contains(glic_center_point) ||
+      work_area_bounds.IsEmpty()) {
+    return DisplayPosition::kUnknown;
+  }
+  // Adjust glic center point to the origin of the display's work area.
+  gfx::Point glic_work_area_center_point =
+      glic_center_point - work_area_bounds.OffsetFromOrigin();
+  int x_index = std::floor(3 * glic_work_area_center_point.x() /
+                           work_area_bounds.width());
+  int y_index = std::floor(3 * glic_work_area_center_point.y() /
+                           work_area_bounds.height());
+
+  // This is unexpected to happen but just in case.
+  if (x_index < 0 || x_index > 2 || y_index < 0 || y_index > 2) {
+    return DisplayPosition::kUnknown;
+  }
+
+  const std::array<std::array<DisplayPosition, 3>, 3> position_map = {{
+      {DisplayPosition::kTopLeft, DisplayPosition::kCenterLeft,
+       DisplayPosition::kBottomLeft},
+      {DisplayPosition::kTopCenter, DisplayPosition::kCenterCenter,
+       DisplayPosition::kBottomCenter},
+      {DisplayPosition::kTopRight, DisplayPosition::kCenterRight,
+       DisplayPosition::kBottomRight},
+  }};
+  return position_map[x_index][y_index];
 }
 
 void GlicMetrics::OnAttachedToBrowser(AttachChangeReason reason) {
