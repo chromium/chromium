@@ -2017,6 +2017,7 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "use_blink",
+            "tvos_platform",
             "xctest",
         ],
     ),

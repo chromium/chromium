@@ -862,6 +862,11 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "tvos_platform",
+    args = {"target_platform": "tvos"},
+)
+
+gn_args.config(
     name = "is_skylab",
     args = {
         "is_skylab": True,
