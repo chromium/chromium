@@ -229,6 +229,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/country_codes",
     "//components/google/core/common",
     "//components/metrics",

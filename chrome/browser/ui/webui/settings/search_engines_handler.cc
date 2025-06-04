@@ -282,8 +282,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
     // support `image-set`.
     dict.Set("iconPath",
              base::StrCat({"chrome://theme/",
-                           template_url->data().GetBuiltinImageResourceId(),
-                           "@2x"}));
+                           template_url->GetBuiltinImageResourceId(), "@2x"}));
   }
 
   dict.Set("modelIndex", base::checked_cast<int>(index));

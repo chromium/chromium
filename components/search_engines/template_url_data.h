@@ -128,6 +128,8 @@ struct TemplateURLData {
   GURL doodle_url;
 
   // Builtin base resource ID used to construct derived resource IDs.
+  // TODO(crbug.com/421837121): Deprecated, use
+  // `TemplateURL::GetBaseBuiltinResourceId()` and derived getters instead.
   std::string_view base_builtin_resource_id;
 
   // The following post_params are comma-separated lists used to specify the

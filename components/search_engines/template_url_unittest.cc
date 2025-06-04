@@ -21,12 +21,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "build/branding_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/testing_search_terms_data.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +42,10 @@ using PolicyOrigin = TemplateURLData::PolicyOrigin;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace {
+
+const bool kEnableBuiltinSearchProviderAssets =
+    !!BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS);
+
 bool IsLowerCase(const std::u16string& str) {
   return str == base::i18n::ToLower(str);
 }
@@ -3024,6 +3030,48 @@ TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
   data.image_search_branding_label = u"fooimages";
   TemplateURL image_branding_url(data);
   EXPECT_EQ(u"fooimages", image_branding_url.image_search_branding_label());
+}
+
+TEST_F(TemplateURLTest, GetBuiltinImageResourceId_FromPrepopulatedEngine) {
+  std::unique_ptr<TemplateURLData> t_url_data =
+      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::google);
+  TemplateURL t_url(*t_url_data.get());
+
+  std::string expected_resource_id = kEnableBuiltinSearchProviderAssets
+                                         ? "IDR_SEARCH_ENGINE_GOOGLE_IMAGE"
+                                         : "IDR_DEFAULT_FAVICON";
+  EXPECT_EQ(t_url.GetBuiltinImageResourceId(), expected_resource_id);
+}
+
+TEST_F(TemplateURLTest,
+       GetBuiltinImageResourceId_FromPrepopulatedEngineWithoutResources) {
+  // Relies on Baidu not having built-in resources, the test would start failing
+  // if that changes.
+  std::unique_ptr<TemplateURLData> t_url_data =
+      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::baidu);
+  TemplateURL t_url(*t_url_data.get());
+  EXPECT_EQ(t_url.GetBuiltinImageResourceId(), "IDR_DEFAULT_FAVICON");
+}
+
+TEST_F(TemplateURLTest, GetBuiltinImageResourceId_FromAssignedData) {
+  TemplateURLData data;
+  data.prepopulate_id = TemplateURLPrepopulateData::google.id;
+  TemplateURL t_url(data);
+
+  std::string expected_resource_id = kEnableBuiltinSearchProviderAssets
+                                         ? "IDR_SEARCH_ENGINE_GOOGLE_IMAGE"
+                                         : "IDR_DEFAULT_FAVICON";
+  EXPECT_EQ(t_url.GetBuiltinImageResourceId(), expected_resource_id);
+}
+
+TEST_F(TemplateURLTest, GetBuiltinImageResourceId_FromCustomEngine) {
+  TemplateURLData data;
+  data.SetShortName(TemplateURLPrepopulateData::google.name);
+  data.SetKeyword(TemplateURLPrepopulateData::google.keyword);
+  data.SetURL(TemplateURLPrepopulateData::google.search_url);
+  TemplateURL t_url(data);
+
+  EXPECT_EQ(t_url.GetBuiltinImageResourceId(), "IDR_DEFAULT_FAVICON");
 }
 
 struct IsBetterThanEngineTestEngine {
