@@ -267,6 +267,7 @@ source_set("save_card_bottom_sheet_view_controller_unittest") {
   testonly = true
   sources = [ "save_card_bottom_sheet_view_controller_unittest.mm" ]
   deps = [
+    ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_view_controller",
     "//components/strings:components_strings_grit",
     "//ios/chrome/common/ui/confirmation_alert",

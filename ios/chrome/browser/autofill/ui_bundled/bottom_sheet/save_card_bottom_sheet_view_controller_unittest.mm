@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -15,15 +16,32 @@
 class SaveCardBottomSheetViewControllerTest : public PlatformTest {
  public:
   SaveCardBottomSheetViewControllerTest() {
+    dataSource_ =
+        OCMStrictProtocolMock(@protocol(SaveCardBottomSheetDataSource));
     mutator_ = OCMStrictProtocolMock(@protocol(SaveCardBottomSheetMutator));
     view_controller_ = [[SaveCardBottomSheetViewController alloc] init];
+    view_controller_.dataSource = dataSource_;
   }
 
   ~SaveCardBottomSheetViewControllerTest() override {
+    EXPECT_OCMOCK_VERIFY(dataSource_);
     EXPECT_OCMOCK_VERIFY(mutator_);
   }
 
  protected:
+  void ViewSetup() {
+    // Set dataSource_ properties when accessed on `viewDidLoad`.
+    OCMStub([dataSource_ logoType]).andReturn(kGooglePayLogo);
+    OCMStub([dataSource_ logoAccessibilityLabel]).andReturn(@"Google Pay");
+
+    // Presence of primary action string lets view controller create a primary
+    // action button.
+    view_controller_.primaryActionString = @"Save";
+
+    EXPECT_TRUE(view_controller_.view);
+  }
+
+  id<SaveCardBottomSheetDataSource> dataSource_;
   id<SaveCardBottomSheetMutator> mutator_;
   SaveCardBottomSheetViewController* view_controller_;
 };
@@ -41,10 +59,7 @@ TEST_F(SaveCardBottomSheetViewControllerTest, DISABLED_BottomSheetCancelled) {
 }
 
 TEST_F(SaveCardBottomSheetViewControllerTest, ShowLoading) {
-  // Presence of primary action string lets view controller create a primary
-  // action button.
-  view_controller_.primaryActionString = @"Save";
-  EXPECT_TRUE(view_controller_.view);
+  ViewSetup();
   [view_controller_ showLoadingStateWithAccessibilityLabel:@"A11y label"];
   EXPECT_TRUE(view_controller_.isLoading);
   EXPECT_FALSE(view_controller_.isConfirmed);
@@ -53,11 +68,7 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowLoading) {
 }
 
 TEST_F(SaveCardBottomSheetViewControllerTest, ShowConfirmation) {
-  // Presence of primary action string lets view controller create a primary
-  // action button.
-  view_controller_.primaryActionString = @"Save";
-
-  EXPECT_TRUE(view_controller_.view);
+  ViewSetup();
   [view_controller_ showConfirmationState];
   EXPECT_FALSE(view_controller_.isLoading);
   EXPECT_TRUE(view_controller_.isConfirmed);
