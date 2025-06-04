@@ -158,6 +158,14 @@ void TabGroupChangeNotifierImpl::OnInitialized() {
     last_known_tab_groups_ = ConvertToMapOfSharedTabGroup(*original_tab_groups);
   }
 
+  had_shared_tab_groups_on_startup_ = !last_known_tab_groups_.empty();
+  for (const auto& [guid, group] : last_known_tab_groups_) {
+    if (group.local_group_id().has_value()) {
+      had_open_shared_tab_groups_on_startup_ = true;
+      break;
+    }
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -180,6 +188,12 @@ bool TabGroupChangeNotifierImpl::IsInProgressInitialMergeOrDisableSync() {
              tab_groups::SyncBridgeUpdateType::kInitialMerge ||
          sync_bridge_update_type_ ==
              tab_groups::SyncBridgeUpdateType::kDisableSync;
+}
+
+bool TabGroupChangeNotifierImpl::HadSharedTabGroupsLastSession(
+    bool open_shared_tab_groups) {
+  return open_shared_tab_groups ? had_open_shared_tab_groups_on_startup_
+                                : had_shared_tab_groups_on_startup_;
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupAdded(
@@ -207,6 +221,10 @@ void TabGroupChangeNotifierImpl::OnTabGroupAdded(
 
 void TabGroupChangeNotifierImpl::BeforeTabGroupUpdateFromRemote(
     const base::Uuid& sync_group_id) {
+  if (!is_initialized_ || IsInProgressInitialMergeOrDisableSync()) {
+    return;
+  }
+
   auto group_it = last_known_tab_groups_.find(sync_group_id);
   if (group_it == last_known_tab_groups_.end()) {
     return;
@@ -323,6 +341,8 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
 void TabGroupChangeNotifierImpl::OnTabLastSeenTimeChanged(
     const base::Uuid& tab_id,
     tab_groups::TriggerSource source) {
+  // We don't check for IsInProgressInitialMergeOrDisableSync() as last seen
+  // time is received from another bridge.
   if (!is_initialized_) {
     return;
   }
@@ -349,7 +369,7 @@ void TabGroupChangeNotifierImpl::OnSyncBridgeUpdateTypeChanged(
   sync_bridge_update_type_ = sync_bridge_update_type;
 
   if (sync_bridge_update_type_ ==
-      tab_groups::SyncBridgeUpdateType::kDisableSync) {
+      tab_groups::SyncBridgeUpdateType::kCompletedDisableSyncThisSession) {
     for (auto& observer : observers_) {
       observer.OnSyncDisabled();
     }

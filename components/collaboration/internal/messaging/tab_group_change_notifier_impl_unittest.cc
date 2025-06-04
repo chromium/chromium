@@ -291,6 +291,7 @@ TEST_F(TabGroupChangeNotifierImplTest,
   EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(0);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
       tab_groups::SyncBridgeUpdateType::kInitialMerge);
+
   // Add a tab group to the service.
   tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
   EXPECT_CALL(*notifier_observer_, OnTabGroupAdded).Times(0);
@@ -314,13 +315,17 @@ TEST_F(TabGroupChangeNotifierImplTest,
 
   // Sign-out and start disabling sync. Incoming sync updates should be ignored.
   // Remove the first group and ensure the observer is not informed.
-  EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(1);
   tgss_observer_->OnSyncBridgeUpdateTypeChanged(
       tab_groups::SyncBridgeUpdateType::kDisableSync);
 
   EXPECT_CALL(*notifier_observer_, OnTabGroupRemoved).Times(0);
   tgss_observer_->OnTabGroupRemoved(tab_group_1.saved_guid(),
                                     tab_groups::TriggerSource::REMOTE);
+
+  // Finish disabling sync.
+  EXPECT_CALL(*notifier_observer_, OnSyncDisabled).Times(1);
+  tgss_observer_->OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType::kCompletedDisableSyncThisSession);
 }
 
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAvailableOnStartup) {
@@ -413,6 +418,42 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAvailableOnStartup) {
             tab_group_4_received_title.title());
   EXPECT_EQ(tab_group_4_title_and_color_changed.color(),
             tab_group_4_received_color.color());
+}
+
+TEST_F(TabGroupChangeNotifierImplTest,
+       TestHadSharedTabGroupsOnStartup_OpenGroups) {
+  tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
+  tab_group_1.SetLocalGroupId(tab_groups::test::GenerateRandomTabGroupID());
+  InitializeNotifier({tab_group_1}, /*init_tab_groups=*/{});
+
+  EXPECT_TRUE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/false));
+  EXPECT_TRUE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/true));
+}
+
+TEST_F(TabGroupChangeNotifierImplTest,
+       TestHadSharedTabGroupsOnStartup_NoOpenGroups) {
+  tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
+  InitializeNotifier({tab_group_1},
+                     /*init_tab_groups=*/{});
+
+  EXPECT_TRUE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/false));
+  EXPECT_FALSE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/true));
+}
+
+TEST_F(TabGroupChangeNotifierImplTest,
+       TestHadSharedTabGroupsOnStartup_NoGroups) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/{},
+      /*init_tab_groups=*/{});
+
+  EXPECT_FALSE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/false));
+  EXPECT_FALSE(notifier_->HadSharedTabGroupsLastSession(
+      /*open_shared_tab_groups=*/true));
 }
 
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAddedLocally) {
