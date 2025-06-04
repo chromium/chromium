@@ -35,6 +35,10 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     is_hibernating_ = is_hibernating;
   }
   size_t GetMemoryUsage() const override { return 0; }
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
+      override {
+    return GetOrCreateCanvasResourceProviderImpl();
+  }
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override {
     return GetOrCreateCanvasResourceProviderImpl();
   }

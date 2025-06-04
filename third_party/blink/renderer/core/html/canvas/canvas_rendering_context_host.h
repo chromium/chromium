@@ -102,6 +102,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // Partial CanvasResourceHost implementation
   void InitializeForRecording(cc::PaintCanvas*) const final;
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override;
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
+      override;
   void PageVisibilityChanged() override;
 
   bool IsWebGL() const;

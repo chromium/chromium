@@ -52,6 +52,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual size_t GetMemoryUsage() const = 0;
   virtual void PageVisibilityChanged() {}
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
+  virtual CanvasResourceProvider*
+  GetOrCreateCanvasResourceProviderForCanvas2D() = 0;
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
