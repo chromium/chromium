@@ -14,7 +14,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -262,15 +261,12 @@ autofill_private::PayOverTimeIssuerEntry BnplIssuerToPayOverTimeIssuerEntry(
 namespace extensions::autofill_util {
 
 AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm) {
-  const std::vector<const autofill::AutofillProfile*>& profiles =
+  const std::vector<const autofill::AutofillProfile*> profiles =
       adm.GetProfilesForSettings();
-  // TODO(crbug.com/40283168): Replace by `profiles`.
+
   std::vector<std::u16string> labels =
       autofill::AutofillProfile::CreateDifferentiatingLabels(
-          std::vector<
-              raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
-              profiles.begin(), profiles.end()),
-          ExtensionsBrowserClient::Get()->GetApplicationLocale());
+          profiles, ExtensionsBrowserClient::Get()->GetApplicationLocale());
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;

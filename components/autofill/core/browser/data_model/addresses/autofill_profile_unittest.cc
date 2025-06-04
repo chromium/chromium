@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/format_macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,9 +41,8 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 namespace {
 
 std::u16string GetSuggestionLabel(AutofillProfile* profile) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles;
-  profiles.push_back(profile);
-  return AutofillProfile::CreateDifferentiatingLabels(profiles, "en-US")[0];
+  return AutofillProfile::CreateDifferentiatingLabels(
+      base::span_from_ref(profile), "en-US")[0];
 }
 
 void SetupTestProfile(AutofillProfile& profile) {
@@ -54,9 +52,9 @@ void SetupTestProfile(AutofillProfile& profile) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 }
 
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-ToRawPointerVector(const std::vector<std::unique_ptr<AutofillProfile>>& list) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> result;
+std::vector<const AutofillProfile*> ToRawPointerVector(
+    const std::vector<std::unique_ptr<AutofillProfile>>& list) {
+  std::vector<const AutofillProfile*> result;
   for (const auto& item : list) {
     result.push_back(item.get());
   }
@@ -167,7 +165,7 @@ TEST_F(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile7a, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles;
+  std::vector<const AutofillProfile*> profiles;
   profiles.push_back(&profile7);
   profiles.push_back(&profile7a);
   std::vector<std::u16string> labels =

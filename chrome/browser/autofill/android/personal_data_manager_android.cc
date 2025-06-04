@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -672,10 +671,8 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
 
   FieldType excluded_field = include_name_in_label ? UNKNOWN_TYPE : NAME_FULL;
 
-  // TODO(crbug.com/40283168): Replace by `profiles`.
   std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
-      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(
-          profiles.begin(), profiles.end()),
+      profiles,
       address_only ? std::make_optional(suggested_fields) : std::nullopt,
       /*triggering_field_type=*/std::nullopt, {excluded_field},
       minimal_fields_shown, g_browser_process->GetApplicationLocale());

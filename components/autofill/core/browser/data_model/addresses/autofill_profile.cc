@@ -20,7 +20,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -872,8 +871,7 @@ void AutofillProfile::MergeFormGroupTokenQuality(
 
 // static
 std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    base::span<const AutofillProfile* const> profiles,
     const std::string& app_locale) {
   const size_t kMinimalFieldsShown = 2;
   return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
@@ -884,8 +882,7 @@ std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
 
 // static
 std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    base::span<const AutofillProfile* const> profiles,
     const std::optional<FieldTypeSet> suggested_fields,
     std::optional<FieldType> triggering_field_type,
     FieldTypeSet excluded_fields,
@@ -1100,8 +1097,7 @@ bool AutofillProfile::SetInfoWithVerificationStatus(
 
 // static
 void AutofillProfile::CreateInferredLabelsHelper(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        profiles,
+    base::span<const AutofillProfile* const> profiles,
     const std::list<size_t>& indices,
     const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,

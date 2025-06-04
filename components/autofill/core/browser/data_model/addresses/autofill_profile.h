@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -248,8 +247,7 @@ class AutofillProfile : public FormGroup {
   // 4. Phone.
   // 5. Company name.
   static std::vector<std::u16string> CreateDifferentiatingLabels(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles,
+      base::span<const AutofillProfile* const> profiles,
       const std::string& app_locale);
 
   // Creates inferred labels for `profiles`, according to the rules above and
@@ -270,8 +268,7 @@ class AutofillProfile : public FormGroup {
   // TODO(crbug.com/380273791): Possibly make `suggested_fields` non-optional
   // after launch.
   static std::vector<std::u16string> CreateInferredLabels(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles,
+      base::span<const AutofillProfile* const> profiles,
       const std::optional<FieldTypeSet> suggested_fields,
       std::optional<FieldType> triggering_field_type,
       FieldTypeSet excluded_fields,
@@ -371,8 +368,7 @@ class AutofillProfile : public FormGroup {
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
   // possible. The label fields are drawn from |field_types|.
   static void CreateInferredLabelsHelper(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles,
+      base::span<const AutofillProfile* const> profiles,
       const std::list<size_t>& indices,
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,

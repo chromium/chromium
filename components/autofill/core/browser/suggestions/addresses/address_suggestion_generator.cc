@@ -159,12 +159,10 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
-  auto profile_ptrs =
-      base::ToVector(profiles,
-                     [](const AutofillProfile& profile)
-                         -> raw_ptr<const AutofillProfile, VectorExperimental> {
-                       return &profile;
-                     });
+  auto profile_ptrs = base::ToVector(
+      profiles, [](const AutofillProfile& profile) -> const AutofillProfile* {
+        return &profile;
+      });
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
     differentiating_labels = AutofillProfile::CreateInferredLabels(
