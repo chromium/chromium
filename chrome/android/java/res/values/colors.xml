@@ -15,6 +15,7 @@ found in the LICENSE file.
 
     <!-- App menu colors -->
     <color name="update_menu_item_text_color">@color/default_red</color>
+    <macro name="menu_button_dot_primary">@macro/default_icon_color_accent1</macro>
 
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>

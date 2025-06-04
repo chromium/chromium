@@ -44,6 +44,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
@@ -67,6 +68,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
@@ -100,6 +102,7 @@ import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -1448,8 +1451,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateOptionalButton(ButtonData buttonData) {
-            if (hasMultipleDevButtons()) return;
             if (mOptionalButtonCoordinator == null) initializeOptionalButton();
+
+            // See if we should show an indicator if optional button cannot be shown. This check
+            // needs to be invoked _after_ optional button initialization is attempted, in order
+            // to determine its visibility in case it gets hidden due to toolbar width/button count
+            // constraints.
+            if (maybeShowAlternativeUiForOptionalButton(
+                    buttonData.getButtonSpec().getButtonVariant())) {
+                return;
+            }
 
             Tab tab = getCurrentTab();
             if (tab != null && mTrackerSupplier.get() == null) {
@@ -1458,9 +1469,26 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
         }
 
+        private boolean maybeShowAlternativeUiForOptionalButton(
+                @AdaptiveToolbarButtonVariant int buttonVariant) {
+            if (mOptionalButtonCoordinator == null || shouldShowOptionalButton()) return false;
+
+            boolean show = buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
+            mMenuButton.findViewById(R.id.menu_dot).setVisibility(show ? View.VISIBLE : View.GONE);
+            return true;
+        }
+
         private void updateOptionalButtonTint() {
             if (mOptionalButtonCoordinator != null) {
                 mOptionalButtonCoordinator.setIconForegroundColor(mTint);
+                ImageView menuDot = mMenuButton.findViewById(R.id.menu_dot);
+                if (mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
+                    @ColorRes int tint = R.color.default_icon_color_blue_light;
+                    ImageViewCompat.setImageTintList(
+                            menuDot, AppCompatResources.getColorStateList(getContext(), tint));
+                } else if (mIntentDataProvider.getColorProvider().hasCustomToolbarColor()) {
+                    ImageViewCompat.setImageTintList(menuDot, mTint);
+                }
             }
         }
 

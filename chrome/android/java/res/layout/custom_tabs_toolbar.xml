@@ -178,7 +178,18 @@ found in the LICENSE file.
             android:tooltipText="@string/accessibility_toolbar_btn_menu"
             android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
-
+       <ImageView
+           android:id="@+id/menu_dot"
+           style="@style/ToolbarMenuButton"
+           android:src="@drawable/menu_dot"
+           android:importantForAccessibility="no"
+           android:paddingTop="6dp"
+           android:paddingBottom="34dp"
+           android:paddingStart="30dp"
+           android:paddingEnd="10dp"
+           android:layout_gravity="top|end"
+           android:background="@null"
+           android:visibility="gone" />
     </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
     <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tab_menu_button.xml:MenuButton) -->
 </org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar>

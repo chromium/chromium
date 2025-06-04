@@ -409,6 +409,7 @@ chrome_java_resources = [
   "java/res/drawable/material_ic_drive_file_move_24dp.xml",
   "java/res/drawable/material_ic_edit_24dp.xml",
   "java/res/drawable/material_tooltip_background.xml",
+  "java/res/drawable/menu_dot.xml",
   "java/res/drawable/new_tab_animation_rounded_rect.xml",
   "java/res/drawable/notifications_active.xml",
   "java/res/drawable/outline_chevron_right_24dp.xml",
