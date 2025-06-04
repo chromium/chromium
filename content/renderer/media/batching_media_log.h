@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "media/base/media_log.h"
-#include "url/gurl.h"
 
 namespace base {
 class TickClock;

@@ -17,7 +17,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 

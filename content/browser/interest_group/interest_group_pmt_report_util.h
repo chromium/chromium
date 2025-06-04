@@ -12,8 +12,8 @@
 #include "components/cbor/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "url/gurl.h"
 #include "url/origin.h"
+
 namespace content {
 
 // This class is meant to hold all the data necessary for building a request

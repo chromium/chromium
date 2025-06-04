@@ -20,7 +20,6 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {

@@ -9,7 +9,6 @@
 #include "base/gtest_prod_util.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"
-#include "url/gurl.h"
 
 namespace content {
 

@@ -20,7 +20,6 @@
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

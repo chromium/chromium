@@ -39,7 +39,6 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "url/gurl.h"
 
 namespace base {
 class WaitableEvent;

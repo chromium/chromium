@@ -16,7 +16,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
-#include "url/gurl.h"
 
 namespace content {
 
