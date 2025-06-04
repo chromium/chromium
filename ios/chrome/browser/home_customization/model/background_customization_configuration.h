@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/themes/ntp_background_data.h"
+
 class GURL;
 
 /**
@@ -15,19 +17,23 @@ class GURL;
  */
 @interface BackgroundCustomizationConfiguration : NSObject
 
+// Initializes a new instance of the background customization configuration
+// with the provided collection image.
+- (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage;
+
 // A unique identifier for the background configuration.
-@property(nonatomic, copy) NSString* configurationID;
+@property(readonly, nonatomic, copy) NSString* configurationID;
 
 // A pointer to a GURL that points to the low-resolution version (thumbnail)
 // of the background image.
-@property(nonatomic, assign) GURL& thumbnailURL;
+@property(readonly, nonatomic) const GURL& thumbnailURL;
 
 // A pointer to a GURL that points to the high-resolution version of the
 // background image.
-@property(nonatomic, assign) GURL& highResURL;
+@property(readonly, nonatomic) const GURL& highResURL;
 
 // A pointer to a UIColor representing the background's base color.
-@property(nonatomic, strong) UIColor* backgroundColor;
+@property(readonly, nonatomic, strong) UIColor* backgroundColor;
 
 @end
 

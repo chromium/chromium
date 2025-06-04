@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_color_picker_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_photo_picker_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_preset_gallery_picker_mediator.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_library_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_view_controller.h"
@@ -51,12 +53,16 @@
   __weak __typeof(self) weakSelf = self;
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(self.browser->GetProfile());
+  HomeBackgroundImageService* homeBackgroundImageService =
+      HomeBackgroundImageServiceFactory::GetForProfile(
+          self.browser->GetProfile());
 
   _backgroundColorPickerMediator =
       [[HomeCustomizationBackgroundColorPickerMediator alloc] init];
   _backgroundPresetGalleryPickerMediator =
       [[HomeCustomizationBackgroundPresetGalleryPickerMediator alloc]
-          initWithImageFetcherService:imageFetcherService];
+          initWithImageFetcherService:imageFetcherService
+           homeBackgroundImageService:homeBackgroundImageService];
 
   [self
       addItemWithTitle:
@@ -135,7 +141,7 @@
   mainViewController.logoVendorProvider = self;
   mainViewController.mutator = _backgroundPresetGalleryPickerMediator;
   _backgroundPresetGalleryPickerMediator.consumer = mainViewController;
-  [_backgroundPresetGalleryPickerMediator configureBackgroundConfigurations];
+  [_backgroundPresetGalleryPickerMediator loadBackgroundConfigurations];
 
   mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
   UINavigationController* navigationController = [[UINavigationController alloc]

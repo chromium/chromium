@@ -151,6 +151,8 @@ const CGFloat kHeaderInsetSides = 7.5;
   _backgroundCustomizationConfigurationMap =
       backgroundCustomizationConfigurationMap;
   _backgroundCollectionConfigurations = backgroundCollectionConfigurations;
+  [_diffableDataSource applySnapshot:[self dataSnapshot]
+                animatingDifferences:NO];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -223,7 +225,6 @@ const CGFloat kHeaderInsetSides = 7.5;
       BackgroundCollectionConfiguration.collectionName
     ]];
     NSMutableArray* backgroundIds = [NSMutableArray array];
-
     for (BackgroundCustomizationConfiguration* backgroundConfiguration in
              BackgroundCollectionConfiguration.configurations) {
       [backgroundIds addObject:backgroundConfiguration.configurationID];
