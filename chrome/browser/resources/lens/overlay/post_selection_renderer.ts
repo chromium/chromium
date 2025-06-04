@@ -788,7 +788,7 @@ export class PostSelectionRendererElement extends
   }
 
   // Used in HTML template to know if there is currently a selection to render.
-  private hasSelection(): boolean {
+  hasSelection(): boolean {
     return this.width > 0 && this.height > 0;
   }
 

@@ -803,10 +803,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().onSelectionStart();
     if (this.enableBorderGlow) {
       this.getOverlayBorderGlow().handleGestureStart();
-      // TODO(crbug.com/421002691): follow the convention where the layer
-      // should return true if its handling the gesture, and draggingRespondent
-      // should be updated
-      this.$.regionSelectionLayer.handleGestureStart();
+
+      // If there is no post selection, fade the scrim from the region selection
+      // back in.
+      if (!this.$.postSelectionRenderer.hasSelection()) {
+        // TODO(crbug.com/421002691): follow the convention where the layer
+        // should return true if its handling the gesture, and
+        // draggingRespondent should be updated. Currently used to trigger the
+        // fade in of the darkened scrim.
+        this.$.regionSelectionLayer.handleGestureStart();
+      }
     }
 
     if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
@@ -837,8 +843,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       // The dragging responding may not be TEXT in translate mode if
       // there is no selectable text.
       this.setCursorToCrosshair();
-      this.$.postSelectionRenderer.clearSelection();
       this.draggingRespondent = DragFeature.MANUAL_REGION;
+      this.$.postSelectionRenderer.clearSelection();
+
+      // TODO(crbug.com/421002691): follow the convention where the layer
+      // should return true if its handling the gesture, and draggingRespondent
+      // should be updated. Currently used to trigger the fade in of the
+      // darkened scrim.
+      this.$.regionSelectionLayer.handleGestureStart();
       this.$.regionSelectionLayer.handleGestureDrag(this.currentGesture);
     }
   }
@@ -900,8 +912,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private handlePostSelectionUpdated(height: number, width: number) {
     const overlayBorderGlow = this.getOverlayBorderGlow();
-    if (width === 0 && height === 0) {
+    // If there is no selection happening, fade the glow back in.
+    if (width === 0 && height === 0 &&
+        this.draggingRespondent === DragFeature.NONE) {
       overlayBorderGlow.handleClearSelection();
+      this.$.regionSelectionLayer.handlePostSelectionCleared();
       return;
     }
 
