@@ -355,14 +355,6 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      SharedImageUsageSet usage);
-  virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       uint32_t texture_target);
 

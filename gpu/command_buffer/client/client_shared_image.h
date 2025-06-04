@@ -123,8 +123,8 @@ class GPU_EXPORT ClientSharedImage
   gfx::ColorSpace color_space() const { return metadata_.color_space; }
   GrSurfaceOrigin surface_origin() const { return metadata_.surface_origin; }
   SkAlphaType alpha_type() const { return metadata_.alpha_type; }
-  SharedImageUsageSet usage() { return metadata_.usage; }
-  std::optional<gfx::BufferUsage> buffer_usage() { return buffer_usage_; }
+  SharedImageUsageSet usage() const { return metadata_.usage; }
+  std::optional<gfx::BufferUsage> buffer_usage() const { return buffer_usage_; }
   bool is_software() const { return is_software_; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }

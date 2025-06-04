@@ -350,24 +350,6 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage) {
-  AddMailbox(mailbox);
-  proxy_->NotifyMailboxAdded(mailbox, usage);
-
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      SharedImageMetadata(format, size, color_space, surface_origin, alpha_type,
-                          usage),
-      GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
-}
-
-scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
     gpu::SharedImageUsageSet usage,
     uint32_t texture_target) {
   AddMailbox(mailbox);
