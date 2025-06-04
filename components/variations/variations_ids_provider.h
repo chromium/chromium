@@ -284,7 +284,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   std::optional<int> low_entropy_source_value_;
 
   // Whether or not we've initialized the caches.
-  bool variation_ids_cache_initialized_;
+  bool variation_ids_cache_initialized_ = false;
 
   // Keep a cache of variation IDs that are transmitted in headers to Google.
   // This consists of a list of valid IDs, and the actual transmitted header.
