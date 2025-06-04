@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
 
 namespace ash {
 

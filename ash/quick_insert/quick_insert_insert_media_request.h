@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/input_method_observer.h"
-#include "url/gurl.h"
 
 namespace ui {
 class InputMethod;

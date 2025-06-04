@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "components/user_manager/user.h"
-#include "url/gurl.h"
 
 namespace ash::personalization_app {
 

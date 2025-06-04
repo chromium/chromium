@@ -15,7 +15,6 @@
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "url/gurl.h"
 
 namespace gfx {
 class Rect;

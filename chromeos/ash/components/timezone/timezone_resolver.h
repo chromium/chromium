@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
-#include "url/gurl.h"
 
 class PrefRegistrySimple;
 class PrefService;

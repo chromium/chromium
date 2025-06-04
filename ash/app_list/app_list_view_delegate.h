@@ -21,7 +21,6 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace ui {
 class SimpleMenuModel;

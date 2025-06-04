@@ -11,7 +11,6 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "components/account_id/account_id.h"
-#include "url/gurl.h"
 
 namespace ash {
 

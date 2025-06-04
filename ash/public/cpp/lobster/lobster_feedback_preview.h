@@ -11,7 +11,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "url/gurl.h"
 
 namespace ash {
 

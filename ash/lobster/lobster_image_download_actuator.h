@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ui/base/ime/text_input_client.h"
-#include "url/gurl.h"
 
 namespace ash {
 

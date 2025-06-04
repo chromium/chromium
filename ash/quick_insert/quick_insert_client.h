@@ -20,7 +20,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/ime/text_input_client.h"
-#include "url/gurl.h"
 
 class SkBitmap;
 
