@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -404,6 +406,7 @@ void LinkToTextMenuObserver::RemoveHighlights() {
               annotation_agent_container.BindNewPipeAndPassReceiver());
       annotation_agent_container->RemoveAgentsOfType(
           blink::mojom::AnnotationType::kGlic);
+      base::RecordAction(base::UserMetricsAction("GlicRemoveHighlight"));
       return;
     }
     case blink::mojom::AnnotationType::kTextFinder:

@@ -11,6 +11,7 @@
 #include "base/state_transitions.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
@@ -65,6 +66,8 @@ void GlicAnnotationManager::ScrollTo(
         mojom::ScrollToErrorReason::kNewerScrollToCall);
   }
   annotation_task_.reset();
+
+  service_->metrics()->OnGlicScrollAttempt();
 
   mojom::WebClientHandler::ScrollToCallback wrapped_callback =
       base::BindOnce(&RunScrollToCallback, std::move(callback));
@@ -323,6 +326,17 @@ void GlicAnnotationManager::AnnotationTask::SetState(State new_state) {
            {State::kInactive, {}}}));
   CHECK_STATE_TRANSITION(allowed_transitions, old_state, new_state);
   state_ = new_state;
+
+  switch (new_state) {
+    case State::kActive:
+    case State::kFailed:
+      annotation_manager_->service_->metrics()->OnGlicScrollComplete(
+          new_state == State::kActive);
+      break;
+    case State::kRunning:
+    case State::kInactive:
+      break;
+  }
 }
 
 void GlicAnnotationManager::AnnotationTask::RemoteDisconnected() {

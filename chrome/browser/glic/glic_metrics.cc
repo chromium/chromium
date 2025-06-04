@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -343,9 +345,46 @@ void GlicMetrics::OnGlicWindowClose() {
                               attach_change_count_);
   attach_change_count_ = 0;
 
+  if (base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
+    base::UmaHistogramCounts100("Glic.ScrollTo.SessionCount",
+                                scroll_attempt_count_);
+    scroll_attempt_count_ = 0;
+  }
+
   glic_window_size_timer_.Stop();
   profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
                                 base::Time::Now());
+}
+
+void GlicMetrics::OnGlicScrollAttempt() {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  ++scroll_attempt_count_;
+  if (!input_submitted_time_.is_null()) {
+    scroll_input_submitted_time_ = input_submitted_time_;
+    scroll_input_mode_ = input_mode_;
+  }
+}
+
+void GlicMetrics::OnGlicScrollComplete(bool success) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  if (success && !scroll_input_submitted_time_.is_null()) {
+    base::TimeDelta time_to_scroll =
+        base::TimeTicks::Now() - scroll_input_submitted_time_;
+    switch (scroll_input_mode_) {
+      case mojom::WebClientMode::kAudio:
+        base::UmaHistogramMediumTimes(
+            "Glic.ScrollTo.UserPromptToScrollTime.Audio", time_to_scroll);
+        break;
+      case mojom::WebClientMode::kText:
+        base::UmaHistogramMediumTimes(
+            "Glic.ScrollTo.UserPromptToScrollTime.Text", time_to_scroll);
+        break;
+      case mojom::WebClientMode::kUnknown:
+        break;
+    }
+  }
+  scroll_input_submitted_time_ = base::TimeTicks();
+  scroll_input_mode_ = mojom::WebClientMode::kUnknown;
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
