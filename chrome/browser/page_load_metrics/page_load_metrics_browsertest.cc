@@ -3590,26 +3590,6 @@ class PageLoadMetricsPreviewBrowserTest : public PageLoadMetricsBrowserTest {
   std::unique_ptr<test::PreviewTestHelper> helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsPreviewBrowserTest,
-                       PreviewPrimaryPageType) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
-
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadTrackerPageType,
-      page_load_metrics::internal::PageLoadTrackerPageType::kPrimaryPage, 1);
-
-  helper_->InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
-  helper_->WaitUntilLoadFinished();
-
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadTrackerPageType,
-      page_load_metrics::internal::PageLoadTrackerPageType::kPreviewPrimaryPage,
-      1);
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 class PageLoadMetricsBrowserTestTerminatedPage

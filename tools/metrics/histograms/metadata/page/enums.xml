@@ -358,12 +358,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h:PageLoadTimingStatus) -->
 
-<enum name="PageLoadTrackerPageType">
-  <int value="0" label="Primary Page"/>
-  <int value="1" label="Prerender Page"/>
-  <int value="2" label="FencedFrames Page"/>
-</enum>
-
 <enum name="PageVisitType">
   <int value="0"
       label="Independent Visit; the page is opened from UI or in new tab, and
