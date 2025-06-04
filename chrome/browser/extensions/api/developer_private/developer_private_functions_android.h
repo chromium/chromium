@@ -14,21 +14,12 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateReloadFunction,
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,
                    "developerPrivate.loadUnpacked",
                    DEVELOPERPRIVATE_LOADUNPACKED);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateInstallDroppedFileFunction,
-                   "developerPrivate.installDroppedFile",
-                   DEVELOPERPRIVATE_INSTALLDROPPEDFILE);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateNotifyDragInstallInProgressFunction,
-                   "developerPrivate.notifyDragInstallInProgress",
-                   DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
                    "developerPrivate.packDirectory",
                    DEVELOPERPRIVATE_PACKDIRECTORY);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRepairExtensionFunction,
-                   "developerPrivate.repairExtension",
-                   DEVELOPERPRIVATE_REPAIREXTENSION);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowOptionsFunction,
                    "developerPrivate.showOptions",
                    DEVELOPERPRIVATE_SHOWOPTIONS);
