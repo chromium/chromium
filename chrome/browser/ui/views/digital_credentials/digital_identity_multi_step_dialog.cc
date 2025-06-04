@@ -141,12 +141,13 @@ void DigitalIdentityMultiStepDialogDelegate::Update(
 
   SetButtons(button_mask);
 
-  auto body_label = std::make_unique<views::Label>(body_text);
-  body_label->SetMultiLine(true);
-  body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
   contents_view_->RemoveAllChildViews();
-  contents_view_->AddChildView(std::move(body_label));
+  if (!body_text.empty()) {
+    auto body_label = std::make_unique<views::Label>(body_text);
+    body_label->SetMultiLine(true);
+    body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    contents_view_->AddChildView(std::move(body_label));
+  }
   if (custom_body_field) {
     contents_view_->AddChildView(std::move(custom_body_field));
   }

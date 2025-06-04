@@ -59,8 +59,9 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnCancel,
                      weak_factory_.GetWeakPtr()),
-      dialog_title, dialog_body,
-      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
+      /*dialog_title=*/u"", /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::CreateHeaderView(
+          std::move(dialog_title), std::move(dialog_body),
           std::move(illustration)));
 }
 

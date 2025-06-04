@@ -306,9 +306,9 @@ void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
-      std::move(title_text), /*dialog_body=*/u"",
-      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
-          std::move(illustration)));
+      /*dialog_title=*/u"", /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::CreateHeaderView(
+          std::move(title_text), /*body_text=*/u"", std::move(illustration)));
 }
 
 void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
@@ -327,9 +327,9 @@ void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
-      std::move(title_text), /*dialog_body=*/u"",
-      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
-          std::move(illustration)));
+      /*dialog_title=*/u"", /*dialog_body=*/u"",
+      DigitalIdentityMultiStepDialog::CreateHeaderView(
+          std::move(title_text), /*body_text=*/u"", std::move(illustration)));
 }
 
 void DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete() {
