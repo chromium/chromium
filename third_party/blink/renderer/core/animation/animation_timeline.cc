@@ -214,16 +214,10 @@ void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
   }
 }
 
-void AnimationTimeline::AddAnimationForTriggering(Animation* animation) {
-  AnimationTrigger* trigger = animation->GetTriggerInternal();
-  DCHECK(IsProgressBased() && trigger &&
-         trigger->GetTimelineInternal() == this);
-  animations_for_triggering_.insert(animation);
+void AnimationTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
+  DCHECK(trigger && trigger->GetTimelineInternal() == this);
+  triggers_.insert(trigger);
   update_triggers_ = true;
-}
-
-void AnimationTimeline::RemoveAnimationForTriggering(Animation* animation) {
-  animations_for_triggering_.erase(animation);
 }
 
 void AnimationTimeline::ServiceAnimationTriggers() {
@@ -235,10 +229,8 @@ void AnimationTimeline::ServiceAnimationTriggers() {
   }
 
   if (update_triggers_) {
-    for (Animation* animation : animations_for_triggering_) {
-      if (AnimationTrigger* trigger = animation->GetTriggerInternal()) {
-        trigger->ActionAnimation(animation);
-      }
+    for (AnimationTrigger* trigger : triggers_) {
+      trigger->Update();
     }
   }
 
@@ -249,7 +241,7 @@ void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);
   visitor->Trace(animations_);
-  visitor->Trace(animations_for_triggering_);
+  visitor->Trace(triggers_);
   ScriptWrappable::Trace(visitor);
 }
 

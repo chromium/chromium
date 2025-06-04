@@ -228,8 +228,7 @@ void DocumentAnimations::GetAnimationsTargetingTreeScope(
       if (animation->ReplaceStateRemoved())
         continue;
       if (!animation->effect() || (!animation->effect()->IsCurrent() &&
-                                   !animation->effect()->IsInEffect() &&
-                                   !animation->CanBeTriggered())) {
+                                   !animation->effect()->IsInEffect())) {
         continue;
       }
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());

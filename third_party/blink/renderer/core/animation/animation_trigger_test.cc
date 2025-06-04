@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -71,8 +72,9 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   ElementAnimations* animations = target->GetElementAnimations();
-  Animation* animation = (*animations->Animations().begin()).key;
-  AnimationTrigger* trigger = animation->trigger();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  AnimationTrigger* trigger = animation->GetTrigger();
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -108,8 +110,9 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   // cover 10% cover 90% auto auto.
   trigger->setRangeBoundariesForTest(cover_10, cover_90, auto_offset,
                                      auto_offset);
-  TriggerBoundaries boundaries =
-      trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  double dummy_offset = 0;
+  TriggerBoundaries boundaries = trigger->ComputeTriggerBoundaries(
+      dummy_offset, timeline_source, timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, cover_10_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, cover_90_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
@@ -118,7 +121,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   // contain 20% contain 80% auto normal.
   trigger->setRangeBoundariesForTest(contain_20, contain_80, auto_offset,
                                      normal);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, contain_20_px);
@@ -126,7 +130,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   // cover 10% cover 90% normal auto.
   trigger->setRangeBoundariesForTest(cover_10, cover_90, normal, auto_offset);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, cover_10_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, cover_90_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_0_px);
@@ -134,7 +139,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   // contain 20% contain 80% normal normal.
   trigger->setRangeBoundariesForTest(contain_20, contain_80, normal, normal);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_0_px);
@@ -142,7 +148,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   // contain 20% contain 80% cover 10% normal.
   trigger->setRangeBoundariesForTest(contain_20, contain_80, cover_10, normal);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
@@ -151,7 +158,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   // contain 20% contain 80% cover 10% auto.
   trigger->setRangeBoundariesForTest(contain_20, contain_80, cover_10,
                                      auto_offset);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
@@ -160,7 +168,8 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   // contain 20% contain 80% cover 10% cover 90%.
   trigger->setRangeBoundariesForTest(contain_20, contain_80, cover_10,
                                      cover_90);
-  boundaries = trigger->ComputeTriggerBoundaries(timeline_source, timeline);
+  boundaries = trigger->ComputeTriggerBoundaries(dummy_offset, timeline_source,
+                                                 timeline);
   ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
   ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);

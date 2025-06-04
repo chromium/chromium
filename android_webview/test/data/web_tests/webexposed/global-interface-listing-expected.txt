@@ -72,7 +72,6 @@ interface Animation : EventTarget
     getter replaceState
     getter startTime
     getter timeline
-    getter trigger
     method cancel
     method commitStyles
     method constructor
@@ -93,7 +92,6 @@ interface Animation : EventTarget
     setter rangeStart
     setter startTime
     setter timeline
-    setter trigger
 interface AnimationEffect
     attribute @@toStringTag
     method constructor
@@ -125,7 +123,9 @@ interface AnimationTrigger
     getter rangeStart
     getter timeline
     getter type
+    method addAnimation
     method constructor
+    method removeAnimation
 interface AsyncDisposableStack
     attribute @@toStringTag
     getter disposed

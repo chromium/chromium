@@ -66,20 +66,6 @@ class TreeScope;
 class TimelineRange;
 class AnimationTrigger;
 
-// The state of the animation's trigger.
-// https://drafts.csswg.org/web-animations-2/#trigger-state
-enum class AnimationTriggerState {
-  // The initial state of the trigger. The trigger has not yet taken any action
-  // on the animation.
-  kIdle,
-  // The last action taken by the trigger on the animation was due to entering
-  // the trigger range.
-  kPrimary,
-  // The last action taken by the trigger on the animation was due to exiting
-  // the exit range.
-  kInverse,
-};
-
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,
@@ -453,54 +439,34 @@ class CORE_EXPORT Animation : public EventTarget,
   static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
   static RangeBoundary* ToRangeBoundary(TimelineOffsetOrAuto offset_or_auto);
 
-  AnimationTrigger* trigger() {
-    FlushPendingUpdates();
-    return GetTriggerInternal();
-  }
-  AnimationTrigger* GetTriggerInternal() const { return trigger_; }
-  virtual void setTrigger(AnimationTrigger* trigger);
-
   struct AnimationTriggerData {
-    AnimationTriggerState state = blink::AnimationTriggerState::kIdle;
-
     // The most recent `animation-play-state` value for |animation_|. This will
     // be std::nullopt for non-CSSAnimations. When this animation's trigger
     // actions this animation, it will factor in this play state, leaving the
     // animation paused if necessary.
     std::optional<EAnimPlayState> css_play_state;
-
-    // Whether there has been a change to |css_play_state_| value since the
-    // last time this animation's trigger had an opportunity to action it.
-    bool play_state_update_pending = false;
   };
-  AnimationTriggerState GetTriggerState() const { return trigger_data_.state; }
-  void SetTriggerState(AnimationTriggerState state) {
-    trigger_data_.state = state;
-  }
+
   std::optional<EAnimPlayState> GetTriggerActionPlayState() const {
     return trigger_data_.css_play_state;
   }
   void SetTriggerActionPlayState(std::optional<EAnimPlayState> play_state) {
-    SetPendingTriggerPlayStateUpdate(play_state !=
-                                     trigger_data_.css_play_state);
     trigger_data_.css_play_state = play_state;
   }
-  bool PendingTriggerPlayStateUpdate() const {
-    return trigger_data_.play_state_update_pending;
-  }
-  void SetPendingTriggerPlayStateUpdate(bool pending) {
-    trigger_data_.play_state_update_pending = pending;
-  }
-  // Indicates if an animation is scroll-triggered and could still be played by
-  // its trigger. These animations are to appear in list for getAnimations
-  // calls, and must not be garbage-collected.
-  bool CanBeTriggered() const;
 
   void SetPausedForTrigger(bool paused_for_trigger) {
     paused_for_trigger_ = paused_for_trigger;
   }
   bool PausedForTrigger() const { return paused_for_trigger_; }
   void ResetPlayback();
+
+  // Plays an animation. When auto_rewind is enabled, the current time can be
+  // adjusted to accommodate reversal of an animation or snapping to an
+  // endpoint.
+  enum class AutoRewind { kDisabled, kEnabled };
+  void PlayInternal(AutoRewind auto_rewind, ExceptionState& exception_state);
+  void PauseInternal(ExceptionState& exception_state);
+  void ReverseInternal(ExceptionState& exception_state);
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -571,12 +537,6 @@ class CORE_EXPORT Animation : public EventTarget,
   void UpdateFinishedState(UpdateType update_context,
                            NotificationType notification_type);
   void QueueFinishedEvent();
-
-  // Plays an animation. When auto_rewind is enabled, the current time can be
-  // adjusted to accommodate reversal of an animation or snapping to an
-  // endpoint.
-  enum class AutoRewind { kDisabled, kEnabled };
-  void PlayInternal(AutoRewind auto_rewind, ExceptionState& exception_state);
 
   void ResetPendingTasks();
   std::optional<AnimationTimeDelta> TimelineTime() const;

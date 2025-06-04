@@ -17,4 +17,6 @@ enum AnimationTriggerType { "once", "repeat", "alternate", "state" };
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
+  [RaisesException] void addAnimation(Animation animation);
+  void removeAnimation(Animation animation);
 };

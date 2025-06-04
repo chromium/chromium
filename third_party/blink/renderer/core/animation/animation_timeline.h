@@ -19,6 +19,7 @@
 namespace blink {
 
 class Document;
+class AnimationTrigger;
 
 enum class TimelinePhase { kInactive, kActive };
 
@@ -151,8 +152,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     return std::nullopt;
   }
 
-  void AddAnimationForTriggering(Animation* animation);
-  void RemoveAnimationForTriggering(Animation* animation);
+  void AddAnimationTrigger(AnimationTrigger* trigger);
   void ServiceAnimationTriggers();
 
  protected:
@@ -173,9 +173,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   HeapHashSet<Member<Animation>> animations_needing_update_;
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>> animations_;
-  // Animations whose triggers take action on them based on the state of this
-  // timeline.
-  HeapHashSet<WeakMember<Animation>> animations_for_triggering_;
+  // Triggers which depend on this timeline.
+  HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
 
   scoped_refptr<cc::AnimationTimeline> compositor_timeline_;
 

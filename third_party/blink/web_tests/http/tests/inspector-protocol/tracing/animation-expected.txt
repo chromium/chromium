@@ -9,7 +9,7 @@ Object: {
 			name: 
 			nodeId: number
 			nodeName: string
-			state: running
+			state: paused
 		}
 	}
 	cat: string

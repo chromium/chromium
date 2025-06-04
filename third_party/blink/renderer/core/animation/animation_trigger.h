@@ -17,13 +17,27 @@ namespace blink {
 
 class ExecutionContext;
 
+// The state of the animation's trigger.
+// https://drafts.csswg.org/web-animations-2/#trigger-state
+enum class AnimationTriggerState {
+  // The initial state of the trigger. The trigger has not yet taken any action
+  // on the animation.
+  kIdle,
+  // The last action taken by the trigger on the animation was due to entering
+  // the trigger range.
+  kPrimary,
+  // The last action taken by the trigger on the animation was due to exiting
+  // the exit range.
+  kInverse,
+};
+
 class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
   using Type = V8AnimationTriggerType;
-  using TriggerState = blink::AnimationTriggerState;
+  using State = AnimationTriggerState;
 
   AnimationTrigger(AnimationTimeline* timeline,
                    Type type,
@@ -57,20 +71,19 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
     exit_range_end_ = exit_end;
   }
 
+  State GetState() { return state_; }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_);
     visitor->Trace(range_start_);
     visitor->Trace(range_end_);
     visitor->Trace(exit_range_start_);
     visitor->Trace(exit_range_end_);
+    visitor->Trace(animations_);
     ScriptWrappable::Trace(visitor);
   }
 
   using TimelineState = ScrollSnapshotTimeline::TimelineState;
-  void ActionAnimation(Animation* animation);
-  bool ActionAnimationInternal(Animation* animation,
-                               bool within_trigger_range,
-                               bool within_exit_range);
 
   static Type ToV8TriggerType(EAnimationTriggerType type) {
     switch (type) {
@@ -98,19 +111,29 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
     double exit_start;
     // The end offset of the exit range.
     double exit_end;
+    double current_offset;
   };
 
-  TriggerBoundaries ComputeTriggerBoundaries(Element& timeline_source,
+  enum class UpdateType { kNone, kPlay, kPause, kReverse, kUnpause, kReset };
+
+  TriggerBoundaries ComputeTriggerBoundaries(double current_offset,
+                                             Element& timeline_source,
                                              const ScrollTimeline& timeline);
+  std::optional<AnimationTrigger::TriggerBoundaries>
+  CalculateTriggerBoundaries();
+  std::optional<AnimationTrigger::State> ComputeState();
+
+  void addAnimation(Animation* animation, ExceptionState& exception_state);
+  void removeAnimation(Animation* animation);
+
+  void Update();
+  void UpdateInternal(State old_state, State new_state);
+  void UpdateAnimations(UpdateType update_type);
 
  private:
-  // It's possible we're in a range that would normally action
-  // the animation but, e.g. because `animation-play-state` was 'paused'
-  // when we initially entered the range (and updated |state_|) and has now
-  // changed to 'running', we should unpause (and vice versa for a change
-  // from 'running' to 'paused'). This function ensures that we pause or unpause
-  // the the animation in these cases.
-  void ProcessPendingPlayStateUpdate(Animation* animation);
+  // Handles playing an animation which is added to a trigger which has already
+  // tripped.
+  void HandlePostTripAdd(Animation* animation, ExceptionState& exception_state);
 
   Member<AnimationTimeline> timeline_;
   Type type_;
@@ -118,6 +141,9 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   Member<const RangeBoundary> range_end_;
   Member<const RangeBoundary> exit_range_start_;
   Member<const RangeBoundary> exit_range_end_;
+
+  State state_;
+  HeapHashSet<WeakMember<Animation>> animations_;
 };
 
 }  // namespace blink

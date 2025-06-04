@@ -163,7 +163,7 @@ HeapVector<Member<Animation>> Animatable::GetAnimationsInternal(
       // DocumentAnimations::getAnimations should only give us animations that
       // are either current or in effect.
       DCHECK(animation->effect()->IsCurrent() ||
-             animation->effect()->IsInEffect() || animation->CanBeTriggered());
+             animation->effect()->IsInEffect());
       animations.push_back(animation);
     }
   }

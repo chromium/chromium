@@ -124,32 +124,10 @@ CSSAnimation::PlayStateTransitionScope::~PlayStateTransitionScope() {
     animation_.ignore_css_play_state_ = true;
 }
 
-void CSSAnimation::setTrigger(AnimationTrigger* trigger) {
-  Animation::setTrigger(trigger);
-  ignore_css_trigger_ = true;
-}
-
-CSSAnimation::ScopedResetIgnoreCSSProperties::ScopedResetIgnoreCSSProperties(
-    CSSAnimation* animation) {
-  if (animation) {
-    ignore_css_play_state_ = animation->GetIgnoreCSSPlayState();
-    ignore_css_timeline_ = animation->GetIgnoreCSSTimeline();
-    ignore_css_range_start_ = animation->GetIgnoreCSSRangeStart();
-    ignore_css_range_end_ = animation->GetIgnoreCSSRangeEnd();
-    ignore_css_trigger_ = animation->GetIgnoreCSSTrigger();
-    animation_ = animation;
-  }
-}
-
-CSSAnimation::ScopedResetIgnoreCSSProperties::
-    ~ScopedResetIgnoreCSSProperties() {
-  if (animation_) {
-    animation_->SetIgnoreCSSPlayState(ignore_css_play_state_);
-    animation_->SetIgnoreCSSTimeline(ignore_css_timeline_);
-    animation_->SetIgnoreCSSRangeStart(ignore_css_range_start_);
-    animation_->SetIgnoreCSSRangeEnd(ignore_css_range_end_);
-    animation_->SetIgnoreCSSTrigger(ignore_css_trigger_);
-  }
+void CSSAnimation::Trace(blink::Visitor* visitor) const {
+  Animation::Trace(visitor);
+  visitor->Trace(owning_element_);
+  visitor->Trace(css_trigger_);
 }
 
 }  // namespace blink

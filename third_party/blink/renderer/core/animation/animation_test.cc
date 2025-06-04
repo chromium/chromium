@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -2211,116 +2212,6 @@ TEST_P(AnimationAnimationTestNoCompositing,
   EXPECT_EQ("idle", animation->playState());
   EXPECT_FALSE(animation->Update(kTimingUpdateForAnimationFrame));
   EXPECT_FALSE(animation->HasPendingActivity());
-}
-
-TEST_P(AnimationAnimationTestNoCompositing, PendingActivityWithOnceTrigger) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes myAnim {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(5); }
-      }
-      .subject {
-        height: 50px;
-        width: 50px;
-        animation: myAnim linear 0.5s none;
-        animation-trigger: scroll() once 50px 100px;
-      }
-     .scroller {
-        overflow-y: scroll;
-        height: 500px;
-        width: 500px;
-        border: solid 1px;
-        position: relative;
-      }
-      #space {
-        width: 50px;
-        height: 600px;
-      }
-    </style>
-    <div id="scroller" class="scroller">
-      <div id="space"></div>
-      <div id="target" class="subject"></div>
-      <div id="space"></div>
-    </div>
-  )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  ElementAnimations* animations = target->GetElementAnimations();
-  animation = (*animations->Animations().begin()).key;
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kIdle);
-  EXPECT_TRUE(animation->HasPendingActivity());
-
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
-
-  scroller->scrollTo(0, 75);
-  UpdateAllLifecyclePhasesForTest();
-
-  animation->trigger()->ActionAnimation(animation);
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kPrimary);
-  // Finish the animation.
-  animation->finish();
-
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kPrimary);
-  EXPECT_FALSE(animation->HasPendingActivity());
-}
-
-TEST_P(AnimationAnimationTestNoCompositing, PendingActivityWithRepeatTrigger) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      @keyframes myAnim {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(5); }
-      }
-      .subject {
-        height: 50px;
-        width: 50px;
-        animation: myAnim linear 0.5s none;
-        animation-trigger: scroll() repeat 50px 100px;
-      }
-     .scroller {
-        overflow-y: scroll;
-        height: 500px;
-        width: 500px;
-        border: solid 1px;
-        position: relative;
-      }
-      #space {
-        width: 50px;
-        height: 600px;
-      }
-    </style>
-    <div id="scroller" class="scroller">
-      <div id="space"></div>
-      <div id="target" class="subject"></div>
-      <div id="space"></div>
-    </div>
-  )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  ElementAnimations* animations = target->GetElementAnimations();
-  animation = (*animations->Animations().begin()).key;
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kIdle);
-  EXPECT_TRUE(animation->HasPendingActivity());
-
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
-
-  scroller->scrollTo(0, 75);
-  UpdateAllLifecyclePhasesForTest();
-
-  animation->trigger()->ActionAnimation(animation);
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kPrimary);
-  // Finish the animation.
-  animation->finish();
-
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(animation->GetTriggerState(), AnimationTriggerState::kPrimary);
-  EXPECT_TRUE(animation->HasPendingActivity());
 }
 
 TEST_P(AnimationAnimationTestCompositing, InvalidExecutionContext) {

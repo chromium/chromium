@@ -64,5 +64,4 @@ enum ReplaceState { "active", "removed", "persisted" };
     [Measure] attribute EventHandler onremove;
     [CallWith=ScriptState] readonly attribute Promise<Animation> finished;
     [CallWith=ScriptState] readonly attribute Promise<Animation> ready;
-    [RuntimeEnabled=AnimationTrigger] attribute AnimationTrigger? trigger;
 };

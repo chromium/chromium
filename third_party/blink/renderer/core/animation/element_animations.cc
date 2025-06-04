@@ -210,12 +210,12 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
 
 bool ElementAnimations::SetCompositedClipPathStatus(
     CompositedPaintStatus status) {
-  if (static_cast<unsigned>(status) != composited_clip_path_status_) {
-    if (status == ElementAnimations::CompositedPaintStatus::kNotComposited ||
-        status == ElementAnimations::CompositedPaintStatus::kNoAnimation) {
-      clip_path_paint_worklet_candidate_ = nullptr;
-    }
+  if (status == ElementAnimations::CompositedPaintStatus::kNotComposited ||
+      status == ElementAnimations::CompositedPaintStatus::kNoAnimation) {
+    clip_path_paint_worklet_candidate_ = nullptr;
+  }
 
+  if (static_cast<unsigned>(status) != composited_clip_path_status_) {
     composited_clip_path_status_ = static_cast<unsigned>(status);
     return true;
   }

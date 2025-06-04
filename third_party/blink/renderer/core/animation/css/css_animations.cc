@@ -227,7 +227,7 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // InertEffect from having visual effects. Ensure this by making
     // sure the animation's InertEffect's local time is unresolved.
     if (!animation ||
-        animation->GetTriggerState() == AnimationTriggerState::kIdle) {
+        animation->GetTrigger()->GetState() == AnimationTriggerState::kIdle) {
       if (!IdleTriggerAllowsVisualEffect(trigger, timing)) {
         return std::nullopt;
       }
@@ -1915,13 +1915,11 @@ void CSSAnimations::CalculateAnimationUpdate(
             ((range_end != existing_animation->RangeEnd()) &&
              !animation->GetIgnoreCSSRangeEnd());
 
-        AnimationTrigger* existing_trigger = animation->GetTriggerInternal();
+        AnimationTrigger* existing_trigger = animation->GetTrigger();
         AnimationTrigger* trigger = nullptr;
         if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
-          trigger = !animation->GetIgnoreCSSTrigger()
-                        ? ComputeTrigger(&animating_element, animation_data, i,
-                                         update, existing_trigger)
-                        : existing_trigger;
+          trigger = ComputeTrigger(&animating_element, animation_data, i,
+                                   update, existing_trigger);
         }
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
@@ -2212,8 +2210,10 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
         running_animations_[paused_index]->animation.Get());
 
     if (animation->Paused()) {
-      animation->Unpause();
-      animation->ResetIgnoreCSSPlayState();
+      if (!animation->PausedForTrigger()) {
+        animation->Unpause();
+        animation->ResetIgnoreCSSPlayState();
+      }
     } else {
       animation->pause();
       animation->ResetIgnoreCSSPlayState();
@@ -2240,9 +2240,14 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       css_animation.ResetIgnoreCSSTimeline();
     }
     css_animation.SetRange(entry.range_start, entry.range_end);
-    if (!css_animation.GetIgnoreCSSTrigger()) {
-      css_animation.setTrigger(entry.trigger);
-      css_animation.ResetIgnoreCSSTrigger();
+    if (css_animation.GetTrigger() != entry.trigger) {
+      if (AnimationTrigger* trigger = css_animation.GetTrigger()) {
+        trigger->removeAnimation(&css_animation);
+      }
+      if (entry.trigger) {
+        entry.trigger->addAnimation(&css_animation, ASSERT_NO_EXCEPTION);
+      }
+      css_animation.SetTrigger(entry.trigger);
     }
     css_animation.SetTriggerActionPlayState(
         entry.play_state_list[entry.index % entry.play_state_list.size()]);
@@ -2278,20 +2283,18 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
         entry.position_index, entry.name, entry.trigger);
     animation->SetTriggerActionPlayState(
         entry.play_state_list[entry.name_index % entry.play_state_list.size()]);
-    // If this animation has a trigger, do not play it automatically, wait for
-    // its trigger to play it.
-    AnimationTrigger* trigger = animation->GetTriggerInternal();
-    // At the moment, only progress-based animation triggers are supported,
-    // so we should only wait for progress-based triggers.
-    bool wait_for_trigger = trigger && trigger->GetTimelineInternal() &&
-                            trigger->GetTimelineInternal()->IsProgressBased();
-    if (!wait_for_trigger) {
+    animation->SetTrigger(entry.trigger);
+    if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+      // If this animation has a trigger, do not play it automatically, wait for
+      // its trigger to play it.
+      entry.trigger->addAnimation(animation, ASSERT_NO_EXCEPTION);
+    } else {
       animation->play();
-      if (inert_animation->Paused()) {
-        animation->pause();
-      }
-      animation->ResetIgnoreCSSPlayState();
     }
+    if (inert_animation->Paused()) {
+      animation->pause();
+    }
+    animation->ResetIgnoreCSSPlayState();
     animation->SetRange(entry.range_start, entry.range_end);
     animation->ResetIgnoreCSSRangeStart();
     animation->ResetIgnoreCSSRangeEnd();

@@ -86,36 +86,15 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void SetIgnoreCSSRangeEnd(bool ignore) { ignore_css_range_end_ = ignore; }
   void ResetIgnoreCSSRangeEnd() { ignore_css_range_end_ = false; }
 
-  void setTrigger(AnimationTrigger* trigger) override;
-  bool GetIgnoreCSSTrigger() { return ignore_css_trigger_; }
-  void SetIgnoreCSSTrigger(bool ignore) { ignore_css_trigger_ = ignore; }
-  void ResetIgnoreCSSTrigger() { ignore_css_trigger_ = false; }
-
-  class ScopedResetIgnoreCSSProperties {
-    STACK_ALLOCATED();
-
-   public:
-    explicit ScopedResetIgnoreCSSProperties(CSSAnimation* animation);
-    ~ScopedResetIgnoreCSSProperties();
-
-   private:
-    bool ignore_css_play_state_ = false;
-    bool ignore_css_timeline_ = false;
-    bool ignore_css_range_start_ = false;
-    bool ignore_css_range_end_ = false;
-    bool ignore_css_trigger_ = false;
-    CSSAnimation* animation_ = nullptr;
-  };
-
-  void Trace(blink::Visitor* visitor) const override {
-    Animation::Trace(visitor);
-    visitor->Trace(owning_element_);
-  }
+  void Trace(blink::Visitor* visitor) const override;
 
   // Force pending animation properties to be applied, as these may alter the
   // animation. This step is required before any web animation API calls that
   // depends on computed values.
   void FlushPendingUpdates() const override { FlushStyles(); }
+
+  AnimationTrigger* GetTrigger() const { return css_trigger_.Get(); }
+  void SetTrigger(AnimationTrigger* trigger) { css_trigger_ = trigger; }
 
  protected:
   AnimationEffect::EventDelegate* CreateEventDelegate(
@@ -151,9 +130,9 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // When set changes to 'animation-range-*' will be ignored.
   bool ignore_css_range_start_ = false;
   bool ignore_css_range_end_ = false;
-  // When set, changes to 'animation-trigger*' will be ignored.
-  bool ignore_css_trigger_ = false;
 
+  // The trigger corresponding to the animation-trigger property.
+  Member<AnimationTrigger> css_trigger_;
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation
   // The spec: https://drafts.csswg.org/css-animations-2/#owning-element-section
