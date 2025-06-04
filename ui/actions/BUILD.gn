@@ -9,8 +9,8 @@ source_set("actions_headers") {
   sources = [
     "action_id.h",
     "action_id_macros.inc",
-    "actions.h",
     "action_utils.h",
+    "actions.h",
   ]
 
   public_deps = [
