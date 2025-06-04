@@ -153,6 +153,14 @@ void AvatarToolbarButton::AddedToWidget() {
   OnThemeChanged();
 }
 
+void AvatarToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  ToolbarButton::OnBoundsChanged(previous_bounds);
+  // This is needed to update the layout insets when the button is resized.
+  // `ToolbarButton::SetHighlight` may NOT clear the text immediately when the
+  // text is empty (clearing is delayed until the bounds are changed).
+  UpdateLayoutInsets();
+}
+
 void AvatarToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
 
