@@ -1401,6 +1401,13 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Force Consent", kForceBWGPromoConsent, std::size(kForceBWGPromoConsent),
      nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
+    {{OmniboxFieldTrial::kMobileParityEnableFeedForGoogleOnly.name, "true"}};
+const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
+    {"- feed only when searching with Google",
+     kOmniboxMobileParityEnableFeedForGoogleOnly,
+     std::size(kOmniboxMobileParityEnableFeedForGoogleOnly), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1516,7 +1523,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-mobile-parity-update",
      flag_descriptions::kOmniboxMobileParityUpdateName,
      flag_descriptions::kOmniboxMobileParityUpdateDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate,
+                                    kOmniboxMobileParityVariations,
+                                    "OmniboxMobileParityUpdate")},
     {"force-startup-signin-promo",
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,
