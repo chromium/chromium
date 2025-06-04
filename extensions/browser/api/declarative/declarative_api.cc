@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -74,7 +74,8 @@ enum class DeclarativeAPIFunctionType {
   kDeclarativeWebRequestWebviewAddRules = 6,
   kDeclarativeWebRequestWebviewRemoveRules = 7,
   kDeclarativeWebRequestWebviewGetRules = 8,
-  kDeclarativeApiFunctionCallTypeMax,
+
+  kMaxValue = kDeclarativeWebRequestWebviewGetRules,
 };
 
 DeclarativeAPIType GetDeclarativeAPIType(const std::string& event_name) {
@@ -91,11 +92,8 @@ DeclarativeAPIType GetDeclarativeAPIType(const std::string& event_name) {
 }
 
 void RecordUMAHelper(DeclarativeAPIFunctionType type) {
-  DCHECK_LT(type,
-            DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.DeclarativeAPIFunctionCalls", type,
-      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax);
+  DCHECK_LE(type, DeclarativeAPIFunctionType::kMaxValue);
+  base::UmaHistogramEnumeration("Extensions.DeclarativeAPIFunctionCalls", type);
 }
 
 void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict);
@@ -226,8 +224,7 @@ ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
 
 void EventsEventAddRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type =
-      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
       type = DeclarativeAPIFunctionType::kDeclarativeContentAddRules;
@@ -267,8 +264,7 @@ ExtensionFunction::ResponseValue EventsEventRemoveRulesFunction::RunInternal() {
 
 void EventsEventRemoveRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type =
-      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
       type = DeclarativeAPIFunctionType::kDeclarativeContentRemoveRules;
@@ -313,8 +309,7 @@ ExtensionFunction::ResponseValue EventsEventGetRulesFunction::RunInternal() {
 
 void EventsEventGetRulesFunction::RecordUMA(
     const std::string& event_name) const {
-  DeclarativeAPIFunctionType type =
-      DeclarativeAPIFunctionType::kDeclarativeApiFunctionCallTypeMax;
+  DeclarativeAPIFunctionType type;
   switch (GetDeclarativeAPIType(event_name)) {
     case DeclarativeAPIType::kContent:
       type = DeclarativeAPIFunctionType::kDeclarativeContentGetRules;
