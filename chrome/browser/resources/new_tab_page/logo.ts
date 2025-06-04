@@ -17,7 +17,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import type {IframeElement} from './iframe.js';
 import {getCss} from './logo.css.js';
 import {getHtml} from './logo.html.js';
-import type {Doodle, DoodleShareChannel, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
+import type {Doodle, DoodleShareChannel, ImageDoodle, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {DoodleImageType} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
@@ -48,15 +48,9 @@ export class LogoElement extends CrLitElement {
       },
 
       /**
-       * If true displays the dark mode doodle if possible.
+       * Used to determine if we should display a dark mode doodle.
        */
-      dark: {type: Boolean},
-
-      /**
-       * The NTP's background color. If null or undefined the NTP does not have
-       * a single background color, e.g. when a background image is set.
-       */
-      backgroundColor: {type: Object},
+      theme: {type: Object},
 
       loaded_: {type: Boolean},
       doodle_: {type: Object},
@@ -83,8 +77,7 @@ export class LogoElement extends CrLitElement {
   }
 
   accessor singleColored: boolean = false;
-  accessor dark: boolean;
-  accessor backgroundColor: SkColor|null = null;
+  accessor theme: Theme|null = null;
   private accessor loaded_: boolean = false;
   protected accessor doodle_: Doodle|null = null;
   protected accessor imageDoodle_: ImageDoodle|null = null;
@@ -95,9 +88,9 @@ export class LogoElement extends CrLitElement {
   protected accessor showAnimation_: boolean = false;
   protected accessor animationUrl_: string = '';
   protected accessor iframeUrl_: string = '';
-  private accessor duration_: string;
-  private accessor height_: string;
-  private accessor width_: string;
+  private accessor duration_: string = '';
+  private accessor height_: string = '';
+  private accessor width_: string = '';
   protected accessor expanded_: boolean = false;
   protected accessor showShareDialog_: boolean = false;
   protected accessor imageDoodleTabIndex_: number = -1;
@@ -167,8 +160,8 @@ export class LogoElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('dark')) {
-      this.onDarkChange_();
+    if (changedProperties.has('theme')) {
+      this.sendMode_();
     }
 
     const changedPrivateProperties =
@@ -202,8 +195,9 @@ export class LogoElement extends CrLitElement {
   }
 
   private computeImageDoodle_(): ImageDoodle|null {
-    return this.doodle_ && this.doodle_.image &&
-        (this.dark ? this.doodle_.image.dark : this.doodle_.image.light) ||
+    return this.doodle_ && this.doodle_.image && this.theme &&
+        (this.theme.isDark ? this.doodle_.image.dark :
+                             this.doodle_.image.light) ||
         null;
   }
 
@@ -218,10 +212,23 @@ export class LogoElement extends CrLitElement {
         !!this.doodle_ && !!this.doodle_.interactive && window.navigator.onLine;
   }
 
+  /**
+   * @returns The NTP's background color or null if the NTP does not have
+   * a single background color, e.g. when a background image is set.
+   */
+  private computeBackgroundColor_(): SkColor|null {
+    if (!this.theme || !!this.theme.backgroundImage) {
+      return null;
+    }
+
+    return this.theme.backgroundColor;
+  }
+
   private computeDoodleBoxed_(): boolean {
-    return !this.backgroundColor ||
+    const backgroundColor = this.computeBackgroundColor_();
+    return !backgroundColor ||
         !!this.imageDoodle_ &&
-        this.imageDoodle_.backgroundColor.value !== this.backgroundColor.value;
+        this.imageDoodle_.backgroundColor.value !== backgroundColor.value;
   }
 
   /**
@@ -304,20 +311,19 @@ export class LogoElement extends CrLitElement {
   }
 
   /**
-   * Sends a postMessage to the interactive doodle whether the  current theme is
+   * Sends a postMessage to the interactive doodle whether the current theme is
    * dark or light. Won't do anything if we don't have an interactive doodle or
    * we haven't been told yet whether the current theme is dark or light.
    */
   private sendMode_() {
-    const iframe = $$<IframeElement>(this, '#iframe');
-    if (this.dark === undefined || !iframe) {
+    if (!this.theme) {
       return;
     }
-    iframe.postMessage({cmd: 'changeMode', dark: this.dark});
-  }
-
-  private onDarkChange_() {
-    this.sendMode_();
+    const iframe = $$<IframeElement>(this, '#iframe');
+    if (!iframe) {
+      return;
+    }
+    iframe.postMessage({cmd: 'changeMode', dark: this.theme.isDark});
   }
 
   private computeImageUrl_(): string {
@@ -351,9 +357,12 @@ export class LogoElement extends CrLitElement {
   }
 
   private onDurationHeightWidthChange_() {
-    this.style.setProperty('--duration', this.duration_);
-    this.style.setProperty('--height', this.height_);
-    this.style.setProperty('--width', this.width_);
+    this.duration_ ? this.style.setProperty('--duration', this.duration_) :
+                     this.style.removeProperty('--duration');
+    this.height_ ? this.style.setProperty('--height', this.height_) :
+                   this.style.removeProperty('--height');
+    this.width_ ? this.style.setProperty('--width', this.width_) :
+                  this.style.removeProperty('--width');
   }
 
   private computeImageDoodleTabIndex_(): number {

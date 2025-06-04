@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import type {IframeElement, LogoElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {Doodle} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {Doodle, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {DoodleImageType, DoodleShareChannel, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -12,10 +13,13 @@ import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertLE, assertT
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, installMock, keydown} from './test_support.js';
+import {assertNotStyle, assertStyle, createTheme, installMock, keydown} from './test_support.js';
 
 const imageOffsetHeight = 168;
 const imageOffsetWidth = 336;
+const WHITE_COLOR: SkColor = {
+  value: 0xffffffff,
+};
 
 /**
  * @return {!{top: number, right: number, bottom: number, left: number}}
@@ -49,7 +53,7 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
         imageUrl: {url: createImageDataUrl(width, height, 'red')},
         width,
         height,
-        backgroundColor: {value: 0xffffffff},
+        backgroundColor: WHITE_COLOR,
         imageImpressionLogUrl: {url: 'https://log.com'},
       },
       dark: {
@@ -73,13 +77,15 @@ suite('NewTabPageLogoTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<PageHandlerRemote>;
 
-  async function createLogo(doodle: Doodle|null = null): Promise<LogoElement> {
+  async function createLogo(
+      doodle: Doodle|null = null,
+      theme: Theme|null = null): Promise<LogoElement> {
     handler.setResultFor('getDoodle', Promise.resolve({
       doodle: doodle,
     }));
     const logo = document.createElement('ntp-logo');
     document.body.appendChild(logo);
-    logo.backgroundColor = {value: 0xffffffff};
+    logo.theme = theme;
     await microtasksFinished();
     return logo;
   }
@@ -110,9 +116,10 @@ suite('NewTabPageLogoTest', () => {
       assertTrue(!!imageDoodle);
 
       // Act.
-      const logo = await createLogo(doodle);
-      logo.dark = dark;
-      logo.backgroundColor = imageDoodle.backgroundColor;
+      const logo = await createLogo(
+          doodle,
+          createTheme(
+              {isDark: dark, backgroundColor: imageDoodle.backgroundColor}));
       await microtasksFinished();
 
       // Assert.
@@ -140,11 +147,11 @@ suite('NewTabPageLogoTest', () => {
       doodle.image.light.backgroundColor.value = 0xff0000ff;
 
       // Act.
-      const logo = await createLogo(doodle);
-      if (color) {
-        logo.backgroundColor = hexColorToSkColor(color);
-      }
-
+      const logo = await createLogo(
+          doodle, createTheme({
+            isDark: false,
+            backgroundColor: color ? hexColorToSkColor(color) : undefined,
+          }));
       // Assert.
       assertStyle($$(logo, '#imageDoodle')!, 'padding', '16px 24px');
       assertStyle(
@@ -157,8 +164,9 @@ suite('NewTabPageLogoTest', () => {
   ].forEach(([width, height]) => {
     test(`${width}x${height} doodle aligned correctly`, async () => {
       // Act.
-      const logo = await createLogo(createImageDoodle(width, height));
-      logo.backgroundColor = {value: 0xffffffff};
+      const logo = await createLogo(
+          createImageDoodle(width, height),
+          createTheme({isDark: false, backgroundColor: WHITE_COLOR}));
 
       // Assert.
       assertEquals(imageOffsetHeight, logo.offsetHeight);
@@ -170,9 +178,9 @@ suite('NewTabPageLogoTest', () => {
 
     test(`${width}x${height} boxed doodle aligned correctly`, async () => {
       // Act.
-      const logo = await createLogo(createImageDoodle(width, height));
-      logo.dark = true;
-      logo.backgroundColor = {value: 0xff0000ff};
+      const logo = await createLogo(
+          createImageDoodle(width, height),
+          createTheme({isDark: true, backgroundColor: {value: 0xff0000ff}}));
       await microtasksFinished();
 
       // Assert.
@@ -190,8 +198,7 @@ suite('NewTabPageLogoTest', () => {
     doodle.image!.dark = null;
 
     // Act.
-    const logo = await createLogo(doodle);
-    logo.dark = true;
+    const logo = await createLogo(doodle, createTheme({isDark: true}));
     await microtasksFinished();
 
     // Assert.
@@ -204,7 +211,8 @@ suite('NewTabPageLogoTest', () => {
     const doodle = createImageDoodle(/*width=*/ 1000, /*height=*/ 500);
 
     // Act.
-    const logo = await createLogo(doodle);
+    const logo = await createLogo(
+        doodle, createTheme({isDark: false, backgroundColor: WHITE_COLOR}));
 
     // Assert.
     assertEquals(
@@ -222,7 +230,7 @@ suite('NewTabPageLogoTest', () => {
     doodle.image!.light.animationUrl = {url: 'https://foo.com'};
 
     // Act.
-    const logo = await createLogo(doodle);
+    const logo = await createLogo(doodle, createTheme({isDark: false}));
 
     // Assert.
     assertNotStyle($$(logo, '#doodle')!, 'display', 'none');
@@ -235,16 +243,17 @@ suite('NewTabPageLogoTest', () => {
 
   test('setting interactive doodle shows iframe', async () => {
     // Act.
-    const logo = await createLogo({
-      interactive: {
-        url: {url: 'https://foo.com'},
-        width: 200,
-        height: 100,
-      },
-      description: '',
-      image: null,
-    });
-    logo.dark = false;
+    const logo = await createLogo(
+        {
+          interactive: {
+            url: {url: 'https://foo.com'},
+            width: 200,
+            height: 100,
+          },
+          description: '',
+          image: null,
+        },
+        createTheme({isDark: false, backgroundColor: WHITE_COLOR}));
     await microtasksFinished();
 
     // Assert.
@@ -282,7 +291,7 @@ suite('NewTabPageLogoTest', () => {
     assertEquals(0, windowProxy.getCallCount('postMessage'));
 
     // Act (setting mode).
-    logo.dark = true;
+    logo.theme = createTheme({isDark: true});
     await microtasksFinished();
 
     // Assert (setting mode).
@@ -350,7 +359,8 @@ suite('NewTabPageLogoTest', () => {
 
   test('doodle aligned correctly', async () => {
     // Act.
-    const logo = await createLogo(createImageDoodle());
+    const logo =
+        await createLogo(createImageDoodle(), createTheme({isDark: false}));
 
     // Assert.
     const pos = getRelativePosition($$(logo, '#doodle')!, logo);
@@ -452,16 +462,17 @@ suite('NewTabPageLogoTest', () => {
 
   test('receiving mode message sends mode', async () => {
     // Arrange.
-    const logo = await createLogo({
-      interactive: {
-        url: {url: 'https://foo.com'},
-        width: 200,
-        height: 100,
-      },
-      description: '',
-      image: null,
-    });
-    logo.dark = false;
+    await createLogo(
+        {
+          interactive: {
+            url: {url: 'https://foo.com'},
+            width: 200,
+            height: 100,
+          },
+          description: '',
+          image: null,
+        },
+        createTheme({isDark: false}));
     await microtasksFinished();
     windowProxy.resetResolver('postMessage');
 
@@ -484,7 +495,7 @@ suite('NewTabPageLogoTest', () => {
       // Arrange.
       const doodle = createImageDoodle();
       doodle.image!.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
-      const logo = await createLogo(doodle);
+      const logo = await createLogo(doodle, createTheme({isDark: false}));
 
       // Act.
       $$<HTMLElement>(logo, '#image')!.click();
@@ -503,7 +514,7 @@ suite('NewTabPageLogoTest', () => {
         // Arrange.
         const doodle = createImageDoodle();
         doodle.image!.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
-        const logo = await createLogo(doodle);
+        const logo = await createLogo(doodle, createTheme({isDark: false}));
 
         // Act.
         keydown($$<HTMLElement>(logo, '#image')!, key);
@@ -524,7 +535,7 @@ suite('NewTabPageLogoTest', () => {
       assertTrue(!!doodle.image);
       doodle.image.light.animationUrl = {url: 'https://foo.com'};
       doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
-      const logo = await createLogo(doodle);
+      const logo = await createLogo(doodle, createTheme({isDark: false}));
       assertEquals(0, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
 
       // Act (start animation).
@@ -545,7 +556,7 @@ suite('NewTabPageLogoTest', () => {
           hasUrl ? 0 : -1, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
 
       // Act (switch mode).
-      logo.dark = true;
+      logo.theme = createTheme({isDark: true});
       await microtasksFinished();
 
       // Assert (animation stopped).
@@ -562,7 +573,7 @@ suite('NewTabPageLogoTest', () => {
       assertTrue(!!doodle.image.light);
       doodle.image.light.animationUrl = {url: 'https://foo.com'};
       doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
-      const logo = await createLogo(doodle);
+      const logo = await createLogo(doodle, createTheme({isDark: false}));
       $$<HTMLElement>(logo, '#image')!.click();
       await microtasksFinished();
 
@@ -590,7 +601,7 @@ suite('NewTabPageLogoTest', () => {
   test('clicking share button adds share dialog', async () => {
     // Arrange.
     const doodle = createImageDoodle();
-    const logo = await createLogo(doodle);
+    const logo = await createLogo(doodle, createTheme({isDark: false}));
 
     // Act.
     $$<HTMLElement>(logo, '#shareButton')!.click();
@@ -607,7 +618,8 @@ suite('NewTabPageLogoTest', () => {
 
   test('closing share dialog removes share dialog', async () => {
     // Arrange.
-    const logo = await createLogo(createImageDoodle());
+    const logo =
+        await createLogo(createImageDoodle(), createTheme({isDark: false}));
     $$<HTMLElement>(logo, '#shareButton')!.click();
     await microtasksFinished();
 
@@ -628,7 +640,7 @@ suite('NewTabPageLogoTest', () => {
       handler.setResultFor('getDoodle', doodleResolver.promise);
       const logo = document.createElement('ntp-logo');
       document.body.appendChild(logo);
-      logo.dark = dark;
+      logo.theme = createTheme({isDark: dark});
       handler.setResultFor('onDoodleImageRendered', Promise.resolve({
         imageClickParams: 'foo=bar&hello=world',
         interactionLogUrl: null,
@@ -682,7 +694,7 @@ suite('NewTabPageLogoTest', () => {
       handler.setResultFor('getDoodle', doodleResolver.promise);
       const logo = document.createElement('ntp-logo');
       document.body.appendChild(logo);
-      logo.dark = dark;
+      logo.theme = createTheme({isDark: dark});
       handler.setResultFor('onDoodleImageRendered', Promise.resolve({
         imageClickParams: '',
         interactionLogUrl: {url: 'https://interaction.com'},

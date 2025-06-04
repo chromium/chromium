@@ -307,8 +307,9 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
       assertStyle($$(app, '#backgroundImageAttribution2')!, 'display', 'none');
       assertFalse(app.$.logo.singleColored);
-      assertFalse(app.$.logo.dark);
-      assertEquals(0xffff0000, app.$.logo.backgroundColor?.value);
+      assertTrue(!!app.$.logo.theme);
+      assertFalse(app.$.logo.theme?.isDark);
+      assertEquals(0xffff0000, app.$.logo.theme?.backgroundColor?.value);
     });
 
     test('setting 3p theme shows attribution', async () => {
@@ -354,7 +355,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           'https://img.png',
           (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(null, app.$.logo.backgroundColor);
+      assertTrue(!!app.$.logo.theme?.backgroundColor);
     });
 
     test('setting attributions shows attributions', async function() {

@@ -176,7 +176,6 @@ export class AppElement extends AppElementBase {
       backgroundImageAttribution1_: {type: String},
       backgroundImageAttribution2_: {type: String},
       backgroundImageAttributionUrl_: {type: String},
-      backgroundColor_: {type: Object},
 
       // Used in cr-searchbox component via host-context.
       colorSourceIsBaseline: {type: Boolean},
@@ -249,7 +248,7 @@ export class AppElement extends AppElementBase {
   protected accessor oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
   protected accessor oneGoogleBarIframePath_: string|undefined;
   protected accessor oneGoogleBarLoaded_: boolean = false;
-  protected accessor theme_: Theme|undefined;
+  protected accessor theme_: Theme|null = null;
   protected accessor showCustomize_: boolean = false;
   protected accessor showCustomizeChromeText_: boolean = false;
   protected accessor showWallpaperSearch_: boolean = false;
@@ -259,7 +258,6 @@ export class AppElement extends AppElementBase {
   protected accessor backgroundImageAttribution1_: string = '';
   protected accessor backgroundImageAttribution2_: string = '';
   protected accessor backgroundImageAttributionUrl_: string = '';
-  protected accessor backgroundColor_: SkColor|null = null;
   protected accessor colorSourceIsBaseline: boolean = false;
   protected accessor logoColor_: SkColor|null = null;
   protected accessor singleColoredLogo_: boolean = false;
@@ -507,9 +505,6 @@ export class AppElement extends AppElementBase {
       this.logoColor_ = this.computeLogoColor_();
       this.singleColoredLogo_ = this.computeSingleColoredLogo_();
     }
-
-    // theme_, showBackgroundImage_
-    this.backgroundColor_ = this.computeBackgroundColor_();
 
     // theme_, showLensUploadDialog_
     this.realboxShown_ = this.computeRealboxShown_();
@@ -769,14 +764,6 @@ export class AppElement extends AppElementBase {
             NtpBackgroundImageSource.kWallpaperSearchInspiration) {
       this.wallpaperSearchButtonAnimationEnabled_ = false;
     }
-  }
-
-  private computeBackgroundColor_(): SkColor|null {
-    if (this.showBackgroundImage_ || !this.theme_) {
-      return null;
-    }
-
-    return this.theme_.backgroundColor;
   }
 
   private computeColorSourceIsBaseline(): boolean {

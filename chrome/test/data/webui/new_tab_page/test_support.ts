@@ -66,14 +66,20 @@ export function createBackgroundImage(url: string): BackgroundImage {
   };
 }
 
-export function createTheme({isDark = false, isBaseline = true} = {}): Theme {
+export function createTheme({
+  isDark = false,
+  isBaseline = true,
+  backgroundColor = {
+    value: 0xffff0000,
+  },
+} = {}): Theme {
   const mostVisited = {
     backgroundColor: {value: 0xff00ff00},
     isDark,
     useWhiteTileIcon: false,
   };
   return {
-    backgroundColor: {value: 0xffff0000},
+    backgroundColor: backgroundColor,
     backgroundImage: null,
     backgroundImageAttributionUrl: null,
     backgroundImageAttribution1: '',

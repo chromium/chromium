@@ -15,8 +15,7 @@
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
        the msan builder. See crbug.com/1169070. -->
   <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
-      .dark="${this.isThemeDark_()}" .backgroundColor="${this.backgroundColor_}"
-      ?hidden="${!this.logoEnabled_}">
+      .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
   <div id="searchboxContainer">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
