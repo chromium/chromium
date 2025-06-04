@@ -602,9 +602,8 @@ bool ui::IsNSRange(id value) {
                             "BrowserAccessibilityCocoa::needsToUpdateChildren",
                             !!_children);
 
-  if (![self nodeDelegate]) {
+  if (![self instanceActive])
     return nil;
-  }
   if (!_children) {
     base::AutoReset<bool> set_getting_children(&_gettingChildren, true);
     // PlatformChildCount may add extra mac nodes if the node requires them.
@@ -641,7 +640,7 @@ bool ui::IsNSRange(id value) {
   // This function may be called in the middle of -accessibilityChildren if
   // this node adds extra mac nodes while its children are being requested. If
   // _gettingChildren is true, we don't need to do anything here.
-  if (![self nodeDelegate] || _gettingChildren) {
+  if (![self instanceActive] || _gettingChildren) {
     return;
   }
   _children = nil;
@@ -1145,7 +1144,6 @@ bool ui::IsNSRange(id value) {
 - (NSString*)AXRole {
   return [self role];
 }
-
 - (NSString*)role {
   if (![self instanceActive]) {
     TRACE_EVENT0("accessibility", "BrowserAccessibilityCocoa::role nil");
@@ -2941,6 +2939,18 @@ bool ui::IsNSRange(id value) {
     return focus;
 
   return _owner;
+}
+
+- (BOOL)isAccessibilityElement {
+  if (![self instanceActive])
+    return NO;
+
+  if ([self internalRole] == ax::mojom::Role::kImage &&
+      _owner->HasExplicitlyEmptyName()) {
+    return NO;
+  }
+
+  return [super isAccessibilityElement];
 }
 
 @end

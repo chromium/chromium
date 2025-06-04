@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus label='done'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=2 number_of_columns=1
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++CELL hidden cell_row_span=1 cell_column_span=1
+++++++++++++CELL label='B' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='B'
+++++++++++++++++UNKNOWN label='B'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL hidden cell_row_span=1 cell_column_span=1
+++++++++++++CELL label='D' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='D'
+++++++++++++++++UNKNOWN label='D'

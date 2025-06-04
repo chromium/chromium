@@ -28,7 +28,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -196,34 +195,6 @@ INSTANTIATE_TEST_SUITE_P(
     DumpAccessibilityEventsTestExceptUIA,
     ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
     DumpAccessibilityEventsTestPassToString());
-
-#if BUILDFLAG(IS_MAC)
-class DumpAccessibilityEventsTestWithoutMacChildOptimization
-    : public DumpAccessibilityEventsTest {
- protected:
-  DumpAccessibilityEventsTestWithoutMacChildOptimization() {
-    feature_list_.InitWithFeatures(
-        {/* enabled_features */},
-        {features::kMacAccessibilityOptimizeChildrenChanged});
-  }
-
-  ~DumpAccessibilityEventsTestWithoutMacChildOptimization() override {
-    // Ensure that the feature lists are destroyed in the same order they
-    // were created in.
-    scoped_feature_list_.Reset();
-    feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityEventsTestWithoutMacChildOptimization,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
-    DumpAccessibilityEventsTestPassToString());
-#endif  // BUILDFLAG(IS_MAC)
 
 class DumpAccessibilityEventsWithExperimentalWebFeaturesTest
     : public DumpAccessibilityEventsTest {
@@ -733,20 +704,6 @@ IN_PROC_BROWSER_TEST_P(
   RunEventTest(
       FILE_PATH_LITERAL("individual-nodes-become-ignored-but-included.html"));
 }
-
-#if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestWithoutMacChildOptimization,
-                       AccessibilityEventsIndividualNodesBecomeIgnored) {
-  RunEventTest(FILE_PATH_LITERAL("individual-nodes-become-ignored.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTestWithoutMacChildOptimization,
-    AccessibilityEventsIndividualNodesBecomeIgnoredButIncluded) {
-  RunEventTest(
-      FILE_PATH_LITERAL("individual-nodes-become-ignored-but-included.html"));
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsInnerHtmlChange) {

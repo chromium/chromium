@@ -1,7 +1,7 @@
 <!--
 @BLINK-ALLOW:*ColumnCount*
 @BLINK-ALLOW:*ColumnIndex*
-@EXECUTE-AND-WAIT-FOR:removeColumns()
+@WAIT-FOR:done
 -->
 <style>
   .hide-first-column td:first-child { display: none; }
@@ -20,9 +20,8 @@
 </table>
 
 <script>
-  function removeColumns() {
+  setTimeout(() => {
     document.body.className = "hide-first-column";
     document.title="done";
-    return 'done';
-  }
+  }, 50);
 </script>

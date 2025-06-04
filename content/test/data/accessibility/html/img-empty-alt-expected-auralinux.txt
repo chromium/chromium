@@ -8,14 +8,3 @@
 ++++[image] name='To get missing image descriptions, open the context menu.'
 ++++[static] name=' '
 ++++[image] name='full'
-=== Start Continuation ===
-[document web]
-++[section]
-++++[static] name=' '
-++++[image] name=''
-++++[static] name=' '
-++++[image] name='new-alt'
-++++[static] name=' '
-++++[static] name=' '
-++++[image] name='To get missing image descriptions, open the context menu.'
-++++[static] name=' '
