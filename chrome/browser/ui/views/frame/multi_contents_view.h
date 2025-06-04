@@ -175,6 +175,10 @@ class MultiContentsView : public views::View,
   // each other.
   raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
 
+  // The view that is shown for entering split view. E.g., this is shown when
+  // the user drags a link to the edge of the contents view.
+  raw_ptr<views::View> drop_target_view_ = nullptr;
+
   // Handles incoming drag events to show/hide the drop target for entering
   // split view.
   std::unique_ptr<MultiContentsViewDropTargetController>
