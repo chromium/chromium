@@ -138,10 +138,9 @@ mach_port_t IOSurfaceMachPortTraits::Retain(mach_port_t port) {
 
 // static
 void IOSurfaceMachPortTraits::Release(mach_port_t port) {
-  kern_return_t kr =
-      mach_port_mod_refs(mach_task_self(), port, MACH_PORT_RIGHT_SEND, -1);
+  kern_return_t kr = mach_port_deallocate(mach_task_self(), port);
   MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
-      << "IOSurfaceMachPortTraits::Release mach_port_mod_refs";
+      << "IOSurfaceMachPortTraits::Release mach_port_deallocate";
 }
 
 // Common method used by IOSurfaceSetColorSpace and IOSurfaceCanSetColorSpace.
@@ -202,10 +201,8 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 
   if (color_space_name) {
-    if (io_surface) {
-      IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"),
-                        color_space_name);
-    }
+    IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"),
+                      color_space_name);
     return true;
   }
 
@@ -302,11 +299,11 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     const size_t bytes_per_element = BytesPerElement(format, 0);
     const size_t bytes_per_row = IOSurfaceAlignProperty(
         kIOSurfaceBytesPerRow,
-        base::bits::AlignUpDeprecatedDoNotUse(size.width(), 2) *
+        base::bits::AlignUp(static_cast<size_t>(size.width()), size_t{2}) *
             bytes_per_element);
     const size_t bytes_alloc = IOSurfaceAlignProperty(
         kIOSurfaceAllocSize,
-        base::bits::AlignUpDeprecatedDoNotUse(size.height(), 2) *
+        base::bits::AlignUp(static_cast<size_t>(size.height()), size_t{2}) *
             bytes_per_row);
     AddIntegerValue(properties.get(), kIOSurfaceBytesPerElement,
                     bytes_per_element);
@@ -354,8 +351,7 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 }
 
-COMPONENT_EXPORT(GFX)
-base::apple::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
+ScopedIOSurface IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
   if (!io_surface_mach_port) {

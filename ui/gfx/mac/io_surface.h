@@ -100,7 +100,7 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format,
 
 // Return an IOSurface consuming |io_surface_mach_port|.
 COMPONENT_EXPORT(GFX)
-base::apple::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
+ScopedIOSurface IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port);
 
 }  // namespace gfx
