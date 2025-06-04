@@ -179,6 +179,21 @@ class TouchToFillPaymentMethodProperties {
     }
 
     /**
+     * Properties defined here reflect the visible state of a button in the TouchToFill sheet for
+     * payments.
+     */
+    static class ButtonProperties {
+        static final PropertyModel.ReadableIntPropertyKey TEXT_ID =
+                new PropertyModel.ReadableIntPropertyKey("text_id");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
+                new ReadableObjectPropertyKey<>("open_click_action");
+
+        static final PropertyKey[] ALL_KEYS = {TEXT_ID, ON_CLICK_ACTION};
+
+        private ButtonProperties() {}
+    }
+
+    /**
      * Properties defined here reflect the visible state of the footer in the TouchToFill sheet for
      * payments.
      */

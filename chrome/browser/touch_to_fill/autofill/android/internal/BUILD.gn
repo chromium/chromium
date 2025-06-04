@@ -133,6 +133,7 @@ android_library("javatests") {
     "//components/strings:components_strings_grd",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",

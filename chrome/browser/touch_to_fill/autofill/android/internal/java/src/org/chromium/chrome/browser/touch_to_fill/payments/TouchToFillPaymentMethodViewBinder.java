@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
@@ -297,32 +299,11 @@ class TouchToFillPaymentMethodViewBinder {
     }
 
     static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
+        if (propertyKey == TEXT_ID) {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
-        } else if (propertyKey == ON_IBAN_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_IBAN_CLICK_ACTION).run());
-            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
-        } else if (propertyKey == ON_LOYALTY_CARD_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
-            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(R.string.autofill_loyalty_card_autofill_button);
-        } else if (propertyKey == CARD_IMAGE
-                || propertyKey == MAIN_TEXT
-                || propertyKey == MAIN_TEXT_CONTENT_DESCRIPTION
-                || propertyKey == MINOR_TEXT
-                || propertyKey == FIRST_LINE_LABEL
-                || propertyKey == SECOND_LINE_LABEL
-                || propertyKey == IBAN_VALUE
-                || propertyKey == IBAN_NICKNAME
-                || propertyKey == ITEM_COLLECTION_INFO
-                || propertyKey == APPLY_DEACTIVATED_STYLE
-                || propertyKey == LOYALTY_CARD_NUMBER
-                || propertyKey == MERCHANT_NAME
-                || propertyKey == LOYALTY_CARD_ICON) {
-            // Skip, because none of these changes affect the button
+            buttonTitleText.setText(model.get(TEXT_ID));
+        } else if (propertyKey == ON_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
