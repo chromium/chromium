@@ -27,6 +27,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
@@ -239,6 +240,10 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
 
     history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
         mock_history_service_.get(), mock_device_info_sync_service_.get());
+  }
+
+  MockDeviceInfoSyncService* GetMockDeviceInfoSyncService() {
+    return mock_device_info_sync_service_.get();
   }
 
   FetchOptions GetSampleFetchOptions() {
@@ -524,6 +529,50 @@ TEST_P(HistoryURLVisitDataFetcherSourcesTest, FetchURLVisitData) {
       std::get_if<URLVisitAggregate::HistoryData>(&result.data.begin()->second);
   EXPECT_EQ(history->last_visited.visit_row.originator_cache_guid.empty(),
             source == Source::kLocal);
+}
+
+TEST_P(HistoryURLVisitDataFetcherSourcesTest, FetchURLVisitData_FakeRemote) {
+  const auto source = GetParam();
+
+  std::vector<history::AnnotatedVisit> annotated_visits;
+  annotated_visits.emplace_back(SampleAnnotatedVisit(
+      1, GURL("http://gmail.com/"), /*title=*/u"Gmail",
+      /*visibility_score=*/1.0,
+      /*originator_cache_guid=*/kSampleForeignDeviceGUID,
+      /*app_id=*/std::string("CCT app id 0"), base::Time::Now(),
+      /*visit_duration=*/base::Seconds(10)));
+  SetHistoryServiceExpectations(annotated_visits);
+  SetDeviceInfoTrackerExpectations();
+
+  auto fake_local_device_info_provider =
+      std::make_unique<syncer::FakeLocalDeviceInfoProvider>();
+  fake_local_device_info_provider->UpdateClientName(
+      kSampleForeignDeviceClientName);
+
+  EXPECT_CALL(*GetMockDeviceInfoSyncService(), GetLocalDeviceInfoProvider())
+      .WillOnce(testing::Return(fake_local_device_info_provider.get()));
+
+  ResultOption result_option{.age_limit = base::Days(1)};
+  std::map<URLType, ResultOption> result_sources = {};
+  if (source == Source::kLocal) {
+    result_sources.emplace(URLType::kLocalVisit, std::move(result_option));
+  } else if (source == Source::kForeign) {
+    result_sources.emplace(URLType::kRemoteVisit, std::move(result_option));
+  }
+
+  std::map<Fetcher, FetchOptions::FetchSources> fetcher_sources;
+  fetcher_sources.emplace(Fetcher::kHistory,
+                          FetchOptions::FetchSources({source}));
+  FetchOptions options =
+      FetchOptions(std::move(result_sources), std::move(fetcher_sources),
+                   base::Time::Now() - base::Days(1));
+  auto result = FetchAndGetResult(options);
+  EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
+  if (source == Source::kLocal) {
+    EXPECT_EQ(result.data.size(), 1u);
+  } else {
+    EXPECT_EQ(result.data.size(), 0u);
+  }
 }
 
 class HistoryURLVisitDataFetcherDataTest

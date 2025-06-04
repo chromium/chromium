@@ -82,6 +82,30 @@ bool ShouldDiscardShortVisit(
          visit_duration_limit;
 }
 
+visited_url_ranking::URLVisit::Source GetVisitSource(
+    std::map<std::string,
+             std::pair<std::string, syncer::DeviceInfo::FormFactor>>
+        sync_device_info,
+    history::AnnotatedVisit annotated_visit,
+    raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service) {
+  // The `originator_cache_guid` field is only set for foreign session visits
+  // but some foreign visits are actually local as they can come from different
+  // browsers/channels on the same device.
+  auto it =
+      sync_device_info.find(annotated_visit.visit_row.originator_cache_guid);
+  const syncer::LocalDeviceInfoProvider* local_device_info_provider =
+      device_info_sync_service->GetLocalDeviceInfoProvider();
+  if (annotated_visit.visit_row.originator_cache_guid.empty() ||
+      (it != sync_device_info.end() &&
+       (local_device_info_provider &&
+        it->second.first ==
+            local_device_info_provider->GetLocalDeviceInfo()->client_name()))) {
+    return visited_url_ranking::URLVisit::Source::kLocal;
+  } else {
+    return visited_url_ranking::URLVisit::Source::kForeign;
+  }
+}
+
 }  // namespace
 
 namespace visited_url_ranking {
@@ -178,11 +202,8 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
       syncer::GetLocalDeviceFormFactor();
   std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
   for (auto& annotated_visit : annotated_visits) {
-    // The `originator_cache_guid` field is only set for foreign session visits.
-    Source current_visit_source =
-        annotated_visit.visit_row.originator_cache_guid.empty()
-            ? Source::kLocal
-            : Source::kForeign;
+    Source current_visit_source = GetVisitSource(
+        sync_device_info, annotated_visit, device_info_sync_service_);
     if (!base::Contains(requested_fetch_sources, current_visit_source)) {
       continue;
     }
@@ -194,7 +215,7 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
       std::optional<std::string> client_name = std::nullopt;
       syncer::DeviceInfo::FormFactor device_type =
           syncer::DeviceInfo::FormFactor::kUnknown;
-      if (annotated_visit.visit_row.originator_cache_guid.empty()) {
+      if (current_visit_source == Source::kLocal) {
         device_type = local_device_form_factor;
       } else {
         auto it = sync_device_info.find(
