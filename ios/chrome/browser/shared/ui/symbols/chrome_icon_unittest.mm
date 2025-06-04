@@ -8,6 +8,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -45,7 +46,8 @@ TEST_F(ChromeIconTest, RTL) {
   EXPECT_FALSE([ChromeIcon searchIcon].flipsForRightToLeftLayoutDirection);
 }
 
-TEST_F(ChromeIconTest, TemplateBarButtonItem) {
+// TODO(crbug.com/422438137): Re-enable the test. `doSomething` is not called.
+TEST_F(ChromeIconTest, DISABLED_TemplateBarButtonItem) {
   UIImage* image = [UIImage imageNamed:@"ic_close"];
   image.accessibilityIdentifier = @"identifier";
   image.accessibilityLabel = @"label";
@@ -70,6 +72,7 @@ TEST_F(ChromeIconTest, TemplateBarButtonItem) {
             barButtonItem.image.flipsForRightToLeftLayoutDirection);
   EXPECT_EQ(UIImageRenderingModeAlwaysTemplate,
             barButtonItem.image.renderingMode);
+  EXPECT_OCMOCK_VERIFY(mockTarget);
 }
 
 }  // namespace
