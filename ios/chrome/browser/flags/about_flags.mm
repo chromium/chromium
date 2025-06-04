@@ -2722,6 +2722,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableAutofillStrikeSystemDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kDisableAutofillStrikeSystem)},
+    {"ios-default-browser-promo-propensity-model",
+     flag_descriptions::kDefaultBrowserPromoPropensityModelName,
+     flag_descriptions::kDefaultBrowserPromoPropensityModelDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserPromoPropensityModel)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

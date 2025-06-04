@@ -229,6 +229,9 @@ extern const char kDataSharingJoinOnlyDescription[];
 extern const char kDefaultBrowserBannerPromoName[];
 extern const char kDefaultBrowserBannerPromoDescription[];
 
+extern const char kDefaultBrowserPromoPropensityModelName[];
+extern const char kDefaultBrowserPromoPropensityModelDescription[];
+
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 

@@ -409,6 +409,12 @@ const char kDefaultBrowserBannerPromoDescription[] =
     "When enabled, the default browser banner promo will show when conditions "
     "are met.";
 
+const char kDefaultBrowserPromoPropensityModelName[] =
+    "Default Browser promo propensity model";
+const char kDefaultBrowserPromoPropensityModelDescription[] =
+    "When enabled, a propensity model will help make the determination of "
+    "whether to show a default browser promo";
+
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
 const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =

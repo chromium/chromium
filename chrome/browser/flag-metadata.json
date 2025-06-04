@@ -5770,6 +5770,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "ios-default-browser-promo-propensity-model",
+    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ios-deprecate-feed-header",
     "owners": [ "ginnyhuang@chromium.org", "bling-get-set-up@google.com" ],
     "expiry_milestone": 139
