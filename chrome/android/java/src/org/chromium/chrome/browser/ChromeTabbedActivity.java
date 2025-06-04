@@ -276,7 +276,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.xr.XrLayoutStateObserver;
+import org.chromium.chrome.browser.xr.scenecore.XrSceneCoreSessionManagerImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelper;
@@ -301,6 +301,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -312,6 +313,8 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManagerProvider;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -328,7 +331,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity {
+public class ChromeTabbedActivity extends ChromeActivity
+        implements XrSceneCoreSessionManagerProvider {
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
@@ -546,9 +550,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     // Delegate to handle drag and drop features for tablets.
     private DragAndDropDelegate mDragDropDelegate;
 
-    // Layout state change observer for for XR devices.
-    private @Nullable XrLayoutStateObserver mXrLayoutStateObserver;
-
     private CookiesFetcher mIncognitoCookiesFetcher;
 
     // Manager for tab group visual data lifecycle updates.
@@ -559,6 +560,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private @Nullable ArchivedTabsAutoDeletePromoManager mArchivedTabsAutoDeletePromoManager;
 
     @Nullable private ExtensionKeybindingRegistry mExtensionKeybindingRegistry;
+
+    private @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -849,17 +852,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         incognitoSupplier,
                         adaptOnOverviewColorAlphaChange());
 
-        // Set up layout state osberver for transitions between HSM and FSM on an XR device.
-        if (XrUtils.isXrDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            mXrLayoutStateObserver =
-                    new XrLayoutStateObserver(
-                            this,
-                            mLayoutStateProviderSupplier,
-                            mCallbackController,
-                            getCompositorViewHolderSupplier(),
-                            hubLayoutDependencyHolder.getHubRootView());
-        }
-
         return hubLayoutDependencyHolder;
     }
 
@@ -1118,6 +1110,16 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private void onTabSwitcherClicked() {
+        if (mXrSceneCoreSessionManager != null) {
+            // Do nothing if space mode switch is already started.
+            mXrSceneCoreSessionManager.startSpaceModeChange(
+                    true, this::onTabSwitcherClickedInternal);
+        } else {
+            onTabSwitcherClickedInternal();
+        }
+    }
+
+    private void onTabSwitcherClickedInternal() {
         Profile profile = mTabModelProfileSupplier.get();
         if (profile != null) {
             TrackerFactory.getTrackerForProfile(profile)
@@ -2515,6 +2517,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
+        initializeXrSceneCoreSessionManager();
         initHub();
     }
 
@@ -3911,12 +3914,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mDseNewTabUrlManager.destroy();
         }
 
-        if (mXrLayoutStateObserver != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            mXrLayoutStateObserver.destroy();
-            mXrLayoutStateObserver = null;
-        }
-
         if (mSuggestionEventObserver != null) {
             mSuggestionEventObserver.destroy();
             mSuggestionEventObserver = null;
@@ -3930,6 +3927,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (mExtensionKeybindingRegistry != null) {
             mExtensionKeybindingRegistry.destroy();
             mExtensionKeybindingRegistry = null;
+        }
+
+        if (mXrSceneCoreSessionManager != null) {
+            mXrSceneCoreSessionManager.destroy();
+            mXrSceneCoreSessionManager = null;
         }
 
         super.onDestroyInternal();
@@ -4300,5 +4302,46 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                     .getTabCountSupplier(),
                             mTabModelSelector.getModel(false));
         }
+    }
+
+    private void initializeXrSceneCoreSessionManager() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // TODO(crbug.com/422134376): To detect "Android XR" query OS instead of device's
+            // properties.
+            if (XrUtils.isXrDevice()) {
+                mXrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
+                mXrSceneCoreSessionManager
+                        .getXrSpaceModeObservableSupplier()
+                        .addObserver(this::onXrSpaceModeChanged);
+            }
+        }
+    }
+
+    /**
+     * Hide/show web content, make background opaque or transparent when switching to/from XR full
+     * space mode.
+     *
+     * <p>Toolbar updates its visibility in ToolbarManager.onXrSpaceModeChanged.
+     *
+     * @param fullSpaceMode: true to hide, false to show
+     */
+    public void onXrSpaceModeChanged(boolean fullSpaceMode) {
+        if (mCompositorViewHolder != null) {
+            mCompositorViewHolder.getCompositorView().setXrFullSpaceMode(fullSpaceMode);
+
+            // TODO(crbug.com/422140378): The video overlay stays visible on the transparent
+            //  background of the HubLayout if webcontent is not hidden.
+            Tab tab = mTabModelSelector.getCurrentTab();
+            if (tab != null) {
+                tab.getWebContents()
+                        .updateWebContentsVisibility(
+                                fullSpaceMode ? Visibility.HIDDEN : Visibility.VISIBLE);
+            }
+        }
+    }
+
+    @Override
+    public @Nullable XrSceneCoreSessionManager getXrSceneCoreSessionManager() {
+        return mXrSceneCoreSessionManager;
     }
 }
