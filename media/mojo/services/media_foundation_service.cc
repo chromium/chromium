@@ -398,10 +398,15 @@ CdmCapabilityOrStatus GetCdmCapability(
     }
 #endif
 
-    // Remove VP9 from the OS CDM capabilities check
-    // since it does not support clearlead.
-    if (is_os_cdm && is_hw_secure && (video_codec == VideoCodec::kVP9)) {
-      continue;
+    if (is_os_cdm && is_hw_secure) {
+      // Remove VP9 from the OS CDM capabilities check since it does
+      // not support clearlead. Remove AV1 from the hardware secure
+      // OS CDM capabilities check if the feature is disabled.
+      if (video_codec == VideoCodec::kVP9 ||
+          (video_codec == VideoCodec::kAV1 &&
+           !base::FeatureList::IsEnabled(kHardwareSecureDecryptionAv1))) {
+        continue;
+      }
     }
 
     if (is_type_supported_cb.Run(
