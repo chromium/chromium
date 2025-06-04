@@ -430,6 +430,10 @@ void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
   if (!GetVisible())
     return;
 
+  // Also check preferred visibility.
+  if (!visible_preferred())
+    return;
+
   // Only respond on the internal display.
   if (!IsWidgetOnInternalDisplay())
     return;
