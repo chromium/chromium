@@ -730,8 +730,7 @@ void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor,
     if (field_trial) {
       trial_name = field_trial->trial_name();
       group_name = field_trial->group_name();
-      params_associator->GetFieldTrialParamsWithoutFallback(
-          trial_name, group_name, &params);
+      params_associator->GetFieldTrialParams(field_trial, &params);
     }
 
     visitor.Visit(feature_override.first,
