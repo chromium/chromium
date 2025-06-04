@@ -52,6 +52,12 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private int mBottomInsetsForEdgeToEdge;
     private final Rect mDisplayCutoutRect;
 
+    private final boolean mEnableKeyboardOverlayMode;
+    // This is currently only being used by the DeferredImeWindowInsetApplicationCallback. If this
+    // is to be used by other callers, it should be changed to some token system to ensure that
+    // different callers don't interfere with each other.
+    private boolean mIsKeyboardInOverlayMode;
+
     // Cached state
     private @Nullable WindowInsetsCompat mLastSeenRawWindowInset;
     private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
@@ -156,9 +162,13 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * Creates an instance of {@link InsetObserver}.
      *
      * @param rootViewWeakRef A weak reference to the root view of the app.
+     * @param enableKeyboardOverlayMode Whether the keyboard can be considered to be in "overlay"
+     *     mode, where its inset shouldn't affect the size of the viewport.
      */
-    public InsetObserver(ImmutableWeakReference<View> rootViewWeakRef) {
+    public InsetObserver(
+            ImmutableWeakReference<View> rootViewWeakRef, boolean enableKeyboardOverlayMode) {
         mRootViewReference = rootViewWeakRef;
+        mEnableKeyboardOverlayMode = enableKeyboardOverlayMode;
         mWindowInsets = new Rect();
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
@@ -419,6 +429,27 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         for (WindowInsetObserver mObserver : mObservers) {
             mObserver.onSafeAreaChanged(new Rect(mCurrentSafeArea));
         }
+    }
+
+    /**
+     * Returns whether the keyboard is in overlay mode. When in overlay mode, the keyboard should
+     * not resize the application view, and should be treated as a visual overlay as opposed to an
+     * window inset that changes the size of the viewport.
+     */
+    public boolean isKeyboardInOverlayMode() {
+        if (!mEnableKeyboardOverlayMode) return false;
+        // Currently, the keyboard will only be in overlay mode specifically if the
+        // DeferredIMEWindowInsetApplicationCallback is consuming the window IME insets.
+        return mIsKeyboardInOverlayMode;
+    }
+
+    /**
+     * Sets whether the keyboard should be in overlay mode.
+     *
+     * @param isKeyboardInOverlayMode Whether the keyboard should be in overlay mode.
+     */
+    public void setKeyboardInOverlayMode(boolean isKeyboardInOverlayMode) {
+        mIsKeyboardInOverlayMode = isKeyboardInOverlayMode;
     }
 
     private void updateDisplayCutoutRect(final WindowInsetsCompat insets) {

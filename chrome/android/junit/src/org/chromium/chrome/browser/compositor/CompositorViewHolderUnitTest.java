@@ -83,6 +83,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -177,6 +178,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private ContentCaptureFeatures.Natives mContentCaptureFeaturesJni;
     @Mock private InputHintChecker.Natives mInputHintCheckerJni;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private InsetObserver mInsetObserver;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -202,6 +204,9 @@ public class CompositorViewHolderUnitTest {
         KeyboardVisibilityDelegate.setInstance(mMockKeyboard);
 
         mViewportInsets = ApplicationViewportInsetSupplier.createForTests();
+        when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(false);
+        mViewportInsets.setInsetObserver(mInsetObserver);
+
         mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
         mViewportInsets.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mKeyboardAccessoryInsetSupplier = new ObservableSupplierImpl<>();
@@ -713,6 +718,55 @@ public class CompositorViewHolderUnitTest {
         when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        mKeyboardInsetSupplier.set(0);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        verify(mCompositorViewHolder, times(1))
+                .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
+    }
+
+    // Keyboard resize tests for geometrychange event fired to JS.
+    @Test
+    public void testWebContentResizeTriggeredDueToKeyboardShow_keyboardInOverlayMode() {
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
+        reset(mWebContents);
+
+        // Viewport dimensions when keyboard is hidden.
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+
+        // adjustedHeight is the height of the CompositorViewHolder from Android View layout
+        // after showing the keyboard. This simulates a reduced layout height from the keyboard
+        // taking up the bottom space.
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
+        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        // The CompositorViewHolder does not account for the keyboard since the keyboard inset has
+        // been consumed by an inset consumer, which deliberately did not update the CVH.
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(true);
+
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
+        // to the WebContents.
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
+        verify(mCompositorViewHolder, times(1))
+                .notifyVirtualKeyboardOverlayRect(
+                        mWebContents, 0, 0, fullViewportWidth, KEYBOARD_HEIGHT);
+
+        reset(mWebContents);
+
+        // Hide the keyboard.
+        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
+        when(mMockKeyboard.calculateTotalKeyboardHeight(any())).thenReturn(0);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+        when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(true);
         mKeyboardInsetSupplier.set(0);
         mCompositorViewHolder.updateWebContentsSize(mTab);
 
