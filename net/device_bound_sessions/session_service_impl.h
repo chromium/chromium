@@ -39,8 +39,7 @@ class SessionStore;
 
 struct DeferredURLRequest {
   DeferredURLRequest(const URLRequest* request,
-                     SessionService::RefreshCompleteCallback restart_callback,
-                     SessionService::RefreshCompleteCallback continue_callback);
+                     SessionService::RefreshCompleteCallback callback);
   DeferredURLRequest(DeferredURLRequest&& other) noexcept;
 
   DeferredURLRequest& operator=(DeferredURLRequest&& other) noexcept;
@@ -49,8 +48,7 @@ struct DeferredURLRequest {
 
   raw_ptr<const URLRequest> request = nullptr;
   base::ElapsedTimer timer;
-  SessionService::RefreshCompleteCallback restart_callback;
-  SessionService::RefreshCompleteCallback continue_callback;
+  SessionService::RefreshCompleteCallback callback;
 };
 
 class NET_EXPORT SessionServiceImpl : public SessionService {
@@ -75,11 +73,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       URLRequest* request,
       const FirstPartySetMetadata& first_party_set_metadata) override;
 
-  void DeferRequestForRefresh(
-      URLRequest* request,
-      DeferralParams deferral,
-      RefreshCompleteCallback restart_callback,
-      RefreshCompleteCallback continue_callback) override;
+  void DeferRequestForRefresh(URLRequest* request,
+                              DeferralParams deferral,
+                              RefreshCompleteCallback callback) override;
 
   void SetChallengeForBoundSession(OnAccessCallback on_access_callback,
                                    const GURL& request_url,

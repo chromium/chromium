@@ -30,8 +30,18 @@ namespace net::device_bound_sessions {
 // Full information can be found at https://github.com/WICG/dbsc
 class NET_EXPORT SessionService {
  public:
-  using RefreshCompleteCallback = base::OnceClosure;
   using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
+
+  // Records the outcome of an attempt to refresh.
+  enum class RefreshResult {
+    kRefreshed,           // Refresh was successful.
+    kInitializedService,  // Service is now initialized, refresh may still be
+                          // needed.
+    kUnreachable,         // Refresh endpoint was unreachable.
+    kServerError,         // Refresh endpoint eserved a transient error.
+    kQuotaExceeded,       // Refresh quota exceeded.
+  };
+  using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
 
   // Indicates the reason for deferring. Exactly one of
   // `is_pending_initialization` or `session_id` will be truthy.
@@ -101,18 +111,14 @@ class NET_EXPORT SessionService {
 
   // Defer a request and maybe refresh the corresponding session.
   // `deferral` is either the identifier of the session that is required to be
-  // refreshed, or indicates the session is not completely initialized.
+  // refreshed, or indicates the service is not completely initialized.
   // This will refresh the corresponding session if: another deferred request
   // has not already kicked off refresh, the session can be found, and the
   // associated unexportable key id is valid.
-  // Provides two callbacks, will always call one of them:
-  // - `restart_callback` queries for cookies for the requests again.
-  // - `continue_callback` sends the request without query for cookies again.
-  virtual void DeferRequestForRefresh(
-      URLRequest* request,
-      DeferralParams deferral,
-      RefreshCompleteCallback restart_callback,
-      RefreshCompleteCallback continue_callback) = 0;
+  // On completion, calls `callback`.
+  virtual void DeferRequestForRefresh(URLRequest* request,
+                                      DeferralParams deferral,
+                                      RefreshCompleteCallback callback) = 0;
 
   // Set the challenge for a bound session after getting a
   // Sec-Session-Challenge header.

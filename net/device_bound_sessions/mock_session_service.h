@@ -40,8 +40,7 @@ class SessionServiceMock : public SessionService {
               DeferRequestForRefresh,
               (URLRequest * request,
                DeferralParams deferral,
-               RefreshCompleteCallback restart_callback,
-               RefreshCompleteCallback continue_callback),
+               RefreshCompleteCallback callback),
               (override));
   MOCK_METHOD(void,
               SetChallengeForBoundSession,

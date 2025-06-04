@@ -965,10 +965,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
           request_, *deferral,
           // restart with new cookies callback
           base::BindOnce(&URLRequestHttpJob::RestartTransactionForRefresh,
-                         weak_factory_.GetWeakPtr()),
-          // continue callback
-          base::BindOnce(&URLRequestHttpJob::StartTransaction,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), *deferral));
       return;
     }
 
@@ -1406,9 +1403,21 @@ void URLRequestHttpJob::RestartTransaction() {
   }
 }
 
-void URLRequestHttpJob::RestartTransactionForRefresh() {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestHttpJob::RestartTransactionForRefresh(
+    const device_bound_sessions::SessionService::DeferralParams&
+        deferral_params,
+    device_bound_sessions::SessionService::RefreshResult result) {
+  // Some deferrals are not associated with a particular session
+  // (e.g. session service initialization).
+  if (deferral_params.session_id.has_value()) {
+    request_->AddDeviceBoundSessionDeferral(device_bound_sessions::SessionKey{
+        SchemefulSite(request_->url()), *deferral_params.session_id});
+  }
+
   RestartTransaction();
 }
+#endif
 
 void URLRequestHttpJob::RestartTransactionWithAuth(
     const AuthCredentials& credentials) {

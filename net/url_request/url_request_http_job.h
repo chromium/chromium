@@ -31,6 +31,10 @@
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace net {
 
 class HttpRequestHeaders;
@@ -163,7 +167,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
                               CompletionOnceCallback callback);
 
   void RestartTransaction();
-  void RestartTransactionForRefresh();
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void RestartTransactionForRefresh(
+      const device_bound_sessions::SessionService::DeferralParams&
+          deferral_params,
+      device_bound_sessions::SessionService::RefreshResult result);
+#endif
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 
   // Overridden from URLRequestJob:

@@ -58,36 +58,6 @@ auto ExpectId(std::string_view id) {
   return testing::Field(&SessionKey::id, Session::Id(std::string(id)));
 }
 
-class TestDeferCompletion {
- public:
-  enum class CallbackType { kRestart, kContinue };
-
-  explicit TestDeferCompletion(base::OnceCallback<void(CallbackType)> callback)
-      : completion_callback_(std::move(callback)) {}
-  ~TestDeferCompletion() = default;
-
-  SessionService::RefreshCompleteCallback GetRestartCb() {
-    return base::BindOnce(&TestDeferCompletion::RestartRequest,
-                          weak_factory_.GetWeakPtr());
-  }
-
-  SessionService::RefreshCompleteCallback GetContinueCb() {
-    return base::BindOnce(&TestDeferCompletion::ContinueRequest,
-                          weak_factory_.GetWeakPtr());
-  }
-
-  void RestartRequest() {
-    std::move(completion_callback_).Run(CallbackType::kRestart);
-  }
-  void ContinueRequest() {
-    std::move(completion_callback_).Run(CallbackType::kContinue);
-  }
-
- private:
-  base::OnceCallback<void(CallbackType)> completion_callback_;
-  base::WeakPtrFactory<TestDeferCompletion> weak_factory_{this};
-};
-
 class FakeDeviceBoundSessionObserver {
  public:
   const std::vector<SessionAccess>& notifications() const {
@@ -489,17 +459,13 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   FakeDeviceBoundSessionObserver observer;
   request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
-
   // Set up the fetcher for a successful refresh.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kRefreshUrlString, kOrigin);
+  base::test::TestFuture<SessionService::RefreshResult> future;
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future.GetCallback());
 
   // Check access callback triggered by DeferRequestForRefresh.
   SessionAccess expected_access{SessionAccess::AccessType::kCreation,
@@ -509,8 +475,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
       ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
                                 SessionKey(site, Session::Id(kSessionId))}));
 
-  // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  // Check that the request successfully refreshed.
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
@@ -538,17 +504,14 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
   FakeDeviceBoundSessionObserver observer;
   request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future_2;
-  TestDeferCompletion defer_completion(
-      future_2.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future_2;
 
   // Set up a null fetcher for failure refresh.
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
       SessionError::ErrorType::kPersistentHttpError, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future_2.GetCallback());
 
   // Check access callback triggered by DeferRequestForRefresh.
   ASSERT_THAT(
@@ -559,8 +522,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
                                 SessionKey(site_1, Session::Id(kSessionId)),
                                 std::vector<std::string>{"test_cookie"}}));
 
-  // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future_2.Take(), TestDeferCompletion::CallbackType::kContinue);
+  EXPECT_EQ(future_2.Take(), SessionService::RefreshResult::kUnreachable);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
@@ -588,17 +550,14 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
   FakeDeviceBoundSessionObserver observer;
   request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
 
   // Set up a null fetcher for failure refresh.
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
       SessionError::ErrorType::kNetError, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future.GetCallback());
 
   // Check access callback triggered by DeferRequestForRefresh.
   ASSERT_THAT(
@@ -606,8 +565,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
       ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
                                 SessionKey(site_1, Session::Id(kSessionId))}));
 
-  // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  // Check that the refresh failed.
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
@@ -637,20 +596,18 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
   request->SetDeviceBoundSessionAccessCallback(
       future_2.GetRepeatingCallback<const SessionAccess&>());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future_3;
-  TestDeferCompletion defer_completion(
-      future_3.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future_3;
 
   // Set up a successful fetcher.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId2, kRefreshUrlString2, kOrigin2);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId2)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future_3.GetCallback());
 
-  // Check the continue callback is called.
-  EXPECT_EQ(future_3.Take(), TestDeferCompletion::CallbackType::kContinue);
+  // Check that refresh fails since the session wasn't supposed to be
+  // deferred.
+  EXPECT_EQ(future_3.Take(), SessionService::RefreshResult::kUnreachable);
 }
 
 TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
@@ -679,10 +636,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   FakeDeviceBoundSessionObserver observer;
   request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
 
   // Set up the fetcher for a successful refresh with a new session ID
   // which doesn't equal to the refreshing one.
@@ -690,7 +644,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
       kSessionId2, kRefreshUrlString, kOrigin);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future.GetCallback());
 
   // Check access callback triggered by DeferRequestForRefresh.
   EXPECT_THAT(
@@ -703,8 +657,8 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
                   SessionAccess{SessionAccess::AccessType::kCreation,
                                 SessionKey(site, Session::Id(kSessionId2))}));
 
-  // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  // Check session is refreshed.
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
 
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId2)));
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
@@ -736,10 +690,7 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   FakeDeviceBoundSessionObserver observer;
   request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
-  // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
 
   // Set up the fetcher for a successful refresh, but with invalid
   // parameters (e.g. doesn't specify any bound credentials).
@@ -751,7 +702,7 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   }));
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future.GetCallback());
 
   // Check access callback triggered by DeferRequestForRefresh.
   EXPECT_THAT(
@@ -761,8 +712,8 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
                   SessionAccess{SessionAccess::AccessType::kTermination,
                                 SessionKey(site, Session::Id(kSessionId)),
                                 std::vector<std::string>{"test_cookie"}}));
-  // Check the restart callback is called due to unsuccessful refresh.
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+  // Check the session refresh fails.
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
 }
 
@@ -818,16 +769,14 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
 
   RecordingNetLogObserver observer;
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kRefreshUrlString, kOrigin);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-      defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
+      future.GetCallback());
 
   EXPECT_EQ(
       observer.GetEntriesWithType(NetLogEventType::DBSC_REFRESH_REQUEST).size(),
@@ -846,48 +795,40 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
 
   // The first refresh succeeds
   {
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 
   // The second refresh succeeds
   {
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 
   // The third refresh is throttled
   {
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
   }
 
   // After five minutes, the quota is restored and the fourth refresh
   // succeeds.
   FastForwardBy(base::Minutes(5));
   {
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 }
 
@@ -903,13 +844,11 @@ TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
 
   // The third refresh is not throttled because the refresh quota is disabled.
   for (size_t i = 0; i < 3; i++) {
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
 }
 
@@ -928,17 +867,40 @@ TEST_F(SessionServiceImplTest, SessionBackoff) {
   // Do four failing refreshes.
   for (size_t i = 0; i < 4; i++) {
     FastForwardBy(base::Minutes(5));
-    base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-    TestDeferCompletion defer_completion(
-        future.GetCallback<TestDeferCompletion::CallbackType>());
+    base::test::TestFuture<SessionService::RefreshResult> future;
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
-        defer_completion.GetRestartCb(), defer_completion.GetContinueCb());
-    EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kUnreachable);
   }
 
   // Backoff should prevent us from deferring anymore.
   std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
+}
+
+TEST_F(SessionServiceImplTest, RepeatedDeferral) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  ASSERT_TRUE(maybe_deferral);
+  EXPECT_FALSE(maybe_deferral->is_pending_initialization);
+  EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
+
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)});
+
+  maybe_deferral =
       service().ShouldDefer(request.get(), FirstPartySetMetadata());
   EXPECT_FALSE(maybe_deferral);
 }
@@ -1059,19 +1021,16 @@ TEST_F(SessionServiceImplWithStoreTest, RequestsWaitForSessionsToLoad) {
   EXPECT_TRUE(maybe_deferral->is_pending_initialization);
 
   // Now actually defer the request
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
   service().DeferRequestForRefresh(request.get(), *maybe_deferral,
-                                   defer_completion.GetRestartCb(),
-                                   defer_completion.GetContinueCb());
+                                   future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
   // Complete loading. We should now restart the request.
   FinishLoadingSessions(SessionStore::SessionsMap());
 
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kInitializedService);
 }
 
 TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
@@ -1130,14 +1089,11 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
                                                 Session::Id(kSessionId), _))
       .WillOnce(RunOnceCallback<2>(unexportable_keys::UnexportableKeyId()));
 
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
-  TestDeferCompletion defer_completion(
-      future.GetCallback<TestDeferCompletion::CallbackType>());
+  base::test::TestFuture<SessionService::RefreshResult> future;
   service().DeferRequestForRefresh(request.get(), *maybe_deferral,
-                                   defer_completion.GetRestartCb(),
-                                   defer_completion.GetContinueCb());
+                                   future.GetCallback());
 
-  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
+  EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
 }
 
 }  // namespace net::device_bound_sessions

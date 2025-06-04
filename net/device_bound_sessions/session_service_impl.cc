@@ -54,11 +54,8 @@ bool SessionMatchesFilter(
 
 DeferredURLRequest::DeferredURLRequest(
     const URLRequest* request,
-    SessionService::RefreshCompleteCallback restart_callback,
-    SessionService::RefreshCompleteCallback continue_callback)
-    : request(request),
-      restart_callback(std::move(restart_callback)),
-      continue_callback(std::move(continue_callback)) {}
+    SessionService::RefreshCompleteCallback callback)
+    : request(request), callback(std::move(callback)) {}
 
 DeferredURLRequest::DeferredURLRequest(DeferredURLRequest&& other) noexcept =
     default;
@@ -169,8 +166,14 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     return DeferralParams();
   }
   SchemefulSite site(request->url());
+  const base::flat_set<SessionKey>& previous_deferrals =
+      request->device_bound_session_deferrals();
   auto range = GetSessionsForSite(site);
   for (auto it = range.first; it != range.second; ++it) {
+    if (previous_deferrals.find({site, it->second->id()}) !=
+        previous_deferrals.end()) {
+      continue;
+    }
     if (it->second->ShouldDeferRequest(request, first_party_set_metadata)) {
       NotifySessionAccess(request->device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, site,
@@ -185,10 +188,8 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
 void SessionServiceImpl::DeferRequestForRefresh(
     URLRequest* request,
     DeferralParams deferral,
-    RefreshCompleteCallback restart_callback,
-    RefreshCompleteCallback continue_callback) {
-  CHECK(restart_callback);
-  CHECK(continue_callback);
+    RefreshCompleteCallback callback) {
+  CHECK(callback);
   CHECK(request);
 
   if (deferral.is_pending_initialization) {
@@ -196,7 +197,8 @@ void SessionServiceImpl::DeferRequestForRefresh(
     requests_before_initialization_++;
     // Due to the need to recompute `first_party_set_metadata`, we always
     // restart the request after initialization completes.
-    queued_operations_.push_back(std::move(restart_callback));
+    queued_operations_.push_back(base::BindOnce(
+        std::move(callback), RefreshResult::kInitializedService));
     return;
   }
 
@@ -208,8 +210,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
     needs_refresh = true;
   }
   // Add the request to the deferred list.
-  it->second.emplace_back(request, std::move(restart_callback),
-                          std::move(continue_callback));
+  it->second.emplace_back(request, std::move(callback));
 
   SchemefulSite site(request->url());
   auto* session = GetSession(site, session_id);
@@ -284,11 +285,10 @@ void SessionServiceImpl::UnblockDeferredRequests(const Session::Id& session_id,
     base::UmaHistogramTimes("Net.DeviceBoundSessions.RequestDeferredDuration",
                             request.timer.Elapsed());
 
-    if (is_cookie_refreshed) {
-      std::move(request.restart_callback).Run();
-    } else {
-      std::move(request.continue_callback).Run();
-    }
+    // TODO(crbug.com/417401759): Propagate a better result.
+    std::move(request.callback)
+        .Run(is_cookie_refreshed ? RefreshResult::kRefreshed
+                                 : RefreshResult::kUnreachable);
   }
 }
 
