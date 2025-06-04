@@ -274,6 +274,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
   result->profile_store_backend_error_ = profile_store_backend_error_;
+  result->account_store_backend_error_ = account_store_backend_error_;
 
   return result;
 }
