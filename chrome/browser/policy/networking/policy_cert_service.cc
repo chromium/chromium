@@ -27,9 +27,7 @@
 
 namespace policy {
 
-PolicyCertService::~PolicyCertService() {
-  StopListeningToPolicyCertificateProvider();
-}
+PolicyCertService::~PolicyCertService() = default;
 
 PolicyCertService::PolicyCertService(
     Profile* profile,
@@ -38,8 +36,8 @@ PolicyCertService::PolicyCertService(
     : profile_(profile),
       policy_certificate_provider_(policy_certificate_provider),
       may_use_profile_wide_trust_anchors_(may_use_profile_wide_trust_anchors) {
-  DCHECK(policy_certificate_provider_);
-  DCHECK(profile_);
+  CHECK(policy_certificate_provider_);
+  CHECK(profile_);
 }
 
 PolicyCertService::PolicyCertService(Profile* profile)
@@ -61,7 +59,19 @@ void PolicyCertService::StartObservingCertChanges(
   profile_wide_trust_anchors_ = GetAllowedProfileWideTrustAnchors();
 }
 
+void PolicyCertService::StopObservingCertChanges() {
+  // If `on_policy_provided_certs_changed_callback_` is not set then the
+  // observer was never added or has already been removed.
+  if (!on_policy_provided_certs_changed_callback_) {
+    return;
+  }
+  CHECK(policy_certificate_provider_);
+  policy_certificate_provider_->RemovePolicyProvidedCertsObserver(this);
+  on_policy_provided_certs_changed_callback_.Reset();
+}
+
 void PolicyCertService::OnPolicyProvidedCertsChanged() {
+  CHECK(policy_certificate_provider_);
   profile_wide_all_server_and_authority_certs_ =
       policy_certificate_provider_->GetAllServerAndAuthorityCertificates(
           chromeos::onc::CertificateScope::Default());
@@ -86,7 +96,10 @@ void PolicyCertService::OnPolicyProvidedCertsChanged() {
 }
 
 void PolicyCertService::OnPolicyCertificateProviderDestroying() {
-  StopListeningToPolicyCertificateProvider();
+  StopObservingCertChanges();
+  // Set our PolicyCertificateProvider pointer to null so that it doesn't become
+  // dangling.
+  policy_certificate_provider_ = nullptr;
 }
 
 void PolicyCertService::GetPolicyCertificatesForStoragePartition(
@@ -97,6 +110,7 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
       profile_wide_all_server_and_authority_certs_;
   *out_trust_anchors = profile_wide_trust_anchors_;
 
+  CHECK(policy_certificate_provider_);
   if (policy_certificate_provider_->GetExtensionIdsWithPolicyCertificates()
           .empty()) {
     return;
@@ -173,6 +187,7 @@ net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
     return {};
   }
 
+  CHECK(policy_certificate_provider_);
   return policy_certificate_provider_->GetWebTrustedCertificates(
       chromeos::onc::CertificateScope::Default());
 }
@@ -191,14 +206,6 @@ void PolicyCertService::SetPolicyTrustAnchorsForTesting(
 
   profile_wide_all_server_and_authority_certs_ = trust_anchors;
   profile_wide_trust_anchors_ = trust_anchors;
-}
-
-void PolicyCertService::StopListeningToPolicyCertificateProvider() {
-  if (!policy_certificate_provider_) {
-    return;
-  }
-  policy_certificate_provider_->RemovePolicyProvidedCertsObserver(this);
-  policy_certificate_provider_ = nullptr;
 }
 
 }  // namespace policy

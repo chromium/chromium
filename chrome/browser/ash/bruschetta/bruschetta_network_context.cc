@@ -149,9 +149,12 @@ void BruschettaNetworkContext::OnCertificateRequested(
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder_remote) {
-  if (!cert_store_) {
-    cert_store_ = ProfileNetworkContextServiceFactory::GetForContext(profile_)
-                      ->CreateClientCertStore();
+  if (!cert_store_ &&
+      !(cert_store_ =
+            ProfileNetworkContextServiceFactory::GetForContext(profile_)
+                ->CreateClientCertStore())) {
+    OnGotClientCerts(cert_info, std::move(cert_responder_remote), /*certs=*/{});
+    return;
   }
   cert_store_->GetClientCerts(
       cert_info, base::BindOnce(&BruschettaNetworkContext::OnGotClientCerts,

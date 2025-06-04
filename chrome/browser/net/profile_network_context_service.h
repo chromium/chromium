@@ -131,7 +131,7 @@ class ProfileNetworkContextService
   void set_client_cert_store_factory_for_testing(
       base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
           factory) {
-    client_cert_store_factory_ = std::move(factory);
+    client_cert_store_factory_for_testing_ = std::move(factory);
   }
 
   // Get platform ClientCertStore. May return nullptr.
@@ -232,9 +232,14 @@ class ProfileNetworkContextService
   void OnMitigationsEnabledFor3pcdChanged(bool enable) override;
   void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) override;
 
-  const raw_ptr<Profile> profile_;
+  // KeyedService:
+  void Shutdown() override;
 
-  ProxyConfigMonitor proxy_config_monitor_;
+  bool is_shutting_down_ = false;
+
+  raw_ptr<Profile> profile_;
+
+  std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
 
   BooleanPrefMember quic_allowed_;
   StringPrefMember pref_accept_language_;
@@ -254,9 +259,8 @@ class ProfileNetworkContextService
   base::CallbackListSubscription server_cert_database_observer_;
 #endif
 
-  // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
-      client_cert_store_factory_;
+      client_cert_store_factory_for_testing_;
 
   base::WeakPtrFactory<ProfileNetworkContextService> weak_factory_{this};
 };

@@ -58,6 +58,10 @@ class PolicyCertService : public KeyedService,
   // the network service is enabled.
   void StartObservingCertChanges(base::RepeatingClosure callback);
 
+  // Clears the callback set by `StartObservingCertChanges()` and stops
+  // observing for changes to the policy-provided certificates.
+  void StopObservingCertChanges();
+
   // Returns true if the service is currently observing changes to the
   // policy-provided certificates.
   bool IsObservingCertChanges() const {
@@ -101,10 +105,6 @@ class PolicyCertService : public KeyedService,
   // trust and have profile-wide scope. If |may_use_profile_wide_trust_anchors_|
   // is false, always returns an empty list.
   net::CertificateList GetAllowedProfileWideTrustAnchors();
-
-  // Stops listening for updates from `policy_certificate_provider_`, if
-  // `policy_certificate_provider_` is set. Otherwise it does nothing.
-  void StopListeningToPolicyCertificateProvider();
 
   const raw_ptr<Profile> profile_;
 
