@@ -222,4 +222,16 @@ BackingStoreTransactionImpl::OpenIndexCursor(
   return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
+blink::mojom::IDBValuePtr BackingStoreTransactionImpl::BuildMojoValue(
+    IndexedDBValue value) {
+  auto mojo_value = blink::mojom::IDBValue::New();
+  if (!value.empty()) {
+    mojo_value->bits = std::move(value.bits);
+  }
+  if (!value.external_objects.empty()) {
+    NOTIMPLEMENTED();
+  }
+  return mojo_value;
+}
+
 }  // namespace content::indexed_db::sqlite

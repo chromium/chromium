@@ -224,6 +224,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) override;
+    blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) override;
 
     Status PutExternalObjectsIfNeeded(const std::string& object_store_data_key,
                                       std::vector<IndexedDBExternalObject>*);

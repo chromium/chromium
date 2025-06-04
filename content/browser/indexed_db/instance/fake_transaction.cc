@@ -195,4 +195,9 @@ FakeTransaction::OpenIndexCursor(int64_t object_store_id,
                                                key_range, direction);
 }
 
+blink::mojom::IDBValuePtr FakeTransaction::BuildMojoValue(
+    IndexedDBValue value) {
+  return wrapped_transaction_->BuildMojoValue(std::move(value));
+}
+
 }  // namespace content::indexed_db

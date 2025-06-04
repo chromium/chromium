@@ -435,6 +435,7 @@ void BucketContext::CreateAllExternalObjects(
     const std::vector<IndexedDBExternalObject>& objects,
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!ShouldUseSqlite());
 
   TRACE_EVENT0("IndexedDB", "BucketContext::CreateAllExternalObjects");
 

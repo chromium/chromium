@@ -95,6 +95,7 @@ class FakeTransaction : public BackingStore::Transaction {
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection) override;
+  blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) override;
 
  private:
   Status result_;

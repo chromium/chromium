@@ -18,9 +18,6 @@
 namespace content::indexed_db {
 
 struct CONTENT_EXPORT IndexedDBValue {
-  // Destructively converts an IndexedDBValue to a Mojo Value.
-  static blink::mojom::IDBValuePtr ConvertAndEraseValue(IndexedDBValue* value);
-
   IndexedDBValue();
   ~IndexedDBValue();
 

@@ -135,13 +135,10 @@ Status Cursor::AdvanceOperation(
   }
 
   blink::mojom::IDBValuePtr mojo_value;
-  std::vector<IndexedDBExternalObject> external_objects;
   IndexedDBValue* value = Value();
   if (value) {
-    mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
-    external_objects.swap(value->external_objects);
-    transaction_->bucket_context()->CreateAllExternalObjects(
-        external_objects, &mojo_value->external_objects);
+    mojo_value = transaction_->BackingStoreTransaction()->BuildMojoValue(
+        std::move(*value));
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -210,13 +207,10 @@ Status Cursor::ContinueOperation(
   }
 
   blink::mojom::IDBValuePtr mojo_value;
-  std::vector<IndexedDBExternalObject> external_objects;
   IndexedDBValue* value = Value();
   if (value) {
-    mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
-    external_objects.swap(value->external_objects);
-    transaction_->bucket_context()->CreateAllExternalObjects(
-        external_objects, &mojo_value->external_objects);
+    mojo_value = transaction_->BackingStoreTransaction()->BuildMojoValue(
+        std::move(*value));
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -335,11 +329,10 @@ Status Cursor::PrefetchIterationOperation(
 
   std::vector<blink::mojom::IDBValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
-  for (size_t i = 0; i < found_values.size(); ++i) {
-    mojo_values.push_back(
-        IndexedDBValue::ConvertAndEraseValue(&found_values[i]));
-    transaction_->bucket_context()->CreateAllExternalObjects(
-        found_values[i].external_objects, &mojo_values[i]->external_objects);
+  for (IndexedDBValue& value : found_values) {
+    mojo_values.emplace_back(
+        transaction_->BackingStoreTransaction()->BuildMojoValue(
+            std::move(value)));
   }
 
   std::move(callback).Run(blink::mojom::IDBCursorResult::NewValues(

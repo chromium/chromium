@@ -203,6 +203,7 @@ class CONTENT_EXPORT BucketContext
 
   // Create external objects from |objects| and store the results in
   // |mojo_objects|. |mojo_objects| must be the same length as |objects|.
+  // Only used for LevelDB.
   void CreateAllExternalObjects(
       const std::vector<IndexedDBExternalObject>& objects,
       std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects);

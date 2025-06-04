@@ -9,18 +9,6 @@
 
 namespace content::indexed_db {
 
-// static
-blink::mojom::IDBValuePtr IndexedDBValue::ConvertAndEraseValue(
-    IndexedDBValue* value) {
-  auto mojo_value = blink::mojom::IDBValue::New();
-  if (!value->empty()) {
-    mojo_value->bits = std::move(value->bits);
-  }
-  IndexedDBExternalObject::ConvertToMojo(value->external_objects,
-                                         &mojo_value->external_objects);
-  return mojo_value;
-}
-
 IndexedDBValue::IndexedDBValue() = default;
 IndexedDBValue::~IndexedDBValue() = default;
 

@@ -197,6 +197,7 @@ class BackingStore {
         int64_t index_id,
         const blink::IndexedDBKeyRange& key_range,
         blink::mojom::IDBCursorDirection) = 0;
+    virtual blink::mojom::IDBValuePtr BuildMojoValue(IndexedDBValue value) = 0;
   };
 
   // Another interface to be implemented by a backend implementation.
