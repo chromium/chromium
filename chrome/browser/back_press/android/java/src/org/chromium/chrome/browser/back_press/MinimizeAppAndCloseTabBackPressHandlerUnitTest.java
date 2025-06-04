@@ -199,6 +199,8 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
             MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.BAKLAVA);
         } else if (systemBack) {
             MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.TIRAMISU);
+        } else {
+            MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.S_V2);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
