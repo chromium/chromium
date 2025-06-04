@@ -379,6 +379,15 @@ int SSLConnectJob::DoSSLConnect() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
+      endpoint_result_ &&
+      !endpoint_result_->metadata.trust_anchor_ids.empty() &&
+      !ssl_client_context()->config().trust_anchor_ids.empty()) {
+    ssl_config.trust_anchor_ids = SSLConfig::SelectTrustAnchorIDs(
+        endpoint_result_->metadata.trust_anchor_ids,
+        ssl_client_context()->config().trust_anchor_ids);
+  }
+
   net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
     base::Value::Dict dict;
     dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);

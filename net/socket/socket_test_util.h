@@ -609,6 +609,7 @@ struct SSLSocketDataProvider {
   std::optional<bool> expected_ignore_certificate_errors;
   std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
   std::optional<std::vector<uint8_t>> expected_ech_config_list;
+  std::optional<std::vector<uint8_t>> expected_trust_anchor_ids;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;

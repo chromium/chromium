@@ -46,4 +46,21 @@ int SSLConfig::GetCertVerifyFlags() const {
   return flags;
 }
 
+// static
+std::vector<uint8_t> SSLConfig::SelectTrustAnchorIDs(
+    const std::vector<std::vector<uint8_t>>& server_advertised_trust_anchor_ids,
+    const absl::flat_hash_set<std::vector<uint8_t>>& trusted_trust_anchor_ids) {
+  std::vector<uint8_t> selected_trust_anchor_ids;
+  for (const auto& server_advertised_tai : server_advertised_trust_anchor_ids) {
+    if (trusted_trust_anchor_ids.contains(server_advertised_tai)) {
+      selected_trust_anchor_ids.emplace_back(
+          base::checked_cast<uint8_t>(server_advertised_tai.size()));
+      selected_trust_anchor_ids.insert(selected_trust_anchor_ids.end(),
+                                       server_advertised_tai.begin(),
+                                       server_advertised_tai.end());
+    }
+  }
+  return selected_trust_anchor_ids;
+}
+
 }  // namespace net

@@ -20,6 +20,10 @@
 #include <shlobj.h>
 #include <stdint.h>
 
+// LogSeverity is both a macro in setupapi.h and in absl, which is used
+// indirectly within InProcessBrowserTest.
+#undef LogSeverity
+
 #include <optional>
 
 #include "base/base_paths_win.h"

@@ -793,6 +793,12 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // Finch-controlled list of ports that should be blocked on localhost.
 NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
 
+// Enables TLS Trust Anchor IDs
+// (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html),
+// a TLS extension to help the server serve a certificate that the client will
+// trust.
+NET_EXPORT BASE_DECLARE_FEATURE(kTLSTrustAnchorIDs);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

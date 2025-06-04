@@ -778,4 +778,8 @@ BASE_FEATURE(kRestrictAbusePortsOnLocalhost,
              "RestrictAbusePortsOnLocalhost",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTLSTrustAnchorIDs,
+             "TLSTrustAnchorIDs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
