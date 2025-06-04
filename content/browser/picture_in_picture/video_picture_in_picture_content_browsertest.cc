@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -571,8 +572,16 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
 // Tests Media Session action availability upon reaching the end of stream by
 // verifying that the "nexttrack" action can be invoked after playing through
 // to the end of media.
+// TODO(https://crbug.com/422414020): This is failing on Windows arm64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
+  DISABLED_ActionAvailableAfterEndOfStreamAndSrcUpdate
+#else
+#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
+  ActionAvailableAfterEndOfStreamAndSrcUpdate
+#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       ActionAvailableAfterEndOfStreamAndSrcUpdate) {
+                       MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
