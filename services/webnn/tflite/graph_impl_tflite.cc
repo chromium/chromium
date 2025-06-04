@@ -408,6 +408,7 @@ class GraphImplTflite::ComputeResources {
 
   flatbuffers::DetachedBuffer model_content_;
   std::vector<uint8_t> model_weights_;
+  std::vector<DelegateInfo> delegates_;
 
   // `model_` depends on `model_content_` outliving it.
   std::unique_ptr<::tflite::FlatBufferModel> model_;
@@ -415,13 +416,13 @@ class GraphImplTflite::ComputeResources {
   // `allocation_` depends on `model_weights_` outliving it.
   std::unique_ptr<::tflite::Allocation> allocation_;
 
-  // `interpreter_` depends on `model_` and `allocation_` outliving it.
+  // `interpreter_` depends on `model_`, `allocation_`, and `delegates_`
+  // outliving it.
   std::unique_ptr<::tflite::Interpreter> interpreter_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
   ::tflite::profiling::BufferedProfiler profiler_{/*max_num_entries=*/1024};
 #endif
-  std::vector<DelegateInfo> delegates_;
 };
 
 // static
