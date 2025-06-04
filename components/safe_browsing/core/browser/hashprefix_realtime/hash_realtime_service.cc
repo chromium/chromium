@@ -422,14 +422,6 @@ void HashRealTimeService::OnURLLoaderComplete(
         "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
         ohttp_client_destructed_early);
   }
-  if (net_error == net::ERR_NAME_NOT_RESOLVED) {
-    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.NameNotResolved",
-                            network_time);
-  }
-  if (net_error == net::ERR_CONNECTION_CLOSED) {
-    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.ConnectionClosed",
-                            network_time);
-  }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
       response = ParseResponseAndUpdateBackoff(net_error, response_code,

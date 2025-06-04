@@ -105,16 +105,11 @@ class HashRealTimeService : public KeyedService {
 
  private:
   friend class HashRealTimeServiceTest;
-  friend class HashRealTimeServiceDirectFetchTest;
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_RetriableNetError);
-  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
-                           TestLookupFailure_NetErrorNameNotResolved);
-  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
-                           TestLookupFailure_NetErrorConnectionClosed);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_NetErrorHttpCodeFailure);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -138,8 +133,6 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_NotCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_OhttpClientDestructedEarly);
-  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
-                           TestLookupFailure_RetriableNetError);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
 

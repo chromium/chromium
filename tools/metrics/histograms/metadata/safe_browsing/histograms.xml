@@ -1476,7 +1476,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult{Protocol}"
-    enum="SafeBrowsingApiJavaValidationResult" expires_after="2025-06-22">
+    enum="SafeBrowsingApiJavaValidationResult" expires_after="2026-06-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1844,21 +1844,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     real-time lookup. Logged on each resource check for which a lookup request
     is sent to the server.
   </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HPRT.Network.Time.{NetError}" units="ms"
-    expires_after="2025-06-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the roundtrip time it took to perform a Safe Browsing hash-prefix
-    real-time lookup when the net error is {NetError}. Logged on each resource
-    check for which a lookup request is sent to the server.
-  </summary>
-  <token key="NetError">
-    <variant name="ConnectionClosed" summary="ERR_CONNECTION_CLOSED"/>
-    <variant name="NameNotResolved" summary="ERR_NAME_NOT_RESOLVED"/>
-  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.Network.{ResponseSource}Result"
@@ -2845,7 +2830,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.UserPopulation{UserCategory}"
-    enum="SafeBrowsingUserPopulation" expires_after="2025-07-06">
+    enum="SafeBrowsingUserPopulation" expires_after="2026-06-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3486,7 +3471,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2{SafeBrowsing_V4Store_Metrics}"
-    units="entries" expires_after="2025-07-06">
+    units="entries" expires_after="2026-06-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

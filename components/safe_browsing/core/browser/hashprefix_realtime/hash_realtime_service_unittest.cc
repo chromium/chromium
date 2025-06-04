@@ -347,16 +347,6 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_bucket_count=*/1);
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.Network.Time", /*expected_count=*/1);
-    histogram_tester_->ExpectTotalCount(
-        /*name=*/"SafeBrowsing.HPRT.Network.Time.NameNotResolved",
-        /*expected_count=*/expected_network_result == net::ERR_NAME_NOT_RESOLVED
-            ? 1
-            : 0);
-    histogram_tester_->ExpectTotalCount(
-        /*name=*/"SafeBrowsing.HPRT.Network.Time.ConnectionClosed",
-        /*expected_count=*/expected_network_result == net::ERR_CONNECTION_CLOSED
-            ? 1
-            : 0);
     histogram_tester_->ExpectUniqueSample(
         /*name=*/"SafeBrowsing.HPRT.Network.Result",
         /*sample=*/expected_network_result,
@@ -1140,34 +1130,6 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
       /*expected_network_result_suffix=*/"NetErrorResult",
       /*expected_operation_outcome=*/
       HashRealTimeService::OperationOutcome::kRetriableError);
-}
-TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorNameNotResolved) {
-  GURL url = GURL("https://example.test");
-  RunRequestFailureTest(
-      /*url=*/url, /*response_full_hashes=*/std::nullopt,
-      /*custom_response=*/"",
-      /*net_error=*/net::ERR_NAME_NOT_RESOLVED,
-      /*outer_response_error_code=*/std::nullopt,
-      /*inner_response_code=*/std::nullopt,
-      /*expected_prefix_count=*/1,
-      /*expected_network_result=*/net::ERR_NAME_NOT_RESOLVED,
-      /*expected_network_result_suffix=*/"NetErrorResult",
-      /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNetworkError);
-}
-TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorConnectionClosed) {
-  GURL url = GURL("https://example.test");
-  RunRequestFailureTest(
-      /*url=*/url, /*response_full_hashes=*/std::nullopt,
-      /*custom_response=*/"",
-      /*net_error=*/net::ERR_CONNECTION_CLOSED,
-      /*outer_response_error_code=*/std::nullopt,
-      /*inner_response_code=*/std::nullopt,
-      /*expected_prefix_count=*/1,
-      /*expected_network_result=*/net::ERR_CONNECTION_CLOSED,
-      /*expected_network_result_suffix=*/"NetErrorResult",
-      /*expected_operation_outcome=*/
-      HashRealTimeService::OperationOutcome::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
