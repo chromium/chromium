@@ -1078,6 +1078,7 @@ public final class ProductionSupportedFlagList {
                 "PrefetchServiceWorker",
                 "Enables SpeculationRules prefetch to ServiceWorker-controlled URLs."),
         Flag.baseFeature("TimedHTMLParserBudget"),
+        Flag.baseFeature("BackgroundUpdateForRegisteredStorageKeys"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

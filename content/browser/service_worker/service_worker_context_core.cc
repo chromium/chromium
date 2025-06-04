@@ -724,7 +724,19 @@ void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
 
 bool ServiceWorkerContextCore::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextCore::MaybeHasRegistrationForStorageKey");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The following code implements a performance optimization: it retrieves
+  // `storage_keys` from the `ServiceWorkerStorage` in the thread pool without
+  // waiting for `DidGetRegisteredStorageKeys()` to be called. This can speed up
+  // navigation during the browser startup phase.
+  if (!registrations_initialized_ && wrapper_->storage_shared_buffer()) {
+    if (std::optional<std::vector<blink::StorageKey>> storage_keys =
+            wrapper_->storage_shared_buffer()->TakeRegisteredKeys()) {
+      SetRegisteredStorageKeys(*storage_keys);
+    }
+  }
   if (!registrations_initialized_) {
     return true;
   }
@@ -1427,14 +1439,18 @@ void ServiceWorkerContextCore::OnRegistrationFinishedForCheckHasServiceWorker(
 void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
     base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextCore::DidGetRegisteredStorageKeys");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  for (const blink::StorageKey& storage_key : storage_keys) {
-    registered_storage_keys_.insert(storage_key);
+  if (wrapper_->storage_shared_buffer()) {
+    // Discard RegisteredKeys from storage_shared_buffer.
+    wrapper_->storage_shared_buffer()->TakeRegisteredKeys();
   }
 
-  DCHECK(!registrations_initialized_);
-  registrations_initialized_ = true;
+  if (!registrations_initialized_) {
+    SetRegisteredStorageKeys(storage_keys);
+  }
 
   if (on_registrations_initialized_for_test_) {
     std::move(on_registrations_initialized_for_test_).Run();
@@ -1445,6 +1461,17 @@ void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
         "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
         base::TimeTicks::Now() - start_time);
   }
+}
+
+void ServiceWorkerContextCore::SetRegisteredStorageKeys(
+    const std::vector<blink::StorageKey>& storage_keys) {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextCore::SetRegisteredStorageKeys");
+  CHECK(!registrations_initialized_);
+  for (const blink::StorageKey& storage_key : storage_keys) {
+    registered_storage_keys_.insert(storage_key);
+  }
+  registrations_initialized_ = true;
 }
 
 ScopedServiceWorkerClient::ScopedServiceWorkerClient(

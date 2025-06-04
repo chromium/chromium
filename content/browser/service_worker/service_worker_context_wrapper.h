@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_identifiability_metrics.h"
@@ -432,6 +433,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
           receiver);
 
+  scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>&
+  storage_shared_buffer() {
+    return storage_shared_buffer_;
+  }
+
   using StorageControlBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>)>;
   // Sets a callback to bind ServiceWorkerStorageControl for testing.
@@ -607,6 +613,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // ServiceWorkerStorage is sandboxed. An instance of this impl should live in
   // the storage service, not here.
   std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
+  scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+      storage_shared_buffer_;
+
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
