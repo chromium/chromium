@@ -93,7 +93,7 @@ enum class BackgroundPageType {
   kServiceWorker,
 
   // New enum values must go above here.
-  kNumBackgroundPageTypes
+  kMaxValue = kServiceWorker
 };
 
 // Used in histogram Extensions.ExternalItemState.
@@ -742,13 +742,11 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // are effectively extensions. Unfortunately, it's too late, as we don't
     // want to mess up the existing stats.
     if (type == Manifest::TYPE_EXTENSION) {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.BackgroundPageType",
-                                GetBackgroundPageType(extension),
-                                BackgroundPageType::kNumBackgroundPageTypes);
+      base::UmaHistogramEnumeration("Extensions.BackgroundPageType",
+                                    GetBackgroundPageType(extension));
       if (should_record_incremented_metrics) {
-        UMA_HISTOGRAM_ENUMERATION("Extensions.BackgroundPageType2",
-                                  GetBackgroundPageType(extension),
-                                  BackgroundPageType::kNumBackgroundPageTypes);
+        base::UmaHistogramEnumeration("Extensions.BackgroundPageType2",
+                                      GetBackgroundPageType(extension));
       }
 
       if (GetBackgroundPageType(extension) == BackgroundPageType::kEventPage) {
