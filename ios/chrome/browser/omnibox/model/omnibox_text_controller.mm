@@ -257,7 +257,7 @@
 }
 
 - (void)onTextInputModeChange {
-  // Update the popup to align suggestions with the text in the textField.
+  [self updatePopupLayoutDirection];
   [self.omniboxAutocompleteController updatePopupSuggestions];
 }
 

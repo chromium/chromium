@@ -60,10 +60,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
 
-// Whether the omnibox has a thumbnail.
-@property(nonatomic, assign) BOOL hasThumbnail;
-
-// Holds the current suggestion groups.
+/// Holds the current suggestion groups.
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups;
 
@@ -120,12 +117,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     didUpdateSemanticContentAttribute:
         (UISemanticContentAttribute)semanticContentAttribute {
   [self.consumer setSemanticContentAttribute:semanticContentAttribute];
-}
-
-- (void)omniboxAutocompleteController:
-            (OmniboxAutocompleteController*)omniboxAutocompleteController
-                didUpdateHasThumbnail:(BOOL)hasThumbnail {
-  self.hasThumbnail = hasThumbnail;
 }
 
 - (void)omniboxAutocompleteController:

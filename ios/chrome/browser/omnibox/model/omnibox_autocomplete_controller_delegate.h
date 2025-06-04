@@ -30,11 +30,6 @@
     didUpdateSemanticContentAttribute:
         (UISemanticContentAttribute)semanticContentAttribute;
 
-/// Notifies the delegate of thumbnail update.
-- (void)omniboxAutocompleteController:
-            (OmniboxAutocompleteController*)omniboxAutocompleteController
-                didUpdateHasThumbnail:(BOOL)hasThumbnail;
-
 /// Notifies the delegate of the updated suggestions groups.
 - (void)omniboxAutocompleteController:
             (OmniboxAutocompleteController*)omniboxAutocompleteController

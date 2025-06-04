@@ -68,7 +68,7 @@
 
   // Before inserting pedals above all, back up non-pedal suggestions for
   // debouncing.
-  _nonPedalSuggestionsGroups = groups;
+  _nonPedalSuggestionsGroups = [NSArray arrayWithArray:groups];
 
   // Get pedals, if any. They go at the very top of the list.
   id<AutocompleteSuggestionGroup> pedalSuggestionsGroup =

@@ -329,8 +329,6 @@ using base::UserMetricsAction;
 }
 
 - (void)setHasThumbnail:(BOOL)hasThumbnail {
-  [self.delegate omniboxAutocompleteController:self
-                         didUpdateHasThumbnail:hasThumbnail];
   self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
 }
 
