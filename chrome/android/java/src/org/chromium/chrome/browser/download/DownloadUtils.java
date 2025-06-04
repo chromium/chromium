@@ -277,9 +277,9 @@ public class DownloadUtils {
         }
         OfflinePageOrigin origin = new OfflinePageOrigin(context, tab);
 
-        if (tab.isShowingErrorPage()) {
+        if (tab.isShowingErrorPage() && !tab.isIncognito()) {
             // The download needs to be scheduled to happen at later time due to current network
-            // error.
+            // error. This is not available in incognito mode.
             final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
             bridge.scheduleDownload(
                     tab.getWebContents(),

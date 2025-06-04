@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.download.ChromeDownloadDelegate;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -134,6 +135,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean startDownload(GURL url, boolean isLink) {
         return !isLink
                 || !ChromeDownloadDelegate.from(mTab).shouldInterceptContextMenuDownload(url);
+    }
+
+    public void startDownloadPage(Context context) {
+        DownloadUtils.downloadOfflinePage(context, mTab, false);
     }
 
     /** Initiates the printing process of the current page. */

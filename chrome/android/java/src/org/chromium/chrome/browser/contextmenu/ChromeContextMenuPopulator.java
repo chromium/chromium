@@ -757,11 +757,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         } else if (itemId == R.id.contextmenu_save_page) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_PAGE);
-            GURL url = mItemDelegate.getPageUrl();
             if (mIsDownloadRestrictedByPolicy) {
                 showDownloadRestrictedToast();
-            } else if (mItemDelegate.startDownload(url, true)) {
-                mNativeDelegate.startDownload(url, false);
+            } else {
+                mItemDelegate.startDownloadPage(mContext);
             }
         } else if (itemId == R.id.contextmenu_share_page) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_PAGE);

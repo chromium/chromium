@@ -16,6 +16,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
