@@ -14,8 +14,9 @@
 #include "build/build_config.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -24,7 +25,6 @@
 
 namespace gfx {
 class GpuFence;
-struct GpuMemoryBufferHandle;
 }  // namespace gfx
 
 namespace gpu {

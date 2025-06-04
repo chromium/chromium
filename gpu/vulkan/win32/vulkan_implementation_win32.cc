@@ -15,7 +15,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "gpu/vulkan/win32/vulkan_surface_win32.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
