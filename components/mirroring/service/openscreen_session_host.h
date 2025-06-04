@@ -319,10 +319,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // destructed only on the destruction of this class.
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
 
-  // Task runners used specifically for audio, video encoding.
-  scoped_refptr<base::SingleThreadTaskRunner> audio_encode_thread_;
-  scoped_refptr<base::SingleThreadTaskRunner> video_encode_thread_;
-
   // Called when audio is successfully captured by `audio_input_device_`.
   std::unique_ptr<AudioCapturingCallback> audio_capturing_callback_;
 

@@ -21,7 +21,7 @@ using media::cast::CastEnvironment;
 MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     scoped_refptr<CastEnvironment> cast_environment,
     viz::Gpu& gpu,
-    base::RepeatingClosure context_lost_cb)
+    base::OnceClosure context_lost_cb)
     : cast_environment_(std::move(cast_environment)),
       gpu_(gpu),
       context_lost_cb_(std::move(context_lost_cb)) {}
@@ -30,13 +30,12 @@ MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     MirroringGpuFactoriesFactory&&) = default;
 MirroringGpuFactoriesFactory& MirroringGpuFactoriesFactory::operator=(
     MirroringGpuFactoriesFactory&&) = default;
+
 MirroringGpuFactoriesFactory::~MirroringGpuFactoriesFactory() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
   if (instance_) {
-    DestroyInstance();
+    DestroyInstanceOnVideoThread();
   }
-  context_provider_->RemoveObserver(this);
-  context_provider_ = nullptr;
 }
 
 media::GpuVideoAcceleratorFactories&
@@ -108,21 +107,25 @@ void MirroringGpuFactoriesFactory::BindOnVideoThread() {
 }
 
 void MirroringGpuFactoriesFactory::OnContextLost() {
-  cast_environment_->PostTask(
-      CastEnvironment::ThreadId::kVideo, FROM_HERE,
-      base::BindOnce(&media::MojoGpuVideoAcceleratorFactories::DestroyContext,
-                     base::Unretained(instance_.get())));
-
-  std::move(context_lost_cb_).Run();
-  DestroyInstance();
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
+  if (context_lost_cb_) {
+    if (instance_) {
+      DestroyInstanceOnVideoThread();
+    }
+    // `context_lost_cb_` may destroy `this`, so it is important that it is
+    // called last in this method.
+    std::move(context_lost_cb_).Run();
+  }
 }
 
-void MirroringGpuFactoriesFactory::DestroyInstance() {
-  CHECK(instance_);
+void MirroringGpuFactoriesFactory::DestroyInstanceOnVideoThread() {
   // The GPU factories object, after construction, must only be accessed on the
   // video encoding thread (including for deletion).
-  cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo)
-      ->DeleteSoon(FROM_HERE, std::move(instance_));
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
+  CHECK(instance_);
+  instance_.reset();
+  context_provider_->RemoveObserver(this);
+  context_provider_ = nullptr;
 }
 
 }  // namespace mirroring

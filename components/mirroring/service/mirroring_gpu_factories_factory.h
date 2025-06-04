@@ -30,7 +30,7 @@ class MirroringGpuFactoriesFactory : public viz::ContextLostObserver {
   MirroringGpuFactoriesFactory(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
       viz::Gpu& gpu,
-      base::RepeatingClosure context_lost_cb);
+      base::OnceClosure context_lost_cb);
 
   MirroringGpuFactoriesFactory(const MirroringGpuFactoriesFactory&) = delete;
   MirroringGpuFactoriesFactory& operator=(const MirroringGpuFactoriesFactory&) =
@@ -48,12 +48,13 @@ class MirroringGpuFactoriesFactory : public viz::ContextLostObserver {
   // viz::ContextLostObserver overrides.
   void OnContextLost() override;
 
-  void DestroyInstance();
+  // Properly destructs `instance_` and `context_provider_` on the VIDEO thread.
+  void DestroyInstanceOnVideoThread();
 
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   raw_ref<viz::Gpu> gpu_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
-  base::RepeatingClosure context_lost_cb_;
+  base::OnceClosure context_lost_cb_;
   std::unique_ptr<media::MojoGpuVideoAcceleratorFactories> instance_;
 };
 
