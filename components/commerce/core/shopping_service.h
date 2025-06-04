@@ -39,7 +39,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

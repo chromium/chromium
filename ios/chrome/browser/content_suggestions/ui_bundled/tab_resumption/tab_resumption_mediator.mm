@@ -24,7 +24,7 @@
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/commerce/core/shopping_service.h"
-#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#import "components/optimization_guide/core/optimization_guide_decision.h"
 #import "components/optimization_guide/proto/common_types.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/page_image_service/features.h"

@@ -20,6 +20,7 @@
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
+#include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"

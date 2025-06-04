@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -368,6 +369,8 @@ class TestPredictionModelStore : public PredictionModelStore {
 
 class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
  public:
+  using StoreEntry = proto::StoreEntry;
+  using StoreEntryMap = std::map<OptimizationGuideStore::EntryKey, StoreEntry>;
   PredictionManagerTestBase() = default;
   ~PredictionManagerTestBase() override = default;
 
@@ -395,6 +398,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
   void CreatePredictionManager() {
     if (prediction_manager_) {
+      db_store_.clear();
       prediction_manager_.reset();
     }
 
@@ -499,6 +503,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  StoreEntryMap db_store_;
   std::unique_ptr<TestPredictionModelStore> prediction_model_store_;
   std::unique_ptr<TestPredictionManager> prediction_manager_;
   bool component_updates_enabled_ = true;
