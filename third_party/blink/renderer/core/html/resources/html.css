@@ -2098,3 +2098,25 @@ dialog:where(:modal) {
     display: none !important;
   }
 }
+
+@supports blink-feature(MenuElements) {
+  menubar {
+    display: inline-block;
+  }
+
+  menulist {
+    display: block;
+  }
+
+  menuitem {
+    padding: 1em;
+  }
+
+  menubar menuitem {
+    display: inline-block;
+  }
+
+  menulist menuitem {
+    display: block;
+  }
+}
