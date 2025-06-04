@@ -100,13 +100,14 @@ class UserScriptsUITest : public InteractiveBrowserTestT<UserScriptsAPITest> {
     // Register the user script in the extension background script and confirm
     // it registered successfully.
     return CheckResult(
-        [this, &extension_id]() -> bool {
+        [this, &extension_id]() -> std::string {
           return BackgroundScriptExecutor::ExecuteScript(
                      profile(), extension_id, "registerUserScripts();",
-                     BackgroundScriptExecutor::ResultCapture::
-                         kSendScriptResult) == "success";
+                     BackgroundScriptExecutor::ResultCapture::kSendScriptResult)
+              .TakeString();
         },
-        true, "Registering dynamic user script and checking that it completed");
+        /*matcher=*/"success", /*check_description=*/
+        "Registering dynamic user script and checking that it completed");
   }
 };
 
