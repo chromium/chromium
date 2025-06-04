@@ -10,11 +10,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_session_observer_views.h"
 #include "components/live_caption/caption_util.h"
-#include "components/live_caption/views/caption_bubble.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -34,22 +32,9 @@ CaptionBubbleContextViews::CaptionBubbleContextViews(
     : CaptionBubbleContextBrowser(web_contents),
       web_contents_(web_contents),
       web_contents_observer_(
-          std::make_unique<CaptionBubbleSessionObserverViews>(web_contents)) {
-  auto* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser || !browser->is_type_normal()) {
-    return;
-  }
-  browser->tab_strip_model()->AddObserver(this);
-}
+          std::make_unique<CaptionBubbleSessionObserverViews>(web_contents)) {}
 
-CaptionBubbleContextViews::~CaptionBubbleContextViews() {
-  caption_bubble_ = nullptr;
-  auto* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser || !browser->is_type_normal()) {
-    return;
-  }
-  browser->tab_strip_model()->RemoveObserver(this);
-}
+CaptionBubbleContextViews::~CaptionBubbleContextViews() = default;
 
 void CaptionBubbleContextViews::GetBounds(GetBoundsCallback callback) const {
   if (!web_contents_) {
@@ -99,17 +84,7 @@ void CaptionBubbleContextViews::Activate() {
 }
 
 bool CaptionBubbleContextViews::IsActivatable() const {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser) {
-    return false;
-  }
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-  if (!tab_strip_model) {
-    return false;
-  }
-
-  return tab_strip_model->GetIndexOfWebContents(web_contents_) !=
-         tab_strip_model->active_index();
+  return true;
 }
 
 bool CaptionBubbleContextViews::ShouldAvoidOverlap() const {
@@ -126,30 +101,12 @@ CaptionBubbleContextViews::GetCaptionBubbleSessionObserver() {
   return nullptr;
 }
 
-void CaptionBubbleContextViews::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (caption_bubble_) {
-    caption_bubble_->OnContextActivatabilityChanged();
-  }
-}
-
 OpenCaptionSettingsCallback
 CaptionBubbleContextViews::GetOpenCaptionSettingsCallback() {
   // Unretained is safe because the caption bubble context outlives the caption
   // bubble that uses this callback.
   return base::BindRepeating(&CaptionBubbleContextViews::OpenCaptionSettings,
                              base::Unretained(this));
-}
-
-void CaptionBubbleContextViews::SetContextActivatabilityObserver(
-    CaptionBubble* caption_bubble) {
-  caption_bubble_ = caption_bubble;
-}
-
-void CaptionBubbleContextViews::RemoveContextActivatabilityObserver() {
-  caption_bubble_ = nullptr;
 }
 
 void CaptionBubbleContextViews::OpenCaptionSettings() {

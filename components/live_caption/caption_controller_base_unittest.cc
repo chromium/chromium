@@ -85,11 +85,6 @@ class MockCaptionBubbleContext : public CaptionBubbleContext {
               GetOpenCaptionSettingsCallback,
               (),
               (override));
-  MOCK_METHOD(void,
-              SetContextActivatabilityObserver,
-              (CaptionBubble*),
-              (override));
-  MOCK_METHOD(void, RemoveContextActivatabilityObserver, (), (override));
 };
 
 class MockCaptionBubbleController : public CaptionBubbleController {
