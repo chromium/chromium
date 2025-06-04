@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -214,8 +213,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                             @Override
                             public MVCListAdapter.ModelList buildMenuModelList(
                                     AppMenuHandler handler) {
-                                fail("Building the menu list is unsupported.");
-                                return null;
+                                return new MVCListAdapter.ModelList();
                             }
                         });
 
@@ -462,6 +460,27 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void shouldCheckBookmarkStar_NullBookmarkModel() {
         mBookmarkModelSupplier.set(null);
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
+    }
+
+    @Test
+    public void readAloud_CanBeAddedOnMultipleCreatedMenus() {
+        when(mReadAloudController.isReadable(any(Tab.class))).thenReturn(true);
+
+        MVCListAdapter.ModelList modelList =
+                mAppMenuPropertiesDelegate.getMenuItems(mock(AppMenuHandler.class));
+        mAppMenuPropertiesDelegate.observeAndMaybeAddReadAloud(modelList, mTab);
+        Assert.assertEquals(1, modelList.size());
+        Assert.assertEquals(
+                R.id.readaloud_menu_id,
+                modelList.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
+
+        MVCListAdapter.ModelList modelList2 =
+                mAppMenuPropertiesDelegate.getMenuItems(mock(AppMenuHandler.class));
+        mAppMenuPropertiesDelegate.observeAndMaybeAddReadAloud(modelList2, mTab);
+        Assert.assertEquals(1, modelList2.size());
+        Assert.assertEquals(
+                R.id.readaloud_menu_id,
+                modelList2.get(0).model.get(AppMenuItemProperties.MENU_ITEM_ID));
     }
 
     private void setUpMocksForPageMenu() {

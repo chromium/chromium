@@ -270,6 +270,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     @Override
     public final ModelList getMenuItems(AppMenuHandler handler) {
         mReadAloudPos = -1;
+        mHasReadAloudInserted = false;
         mModelList = buildMenuModelList(handler);
         return mModelList;
     }
