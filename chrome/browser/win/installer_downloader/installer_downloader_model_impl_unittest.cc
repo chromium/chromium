@@ -67,49 +67,75 @@ class InstallerDownloaderModelTest : public testing::Test {
 };
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountNotExceeded) {
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount,
                              InstallerDownloaderModelImpl::kMaxShowCount - 1);
-  EXPECT_FALSE(model_->IsMaxShowCountReached());
+  EXPECT_TRUE(model_->CanShowInfobar());
 }
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountExactlyAtLimit) {
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount,
                              InstallerDownloaderModelImpl::kMaxShowCount);
-  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_FALSE(model_->CanShowInfobar());
 }
 
 TEST_F(InstallerDownloaderModelTest, MaxShowCountAboveLimit) {
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount,
                              InstallerDownloaderModelImpl::kMaxShowCount + 1);
-  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_FALSE(model_->CanShowInfobar());
 }
 
 TEST_F(InstallerDownloaderModelTest,
        IncrementShowCountPersistsAndStopsAtLimit) {
   // Start from a clean slate.
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             false);
   GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 0);
 
   // Increment (kMaxShowCount-1) times and verify we have NOT hit the ceiling.
   for (int i = 0; i < InstallerDownloaderModelImpl::kMaxShowCount - 1; ++i) {
     model_->IncrementShowCount();
-    EXPECT_FALSE(model_->IsMaxShowCountReached());
+    EXPECT_TRUE(model_->CanShowInfobar());
     EXPECT_EQ(i + 1, GetLocalState().GetInteger(
                          prefs::kInstallerDownloaderInfobarShowCount));
   }
 
   // One more increment reaches the exact limit.
   model_->IncrementShowCount();
-  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_FALSE(model_->CanShowInfobar());
   EXPECT_EQ(
       InstallerDownloaderModelImpl::kMaxShowCount,
       GetLocalState().GetInteger(prefs::kInstallerDownloaderInfobarShowCount));
 
   // Extra increments keep the model in "limit reached" state.
   model_->IncrementShowCount();
-  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_FALSE(model_->CanShowInfobar());
   EXPECT_EQ(
       InstallerDownloaderModelImpl::kMaxShowCount + 1,
       GetLocalState().GetInteger(prefs::kInstallerDownloaderInfobarShowCount));
+}
+
+TEST_F(InstallerDownloaderModelTest, PreventFutureDisplayPrefBlocksInfobar) {
+  GetLocalState().SetBoolean(prefs::kInstallerDownloaderPreventFutureDisplay,
+                             true);
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 0);
+  EXPECT_FALSE(model_->CanShowInfobar());
+}
+
+TEST_F(InstallerDownloaderModelTest, PreventFutureDisplayMethodWorks) {
+  EXPECT_FALSE(GetLocalState().GetBoolean(
+      prefs::kInstallerDownloaderPreventFutureDisplay));
+
+  model_->PreventFutureDisplay();
+
+  EXPECT_TRUE(GetLocalState().GetBoolean(
+      prefs::kInstallerDownloaderPreventFutureDisplay));
+  EXPECT_FALSE(model_->CanShowInfobar());
 }
 
 // This test verifies that when the Os version is ineligible, no additional

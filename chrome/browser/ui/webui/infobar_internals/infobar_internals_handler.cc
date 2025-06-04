@@ -62,6 +62,11 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
             installer_downloader::prefs::kInstallerDownloaderInfobarShowCount,
             0);
 
+        // Reset the prevent future display flag.
+        prefs->SetBoolean(installer_downloader::prefs::
+                              kInstallerDownloaderPreventFutureDisplay,
+                          false);
+
         // Set bypass flag to instruct to the controller to skip/ignore
         // eligibility check result since it may failed.
         prefs->SetBoolean(installer_downloader::prefs::

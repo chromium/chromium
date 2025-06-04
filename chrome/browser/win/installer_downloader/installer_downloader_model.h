@@ -43,13 +43,15 @@ class InstallerDownloaderModel {
                              content::DownloadManager& download_manager,
                              CompletionCallback completion_callback) = 0;
 
-  // Returns true if the infobar has been displayed the maximum number of times,
-  // false otherwise.
-  virtual bool IsMaxShowCountReached() const = 0;
+  // Returns true if the infobar can be displayed, false otherwise.
+  virtual bool CanShowInfobar() const = 0;
 
   // Increments the "show" counter. Called exactly once whenever the
   // controller actually displays the infobar.
   virtual void IncrementShowCount() = 0;
+
+  // Set a flag to prevent any future infobar display.
+  virtual void PreventFutureDisplay() = 0;
 
   // Returns true if eligibility check should be overridden for manual testing
   // purpose.
