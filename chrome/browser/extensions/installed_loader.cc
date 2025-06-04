@@ -135,30 +135,37 @@ bool IsManifestCorrupt(const base::Value::Dict& manifest) {
 ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
   // Always reload manifests of unpacked extensions, because they can change
   // on disk independent of the manifest in our prefs.
-  if (Manifest::IsUnpackedLocation(info.extension_location))
+  if (Manifest::IsUnpackedLocation(info.extension_location)) {
     return ManifestReloadReason::kUnpackedDir;
+  }
 
-  if (!info.extension_manifest)
+  if (!info.extension_manifest) {
     return ManifestReloadReason::kNotNeeded;
+  }
 
   // Reload the manifest if it needs to be relocalized.
-  if (extension_l10n_util::ShouldRelocalizeManifest(*info.extension_manifest))
+  if (extension_l10n_util::ShouldRelocalizeManifest(*info.extension_manifest)) {
     return ManifestReloadReason::kNeedsRelocalization;
+  }
 
   // Reload if the copy of the manifest in the preferences is corrupt.
-  if (IsManifestCorrupt(*info.extension_manifest))
+  if (IsManifestCorrupt(*info.extension_manifest)) {
     return ManifestReloadReason::kCorruptPreferences;
+  }
 
   return ManifestReloadReason::kNotNeeded;
 }
 
 BackgroundPageType GetBackgroundPageType(const Extension* extension) {
-  if (!BackgroundInfo::HasBackgroundPage(extension))
+  if (!BackgroundInfo::HasBackgroundPage(extension)) {
     return NO_BACKGROUND_PAGE;
-  if (BackgroundInfo::HasPersistentBackgroundPage(extension))
+  }
+  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
     return BACKGROUND_PAGE_PERSISTENT;
-  if (BackgroundInfo::IsServiceWorkerBased(extension))
+  }
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
     return SERVICE_WORKER;
+  }
   return EVENT_PAGE;
 }
 
@@ -185,8 +192,9 @@ void RecordDisableReasons(const DisableReasonSet& reasons) {
 // Returns the current access level for the given `extension`.
 HostPermissionsAccess GetHostPermissionAccessLevelForExtension(
     const Extension& extension) {
-  if (!util::CanWithholdPermissionsFromExtension(extension))
+  if (!util::CanWithholdPermissionsFromExtension(extension)) {
     return HostPermissionsAccess::kCannotAffect;
+  }
 
   bool has_active_hosts = !extension.permissions_data()
                                ->active_permissions()
@@ -227,8 +235,9 @@ HostPermissionsAccess GetHostPermissionAccessLevelForExtension(
                                             .effective_hosts()
                                             .begin();
     if (single_pattern.scheme() != content::kChromeUIScheme ||
-        single_pattern.host() != chrome::kChromeUIFaviconHost)
+        single_pattern.host() != chrome::kChromeUIFaviconHost) {
       return HostPermissionsAccess::kOnSpecificSites;
+    }
   }
 
   // The extension is not running automatically anywhere. All its hosts were
@@ -356,8 +365,9 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     }
   }
 
-  if (write_to_prefs)
+  if (write_to_prefs) {
     extension_prefs_->UpdateManifest(extension.get());
+  }
 
   ExtensionRegistrar::Get(profile_)->AddExtension(extension.get());
 }
@@ -703,8 +713,9 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // From now on, don't count component extensions, since they are only
     // extensions as an implementation detail. Continue to count unpacked
     // extensions for a few metrics.
-    if (Manifest::IsComponentLocation(location))
+    if (Manifest::IsComponentLocation(location)) {
       continue;
+    }
 
     // Histogram for extensions overriding the new tab page should include
     // unpacked extensions.
@@ -718,17 +729,21 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // Histogram for extensions with settings overrides.
     const SettingsOverrides* settings = SettingsOverrides::Get(extension);
     if (settings) {
-      if (settings->search_engine)
+      if (settings->search_engine) {
         ++search_engine_override_count;
-      if (!settings->startup_pages.empty())
+      }
+      if (!settings->startup_pages.empty()) {
         ++startup_pages_override_count;
-      if (settings->homepage)
+      }
+      if (settings->homepage) {
         ++homepage_override_count;
+      }
     }
 
     // Don't count unpacked extensions anymore, either.
-    if (Manifest::IsUnpackedLocation(location))
+    if (Manifest::IsUnpackedLocation(location)) {
       continue;
+    }
 
     if (should_record_incremented_metrics) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.ManifestVersion2",
@@ -815,12 +830,13 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     // we want to know how many extensions have a given type of action as part
     // of their code, rather than as part of the extension action redesign
     // (which gives each extension an action).
-    if (extension->manifest()->FindKey(manifest_keys::kPageAction))
+    if (extension->manifest()->FindKey(manifest_keys::kPageAction)) {
       ++page_action_count;
-    else if (extension->manifest()->FindKey(manifest_keys::kBrowserAction))
+    } else if (extension->manifest()->FindKey(manifest_keys::kBrowserAction)) {
       ++browser_action_count;
-    else
+    } else {
       ++no_action_count;
+    }
 
     RecordPermissionMessagesHistogram(extension, "Load",
                                       should_record_incremented_metrics);
@@ -831,16 +847,18 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     if (ui_util::ShouldDisplayInExtensionSettings(*extension) &&
         !Manifest::IsPolicyLocation(extension->location())) {
       if (util::CanBeIncognitoEnabled(extension)) {
-        if (util::IsIncognitoEnabled(extension->id(), profile))
+        if (util::IsIncognitoEnabled(extension->id(), profile)) {
           ++incognito_allowed_count;
-        else
+        } else {
           ++incognito_not_allowed_count;
+        }
       }
       if (extension->wants_file_access()) {
-        if (util::AllowFileAccess(extension->id(), profile))
+        if (util::AllowFileAccess(extension->id(), profile)) {
           ++file_access_allowed_count;
-        else
+        } else {
           ++file_access_not_allowed_count;
+        }
       }
     }
 
@@ -872,8 +890,9 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
                                        .effective_hosts()) {
           // Ignore chrome:-scheme patterns (like chrome://favicon); these
           // aren't withheld, and thus shouldn't be considered "granted".
-          if (pattern.scheme() != content::kChromeUIScheme)
+          if (pattern.scheme() != content::kChromeUIScheme) {
             ++num_granted_hosts;
+          }
         }
         // TODO(devlin): This only takes into account the granted hosts that
         // were also requested by the extension (because it looks at the active
