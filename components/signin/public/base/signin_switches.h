@@ -137,9 +137,6 @@ BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnablePendingModePasswordsPromo);
-
 #if BUILDFLAG(IS_IOS)
 
 // Features to enable identities in auth error (stale token).

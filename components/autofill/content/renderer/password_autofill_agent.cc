@@ -60,7 +60,6 @@
 #include "components/password_manager/core/common/password_manager_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -2171,9 +2170,7 @@ bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
     const WebInputElement& password_element) const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   return password_element && IsElementEditable(password_element) &&
-         should_show_popup_without_passwords_ &&
-         base::FeatureList::IsEnabled(
-             switches::kEnablePendingModePasswordsPromo);
+         should_show_popup_without_passwords_;
 #else
   return false;
 #endif

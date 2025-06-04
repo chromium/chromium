@@ -376,9 +376,6 @@ extern const char kReloadTabUiResourcesIfChangedDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kEnablePendingModePasswordsPromoName[];
-extern const char kEnablePendingModePasswordsPromoDescription[];
-
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 

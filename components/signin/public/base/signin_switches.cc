@@ -189,10 +189,6 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnablePendingModePasswordsPromo,
-             "EnablePendingModePasswordsPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kEnableIdentityInAuthError,

@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -1298,8 +1297,6 @@ TEST_F(
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_ExternalURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL())
       .WillByDefault(ReturnRef(kExternalURL));
 
@@ -1327,8 +1324,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_ExternalURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL())
       .WillByDefault(ReturnRef(kExternalURL));
 
@@ -1362,8 +1357,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_GaiaURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   EXPECT_CALL(client(), GetLastCommittedURL)
       .WillRepeatedly(ReturnRef(kGaiaURL));
 
@@ -1386,8 +1379,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_GaiaURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL).WillByDefault(ReturnRef(kGaiaURL));
 
   EnablePasswordSync();
@@ -1416,8 +1407,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_PasswordManagerURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   EXPECT_CALL(client(), GetLastCommittedURL)
       .WillRepeatedly(ReturnRef(kPasswordsManagerURL));
 
@@ -1440,8 +1429,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_PasswordManagerURL) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL)
       .WillByDefault(ReturnRef(kPasswordsManagerURL));
 

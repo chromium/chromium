@@ -28,7 +28,6 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -299,9 +298,7 @@ bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
              ->HasAccountWithRefreshTokenInPersistentErrorState(
                  password_client.GetIdentityManager()->GetPrimaryAccountId(
                      signin::ConsentLevel::kSignin)) &&
-         is_sync_passwords_enabled && is_external_url &&
-         base::FeatureList::IsEnabled(
-             switches::kEnablePendingModePasswordsPromo);
+         is_sync_passwords_enabled && is_external_url;
 }
 
 void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {

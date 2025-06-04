@@ -585,13 +585,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kEnablePendingModePasswordsPromoName[] =
-    "Pending Mode Passwords Promo";
-const char kEnablePendingModePasswordsPromoDescription[] =
-    "Enables an autofill promo on passwords when the user is is pending state. "
-    "The promo prompts the user to signin to access passwords saved in their "
-    "account";
-
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
