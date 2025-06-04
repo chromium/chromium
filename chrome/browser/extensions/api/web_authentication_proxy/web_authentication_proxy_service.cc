@@ -9,7 +9,6 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -28,6 +27,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
@@ -427,7 +427,7 @@ void WebAuthenticationProxyService::CancelPendingCallbacks() {
   for (auto it = pending_callbacks_.begin(); it != pending_callbacks_.end();) {
     auto& [request_id, callback] = *it;
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [](IsUvpaaCallback& cb) { std::move(cb).Run(/*is_uvpaa=*/false); },
             // CreateCallback or GetCallback:
             [id = request_id](auto& cb) {
