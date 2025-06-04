@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SQLITE_SANDBOXED_VFS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
@@ -73,23 +73,24 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
       const base::FilePath& file_path) override;
 
   // Object whose lifetime is tied to the registration of a VFS file set.
+  // The class `vfs_file_set` must outlive `UnregisterRunner`.
   class COMPONENT_EXPORT(PERSISTENT_CACHE) UnregisterRunner {
    public:
-    explicit UnregisterRunner(SqliteVfsFileSet vfs_file_set);
+    explicit UnregisterRunner(const SqliteVfsFileSet& vfs_file_set);
     UnregisterRunner(UnregisterRunner& other) = delete;
     UnregisterRunner& operator=(const UnregisterRunner& other) = delete;
 
     ~UnregisterRunner();
 
    private:
-    SqliteVfsFileSet vfs_file_set_;
+    raw_ref<const SqliteVfsFileSet> vfs_file_set_;
   };
 
   // Make files provided in `sqlite_vfs_file_set` available in the vfs. Returns
   // a runner object that will take care of unregistering the files on
   // destruction.
   [[nodiscard]] UnregisterRunner RegisterSandboxedFiles(
-      SqliteVfsFileSet sqlite_vfs_file_set);
+      const SqliteVfsFileSet& sqlite_vfs_file_set);
 
  private:
   // Make files provided in `sqlite_vfs_file_set` unavailable in the vfs.
@@ -99,7 +100,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteSandboxedVfsDelegate
 
   // Provides exclusive access to the underlying data structure.
   base::Lock files_map_lock_;
-  std::map<base::FilePath, SandboxedFile> sandboxed_files_map_
+
+  // The map keeps an index of the `base::FilePath` to the `SandboxedFile`. It
+  // doesn't owns them. The liveness of these objects are managed by the calls
+  // to `RegisterSandboxedFiles` / `UnregisterSandboxedFiles`.
+  base::flat_map<base::FilePath, raw_ptr<SandboxedFile>> sandboxed_files_map_
       GUARDED_BY(files_map_lock_);
 };
 

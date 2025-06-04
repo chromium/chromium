@@ -4,6 +4,8 @@
 
 #include "components/persistent_cache/sqlite/test_utils.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -42,10 +44,10 @@ SqliteVfsFileSet TestHelper::CreateFilesAndBuildVfsFileSet() {
   base::File journal_file = CreateFile(temporary_subdir, "SECOND");
 
   return SqliteVfsFileSet(
-      SandboxedFile(std::move(db_file),
-                    SandboxedFile::AccessRights::kReadWrite),
-      SandboxedFile(std::move(journal_file),
-                    SandboxedFile::AccessRights::kReadWrite));
+      std::make_unique<SandboxedFile>(std::move(db_file),
+                                      SandboxedFile::AccessRights::kReadWrite),
+      std::make_unique<SandboxedFile>(std::move(journal_file),
+                                      SandboxedFile::AccessRights::kReadWrite));
 }
 
 base::FilePath TestHelper::CreateTemporaryDir() {

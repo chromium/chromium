@@ -30,11 +30,11 @@ SqliteVfsFileSet SqliteBackendImpl::GetVfsFileSetFromParams(
   CHECK_EQ(backend_params.type, BackendType::kSqlite);
 
   using AccessRights = SandboxedFile::AccessRights;
-  SandboxedFile db_file = SandboxedFile(std::move(backend_params.db_file),
-                                        backend_params.db_file_is_writable
-                                            ? AccessRights::kReadWrite
-                                            : AccessRights::kReadOnly);
-  SandboxedFile journal_file = SandboxedFile(
+  std::unique_ptr<SandboxedFile> db_file = std::make_unique<SandboxedFile>(
+      std::move(backend_params.db_file), backend_params.db_file_is_writable
+                                             ? AccessRights::kReadWrite
+                                             : AccessRights::kReadOnly);
+  std::unique_ptr<SandboxedFile> journal_file = std::make_unique<SandboxedFile>(
       std::move(backend_params.journal_file),
       backend_params.journal_file_is_writable ? AccessRights::kReadWrite
                                               : AccessRights::kReadOnly);
@@ -47,9 +47,10 @@ SqliteBackendImpl::SqliteBackendImpl(BackendParams backend_params)
 
 SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
     : database_path_(vfs_file_set.GetDbVirtualFilePath()),
+      vfs_file_set_(std::move(vfs_file_set)),
       unregister_runner_(
           SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-              std::move(vfs_file_set))),
+              vfs_file_set_)),
       db_(sql::DatabaseOptions()
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)

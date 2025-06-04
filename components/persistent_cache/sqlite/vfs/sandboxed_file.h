@@ -13,6 +13,10 @@ namespace persistent_cache {
 
 // Represents a file to be exposed to sql::Database via
 // SqliteSandboxedVfsDelegate.
+//
+// This class can be bound to a sqlite3_file to which ownership is relinquished
+// to SQLite. It's not copyable or movable to ensure it doesn't become invalid
+// outside of SQLite's control.
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
     : public sql::SandboxedVfsFile {
  public:
@@ -21,15 +25,31 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   SandboxedFile(base::File file, AccessRights access_rights);
   SandboxedFile(SandboxedFile& other) = delete;
   SandboxedFile& operator=(const SandboxedFile& other) = delete;
-  SandboxedFile(SandboxedFile&& other);
-  SandboxedFile& operator=(SandboxedFile&& other);
+  SandboxedFile(SandboxedFile&& other) = delete;
+  SandboxedFile& operator=(SandboxedFile&& other) = delete;
   ~SandboxedFile() override;
 
-  SandboxedFile Copy() const;
+  // Called by the VFS to take the underlying base::File. Concretely,
+  // this dance occurs when a file is opened:
+  //
+  // SandboxedVfs::Open
+  //   -- Acquire the base::File
+  //   SqliteSandboxedVfsDelegate::OpenFile
+  //     SandboxedFile::TakeUnderlyingFile
+  //   -- Pass it back to SandboxedFile
+  //   SqliteSandboxedVfsDelegate::RetrieveSandboxedVfsFile
+  //     SandboxedFile::OnFileOpened  base::File TakeUnderlyingFile();
+  base::File TakeUnderlyingFile();
 
-  // Duplicates the underlying file without rendering it invalid. Use to share
-  // file access to interfaces requiring a regular `base::File`.
-  base::File DuplicateUnderlyingFile() const;
+  // Called by the VFS when the file is successfully opened.
+  void OnFileOpened(base::File file);
+
+  // Used for unittests.
+  base::File& UnderlyingFileForTesting() { return underlying_file_; }
+  base::File& OpenedFileForTesting() { return opened_file_; }
+
+  // Returns true if this is a valid opened file.
+  bool IsValid() const { return opened_file_.IsValid(); }
 
   AccessRights access_rights() const { return access_rights_; }
 
@@ -58,6 +78,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
 
  private:
   base::File underlying_file_;
+  base::File opened_file_;
   AccessRights access_rights_;
 
   // One of the SQLite locking mode constants.

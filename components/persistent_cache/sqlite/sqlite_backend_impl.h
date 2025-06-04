@@ -41,7 +41,17 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
   base::FilePath database_path_;
+
+  // The set of of `SanboxedFiles` accessible by this backend. This class owns
+  // the `SandboxedFiles`.
+  SqliteVfsFileSet vfs_file_set_;
+
+  // Owns the registration / unregistration of the `SanboxedFiles` own by this
+  // backend to the `SqliteSandboxedVfsDelegate`. Must be defined after
+  // `vfs_file_set_` to ensures unregistration occurs before the `vfs_file_set_`
+  // is released.
   SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_;
+
   // Defined after `unregister_runner_` to ensure that files remain available
   // through the VFS throughout the database's lifetime.
   sql::Database db_;

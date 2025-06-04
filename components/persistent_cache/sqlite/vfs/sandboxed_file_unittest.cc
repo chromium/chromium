@@ -28,6 +28,11 @@ class SandboxedFileTest : public testing::Test {
         SandboxedFile::AccessRights::kReadWrite);
   }
 
+  // Simulate an OpenFile from the VFS delegate.
+  void OpenFile(SandboxedFile* file) {
+    file->OnFileOpened(file->TakeUnderlyingFile());
+  }
+
   int ReadToBuffer(SandboxedFile* file, size_t offset) {
     // Prepare the buffer used for readback.
     buffer_.resize(kTestBufferLength);
@@ -51,8 +56,33 @@ class SandboxedFileTest : public testing::Test {
   std::vector<uint8_t> buffer_;
 };
 
+TEST_F(SandboxedFileTest, OpenClose) {
+  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("open");
+  EXPECT_FALSE(file->IsValid());
+
+  OpenFile(file.get());
+  EXPECT_TRUE(file->IsValid());
+  EXPECT_FALSE(file->TakeUnderlyingFile().IsValid());
+
+  file->Close();
+  EXPECT_FALSE(file->IsValid());
+}
+
+TEST_F(SandboxedFileTest, ReOpen) {
+  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("re-open");
+  OpenFile(file.get());
+  file->Close();
+
+  // It is valid to re-open a file after a close.
+  OpenFile(file.get());
+  EXPECT_TRUE(file->IsValid());
+  file->Close();
+  EXPECT_FALSE(file->IsValid());
+}
+
 TEST_F(SandboxedFileTest, BasicReadWrite) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("basic");
+  OpenFile(file.get());
 
   std::vector<uint8_t> content(kTestBufferLength, 0xCA);
   EXPECT_EQ(file->Write(content.data(), content.size(), 0), SQLITE_OK);
@@ -64,6 +94,7 @@ TEST_F(SandboxedFileTest, BasicReadWrite) {
 
 TEST_F(SandboxedFileTest, ReadToShort) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("short");
+  OpenFile(file.get());
 
   const std::string content = "This is a short text";
   EXPECT_EQ(WriteToFile(file.get(), 0, content), SQLITE_OK);
@@ -81,6 +112,7 @@ TEST_F(SandboxedFileTest, ReadToShort) {
 
 TEST_F(SandboxedFileTest, ReadTooFar) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("too-short");
+  OpenFile(file.get());
 
   const std::string content = "This is a too short text";
   EXPECT_EQ(WriteToFile(file.get(), 0, content), SQLITE_OK);
@@ -98,6 +130,7 @@ TEST_F(SandboxedFileTest, ReadTooFar) {
 
 TEST_F(SandboxedFileTest, ReadWithOffset) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("offset");
+  OpenFile(file.get());
 
   const std::string content = "The answer is 42";
   EXPECT_EQ(WriteToFile(file.get(), 0, content), SQLITE_OK);
@@ -117,6 +150,7 @@ TEST_F(SandboxedFileTest, ReadWithOffset) {
 
 TEST_F(SandboxedFileTest, WriteWithOffset) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("offset");
+  OpenFile(file.get());
 
   // Write pass end-of-file should increase the file size and fill the gab with
   // zeroes.
@@ -138,6 +172,7 @@ TEST_F(SandboxedFileTest, WriteWithOffset) {
 
 TEST_F(SandboxedFileTest, OverlappingWrites) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("writes");
+  OpenFile(file.get());
 
   const std::string content1 = "aaa";
   const std::string content2 = "bbb";
@@ -165,6 +200,7 @@ TEST_F(SandboxedFileTest, OverlappingWrites) {
 
 TEST_F(SandboxedFileTest, Truncate) {
   std::unique_ptr<SandboxedFile> file = CreateEmptyFile("truncate");
+  OpenFile(file.get());
 
   std::vector<uint8_t> content(kTestBufferLength, 0xCA);
   EXPECT_EQ(file->Write(content.data(), content.size(), 0), SQLITE_OK);

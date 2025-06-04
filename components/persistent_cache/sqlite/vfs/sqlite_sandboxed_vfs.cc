@@ -56,7 +56,10 @@ sql::SandboxedVfsFile* SqliteSandboxedVfsDelegate::RetrieveSandboxedVfsFile(
   if (it == sandboxed_files_map_.end()) {
     return nullptr;
   }
-  return &it->second;
+
+  it->second->OnFileOpened(std::move(file));
+
+  return it->second;
 }
 
 base::File SqliteSandboxedVfsDelegate::OpenFile(
@@ -71,7 +74,7 @@ base::File SqliteSandboxedVfsDelegate::OpenFile(
   }
 
   // If `file_name` is found in the mapping return the associated file.
-  return it->second.DuplicateUnderlyingFile();
+  return it->second->TakeUnderlyingFile();
 }
 
 int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
@@ -103,17 +106,17 @@ SqliteSandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   // Write access is conditional on the file being opened for write.
   return sql::SandboxedVfs::PathAccessInfo{
       .can_read = true,
-      .can_write = it->second.access_rights() ==
+      .can_write = it->second->access_rights() ==
                    SandboxedFile::AccessRights::kReadWrite};
 }
 
 SqliteSandboxedVfsDelegate::UnregisterRunner::UnregisterRunner(
-    SqliteVfsFileSet vfs_file_set)
-    : vfs_file_set_(std::move(vfs_file_set)) {}
+    const SqliteVfsFileSet& vfs_file_set)
+    : vfs_file_set_(vfs_file_set) {}
 
 SqliteSandboxedVfsDelegate::UnregisterRunner::~UnregisterRunner() {
   SqliteSandboxedVfsDelegate::GetInstance()->UnregisterSandboxedFiles(
-      vfs_file_set_);
+      *vfs_file_set_);
 }
 
 // static
@@ -131,17 +134,16 @@ void SqliteSandboxedVfsDelegate::UnregisterSandboxedFiles(
 // static
 SqliteSandboxedVfsDelegate::UnregisterRunner
 SqliteSandboxedVfsDelegate::RegisterSandboxedFiles(
-    SqliteVfsFileSet sqlite_vfs_file_set) {
+    const SqliteVfsFileSet& sqlite_vfs_file_set) {
   base::AutoLock lock(files_map_lock_);
 
   for (auto& kv : sqlite_vfs_file_set.GetFiles()) {
-    auto [it, inserted] =
-        sandboxed_files_map_.emplace(kv.first, std::move(kv.second));
+    auto [it, inserted] = sandboxed_files_map_.emplace(kv.first, kv.second);
     CHECK(inserted)
         << "Registering the same file set more than once should never happen";
   }
 
-  return UnregisterRunner(std::move(sqlite_vfs_file_set));
+  return UnregisterRunner(sqlite_vfs_file_set);
 }
 
 }  // namespace persistent_cache

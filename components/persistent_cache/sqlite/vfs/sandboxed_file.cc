@@ -15,20 +15,18 @@ SandboxedFile::SandboxedFile(base::File file, AccessRights access_rights)
       sqlite_lock_mode_(SQLITE_LOCK_NONE) {}
 SandboxedFile::~SandboxedFile() = default;
 
-SandboxedFile::SandboxedFile(SandboxedFile&& other) = default;
-SandboxedFile& SandboxedFile::operator=(SandboxedFile&& other) = default;
-
-SandboxedFile SandboxedFile::Copy() const {
-  return SandboxedFile(DuplicateUnderlyingFile(), access_rights_);
+base::File SandboxedFile::TakeUnderlyingFile() {
+  return std::move(underlying_file_);
 }
 
-base::File SandboxedFile::DuplicateUnderlyingFile() const {
-  return underlying_file_.Duplicate();
+void SandboxedFile::OnFileOpened(base::File file) {
+  CHECK(file.IsValid());
+  opened_file_ = std::move(file);
 }
 
 int SandboxedFile::Close() {
-  // TODO(https://crbug.com/377475540): Implement open/close of sandboxedfile
-  // after fixing their liveness.
+  CHECK(IsValid());
+  underlying_file_ = std::move(opened_file_);
   return SQLITE_OK;
 }
 
@@ -44,7 +42,8 @@ int SandboxedFile::Read(void* buffer, int size, sqlite3_int64 offset) {
       UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(buffer), checked_size));
 
   // Read data from the file.
-  std::optional<size_t> bytes_read = underlying_file_.Read(offset, data);
+  CHECK(IsValid());
+  std::optional<size_t> bytes_read = opened_file_.Read(offset, data);
   if (!bytes_read.has_value()) {
     return SQLITE_IOERR_READ;
   }
@@ -72,7 +71,8 @@ int SandboxedFile::Write(const void* buffer, int size, sqlite3_int64 offset) {
   auto data = UNSAFE_BUFFERS(
       base::span(static_cast<const uint8_t*>(buffer), checked_size));
 
-  std::optional<size_t> bytes_written = underlying_file_.Write(offset, data);
+  CHECK(IsValid());
+  std::optional<size_t> bytes_written = opened_file_.Write(offset, data);
   if (!bytes_written.has_value()) {
     return SQLITE_IOERR_WRITE;
   }
@@ -94,21 +94,24 @@ int SandboxedFile::Write(const void* buffer, int size, sqlite3_int64 offset) {
 }
 
 int SandboxedFile::Truncate(sqlite3_int64 size) {
-  if (!underlying_file_.SetLength(size)) {
+  CHECK(IsValid());
+  if (!opened_file_.SetLength(size)) {
     return SQLITE_IOERR_TRUNCATE;
   }
   return SQLITE_OK;
 }
 
 int SandboxedFile::Sync(int flags) {
-  if (!underlying_file_.Flush()) {
+  CHECK(IsValid());
+  if (!opened_file_.Flush()) {
     return SQLITE_IOERR_FSYNC;
   }
   return SQLITE_OK;
 }
 
 int SandboxedFile::FileSize(sqlite3_int64* result_size) {
-  int64_t length = underlying_file_.GetLength();
+  CHECK(IsValid());
+  int64_t length = opened_file_.GetLength();
   if (length < 0) {
     return SQLITE_IOERR_FSTAT;
   }
