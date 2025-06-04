@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -27,6 +26,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -81,7 +81,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
   using bound_session_credentials::RotationDebugInfo;
   // Null value means no error.
   std::optional<RotationDebugInfo::FailureType> failure_type = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](Result result) -> std::optional<RotationDebugInfo::FailureType> {
             switch (result) {
               case Result::kConnectionError:

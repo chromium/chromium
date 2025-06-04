@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -22,6 +21,7 @@
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace {
 
@@ -95,7 +95,7 @@ void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
   }
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const std::vector<uint8_t>& wrapped_binding_key_to_reuse) {
             key_loader_ =
                 unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
@@ -119,13 +119,13 @@ void RegistrationTokenHelper::SignHeaderAndPayload(
         binding_key) {
   if (!binding_key.has_value()) {
     Error error = std::visit(
-        base::Overloaded{[](const std::vector<uint8_t>&) {
-                           return Error::kLoadReusedKeyFailure;
-                         },
-                         [](const std::vector<
-                             crypto::SignatureVerifier::SignatureAlgorithm>&) {
-                           return Error::kGenerateNewKeyFailure;
-                         }},
+        absl::Overload{[](const std::vector<uint8_t>&) {
+                         return Error::kLoadReusedKeyFailure;
+                       },
+                       [](const std::vector<
+                           crypto::SignatureVerifier::SignatureAlgorithm>&) {
+                         return Error::kGenerateNewKeyFailure;
+                       }},
         key_init_param_);
     std::move(callback).Run(base::unexpected(error));
     return;
