@@ -173,9 +173,20 @@ class GraphImplTflite::ComputeResources {
     TfLiteStatus status = builder(&self->interpreter_);
 
     // If failed to build interpreter with delegates, re-build the interpreter
-    // without delegates.
-    // TODO(crbug.com/421237232): Try again to only apply XNNPack delegate.
+    // with just the XNNPack delegate, then try again with no delegate.
     if (status == kTfLiteDelegateError) {
+      self->delegates_.clear();
+      ::tflite::InterpreterBuilder builder_with_xnnpack(
+          self->model_->GetModel(), op_resolver,
+          ::tflite::DefaultErrorReporter(),
+          /*options=*/nullptr, self->allocation_.get());
+      builder_with_xnnpack.SetNumThreads(num_of_threads);
+      self->SetUpXNNPackDelegate(builder_with_xnnpack, num_of_threads);
+      status = builder_with_xnnpack(&self->interpreter_);
+    }
+
+    if (status == kTfLiteDelegateError) {
+      self->delegates_.clear();
       ::tflite::InterpreterBuilder default_builder(
           self->model_->GetModel(), op_resolver,
           ::tflite::DefaultErrorReporter(),
@@ -395,6 +406,11 @@ class GraphImplTflite::ComputeResources {
 #endif
     }
 
+    SetUpXNNPackDelegate(builder, num_of_threads);
+  }
+
+  void SetUpXNNPackDelegate(::tflite::InterpreterBuilder& builder,
+                            int num_of_threads) {
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
     auto opts = TfLiteXNNPackDelegateOptionsDefault();
     opts.num_threads = num_of_threads;
