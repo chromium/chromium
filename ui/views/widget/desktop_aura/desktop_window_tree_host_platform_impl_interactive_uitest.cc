@@ -16,6 +16,7 @@
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/configurable_test_frame_view.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -23,7 +24,6 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/native_frame_view.h"
 
 // TODO(crbug.com/c/373971535): remove this and apply renaming.
 using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLinux;
@@ -162,29 +162,6 @@ void SetExpectationBasedOnHittestValue(
   EXPECT_FALSE(handler.hittest().has_value());
 }
 
-// This is used to return a customized result to NonClientHitTest.
-class HitTestNonClientFrameView : public NativeFrameView {
- public:
-  explicit HitTestNonClientFrameView(Widget* widget)
-      : NativeFrameView(widget) {}
-
-  HitTestNonClientFrameView(const HitTestNonClientFrameView&) = delete;
-  HitTestNonClientFrameView& operator=(const HitTestNonClientFrameView&) =
-      delete;
-
-  ~HitTestNonClientFrameView() override = default;
-
-  void set_hit_test_result(int component) { hit_test_result_ = component; }
-
-  // NonClientFrameView overrides:
-  int NonClientHitTest(const gfx::Point& point) override {
-    return hit_test_result_;
-  }
-
- private:
-  int hit_test_result_ = HTNOWHERE;
-};
-
 // This is used to return HitTestNonClientFrameView on create call.
 class HitTestWidgetDelegate : public WidgetDelegate {
  public:
@@ -195,19 +172,20 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
   ~HitTestWidgetDelegate() override = default;
 
-  HitTestNonClientFrameView* frame_view() { return frame_view_; }
+  test::ConfigurableTestFrameView* frame_view() { return frame_view_; }
 
   // WidgetDelegate:
   std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
       Widget* widget) override {
     DCHECK(!frame_view_);
-    auto frame_view = std::make_unique<HitTestNonClientFrameView>(widget);
+    auto frame_view = std::make_unique<test::ConfigurableTestFrameView>(widget);
     frame_view_ = frame_view.get();
     return frame_view;
   }
 
  private:
-  raw_ptr<HitTestNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
+  raw_ptr<test::ConfigurableTestFrameView, DanglingUntriaged> frame_view_ =
+      nullptr;
 };
 
 // Test host that can intercept calls to the real host.
@@ -372,7 +350,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, HitTest) {
 
     // Set the desired hit test result value, which will be returned, when
     // WindowEventFilter starts to perform hit testing.
-    frame_view->set_hit_test_result(hittest);
+    frame_view->SetHitTestResult(hittest);
 
     gfx::Rect bounds = window->GetBoundsInScreen();
 
@@ -454,7 +432,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   auto* frame_view = delegate_->frame_view();
   // Set the desired hit test result value, which will be returned, when
   // WindowEventFilter starts to perform hit testing.
-  frame_view->set_hit_test_result(HTCAPTION);
+  frame_view->SetHitTestResult(HTCAPTION);
 
   host_->ResetCalledMaximize();
 
@@ -496,20 +474,20 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   auto* frame_view = delegate_->frame_view();
 
   if (use_touch_event()) {
-    frame_view->set_hit_test_result(HTCLIENT);
+    frame_view->SetHitTestResult(HTCLIENT);
     ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 
-    frame_view->set_hit_test_result(HTCLIENT);
+    frame_view->SetHitTestResult(HTCLIENT);
     details.set_tap_count(2);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
   } else {
-    frame_view->set_hit_test_result(HTCLIENT);
+    frame_view->SetHitTestResult(HTCLIENT);
     int flags = ui::EF_LEFT_MOUSE_BUTTON;
     GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
 
-    frame_view->set_hit_test_result(HTCLIENT);
+    frame_view->SetHitTestResult(HTCLIENT);
     flags |= ui::EF_IS_DOUBLE_CLICK;
     GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
   }
@@ -537,11 +515,11 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
 
   auto* frame_view = delegate_->frame_view();
 
-  frame_view->set_hit_test_result(HTCLIENT);
+  frame_view->SetHitTestResult(HTCLIENT);
   int flags_left_button = ui::EF_LEFT_MOUSE_BUTTON;
   GenerateAndDispatchClickMouseEvent(gfx::Point(), flags_left_button);
 
-  frame_view->set_hit_test_result(HTCAPTION);
+  frame_view->SetHitTestResult(HTCAPTION);
   GenerateAndDispatchClickMouseEvent(gfx::Point(), ui::EF_RIGHT_MOUSE_BUTTON);
   EXPECT_FALSE(host_->called_maximize());
 

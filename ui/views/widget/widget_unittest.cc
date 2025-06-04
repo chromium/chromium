@@ -53,6 +53,7 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/configurable_test_frame_view.h"
 #include "ui/views/test/mock_drag_controller.h"
 #include "ui/views/test/mock_native_widget.h"
 #include "ui/views/test/native_widget_factory.h"
@@ -136,6 +137,12 @@ ui::GestureEvent CreateTestGestureEvent(const ui::GestureEventDetails& details,
   return ui::GestureEvent(x, y, 0, base::TimeTicks(), details);
 }
 
+std::unique_ptr<NativeFrameView> CreateMinimumSizeFrameView(Widget* frame) {
+  auto frame_view = std::make_unique<ConfigurableTestFrameView>(frame);
+  frame_view->SetMinimumSize(gfx::Size(300, 400));
+  return std::move(frame_view);
+}
+
 class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
  public:
   TestWidgetRemovalsObserver() = default;
@@ -217,26 +224,6 @@ class ScrollableEventCountView : public EventCountView {
 };
 
 BEGIN_METADATA(ScrollableEventCountView)
-END_METADATA
-
-// A view that implements GetMinimumSize.
-class MinimumSizeFrameView : public NativeFrameView {
-  METADATA_HEADER(MinimumSizeFrameView, NativeFrameView)
-
- public:
-  explicit MinimumSizeFrameView(Widget* frame) : NativeFrameView(frame) {}
-
-  MinimumSizeFrameView(const MinimumSizeFrameView&) = delete;
-  MinimumSizeFrameView& operator=(const MinimumSizeFrameView&) = delete;
-
-  ~MinimumSizeFrameView() override = default;
-
- private:
-  // Overridden from View:
-  gfx::Size GetMinimumSize() const override { return gfx::Size(300, 400); }
-};
-
-BEGIN_METADATA(MinimumSizeFrameView)
 END_METADATA
 
 // An event handler that simply keeps a count of the different types of events
@@ -2858,8 +2845,7 @@ TEST_F(DesktopWidgetTest, TestViewWidthAfterMinimizingWidget) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   NonClientView* non_client_view = widget->non_client_view();
-  non_client_view->SetFrameView(
-      std::make_unique<MinimumSizeFrameView>(widget.get()));
+  non_client_view->SetFrameView(CreateMinimumSizeFrameView(widget.get()));
   // Setting the frame view doesn't do a layout, so force one.
   non_client_view->InvalidateLayout();
   views::test::RunScheduledLayout(non_client_view);
@@ -3001,8 +2987,7 @@ TEST_F(DesktopWidgetTest, TestWindowVisibilityAfterHide) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   NonClientView* non_client_view = widget->non_client_view();
-  non_client_view->SetFrameView(
-      std::make_unique<MinimumSizeFrameView>(widget.get()));
+  non_client_view->SetFrameView(CreateMinimumSizeFrameView(widget.get()));
 
   widget->Show();
   EXPECT_TRUE(IsNativeWindowVisible(widget->GetNativeWindow()));
@@ -5706,8 +5691,7 @@ TEST_F(WidgetTest, NonClientViewAccessibilityProperties) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   NonClientView* non_client_view = widget->non_client_view();
-  non_client_view->SetFrameView(
-      std::make_unique<MinimumSizeFrameView>(widget.get()));
+  non_client_view->SetFrameView(CreateMinimumSizeFrameView(widget.get()));
   widget->Show();
 
   ui::AXNodeData node_data;
