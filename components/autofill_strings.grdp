@@ -219,8 +219,7 @@
       Manage passwords...
     </message>
 
-    <!-- TODO(crbug.com/404436027): Enable translatation after UX review is completed. -->
-    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" translateable="false" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
+    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
       Manage loyalty cards...
     </message>
   </if>
@@ -237,8 +236,7 @@
       Manage Passwords...
     </message>
 
-    <!-- TODO(crbug.com/404436027): Enable translatation after UX review is completed. -->
-    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" translateable="false" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
+    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
       Manage Loyalty Cards...
     </message>
   </if>
