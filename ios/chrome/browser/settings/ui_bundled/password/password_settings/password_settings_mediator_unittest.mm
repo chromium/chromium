@@ -34,6 +34,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -159,7 +160,13 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     trusted_vault_backend_ = std::make_unique<MockTrustedVaultClientBackend>();
   }
 
-  void TearDown() override { [mediator_ disconnect]; }
+  void TearDown() override {
+    EXPECT_OCMOCK_VERIFY(consumer_);
+    EXPECT_OCMOCK_VERIFY(export_handler_);
+    EXPECT_OCMOCK_VERIFY(bulk_move_passwords_to_account_handler_);
+    EXPECT_OCMOCK_VERIFY(reauth_module_);
+    [mediator_ disconnect];
+  }
 
   void CreateMediator() {
     mediator_ = [[PasswordSettingsMediator alloc]
