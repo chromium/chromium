@@ -52,31 +52,13 @@ bool IsUriSecure(std::string_view uri) {
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }
 
-// Convert margins from microns to PWG units.
-// Returns false if the margins are not divisible by kMicronsPerPwgUnit meaning
-// that the microns margins are not backwards convertible to PWG units.
-bool MarginsMicronsToPWG(const PageMargins& margins_microns,
-                         int* bottom_pwg,
-                         int* left_pwg,
-                         int* right_pwg,
-                         int* top_pwg) {
-  CHECK(bottom_pwg);
-  CHECK(left_pwg);
-  CHECK(right_pwg);
-  CHECK(top_pwg);
-
-  if (margins_microns.bottom % kMicronsPerPwgUnit != 0 ||
-      margins_microns.left % kMicronsPerPwgUnit != 0 ||
-      margins_microns.right % kMicronsPerPwgUnit != 0 ||
-      margins_microns.top % kMicronsPerPwgUnit != 0) {
-    return false;
-  }
-
-  *bottom_pwg = margins_microns.bottom / kMicronsPerPwgUnit;
-  *left_pwg = margins_microns.left / kMicronsPerPwgUnit;
-  *right_pwg = margins_microns.right / kMicronsPerPwgUnit;
-  *top_pwg = margins_microns.top / kMicronsPerPwgUnit;
-  return true;
+// TODO(crbug.com/316999874): Remove this once sending custom margins to the
+// backend is fixed.
+bool AreMarginsUMConvertibleToPWG(const PageMargins& margins_microns) {
+  return margins_microns.bottom % kMicronsPerPwgUnit == 0 &&
+         margins_microns.left % kMicronsPerPwgUnit == 0 &&
+         margins_microns.right % kMicronsPerPwgUnit == 0 &&
+         margins_microns.top % kMicronsPerPwgUnit == 0;
 }
 
 // Populates the 'client-info' attribute of the IPP collection `options`. Each
@@ -145,7 +127,10 @@ void EncodeMediaCol(ipp_t* options,
   DCHECK_EQ(size_um.height() % kMicronsPerPwgUnit, 0);
   int width = size_um.width() / kMicronsPerPwgUnit;
   int height = size_um.height() / kMicronsPerPwgUnit;
-  int bottom_margin = 0, left_margin = 0, right_margin = 0, top_margin = 0;
+  int bottom_margin = 0;
+  int left_margin = 0;
+  int right_margin = 0;
+  int top_margin = 0;
   if (!settings.borderless()) {
     if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
       CHECK_NE(settings.margin_type(), mojom::MarginType::kNoMargins);
@@ -167,20 +152,29 @@ void EncodeMediaCol(ipp_t* options,
       // margins.
       bool uses_custom_margins = false;
       if (settings.margin_type() == mojom::MarginType::kCustomMargins) {
-        uses_custom_margins = MarginsMicronsToPWG(
-            settings.requested_custom_margins_in_microns(), &bottom_margin,
-            &left_margin, &right_margin, &top_margin);
+        uses_custom_margins = AreMarginsUMConvertibleToPWG(
+            settings.requested_custom_margins_in_microns());
+        if (uses_custom_margins) {
+          bottom_margin = settings.requested_custom_margins_in_microns().bottom;
+          left_margin = settings.requested_custom_margins_in_microns().left;
+          right_margin = settings.requested_custom_margins_in_microns().right;
+          top_margin = settings.requested_custom_margins_in_microns().top;
+        }
       }
       if (!uses_custom_margins) {
-        PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
-                                           &bottom_margin, &left_margin,
-                                           &right_margin, &top_margin);
+        MarginsMicronsFromSizeAndPrintableArea(size_um, printable_area_um,
+                                               &bottom_margin, &left_margin,
+                                               &right_margin, &top_margin);
       }
     } else {
-      PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
-                                         &bottom_margin, &left_margin,
-                                         &right_margin, &top_margin);
+      MarginsMicronsFromSizeAndPrintableArea(size_um, printable_area_um,
+                                             &bottom_margin, &left_margin,
+                                             &right_margin, &top_margin);
     }
+    bottom_margin = MarginMicronsToPWG(bottom_margin);
+    left_margin = MarginMicronsToPWG(left_margin);
+    right_margin = MarginMicronsToPWG(right_margin);
+    top_margin = MarginMicronsToPWG(top_margin);
   }
 
   ScopedIppPtr media_col = WrapIpp(ippNew());

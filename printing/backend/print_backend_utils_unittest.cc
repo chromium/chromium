@@ -92,15 +92,32 @@ TEST(PrintBackendUtilsCupsTest, PrintableAreaFromMarginsA4) {
   EXPECT_EQ(gfx::Rect(2000, 1000, 205000, 292000), printable_area_um);
 }
 
-TEST(PrintBackendUtilsCupsTest, MarginsFromPrintableAreaA4) {
-  int bottom, left, right, top;
-  PwgMarginsFromSizeAndPrintableArea({210000, 297000},
-                                     {2000, 1000, 205000, 292000}, &bottom,
-                                     &left, &right, &top);
-  EXPECT_EQ(100, bottom);
-  EXPECT_EQ(200, left);
-  EXPECT_EQ(300, right);
-  EXPECT_EQ(400, top);
+TEST(PrintBackendUtilsCupsTest, MarginsPWGFromPrintableAreaA4) {
+  static constexpr int kBottomUm = 1000;
+  static constexpr int kLeftUm = 2000;
+  static constexpr int kRightUm = 3000;
+  static constexpr int kTopUm = 4000;
+
+  int bottom_um = 0;
+  int left_um = 0;
+  int right_um = 0;
+  int top_um = 0;
+  MarginsMicronsFromSizeAndPrintableArea(
+      {210000, 297000}, {2000, 1000, 205000, 292000}, &bottom_um, &left_um,
+      &right_um, &top_um);
+
+  // Verify margins in microns are correct.
+  EXPECT_EQ(kBottomUm, bottom_um);
+  EXPECT_EQ(kLeftUm, left_um);
+  EXPECT_EQ(kRightUm, right_um);
+  EXPECT_EQ(kTopUm, top_um);
+
+  ASSERT_EQ(kMicronsPerPwgUnit, 10);
+  // Verify margins in PWG units are correct.
+  EXPECT_EQ(kBottomUm / kMicronsPerPwgUnit, MarginMicronsToPWG(bottom_um));
+  EXPECT_EQ(kLeftUm / kMicronsPerPwgUnit, MarginMicronsToPWG(left_um));
+  EXPECT_EQ(kRightUm / kMicronsPerPwgUnit, MarginMicronsToPWG(right_um));
+  EXPECT_EQ(kTopUm / kMicronsPerPwgUnit, MarginMicronsToPWG(top_um));
 }
 
 #endif  // BUILDFLAG(USE_CUPS)

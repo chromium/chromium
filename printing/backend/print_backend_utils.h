@@ -58,17 +58,21 @@ gfx::Rect PrintableAreaFromSizeAndPwgMargins(const gfx::Size& size_um,
                                              int right_pwg,
                                              int top_pwg);
 
-// Calculates a paper's four margins in PWG units from its size and printable
-// area in microns. Since the size and printable area were converted from PWG
-// units in the first place, the margins in PWG units can be reconstructed
-// losslessly.
+// Calculates a paper's four margins in microns from its size and printable
+// area in microns.
 COMPONENT_EXPORT(PRINT_BACKEND)
-void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
-                                        const gfx::Rect& printable_area_um,
-                                        int* bottom_pwg,
-                                        int* left_pwg,
-                                        int* right_pwg,
-                                        int* top_pwg);
+void MarginsMicronsFromSizeAndPrintableArea(const gfx::Size& size_um,
+                                            const gfx::Rect& printable_area_um,
+                                            int* bottom_um,
+                                            int* left_um,
+                                            int* right_um,
+                                            int* top_um);
+
+// Converts a margin value from microns to PWG units and returns the result. The
+// value in microns must be obtained from the printer and must be convertible to
+// PWG units.
+COMPONENT_EXPORT(PRINT_BACKEND)
+int MarginMicronsToPWG(int margin_um);
 #endif  // BUILDFLAG(USE_CUPS)
 
 }  // namespace printing

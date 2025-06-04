@@ -123,32 +123,29 @@ gfx::Rect PrintableAreaFromSizeAndPwgMargins(const gfx::Size& size_um,
                    printable_area_width_um, printable_area_height_um);
 }
 
-void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
-                                        const gfx::Rect& printable_area_um,
-                                        int* bottom_pwg,
-                                        int* left_pwg,
-                                        int* right_pwg,
-                                        int* top_pwg) {
-  CHECK(bottom_pwg);
-  CHECK(left_pwg);
-  CHECK(right_pwg);
-  CHECK(top_pwg);
+void MarginsMicronsFromSizeAndPrintableArea(const gfx::Size& size_um,
+                                            const gfx::Rect& printable_area_um,
+                                            int* bottom_um,
+                                            int* left_um,
+                                            int* right_um,
+                                            int* top_um) {
+  CHECK(bottom_um);
+  CHECK(left_um);
+  CHECK(right_um);
+  CHECK(top_um);
 
-  // These values in microns were obtained in the first place by converting
-  // from PWG units, so we can losslessly convert them back.
-  int bottom_um = printable_area_um.y();
-  int left_um = printable_area_um.x();
-  int right_um = size_um.width() - printable_area_um.right();
-  int top_um = size_um.height() - printable_area_um.bottom();
-  CHECK_EQ(bottom_um % kMicronsPerPwgUnit, 0);
-  CHECK_EQ(left_um % kMicronsPerPwgUnit, 0);
-  CHECK_EQ(right_um % kMicronsPerPwgUnit, 0);
-  CHECK_EQ(top_um % kMicronsPerPwgUnit, 0);
+  *bottom_um = printable_area_um.y();
+  *left_um = printable_area_um.x();
+  *right_um = size_um.width() - printable_area_um.right();
+  *top_um = size_um.height() - printable_area_um.bottom();
+}
 
-  *bottom_pwg = bottom_um / kMicronsPerPwgUnit;
-  *left_pwg = left_um / kMicronsPerPwgUnit;
-  *right_pwg = right_um / kMicronsPerPwgUnit;
-  *top_pwg = top_um / kMicronsPerPwgUnit;
+int MarginMicronsToPWG(int margin_um) {
+  // This value in microns was obtained from the printer and must be
+  // convertible to PWG units.
+  CHECK_EQ(margin_um % kMicronsPerPwgUnit, 0);
+
+  return margin_um / kMicronsPerPwgUnit;
 }
 #endif  // BUILDFLAG(USE_CUPS)
 
