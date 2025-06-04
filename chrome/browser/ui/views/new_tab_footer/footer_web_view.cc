@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
@@ -30,6 +32,12 @@ NewTabFooterWebView::~NewTabFooterWebView() {
   contents_wrapper_->web_contents()->WasHidden();
   contents_wrapper_->SetHost(nullptr);
   contents_wrapper_ = nullptr;
+}
+
+void NewTabFooterWebView::ShowUI(base::TimeTicks load_start) {
+  ShowUI();
+  base::UmaHistogramMediumTimes("NewTabPage.Footer.ShownTime",
+                                base::TimeTicks::Now() - load_start);
 }
 
 void NewTabFooterWebView::ShowUI() {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/search/search.h"
@@ -85,6 +86,7 @@ void NewTabFooterController::DidFinishNavigation(
 }
 
 void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
+  base::TimeTicks load_start_timestamp = base::TimeTicks::Now();
   // TODO(crbug.com/4438803): Support SideBySide. Currently, when it is enabled,
   // footer_ will have no value.
   if (!footer_) {
@@ -105,7 +107,7 @@ void NewTabFooterController::UpdateFooterVisibility(bool log_on_load_metric) {
        ntp_footer::CanShowExtensionFooter(url, profile_));
 
   if (show) {
-    footer_->ShowUI();
+    footer_->ShowUI(load_start_timestamp);
   } else {
     footer_->CloseUI();
   }

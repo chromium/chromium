@@ -530,6 +530,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Footer.ShownTime" units="ms"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the time, in milliseconds, between when the New Tab Footer was
+    triggered to be shown and when it was shown.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Footer.ToggledVisibility" enum="BooleanVisible"
     expires_after="2026-02-01">
   <owner>pauladedeji@google.com</owner>
