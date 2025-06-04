@@ -994,6 +994,19 @@ const FeatureEntry::FeatureVariation
         {"for prerendering page", kEnableLazyLoadImageForPrerenderPage,
          std::size(kEnableLazyLoadImageForPrerenderPage), nullptr}};
 
+const FeatureEntry::FeatureParam kSoftNavigationHeuristicsBasic[] = {
+    {"mode", "basic"}};
+const FeatureEntry::FeatureParam
+    kSoftNavigationHeuristicsAdvancedPaintAttribution[] = {
+        {"mode", "advanced_paint_attribution"}};
+
+const FeatureEntry::FeatureVariation kSoftNavigationHeuristicsVariations[] = {
+    {"Basic (default)", kSoftNavigationHeuristicsBasic,
+     std::size(kSoftNavigationHeuristicsBasic), nullptr},
+    {"Advanced Paint Attribution",
+     kSoftNavigationHeuristicsAdvancedPaintAttribution,
+     std::size(kSoftNavigationHeuristicsAdvancedPaintAttribution), nullptr}};
+
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceAutomatic, switches::kTopChromeTouchUi,
@@ -4861,6 +4874,13 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kEnableLazyLoadImageForInvisiblePage,
          kSearchSuggsetionPrerenderTypeVariations,
          "EnableLazyLoadImageForInvisiblePage")},
+    {"soft-navigation-heuristics",
+     flag_descriptions::kSoftNavigationHeuristicsName,
+     flag_descriptions::kSoftNavigationHeuristicsDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kSoftNavigationHeuristics,
+         kSoftNavigationHeuristicsVariations,
+         "SoftNavigationHeuristics")},
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableQuic, switches::kDisableQuic)},

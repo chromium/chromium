@@ -341,6 +341,9 @@ extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 extern const char kEnableLazyLoadImageForInvisiblePageName[];
 extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
 
+extern const char kSoftNavigationHeuristicsName[];
+extern const char kSoftNavigationHeuristicsDescription[];
+
 extern const char kEnableSiteSearchAllowUserOverridePolicyName[];
 extern const char kEnableSiteSearchAllowUserOverridePolicyDescription[];
 

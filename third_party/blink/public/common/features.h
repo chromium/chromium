@@ -1685,6 +1685,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kServiceWorkerSyntheticResponseAllowedUrls);
 
+// 'Mode' parameter for blink::features::kSoftNavigationHeuristics.
+enum class SoftNavigationHeuristicsMode {
+  kBasic,
+  kAdvancedPaintAttribution,
+};
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    SoftNavigationHeuristicsMode,
+    kSoftNavigationHeuristicsModeParam);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostRenderProcessForLoading);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

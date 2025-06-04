@@ -1839,6 +1839,14 @@ const char kEnableLazyLoadImageForInvisiblePageName[] =
 const char kEnableLazyLoadImageForInvisiblePageDescription[] =
     "Respect the loading = lazy attribute for images even on invisible pages.";
 
+const char kSoftNavigationHeuristicsName[] = "Soft Navigation Heuristics";
+const char kSoftNavigationHeuristicsDescription[] =
+    "Enables the soft navigation heuristics, including support for "
+    "PerformanceObserver. This setting overrides other experimental settings. "
+    "See the documentation for our earlier experiment at "
+    "https://developer.chrome.com/docs/web-platform/soft-navigations-experiment"
+    " (to be updated soon).";
+
 const char kEnableSiteSearchAllowUserOverridePolicyName[] =
     "Enable allow_user_override field for SiteSearchSettings policy";
 const char kEnableSiteSearchAllowUserOverridePolicyDescription[] =

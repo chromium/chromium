@@ -9564,6 +9564,7 @@ from previous Chrome versions.
   <int value="-1618660008" label="IpProtectionV1:enabled"/>
   <int value="-1618030555" label="ArcAccountRestrictions:enabled"/>
   <int value="-1617805422" label="WebViewUseMetricsUploadService:enabled"/>
+  <int value="-1617780223" label="SoftNavigationHeuristics:disabled"/>
   <int value="-1617666878" label="AndroidElegantTextHeight:enabled"/>
   <int value="-1617392895" label="OfflineAutoFetch:disabled"/>
   <int value="-1617183455" label="OfflineRecentPages:disabled"/>
@@ -17795,6 +17796,7 @@ from previous Chrome versions.
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
   <int value="1464610065" label="TabbedAppOverflowMenuRegroup:disabled"/>
+  <int value="1464938249" label="SoftNavigationHeuristics:enabled"/>
   <int value="1465624446" label="disable-zero-copy"/>
   <int value="1465747574" label="CrOSLateBootBluetoothTelephony:enabled"/>
   <int value="1466380480" label="enable-device-discovery-notifications"/>

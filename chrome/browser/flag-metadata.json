@@ -8993,6 +8993,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "soft-navigation-heuristics",
+    "owners": [ "speed-metrics-dev@chromium.org", "johannes@chromium.org", "shaseley@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "spectre-v2-mitigation",
     "owners": [
       "chromeos-security@google.com"
