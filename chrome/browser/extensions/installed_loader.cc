@@ -108,7 +108,7 @@ enum class ExternalItemState {
   kNonwebstoreUninstalled,
 
   // New enum values must go above here.
-  kExternalItemMaxItems
+  kMaxValue = kNonwebstoreUninstalled
 };
 
 bool IsManifestCorrupt(const base::Value::Dict& manifest) {
@@ -596,22 +596,18 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     if (Manifest::IsExternalLocation(location)) {
       // See loop below for DISABLED.
       if (UpdatesFromWebstore(*extension)) {
-        UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  ExternalItemState::kWebstoreEnabled,
-                                  ExternalItemState::kExternalItemMaxItems);
+        base::UmaHistogramEnumeration("Extensions.ExternalItemState",
+                                      ExternalItemState::kWebstoreEnabled);
         if (should_record_incremented_metrics) {
-          UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    ExternalItemState::kWebstoreEnabled,
-                                    ExternalItemState::kExternalItemMaxItems);
+          base::UmaHistogramEnumeration("Extensions.ExternalItemState2",
+                                        ExternalItemState::kWebstoreEnabled);
         }
       } else {
-        UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  ExternalItemState::kNonwebstoreEnabled,
-                                  ExternalItemState::kExternalItemMaxItems);
+        base::UmaHistogramEnumeration("Extensions.ExternalItemState",
+                                      ExternalItemState::kNonwebstoreEnabled);
         if (should_record_incremented_metrics) {
-          UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    ExternalItemState::kNonwebstoreEnabled,
-                                    ExternalItemState::kExternalItemMaxItems);
+          base::UmaHistogramEnumeration("Extensions.ExternalItemState2",
+                                        ExternalItemState::kNonwebstoreEnabled);
         }
       }
     }
@@ -920,22 +916,19 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     if (Manifest::IsExternalLocation(location)) {
       // See loop above for ENABLED.
       if (UpdatesFromWebstore(*disabled_extension)) {
-        UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  ExternalItemState::kWebstoreDisabled,
-                                  ExternalItemState::kExternalItemMaxItems);
+        base::UmaHistogramEnumeration("Extensions.ExternalItemState",
+                                      ExternalItemState::kWebstoreDisabled);
         if (should_record_incremented_metrics) {
-          UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    ExternalItemState::kWebstoreDisabled,
-                                    ExternalItemState::kExternalItemMaxItems);
+          base::UmaHistogramEnumeration("Extensions.ExternalItemState2",
+                                        ExternalItemState::kWebstoreDisabled);
         }
       } else {
-        UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState",
-                                  ExternalItemState::kNonwebstoreDisabled,
-                                  ExternalItemState::kExternalItemMaxItems);
+        base::UmaHistogramEnumeration("Extensions.ExternalItemState",
+                                      ExternalItemState::kNonwebstoreDisabled);
         if (should_record_incremented_metrics) {
-          UMA_HISTOGRAM_ENUMERATION("Extensions.ExternalItemState2",
-                                    ExternalItemState::kNonwebstoreDisabled,
-                                    ExternalItemState::kExternalItemMaxItems);
+          base::UmaHistogramEnumeration(
+              "Extensions.ExternalItemState2",
+              ExternalItemState::kNonwebstoreDisabled);
         }
       }
     }
