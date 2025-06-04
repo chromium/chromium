@@ -299,6 +299,9 @@ crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_OES_texture_half_f
 crbug.com/1372155 [ android android-sm-a137f ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
 crbug.com/1372155 [ android android-sm-a137f arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
+# Extensions not available on Corsola devices with Android Desktop.
+[ android android-corsola arm ] WebglExtension_EXT_float_blend [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

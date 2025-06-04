@@ -272,6 +272,15 @@ crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR
 # The Mac OpenGL driver doesn't support shader images, and therefore does not support PLS.
 crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_pixel_local_storage [ Skip ]
 
+# Extensions not available on Corsola devices with Android Desktop.
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_EXT_float_blend [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_EXT_texture_norm16 [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+[ android android-corsola arm passthrough angle-vulkan ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
