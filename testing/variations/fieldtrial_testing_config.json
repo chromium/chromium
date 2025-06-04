@@ -24769,6 +24769,22 @@
             ]
         }
     ],
+    "UseFinchPermanentCountyForFetchCountryId": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFinchPermanentCountyForFetchCountryId"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseFirstCoalescedFrameAsFlingGenerationTimestamp": [
         {
             "platforms": [
