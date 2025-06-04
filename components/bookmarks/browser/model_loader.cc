@@ -66,11 +66,14 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     int64_t max_node_id = 0;
 
     std::unique_ptr<BookmarkPermanentNode> account_bb_node =
-        BookmarkPermanentNode::CreateBookmarkBar(0);
+        BookmarkPermanentNode::CreateBookmarkBar(
+            0, /*is_account_node=*/true);
     std::unique_ptr<BookmarkPermanentNode> account_other_folder_node =
-        BookmarkPermanentNode::CreateOtherBookmarks(0);
+        BookmarkPermanentNode::CreateOtherBookmarks(
+            0, /*is_account_node=*/true);
     std::unique_ptr<BookmarkPermanentNode> account_mobile_folder_node =
-        BookmarkPermanentNode::CreateMobileBookmarks(0);
+        BookmarkPermanentNode::CreateMobileBookmarks(
+            0, /*is_account_node=*/true);
 
     std::optional<base::Value::Dict> root_dict =
         LoadFileToDict(account_file_path);

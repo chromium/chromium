@@ -245,6 +245,7 @@ class BookmarksApiEventsTest : public ExtensionApiTest {
         node.date_added().InMillisecondsSinceUnixEpoch();
     remove_info.node.id = base::NumberToString(node.id());
     remove_info.node.title = base::UTF16ToUTF8(node.GetTitledUrlNodeTitle());
+    remove_info.node.syncing = !model()->IsLocalOnlyNode(node);
     remove_info.parent_id = base::NumberToString(node.parent()->id());
 
     if (!node.is_folder()) {

@@ -159,6 +159,12 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
       /*only_folders=*/false, /*visible_index=*/std::nullopt,
       &remove_info.node);
 
+  // The syncing property is not accurately populated for non-permanent nodes,
+  // because the node has already been detached from its parent.
+  if (!node->is_permanent_node()) {
+    remove_info.node.syncing = !model_->IsLocalOnlyNode(*parent);
+  }
+
   DispatchEvent(events::BOOKMARKS_ON_REMOVED,
                 api::bookmarks::OnRemoved::kEventName,
                 api::bookmarks::OnRemoved::Create(

@@ -149,7 +149,7 @@ BookmarkPermanentNode::CreateManagedBookmarks(int64_t id) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, FOLDER, base::Uuid::ParseLowercase(kManagedNodeUuid),
-      std::u16string()));
+      std::u16string(), /*is_account_node=*/false));
 }
 
 // static
@@ -182,36 +182,48 @@ BookmarkPermanentNode::~BookmarkPermanentNode() = default;
 
 // static
 std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
-    int64_t id) {
+    int64_t id,
+    bool is_account_node) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, BOOKMARK_BAR, base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME)));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME),
+      is_account_node));
 }
 
 // static
 std::unique_ptr<BookmarkPermanentNode>
-BookmarkPermanentNode::CreateOtherBookmarks(int64_t id) {
+BookmarkPermanentNode::CreateOtherBookmarks(int64_t id,
+                                            bool is_account_node) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, OTHER_NODE, base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME)));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME),
+      is_account_node));
 }
 
 // static
 std::unique_ptr<BookmarkPermanentNode>
-BookmarkPermanentNode::CreateMobileBookmarks(int64_t id) {
+BookmarkPermanentNode::CreateMobileBookmarks(int64_t id,
+                                             bool is_account_node) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new BookmarkPermanentNode(
       id, MOBILE, base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME)));
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME),
+      is_account_node));
 }
 
 BookmarkPermanentNode::BookmarkPermanentNode(int64_t id,
                                              Type type,
                                              const base::Uuid& uuid,
-                                             const std::u16string& title)
-    : BookmarkNode(id, uuid, GURL(), type, /*is_permanent_node=*/true) {
+                                             const std::u16string& title,
+                                             bool is_account_node)
+    : BookmarkNode(id,
+                   uuid,
+                   GURL(),
+                   type,
+                   /*is_permanent_node=*/true),
+      is_account_node_(is_account_node) {
   CHECK(type != URL);
   SetTitle(title);
 }
