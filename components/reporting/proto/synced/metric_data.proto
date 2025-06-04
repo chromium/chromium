@@ -487,6 +487,16 @@ message DisplayStatus {
   optional int64 refresh_rate = 4;
   // Internal or external display.
   optional bool is_internal = 5;
+
+  // These data members are similar to the ones in the DisplayDevice. But are
+  // duplicated here to ensure clients are able to distinguish displays based on
+  // the external display connected/disconnected events as DisplayDevice is
+  // part of InfoData that is gathered only on boot.
+  //
+  // 32 bits serial number.
+  optional uint32 serial_number = 6;
+  // EDID version.
+  optional string edid_version = 7;
 }
 
 // Deliberately left empty as there is no payload for Heartbeat messages.
