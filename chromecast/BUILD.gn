@@ -716,7 +716,10 @@ if (is_android) {
   dist_aar("cast_browser_dist_aar") {
     android_manifest = "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-    native_libraries = [ "$root_build_dir/libcast_browser_android.so" ]
+    native_libraries = [
+      "$root_build_dir/libcast_browser_android.so",
+      "$root_out_dir/libchrome_crashpad_handler.so",
+    ]
 
     deps = [
       ":cast_browser_apk_assets",
