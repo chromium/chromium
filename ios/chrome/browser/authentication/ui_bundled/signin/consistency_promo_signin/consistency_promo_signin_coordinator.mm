@@ -276,7 +276,8 @@
   self.reauthCoordinator = [[ReauthCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
-                         account:account];
+                         account:account
+                     accessPoint:self.accessPoint];
   self.reauthCoordinator.delegate = self;
   [self.reauthCoordinator start];
 }

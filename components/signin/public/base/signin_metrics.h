@@ -602,6 +602,21 @@ enum class SigninAccountType {
   // Always the last enumerated type.
   kMaxValue = kManaged,
 };
+
+// Event within the reauth flow.
+enum class ReauthFlowEvent : int {
+  // The reauth flow has started.
+  kStarted = 0,
+  // The reauth flow has completed successfully.
+  kCompleted = 1,
+  // There was an error during the reauth flow.
+  kError = 2,
+  // The reauth flow was cancelled by the user.
+  kCancelled = 3,
+  // The reauth flow was cancelled because the coordinator was stopped.
+  kInterrupted = 4,
+  kMaxValue = kInterrupted
+};
 #endif  // BUILDFLAG(IS_IOS)
 
 // -----------------------------------------------------------------------------
@@ -712,6 +727,12 @@ void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
 void RecordSignoutConfirmationFromDataLossAlert(
     SignoutDataLossAlertReason reason,
     bool signout_confirmed);
+
+// Records the progression of the reauthentication flow that was started within
+// the sign-in flow designated by `access_point`. `event` is converted into a
+// suffix for `Signin.Reauth.InSigninFlow` histogram family.
+void RecordReauthFlowEventInSigninFlow(signin_metrics::AccessPoint access_point,
+                                       ReauthFlowEvent event);
 #endif  // BUILDFLAG(IS_IOS)
 
 // Records the total number of open tabs at the moment of signin or enabling

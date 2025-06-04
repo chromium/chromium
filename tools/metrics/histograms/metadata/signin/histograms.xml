@@ -2377,6 +2377,24 @@ should be kept to monitor/debug signin Multilogin issues-->
   <token key="AccessPoint" variants="SigninPromoAccessPoint"/>
 </histogram>
 
+<histogram name="Signin.Reauth.InSigninFlow.{Event}" enum="SigninAccessPoint"
+    expires_after="2026-05-28">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Recorded when a reauth flow triggered within the sign-in flow is {Event}.
+    Recorded bucket designates the sign-in flow in which the reauthentication
+    flow was triggered. Only recorded on iOS.
+  </summary>
+  <token key="Event">
+    <variant name="Cancelled" summary="cancelled by the user"/>
+    <variant name="Completed" summary="completed"/>
+    <variant name="Error" summary="finished with an error"/>
+    <variant name="Interrupted" summary="interrupted"/>
+    <variant name="Started" summary="started"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->
