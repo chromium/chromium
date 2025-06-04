@@ -1170,6 +1170,19 @@ TEST_F(TabletModeControllerTest, KioskBlocksEnteringTabletMode) {
   EXPECT_TRUE(IsInPhysicalTabletState());
 }
 
+TEST_F(TabletModeControllerTest,
+       KioskModeExplicitlyHidesCursorWhenEnteringClamshellMode) {
+  SetTabletMode(true);
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+  Shell::Get()->cursor_manager()->ShowCursor();
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+}
+
 TEST_F(TabletModeControllerTest, DeviceReactsOnLidChangeInKioskSession) {
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(AreEventsBlocked());
