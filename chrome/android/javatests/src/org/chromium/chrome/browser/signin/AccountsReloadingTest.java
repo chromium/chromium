@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.os.Build;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -20,7 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -29,11 +27,12 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,10 +45,8 @@ import java.util.Set;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.EnableFeatures(SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER)
 public class AccountsReloadingTest {
-    private static final String TEST_EMAIL1 = "test.account1@gmail.com";
-    private static final String TEST_EMAIL2 = "test.account2@gmail.com";
-
     private static class Observer implements Callback<CoreAccountInfo> {
         private final Set<CoreAccountInfo> mAccountsUpdated = new HashSet<>();
         private int mCallCount;
@@ -87,67 +84,74 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    public void testRefreshTokenUpdateWhenSigninInWithoutSyncWithOneAccountOnDevice() {
-        final CoreAccountInfo account1 = mSigninTestRule.addTestAccountThenSignin();
+    public void testRefreshTokenUpdateWhenSignInWithOneAccountOnDevice() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
-        Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
+        CriteriaHelper.pollUiThread(
+                () -> mObserver.mCallCount == 1,
+                "Refresh token should be updated once when the account is added");
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1)), mObserver.mAccountsUpdated);
     }
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "crbug.com/40816967")
     public void testRefreshTokenUpdateWhenDefaultAccountSignsIn() {
-        final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
-        final CoreAccountInfo account2 = mSigninTestRule.addAccount(TEST_EMAIL2);
-        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
-        Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
+        CriteriaHelper.pollUiThread(
+                () -> mObserver.mCallCount == 3,
+                "Refresh token should be updated 3 times, once per account");
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
+                mObserver.mAccountsUpdated);
 
-        SigninTestUtil.signin(account1);
+        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
 
         CriteriaHelper.pollUiThread(
-                () -> mObserver.mCallCount == 2,
-                "Refresh token should only be updated when user signs in. "
-                        + "Adding account when user is signed out shouldn't trigger refresh "
-                        + "token update.");
+                () -> mObserver.mCallCount == 3, "Refresh token should not be updated on sign in.");
         Assert.assertEquals(
-                new HashSet<>(Arrays.asList(account1, account2)), mObserver.mAccountsUpdated);
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
+                mObserver.mAccountsUpdated);
     }
 
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSecondaryAccountSignsIn() {
-        final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
-        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
-        Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1)), mObserver.mAccountsUpdated);
+        mObserver.mAccountsUpdated.clear();
 
-        final CoreAccountInfo account2 = mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT2);
 
         CriteriaHelper.pollUiThread(
-                () -> mObserver.mCallCount == 2,
-                "Refresh token should only be updated when user signs in. "
-                        + "Adding account when user is signed out shouldn't trigger refresh "
-                        + "token update.");
+                () -> mObserver.mCallCount == 3,
+                "Refresh token should be updated 3 times, once per account");
         Assert.assertEquals(
-                new HashSet<>(Arrays.asList(account1, account2)), mObserver.mAccountsUpdated);
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
+                mObserver.mAccountsUpdated);
     }
 
     @Test
     @MediumTest
     public void testRefreshTokenUpdateWhenSignedInUserAddsNewAccount() {
-        final CoreAccountInfo account1 = mSigninTestRule.addTestAccountThenSignin();
-        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
-        Assert.assertEquals(new HashSet<>(Arrays.asList(account1)), mObserver.mAccountsUpdated);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        CriteriaHelper.pollUiThread(
+                () -> mObserver.mCallCount == 1,
+                "Refresh token should be updated once when the account is added");
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1)), mObserver.mAccountsUpdated);
         mObserver.mAccountsUpdated.clear();
 
-        final CoreAccountInfo account2 = mSigninTestRule.addAccount(TEST_EMAIL2);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         CriteriaHelper.pollUiThread(
                 () -> mObserver.mCallCount == 3,
-                "Refresh token should be updated 3 times: "
-                        + "1 when user signs in, twice when the signed-in user adds "
-                        + "a new account.");
+                "Refresh token should be updated 3 times, once per account");
         Assert.assertEquals(
-                new HashSet<>(Arrays.asList(account1, account2)), mObserver.mAccountsUpdated);
+                new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
+                mObserver.mAccountsUpdated);
     }
 }

@@ -85,6 +85,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures({
     SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN,
+    SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER,
     ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID
 })
 public class SigninManagerImplTest {
