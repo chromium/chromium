@@ -791,4 +791,11 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/window-size-switch-larger-than-screen.js",
     "--screen-info={800x600} --window-size=1600,1200")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowScreenAvail,
+    "sanity/window-screen-avail.js",
+    "--screen-info={800x600"
+    " workAreaLeft=10 workAreaRight=90"
+    " workAreaTop=20 workAreaBottom=80}")
+
 }  // namespace headless
