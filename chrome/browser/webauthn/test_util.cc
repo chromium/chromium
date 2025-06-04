@@ -29,6 +29,14 @@
 #include <windows.h>
 #endif
 
+base::span<const uint8_t, 16> TestProtobufCredId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<20, 16>();
+}
+
+base::span<const uint8_t, 1> TestProtobufUserId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<55, 1>();
+}
+
 std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
   base::FilePath data_root;
   CHECK(base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &data_root));

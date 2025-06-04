@@ -5710,7 +5710,11 @@ if (!is_android) {
     sources += metric_integration_sources
 
     if (!is_chromeos) {
-      sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
+      sources += [
+        "../browser/webauthn/enclave_authenticator_browsertest.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest_base.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest_base.h",
+      ]
       deps += [ "//components/os_crypt/sync:test_support" ]
     }
 
