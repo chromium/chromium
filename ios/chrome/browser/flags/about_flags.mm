@@ -1386,6 +1386,8 @@ const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "2"}};
 const FeatureEntry::FeatureParam kSkipBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "3"}};
+const FeatureEntry::FeatureParam kForceBWGPromoConsent[] = {
+    {kBWGPromoConsentParams, "4"}};
 
 const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Single screen for BWG Promo Consent Flow",
@@ -1395,6 +1397,8 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
      kDoubleScreenForBWGPromoConsent,
      std::size(kDoubleScreenForBWGPromoConsent), nullptr},
     {"Skip FRE", kSkipBWGPromoConsent, std::size(kSkipBWGPromoConsent),
+     nullptr},
+    {"Force Consent", kForceBWGPromoConsent, std::size(kForceBWGPromoConsent),
      nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four

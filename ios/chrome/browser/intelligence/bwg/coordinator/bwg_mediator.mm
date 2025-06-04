@@ -49,10 +49,17 @@
 }
 
 - (void)presentBWGFlow {
-  if (BWGPromoConsentVariationsParam() ==
-      BWGPromoConsentVariations::kSkipConsent) {
-    [self prepareBWGOverlay];
-    return;
+  switch (BWGPromoConsentVariationsParam()) {
+    case BWGPromoConsentVariations::kSkipConsent:
+      [self prepareBWGOverlay];
+      return;
+    case BWGPromoConsentVariations::kForceConsent:
+      // Resetting the consent pref will allow the BWG flow to act as if consent
+      // was never given.
+      _prefService->SetBoolean(prefs::kIOSBwgConsent, NO);
+      break;
+    default:
+      break;
   }
 
   BOOL didPresentBWGFRE = [self.delegate maybePresentBWGFRE];

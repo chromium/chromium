@@ -27,6 +27,7 @@ enum class BWGPromoConsentVariations {
   kSinglePage = 1,
   kDoublePage = 2,
   kSkipConsent = 3,
+  kForceConsent = 4,
 };
 
 // Returns the variation of the BWG Promo Consent flow.

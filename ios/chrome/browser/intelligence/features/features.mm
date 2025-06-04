@@ -39,6 +39,9 @@ BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
   if (param == 3) {
     return BWGPromoConsentVariations::kSkipConsent;
   }
+  if (param == 4) {
+    return BWGPromoConsentVariations::kForceConsent;
+  }
   return BWGPromoConsentVariations::kDisabled;
 }
 
