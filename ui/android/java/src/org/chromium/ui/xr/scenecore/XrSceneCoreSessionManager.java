@@ -7,7 +7,7 @@ package org.chromium.ui.xr.scenecore;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -37,7 +37,7 @@ public interface XrSceneCoreSessionManager extends Destroyable {
     boolean startSpaceModeChange(boolean fsmModeRequested, @Nullable Runnable completedCallback);
 
     /** Get XR space mode observable supplier. Returns boolean: True for XR Full space mode. */
-    ObservableSupplierImpl<Boolean> getXrSpaceModeObservableSupplier();
+    ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier();
 
     /** Call to complete XR space mode transition. */
     void finishSpaceModeChange();

@@ -19,6 +19,7 @@ import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.ChromiumExecutorServiceFactory;
 import org.chromium.base.task.TaskTraits;
@@ -95,7 +96,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getXrSpaceModeObservableSupplier() {
+    public ObservableSupplier<Boolean> getXrSpaceModeObservableSupplier() {
         return mIsFullSpaceModeNowSupplier;
     }
 

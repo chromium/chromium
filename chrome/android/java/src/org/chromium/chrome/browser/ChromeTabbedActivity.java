@@ -4312,7 +4312,7 @@ public class ChromeTabbedActivity extends ChromeActivity
                 mXrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
                 mXrSceneCoreSessionManager
                         .getXrSpaceModeObservableSupplier()
-                        .addObserver(this::onXrSpaceModeChanged);
+                        .addSyncObserver(this::onXrSpaceModeChanged);
             }
         }
     }

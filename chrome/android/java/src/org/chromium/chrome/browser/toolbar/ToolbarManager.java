@@ -1651,7 +1651,7 @@ public class ToolbarManager
         var xrManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(mActivity);
         if (xrManager != null) {
             mXrSpaceModeObservableSupplier = xrManager.getXrSpaceModeObservableSupplier();
-            mXrSpaceModeObservableSupplier.addObserver(mOnXrSpaceModeChanged);
+            mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
         }
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
