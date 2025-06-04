@@ -17,8 +17,7 @@ class BrowserContext;
 
 namespace extensions {
 
-// A KeyedService which broadcasts external logout request events in Ash and
-// Lacros.
+// A KeyedService which broadcasts external logout request events.
 class ExternalLogoutRequestEventHandler
     : public crosapi::mojom::ExternalLogoutRequestObserver,
       public KeyedService {
