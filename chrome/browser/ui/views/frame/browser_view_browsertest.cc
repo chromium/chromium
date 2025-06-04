@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -108,8 +107,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   void CloseDevToolsWindow() {
-    DevToolsWindowTesting::CloseDevToolsWindowSync(
-        devtools_.ExtractAsDangling());
+    DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_);
   }
 
   void SetDevToolsBounds(const gfx::Rect& bounds) {
@@ -264,69 +262,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
   EXPECT_EQ(full_bounds, contents_web_view()->bounds());
-}
-
-void SetDevToolsWindowSizePrefs(Browser* browser,
-                                int left,
-                                int right,
-                                int top,
-                                int bottom) {
-  PrefService* prefs = browser->GetProfile()->GetPrefs();
-  ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
-  base::Value::Dict& wp_prefs = update.Get();
-  base::Value::Dict dev_tools_defaults;
-  dev_tools_defaults.Set("left", left);
-  dev_tools_defaults.Set("right", right);
-  dev_tools_defaults.Set("top", top);
-  dev_tools_defaults.Set("bottom", bottom);
-  dev_tools_defaults.Set("maximized", false);
-  dev_tools_defaults.Set("always_on_top", false);
-  wp_prefs.Set(DevToolsWindow::kDevToolsApp, std::move(dev_tools_defaults));
-}
-
-const base::Value::Dict& GetDevToolsWindowSizePrefs(Browser* browser) {
-  PrefService* prefs = browser->GetProfile()->GetPrefs();
-  return prefs->GetDict(prefs::kAppWindowPlacement)
-      .Find(DevToolsWindow::kDevToolsApp)
-      ->GetDict();
-}
-
-auto HasDimensions(int left, int right, int top, int bottom) {
-  return base::test::DictionaryHasValues(base::Value::Dict()
-                                             .Set("left", left)
-                                             .Set("right", right)
-                                             .Set("top", top)
-                                             .Set("bottom", bottom));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowDefaultSize) {
-  // Starting DevTools the first time sets the window size to the default.
-  OpenDevToolsWindow(false);
-  CloseDevToolsWindow();
-  EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
-              HasDimensions(100, 740, 100, 740));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowKeepsSize) {
-  // Setting reasonable size prefs does not change the prefs.
-  SetDevToolsWindowSizePrefs(browser(), 123, 567, 234, 678);
-  EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
-              HasDimensions(123, 567, 234, 678));
-  OpenDevToolsWindow(false);
-  CloseDevToolsWindow();
-  EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
-              HasDimensions(123, 567, 234, 678));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowResetsSize) {
-  // Setting unreasonably small size prefs resets the prefs.
-  SetDevToolsWindowSizePrefs(browser(), 121, 232, 343, 454);
-  EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
-              HasDimensions(121, 232, 343, 454));
-  OpenDevToolsWindow(false);
-  CloseDevToolsWindow();
-  EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
-              HasDimensions(100, 740, 100, 740));
 }
 
 // Verifies that the side panel's rounded corner is being correctly layed out.
