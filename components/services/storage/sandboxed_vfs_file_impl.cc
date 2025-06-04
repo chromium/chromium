@@ -7,17 +7,17 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "sql/sandboxed_vfs_file_impl.h"
+#include "components/services/storage/sandboxed_vfs_file_impl.h"
 
 #include "base/notreached.h"
 #include "sql/sandboxed_vfs.h"
 
-namespace sql {
+namespace storage {
 
 SandboxedVfsFileImpl::SandboxedVfsFileImpl(base::File file,
                                            base::FilePath file_path,
-                                           SandboxedVfsFileType file_type,
-                                           SandboxedVfs* vfs)
+                                           sql::SandboxedVfsFileType file_type,
+                                           sql::SandboxedVfs* vfs)
     : SandboxedVfsFile(),
       file_(std::move(file)),
       sqlite_lock_mode_(SQLITE_LOCK_NONE),
@@ -45,7 +45,7 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
   // journal and the WAL file are always unlocked. Also, as an optimization,
   // SQLite first reads the database header without locking the file.
   DCHECK(sqlite_lock_mode_ > SQLITE_LOCK_NONE ||
-         file_type_ != SandboxedVfsFileType::kDatabase ||
+         file_type_ != sql::SandboxedVfsFileType::kDatabase ||
          (offset == kSqliteDatabaseHeaderOffset &&
           size == kSqliteDatabaseHeaderSize))
       << "Read from database file with lock mode " << sqlite_lock_mode_
@@ -94,7 +94,7 @@ int SandboxedVfsFileImpl::Write(const void* buffer,
   // SQLite's locking protocol only acquires locks on the database file. The
   // journal and the WAL file are always unlocked.
   DCHECK(sqlite_lock_mode_ == SQLITE_LOCK_EXCLUSIVE ||
-         file_type_ != SandboxedVfsFileType::kDatabase)
+         file_type_ != sql::SandboxedVfsFileType::kDatabase)
       << "Write to database file with lock mode " << sqlite_lock_mode_;
 
   const char* data = reinterpret_cast<const char*>(buffer);
@@ -432,4 +432,4 @@ int SandboxedVfsFileImpl::Unfetch(sqlite3_int64 offset, void* fetch_result) {
   return SQLITE_IOERR;
 }
 
-}  // namespace sql
+}  // namespace storage

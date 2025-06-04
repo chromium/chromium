@@ -61,6 +61,8 @@ source_set("storage") {
     "partition_impl.h",
     "sandboxed_vfs_delegate.cc",
     "sandboxed_vfs_delegate.h",
+    "sandboxed_vfs_file_impl.cc",
+    "sandboxed_vfs_file_impl.h",
     "service_worker/service_worker_database.cc",
     "service_worker/service_worker_database.h",
     "service_worker/service_worker_disk_cache.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SQL_SANDBOXED_VFS_FILE_IMPL_H_
-#define SQL_SANDBOXED_VFS_FILE_IMPL_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SANDBOXED_VFS_FILE_IMPL_H_
+#define COMPONENTS_SERVICES_STORAGE_SANDBOXED_VFS_FILE_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/files/file.h"
@@ -11,7 +11,7 @@
 #include "sql/sandboxed_vfs.h"
 #include "sql/sandboxed_vfs_file.h"
 
-namespace sql {
+namespace storage {
 
 // SQLite VFS file implementation that works in a sandboxed process.
 //
@@ -29,12 +29,12 @@ namespace sql {
 //
 // SQLite's built-in VFSes use the OS support for locking a range of bytes in
 // the file, rather locking than the whole file.
-class COMPONENT_EXPORT(SQL) SandboxedVfsFileImpl : public SandboxedVfsFile {
+class SandboxedVfsFileImpl : public sql::SandboxedVfsFile {
  public:
   SandboxedVfsFileImpl(base::File file,
                        base::FilePath file_path,
                        sql::SandboxedVfsFileType file_type,
-                       SandboxedVfs* vfs);
+                       sql::SandboxedVfs* vfs);
   ~SandboxedVfsFileImpl() override;
 
   // sqlite3_file implementation.
@@ -66,13 +66,13 @@ class COMPONENT_EXPORT(SQL) SandboxedVfsFileImpl : public SandboxedVfsFile {
   // One of the SQLite locking mode constants.
   int sqlite_lock_mode_;
   // The SandboxedVfs that created this instance.
-  const raw_ptr<SandboxedVfs> vfs_;
+  const raw_ptr<sql::SandboxedVfs> vfs_;
   // Tracked to check assumptions about SQLite's locking protocol.
-  const SandboxedVfsFileType file_type_;
+  const sql::SandboxedVfsFileType file_type_;
   // Used to identify the file in IPCs to the browser process.
   const base::FilePath file_path_;
 };
 
-}  // namespace sql
+}  // namespace storage
 
-#endif  // SQL_SANDBOXED_VFS_FILE_IMPL_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SANDBOXED_VFS_FILE_IMPL_H_
