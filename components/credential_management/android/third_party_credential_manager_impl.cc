@@ -36,7 +36,10 @@ void ThirdPartyCredentialManagerImpl::Store(
 
 void ThirdPartyCredentialManagerImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
-  // TODO(crbug.com/374710839): Implement.
+  // Send acknowledge response back.
+  // We're currently preventing silent access for every get request by default
+  // in 3rd party mode so there is nothing more to do here for now.
+  std::move(callback).Run();
 }
 
 // This method decides if credential picker should be shown.

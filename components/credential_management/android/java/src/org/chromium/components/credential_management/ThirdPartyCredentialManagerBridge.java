@@ -59,9 +59,14 @@ class ThirdPartyCredentialManagerBridge {
                 sCredentialManagerForTesting == null
                         ? CredentialManager.create(context)
                         : sCredentialManagerForTesting;
+        // We're currently preventing silent access for every get request by
+        // default in 3rd party mode so isAutoSelectAllowed is always set to
+        // false.
         GetPasswordOption passwordOption =
                 new GetPasswordOption(
-                        Collections.emptySet(), isAutoSelectAllowed, Collections.emptySet());
+                        Collections.emptySet(),
+                        /* isAutoSelectAllowed= */ false,
+                        Collections.emptySet());
         GetCredentialRequest.Builder getCredentialRequestBuilder =
                 new GetCredentialRequest.Builder();
         if (includePasswords) {
