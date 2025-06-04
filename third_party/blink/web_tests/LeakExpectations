@@ -51,3 +51,15 @@ crbug.com/1430360 [ Linux ] external/wpt/custom-elements/form-associated/label-d
 # culprit CLs instead of suppressing the leaks. If you have any question, #
 # ask yuzus@.                                                             #
 ###########################################################################
+
+# These tests leak under headless shell but not content shell. Because there are
+# no obvious culprits to revert, the failures have been suppressed and need to
+# be fixed out-of-band.
+crbug.com/422282936 external/wpt/css/css-overflow/scroll-marker-focus-scroll-crash.html [ Crash ]
+crbug.com/422282936 external/wpt/html/semantics/text-level-semantics/the-a-element/a-click-handler-with-null-browsing-context-crash.html [ Crash ]
+crbug.com/422282936 external/wpt/shadow-dom/crashtests/move-to-new-tree-1343016.html [ Crash ]
+crbug.com/422282936 external/wpt/streams/piping/crashtests/cross-piping.html [ Crash ]
+crbug.com/422282936 external/wpt/streams/piping/crashtests/cross-piping2.https.html [ Crash ]
+crbug.com/422282936 virtual/not-site-per-process/external/wpt/* [ Crash ]
+# Reftest mismatch.
+crbug.com/422282936 external/wpt/css/css-overflow/root-scroll-button.html [ Failure ]
