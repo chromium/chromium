@@ -159,6 +159,8 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
     float initial_device_scale_factor) {
   cc::ManagedMemoryPolicy actual = default_policy;
   actual.bytes_limit_when_visible = 0;
+  actual.priority_cutoff_when_visible =
+      gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
 
   // If the value was overridden on the command line, use the specified value.
   static bool client_hard_limit_bytes_overridden =
@@ -168,8 +170,9 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
     if (base::StringToSizeT(
             base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                 ::switches::kForceGpuMemAvailableMb),
-            &actual.bytes_limit_when_visible))
+            &actual.bytes_limit_when_visible)) {
       actual.bytes_limit_when_visible *= 1024 * 1024;
+    }
     return actual;
   }
 
@@ -213,9 +216,6 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
 
   actual.bytes_limit_when_visible = mb_limit_when_visible * 1024 * 1024;
 #endif
-  actual.priority_cutoff_when_visible =
-      gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-
   return actual;
 }
 
