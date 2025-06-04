@@ -451,10 +451,12 @@ class PageInfoBubbleViewTest : public testing::Test {
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
 
-    if (!web_contents_helper_) {
-      web_contents_helper_ =
-          std::make_unique<ScopedWebContentsTestHelper>(false);
-    }
+    // Create after the global features to ensure that there are no
+    // dangling pointers during teardown.
+    CHECK(!web_contents_helper_);
+    web_contents_helper_ =
+        std::make_unique<ScopedWebContentsTestHelper>(off_the_record_);
+
     views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
         std::make_unique<ChromeTestViewsDelegate<>>());
     views::Widget::InitParams parent_params(
@@ -483,6 +485,8 @@ class PageInfoBubbleViewTest : public testing::Test {
   void TearDown() override { parent_window_->CloseNow(); }
 
  protected:
+  bool off_the_record_ = false;
+
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
@@ -629,9 +633,7 @@ TEST_F(PageInfoBubbleViewTest, CheckToggleSettingForCapturedSurfaceControl) {
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
  public:
-  PageInfoBubbleViewOffTheRecordTest() {
-    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(true);
-  }
+  PageInfoBubbleViewOffTheRecordTest() { off_the_record_ = true; }
 };
 
 // Test resetting blocked in Incognito permission.
@@ -1192,8 +1194,7 @@ class PageInfoBubbleViewCookies3pcdButtonTest
   PageInfoBubbleViewCookies3pcdButtonTest() {
     feature_list_.InitWithFeatures(
         {content_settings::features::kTrackingProtection3pcd}, {});
-    web_contents_helper_ =
-        std::make_unique<ScopedWebContentsTestHelper>(GetParam());
+    off_the_record_ = GetParam();
   }
 
  protected:
@@ -1254,8 +1255,7 @@ class PageInfoBubbleViewCookiesSubpageTitleTest
   PageInfoBubbleViewCookiesSubpageTitleTest() {
     feature_list_.InitWithFeatures(
         {content_settings::features::kTrackingProtection3pcd}, {});
-    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(
-        testing::get<2>(GetParam()));
+    off_the_record_ = testing::get<2>(GetParam());
   }
 
  private:
@@ -1290,7 +1290,7 @@ class PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest
         {privacy_sandbox::kActUserBypassUx,
          privacy_sandbox::kFingerprintingProtectionUx},
         {});
-    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(true);
+    off_the_record_ = true;
   }
 
  private:
