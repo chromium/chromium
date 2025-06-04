@@ -367,6 +367,9 @@ extern const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[];
 extern const char kIOSEnableRealtimeEventReportingName[];
 extern const char kIOSEnableRealtimeEventReportingDescription[];
 
+extern const char kIOSFillRecoveryPasswordName[];
+extern const char kIOSFillRecoveryPasswordDescription[];
+
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 

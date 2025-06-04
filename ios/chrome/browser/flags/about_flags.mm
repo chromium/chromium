@@ -2700,6 +2700,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillRequireCvcForPossibleCardUpdate)},
+    {"ios-fill-recovery-password",
+     flag_descriptions::kIOSFillRecoveryPasswordName,
+     flag_descriptions::kIOSFillRecoveryPasswordDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSFillRecoveryPassword)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

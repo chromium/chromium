@@ -5770,6 +5770,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "ios-fill-recovery-password",
+    "owners": [ "noemies@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 141
+  },
+  {
     "name": "ios-interruptible-coordinator-always-dismissed",
     "owners": [
       "arthurmilchior@google.com",

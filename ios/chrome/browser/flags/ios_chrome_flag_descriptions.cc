@@ -639,6 +639,12 @@ extern const char kIOSEnableRealtimeEventReportingDescription[] =
     "When enabled, realtime events will be reported to the user's "
     "organization.";
 
+const char kIOSFillRecoveryPasswordName[] =
+    "Enable autofilling with a recovery password";
+const char kIOSFillRecoveryPasswordDescription[] =
+    "When enabled, users will be able to attempt to log in using a recovery "
+    "password if the main one didn't work.";
+
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =

@@ -92,7 +92,10 @@ BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetV2);
 // is signed-in and taps on a new password field.
 BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 
-#endif
+// Allows filling from a secondary recovery password saved as a backup on iOS.
+BASE_DECLARE_FEATURE(kIOSFillRecoveryPassword);
+
+#endif  // BUILDFLAG(IS_IOS)
 
 // Enables running the clientside form classifier to parse password forms.
 BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
