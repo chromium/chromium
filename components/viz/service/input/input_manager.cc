@@ -95,7 +95,7 @@ constexpr char kStateProcessingResultHistogram[] =
 enum class CreateAndroidInputReceiverResult {
   kSuccessfullyCreated = 0,
   kFailedUnknown = 1,
-  kFailedNullSurfaceControl = 2,
+  // kFailedNullSurfaceControl = 2,
   kFailedNullLooper = 3,
   kFailedNullInputTransferToken = 4,
   kFailedNullCallbacks = 5,
@@ -106,7 +106,9 @@ enum class CreateAndroidInputReceiverResult {
   kRootCompositorFrameSinkDestroyed = 10,
   kFailedChoreographerNotSupported = 11,
   kFailedNullChoreographer = 12,
-  kMaxValue = kFailedNullChoreographer,
+  kFailedNullParentSurfaceControl = 13,
+  kFailedNullChildSurfaceControl = 14,
+  kMaxValue = kFailedNullChildSurfaceControl,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:CreateAndroidInputReceiverResult)
 
@@ -778,13 +780,20 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
     return;
   }
 
+  if (!parent_input_surface->surface()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kFailedNullParentSurfaceControl);
+    return;
+  }
+
   scoped_refptr<gfx::SurfaceControl::Surface> input_surface =
       base::MakeRefCounted<gfx::SurfaceControl::Surface>(*parent_input_surface,
                                                          kInputSCName);
-  if (!parent_input_surface->surface() || !input_surface->surface()) {
+  if (!input_surface->surface()) {
     UMA_HISTOGRAM_ENUMERATION(
         kInputReceiverCreationResultHistogram,
-        CreateAndroidInputReceiverResult::kFailedNullSurfaceControl);
+        CreateAndroidInputReceiverResult::kFailedNullChildSurfaceControl);
     return;
   }
 
