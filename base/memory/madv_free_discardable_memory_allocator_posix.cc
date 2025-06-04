@@ -10,17 +10,13 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/tracing_buildflags.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/memory_dump_manager.h"  // no-presubmit-check
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
 
 MadvFreeDiscardableMemoryAllocatorPosix::
     MadvFreeDiscardableMemoryAllocatorPosix() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Don't register dump provider if
   // SingleThreadTaskRunner::CurrentDefaultHAndle is not set, such as in tests
   // and Android Webview.
@@ -29,14 +25,11 @@ MadvFreeDiscardableMemoryAllocatorPosix::
         this, "MadvFreeDiscardableMemoryAllocator",
         SingleThreadTaskRunner::GetCurrentDefault());
   }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 MadvFreeDiscardableMemoryAllocatorPosix::
     ~MadvFreeDiscardableMemoryAllocatorPosix() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(this);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 std::unique_ptr<DiscardableMemory>
@@ -53,7 +46,6 @@ size_t MadvFreeDiscardableMemoryAllocatorPosix::GetBytesAllocated() const {
 bool MadvFreeDiscardableMemoryAllocatorPosix::OnMemoryDump(
     const trace_event::MemoryDumpArgs& args,
     trace_event::ProcessMemoryDump* pmd) {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   if (args.level_of_detail !=
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     return true;
@@ -65,9 +57,6 @@ bool MadvFreeDiscardableMemoryAllocatorPosix::OnMemoryDump(
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         GetBytesAllocated());
   return true;
-#else   // BUILDFLAG(ENABLE_BASE_TRACING)
-  return false;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 }  // namespace base

@@ -13,7 +13,6 @@
 
 namespace base {
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST(TestPendingTaskTest, TraceSupport) {
   base::TestPendingTask task;
 
@@ -25,7 +24,6 @@ TEST(TestPendingTaskTest, TraceSupport) {
   task.AsValueInto(&task_value);
   EXPECT_THAT(task_value.ToJSON(), ::testing::HasSubstr("post_time"));
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 TEST(TestPendingTaskTest, ToString) {
   base::TestPendingTask task;

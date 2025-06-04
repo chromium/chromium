@@ -12,24 +12,20 @@
 namespace base {
 
 void CancelableEvent::Signal() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Must be ordered before SignalImpl() to match the `TerminatingFlow` in
   // TimedWait() and Cancel().
   if (!only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow", "CancelableEvent::Signal",
                         perfetto::Flow::FromPointer(this));
   }
-#endif
   SignalImpl();
 }
 
 bool CancelableEvent::Cancel() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   if (!only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow", "CancelableEvent::Cancel",
                         perfetto::TerminatingFlow::FromPointer(this));
   }
-#endif
   return CancelImpl();
 }
 
@@ -44,13 +40,11 @@ bool CancelableEvent::TimedWait(TimeDelta timeout) {
 
   const bool result = TimedWaitImpl(timeout);
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   if (result && !only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                         "CancelableEvent::Wait Complete",
                         perfetto::TerminatingFlow::FromPointer(this));
   }
-#endif
 
   return result;
 }

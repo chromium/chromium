@@ -438,10 +438,8 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     TimeTicks queue_time;
     bool config_category_enabled = false;
-#if BUILDFLAG(ENABLE_BASE_TRACING)
     config_category_enabled =
         TRACE_EVENT_CATEGORY_ENABLED("config.scheduler.record_task_post_time");
-#endif
     if (config_category_enabled || add_queue_time_to_tasks ||
         delayed_fence_allowed_) {
       queue_time = sequence_manager_->any_thread_clock()->NowTicks();

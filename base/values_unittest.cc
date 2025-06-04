@@ -16,6 +16,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -31,12 +32,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include <optional>
-
-#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace base {
 
@@ -2209,7 +2205,6 @@ TEST(ValuesTest, MutableGetBlob) {
   EXPECT_EQ(new_blob, value.GetBlob());
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST(ValuesTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(Value(false)), "false");
   EXPECT_EQ(perfetto::TracedValueToString(Value(1)), "1");
@@ -2233,7 +2228,6 @@ TEST(ValuesTest, TracingSupport) {
               "{key:value}");
   }
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 TEST(ValueViewTest, BasicConstruction) {
   {

@@ -80,7 +80,6 @@ class BASE_EXPORT SequenceManager {
       return default_priority_;
     }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
     void SetProtoPriorityConverter(
         perfetto::protos::pbzero::SequenceManagerTask::Priority (
             *proto_priority_converter)(TaskQueue::QueuePriority)) {
@@ -89,16 +88,13 @@ class BASE_EXPORT SequenceManager {
 
     perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
         TaskQueue::QueuePriority priority) const;
-#endif
 
    private:
     TaskQueue::QueuePriority priority_count_;
     TaskQueue::QueuePriority default_priority_;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
     perfetto::protos::pbzero::SequenceManagerTask::Priority (
         *proto_priority_converter_)(TaskQueue::QueuePriority) = nullptr;
-#endif
 
 #if DCHECK_IS_ON()
    public:

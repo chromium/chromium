@@ -23,10 +23,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -710,7 +707,6 @@ TEST(FileTest, DuplicateDeleteOnClose) {
   ASSERT_FALSE(PathExists(file_path));
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST(FileTest, TracedValueSupport) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -723,7 +719,6 @@ TEST(FileTest, TracedValueSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(file),
             "{is_valid:true,created:true,async:false,error_details:FILE_OK}");
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if BUILDFLAG(IS_WIN)
 // Flakily times out on Windows, see http://crbug.com/846276.

@@ -12,14 +12,11 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/memory_allocator_dump.h"  // no-presubmit-check
-#include "base/trace_event/process_memory_dump.h"    // no-presubmit-check
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
 
@@ -458,7 +455,6 @@ TEST(DiscardableSharedMemoryTest, ZeroFilledPagesAfterPurge) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST(DiscardableSharedMemoryTest, TracingOwnershipEdges) {
   const uint32_t kDataSize = 1024;
   TestDiscardableSharedMemory memory1;
@@ -483,6 +479,5 @@ TEST(DiscardableSharedMemoryTest, TracingOwnershipEdges) {
   // TODO(ssid): test for weak global dump once the
   // CreateWeakSharedMemoryOwnershipEdge() is fixed, crbug.com/661257.
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace base

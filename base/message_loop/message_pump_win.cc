@@ -27,10 +27,7 @@
 #include "base/task/task_features.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_message_pump.pbzero.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_message_pump.pbzero.h"
 
 namespace base {
 

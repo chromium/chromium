@@ -58,13 +58,11 @@ class BASE_EXPORT TaskAnnotator {
 
   static void MarkCurrentTaskAsInterestingForTracing();
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   //  TRACE_EVENT argument helper, writing the task start time into
   //  EventContext.
   //  NOTE: Should only be used with TRACE_EVENT or TRACE_EVENT_BEGIN since the
   //          function records the timestamp for event start at call time.
   static void EmitTaskTimingDetails(perfetto::EventContext& ctx);
-#endif
 
   TaskAnnotator();
 
@@ -118,7 +116,6 @@ class BASE_EXPORT TaskAnnotator {
   static void RegisterObserverForTesting(ObserverForTesting* observer);
   static void ClearObserverForTesting();
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // TRACE_EVENT argument helper, writing the task location data into
   // EventContext.
   static void EmitTaskLocation(perfetto::EventContext& ctx,
@@ -133,7 +130,6 @@ class BASE_EXPORT TaskAnnotator {
 
   void MaybeEmitIPCHash(perfetto::EventContext& ctx,
                         const PendingTask& task) const;
-#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 };
 
 class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::ScopedSetIpcHash {

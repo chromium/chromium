@@ -32,11 +32,9 @@ class BASE_EXPORT ScopedInputEvent {
 
   const AInputEvent* a_input_event() const { return a_input_event_.get(); }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::EventForwarder> forwarder)
       const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
  private:
   void DestroyIfNeeded();

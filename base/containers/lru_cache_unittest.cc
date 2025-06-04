@@ -12,13 +12,10 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "base/tracing_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
 
@@ -587,7 +584,6 @@ TYPED_TEST(LRUCacheSetTest, ReplacementIdentity) {
   EXPECT_EQ(iter, cache.end());
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TYPED_TEST(LRUCacheTest, EstimateMemory) {
   typedef typename TypeParam::template Type<std::string, int> Cache;
   Cache cache(10);
@@ -598,7 +594,6 @@ TYPED_TEST(LRUCacheTest, EstimateMemory) {
   EXPECT_GT(trace_event::EstimateMemoryUsage(cache),
             trace_event::EstimateMemoryUsage(key));
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 TEST(LRUCacheIndexOrderTest, IndexIteration) {
   using OrderedCache = LRUCache<int, CachedItem>;

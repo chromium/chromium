@@ -11,10 +11,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 
 #if DCHECK_IS_ON()
 #include "base/auto_reset.h"

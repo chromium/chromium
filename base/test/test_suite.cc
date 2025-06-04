@@ -622,9 +622,7 @@ void TestSuite::Initialize() {
 
   TestTimeouts::Initialize();
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   trace_to_file_.BeginTracingFromCommandLineOptions();
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   debug::StartProfiling(GetProfileName());
 

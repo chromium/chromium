@@ -17,10 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/test/trace_to_file.h"
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if BUILDFLAG(IS_WIN)
 #include <vector>
@@ -96,9 +93,7 @@ class TestSuite {
 
   void AddTestLauncherResultPrinter();
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   test::TraceToFile trace_to_file_;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   raw_ptr<XmlUnitTestResultPrinter, DanglingUntriaged> printer_ = nullptr;
 

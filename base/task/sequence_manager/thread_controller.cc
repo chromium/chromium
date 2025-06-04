@@ -146,7 +146,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
       Phase::kLastPhase, Phase::kLastPhase + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   perfetto_track_.emplace(
       reinterpret_cast<uint64_t>(this),
       // TODO(crbug.com/42050015): Replace with ThreadTrack::Current() after SDK
@@ -161,7 +160,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
   // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));
   // perfetto::internal::TrackEventDataSource::SetTrackDescriptor(
   //     *perfetto_track_, desc);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
@@ -539,7 +537,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
   // Account the next phase starting from now.
   last_phase_end_ = last_wakeup_;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Emit the END of the kScheduled phase right away, this avoids incorrect
   // ordering when kScheduled is later emitted and its END matches the BEGIN of
   // an already emitted phase (tracing's sort is stable and would keep the late
@@ -549,7 +546,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
   // a kScheduled phase, this unmatched END will be ignored.
   TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("base"), *perfetto_track_,
                   last_wakeup_);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 void ThreadController::RunLevelTracker::TimeKeeper::OnApplicationTaskSelected(
@@ -572,12 +568,10 @@ void ThreadController::RunLevelTracker::TimeKeeper::OnApplicationTaskSelected(
         queue_time = last_sleep_;
       }
       RecordTimeInPhase(kScheduled, queue_time, last_wakeup_);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
       // Match the END event which was already emitted by RecordWakeUp().
       TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("base"),
                         perfetto::StaticString(PhaseToEventName(kScheduled)),
                         *perfetto_track_, queue_time);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
     }
     last_wakeup_ = TimeTicks();
   }
@@ -609,7 +603,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
   const TimeTicks phase_end = lazy_now.Now();
   RecordTimeInPhase(phase, last_phase_end_, phase_end);
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Ugly hack to name our `perfetto_track_`.
   bool is_tracing_enabled = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("base"),
@@ -632,14 +625,12 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
                     phase_end);
   }
   was_tracing_enabled_ = is_tracing_enabled;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   last_phase_end_ = phase_end;
 }
 
 void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
     perfetto::EventContext& ctx) {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   static const uint8_t* flow_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("wakeup.flow");
   if (!*flow_enabled) {
@@ -648,7 +639,6 @@ void ThreadController::RunLevelTracker::TimeKeeper::MaybeEmitIncomingWakeupFlow(
 
   perfetto::TerminatingFlow::ProcessScoped(
       reinterpret_cast<uint64_t>(&(outer_.get())))(ctx);
-#endif
 }
 
 bool ThreadController::RunLevelTracker::TimeKeeper::ShouldRecordNow(

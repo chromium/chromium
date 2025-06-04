@@ -39,13 +39,6 @@ if (is_cronet_build) {
 
 # Features used by //base/trace_event and //services/tracing.
 declare_args() {
-  # Tracing support requires //third_party/perfetto, which is not available in
-  # libchrome (CrOS's version of //base). This flag can disable tracing support
-  # altogether, in which case all tracing instrumentation in //base becomes a
-  # no-op.
-  # TODO(crbug.com/40124378): Add dependency on perfetto to support typed events.
-  enable_base_tracing = true
-
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party
   # repositories which do not use JUnit tests. For instance,

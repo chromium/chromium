@@ -70,79 +70,10 @@ def _FindLocations(input_api, search_regexes, files_to_check, files_to_skip):
   return locations
 
 
-def _CheckNoTraceEventInclude(input_api, output_api):
-  """Verify that //base includes base_tracing.h instead of trace event headers.
-
-  Checks that files outside trace event implementation include the
-  base_tracing.h header instead of specific trace event implementation headers
-  to maintain compatibility with the gn flag "enable_base_tracing = false".
-  """
-  discouraged_includes = [
-    r'^#include "base/trace_event/(?!base_tracing\.h|base_tracing_forward\.h)',
-    r'^#include "third_party/perfetto/include/',
-  ]
-
-  files_to_check = [
-    r".*\.(h|cc|mm)$",
-  ]
-  files_to_skip = [
-    r".*/test/.*",
-    r".*/trace_event/.*",
-    r".*/tracing/.*",
-  ]
-
-  locations = _FindLocations(input_api, discouraged_includes, files_to_check,
-                             files_to_skip)
-  if locations:
-    return [ output_api.PresubmitError(
-        'Base code should include "base/trace_event/base_tracing.h" instead\n' +
-        'of trace_event implementation headers. If you need to include an\n' +
-        'implementation header, verify that "gn check" and base_unittests\n' +
-        'still pass with gn arg "enable_base_tracing = false" and add\n' +
-        '"// no-presubmit-check" after the include. \n' +
-        '\n'.join(locations)) ]
-  return []
-
-
-def _WarnPbzeroIncludes(input_api, output_api):
-  """Warn to check enable_base_tracing=false when including a pbzero header.
-
-  Emits a warning when including a perfetto pbzero header, encouraging the
-  user to verify that //base still builds with enable_base_tracing=false.
-  """
-  warn_includes = [
-    r'^#include "third_party/perfetto/protos/',
-    r'^#include "base/tracing/protos/',
-  ]
-
-  files_to_check = [
-    r".*\.(h|cc|mm)$",
-  ]
-  files_to_skip = [
-    r".*/test/.*",
-    r".*/trace_event/.*",
-    r".*/tracing/.*",
-  ]
-
-  locations = _FindLocations(input_api, warn_includes, files_to_check,
-                             files_to_skip)
-  if locations:
-    return [ output_api.PresubmitPromptWarning(
-        'Please verify that "gn check" and base_unittests still pass with\n' +
-        'gn arg "enable_base_tracing = false" when adding typed trace\n' +
-        'events to //base. You can use "#if BUILDFLAG(ENABLE_BASE_TRACING)"\n' +
-        'to exclude pbzero headers and anything not supported by\n' +
-        '//base/trace_event/trace_event_stub.h.\n' +
-        '\n'.join(locations)) ]
-  return []
-
-
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoInterfacesInBase(input_api, output_api))
-  results.extend(_CheckNoTraceEventInclude(input_api, output_api))
-  results.extend(_WarnPbzeroIncludes(input_api, output_api))
   results.extend(CheckChangeLintsClean(input_api, output_api))
   return results
 

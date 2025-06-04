@@ -21,10 +21,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"  // nogncheck
-#endif
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
 namespace base {
 
@@ -68,7 +65,6 @@ TaskAnnotator::LongTaskTracker* GetCurrentLongTaskTracker() {
   return current_long_task_tracker;
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::ChromeTaskAnnotator::DelayPolicy ToProtoEnum(
     subtle::DelayPolicy type) {
   using ProtoType = perfetto::protos::pbzero::ChromeTaskAnnotator::DelayPolicy;
@@ -81,7 +77,6 @@ perfetto::protos::pbzero::ChromeTaskAnnotator::DelayPolicy ToProtoEnum(
       return ProtoType::PRECISE;
   }
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace
 
@@ -236,7 +231,6 @@ void TaskAnnotator::ClearObserverForTesting() {
   g_task_annotator_observer = nullptr;
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 // TRACE_EVENT argument helper, writing the task location data into
 // EventContext.
 void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
@@ -320,7 +314,6 @@ void TaskAnnotator::MaybeEmitIPCHash(perfetto::EventContext& ctx,
   auto* annotator = event->set_chrome_task_annotator();
   annotator->set_ipc_hash(task.ipc_hash);
 }
-#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 
 TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(uint32_t ipc_hash)
     : ScopedSetIpcHash(ipc_hash, nullptr) {}
@@ -403,7 +396,7 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
   if (!ipc_interface_name_ || !ipc_hash_ || !ipc_method_info_) {
     return;
   }
-#if BUILDFLAG(ENABLE_BASE_TRACING) && !BUILDFLAG(IS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Emit all of the IPC hash information if this task
   // comes from a mojo interface.
   auto* info = ctx.event()->set_chrome_mojo_event_info();

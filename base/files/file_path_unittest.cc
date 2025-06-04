@@ -25,10 +25,7 @@
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/test/scoped_locale.h"
@@ -1661,11 +1658,9 @@ TEST_F(FilePathTest, PrintToOstream) {
   EXPECT_EQ("foo", ss.str());
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 TEST_F(FilePathTest, TracedValueSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(FilePath(FPL("foo"))), "foo");
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 // Test GetHFSDecomposedForm should return empty result for invalid UTF-8
 // strings.

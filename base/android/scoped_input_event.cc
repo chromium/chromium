@@ -40,7 +40,6 @@ ScopedInputEvent& ScopedInputEvent::operator=(ScopedInputEvent&& other) {
   return *this;
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 void ScopedInputEvent::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::EventForwarder> forwarder)
     const {
@@ -70,7 +69,6 @@ void ScopedInputEvent::WriteIntoTrace(
       static_cast<perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
           action));
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 void ScopedInputEvent::DestroyIfNeeded() {
   if (a_input_event_ == nullptr) {

@@ -10,7 +10,6 @@ namespace base::sequence_manager {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::SequenceManagerTask::Priority
 DefaultTaskPriorityToProto(TaskQueue::QueuePriority priority) {
   DCHECK_EQ(priority, static_cast<TaskQueue::QueuePriority>(
@@ -18,7 +17,6 @@ DefaultTaskPriorityToProto(TaskQueue::QueuePriority priority) {
   return perfetto::protos::pbzero::SequenceManagerTask::Priority::
       NORMAL_PRIORITY;
 }
-#endif
 
 void CheckPriorities(TaskQueue::QueuePriority priority_count,
                      TaskQueue::QueuePriority default_priority) {
@@ -37,9 +35,7 @@ SequenceManager::PrioritySettings::CreateDefault() {
   PrioritySettings settings(
       TaskQueue::DefaultQueuePriority::kQueuePriorityCount,
       TaskQueue::DefaultQueuePriority::kNormalPriority);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   settings.SetProtoPriorityConverter(&DefaultTaskPriorityToProto);
-#endif
   return settings;
 }
 
@@ -75,7 +71,6 @@ SequenceManager::PrioritySettings::PrioritySettings(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::SequenceManagerTask::Priority
 SequenceManager::PrioritySettings::TaskPriorityToProto(
     TaskQueue::QueuePriority priority) const {
@@ -85,7 +80,6 @@ SequenceManager::PrioritySettings::TaskPriorityToProto(
       << "A tracing priority-to-proto-priority function was not provided";
   return proto_priority_converter_(priority);
 }
-#endif
 
 SequenceManager::PrioritySettings::~PrioritySettings() = default;
 

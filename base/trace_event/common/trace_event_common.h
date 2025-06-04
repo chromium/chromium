@@ -15,8 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-
 // Enable legacy trace event macros (e.g., TRACE_EVENT{0,1,2}).
 #define PERFETTO_ENABLE_LEGACY_TRACE_EVENTS 1
 
@@ -76,15 +74,11 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 
 }  // namespace perfetto
 
-#else  // !BUILDFLAG(ENABLE_BASE_TRACING)
-
 // This macro is still used in some components even when base tracing is
 // disabled.
 // TODO(crbug/336718643): Make sure no code affected by
 // enable_base_tracing=false includes this file directly, then move the define
 // to trace_event_stub.h.
 #define TRACE_DISABLED_BY_DEFAULT(name) "disabled-by-default-" name
-
-#endif  // !BUILDFLAG(ENABLE_BASE_TRACING)
 
 #endif  // BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_

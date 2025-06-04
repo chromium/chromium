@@ -74,9 +74,6 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
-// The WriteLibunwindstackTraceEventArgs callers below get implicitly ifdef'ed
-// out as well, when ENABLE_BASE_TRACING is disabled.
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
                                        std::optional<int> num_frames,
                                        perfetto::EventContext& ctx) {
@@ -88,7 +85,6 @@ void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
     libunwindstack_unwinder->set_num_frames(*num_frames);
   }
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 bool IsJavaModule(const base::ModuleCache::Module* module) {
   if (!module) {

@@ -10,12 +10,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/tracing_buildflags.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/memory_pressure_level_proto.h"  // no-presubmit-check
-#endif
 
 namespace memory_pressure {
 

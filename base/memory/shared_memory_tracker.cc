@@ -4,18 +4,14 @@
 
 #include "base/memory/shared_memory_tracker.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/trace_event/base_tracing.h"
-#include "base/tracing_buildflags.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 #include <optional>
 
-#include "base/trace_event/memory_dump_manager.h"  // no-presubmit-check
-#include "base/trace_event/process_memory_dump.h"  // no-presubmit-check
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/check.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
+#include "base/tracing_buildflags.h"
 
 namespace base {
 
@@ -67,10 +63,8 @@ void SharedMemoryTracker::DecrementMemoryUsage(
 }
 
 SharedMemoryTracker::SharedMemoryTracker() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "SharedMemoryTracker", nullptr);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 SharedMemoryTracker::~SharedMemoryTracker() = default;
@@ -94,7 +88,6 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
     size_t mapped_size,
     const UnguessableToken& mapped_id,
     trace_event::ProcessMemoryDump* pmd) {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   const std::string dump_name = GetDumpNameForTracing(mapped_id);
   trace_event::MemoryAllocatorDump* local_dump =
       pmd->GetAllocatorDump(dump_name);
@@ -130,9 +123,6 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   pmd->AddOverridableOwnershipEdge(local_dump->guid(), global_dump->guid(),
                                    0 /* importance */);
   return local_dump;
-#else   // BUILDFLAG(ENABLE_BASE_TRACING)
-  NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 }  // namespace base

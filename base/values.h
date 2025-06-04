@@ -214,18 +214,15 @@ class BASE_EXPORT GSL_OWNER ListValue {
     return std::erase_if(storage_, predicate);
   }
 
-  // Estimates dynamic memory usage. Requires tracing support
-  // (enable_base_tracing gn flag), otherwise always returns 0. See
+  // Estimates dynamic memory usage. See
   // base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
   // Serializes to a string for logging and debug purposes.
   std::string DebugString() const;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Write this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
  private:
   using ListStorage = std::vector<Value>;
@@ -556,18 +553,15 @@ class BASE_EXPORT GSL_OWNER DictValue {
 
   std::optional<Value> ExtractByDottedPath(std::string_view path);
 
-  // Estimates dynamic memory usage. Requires tracing support
-  // (enable_base_tracing gn flag), otherwise always returns 0. See
+  // Estimates dynamic memory usage. See
   // base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
   // Serializes to a string for logging and debug purposes.
   std::string DebugString() const;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Write this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
  private:
   BASE_EXPORT friend bool operator==(const DictValue& lhs,
@@ -871,18 +865,15 @@ class BASE_EXPORT GSL_OWNER Value {
   bool operator==(const DictValue& rhs) const;
   bool operator==(const ListValue& rhs) const;
 
-  // Estimates dynamic memory usage. Requires tracing support
-  // (enable_base_tracing gn flag), otherwise always returns 0. See
+  // Estimates dynamic memory usage. See
   // base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
   // Serializes to a string for logging and debug purposes.
   std::string DebugString() const;
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Write this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   template <typename Visitor>
   auto Visit(Visitor&& visitor) const {

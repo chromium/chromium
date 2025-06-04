@@ -248,8 +248,6 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
       "//ui/gfx/geometry",
     ]
 
-    if (enable_base_tracing) {
-      deps += [ "//base/test:test_trace_processor" ]
-    }
+    deps += [ "//base/test:test_trace_processor" ]
   }
 }

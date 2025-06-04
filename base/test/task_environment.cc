@@ -46,6 +46,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,10 +55,6 @@
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/trace_event/trace_log.h"  // nogncheck
-#endif                                   // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base::test {
 
@@ -510,11 +507,9 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
 }
 
 void TaskEnvironment::InitializeThreadPool() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // Force the creation of TraceLog instance before starting ThreadPool and
   // creating additional threads to avoid race conditions.
   trace_event::TraceLog::GetInstance();
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
   task_tracker_ = CreateThreadPool();
   if (mock_time_domain_) {
