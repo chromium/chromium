@@ -102,7 +102,7 @@ found in the LICENSE file.
           android:paddingEnd="20dp"
           android:drawablePadding="12dp"
           android:drawableStart="@drawable/ic_feedback_24dp"
-          android:drawableTint="@macro/default_icon_color"
+          android:drawableTint="@macro/default_icon_color_on_accent1"
           android:text="@string/send_feedback_tab_grid_dialog"
           android:singleLine="true"
           android:visibility="gone"
@@ -110,7 +110,7 @@ found in the LICENSE file.
           app:rippleCornerRadiusBottomStart="@dimen/send_feedback_button_radius"
           app:rippleCornerRadiusTopEnd="@dimen/send_feedback_button_radius"
           app:rippleCornerRadiusTopStart="@dimen/send_feedback_button_radius"
-          app:buttonTextColor="@macro/default_text_color"
-          app:buttonColor="?attr/colorPrimaryContainer"
+          app:buttonTextColor="@macro/default_text_color_on_accent1"
+          app:buttonColor="?attr/colorPrimary"
           app:verticalInset="0dp" />
 </org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView>
