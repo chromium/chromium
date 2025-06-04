@@ -26,13 +26,20 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ui/InputProtector.java",
+    "java/src/org/chromium/components/payments/ui/ItemDividerBase.java",
+    "java/src/org/chromium/components/payments/ui/PaymentsUiUtil.java",
   ]
   deps = [
     "//base:base_java",
+    "//components/browser_ui/styles/android:java",
+    "//components/payments/content/android:minimal_java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
+  resources_package = "org.chromium.components.payments"
 }
 
 android_library("payments_java_test_support") {
