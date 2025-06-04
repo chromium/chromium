@@ -806,8 +806,8 @@ const char kUtilityProcess[]                = "utility";
 const char kUtilityStartupDialog[] = "utility-startup-dialog";
 
 // This switch indicates the type of a utility process. It does not affect the
-// services offered by the process, but is added to the command line for
-// debugging and profiling purposes.
+// services offered by the process, but is added to the command line to make
+// it easier to identify the purpose of the utility process.
 const char kUtilitySubType[] = "utility-sub-type";
 
 // Causes tests to attempt to verify pixel output.
