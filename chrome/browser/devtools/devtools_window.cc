@@ -1878,9 +1878,25 @@ void DevToolsWindow::SetOpenNewWindowForPopups(bool value) {
 
 void DevToolsWindow::CreateDevToolsBrowser() {
   PrefService* prefs = profile_->GetPrefs();
+  bool resetPrefs = false;
   if (!prefs->GetDict(prefs::kAppWindowPlacement).Find(kDevToolsApp)) {
     // Ensure there is always a default size so that
     // BrowserFrame::InitBrowserFrame can retrieve it later.
+    resetPrefs = true;
+  } else {
+    // Reset to default if stored window size is too small.
+    const base::Value::Dict& devtoolsPlacement =
+        prefs->GetDict(prefs::kAppWindowPlacement)
+            .Find(kDevToolsApp)
+            ->GetDict();
+    const int right = devtoolsPlacement.FindInt("right").value();
+    const int left = devtoolsPlacement.FindInt("left").value();
+    const int top = devtoolsPlacement.FindInt("top").value();
+    const int bottom = devtoolsPlacement.FindInt("bottom").value();
+    const int THRESHOLD = 400;  // go/smoldevtools
+    resetPrefs = right - left < THRESHOLD || bottom - top < THRESHOLD;
+  }
+  if (resetPrefs) {
     ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
     base::Value::Dict& wp_prefs = update.Get();
     base::Value::Dict dev_tools_defaults;
