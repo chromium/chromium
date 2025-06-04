@@ -520,6 +520,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPageMenuItems_Phone_RegularPage() {
         setUpMocksForPageMenu();
         setMenuOptions(
@@ -541,6 +542,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_new_tab);
         expectedItems.add(R.id.new_incognito_tab_menu_id);
         expectedTitles.add(R.string.menu_new_incognito_tab);
+        expectedItems.add(R.id.pin_tab_menu_id);
+        expectedTitles.add(R.string.menu_pin_tab);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
         expectedItems.add(R.id.open_history_menu_id);

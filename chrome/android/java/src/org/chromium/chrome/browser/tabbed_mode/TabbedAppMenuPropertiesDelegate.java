@@ -216,6 +216,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Add to Group
         if (shouldShowAddToGroup()) modelList.add(buildAddToGroupItem(currentTab));
 
+        // Pin tab.
+        if (shouldShowPinTab()) modelList.add(buildPinTabItem());
+
         // New Window
         if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
 
@@ -443,6 +446,20 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         getAddToGroupMenuItemString(
                                 currentTab != null ? currentTab.getTabGroupId() : null)));
         return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
+    }
+
+    private boolean shouldShowPinTab() {
+        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
+    }
+
+    private MVCListAdapter.ListItem buildPinTabItem() {
+        assert shouldShowPinTab();
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.pin_tab_menu_id,
+                        R.string.menu_pin_tab,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_offline_pin_24dp : 0));
     }
 
     private MVCListAdapter.ListItem buildNewWindowItem() {
