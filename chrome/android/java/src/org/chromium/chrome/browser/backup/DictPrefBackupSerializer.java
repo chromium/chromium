@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.backup;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.internal.SyncPrefNames;
 
 import java.util.Set;
 
 /** PrefBackupSerializer responsible for serializing/deserializing native dictionary prefs. */
+@NullMarked
 class DictPrefBackupSerializer extends PrefBackupSerializer {
     public DictPrefBackupSerializer() {
         super(/* uniqueEncodingPrefix= */ "NativeJsonDict.");

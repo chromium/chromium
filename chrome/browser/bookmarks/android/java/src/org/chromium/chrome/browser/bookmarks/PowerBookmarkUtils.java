@@ -41,7 +41,7 @@ public class PowerBookmarkUtils {
 
     /** Returns whether the given meta is a shopping list item. */
     public static boolean isShoppingListItem(
-            ShoppingService shoppingService, PowerBookmarkMeta meta) {
+            ShoppingService shoppingService, @Nullable PowerBookmarkMeta meta) {
         return CommerceFeatureUtils.isShoppingListEligible(shoppingService)
                 && meta != null
                 && meta.hasShoppingSpecifics();

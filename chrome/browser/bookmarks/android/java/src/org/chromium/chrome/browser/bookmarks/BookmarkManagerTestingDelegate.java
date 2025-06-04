@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.bookmarks.BookmarkId;
 
 /** Exposes business logic methods to the various bookmark integration. */
+@NullMarked
 public interface BookmarkManagerTestingDelegate {
     /**
      * Returns the bookmark id by the position of the bookmark. Ignores other item types when

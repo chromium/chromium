@@ -13,11 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
@@ -30,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
+@NullMarked
 public class BookmarkBarCoordinator {
 
     private final SimpleRecyclerViewAdapter mItemsAdapter;
@@ -49,14 +50,14 @@ public class BookmarkBarCoordinator {
      * @param bookmarkManagerOpenerSupplier Used to open the bookmark manager.
      */
     public BookmarkBarCoordinator(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull Callback<Integer> heightChangeCallback,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull ViewStub viewStub,
-            @NonNull BookmarkOpener bookmarkOpener,
-            @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
+            Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Callback<Integer> heightChangeCallback,
+            ObservableSupplier<Profile> profileSupplier,
+            ViewStub viewStub,
+            BookmarkOpener bookmarkOpener,
+            ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mView = (BookmarkBar) viewStub.inflate();
 
         // Bind view/model for 'All Bookmarks' button.
@@ -119,11 +120,11 @@ public class BookmarkBarCoordinator {
     /**
      * @return The view for the bookmark bar.
      */
-    public @NonNull View getView() {
+    public View getView() {
         return mView;
     }
 
-    private @NonNull BookmarkBarButton inflateBookmarkBarButton(@NonNull ViewGroup parent) {
+    private BookmarkBarButton inflateBookmarkBarButton(ViewGroup parent) {
         return (BookmarkBarButton)
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bookmark_bar_button, parent, false);

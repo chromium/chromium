@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -23,6 +25,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /** New implementation of {@link BookmarkQueryHandler} that expands the root. */
+@NullMarked
 public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     private final BookmarkModel mBookmarkModel;
     private final BasicBookmarkQueryHandler mBasicBookmarkQueryHandler;
@@ -57,7 +60,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(
-            BookmarkId parentId, Set<PowerBookmarkType> powerFilter) {
+            BookmarkId parentId, @Nullable Set<PowerBookmarkType> powerFilter) {
         boolean isReadingList = mBookmarkModel.isReadingListFolder(parentId);
         final List<BookmarkListEntry> bookmarkListEntries;
         if (!isReadingList && powerFilter != null && !powerFilter.isEmpty()) {
@@ -82,7 +85,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForSearch(
-            String query, Set<PowerBookmarkType> powerFilter) {
+            String query, @Nullable Set<PowerBookmarkType> powerFilter) {
         if (TextUtils.isEmpty(query)) return Collections.emptyList();
         List<BookmarkListEntry> bookmarkListEntries =
                 mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query, powerFilter);
@@ -115,7 +118,10 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                     BookmarkItem item2 = entry2.getBookmarkItem();
 
                     // Sort folders before urls.
-                    int folderComparison = Boolean.compare(item2.isFolder(), item1.isFolder());
+                    int folderComparison =
+                            Boolean.compare(
+                                    assumeNonNull(item2).isFolder(),
+                                    assumeNonNull(item1).isFolder());
                     if (folderComparison != 0) {
                         return folderComparison;
                     }
@@ -139,7 +145,9 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                     BookmarkItem item2 = entry2.getBookmarkItem();
 
                     // Sort account-bound bookmarks before anything else.
-                    return Boolean.compare(item2.isAccountBookmark(), item1.isAccountBookmark());
+                    return Boolean.compare(
+                            assumeNonNull(item2).isAccountBookmark(),
+                            assumeNonNull(item1).isAccountBookmark());
                 });
     }
 
@@ -182,7 +190,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         if (!PowerBookmarkUtils.isShoppingListItem(mShoppingService, meta)) return false;
         return mShoppingService.isSubscribedFromCache(
                 PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
-                        meta.getShoppingSpecifics()));
+                        assumeNonNull(meta).getShoppingSpecifics()));
     }
 
     private List<BookmarkListEntry> collectLeafNodes(BookmarkId parentId) {

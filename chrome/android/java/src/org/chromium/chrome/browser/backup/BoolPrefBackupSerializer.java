@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.backup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.internal.SyncPrefNames;
 
 import java.util.Set;
 
 /** PrefBackupSerializer responsible for serializing/deserializing native boolean prefs. */
+@NullMarked
 class BoolPrefBackupSerializer extends PrefBackupSerializer {
     public BoolPrefBackupSerializer() {
         // Bools were the first backed up prefs, thus the generic string.

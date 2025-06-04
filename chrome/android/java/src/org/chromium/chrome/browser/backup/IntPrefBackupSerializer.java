@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.backup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.internal.SyncPrefNames;
 
@@ -11,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 
 /** PrefBackupSerializer responsible for serializing/deserializing native integer prefs. */
+@NullMarked
 class IntPrefBackupSerializer extends PrefBackupSerializer {
     public IntPrefBackupSerializer() {
         super(/* uniqueEncodingPrefix= */ "NativeIntegerPref.");
