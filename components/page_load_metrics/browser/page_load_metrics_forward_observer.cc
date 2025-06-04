@@ -257,10 +257,10 @@ void PageLoadMetricsForwardObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,
         size_t index) {
-  // TODO(crbug.com/40895492): Investigate whether this should truly be
-  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
-  // they are not all necessarily hit.
-  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
+  // Today, pages in which fenced frames are restored from BFCache can hit this
+  // line. However, we shouldn't forward any metrics to the parent observer
+  // here, because fenced frames are never restored from BFCache independently
+  // of their top-level page.
 }
 
 void PageLoadMetricsForwardObserver::
