@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -29,14 +30,12 @@ class WebContents;
 }  // namespace content
 
 namespace views {
-class BoxLayoutView;
 class ImageView;
 class Label;
 class Link;
 class TableLayoutView;
 class Textarea;
 class Throbber;
-class Widget;
 }  // namespace views
 
 namespace enterprise_connectors {
@@ -44,7 +43,7 @@ namespace enterprise_connectors {
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
 class ContentAnalysisDialogController
-    : public views::DialogDelegate,
+    : public ContentAnalysisDialogDelegate,
       public content::WebContentsObserver,
       public views::TextfieldController,
       public download::DownloadItem::Observer,
@@ -112,12 +111,7 @@ class ContentAnalysisDialogController
       download::DownloadItem* download_item = nullptr);
 
   // views::DialogDelegate:
-  std::u16string GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
   views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
-  ui::mojom::ModalType GetModalType() const override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -298,7 +292,6 @@ class ContentAnalysisDialogController
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_base_;
 
   // Views above the buttons. `contents_view_` owns every other view.
-  raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
   raw_ptr<ContentAnalysisTopImageView> image_ = nullptr;
   raw_ptr<ContentAnalysisSideIconImageView> side_icon_image_ = nullptr;
   raw_ptr<ContentAnalysisSideIconSpinnerView> side_icon_spinner_ = nullptr;

@@ -39,7 +39,6 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/textarea/textarea.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -183,10 +182,6 @@ void ContentAnalysisDialogController::ShowDialogNow() {
   }
 }
 
-std::u16string ContentAnalysisDialogController::GetWindowTitle() const {
-  return std::u16string();
-}
-
 void ContentAnalysisDialogController::AcceptButtonCallback() {
   DCHECK(delegate_base_);
   DCHECK(is_warning());
@@ -257,10 +252,6 @@ void ContentAnalysisDialogController::ContentsChanged(
   }
 }
 
-bool ContentAnalysisDialogController::ShouldShowCloseButton() const {
-  return false;
-}
-
 views::View* ContentAnalysisDialogController::GetContentsView() {
   if (!contents_view_) {
     DVLOG(1) << __func__ << ": first time";
@@ -326,18 +317,6 @@ views::View* ContentAnalysisDialogController::GetContentsView() {
   }
 
   return contents_view_;
-}
-
-views::Widget* ContentAnalysisDialogController::GetWidget() {
-  return contents_view_->GetWidget();
-}
-
-const views::Widget* ContentAnalysisDialogController::GetWidget() const {
-  return contents_view_->GetWidget();
-}
-
-ui::mojom::ModalType ContentAnalysisDialogController::GetModalType() const {
-  return ui::mojom::ModalType::kChild;
 }
 
 void ContentAnalysisDialogController::WebContentsDestroyed() {
