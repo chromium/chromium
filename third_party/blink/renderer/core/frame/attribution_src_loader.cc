@@ -859,20 +859,6 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   // This could occur for responses loaded from memory cache.
   if (support == network::mojom::AttributionSupport::kUnset) {
-    // `ResourceFetcher::DidLoadResourceFromMemoryCache()` early returns for
-    // detached frames. We log metrics here to verify that this is never hit in
-    // detached frames.
-    const bool is_detached = !local_frame_->IsAttached();
-    base::UmaHistogramBoolean(
-        "Conversions.NonAttributionSrcRequestUnsetSupport.Detached",
-        is_detached);
-
-    if (is_detached) {
-      // Attribution support is unknown from detached frames, therefore not
-      // registering the response.
-      return false;
-    }
-
     support = GetSupport();
   }
 
