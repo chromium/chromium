@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

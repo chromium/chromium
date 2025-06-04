@@ -22,7 +22,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/ozone/platform/flatland/flatland_surface.h"
 #include "ui/ozone/platform/flatland/flatland_surface_factory.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"

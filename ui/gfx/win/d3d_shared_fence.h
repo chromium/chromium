@@ -13,7 +13,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gfx {
 

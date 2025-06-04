@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/mojom/buffer_types.mojom-shared.h"
 #include "ui/gfx/mojom/native_handle_types.mojom.h"
 

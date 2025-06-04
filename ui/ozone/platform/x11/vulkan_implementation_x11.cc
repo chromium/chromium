@@ -19,7 +19,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/ozone/platform/x11/vulkan_surface_x11.h"
 
