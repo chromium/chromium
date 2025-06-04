@@ -8621,6 +8621,14 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      // This shorthand is used for testing with origin trial intergration only.
+      // It should never be web-exposed.
+      name: "origin-trial-test-shorthand",
+      longhands: ["origin-trial-test-property"],
+      property_methods: ["ParseShorthand"],
+      runtime_flag: "OriginTrialsSampleAPI",
+    },
+    {
       name: "outline",
       longhands: ["outline-color", "outline-style", "outline-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

@@ -7187,7 +7187,6 @@ const CSSValue* OriginTrialTestProperty::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.OriginTrialTestProperty());
-  ;
 }
 
 const CSSValue* Orphans::ParseSingleValue(CSSParserTokenStream& stream,
