@@ -170,6 +170,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
 
   void TearDown() override {
     [mediator_ shutdown];
+    EXPECT_OCMOCK_VERIFY(mock_browser_coordinator_commands_handler_);
     // Reset the factory
     ios::provider::test::SetPartialTranslateControllerFactory(nil);
     PlatformTest::TearDown();
