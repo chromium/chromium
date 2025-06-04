@@ -265,7 +265,7 @@ unexpected(E) -> unexpected<E>;
 // [expected.expected], class template expected
 // https://eel.is/c++draft/expected#expected
 template <typename T, typename E>
-class [[nodiscard]] expected final {
+class [[nodiscard, gsl::Owner]] expected final {
   // Note: A partial specialization for void value types follows below.
   static_assert(!std::is_void_v<T>, "Error: T must not be void");
 
