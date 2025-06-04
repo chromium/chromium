@@ -238,7 +238,8 @@ public class VideoCaptureCamera extends VideoCapture
                 + ", facing "
                 + (cameraInfo.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT
                         ? "front"
-                        : "back");
+                        : "back")
+                + ", legacy";
     }
 
     static String getDeviceId(int id) {

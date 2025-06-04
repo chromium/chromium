@@ -1585,7 +1585,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                             && infoColor.equals(
                                     CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR);
         }
-        return "camera2 " + index + ", facing " + displayFacing + (isInfrared ? " infrared" : "");
+        return "camera " + index + ", facing " + displayFacing + (isInfrared ? ", infrared" : "");
     }
 
     // Retrieves the index within the camera ID list for the specified camera ID; returns
