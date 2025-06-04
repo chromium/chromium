@@ -1197,7 +1197,26 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   EXPECT_EQ(live_registration2, found_registration);
 }
 
-TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
+class ServiceWorkerRegistryMergeTest
+    : public ServiceWorkerRegistryTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerRegistryMergeTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<ServiceWorkerRegistryMergeTest::ParamType>&
+           info) { return info.param ? "EnableMerging" : "DisableMerging"; });
+
+TEST_P(ServiceWorkerRegistryMergeTest, MergeDuplicateFindRegistrationCalls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (GetParam()) {
+    scoped_feature_list.InitAndEnableFeature(
+        kServiceWorkerMergeFindRegistrationForClientUrl);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        kServiceWorkerMergeFindRegistrationForClientUrl);
+  }
   const GURL kScope("http://www.example.com/scope/");
   const GURL kScript("http://www.example.com/script.js");
   const blink::StorageKey kKey =
@@ -1228,12 +1247,20 @@ TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
               }
             }));
   }
-  // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
-  // calls of FindRegistrationForClientUrl must be merged into one internally.
-  // The following check expects that the
-  // `registry()->FindRegistrationForClientUrl()` implementation keeps track
-  // of `inflight_call_count()` synchronously.
-  EXPECT_EQ(inflight_call_count(), 1U);
+  if (GetParam()) {
+    // When kServiceWorkerMergeFindRegistrationForClientUrl is enabled,
+    // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
+    // calls of FindRegistrationForClientUrl must be merged into one internally.
+    // The following check expects that the
+    // `registry()->FindRegistrationForClientUrl()` implementation keeps track
+    // of `inflight_call_count()` synchronously.
+    EXPECT_EQ(inflight_call_count(), 1U);
+  } else {
+    // When kServiceWorkerMergeFindRegistrationForClientUrl is disabled,
+    // FindRegistrationForClientUrl will never be merged. So
+    // inflight_call_count() returns 3 (= kCallCount).
+    EXPECT_EQ(inflight_call_count(), base::checked_cast<size_t>(kCallCount));
+  }
   loop.Run();
 }
 
