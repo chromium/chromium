@@ -135,7 +135,6 @@ void AddressComponent::CopyFrom(const AddressComponent& other) {
   if (other.IsValueAssigned()) {
     value_ = other.value_;
     value_verification_status_ = other.value_verification_status_;
-    sorted_normalized_tokens_ = other.sorted_normalized_tokens_;
   } else {
     UnsetValue();
   }
@@ -260,7 +259,6 @@ void AddressComponent::SetValue(std::u16string value,
 void AddressComponent::UnsetValue() {
   value_.reset();
   value_verification_status_ = VerificationStatus::kNoStatus;
-  sorted_normalized_tokens_.reset();
 }
 
 bool AddressComponent::IsSupportedType(FieldType field_type) const {
