@@ -18,9 +18,10 @@ python_library("av_sync_tests") {
     "//fuchsia_web/shell",
   ]
   data = [
+    # .vpython3 comes with webdriver via the wheel, it's not necessary to
+    # include //third_party/webdriver/pylib/ in the data deps.
     "//.vpython3",
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
-    "//third_party/webdriver/pylib/",
   ]
 }
