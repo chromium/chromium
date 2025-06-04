@@ -122,7 +122,6 @@ TEST_F(AdvancedProtectionStatusManagerDesktopTest,
   AdvancedProtectionStatusManagerDesktop aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
-  base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(aps_manager.GetUnconsentedPrimaryAccountId().empty());
 
   // Waits for access token request and respond with an error without advanced
@@ -151,7 +150,6 @@ TEST_F(AdvancedProtectionStatusManagerDesktopTest,
   AdvancedProtectionStatusManagerDesktop aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
-  base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(aps_manager.GetUnconsentedPrimaryAccountId().empty());
 
   // Waits for access token request and respond with an error without advanced
@@ -181,7 +179,6 @@ TEST_F(AdvancedProtectionStatusManagerDesktopTest,
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
   ASSERT_FALSE(aps_manager.GetUnconsentedPrimaryAccountId().empty());
-  base::RunLoop().RunUntilIdle();
   // Waits for access token request and respond with a token without advanced
   // protection set.
   MakeOAuthTokenFetchSucceed(account_id,
@@ -208,7 +205,6 @@ TEST_F(AdvancedProtectionStatusManagerDesktopTest, SignedInLongTimeAgoUnderAP) {
   AdvancedProtectionStatusManagerDesktop aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
-  base::RunLoop().RunUntilIdle();
   // Waits for access token request and respond with a token without advanced
   // protection set.
   MakeOAuthTokenFetchSucceed(account_id,
@@ -401,7 +397,6 @@ TEST_F(AdvancedProtectionStatusManagerDesktopTest,
   base::HistogramTester histograms;
   CoreAccountId account_id = SignIn("test@test.com",
                                     /* is_under_advanced_protection = */ true);
-  base::RunLoop().RunUntilIdle();
 
   base::Time last_refresh_time = base::Time::Now() - base::Days(1);
   pref_service_.SetInt64(
