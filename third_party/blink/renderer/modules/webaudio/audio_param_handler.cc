@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webaudio/audio_param_handler.h"
 
-#include <algorithm>
-
-#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -30,31 +32,30 @@ namespace blink {
 namespace {
 
 // Replace NaN values in `values` with `default_value`.
-void HandleNaNValues(base::span<float> values, float default_value) {
+void HandleNaNValues(float* values,
+                     unsigned number_of_values,
+                     float default_value) {
   unsigned k = 0;
 #if defined(ARCH_CPU_X86_FAMILY)
-  if (values.size() >= 4) {
+  if (number_of_values >= 4) {
     __m128 defaults = _mm_set1_ps(default_value);
-    for (k = 0; k < values.size(); k += 4) {
-      // SAFETY: The for loop condition has been checked k < values.size().
-      __m128 v = _mm_loadu_ps(UNSAFE_BUFFERS(values.data() + k));
+    for (k = 0; k < number_of_values; k += 4) {
+      __m128 v = _mm_loadu_ps(values + k);
       // cmpuord returns all 1's if v is NaN for each elmeent of v.
       __m128 isnan = _mm_cmpunord_ps(v, v);
       // Replace NaN parts with default.
       __m128 result = _mm_and_ps(isnan, defaults);
       // Merge in the parts that aren't NaN
       result = _mm_or_ps(_mm_andnot_ps(isnan, v), result);
-      // SAFETY: The for loop condition has been checked k < values.size().
-      _mm_storeu_ps(UNSAFE_BUFFERS(values.data() + k), result);
+      _mm_storeu_ps(values + k, result);
     }
   }
 #elif defined(CPU_ARM_NEON)
-  if (values.size() >= 4) {
+  if (number_of_values >= 4) {
     uint32x4_t defaults =
         reinterpret_cast<uint32x4_t>(vdupq_n_f32(default_value));
-    for (k = 0; k < values.size(); k += 4) {
-      // SAFETY: The for loop condition has been checked k < values.size().
-      float32x4_t v = vld1q_f32(UNSAFE_BUFFERS(values.data() + k));
+    for (k = 0; k < number_of_values; k += 4) {
+      float32x4_t v = vld1q_f32(values + k);
       // Returns true (all ones) if v is not NaN
       uint32x4_t is_not_nan = vceqq_f32(v, v);
       // Get the parts that are not NaN
@@ -63,16 +64,16 @@ void HandleNaNValues(base::span<float> values, float default_value) {
       // Replace the parts that are NaN with the default and merge with previous
       // result.  (Note: vbic_u32(x, y) = x and not y)
       result = vorrq_u32(result, vbicq_u32(defaults, is_not_nan));
-      // SAFETY: The for loop condition has been checked k < values.size().
-      vst1q_f32(UNSAFE_BUFFERS(values.data() + k),
-                reinterpret_cast<float32x4_t>(result));
+      vst1q_f32(values + k, reinterpret_cast<float32x4_t>(result));
     }
   }
 #endif
 
-  std::ranges::replace_if(
-      values.subspan(k), [](float value) { return std::isnan(value); },
-      default_value);
+  for (; k < number_of_values; ++k) {
+    if (std::isnan(values[k])) {
+      values[k] = default_value;
+    }
+  }
 }
 
 }  // namespace
@@ -221,7 +222,7 @@ void AudioParamHandler::SetValue(float value) {
 
 float AudioParamHandler::FinalValue() {
   float value = IntrinsicValue();
-  CalculateFinalValues(base::span_from_ref(value), false);
+  CalculateFinalValues(&value, 1, false);
   return value;
 }
 
@@ -230,20 +231,22 @@ void AudioParamHandler::CalculateSampleAccurateValues(
   DCHECK(GetDeferredTaskHandler().IsAudioThread());
   DCHECK(!values.empty());
 
-  CalculateFinalValues(values, IsAudioRate());
+  CalculateFinalValues(values.data(), values.size(), IsAudioRate());
 }
 
-void AudioParamHandler::CalculateFinalValues(base::span<float> values,
+void AudioParamHandler::CalculateFinalValues(float* values,
+                                             unsigned number_of_values,
                                              bool sample_accurate) {
   DCHECK(GetDeferredTaskHandler().IsAudioThread());
-  DCHECK(!values.empty());
+  DCHECK(values);
+  DCHECK_GT(number_of_values, 0u);
 
   // The calculated result will be the "intrinsic" value summed with all
   // audio-rate connections.
 
   if (sample_accurate) {
     // Calculate sample-accurate (a-rate) intrinsic values.
-    CalculateTimelineValues(values);
+    CalculateTimelineValues(values, number_of_values);
   } else {
     // Calculate control-rate (k-rate) intrinsic value.
     float value = IntrinsicValue();
@@ -255,7 +258,9 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
       value = timeline_value;
     }
 
-    std::ranges::fill(values, value);
+    for (unsigned k = 0; k < number_of_values; ++k) {
+      values[k] = value;
+    }
     SetIntrinsicValue(value);
   }
 
@@ -263,13 +268,13 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
   // together (unity-gain summing junction).  Note that connections would
   // normally be mono, but we mix down to mono if necessary.
   if (NumberOfRenderingConnections() > 0) {
-    DCHECK_LE(values.size(), GetDeferredTaskHandler().RenderQuantumFrames());
+    DCHECK_LE(number_of_values, GetDeferredTaskHandler().RenderQuantumFrames());
 
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
     // value will be added.  Which is exactly what we want.
-    summing_bus_->SetChannelMemory(0, values.data(),
-                                   sample_accurate ? values.size() : 1);
+    summing_bus_->SetChannelMemory(0, values,
+                                   sample_accurate ? number_of_values : 1);
 
     for (unsigned i = 0; i < NumberOfRenderingConnections(); ++i) {
       AudioNodeOutput* output = RenderingOutput(i);
@@ -286,7 +291,9 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     // If we're not sample accurate, duplicate the first element of `values` to
     // all of the elements.
     if (!sample_accurate) {
-      std::ranges::fill(values, values[0]);
+      for (unsigned k = 0; k < number_of_values; ++k) {
+        values[k] = values[0];
+      }
     }
 
     float min_value = MinValue();
@@ -301,26 +308,28 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
       // range between the AudioParam's minValue and maxValue.
       //
       // See https://webaudio.github.io/web-audio-api/#computation-of-value.
-      HandleNaNValues(values, DefaultValue());
+      HandleNaNValues(values, number_of_values, DefaultValue());
     }
 
-    vector_math::Vclip(values, 1, &min_value, &max_value, values, 1);
+    vector_math::Vclip(values, 1, &min_value, &max_value, values, 1,
+                       number_of_values);
   }
 }
 
-void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
+void AudioParamHandler::CalculateTimelineValues(float* values,
+                                                unsigned number_of_values) {
   // Calculate values for this render quantum.  Normally
   // `number_of_values` will equal to
   // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();
-  size_t end_frame = start_frame + values.size();
+  size_t end_frame = start_frame + number_of_values;
 
   // Note we're running control rate at the sample-rate.
   // Pass in the current value as default value.
   SetIntrinsicValue(timeline_.ValuesForFrameRange(
-      start_frame, end_frame, IntrinsicValue(), values, sample_rate,
-      sample_rate, MinValue(), MaxValue(),
+      start_frame, end_frame, IntrinsicValue(), values, number_of_values,
+      sample_rate, sample_rate, MinValue(), MaxValue(),
       GetDeferredTaskHandler().RenderQuantumFrames()));
 }
 
