@@ -5705,7 +5705,7 @@
       name: "WebXRDepthPerformance",
       depends_on: ["WebXR"],
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebXREnabledFeatures",

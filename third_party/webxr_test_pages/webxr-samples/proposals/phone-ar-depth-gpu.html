@@ -202,6 +202,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         useFrontFacing.disabled = true;
 
         session.addEventListener('end', onSessionEnded);
+        session.addEventListener('selectstart', onSelectStart);
 
         let canvas = document.createElement('canvas');
         gl = canvas.getContext('webgl', {
@@ -233,6 +234,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         useFrontFacing.disabled = false;
         xrButton.setSession(null);
         toggleDepthButton.setSession(null);
+      }
+
+      function onSelectStart(event) {
+        requestToggleDepthActive = true;
       }
 
       // Helper, fetches shader source code based on the passed in ID of the <script> element.

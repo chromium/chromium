@@ -11438,7 +11438,9 @@ interface XRDepthInformation
     attribute @@toStringTag
     getter height
     getter normDepthBufferFromNormView
+    getter projectionMatrix
     getter rawValueToMeters
+    getter transform
     getter width
     method constructor
 interface XRFrame
@@ -11566,7 +11568,9 @@ interface XRRigidTransform
     method constructor
 interface XRSession : EventTarget
     attribute @@toStringTag
+    getter depthActive
     getter depthDataFormat
+    getter depthType
     getter depthUsage
     getter domOverlayState
     getter enabledFeatures
@@ -11588,11 +11592,13 @@ interface XRSession : EventTarget
     method cancelAnimationFrame
     method constructor
     method end
+    method pauseDepthSensing
     method requestAnimationFrame
     method requestHitTestSource
     method requestHitTestSourceForTransientInput
     method requestLightProbe
     method requestReferenceSpace
+    method resumeDepthSensing
     method updateRenderState
     setter onend
     setter oninputsourceschange
