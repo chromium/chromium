@@ -23,6 +23,7 @@
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -141,6 +142,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   RunLoop run_loop;
 
   // Start Join flow.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
   InitializeJoinController(run_loop.QuitClosure());
 
   // 1. Pending state.
@@ -220,6 +222,8 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   std::vector<SavedTabGroup> all_tab_groups;
   EXPECT_CALL(*tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_tab_groups));
+  EXPECT_CALL(*data_sharing_service_,
+              ReadGroupDeprecated(kGroupId, IsNotNullCallback()));
 
   data_sharing::DataSharingService::Observer* data_sharing_observer;
   EXPECT_CALL(*tab_group_sync_service_, AddObserver(_))
@@ -257,6 +261,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // Upon successfully promoting the tab group, the flow ends and exit.
   EXPECT_CALL(*delegate_, OnFlowFinished());
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_));
   std::move(promote_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
 
@@ -956,6 +961,123 @@ TEST_F(CollaborationControllerTest, LeaveFlow) {
   std::move(people_group_action_callback)
       .Run(
           data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupRemoved_LocalId_CancelsFlowIfMatching) {
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+
+  // Start Share flow associated with local_id.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+
+  EXPECT_CALL(*delegate_, Cancel(_));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_));
+
+  // Removing the tab group associated with local_id cancels the flow.
+  controller_->OnTabGroupRemoved(local_id, tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupRemoved_LocalId_DoesNotCancelFlowIfNotMatching) {
+  tab_groups::LocalTabGroupID flow_local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  tab_groups::LocalTabGroupID removed_local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  ASSERT_NE(flow_local_id, removed_local_id);
+
+  // Start Share flow associated with flow_local_id.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, flow_local_id));
+
+  EXPECT_CALL(*delegate_, Cancel(_)).Times(0);
+
+  // Removing a different tab group (removed_local_id) does not cancel the
+  // flow.
+  controller_->OnTabGroupRemoved(removed_local_id,
+                                 tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupRemoved_SyncId_CancelsFlowIfMatching) {
+  base::Uuid sync_id = base::Uuid::GenerateRandomV4();
+
+  // Start Share flow associated with sync_id.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, sync_id));
+
+  EXPECT_CALL(*delegate_, Cancel(_));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_));
+
+  // Removing the tab group associated with sync_id cancels the flow.
+  controller_->OnTabGroupRemoved(sync_id, tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupRemoved_SyncId_DoesNotCancelFlowIfNotMatching) {
+  base::Uuid flow_sync_id = base::Uuid::GenerateRandomV4();
+  base::Uuid removed_sync_id = base::Uuid::GenerateRandomV4();
+  ASSERT_NE(flow_sync_id, removed_sync_id);
+
+  // Start Share flow associated with flow_sync_id.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, flow_sync_id));
+
+  EXPECT_CALL(*delegate_, Cancel(_)).Times(0);
+
+  // Removing a different tab group (removed_sync_id) does not cancel the
+  // flow.
+  controller_->OnTabGroupRemoved(removed_sync_id,
+                                 tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupMigrated_CancelsFlowForOldSyncId) {
+  base::Uuid old_sync_id = base::Uuid::GenerateRandomV4();
+
+  // Start Share flow at pending state.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, old_sync_id));
+
+  SavedTabGroup new_group(std::u16string(u"new_title"),
+                          tab_groups::TabGroupColorId::kBlue, {});
+
+  EXPECT_CALL(*delegate_, Cancel(_));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_));
+
+  // Migrating the tab group associated with the old_sync_id cancels the flow.
+  controller_->OnTabGroupMigrated(new_group, old_sync_id,
+                                  tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(CollaborationControllerTest,
+       OnTabGroupMigrated_CancelsFlowForNewLocalId) {
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  base::Uuid old_sync_id = base::Uuid::GenerateRandomV4();
+
+  // Start Share flow with a local_id.
+  EXPECT_CALL(*tab_group_sync_service_, AddObserver(_));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+
+  SavedTabGroup new_group(std::u16string(u"new_title"),
+                          tab_groups::TabGroupColorId::kBlue, {});
+  new_group.SetLocalGroupId(local_id);
+
+  EXPECT_CALL(*delegate_, Cancel(_));
+  EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_));
+
+  // Migrating a different tab group (old_sync_id) to a new group
+  // that has the same local_id as the current flow should cancel the flow.
+  controller_->OnTabGroupMigrated(new_group, old_sync_id,
+                                  tab_groups::TriggerSource::REMOTE);
 }
 
 }  // namespace collaboration

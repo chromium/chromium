@@ -23,7 +23,6 @@
 #include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/public/logger_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
-#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/service/sync_service.h"
 
 namespace collaboration {
@@ -1379,6 +1378,8 @@ CollaborationController::CollaborationController(
       delegate_(std::move(delegate)),
       finish_and_delete_(std::move(finish_and_delete)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  tab_group_sync_service_observer_.Observe(tab_group_sync_service_);
+
   current_state_ = std::make_unique<PendingState>(
       StateId::kPending, this,
       base::BindOnce(&CollaborationController::Exit,
@@ -1446,6 +1447,51 @@ void CollaborationController::SetStateForTesting(StateId state) {
 CollaborationController::StateId CollaborationController::GetStateForTesting() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return current_state_->id();
+}
+
+void CollaborationController::OnTabGroupRemoved(
+    const tab_groups::LocalTabGroupID& local_id,
+    tab_groups::TriggerSource source) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // OnTabGroupRemoved() with sync ID cancels the flow for tab group if it was
+  // started with sync ID.
+  CancelShareOrManageFlow(local_id);
+}
+
+void CollaborationController::OnTabGroupRemoved(
+    const base::Uuid& sync_id,
+    tab_groups::TriggerSource source) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // OnTabGroupRemoved() with local ID cancels the flow for tab group if it was
+  // started with local ID.
+  CancelShareOrManageFlow(sync_id);
+}
+
+void CollaborationController::OnTabGroupMigrated(
+    const tab_groups::SavedTabGroup& new_group,
+    const base::Uuid& old_sync_id,
+    tab_groups::TriggerSource source) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (new_group.is_shared_tab_group()) {
+    // The group is shared, no action needed.
+    return;
+  }
+
+  // Cancel only works when the EitherGroupID variant matches the provided ID,
+  // so try cancelling with both sync ID and local ID.
+  CancelShareOrManageFlow(old_sync_id);
+  if (new_group.local_group_id().has_value()) {
+    CancelShareOrManageFlow(new_group.local_group_id().value());
+  }
+}
+
+void CollaborationController::CancelShareOrManageFlow(
+    const tab_groups::EitherGroupID& either_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (flow_.type == FlowType::kShareOrManage &&
+      flow_.either_id() == either_id) {
+    Cancel();
+  }
 }
 
 bool CollaborationController::IsValidStateTransition(StateId from, StateId to) {
