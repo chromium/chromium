@@ -734,7 +734,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         Tips on getting the most out of Chrome.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_CPE_BODY" desc="Text for the body of a Tips notification that encourages the user to enable the CPE.">
-        To easily get your saved passwords in other apps, chose Chrome for Autofill.
+        To easily get your saved passwords in other apps, choose Chrome for Autofill.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_TIPS_CPE_TITLE" desc="Text for the title of a Tips notification that encourages the user to enable the CPE.">
         Chrome Tip: Get your passwords in any app
