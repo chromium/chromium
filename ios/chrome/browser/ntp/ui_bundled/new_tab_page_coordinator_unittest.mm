@@ -120,7 +120,23 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
+  ~NewTabPageCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY(component_factory_mock_);
+  }
+
   ProfileIOS* GetProfile() { return profile_.get(); }
+
+  void TearDown() override {
+    PlatformTest::TearDown();
+    EXPECT_OCMOCK_VERIFY(application_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(help_commands_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(omnibox_commands_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(snackbar_commands_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(fakebox_focuser_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(lens_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(browser_coordinator_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(component_factory_mock_);
+  }
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
@@ -178,8 +194,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     OCMStub([component_factory_mock_ discoverFeedForBrowser:browser_.get()
                                 viewControllerConfiguration:[OCMArg any]])
         .andReturn(fake_feed_view_controller_);
-    OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
-                                  viewControllerConfiguration:[OCMArg any]]);
 
     coordinator_ =
         [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()
