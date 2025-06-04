@@ -13,7 +13,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -48,15 +47,14 @@ class TouchToFillPaymentMethodViewBridge {
                 imageFetcher,
                 bottomSheetController,
                 delegate,
-                new BottomSheetFocusHelper(bottomSheetController, windowAndroid),
-                () -> AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(context));
+                new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative
     private static @Nullable TouchToFillPaymentMethodViewBridge create(
             TouchToFillPaymentMethodComponent.Delegate delegate,
             Profile profile,
-            WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         Context context = windowAndroid.getContext().get();
         if (context == null) return null;

@@ -5,10 +5,6 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-generate_jni("jni") {
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java" ]
-}
-
 android_library("java") {
   deps = [
     ":java_resources",
@@ -37,9 +33,7 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":jni" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodCoordinator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodMediator.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodProperties.java",

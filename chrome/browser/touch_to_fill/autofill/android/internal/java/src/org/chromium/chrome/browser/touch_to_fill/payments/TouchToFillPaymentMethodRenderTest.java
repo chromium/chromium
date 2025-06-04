@@ -359,8 +359,7 @@ public class TouchToFillPaymentMethodRenderTest {
                             AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
                             mBottomSheetController,
                             mDelegateMock,
-                            mBottomSheetFocusHelper,
-                            () -> {});
+                            mBottomSheetFocusHelper);
                 });
     }
 

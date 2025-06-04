@@ -309,7 +309,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
     @Mock private AutofillImageFetcher mImageFetcher;
     @Mock private TouchToFillResourceProvider mResourceProvider;
-    @Mock private Runnable mPassesManagementUiOpener;
 
     public TouchToFillPaymentMethodControllerRobolectricTest() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
@@ -329,8 +328,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 mImageFetcher,
                 mBottomSheetController,
                 mDelegateMock,
-                mBottomSheetFocusHelper,
-                mPassesManagementUiOpener);
+                mBottomSheetFocusHelper);
         mTouchToFillPaymentMethodModel = mCoordinator.getModelForTesting();
         mCoordinator
                 .getMediatorForTesting()
@@ -1024,7 +1022,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(R.string.autofill_bottom_sheet_manage_loyalty_cards));
         getModelsOfType(itemList, FOOTER).get(0).get(OPEN_MANAGEMENT_UI_CALLBACK).run();
 
-        verify(mPassesManagementUiOpener).run();
+        verify(mDelegateMock).openPassesManagementUi();
         histogramWatcher.assertExpected();
     }
 

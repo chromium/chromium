@@ -187,20 +187,15 @@ class TouchToFillPaymentMethodMediator {
     private List<Iban> mIbans;
     private List<LoyaltyCard> mLoyaltyCards;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
-    private Runnable mPassesManagementUiOpener;
 
     private InputProtector mInputProtector = new InputProtector();
 
     void initialize(
-            Delegate delegate,
-            PropertyModel model,
-            BottomSheetFocusHelper bottomSheetFocusHelper,
-            Runnable passesManagementUiOpener) {
+            Delegate delegate, PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
         mDelegate = delegate;
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
-        mPassesManagementUiOpener = passesManagementUiOpener;
     }
 
     void showCreditCards(
@@ -383,7 +378,7 @@ class TouchToFillPaymentMethodMediator {
 
     public void showManageLoyaltyCards() {
         assert mLoyaltyCards != null;
-        mPassesManagementUiOpener.run();
+        mDelegate.openPassesManagementUi();
         recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.MANAGE_PASSES);
     }
 

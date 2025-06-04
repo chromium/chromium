@@ -54,8 +54,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
             AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
-            BottomSheetFocusHelper bottomSheetFocusHelper,
-            Runnable passesManagementUiOpener) {
+            BottomSheetFocusHelper bottomSheetFocusHelper) {
         mTouchToFillPaymentMethodModel = createModel(mMediator);
         mCardImageFunction =
                 (metaData) ->
@@ -74,11 +73,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 loyaltyCard.getProgramLogo(),
                                 ImageSize.LARGE,
                                 loyaltyCard.getMerchantName());
-        mMediator.initialize(
-                delegate,
-                mTouchToFillPaymentMethodModel,
-                bottomSheetFocusHelper,
-                passesManagementUiOpener);
+        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));

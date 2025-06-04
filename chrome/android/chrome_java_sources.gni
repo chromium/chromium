@@ -1110,6 +1110,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarButtonInProductHelpController.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarIphController.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java",
+  "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodControllerBridge.java",
   "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodViewBridge.java",
   "java/src/org/chromium/chrome/browser/tracing/TracingController.java",
   "java/src/org/chromium/chrome/browser/tracing/TracingNotificationManager.java",

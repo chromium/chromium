@@ -20,9 +20,10 @@
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/touch_to_fill/autofill/android/internal/jni/TouchToFillPaymentMethodControllerBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/TouchToFillPaymentMethodControllerBridge_jni.h"
 
 namespace autofill {
 
@@ -234,7 +235,8 @@ base::android::ScopedJavaLocalRef<jobject>
 TouchToFillPaymentMethodController::GetJavaObject() {
   if (!java_object_) {
     java_object_ = Java_TouchToFillPaymentMethodControllerBridge_create(
-        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
+        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+        web_contents()->GetTopLevelNativeWindow()->GetJavaObject());
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }

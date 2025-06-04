@@ -4,30 +4,44 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
+
 /**
  * JNI wrapper for C++ TouchToFillPaymentMethodViewController. Delegates calls from Java to native.
  */
 @JNINamespace("autofill")
+@NullMarked
 class TouchToFillPaymentMethodControllerBridge
         implements TouchToFillPaymentMethodComponent.Delegate {
     private long mNativeTouchToFillPaymentMethodViewController;
+    private final WeakReference<Context> mContext;
 
     private TouchToFillPaymentMethodControllerBridge(
-            long nativeTouchToFillPaymentMethodViewController) {
+            long nativeTouchToFillPaymentMethodViewController, WeakReference<Context> context) {
         mNativeTouchToFillPaymentMethodViewController =
                 nativeTouchToFillPaymentMethodViewController;
+        mContext = context;
     }
 
     @CalledByNative
-    private static TouchToFillPaymentMethodControllerBridge create(
-            long nativeTouchToFillPaymentMethodViewController) {
+    private static @Nullable TouchToFillPaymentMethodControllerBridge create(
+            long nativeTouchToFillPaymentMethodViewController, WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
         return new TouchToFillPaymentMethodControllerBridge(
-                nativeTouchToFillPaymentMethodViewController);
+                nativeTouchToFillPaymentMethodViewController, windowAndroid.getContext());
     }
 
     @CalledByNative
@@ -92,6 +106,13 @@ class TouchToFillPaymentMethodControllerBridge
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .loyaltyCardSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, loyaltyCard);
+        }
+    }
+
+    @Override
+    public void openPassesManagementUi() {
+        if (mContext.get() != null) {
+            AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(mContext.get());
         }
     }
 
