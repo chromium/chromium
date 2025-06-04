@@ -9,7 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
-#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

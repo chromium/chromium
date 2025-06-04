@@ -6,9 +6,9 @@
 
 #import "base/feature_list.h"
 #import "base/path_service.h"
+#import "components/optimization_guide/core/hints/optimization_guide_store.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_store.h"
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"

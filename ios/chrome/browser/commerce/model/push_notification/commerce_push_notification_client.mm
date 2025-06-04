@@ -15,7 +15,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
-#import "components/optimization_guide/core/hints_manager.h"
+#import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"

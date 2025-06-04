@@ -8,7 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/simple_test_clock.h"
-#import "components/optimization_guide/core/tab_url_provider.h"
+#import "components/optimization_guide/core/hints/tab_url_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

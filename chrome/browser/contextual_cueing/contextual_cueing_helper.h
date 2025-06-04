@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

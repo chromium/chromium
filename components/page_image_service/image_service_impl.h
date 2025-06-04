@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/service/sync_service.h"

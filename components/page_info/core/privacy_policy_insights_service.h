@@ -11,7 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/page_info/core/proto/privacy_policy_annotation_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"

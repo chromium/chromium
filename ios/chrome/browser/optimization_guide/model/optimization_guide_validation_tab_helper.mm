@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/optimization_guide/core/hints_processing_util.h"
+#import "components/optimization_guide/core/hints/hints_processing_util.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/hints.pb.h"

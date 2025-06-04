@@ -20,7 +20,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/features.h"
 #include "components/strings/grit/components_strings.h"

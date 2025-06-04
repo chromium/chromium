@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/page_info/model/about_this_site_tab_helper.h"
 
-#import "components/optimization_guide/core/optimization_guide_decider.h"
-#import "components/optimization_guide/core/optimization_metadata.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"

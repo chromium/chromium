@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/core/tab_url_provider.h"
+#include "components/optimization_guide/core/hints/tab_url_provider.h"
 
 class Profile;
 

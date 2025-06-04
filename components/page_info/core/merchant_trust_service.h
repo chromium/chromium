@@ -14,7 +14,7 @@
 #include "base/time/default_clock.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_info/core/page_info_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"

@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace {

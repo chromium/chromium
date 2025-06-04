@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/text_selection/model/text_classifier_util.h"
 
 #import "base/command_line.h"
-#import "components/optimization_guide/core/optimization_guide_decider.h"
-#import "components/optimization_guide/core/optimization_guide_decision.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

@@ -8,8 +8,8 @@
 #import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/optimization_guide/core/insertion_ordered_set.h"
-#import "components/optimization_guide/core/optimization_guide_navigation_data.h"
+#import "components/optimization_guide/core/hints/insertion_ordered_set.h"
+#import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 

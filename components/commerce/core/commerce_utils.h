@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 #include "components/commerce/core/commerce_types.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 
 class GURL;
 

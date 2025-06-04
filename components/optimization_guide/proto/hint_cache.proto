@@ -14,7 +14,7 @@ import "components/optimization_guide/proto/models.proto";
 // The types of StoreEntries.
 //
 // The values should match those of
-// components/optimization_guide/core/optimization_guide_store.h
+// components/optimization_guide/core/hints/optimization_guide_store.h
 enum StoreEntryType {
   // StoreEntryType when the entry type is unknown.
   EMPTY = 0;
