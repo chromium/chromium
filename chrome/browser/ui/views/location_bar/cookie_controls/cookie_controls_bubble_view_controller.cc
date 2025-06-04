@@ -280,7 +280,7 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
   if (controller_->ShowActFeatures()) {
     is_reloading_state_ = true;
     OnUserTriggeredReloadingAction();
-    controller_->OnTrackingProtectionsChangedForSite(!toggled_on);
+    controller_->OnTrackingProtectionsChangedForSite();
   } else {
     controller_->OnCookieBlockingEnabledForSite(!toggled_on);
   }

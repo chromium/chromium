@@ -179,7 +179,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   // Called when the protections button in the privacy and site data subpage
   // gets clicked.
-  void OnTrackingProtectionButtonPressed(bool pause_protections);
+  void OnTrackingProtectionButtonPressed();
 
   // Checks whether this permission is currently the factory default, as set by
   // Chrome. Specifically, that the following three conditions are true:

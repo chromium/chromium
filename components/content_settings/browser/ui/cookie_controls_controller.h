@@ -69,7 +69,7 @@ class CookieControlsController final
 
   // Called when the user clicks on the button to change their tracking
   // protections state for the current site.
-  void OnTrackingProtectionsChangedForSite(bool pause_protections);
+  void OnTrackingProtectionsChangedForSite();
 
   // Called when the entry point for cookie controls was animated.
   void OnEntryPointAnimated();

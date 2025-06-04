@@ -232,18 +232,18 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           info.metadata.expiration()};
 }
 
-void CookieControlsController::RecordActMetrics(bool pause_protections) {
+void CookieControlsController::RecordActMetrics(bool enable_protections) {
   if (GetIsSubresourceBlocked()) {
     base::RecordAction(UserMetricsAction(
-        pause_protections
-            ? "TrackingProtections.Bubble.FppActive.DisableProtections"
-            : "TrackingProtections.Bubble.FppActive.EnableProtections"));
+        enable_protections
+            ? "TrackingProtections.Bubble.FppActive.EnableProtections"
+            : "TrackingProtections.Bubble.FppActive.DisableProtections"));
   }
   if (GetIsSubresourceProxied()) {
     base::RecordAction(UserMetricsAction(
-        pause_protections
-            ? "TrackingProtections.Bubble.IppActive.DisableProtections"
-            : "TrackingProtections.Bubble.IppActive.EnableProtections"));
+        enable_protections
+            ? "TrackingProtections.Bubble.IppActive.EnableProtections"
+            : "TrackingProtections.Bubble.IppActive.DisableProtections"));
   }
 }
 
@@ -315,16 +315,18 @@ bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
   return rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
 }
 
-void CookieControlsController::OnTrackingProtectionsChangedForSite(
-    bool pause_protections) {
+void CookieControlsController::OnTrackingProtectionsChangedForSite() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
-  if (pause_protections) {
-    tracking_protection_settings_->AddTrackingProtectionException(url);
-  } else {
+  bool reenable_protections =
+      tracking_protection_settings_->HasTrackingProtectionException(url);
+  if (reenable_protections) {
     tracking_protection_settings_->RemoveTrackingProtectionException(url);
+  } else {
+    tracking_protection_settings_->AddTrackingProtectionException(url);
   }
-  OnCookieBlockingEnabledForSite(!pause_protections);
-  RecordActMetrics(pause_protections);
+  OnCookieBlockingEnabledForSite(
+      /*block_third_party_cookies=*/reenable_protections);
+  RecordActMetrics(reenable_protections);
 }
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(

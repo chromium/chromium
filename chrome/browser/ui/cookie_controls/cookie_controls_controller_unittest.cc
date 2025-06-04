@@ -1616,7 +1616,7 @@ TEST_F(CookieControlsUserBypassIncognitoTest, AddTrackingProtectionException) {
       TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
 
   incognito_cookie_controls()->Update(web_contents());
-  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(true);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 
   EXPECT_TRUE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
@@ -1634,7 +1634,7 @@ TEST_F(CookieControlsUserBypassIncognitoTest,
   EXPECT_TRUE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
 
-  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(false);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 
   EXPECT_FALSE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
@@ -1813,8 +1813,10 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   auto* tester = content::WebContentsTester::For(incognito_web_contents());
   tester->NavigateAndCommit(GURL(kUrl));
   incognito_cookie_controls()->Update(incognito_web_contents());
-  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(
-      std::get<0>(GetParam()) == CookieControlsState::kPausedTp);
+  if (std::get<0>(GetParam()) == CookieControlsState::kActiveTp) {
+    AddSiteException();
+  }
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 
   EXPECT_CALL(
       *incognito_mock(),
@@ -1835,7 +1837,11 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
 
   bool tp_paused = std::get<0>(GetParam()) == CookieControlsState::kPausedTp;
 
-  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(tp_paused);
+  if (!tp_paused) {
+    AddSiteException();
+  }
+
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 
   // Allowing 3PCs in regular mode should allow & enforce them in incognito.
   // Protections (i.e. the toggle) should still be on iff ACT features are
@@ -1910,7 +1916,7 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
 
-  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(tp_paused);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIppActiveEnableProtections),
             ipp_enabled && !tp_paused ? 1 : 0);

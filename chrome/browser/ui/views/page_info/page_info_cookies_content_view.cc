@@ -487,11 +487,7 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
 }
 
 void PageInfoCookiesContentView::OnTrackingProtectionButtonPressed() {
-  bool pause_protections =
-      tracking_protection_button_->GetText() ==
-      l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTIONS_BUBBLE_PAUSE_PROTECTIONS_LABEL);
-  presenter_->OnTrackingProtectionButtonPressed(pause_protections);
+  presenter_->OnTrackingProtectionButtonPressed();
   third_party_cookies_container_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
 }
