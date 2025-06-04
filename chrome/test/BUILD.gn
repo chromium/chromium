@@ -6918,6 +6918,7 @@ test("unit_tests") {
     "//components/performance_manager/test_support:test_support_common",
     "//components/plus_addresses/resources/strings",
     "//components/policy:generated",
+    "//components/policy/content:content",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common:common_constants",
     "//components/policy/test_support:unittests",

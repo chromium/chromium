@@ -878,7 +878,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
     // Try to handle non-navigational URLs that popup dialogs and such, these
     // should not actually navigate.
-    if (!HandleNonNavigationAboutURL(params->url)) {
+    if (!HandleNonNavigationAboutURL(
+            params->url, contents_to_navigate_or_insert->GetBrowserContext())) {
       // Perform the actual navigation, tracking whether it came from the
       // renderer.
       navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
