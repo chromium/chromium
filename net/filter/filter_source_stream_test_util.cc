@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/filter/filter_source_stream_test_util.h"
 
 #include <stdint.h>
@@ -62,8 +57,7 @@ std::vector<uint8_t> CompressGzip(std::string_view source, bool gzip_framing) {
   std::vector<base::span<const uint8_t>> segments;
 
   // Initialize the zlib stream.
-  z_stream zlib_stream;
-  memset(&zlib_stream, 0, sizeof(zlib_stream));
+  z_stream zlib_stream = {};
   int code;
   if (gzip_framing) {
     const int kMemLevel = 8;  // the default, see deflateInit2(3)

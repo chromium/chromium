@@ -4,9 +4,12 @@
 
 #include "content/browser/web_package/signed_exchange_handler.h"
 
+#include <stdint.h>
+
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -268,9 +271,9 @@ class SignedExchangeHandlerTest
     // MockSourceStream doesn't take ownership of the buffer, so we must keep it
     // alive.
     source_stream_contents_ = GetTestFileContents(file);
-    source_->AddReadResult(source_stream_contents_.data(),
-                           source_stream_contents_.size(), net::OK, GetParam());
-    source_->AddReadResult(nullptr, 0, net::OK, GetParam());
+    source_->AddReadResult(base::as_byte_span(source_stream_contents_), net::OK,
+                           GetParam());
+    source_->AddReadResult(base::span<uint8_t>(), net::OK, GetParam());
   }
 
   // Reads from |stream| until an error occurs or the EOF is reached.
@@ -297,7 +300,7 @@ class SignedExchangeHandlerTest
       EXPECT_GT(rv, net::OK);
       bytes_read += rv;
       if (output)
-        output->append(output_buffer->data(), rv);
+        output->append(base::as_string_view(output_buffer->first(rv)));
     }
     return bytes_read;
   }
@@ -432,7 +435,7 @@ class SignedExchangeHandlerTest
 };
 
 TEST_P(SignedExchangeHandlerTest, Empty) {
-  source_->AddReadResult(nullptr, 0, net::OK, GetParam());
+  source_->AddReadResult(base::span<uint8_t>(), net::OK, GetParam());
 
   CreateSignedExchangeHandler(CreateTestURLRequestContext());
   WaitForHeader();
@@ -532,8 +535,7 @@ TEST_P(SignedExchangeHandlerTest, AdditionalContentEncodingShouldBeRejected) {
 TEST_P(SignedExchangeHandlerTest, HeaderParseError) {
   const uint8_t data[] = {'s',  'x',  'g',  '1',  '-',  'b',  '2',  '\0',
                           0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00};
-  source_->AddReadResult(reinterpret_cast<const char*>(data), sizeof(data),
-                         net::OK, GetParam());
+  source_->AddReadResult(data, net::OK, GetParam());
   CreateSignedExchangeHandler(CreateTestURLRequestContext());
   WaitForHeader();
 
@@ -546,8 +548,8 @@ TEST_P(SignedExchangeHandlerTest, HeaderParseError) {
 TEST_P(SignedExchangeHandlerTest, TruncatedAfterFallbackUrl) {
   std::string contents = GetTestFileContents("test.example.org_test.sxg");
   contents.resize(50);
-  source_->AddReadResult(contents.data(), contents.size(), net::OK, GetParam());
-  source_->AddReadResult(nullptr, 0, net::OK, GetParam());
+  source_->AddReadResult(base::as_byte_span(contents), net::OK, GetParam());
+  source_->AddReadResult(base::span<uint8_t>(), net::OK, GetParam());
 
   CreateSignedExchangeHandler(CreateTestURLRequestContext());
   WaitForHeader();
@@ -982,9 +984,10 @@ TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
   SetupMockCertVerifier("prime256v1-sha256.public.pem", verify_result);
 
   std::string contents = GetTestFileContents("test.example.org_test.sxg");
-  source_->AddReadResult(contents.data(), contents.size(), net::OK,
+  source_->AddReadResult(base::as_byte_span(contents), net::OK,
                          net::MockSourceStream::ASYNC);
-  source_->AddReadResult(nullptr, 0, net::OK, net::MockSourceStream::ASYNC);
+  source_->AddReadResult(base::span<uint8_t>(), net::OK,
+                         net::MockSourceStream::ASYNC);
 
   CreateSignedExchangeHandler(CreateTestURLRequestContext());
   WaitForHeader();

@@ -121,13 +121,13 @@ class SharedDictionaryHeaderCheckerSourceStreamTest
   IOBufferWithSize* buffer() { return buffer_.get(); }
 
   void AddReadResult(base::span<const char> span, Mode mode) {
-    mock_stream_ptr_->AddReadResult(span.data(), span.size(), OK, mode);
+    AddReadResult(base::as_bytes(span), mode);
   }
-  void AddReadResult(base::span<const unsigned char> span, Mode mode) {
-    AddReadResult(base::as_chars(span), mode);
+  void AddReadResult(base::span<const uint8_t> span, Mode mode) {
+    mock_stream_ptr_->AddReadResult(span, OK, mode);
   }
   void AddReadResult(Error error, Mode mode) {
-    mock_stream_ptr_->AddReadResult(nullptr, 0, error, mode);
+    mock_stream_ptr_->AddReadResult(base::span<uint8_t>(), error, mode);
   }
   void CompleteNextRead() { mock_stream_ptr_->CompleteNextRead(); }
 

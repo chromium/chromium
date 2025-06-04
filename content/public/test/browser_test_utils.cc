@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -430,12 +431,10 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
 void AppendGzippedResource(const base::RefCountedMemory& encoded,
                            std::string* to_append) {
   auto source_stream = std::make_unique<net::MockSourceStream>();
-  auto encoded_chars = base::as_chars(base::span(encoded));
-  source_stream->AddReadResult(encoded_chars.data(), encoded_chars.size(),
-                               net::OK, net::MockSourceStream::SYNC);
+  source_stream->AddReadResult(base::span(encoded), net::OK,
+                               net::MockSourceStream::SYNC);
   // Add an EOF.
-  auto end = encoded_chars.last(0u);
-  source_stream->AddReadResult(end.data(), end.size(), net::OK,
+  source_stream->AddReadResult(base::span<uint8_t>(), net::OK,
                                net::MockSourceStream::SYNC);
   std::unique_ptr<net::GzipSourceStream> filter = net::GzipSourceStream::Create(
       std::move(source_stream), net::SourceStreamType::kGzip);

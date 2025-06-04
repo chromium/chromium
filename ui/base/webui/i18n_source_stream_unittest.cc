@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/base/webui/i18n_source_stream.h"
+
+#include <stdint.h>
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/webui/i18n_source_stream.h"
 
 namespace ui {
 
@@ -29,11 +29,11 @@ const int kSmallSize = 5;  // Arbitrary small value > 1.
 const int kInOneReadSize = INT_MAX;
 
 struct I18nTest {
-  constexpr I18nTest(const char* input, const char* expected_output)
+  constexpr I18nTest(std::string_view input, std::string_view expected_output)
       : input(input), expected_output(expected_output) {}
 
-  const char* input;
-  const char* expected_output;
+  std::string_view input;
+  std::string_view expected_output;
 };
 
 constexpr I18nTest kTestEmpty = I18nTest("", "");
@@ -126,16 +126,17 @@ class I18nSourceStreamTest : public ::testing::TestWithParam<I18nTestParam> {
   net::MockSourceStream* source() { return source_; }
   I18nSourceStream* stream() { return stream_.get(); }
 
-  void PushReadResults(const char* input, size_t chunk_size) {
+  void PushReadResults(std::string_view input, size_t chunk_size) {
     size_t written = 0;
-    size_t source_size = strlen(GetParam().test->input);
+    size_t source_size = input.size();
     while (written != source_size) {
       size_t write_size = std::min(chunk_size, source_size - written);
-      source()->AddReadResult(input + written, write_size, net::OK,
-                              GetParam().mode);
+      source()->AddReadResult(
+          base::as_byte_span(input).subspan(written, write_size), net::OK,
+          GetParam().mode);
       written += write_size;
     }
-    source()->AddReadResult(nullptr, 0, net::OK, GetParam().mode);
+    source()->AddReadResult(base::span<uint8_t>(), net::OK, GetParam().mode);
   }
 
   // Reads from |stream_| until an error occurs or the EOF is reached.
@@ -237,7 +238,7 @@ TEST_P(I18nSourceStreamTest, FilterTests) {
 
 TEST_P(I18nSourceStreamTest, LargeFilterTests) {
   Init();
-  std::string padding;
+  std::vector<uint8_t> padding;
   // 251 and 599 are prime and avoid power-of-two repetition.
   int padding_modulus = 251;
   int pad_size = 599;
@@ -248,8 +249,7 @@ TEST_P(I18nSourceStreamTest, LargeFilterTests) {
   // Create the chain of read buffers.
   const int kPadCount = 128;  // Arbitrary number of pads to add.
   for (int i = 0; i < kPadCount; ++i) {
-    source()->AddReadResult(padding.c_str(), padding.size(), net::OK,
-                            GetParam().mode);
+    source()->AddReadResult(padding, net::OK, GetParam().mode);
   }
   PushReadResults(GetParam().test->input, GetParam().read_size);
 
@@ -262,7 +262,8 @@ TEST_P(I18nSourceStreamTest, LargeFilterTests) {
   std::string expected_output(GetParam().test->expected_output);
   ASSERT_EQ(expected_output.size() + total_padding, static_cast<size_t>(rv));
   for (int i = 0; i < kPadCount; ++i) {
-    EXPECT_EQ(actual_output.substr(i * padding.size(), padding.size()),
+    EXPECT_EQ(base::as_byte_span(
+                  actual_output.substr(i * padding.size(), padding.size())),
               padding);
   }
   EXPECT_EQ(expected_output, &actual_output[total_padding]);
