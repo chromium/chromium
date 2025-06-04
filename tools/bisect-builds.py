@@ -422,6 +422,7 @@ TRICHROME64_APK_FILENAMES = {
     'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
     'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
     'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
+    'system_webview': 'TrichromeWebViewGoogle6432.apks',
 }
 
 TRICHROME_LIBRARY_FILENAMES = {
@@ -438,6 +439,7 @@ TRICHROME64_LIBRARY_FILENAMES = {
     'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
     'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
     'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
+    'system_webview': 'TrichromeLibraryGoogle6432.apk',
 }
 
 WEBVIEW_APK_FILENAMES = {
@@ -1416,6 +1418,15 @@ class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
 
 
 class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    if 'webview' in options.apk.lower():
+      # Trichrome APKs targets were introduced in crrev.com/c/5719255
+      if int(options.good) < 1334017 or int(options.bad) < 1334017:
+        raise BisectException(
+            "Bisecting WebView only supports version >= 1334017")
+
 
   def _get_apk_mapping(self, prefer_64bit=True):
     return {
@@ -2558,6 +2569,12 @@ def ParseCommandLine(args=None):
               '. Switch to using --apk=chrome_stable or one of the other '
               'channels if you see `[Bisect Exception]: Could not found enough'
               'revisions for Android chrome release channel.\n')
+
+  if opts.apk and 'webview' in opts.apk:
+    if opts.archive == 'android-arm64-high' and opts.build_type != 'official':
+      parser.error(
+          'Bisecting WebView for android-arm64-high, please choose official '
+          'builds (-o)')
 
   if opts.times < 1:
     parser.error(f'Number of times to run ({opts.times}) must be greater than '

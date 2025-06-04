@@ -1335,6 +1335,46 @@ class AndroidTrichromeOfficialBuildTest(AndroidBuildTest):
         'full-build-linux/apks/TrichromeChromeGoogle6432.minimal.apks$')
     mock_LaunchOnAndroid.assert_called_once_with(self.device, 'chrome')
 
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.InstallOnAndroid')
+  @patch('bisect-builds.LaunchOnAndroid')
+  def test_run_revision_with_webview_apk_with_unsupported_versions(
+      self, mock_LaunchOnAndroid, mock_InstallOnAndroid):
+    options = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'android-arm64-high', '--apk', 'system_webview', '-g',
+        '100000', '-b', '100010'
+    ])
+
+    with self.assertRaises(bisect_builds.BisectException):
+      _ = bisect_builds.create_archive_build(options)
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.InstallOnAndroid')
+  @patch('bisect-builds.LaunchOnAndroid')
+  def test_webview_launch_revision(self, mock_LaunchOnAndroid,
+                                   mock_InstallOnAndroid):
+    options = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'android-arm64-high', '--apk', 'system_webview', '-g',
+        '1350000', '-b', '1350010'
+    ])
+
+    build = bisect_builds.create_archive_build(options)
+
+    self.assertIsInstance(build, bisect_builds.AndroidTrichromeOfficialBuild)
+    download_job = build.get_download_job(1334339)
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    print(mock_InstallOnAndroid.call_args_list)
+    self.assertRegex(mock_InstallOnAndroid.mock_calls[0].args[1],
+                     'full-build-linux/apks/TrichromeLibraryGoogle6432.apk$')
+    self.assertRegex(
+        mock_InstallOnAndroid.mock_calls[1].args[1],
+        'full-build-linux/apks/TrichromeWebViewGoogle6432.minimal.apks$')
+    mock_LaunchOnAndroid.assert_called_once_with(self.device, 'system_webview')
+
 
 class LinuxReleaseBuildTest(BisectTestCase):
 
@@ -1698,6 +1738,26 @@ class MethodTest(BisectTestCase):
     with self.assertRaises(SystemExit):
       bisect_builds.ParseCommandLine(['-a', 'linux64', '--signed', '-g', '1'])
     self.assertIn('--signed is only supported', mock_stderr.getvalue())
+
+  @patch('sys.stderr', new_callable=io.StringIO)
+  def test_ParseCommandLine_webview_incompatibility_error(self, mock_stderr):
+    with self.assertRaises(SystemExit):
+      _ = bisect_builds.ParseCommandLine([
+          '-r', '-a', 'android-arm64-high', '-g', '127.0.6533.76', '-b',
+          '127.0.6533.79', '--apk', 'system_webview'
+      ])
+    self.assertIn(
+        'Bisecting WebView for android-arm64-high, please choose official '
+        'builds (-o)', mock_stderr.getvalue())
+
+    opts = bisect_builds.ParseCommandLine([
+        '-o', '-a', 'android-arm64-high', '-g', '1334017', '-b', '1335078',
+        '--apk', 'system_webview'
+    ])
+    self.assertEqual(opts.apk, 'system_webview')
+    self.assertEqual(opts.archive, 'android-arm64-high')
+    self.assertEqual(opts.build_type, 'official')
+
 
   @patch('urllib.request.urlopen')
   @patch('builtins.open')
