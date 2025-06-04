@@ -48,6 +48,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GmsCoreUtils.java",
     "java/src/org/chromium/components/webauthn/GpmBrowserOptionsHelper.java",
+    "java/src/org/chromium/components/webauthn/IdentityCredentialsHelper.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
@@ -70,6 +71,7 @@ android_library("java") {
   deps = [
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:service_loader_java",
@@ -193,6 +195,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2GetCredentialsComparatorRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/IdentityCredentialsHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/WebauthnModeProviderRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManCreateCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManGetCredentialRequestHelperRobolectricTest.java",
@@ -212,6 +215,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":test_support_java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_java_test_support",

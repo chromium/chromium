@@ -92,6 +92,7 @@ public class Fido2CredentialRequest
     private @Nullable FidoErrorResponseCallback mErrorCallback;
     private @Nullable RecordOutcomeCallback mRecordingCallback;
     private CredManHelper mCredManHelper;
+    private final IdentityCredentialsHelper mIdentityCredentialsHelper;
     private Barrier mBarrier;
     // mFrameHost is null in makeCredential requests. For getAssertion requests
     // it's non-null for conditional requests and may be non-null in other
@@ -136,6 +137,7 @@ public class Fido2CredentialRequest
         mPlayServicesAvailable = playServicesAvailable;
         mCredManHelper =
                 new CredManHelper(mAuthenticationContextProvider, this, mPlayServicesAvailable);
+        mIdentityCredentialsHelper = new IdentityCredentialsHelper(mAuthenticationContextProvider);
         mBarrier = new Barrier(this::returnErrorAndResetCallback);
     }
 
@@ -303,6 +305,17 @@ public class Fido2CredentialRequest
             }
         }
 
+        if (options.isConditional) {
+            mIdentityCredentialsHelper.handleConditionalCreateRequest(
+                    options,
+                    convertOriginToString(origin),
+                    mClientDataJson,
+                    clientDataHash,
+                    assertNonNull(mMakeCredentialCallback),
+                    this::setOutcomeAndReturnError);
+            return;
+        }
+
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
             if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
                 if (!mPlayServicesAvailable) {
@@ -390,11 +403,6 @@ public class Fido2CredentialRequest
             returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
             return;
         }
-    }
-
-    private void onBinderCallException(Exception e) {
-        Log.e(TAG, "FIDO2 API call failed", e);
-        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
     }
 
     /**
@@ -1177,6 +1185,11 @@ public class Fido2CredentialRequest
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
         }
+    }
+
+    private void onBinderCallException(Exception e) {
+        Log.e(TAG, "FIDO2 API call failed", e);
+        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
     }
 
     private @Nullable ResultReceiver getMaybeResultReceiver() {

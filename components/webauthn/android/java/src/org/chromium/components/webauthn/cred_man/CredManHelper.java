@@ -66,6 +66,8 @@ public class CredManHelper {
 
     protected static final String CRED_MAN_PREFIX = "androidx.credentials.";
     protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
+    protected static final String BUNDLE_KEY_REGISTRATION_RESPONSE_JSON =
+            CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON";
 
     private static final String TAG = "CredManHelper";
 
@@ -148,32 +150,10 @@ public class CredManHelper {
 
                     @Override
                     public void onResult(CreateCredentialResponse createCredentialResponse) {
-                        Bundle data;
-                        data = createCredentialResponse.getData();
-                        String json =
-                                data.getString(
-                                        CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON");
-                        assertNonNull(json);
-                        byte[] responseSerialized =
-                                Fido2CredentialRequestJni.get()
-                                        .makeCredentialResponseFromJson(json);
-                        if (responseSerialized == null) {
-                            Log.e(
-                                    TAG,
-                                    "Failed to convert response from CredMan to Mojo object: %s",
-                                    json);
-                            errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
-                            mMetricsHelper.recordCredManCreateRequestHistogram(
-                                    CredManCreateRequestEnum.FAILURE);
-                            return;
-                        }
-                        MakeCredentialAuthenticatorResponse response;
-                        try {
-                            response =
-                                    MakeCredentialAuthenticatorResponse.deserialize(
-                                            ByteBuffer.wrap(responseSerialized));
-                        } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                            logDeserializationException(e);
+                        Bundle data = createCredentialResponse.getData();
+                        MakeCredentialAuthenticatorResponse response =
+                                parseCreateCredentialResponseData(data);
+                        if (response == null) {
                             errorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR, null);
                             mMetricsHelper.recordCredManCreateRequestHistogram(
                                     CredManCreateRequestEnum.FAILURE);
@@ -659,5 +639,24 @@ public class CredManHelper {
         String16 mojoString = new String16();
         mojoString.data = data;
         return mojoString;
+    }
+
+    public static @Nullable MakeCredentialAuthenticatorResponse parseCreateCredentialResponseData(
+            Bundle data) {
+        String json = data.getString(BUNDLE_KEY_REGISTRATION_RESPONSE_JSON);
+        assertNonNull(json);
+        byte[] responseSerialized =
+                Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(json);
+        if (responseSerialized == null) {
+            Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
+            return null;
+        }
+        try {
+            return MakeCredentialAuthenticatorResponse.deserialize(
+                    ByteBuffer.wrap(responseSerialized));
+        } catch (org.chromium.mojo.bindings.DeserializationException e) {
+            logDeserializationException(e);
+            return null;
+        }
     }
 }

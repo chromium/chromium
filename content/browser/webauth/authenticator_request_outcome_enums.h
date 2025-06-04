@@ -56,6 +56,7 @@ enum class MakeCredentialOutcome {
   kEnclaveError = 15,
   kUiTimeout = 16,
   kOtherFailure = 17,
+  kConditionalCreateFailure = 18,
 };
 
 // This must match the `WebAuthenticationRequestMode` in

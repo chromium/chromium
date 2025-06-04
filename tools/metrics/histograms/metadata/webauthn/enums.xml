@@ -383,6 +383,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Enclave Authenticator Error"/>
   <int value="16" label="Timeout Occurred"/>
   <int value="17" label="Other Failure"/>
+  <int value="18" label="Conditional Create (Passkey Upgrade) Failure"/>
 </enum>
 
 <enum name="WebAuthenticationPinRenewalEvent">
