@@ -503,8 +503,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             passwordsToggle.setBackgroundColor(
                     ChromeSemanticColorUtils.getIphHighlightColor(getContext()));
         }
-        mSyncTypeSwitchPreferencesMap.put(
-                UserSelectableType.PAYMENTS, findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE));
+        ChromeSwitchPreference paymentsToggle =
+                (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING)) {
+            paymentsToggle.setTitle(R.string.account_section_payments_and_info_toggle);
+        }
+        mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PAYMENTS, paymentsToggle);
         mSyncTypeSwitchPreferencesMap.put(
                 UserSelectableType.PREFERENCES,
                 findPreference(PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
@@ -627,8 +631,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
-        mSyncTypeCheckBoxPreferencesMap.put(
-                UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
+        ChromeBaseCheckBoxPreference paymentsToggle =
+                (ChromeBaseCheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING)) {
+            paymentsToggle.setTitle(R.string.sync_payments_and_info_integration);
+        }
+        mSyncTypeCheckBoxPreferencesMap.put(UserSelectableType.PAYMENTS, paymentsToggle);
         mSyncTypeCheckBoxPreferencesMap.put(
                 UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
 

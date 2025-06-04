@@ -591,6 +591,22 @@ public class ManageSyncSettingsTest {
         Assert.assertFalse(paymentsIntegration.isEnabled());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING})
+    public void testPaymentSettingsStringUpdated() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        ChromeSwitchPreference paymentsIntegration =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE);
+        Assert.assertEquals(
+                paymentsIntegration.getTitle(),
+                fragment.getActivity()
+                        .getString(R.string.account_section_payments_and_info_toggle));
+    }
+
     /**
      * Test the trusted vault key retrieval flow, which involves launching an intent and finally
      * calling TrustedVaultClient.notifyKeysChanged().

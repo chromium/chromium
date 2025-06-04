@@ -2586,6 +2586,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_PAYMENTS_INTEGRATION" desc="Title for preference which enables import of Google Pay data for Autofill. 'Google Pay' should not be translated as it is the product name.">
         Payment methods, offers, and addresses using Google Pay
       </message>
+      <message name="IDS_SYNC_PAYMENTS_AND_INFO_INTEGRATION" desc="Title for preference which enables import of Google Wallet data for Autofill. 'Google Wallet' should not be translated as it is the product name.">
+        Payment methods and other info from Google Wallet
+      </message>
       <message name="IDS_ACCOUNT_SETTINGS_TITLE" desc="Title for the account settings page. [CHAR_LIMIT=32]">
         Account
       </message>
@@ -2612,6 +2615,9 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_ACCOUNT_SECTION_PAYMENTS_TOGGLE" desc="Google Pay data for Autofill, one of the data types that we allow syncing. 'Google Pay' should not be translated as it is the product name. Shown on next to the toggle that controls whether Google Pay data for Autofill should be saved in the Google Account and synced across devices.">
         Payment methods, offers, and addresses using Google Pay
+      </message>
+      <message name="IDS_ACCOUNT_SECTION_PAYMENTS_AND_INFO_TOGGLE" desc="Google Wallet data for Autofill, one of the data types that we allow syncing. 'Google Wallet' should not be translated as it is the product name. Shown on next to the toggle that controls whether payments and other data from Google Wallet, for use in Autofill, should be saved in the Google Account and synced across devices.">
+        Payment methods and other info from Google Wallet
       </message>
       <message name="IDS_ACCOUNT_SECTION_SETTINGS_TOGGLE" desc="Settings, one of the data types that we allow syncing. Shown on next to the toggle that controls whether Settings should be saved in the Google Account and synced across devices.">
         Settings
