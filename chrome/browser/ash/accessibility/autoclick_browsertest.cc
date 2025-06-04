@@ -9,6 +9,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
@@ -44,7 +45,9 @@ const char* kShowButtonOnClickUrl =
 }  // namespace
 
 // Tests that Automatic clicks works with elements in the browser.
-class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
+class AutoclickBrowserTest
+    : public AccessibilityFeatureBrowserTest,
+      public ::testing::WithParamInterface<ManifestVersion> {
  public:
   AutoclickBrowserTest(const AutoclickBrowserTest&) = delete;
   AutoclickBrowserTest& operator=(const AutoclickBrowserTest&) = delete;
@@ -52,6 +55,20 @@ class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
  protected:
   AutoclickBrowserTest() = default;
   ~AutoclickBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam() == ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3AccessibilityCommon);
+    } else if (GetParam() == ManifestVersion::kThree) {
+      enabled_features.push_back(
+          ::features::kAccessibilityManifestV3AccessibilityCommon);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
+  }
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -79,9 +96,16 @@ class AutoclickBrowserTest : public AccessibilityFeatureBrowserTest {
  private:
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<AutoclickTestUtils> autoclick_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {
+// TODO(crbug.com/388867838): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         AutoclickBrowserTest,
+                         ::testing::Values(ManifestVersion::kTwo));
+
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LeftClickButtonOnHover) {
   LoadURLAndAutoclick(kShowButtonOnClickUrl);
   // No need to change click type: Default should be right-click.
   utils()->HoverOverHtmlElement(generator(), "click me", "button");
@@ -90,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LeftClickButtonOnHover) {
   utils()->GetNodeBoundsInRoot("show me", "button");
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DoubleClickHover) {
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, DoubleClickHover) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
       "<input type='text' id='text_field'"
@@ -106,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, DoubleClickHover) {
   utils()->WaitForTextSelectionChangedEvent();
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, ClickAndDrag) {
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, ClickAndDrag) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
       "<input type='text' id='text_field'"
@@ -127,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, ClickAndDrag) {
   utils()->WaitForTextSelectionChangedEvent();
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
                        RightClickOnHoverOpensContextMenu) {
   LoadURLAndAutoclick(
       "data:text/html;charset=utf-8,"
@@ -144,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   utils()->GetNodeBoundsInRoot("Paste Ctrl+V", "menuItem");
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest,
                        ScrollHoverHighlightsScrollableArea) {
   utils()->ObserveFocusRings();
 
@@ -199,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, LongDelay) {
   utils()->SetAutoclickDelayMs(500);
   LoadURLAndAutoclick(kShowButtonOnClickUrl);
 
@@ -209,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, LongDelay) {
   EXPECT_GT(timer.Elapsed().InMilliseconds(), 500);
 }
 
-IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest, PauseAutoclick) {
+IN_PROC_BROWSER_TEST_P(AutoclickBrowserTest, PauseAutoclick) {
   utils()->SetAutoclickDelayMs(5);
   LoadURLAndAutoclick(
       "data:text/html,"
@@ -272,9 +296,15 @@ class AutoclickWithAccessibilityServiceTest : public AutoclickBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/388867838): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         AutoclickWithAccessibilityServiceTest,
+                         ::testing::Values(ManifestVersion::kTwo));
+
 // TODO(b/262637071): When the AccessibilityService is on (instead of a fake),
 // check the focus ring bounds too, as autoclick JS should set these.
-IN_PROC_BROWSER_TEST_F(AutoclickWithAccessibilityServiceTest,
+IN_PROC_BROWSER_TEST_P(AutoclickWithAccessibilityServiceTest,
                        ScrollableBoundsPlumbing) {
   const std::string kQuoteText =
       "'Whatever you choose to do, leave tracks. That means don't do it just "
