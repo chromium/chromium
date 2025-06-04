@@ -12,6 +12,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_tracker.h"
 
+class BrowserWindowInterface;
 class PrefService;
 
 class HomePageUndoBubbleCoordinator {
@@ -34,8 +35,8 @@ class HomeButton : public ToolbarButton {
   METADATA_HEADER(HomeButton, ToolbarButton)
 
  public:
-  explicit HomeButton(PressedCallback callback = PressedCallback(),
-                      PrefService* prefs = nullptr);
+  explicit HomeButton(BrowserWindowInterface* browser_window_interface,
+                      PressedCallback callback);
   HomeButton(const HomeButton&) = delete;
   HomeButton& operator=(const HomeButton&) = delete;
   ~HomeButton() override;

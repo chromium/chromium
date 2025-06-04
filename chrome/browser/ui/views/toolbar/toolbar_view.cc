@@ -348,7 +348,7 @@ void ToolbarView::Init() {
 
   PrefService* const prefs = browser_->profile()->GetPrefs();
   std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
-      base::BindRepeating(callback, browser_, IDC_HOME), prefs);
+      browser_, base::BindRepeating(callback, browser_, IDC_HOME));
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
   std::unique_ptr<views::View> toolbar_divider;
