@@ -236,11 +236,14 @@ class GraphBuilderTflite final {
       ::tflite::BuiltinOptions builtin_options_type =
           ::tflite::BuiltinOptions_NONE,
       flatbuffers::Offset<void> builtin_options = 0);
-  OperatorOffset SerializeCastOperation(
-      TensorIndex input_tensor_index,
-      ::tflite::TensorType input_tensor_type,
-      TensorIndex output_tensor_index,
-      ::tflite::TensorType output_tensor_type);
+
+  // Serialize a cast operation. The CAST or DEQUANTIZE operators may be used
+  // depending on the input and output types and whether the input is constant.
+  OperatorOffset SerializeCastOperation(TensorIndex input_tensor_index,
+                                        ::tflite::TensorType input_tensor_type,
+                                        TensorIndex output_tensor_index,
+                                        ::tflite::TensorType output_tensor_type,
+                                        bool constant_input_tensor = false);
 
   // Serializes specializations of the pow operator for the square and square
   // root operations.
@@ -296,12 +299,6 @@ class GraphBuilderTflite final {
       base::span<const TensorIndex> input_tensor_indices,
       TensorIndex output_tensor_index,
       uint32_t axis);
-
-  // This function serializes a TFLite dequantize operator to convert float16
-  // data type to float32.
-  TensorIndex SerializeDequantizeOperation(
-      TensorIndex input_tensor_index,
-      base::span<const int32_t> input_dimensions);
 
   // Get int64 zero point from int4 constant operand.
   base::FixedArray<int64_t> GetInt64ZeroPointFromInt4(

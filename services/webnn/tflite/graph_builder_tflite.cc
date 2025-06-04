@@ -886,30 +886,40 @@ GraphBuilderTflite::SerializeInputTensorInfo(
       it == operand_to_tensor_info_map_.end()
           ? SerializeOperand(operand_id, quantize_params)
           : it->second;
-  // Insert a TFLite dequantize operator to convert float16 to float32 for graph
-  // input, constant and intermediate operands if the current operation doesn't
-  // support float16 inference. For example the below subgraph, the dequantize
-  // operator will be inserted after input and weight nodes since conv2d does
-  // not support float16, but since the reshape operator supports float16 the
-  // dequantize operator is inserted after the reshape.
+  // Insert a TFLite CAST or DEQUANTIZE operator to convert float16 to float32
+  // for graph input, constant and intermediate operands if the current
+  // operation doesn't support float16 inference. For example the below
+  // subgraph, a CAST operator will be inserted after the input node and a
+  // DEQUANTIZE operator will be inserted after the weight node since conv2d
+  // does not support float16, but since the reshape operator supports float16
+  // the CAST operator is inserted after the reshape.
+  //
+  // TFLite delegates recognize the use of the DEQUANTIZE operator to unpack
+  // weights and will skip it if the graph is being evaluated with float16
+  // precision.
   //
   //                       [bias]                                 [bias]
   //                         |                                       |
   //  [input] [weight]  Reshape         [input]       [weight]    Reshape
   //    \         |        /                |            |           |
-  //            Conv2d              =>    dequantize   dequantize dequantize
-  //              |                            \            |          /
-  //           [output]                                  Conv2d
-  //                                                        |
-  //                                                     [output]
+  //            Conv2d              =>     cast      dequantize     cast
+  //              |                          \           |          /
+  //           [output]                                Conv2d
+  //                                                     |
+  //                                                  [output]
   if (!operation_supports_float16 &&
       input_tensor_info.data_type == ::tflite::TensorType_FLOAT16) {
     // TODO(crbug.com/365168170): Associate the dequantized tensor with the
     // operand.
-    return TensorInfo(
-        SerializeDequantizeOperation(input_tensor_info.index,
-                                     input_tensor_info.dimensions),
-        ::tflite::TensorType_FLOAT32, input_tensor_info.dimensions);
+    const TensorIndex temporary_tensor_index = SerializeTemporaryTensor(
+        input_tensor_info.dimensions, ::tflite::TensorType_FLOAT32);
+    const mojom::Operand& operand = GetOperand(operand_id);
+    operators_.emplace_back(SerializeCastOperation(
+        input_tensor_info.index, ::tflite::TensorType_FLOAT16,
+        temporary_tensor_index, ::tflite::TensorType_FLOAT32,
+        operand.kind == mojom::Operand_Kind::kConstant));
+    return TensorInfo(temporary_tensor_index, ::tflite::TensorType_FLOAT32,
+                      input_tensor_info.dimensions);
   }
 
   return input_tensor_info;
@@ -937,7 +947,7 @@ GraphBuilderTflite::TensorInfo GraphBuilderTflite::SerializeOutputTensorInfo(
     //
     //                                           [float16 input]
     //                                                   |
-    //       [float16 input]                         dequantize
+    //       [float16 input]                            cast
     //            |                                      |
     //          Gelu                                    Gelu
     //            |                                      |
@@ -966,7 +976,7 @@ GraphBuilderTflite::TensorInfo GraphBuilderTflite::SerializeOutputTensorInfo(
   //
   //                                             [float16 input]
   //                                                   |
-  //       [float16 input]                          dequantize
+  //       [float16 input]                            cast
   //            |                                      |
   //           relu              =>                   relu
   //           /   \                                  /     \
@@ -2774,11 +2784,13 @@ auto GraphBuilderTflite::SerializeCastOperation(
     TensorIndex input_tensor_index,
     ::tflite::TensorType input_tensor_type,
     TensorIndex output_tensor_index,
-    ::tflite::TensorType output_tensor_type) -> OperatorOffset {
+    ::tflite::TensorType output_tensor_type,
+    bool constant_input_tensor) -> OperatorOffset {
   const std::array<TensorIndex, 1> op_inputs = {input_tensor_index};
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
 
-  if (input_tensor_type == ::tflite::TensorType_FLOAT16 &&
+  if (constant_input_tensor &&
+      input_tensor_type == ::tflite::TensorType_FLOAT16 &&
       output_tensor_type == ::tflite::TensorType_FLOAT32) {
     // TFLite expects the DEQUANTIZE operator to be used to pass float16
     // weights to float32 operators, but WebNN represents this with the cast
@@ -2863,24 +2875,6 @@ auto GraphBuilderTflite::SerializeConcatOperation(
       builder_.CreateVector<TensorIndex>(input_tensor_indices),
       builder_.CreateVector<TensorIndex>(operator_outputs),
       ::tflite::BuiltinOptions_ConcatenationOptions, concat_options.Union());
-}
-
-GraphBuilderTflite::TensorIndex
-GraphBuilderTflite::SerializeDequantizeOperation(
-    TensorIndex input_tensor_index,
-    base::span<const int32_t> input_dimensions) {
-  const TensorIndex output_tensor_index =
-      SerializeTemporaryTensor(input_dimensions, ::tflite::TensorType_FLOAT32);
-  const OperatorCodeIndex operator_code_index =
-      GetOperatorCodeIndex(::tflite::BuiltinOperator_DEQUANTIZE);
-  const std::array<TensorIndex, 1> op_inputs = {input_tensor_index};
-  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
-  operators_.emplace_back(
-      ::tflite::CreateOperator(builder_, operator_code_index,
-                               builder_.CreateVector<TensorIndex>(op_inputs),
-                               builder_.CreateVector<TensorIndex>(op_outputs)));
-
-  return output_tensor_index;
 }
 
 auto GraphBuilderTflite::SerializeMatmulOperation(
@@ -3908,8 +3902,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
                                     mojom::ElementWiseUnary::Kind::kCast);
   const TensorIndex input_tensor_index = input_tensor_info.index;
   const TensorIndex output_tensor_index = output_tensor_info.index;
-  const OperandDescriptor& input_descriptor =
-      GetOperand(op.input_operand_id).descriptor;
+  const mojom::Operand& input_operand = GetOperand(op.input_operand_id);
+  const OperandDescriptor& input_descriptor = input_operand.descriptor;
 
   const DataTypeLimits data_type_limits = context_properties_.data_type_limits;
   switch (op.kind) {
@@ -3922,7 +3916,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
       CHECK(data_type_limits.cast_input.Supports(input_descriptor));
       return SerializeCastOperation(
           input_tensor_index, input_tensor_info.data_type, output_tensor_index,
-          output_tensor_info.data_type);
+          output_tensor_info.data_type,
+          input_operand.kind == mojom::Operand_Kind::kConstant);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
       CHECK(data_type_limits.ceil_input.Supports(input_descriptor));
