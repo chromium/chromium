@@ -259,208 +259,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         setHasOptionsMenu(true);
 
         mShouldReplaceSyncSettingsWithAccountSettings = !mSyncService.hasSyncConsent();
-
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
-            mPageTitle.set(getString(R.string.account_settings_title));
-
-            SettingsUtils.addPreferencesFromResource(
-                    this, R.xml.unified_account_settings_preferences);
-
-            CentralAccountCardPreference centralAccountCardPreference =
-                    (CentralAccountCardPreference)
-                            findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
-            centralAccountCardPreference.initialize(
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
-                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext()));
-
-            IdentityErrorCardPreference identityErrorCardPreference =
-                    (IdentityErrorCardPreference)
-                            findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
-            identityErrorCardPreference.initialize(profile, this);
-
-            mBatchUploadCardPreference =
-                    (BatchUploadCardPreference) findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
-            mBatchUploadCardPreference.initialize(
-                    getActivity(),
-                    profile,
-                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-            mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-
-            if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
-                ChromeBasePreference settingsSyncDisabledByAdministrator =
-                        (ChromeBasePreference)
-                                findPreference(PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
-                settingsSyncDisabledByAdministrator.setDividerAllowedAbove(false);
-                settingsSyncDisabledByAdministrator.setVisible(true);
-            }
-
-            mSyncTypeSwitchPreferencesMap = new HashMap<>();
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.AUTOFILL,
-                    findPreference(PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.BOOKMARKS,
-                    findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
-
-            // HISTORY and TABS are bundled in the same switch in the new settings panel.
-            ChromeSwitchPreference historyAndTabsToggle =
-                    (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.HISTORY, historyAndTabsToggle);
-            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.TABS, historyAndTabsToggle);
-            historyAndTabsToggle.setViewId(R.id.history_and_tabs_toggle);
-
-            ChromeSwitchPreference passwordsToggle =
-                    (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
-            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
-            if (getArguments() != null
-                    && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
-                passwordsToggle.setBackgroundColor(
-                        ChromeSemanticColorUtils.getIphHighlightColor(getContext()));
-            }
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PAYMENTS,
-                    findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE));
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.PREFERENCES,
-                    findPreference(PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
-            mSyncTypeSwitchPreferencesMap.put(
-                    UserSelectableType.READING_LIST,
-                    findPreference(PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
-
-            mSyncTypeSwitchPreferencesMap
-                    .values()
-                    .forEach(pref -> pref.setOnPreferenceChangeListener(this));
-
-            Preference reviewSyncData = findPreference(PREF_ACCOUNT_DATA_DASHBOARD);
-            reviewSyncData.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(
-                            this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
-
-            Preference manageYourGoogleAccount = findPreference(PREF_MANAGE_YOUR_GOOGLE_ACCOUNT);
-            manageYourGoogleAccount.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(
-                            this,
-                            () -> {
-                                SyncSettingsUtils.openGoogleMyAccount(getActivity());
-                            }));
-
-            Preference manageAccountsOnThisDevice =
-                    findPreference(PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS);
-            manageAccountsOnThisDevice.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(
-                            this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
-
-            mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
-            if (getProfile().isChild()) {
-                mSignOutPreference.setVisible(false);
-            } else {
-                mSignOutPreference.initialize(
-                        requireContext(),
-                        getProfile(),
-                        getActivity().getSupportFragmentManager(),
-                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-            }
-            mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
+            setupAccountSettings(profile);
         } else {
-            mPageTitle.set(getString(R.string.sync_category_title));
-
-            SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
-
-            mSyncErrorCardPreference =
-                    (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
-            mSyncErrorCardPreference.initialize(
-                    ProfileDataCache.createWithDefaultImageSize(
-                            getContext(), R.drawable.ic_sync_badge_error_20dp),
-                    profile,
-                    this);
-
-            mSyncingCategory = (PreferenceCategory) findPreference(PREF_SYNCING_CATEGORY);
-
-            mSyncEverything = (ChromeSwitchPreference) findPreference(PREF_SYNC_EVERYTHING);
-            mSyncEverything.setOnPreferenceChangeListener(this);
-
-            Preference turnOffSync = findPreference(PREF_TURN_OFF_SYNC);
-
-            if (!mIsFromSigninScreen) {
-                turnOffSync.setVisible(true);
-                if (!profile.isChild()) {
-                    // Non-child users have an option to sign out and turn off sync.  This is to
-                    // ensure
-                    // that revoking consents for sign in and sync does not require more steps than
-                    // enabling them.
-                    turnOffSync.setIcon(R.drawable.ic_signout_40dp);
-                    turnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
-                    turnOffSync.setOnPreferenceClickListener(
-                            SyncSettingsUtils.toOnClickListener(
-                                    this, this::onSignOutAndTurnOffSyncClicked));
-                } else {
-                    // Child users are force signed-in, so have an option which only turns off sync.
-                    turnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
-                    turnOffSync.setTitle(R.string.turn_off_sync);
-                    turnOffSync.setOnPreferenceClickListener(
-                            SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
-                }
-
-                findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
-            }
-
-            mSyncTypeCheckBoxPreferencesMap = new HashMap<>();
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
-                mSyncTypeCheckBoxPreferencesMap.put(
-                        UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
-            } else {
-                findPreference(PREF_SYNC_APPS).setVisible(false);
-            }
-
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
-            mSyncTypeCheckBoxPreferencesMap.put(
-                    UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
-
-            mSyncTypeCheckBoxPreferencesMap
-                    .values()
-                    .forEach(pref -> pref.setOnPreferenceChangeListener(this));
-
-            // Prevent sync settings changes from taking effect until the user leaves this screen.
-            mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
-
-            mSearchAndBrowseCategory =
-                    (PreferenceCategory) findPreference(PREF_SEARCH_AND_BROWSE_CATEGORY);
-
-            mUrlKeyedAnonymizedData =
-                    (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
-            boolean urlKeyedAnonymizedDataShouldBeEnabled =
-                    !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
-                            || UnifiedConsentServiceBridge
-                                    .isUrlKeyedAnonymizedDataCollectionEnabled(profile);
-            mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
-            mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(
-                    new ChromeManagedPreferenceDelegate(profile) {
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            return UnifiedConsentServiceBridge
-                                    .isUrlKeyedAnonymizedDataCollectionManaged(profile);
-                        }
-                    });
-            Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
-            reviewSyncData.setOnPreferenceClickListener(
-                    SyncSettingsUtils.toOnClickListener(
-                            this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
+            setupSyncSettings(profile);
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
@@ -632,6 +434,237 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
             finishCurrentSettings();
         }
+    }
+
+    private void setupAccountSettings(Profile profile) {
+        assert !mSyncService.hasSyncConsent();
+        mPageTitle.set(getString(R.string.account_settings_title));
+        SettingsUtils.addPreferencesFromResource(this, R.xml.unified_account_settings_preferences);
+
+        setupCentralAccountCardPreference(profile);
+        setupIdentityErrorCardPreference(profile);
+        setupBatchUploadCardPreference(profile);
+        setupAccountDataTypePreferences();
+        if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
+            setupSyncDisabledByAdministrator();
+        }
+        setupReviewSyncDataPreference(PREF_ACCOUNT_DATA_DASHBOARD);
+        setupAccountManagementPreferences();
+        setupSignOutPreference(profile);
+    }
+
+    private void setupCentralAccountCardPreference(Profile profile) {
+        CentralAccountCardPreference centralAccountCardPreference =
+                (CentralAccountCardPreference) findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
+        centralAccountCardPreference.initialize(
+                IdentityServicesProvider.get()
+                        .getIdentityManager(profile)
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext()));
+    }
+
+    private void setupIdentityErrorCardPreference(Profile profile) {
+        IdentityErrorCardPreference identityErrorCardPreference =
+                (IdentityErrorCardPreference) findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
+        identityErrorCardPreference.initialize(profile, this);
+    }
+
+    private void setupBatchUploadCardPreference(Profile profile) {
+        mBatchUploadCardPreference =
+                (BatchUploadCardPreference) findPreference(PREF_BATCH_UPLOAD_CARD_PREFERENCE);
+        mBatchUploadCardPreference.initialize(
+                getActivity(),
+                profile,
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+        mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
+    }
+
+    private void setupAccountDataTypePreferences() {
+        assert !mSyncService.hasSyncConsent();
+        mSyncTypeSwitchPreferencesMap = new HashMap<>();
+        mSyncTypeSwitchPreferencesMap.put(
+                UserSelectableType.AUTOFILL, findPreference(PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));
+        mSyncTypeSwitchPreferencesMap.put(
+                UserSelectableType.BOOKMARKS,
+                findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
+
+        // HISTORY and TABS are bundled in the same switch in the new settings panel.
+        ChromeSwitchPreference historyAndTabsToggle =
+                (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
+        mSyncTypeSwitchPreferencesMap.put(UserSelectableType.HISTORY, historyAndTabsToggle);
+        mSyncTypeSwitchPreferencesMap.put(UserSelectableType.TABS, historyAndTabsToggle);
+        historyAndTabsToggle.setViewId(R.id.history_and_tabs_toggle);
+
+        ChromeSwitchPreference passwordsToggle =
+                (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
+        mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
+        if (getArguments() != null
+                && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
+            passwordsToggle.setBackgroundColor(
+                    ChromeSemanticColorUtils.getIphHighlightColor(getContext()));
+        }
+        mSyncTypeSwitchPreferencesMap.put(
+                UserSelectableType.PAYMENTS, findPreference(PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE));
+        mSyncTypeSwitchPreferencesMap.put(
+                UserSelectableType.PREFERENCES,
+                findPreference(PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
+        mSyncTypeSwitchPreferencesMap.put(
+                UserSelectableType.READING_LIST,
+                findPreference(PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
+
+        mSyncTypeSwitchPreferencesMap
+                .values()
+                .forEach(pref -> pref.setOnPreferenceChangeListener(this));
+    }
+
+    private void setupSyncDisabledByAdministrator() {
+        ChromeBasePreference settingsSyncDisabledByAdministrator =
+                (ChromeBasePreference) findPreference(PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
+        settingsSyncDisabledByAdministrator.setDividerAllowedAbove(false);
+        settingsSyncDisabledByAdministrator.setVisible(true);
+    }
+
+    private void setupReviewSyncDataPreference(String preference) {
+        Preference reviewSyncData = findPreference(preference);
+        reviewSyncData.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
+    }
+
+    private void setupAccountManagementPreferences() {
+        Preference manageYourGoogleAccount = findPreference(PREF_MANAGE_YOUR_GOOGLE_ACCOUNT);
+        manageYourGoogleAccount.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this,
+                        () -> {
+                            SyncSettingsUtils.openGoogleMyAccount(getActivity());
+                        }));
+        Preference manageAccountsOnThisDevice =
+                findPreference(PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS);
+        manageAccountsOnThisDevice.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
+    }
+
+    private void setupSignOutPreference(Profile profile) {
+        mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
+        if (profile.isChild()) {
+            mSignOutPreference.setVisible(false);
+        } else {
+            mSignOutPreference.initialize(
+                    requireContext(),
+                    profile,
+                    getActivity().getSupportFragmentManager(),
+                    ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
+        }
+        mSignOutPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
+    }
+
+    private void setupSyncSettings(Profile profile) {
+        assert mSyncService.hasSyncConsent();
+        mPageTitle.set(getString(R.string.sync_category_title));
+        SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
+
+        setupSyncErrorCardPreference(profile);
+        mSyncingCategory = (PreferenceCategory) findPreference(PREF_SYNCING_CATEGORY);
+        mSyncEverything = (ChromeSwitchPreference) findPreference(PREF_SYNC_EVERYTHING);
+        mSyncEverything.setOnPreferenceChangeListener(this);
+        if (!mIsFromSigninScreen) {
+            setupTurnOffSyncPreference(profile);
+        }
+        setupSyncDataTypePreferences();
+
+        // Prevent sync settings changes from taking effect until the user leaves this screen.
+        mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
+
+        mSearchAndBrowseCategory =
+                (PreferenceCategory) findPreference(PREF_SEARCH_AND_BROWSE_CATEGORY);
+        setupUrlKeyedAnonymizedDataPreference(profile);
+        setupReviewSyncDataPreference(PREF_SYNC_REVIEW_DATA);
+    }
+
+    private void setupSyncErrorCardPreference(Profile profile) {
+        mSyncErrorCardPreference =
+                (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
+        mSyncErrorCardPreference.initialize(
+                ProfileDataCache.createWithDefaultImageSize(
+                        getContext(), R.drawable.ic_sync_badge_error_20dp),
+                profile,
+                this);
+    }
+
+    private void setupTurnOffSyncPreference(Profile profile) {
+        Preference turnOffSync = findPreference(PREF_TURN_OFF_SYNC);
+        turnOffSync.setVisible(true);
+        if (!profile.isChild()) {
+            // Non-child users have an option to sign out and turn off sync. This is to ensure that
+            // revoking consents for sign in and sync does not require more steps than enabling
+            // them.
+            turnOffSync.setIcon(R.drawable.ic_signout_40dp);
+            turnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
+            turnOffSync.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this, this::onSignOutAndTurnOffSyncClicked));
+        } else {
+            // Child users are force signed-in, so have an option which only turns off sync.
+            turnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
+            turnOffSync.setTitle(R.string.turn_off_sync);
+            turnOffSync.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
+        }
+
+        findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
+    }
+
+    private void setupSyncDataTypePreferences() {
+        assert mSyncService.hasSyncConsent();
+        mSyncTypeCheckBoxPreferencesMap = new HashMap<>();
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
+            mSyncTypeCheckBoxPreferencesMap.put(
+                    UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
+        } else {
+            findPreference(PREF_SYNC_APPS).setVisible(false);
+        }
+
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
+        mSyncTypeCheckBoxPreferencesMap.put(
+                UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
+
+        mSyncTypeCheckBoxPreferencesMap
+                .values()
+                .forEach(pref -> pref.setOnPreferenceChangeListener(this));
+    }
+
+    private void setupUrlKeyedAnonymizedDataPreference(Profile profile) {
+        mUrlKeyedAnonymizedData =
+                (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
+        boolean urlKeyedAnonymizedDataShouldBeEnabled =
+                !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
+                        || UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                                profile);
+        mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
+        mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(profile) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return UnifiedConsentServiceBridge
+                                .isUrlKeyedAnonymizedDataCollectionManaged(profile);
+                    }
+                });
     }
 
     /** Handles when user clicks home button in menu to get back to home screen. */
