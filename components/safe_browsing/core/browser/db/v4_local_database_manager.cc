@@ -1099,8 +1099,11 @@ void V4LocalDatabaseManager::DropQueuedAndPendingChecks() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   queued_checks_.clear();
-  // Intentionally ignore the checks this method returns
-  CopyAndRemoveAllPendingChecks();
+  // Abandon all checks this method returns to avoid dangling raw pointers.
+  PendingChecks pending_checks = CopyAndRemoveAllPendingChecks();
+  for (PendingCheck* check : pending_checks) {
+    check->Abandon();
+  }
 }
 
 void V4LocalDatabaseManager::RespondToClient(
