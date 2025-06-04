@@ -207,8 +207,12 @@ void VRBrowserRendererThread::SetVisibleExternalPromptNotification(
 
   if (!ui_) {
     // If the ui is dismissed, make sure that we don't *actually* have a prompt
-    // state that we needed to set.
-    DCHECK(prompt == ExternalPromptNotificationType::kPromptNone);
+    // state that we needed to set. Note that spinning the ui back up is async;
+    // so if we don't have a ui_ object and we need one, ensure that it's being
+    // spun back up.
+    if (prompt != ExternalPromptNotificationType::kPromptNone) {
+      DCHECK(started_);
+    }
     return;
   }
 
@@ -287,6 +291,10 @@ void VRBrowserRendererThread::OnGraphicsReady(
   static_cast<UiInterface*>(ui.get())->OnGlInitialized();
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
+
+  if (draw_state_.GetPrompt() != ExternalPromptNotificationType::kPromptNone) {
+    ui_->SetVisibleExternalPromptNotification(draw_state_.GetPrompt());
+  }
 
   // Create the BrowserRenderer to drive UI rendering based on the delegates.
   browser_renderer_ = std::make_unique<BrowserRenderer>(

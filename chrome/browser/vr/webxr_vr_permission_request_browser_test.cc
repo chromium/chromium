@@ -4,6 +4,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
@@ -18,10 +19,13 @@ namespace vr {
 // a notification to appear telling the user that a permission request is
 // visible in the browser and that closing the browser while this is still
 // displayed does not cause any issues.
-// TODO(https://crbug.com/381000093): Fix tests on Android
+// TODO(https://crbug.com/381000093): Test is disabled because the equivalent UI
+// does not currently exist on Android. Evaluate the usefulness of this test and
+// if other UI needs to be drawn instead.
 #if !BUILDFLAG(IS_ANDROID)
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestInSessionPermissionNotificationCloseWhileVisible) {
+  MockXRDeviceHookBase mock;
   // We need to use a local server for permission requests to not hit a DCHECK.
   t->LoadFileAndAwaitInitialization("generic_webxr_page");
   t->EnterSessionWithUserGestureOrFail();
@@ -43,8 +47,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
       UserFriendlyElementName::kWebXrExternalPromptNotification,
       true /* visible */);
 }
-#endif  // if !BUILDFLAG(IS_ANDROID)
-
+#endif
 // TODO(crbug.com/41434932): Add tests verifying the notification
 // disappears when the permission is accepted/denied once we can query element
 // visibility at any time using PermissionRequestManagerTestApi.
