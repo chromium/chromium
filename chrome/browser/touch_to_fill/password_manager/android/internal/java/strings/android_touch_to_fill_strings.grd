@@ -201,6 +201,9 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_SHEET_SHARED_PASSWORDS_MULTIPLE_PASSWORDS_SUBTITLE" desc="Subtitle for Touch To Fill sheet where users can pick a password credential to fill into a form when multiple credentials have been received via the password sharing feature.">
         You have received passwords for <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph>
       </message>
+      <message name="IDS_TOUCH_TO_FILL_RECOVERY_PASSWORD_LABEL" desc="Label for a recovery password offered for filling as an option if the main saved password doesn't work for signing in.">
+        Temp recovery in case of trouble
+      </message>
       <message name="IDS_TOUCH_TO_FILL_CONTENT_DESCRIPTION" desc="Accessibility string read when the Touch To Fill bottom sheet is opened. It describes the bottom sheet where a user can pick a credential to fill into a password form.">
         List of credentials to be filled on touch.
       </message>

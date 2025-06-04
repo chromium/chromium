@@ -29,6 +29,16 @@ found in the LICENSE file.
       android:layout_marginVertical="@dimen/touch_to_fill_list_item_margin_vertical"
       android:layout_weight="1"
       android:orientation="vertical">
+
+    <!-- The recovery label and the credential origin views are mutually exclusive. If the
+         credential is a backup credential, the recovery label takes precedence. -->
+    <TextView
+        android:id="@+id/recovery_password_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/touch_to_fill_list_item_text_min_height"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone" />
     <TextView
         android:id="@+id/credential_origin"
         android:layout_width="wrap_content"

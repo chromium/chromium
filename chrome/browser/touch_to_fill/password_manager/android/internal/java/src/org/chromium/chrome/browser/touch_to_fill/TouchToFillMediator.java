@@ -189,7 +189,10 @@ class TouchToFillMediator {
                     credentials, webAuthnCredentials, showMorePasskeys)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
-            requestIconOrFallbackImage(model, url);
+            if (!credential.isBackupCredential()) {
+                // Backup credentials display the history icon instead.
+                requestIconOrFallbackImage(model, url);
+            }
         }
 
         if (showMorePasskeys) {

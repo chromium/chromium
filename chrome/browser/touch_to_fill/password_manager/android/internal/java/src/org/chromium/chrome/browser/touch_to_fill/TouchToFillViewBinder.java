@@ -158,6 +158,9 @@ class TouchToFillViewBinder {
             PropertyModel model, View view, PropertyKey propertyKey) {
         Credential credential = model.get(CREDENTIAL);
         if (propertyKey == FAVICON_OR_FALLBACK) {
+            assert !credential.isBackupCredential()
+                    : "Recovery credentials should not have "
+                            + "favicons, but should instead display the history icon.";
             ImageView imageView = view.findViewById(R.id.favicon);
             FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
             imageView.setImageDrawable(
@@ -174,7 +177,20 @@ class TouchToFillViewBinder {
         } else if (propertyKey == CREDENTIAL || propertyKey == ITEM_COLLECTION_INFO) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(credential.getDisplayName());
-            pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
+            pslOriginText.setVisibility(
+                    credential.isExactMatch() || credential.isBackupCredential()
+                            ? View.GONE
+                            : View.VISIBLE);
+
+            TextView recoveryLabel = view.findViewById(R.id.recovery_password_label);
+            recoveryLabel.setText(
+                    view.getContext().getString(R.string.touch_to_fill_recovery_password_label));
+            recoveryLabel.setVisibility(credential.isBackupCredential() ? View.VISIBLE : View.GONE);
+
+            if (credential.isBackupCredential()) {
+                ImageView imageView = view.findViewById(R.id.favicon);
+                imageView.setImageResource(R.drawable.ic_history_24dp);
+            }
 
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getFormattedUsername());

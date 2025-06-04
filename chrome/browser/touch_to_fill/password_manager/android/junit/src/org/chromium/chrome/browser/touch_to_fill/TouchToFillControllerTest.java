@@ -132,6 +132,20 @@ public class TouchToFillControllerTest {
                     "example.xyz",
                     GetLoginMatchType.EXACT,
                     0);
+    private static final Credential CARL_BACKUP =
+            new Credential(
+                    "Carl",
+                    "G3h3!m",
+                    "Carl",
+                    TEST_URL.getSpec(),
+                    "example.xyz",
+                    GetLoginMatchType.EXACT,
+                    0,
+                    false,
+                    /* senderName= */ null,
+                    null,
+                    /* sharingNotificationDisplayed= */ false,
+                    /* isBackupCredential= */ true);
     private static final WebauthnCredential DINO =
             new WebauthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
@@ -532,6 +546,46 @@ public class TouchToFillControllerTest {
         assertThat(iconData.mFallbackColor, is(333));
         assertThat(iconData.mIsFallbackColorDefault, is(true));
         assertThat(iconData.mIconType, is(IconType.FAVICON));
+    }
+
+    @Test
+    public void testNoFaviconForBackupCredential() {
+        mMediator.showCredentials(
+                TEST_URL,
+                true,
+                Collections.emptyList(),
+                Arrays.asList(CARL, CARL_BACKUP),
+                /* showMorePasskeys= */ false,
+                /* triggerSubmission= */ false,
+                /* managePasskeysHidesPasswords= */ false,
+                /* showHybridPasskeyOption= */ false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(4)); // Header + 2 credentials + Footer.
+        assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(CARL));
+        assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
+
+        assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL_BACKUP));
+        assertThat(itemList.get(2).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
+
+        // CARL and CARL_BACKUP both have TEST_URL as their origin URL
+        verify(mMockIconBridge)
+                .getLargeIconForStringUrl(
+                        eq(TEST_URL.getSpec()),
+                        eq(DESIRED_FAVICON_SIZE),
+                        mCallbackArgumentCaptor.capture());
+        LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
+        callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
+
+        // The main credential should still get a favicon
+        assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(notNullValue()));
+
+        // The backup credentials shouldn't get one, since it displays the history icon instead.
+        assertThat(itemList.get(2).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
     }
 
     @Test
