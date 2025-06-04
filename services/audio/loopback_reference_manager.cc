@@ -40,6 +40,24 @@
 // nothing (this cannot happen yet because error handling is not implemented).
 
 namespace audio {
+namespace {
+using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+using OpenOutcome = media::AudioInputStream::OpenOutcome;
+
+ReferenceOpenOutcome MapStreamOpenOutcomeToReferenceOpenOutcome(
+    OpenOutcome outcome) {
+  switch (outcome) {
+    case OpenOutcome::kSuccess:
+      return ReferenceOpenOutcome::SUCCESS;
+    case OpenOutcome::kFailedSystemPermissions:
+      return ReferenceOpenOutcome::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR;
+    case OpenOutcome::kFailedInUse:
+      return ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR;
+    default:
+      return ReferenceOpenOutcome::STREAM_OPEN_ERROR;
+  }
+}
+}  // namespace
 
 // Tracks ReferenceOutput::Listeners. When there are at least one listener, it
 // creates a system loopback stream and forwards the audio to the listeners.
@@ -58,12 +76,61 @@ class LoopbackReferenceManagerCore
     EnsureLoopbackStreamClosed();
   }
 
-  void StartListening(ReferenceOutput::Listener* listener,
-                      const std::string& device_id) {
+  ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
+                                      const std::string& device_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-    EnsureLoopbackStreamStarted();
-    base::AutoLock scoped_lock(lock_);
-    listeners_.insert(listener);
+    if (loopback_stream_) {
+      // The core was already successfully started.
+      base::AutoLock scoped_lock(lock_);
+      listeners_.insert(listener);
+      return ReferenceOpenOutcome::SUCCESS;
+    }
+
+    // Capture audio from all audio devices, or equivalently, audio from all
+    // PIDs playing out audio.
+    const std::string loopback_device_id =
+        media::AudioDeviceDescription::kLoopbackAllDevicesId;
+    // TODO(crbug.com/412581642): Determine optimal parameters.
+    const media::AudioParameters params =
+        AudioManagerPowerUser(audio_manager_)
+            .GetInputStreamParameters(loopback_device_id);
+    // Does not require the lock because the audio stream is not started.
+    sample_rate_ = params.sample_rate();
+
+    // Create the stream, and return an error if we fail.
+    loopback_stream_ = audio_manager_->MakeAudioInputStream(
+        params, loopback_device_id,
+        base::BindRepeating(&media::AudioLog::OnLogMessage,
+                            base::Unretained(audio_log_.get())));
+    if (!loopback_stream_) {
+      return ReferenceOpenOutcome::STREAM_CREATE_ERROR;
+    }
+
+    // Open the stream, and return an error if we fail.
+    media::AudioInputStream::OpenOutcome stream_open_outcome =
+        loopback_stream_->Open();
+    if (stream_open_outcome != OpenOutcome::kSuccess) {
+      loopback_stream_.ExtractAsDangling()->Close();
+      return MapStreamOpenOutcomeToReferenceOpenOutcome(stream_open_outcome);
+    }
+
+    // Create an AudioLog for the successfully opened stream.
+    // TODO(crbug.com/412581642): Add a different AudioComponent for the
+    // reference loopback streams and show them in chrome://media-internals
+    audio_log_ = audio_manager_->CreateAudioLog(
+        media::AudioLogFactory::AudioComponent::kAudioInputController,
+        next_loopback_stream_id_++);
+    audio_log_->OnCreated(params, loopback_device_id);
+
+    // Add the listener and start the stream.
+    {
+      base::AutoLock scoped_lock(lock_);
+      listeners_.insert(listener);
+    }
+    loopback_stream_->Start(this);
+    audio_log_->OnStarted();
+
+    return ReferenceOpenOutcome::SUCCESS;
   }
 
   void StopListening(ReferenceOutput::Listener* listener) {
@@ -108,38 +175,6 @@ class LoopbackReferenceManagerCore
   }
 
  private:
-  void EnsureLoopbackStreamStarted() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-    if (loopback_stream_) {
-      return;
-    }
-    // Capture audio from all audio devices, or equivalently, audio from all
-    // PIDs playing out audio.
-    const std::string loopback_device_id =
-        media::AudioDeviceDescription::kLoopbackAllDevicesId;
-
-    // TODO(crbug.com/412581642): Determine optimal parameters.
-    const media::AudioParameters params =
-        AudioManagerPowerUser(audio_manager_)
-            .GetInputStreamParameters(loopback_device_id);
-    sample_rate_ = params.sample_rate();
-
-    // TODO(crbug.com/412581642): Add a different AudioComponent for the
-    // reference loopback streams and show them in chrome://media-internals
-    audio_log_ = audio_manager_->CreateAudioLog(
-        media::AudioLogFactory::AudioComponent::kAudioInputController,
-        next_loopback_stream_id_++);
-
-    loopback_stream_ = audio_manager_->MakeAudioInputStream(
-        params, loopback_device_id,
-        base::BindRepeating(&media::AudioLog::OnLogMessage,
-                            base::Unretained(audio_log_.get())));
-    loopback_stream_->Open();
-    audio_log_->OnCreated(params, loopback_device_id);
-    loopback_stream_->Start(this);
-    audio_log_->OnStarted();
-  }
-
   void EnsureLoopbackStreamClosed() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     if (!loopback_stream_) {
@@ -179,13 +214,16 @@ class LoopbackReferenceProvider : public ReferenceSignalProvider {
   LoopbackReferenceProvider(base::WeakPtr<LoopbackReferenceManagerCore> core)
       : core_(core) {}
 
-  void StartListening(ReferenceOutput::Listener* listener,
-                      const std::string& device_id) final {
+  ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
+                                      const std::string& device_id) final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     DCHECK(core_);
     if (core_) {
-      core_->StartListening(listener, device_id);
+      return core_->StartListening(listener, device_id);
     }
+    // If the core no longer exists, it must have been destroyed due to an
+    // error. This cannot happen yet as error handling is not yet imlpemented.
+    return ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR;
   }
 
   void StopListening(ReferenceOutput::Listener* listener) final {

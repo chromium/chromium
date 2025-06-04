@@ -15,6 +15,7 @@
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
+#include "reference_signal_provider.h"
 #include "services/audio/output_device_mixer.h"
 #include "services/audio/reference_output.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -929,7 +930,9 @@ TEST_F(OutputDeviceMixerManagerTest, DeviceOutputListener_StartStop) {
   StrictMock<MockListener> listener;
 
   // Attach/detach multiple listeners to/from multiple devices.
-  reference_signal_provider_->StartListening(&listener, kFakeDeviceId);
+  EXPECT_EQ(
+      reference_signal_provider_->StartListening(&listener, kFakeDeviceId),
+      ReferenceSignalProvider::ReferenceOpenOutcome::SUCCESS);
   reference_signal_provider_->StopListening(&listener);
 }
 

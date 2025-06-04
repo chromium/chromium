@@ -49,10 +49,11 @@ class OutputDeviceMixerReferenceProvider : public ReferenceSignalProvider {
       OutputDeviceMixerManager* output_device_mixer_manager)
       : output_device_mixer_manager_(output_device_mixer_manager) {}
 
-  void StartListening(ReferenceOutput::Listener* listener,
-                      const std::string& device_id) final {
+  ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
+                                      const std::string& device_id) final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     output_device_mixer_manager_->StartListening(listener, device_id);
+    return ReferenceOpenOutcome::SUCCESS;
   }
 
   void StopListening(ReferenceOutput::Listener* listener) final {

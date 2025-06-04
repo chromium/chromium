@@ -27,6 +27,10 @@ using ::testing::StrictMock;
 namespace audio {
 namespace {
 
+using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+using OpenOutcome = media::AudioInputStream::OpenOutcome;
+using AudioInputCallback = media::AudioInputStream::AudioInputCallback;
+
 class MockAudioLog : public media::AudioLog {
  public:
   MockAudioLog() {}
@@ -110,6 +114,17 @@ class LoopbackReferenceManagerTest : public ::testing::Test {
   ~LoopbackReferenceManagerTest() override { audio_manager_.Shutdown(); }
 
  protected:
+  // Helper to quickly setup the mock expectations for creating a new loopback
+  // stream.
+  std::unique_ptr<StrictMock<MockAudioInputStream>> ExpectCreateLoopbackStream(
+      int component_id);
+
+  // Used for testing that a specific OpenOutcome is translated to a
+  // ReferenceOpenOutcome.
+  void TestStreamOpenError(
+      OpenOutcome loopback_open_outcome,
+      ReferenceOpenOutcome expected_reference_open_outcome);
+
   base::test::TaskEnvironment task_environment_;
   StrictMock<LocalMockAudioManager> audio_manager_;
   LoopbackReferenceManager loopback_reference_manager_;
@@ -134,6 +149,27 @@ MATCHER_P(FirstSampleEquals, sample_value, "") {
 // matcher instead.
 MATCHER_P(AudioParamsMatches, expected, "") {
   return !(arg < expected) && !(expected < arg);
+}
+
+std::unique_ptr<StrictMock<MockAudioInputStream>>
+LoopbackReferenceManagerTest::ExpectCreateLoopbackStream(int component_id) {
+  auto mock_input_stream = std::make_unique<StrictMock<MockAudioInputStream>>();
+  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
+      .WillOnce(Return(loopback_params_));
+  EXPECT_CALL(audio_manager_,
+              CreateAudioLog(
+                  media::AudioLogFactory::AudioComponent::kAudioInputController,
+                  component_id))
+      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
+  EXPECT_CALL(audio_manager_,
+              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
+                                   loopback_device_id_, _))
+      .WillOnce(Return(mock_input_stream.get()));
+  EXPECT_CALL(*mock_input_stream, Open())
+      .WillOnce(Return(media::AudioInputStream::OpenOutcome::kSuccess));
+  EXPECT_CALL(*mock_input_stream, Stop());
+  EXPECT_CALL(*mock_input_stream, Close());
+  return mock_input_stream;
 }
 
 TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
@@ -173,8 +209,7 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   reference_signal_provider->StartListening(&mock_listener_1,
                                             output_device_id_);
   CHECK(mock_input_stream.captured_callback_);
-  media::AudioInputStream::AudioInputCallback* audio_callback =
-      *(mock_input_stream.captured_callback_);
+  AudioInputCallback* audio_callback = *(mock_input_stream.captured_callback_);
 
   // Send some data, which should be delivered to the first listener.
   EXPECT_CALL(mock_listener_1,
@@ -214,11 +249,12 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   EXPECT_CALL(mock_input_stream, Close());
   EXPECT_CALL(*mock_audio_log_raw_ptr, OnClosed());
   reference_signal_provider->StopListening(&mock_listener_2);
+  // Superfluous calls to StopListening should be no-ops.
+  reference_signal_provider->StopListening(&mock_listener_2);
 }
 
 TEST_F(LoopbackReferenceManagerTest,
        DistributesAudioToListenersSeparateProviders) {
-  StrictMock<MockAudioInputStream> mock_input_stream;
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(loopback_params_);
 
@@ -230,28 +266,16 @@ TEST_F(LoopbackReferenceManagerTest,
 
   // Setup the expectations for starting the loopback stream. This should only
   // happen once, even with two providers.
-  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
-      .WillOnce(Return(loopback_params_));
-  EXPECT_CALL(audio_manager_,
-              CreateAudioLog(
-                  media::AudioLogFactory::AudioComponent::kAudioInputController,
-                  1000000))
-      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
-  EXPECT_CALL(audio_manager_,
-              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
-                                   loopback_device_id_, _))
-      .WillOnce(Return(&mock_input_stream));
-  EXPECT_CALL(mock_input_stream, Open())
-      .WillOnce(Return(media::AudioInputStream::OpenOutcome::kSuccess));
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
+      ExpectCreateLoopbackStream(1000000);
 
   // Add the first listener to the first provider. This should create the
   // stream.
   StrictMock<MockListener> mock_listener_1;
   reference_signal_provider_1->StartListening(&mock_listener_1,
                                               output_device_id_);
-  CHECK(mock_input_stream.captured_callback_);
-  media::AudioInputStream::AudioInputCallback* audio_callback =
-      *(mock_input_stream.captured_callback_);
+  CHECK(mock_input_stream->captured_callback_);
+  AudioInputCallback* audio_callback = *(mock_input_stream->captured_callback_);
 
   // Send some data, which should be delivered to the first listener.
   EXPECT_CALL(mock_listener_1,
@@ -288,15 +312,11 @@ TEST_F(LoopbackReferenceManagerTest,
 
   // Remove the listener from the second provider. This should stop the loopback
   // stream.
-  EXPECT_CALL(mock_input_stream, Stop());
-  EXPECT_CALL(mock_input_stream, Close());
   reference_signal_provider_2->StopListening(&mock_listener_2);
 }
 
 TEST_F(LoopbackReferenceManagerTest,
        OpensAndClosesStreamWithMultipleListenCycles) {
-  StrictMock<MockAudioInputStream> mock_input_stream_1;
-
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(loopback_params_);
   std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
@@ -304,24 +324,13 @@ TEST_F(LoopbackReferenceManagerTest,
   StrictMock<MockListener> mock_listener;
 
   // --- First listen cycle ---
-  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
-      .WillOnce(Return(loopback_params_));
-  EXPECT_CALL(audio_manager_,
-              CreateAudioLog(
-                  media::AudioLogFactory::AudioComponent::kAudioInputController,
-                  1000000))
-      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
-  EXPECT_CALL(audio_manager_,
-              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
-                                   loopback_device_id_, _))
-      .WillOnce(Return(&mock_input_stream_1));
-  EXPECT_CALL(mock_input_stream_1, Open())
-      .WillOnce(Return(media::AudioInputStream::OpenOutcome::kSuccess));
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_1 =
+      ExpectCreateLoopbackStream(1000000);
 
   reference_signal_provider->StartListening(&mock_listener, output_device_id_);
-  CHECK(mock_input_stream_1.captured_callback_);
-  media::AudioInputStream::AudioInputCallback* audio_callback_1 =
-      *(mock_input_stream_1.captured_callback_);
+  CHECK(mock_input_stream_1->captured_callback_);
+  AudioInputCallback* audio_callback_1 =
+      *(mock_input_stream_1->captured_callback_);
 
   // Send some data to the listener.
   EXPECT_CALL(mock_listener,
@@ -331,30 +340,16 @@ TEST_F(LoopbackReferenceManagerTest,
   audio_callback_1->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener, which closes the new stream.
-  EXPECT_CALL(mock_input_stream_1, Stop());
-  EXPECT_CALL(mock_input_stream_1, Close());
   reference_signal_provider->StopListening(&mock_listener);
 
   // --- Second listen cycle ---
-  StrictMock<MockAudioInputStream> mock_input_stream_2;
-  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
-      .WillOnce(Return(loopback_params_));
-  EXPECT_CALL(audio_manager_,
-              CreateAudioLog(
-                  media::AudioLogFactory::AudioComponent::kAudioInputController,
-                  1000001))  // Component ID increments
-      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
-  EXPECT_CALL(audio_manager_,
-              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
-                                   loopback_device_id_, _))
-      .WillOnce(Return(&mock_input_stream_2));
-  EXPECT_CALL(mock_input_stream_2, Open())
-      .WillOnce(Return(media::AudioInputStream::OpenOutcome::kSuccess));
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_2 =
+      ExpectCreateLoopbackStream(1000001);
 
   reference_signal_provider->StartListening(&mock_listener, output_device_id_);
-  CHECK(mock_input_stream_2.captured_callback_);
-  media::AudioInputStream::AudioInputCallback* audio_callback_2 =
-      *(mock_input_stream_2.captured_callback_);
+  CHECK(mock_input_stream_2->captured_callback_);
+  AudioInputCallback* audio_callback_2 =
+      *(mock_input_stream_2->captured_callback_);
 
   // Send some data to the listener again, via the new stream.
   EXPECT_CALL(mock_listener,
@@ -364,9 +359,70 @@ TEST_F(LoopbackReferenceManagerTest,
   audio_callback_2->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener again, which closes the new stream.
-  EXPECT_CALL(mock_input_stream_2, Stop());
-  EXPECT_CALL(mock_input_stream_2, Close());
   reference_signal_provider->StopListening(&mock_listener);
+}
+
+TEST_F(LoopbackReferenceManagerTest, StreamCreateError) {
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
+      .WillOnce(Return(loopback_params_));
+  // Fail to create the loopback stream
+  EXPECT_CALL(audio_manager_,
+              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
+                                   loopback_device_id_, _))
+      .WillOnce(Return(nullptr));
+
+  // Attempt to start the stream but since MakeAudioInputStream returns nullptr,
+  // StartListening should return an error.
+  StrictMock<MockListener> mock_listener;
+  ReferenceOpenOutcome outcome = reference_signal_provider->StartListening(
+      &mock_listener, output_device_id_);
+  EXPECT_EQ(outcome, ReferenceOpenOutcome::STREAM_CREATE_ERROR);
+}
+
+void LoopbackReferenceManagerTest::TestStreamOpenError(
+    OpenOutcome loopback_open_outcome,
+    ReferenceOpenOutcome expected_reference_open_outcome) {
+  StrictMock<MockAudioInputStream> mock_input_stream;
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
+      .WillOnce(Return(loopback_params_));
+  // Fail to create the loopback stream
+  EXPECT_CALL(audio_manager_,
+              MakeAudioInputStream(AudioParamsMatches(loopback_params_),
+                                   loopback_device_id_, _))
+      .WillOnce(Return(&mock_input_stream));
+  EXPECT_CALL(mock_input_stream, Open())
+      .WillOnce(Return(loopback_open_outcome));
+  EXPECT_CALL(mock_input_stream, Close());
+
+  // Attempt to start the stream but since mock_input_strean.Open() returns an
+  // error, StartListening should return an error and call
+  // mock_input_strean.Close().
+  StrictMock<MockListener> mock_listener;
+  ReferenceOpenOutcome outcome = reference_signal_provider->StartListening(
+      &mock_listener, output_device_id_);
+  EXPECT_EQ(outcome, expected_reference_open_outcome);
+}
+
+TEST_F(LoopbackReferenceManagerTest, StreamOpenError) {
+  TestStreamOpenError(OpenOutcome::kFailed,
+                      ReferenceOpenOutcome::STREAM_OPEN_ERROR);
+}
+
+TEST_F(LoopbackReferenceManagerTest, StreamOpenSystemPermissionsError) {
+  TestStreamOpenError(
+      OpenOutcome::kFailedSystemPermissions,
+      ReferenceOpenOutcome::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR);
+}
+
+TEST_F(LoopbackReferenceManagerTest, StreamOpenDeviceInUseError) {
+  TestStreamOpenError(OpenOutcome::kFailedInUse,
+                      ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR);
 }
 
 }  // namespace

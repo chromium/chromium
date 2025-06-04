@@ -55,6 +55,8 @@ constexpr base::TimeDelta kOnMutePollInterval = base::Milliseconds(1000);
 
 enum class ChromeWideEchoCancellationSetting { kEnabled, kDisabled };
 
+using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+
 }  // namespace
 
 class MockInputControllerEventHandler : public InputController::EventHandler {
@@ -393,7 +395,8 @@ class MockReferenceSignalProvider : public ReferenceSignalProvider {
   ~MockReferenceSignalProvider() override = default;
 
   MOCK_METHOD2(StartListening,
-               void(ReferenceOutput::Listener*, const std::string&));
+               ReferenceOpenOutcome(ReferenceOutput::Listener*,
+                                    const std::string&));
   MOCK_METHOD1(StopListening, void(ReferenceOutput::Listener*));
 };
 
