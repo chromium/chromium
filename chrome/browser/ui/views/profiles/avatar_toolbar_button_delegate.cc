@@ -606,12 +606,10 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
 
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      const signin::PrimaryAccountChangeEvent& /*event*/) override {
+    if (!IsSyncPromoEligible()) {
       // Needed to prevent the promo from showing when it is already triggered
-      // and the user turns on sync from a different entry point (e.g.
-      // settings).
+      // and the user sign out or turns on sync without dismissing the promo.
       Collapse();
     }
   }
