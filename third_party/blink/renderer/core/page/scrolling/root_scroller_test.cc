@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/testing/web_view_test_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -2840,7 +2841,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
     // target.
     gfx::Point point(200, 445);
     gfx::Size tap_area(20, 20);
-    WebHitTestResult result = WebView().HitTestResultForTap(point, tap_area);
+    WebHitTestResult result = HitTestResultForTap(&WebView(), point, tap_area);
 
     Node* hit_node = result.GetNode().Unwrap<Node>();
     EXPECT_EQ(target, hit_node);

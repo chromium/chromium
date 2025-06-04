@@ -3828,35 +3828,6 @@ Element* WebViewImpl::FocusedElement() const {
   return document->FocusedElement();
 }
 
-WebHitTestResult WebViewImpl::HitTestResultForTap(
-    const gfx::Point& tap_point_window_pos,
-    const gfx::Size& tap_area) {
-  auto* main_frame = DynamicTo<LocalFrame>(page_->MainFrame());
-  if (!main_frame)
-    return HitTestResult();
-
-  WebGestureEvent tap_event(WebInputEvent::Type::kGestureTap,
-                            WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
-                            WebGestureDevice::kTouchscreen);
-  // GestureTap is only ever from a touchscreen.
-  tap_event.SetPositionInWidget(gfx::PointF(tap_point_window_pos));
-  tap_event.data.tap.tap_count = 1;
-  tap_event.data.tap.width = tap_area.width();
-  tap_event.data.tap.height = tap_area.height();
-
-  WebGestureEvent scaled_event =
-      TransformWebGestureEvent(MainFrameImpl()->GetFrameView(), tap_event);
-
-  HitTestResult result =
-      main_frame->GetEventHandler()
-          .HitTestResultForGestureEvent(
-              scaled_event, HitTestRequest::kReadOnly | HitTestRequest::kActive)
-          .GetHitTestResult();
-
-  result.SetToShadowHostIfInUAShadowRoot();
-  return result;
-}
-
 void WebViewImpl::SetTabsToLinks(bool enable) {
   tabs_to_links_ = enable;
 }

@@ -1667,6 +1667,8 @@ source_set("unit_test_support") {
     "testing/sim/sim_request.h",
     "testing/sim/sim_test.cc",
     "testing/sim/sim_test.h",
+    "testing/web_view_test_helper.cc",
+    "testing/web_view_test_helper.h",
     "workers/worker_thread_test_helper.h",
   ]
 

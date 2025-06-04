@@ -28,7 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include "third_party/blink/public/web/web_view.h"
 
 #include <array>
@@ -143,6 +142,7 @@
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/web_view_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -853,14 +853,14 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapArea) {
   // The tap area is 20 by 20 square, centered at 55, 55.
   gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
   positive_result.Reset();
 
   // Move the hit point the image is just outside the tapped area now.
   hit_point = gfx::Point(61, 61);
   WebHitTestResult negative_result2 =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_FALSE(
       negative_result2.GetNode().To<WebElement>().HasHTMLTagName("img"));
   negative_result2.Reset();
@@ -883,7 +883,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapAreaPageScaleAndPan) {
   // The tap area is 20 by 20 square, centered at 55, 55.
   gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
   positive_result.Reset();
 
@@ -891,7 +891,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapAreaPageScaleAndPan) {
   web_view->SetPageScaleFactor(2.0f);
   web_view->SetVisualViewportOffset(gfx::PointF(100, 100));
   WebHitTestResult negative_result2 =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_FALSE(
       negative_result2.GetNode().To<WebElement>().HasHTMLTagName("img"));
   negative_result2.Reset();

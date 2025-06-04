@@ -205,8 +205,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void EnableAutoResizeForTesting(const gfx::Size& min_window_size,
                                   const gfx::Size& max_window_size) override;
   void DisableAutoResizeForTesting(const gfx::Size& new_window_size) override;
-  WebHitTestResult HitTestResultForTap(const gfx::Point&,
-                                       const gfx::Size&) override;
   void EnableDeviceEmulation(const DeviceEmulationParams&) override;
   void DisableDeviceEmulation() override;
   void PerformCustomContextMenuAction(unsigned action) override;

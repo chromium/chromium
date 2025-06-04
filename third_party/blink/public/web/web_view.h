@@ -60,7 +60,6 @@ class PaintCanvas;
 
 namespace gfx {
 class ColorSpace;
-class Point;
 class PointF;
 class Rect;
 class Size;
@@ -72,7 +71,6 @@ struct ColorProviderColorMaps;
 class PageScheduler;
 class WebFrame;
 class WebFrameWidget;
-class WebHitTestResult;
 class WebLocalFrame;
 class WebNoStatePrefetchClient;
 class WebPagePopup;
@@ -313,16 +311,6 @@ class BLINK_EXPORT WebView {
 
   // Disable auto resize.
   virtual void DisableAutoResizeForTesting(const gfx::Size& new_size) = 0;
-
-  // Data exchange -------------------------------------------------------
-
-  // Do a hit test equivalent to what would be done for a GestureTap event
-  // that has width/height corresponding to the supplied |tapArea|.
-  //
-  // TODO(crbug.com/376493204): This method is only called by Blink unit tests,
-  // so it should be removed from this API.
-  virtual WebHitTestResult HitTestResultForTap(const gfx::Point& tap_point,
-                                               const gfx::Size& tap_area) = 0;
 
   // Developer tools -----------------------------------------------------
 
