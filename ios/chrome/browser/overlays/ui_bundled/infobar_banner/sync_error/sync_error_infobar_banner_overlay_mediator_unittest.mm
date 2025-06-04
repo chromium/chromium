@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -130,8 +131,9 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
        BannerDismissAfterTimeoutSetsInfobarTimeoutPref) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
+  feature_list.InitWithFeatures({syncer::kSyncTrustedVaultInfobarImprovements,
+                                 switches::kEnableIdentityInAuthError},
+                                {});
   base::Time startTime = base::Time::Now();
 
   [mediator_ dismissInfobarBannerForUserInteraction:false];
