@@ -24456,22 +24456,6 @@
             ]
         }
     ],
-    "URLFilteringForAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseRealTimeUrlCheckOnAndroid",
-                        "EnterpriseUrlFilteringEventReportingOnAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "USSMigrationEnabled": [
         {
             "platforms": [

@@ -399,8 +399,9 @@ SafeBrowsingBlockingPageRealTimeUrlCheckTest::
     SafeBrowsingBlockingPageRealTimeUrlCheckTest() = default;
 
 void SafeBrowsingBlockingPageRealTimeUrlCheckTest::SetUp() {
-  scoped_feature_list_.InitWithFeatures({kEnterpriseRealTimeUrlCheckOnAndroid},
-                                        {kDelayedWarnings});
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kDelayedWarnings});
   SafeBrowsingBlockingPagePlatformBrowserTest::SetUp();
 }
 

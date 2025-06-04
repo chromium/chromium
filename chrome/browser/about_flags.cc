@@ -11795,12 +11795,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enterprise-real-time-url-check-on-android",
-     flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidName,
-     flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
-
     {"enterprise-url-filtering-event-reporting-on-android",
      flag_descriptions::kEnterpriseUrlFilteringEventReportingOnAndroidName,
      flag_descriptions::

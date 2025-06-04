@@ -167,10 +167,6 @@ BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
              "EnterprisePasswordReuseUiRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
-             "EnterpriseRealTimeUrlCheckOnAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEsbAsASyncedSetting,
              "EsbAsASyncedSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -385,7 +381,6 @@ base::Value::List GetFeatureStatusList() {
       &kEnhancedFieldsForSecOps,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
-      &kEnterpriseRealTimeUrlCheckOnAndroid,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryForEnterprise,
       &kExternalAppRedirectTelemetry,

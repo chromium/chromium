@@ -783,9 +783,6 @@ extern const char kManagedProfileRequiredInterstitialName[];
 extern const char kManagedProfileRequiredInterstitialDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kEnterpriseRealTimeUrlCheckOnAndroidName[];
-extern const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[];
-
 extern const char kEnterpriseUrlFilteringEventReportingOnAndroidName[];
 extern const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[];
 

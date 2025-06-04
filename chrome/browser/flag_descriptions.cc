@@ -1386,12 +1386,6 @@ const char kManagedProfileRequiredInterstitialDescription[] =
     "required.";
 
 #if BUILDFLAG(IS_ANDROID)
-const char kEnterpriseRealTimeUrlCheckOnAndroidName[] =
-    "Allow the enterprise real-time URL check";
-const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
-    "Enables enterprise real-time URL checks if the "
-    "EnterpriseRealTimeUrlCheckMode policy is set.";
-
 const char kEnterpriseUrlFilteringEventReportingOnAndroidName[] =
     "Allow enterprise url filtering event reporting";
 const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[] =

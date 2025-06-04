@@ -446,11 +446,6 @@ jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
     Profile* profile) {
   DCHECK(profile);
 
-  if (!base::FeatureList::IsEnabled(
-           safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)) {
-    return false;
-  }
-
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);

@@ -5608,12 +5608,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
       safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
           profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
           profile->IsGuestSession());
-#if BUILDFLAG(IS_ANDROID)
-  is_enterprise_lookup_enabled =
-      is_enterprise_lookup_enabled &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid);
-#endif
   bool is_consumer_lookup_enabled =
       safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(
           profile->GetPrefs(), profile->IsOffTheRecord(),
