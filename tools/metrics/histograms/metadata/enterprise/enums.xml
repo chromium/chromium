@@ -75,7 +75,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Page UserData"/>
   <int value="1" label="Cached lookup result"/>
   <int value="2" label="Post navigation lookup"/>
-  <int value="3" label="WebContents UserData"/>
 </enum>
 
 <enum name="DeviceIdentifierStatus">

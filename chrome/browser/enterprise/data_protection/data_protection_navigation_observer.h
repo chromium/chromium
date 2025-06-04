@@ -64,10 +64,7 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
     // DidFinishNavigation().
     kPostNavigationLookup = 2,
 
-    // Verdict was stored in the WebContents' UserData.
-    kWebContentsUserData = 3,
-
-    kMaxValue = kWebContentsUserData
+    kMaxValue = kPostNavigationLookup
   };
 
   // Creates a DataProtectionNavigationObserver if needed.  For example, the
