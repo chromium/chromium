@@ -55,6 +55,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DiskCache.HashBucketOK.Sampled" enum="Boolean"
+    expires_after="2025-10-26">
+  <owner>morlovich@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    Whenever an entry is looked for in the index hash table, reports whether
+    it's in the right bucket. Sampled to report 1% of the time.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -92,7 +92,10 @@ struct NET_EXPORT_PRIVATE IndexHeader {
   int32_t experiment;        // Id of an ongoing test.
   uint64_t create_time;      // Creation time for this set of files.
   int64_t num_bytes;         // Total size of the stored data, in version 3.0
-  int32_t pad[50];
+
+  // Set if a problem is detected; discards cache on next open.
+  int32_t corruption_detected = 0;
+  int32_t pad[49];
   LruData     lru;           // Eviction control data.
 };
 

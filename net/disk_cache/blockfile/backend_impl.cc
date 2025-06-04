@@ -28,6 +28,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -251,6 +252,11 @@ int BackendImpl::SyncInit() {
 
   if (!CheckIndex()) {
     ReportError(ERR_INIT_FAILED);
+    return net::ERR_FAILED;
+  }
+
+  if (data_->header.corruption_detected) {
+    ReportError(ERR_PREVIOUS_CORRUPTION);
     return net::ERR_FAILED;
   }
 
@@ -1639,11 +1645,16 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
       continue;
     }
 
-    // This check is capped to 0xFFFFu to ignore a short canary regression where
-    // things were packed into the first 2^16 buckets.
-    // (See https://crbug.com/421211228)
-    DCHECK_EQ(hash & mask_ & 0xFFFFu,
-              cache_entry->entry()->Data()->hash & mask_ & 0xFFFFu);
+    bool hash_ok =
+        (hash & mask_) == (cache_entry->entry()->Data()->hash & mask_);
+    if (!hash_ok) {
+      data_->header.corruption_detected = 1;
+    }
+
+    if (base::ShouldRecordSubsampledMetric(0.01)) {
+      UMA_HISTOGRAM_BOOLEAN("DiskCache.HashBucketOK.Sampled", hash_ok);
+    }
+
     if (cache_entry->IsSameEntry(key, hash)) {
       if (!cache_entry->Update())
         cache_entry = nullptr;

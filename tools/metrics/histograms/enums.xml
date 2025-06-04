@@ -3765,6 +3765,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="13" label="Invalid mask (corrupt header)"/>
   <int value="14" label="Cache cleared (user request)"/>
   <int value="15" label="Cache created (from empty files)"/>
+  <int value="16" label="Cache discard due to previous corruption"/>
 </enum>
 
 <enum name="DisplayMirroringImplementation">

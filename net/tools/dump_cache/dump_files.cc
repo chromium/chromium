@@ -136,6 +136,7 @@ void DumpIndexHeader(const base::FilePath& name,
   printf("table length: %d\n", header.table_len);
   printf("last crash: %d\n", header.crash);
   printf("experiment: %d\n", header.experiment);
+  printf("corruption detected: %d\n", header.corruption_detected);
   printf("stats: %x\n", header.stats);
   for (int i = 0; i < 5; i++) {
     printf("head %d: 0x%x\n", i, header.lru.heads[i]);
