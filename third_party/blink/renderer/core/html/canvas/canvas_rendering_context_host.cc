@@ -154,6 +154,12 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
 }
 
 CanvasResourceProvider*
+CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
+  CHECK(IsWebGL());
+  return GetOrCreateCanvasResourceProvider();
+}
+
+CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
   return GetOrCreateCanvasResourceProviderImpl();
 }

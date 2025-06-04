@@ -1887,11 +1887,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
   if (was_dirty) {
-    Host()->GetOrCreateCanvasResourceProvider();
+    Host()->GetOrCreateCanvasResourceProviderForWebGL();
   }
   PaintRenderingResultsToCanvas(source_buffer);
   if (has_dispatcher && was_dirty &&
-      Host()->GetOrCreateCanvasResourceProvider()) {
+      Host()->GetOrCreateCanvasResourceProviderForWebGL()) {
     return Host()->ResourceProvider()->ProduceCanvasResource(reason);
   }
   return nullptr;
@@ -1926,7 +1926,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider();
+      Host()->GetOrCreateCanvasResourceProviderForWebGL();
   if (!resource_provider)
     return nullptr;
 
