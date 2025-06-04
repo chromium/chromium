@@ -2493,6 +2493,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.CacheManager.CleanupReachedThreshold"
+    units="entries" expires_after="2025-11-23">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a cleanup task trying to remove origin-keyed expired
+    real-time URL verdict cache entries per reached the maximum number of
+    origins that can be removed per cleanup task. Logged each time a cleanup
+    task is run.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.CacheManager.CleanUpTime" units="ms"
     expires_after="2025-11-15">
   <owner>xinghuilu@chromium.org</owner>
@@ -2503,13 +2515,14 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.CacheManager.RealTimeVerdictCount"
+<histogram name="SafeBrowsing.RT.CacheManager.RealTimeVerdictCount2"
     units="entries" expires_after="2025-11-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of real time URL verdicts stored for this profile. Logged
-    each time a new real time url verdict is cached.
+    each time a cleanup task is run. It counts both the expired and unexpired
+    entries.
   </summary>
 </histogram>
 
