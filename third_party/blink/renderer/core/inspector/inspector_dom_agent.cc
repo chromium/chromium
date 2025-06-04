@@ -190,12 +190,12 @@ void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
 protocol::Response InspectorDOMAgent::ToResponse(
     DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
-    String name_prefix = IsDOMExceptionCode(exception_state.Code())
-                             ? DOMException::GetErrorName(
-                                   exception_state.CodeAs<DOMExceptionCode>()) +
-                                   " "
-                             : g_empty_string;
-    String msg = name_prefix + exception_state.Message();
+    String msg = exception_state.Message();
+    if (IsDOMExceptionCode(exception_state.Code())) {
+      msg = WTF::StrCat({DOMException::GetErrorName(
+                             exception_state.CodeAs<DOMExceptionCode>()),
+                         " ", msg});
+    }
     return protocol::Response::ServerError(msg.Utf8());
   }
   return protocol::Response::Success();
@@ -1091,10 +1091,10 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(
   auto getParsedElement = [](Element* element, Element* contextElement,
                              const String& text, bool is_html_document) {
     String markup = element->IsSVGElement()
-                        ? "<svg " + text + "></svg>"
-                        : element->IsMathMLElement()
-                              ? "<math " + text + "></math>"
-                              : "<span " + text + "></span>";
+                        ? WTF::StrCat({"<svg ", text, "></svg>"})
+                    : element->IsMathMLElement()
+                        ? WTF::StrCat({"<math ", text, "></math>"})
+                        : WTF::StrCat({"<span ", text, "></span>"});
     DocumentFragment* fragment =
         element->GetDocument().createDocumentFragment();
     if (is_html_document && contextElement)
@@ -2062,8 +2062,10 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     case Node::kCommentNode:
     case Node::kCdataSectionNode:
       node_value = node->nodeValue();
-      if (node_value.length() > kMaxTextSize)
-        node_value = node_value.Left(kMaxTextSize) + kEllipsisUChar;
+      if (node_value.length() > kMaxTextSize) {
+        node_value = WTF::StrCat(
+            {node_value.Left(kMaxTextSize), StringView(kEllipsisUChar)});
+      }
       break;
     case Node::kAttributeNode:
       local_name = To<Attr>(node)->localName();

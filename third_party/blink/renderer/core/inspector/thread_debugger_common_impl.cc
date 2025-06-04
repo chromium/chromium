@@ -138,7 +138,7 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
   if (message.empty()) {
     message = "Uncaught (in promise)";
   } else if (message.StartsWith("Uncaught ")) {
-    message = "Uncaught (in promise)" + StringView(message, 8);
+    message = WTF::StrCat({"Uncaught (in promise)", StringView(message, 8)});
   }
 
   ReportConsoleMessage(ToExecutionContext(context),
@@ -492,8 +492,8 @@ bool ReadAdditionalSerializationParameters(
     if (!include_shadow_tree_value->IsUndefined()) {
       if (!include_shadow_tree_value->IsString()) {
         *error_message = ToV8InspectorStringBuffer(
-            String("Parameter " + String(kIncludeShadowTreeParameterName) +
-                   " should be of type string."));
+            WTF::StrCat({"Parameter ", kIncludeShadowTreeParameterName,
+                         " should be of type string."}));
         return false;
       }
       String include_shadow_tree_string = ToCoreString(
@@ -507,8 +507,8 @@ bool ReadAdditionalSerializationParameters(
         include_shadow_tree = ShadowTreeSerialization::kAll;
       } else {
         *error_message = ToV8InspectorStringBuffer(
-            String("Unknown value " + String(kIncludeShadowTreeParameterName) +
-                   ":" + include_shadow_tree_string));
+            WTF::StrCat({"Unknown value ", kIncludeShadowTreeParameterName, ":",
+                         include_shadow_tree_string}));
         return false;
       }
     }
@@ -523,8 +523,8 @@ bool ReadAdditionalSerializationParameters(
     if (!max_node_depth_value->IsUndefined()) {
       if (!max_node_depth_value->IsInt32()) {
         *error_message = ToV8InspectorStringBuffer(
-            String("Parameter " + String(kMaxNodeDepthParameterName) +
-                   " should be of type int."));
+            WTF::StrCat({"Parameter ", kMaxNodeDepthParameterName,
+                         " should be of type int."}));
         return false;
       }
       max_node_depth = max_node_depth_value.As<v8::Int32>()->Value();

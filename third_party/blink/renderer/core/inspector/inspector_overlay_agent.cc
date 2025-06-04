@@ -1483,7 +1483,7 @@ void InspectorOverlayAgent::EvaluateInOverlay(
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(command->Serialize()), &json);
   ClassicScript::CreateUnspecifiedScript(
-      "dispatch(" + String(base::span(json)) + ")",
+      WTF::StrCat({"dispatch(", StringView(base::span(json)), ")"}),
       ScriptSourceLocationType::kInspector)
       ->RunScript(To<LocalFrame>(OverlayMainFrame())->DomWindow(),
                   ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
@@ -1583,7 +1583,7 @@ protocol::Response InspectorOverlayAgent::setInspectMode(
       mode != protocol::Overlay::InspectModeEnum::CaptureAreaScreenshot &&
       mode != protocol::Overlay::InspectModeEnum::ShowDistances) {
     return protocol::Response::ServerError(
-        String("Unknown mode \"" + mode + "\" was provided.").Utf8());
+        WTF::StrCat({"Unknown mode \"", mode, "\" was provided."}).Utf8());
   }
 
   std::vector<uint8_t> serialized_config;

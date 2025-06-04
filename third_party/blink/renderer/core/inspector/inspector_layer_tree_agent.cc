@@ -471,7 +471,7 @@ protocol::Response InspectorLayerTreeAgent::replaySnapshot(
                                    scale.value_or(1.0));
   if (png_data.empty())
     return protocol::Response::ServerError("Image encoding failed");
-  *data_url = "data:image/png;base64," + Base64Encode(png_data);
+  *data_url = WTF::StrCat({"data:image/png;base64,", Base64Encode(png_data)});
   return protocol::Response::Success();
 }
 

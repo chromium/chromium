@@ -347,7 +347,7 @@ bool InspectorPageAgent::SegmentedBufferContent(
   const auto byte_buffer = base::as_byte_span(flat_buffer);
   if (decoder) {
     text_content = decoder->Decode(byte_buffer);
-    text_content = text_content + decoder->Flush();
+    text_content = WTF::StrCat({text_content, decoder->Flush()});
   } else if (encoding.IsValid()) {
     text_content = encoding.Decode(byte_buffer);
   }
@@ -1559,7 +1559,7 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
           .setGatedAPIFeatures(CreateGatedAPIFeaturesArray(frame->DomWindow()))
           .build();
   if (url.HasFragmentIdentifier()) {
-    frame_object->setUrlFragment("#" + url.FragmentIdentifier());
+    frame_object->setUrlFragment(WTF::StrCat({"#", url.FragmentIdentifier()}));
   }
   Frame* parent_frame = frame->Tree().Parent();
   if (parent_frame) {

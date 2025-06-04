@@ -776,7 +776,7 @@ String IPAddressToString(const net::IPAddress& address) {
     return unbracketed;
   }
 
-  return "[" + unbracketed + "]";
+  return WTF::StrCat({"[", unbracketed, "]"});
 }
 
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
@@ -1009,7 +1009,8 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
           .setReferrerPolicy(GetReferrerPolicy(request.GetReferrerPolicy()))
           .build();
   if (url.HasFragmentIdentifier()) {
-    result->setUrlFragment("#" + url.FragmentIdentifier().ToString());
+    result->setUrlFragment(
+        WTF::StrCat({"#", url.FragmentIdentifier().ToString()}));
   }
   if (!data_string.empty())
     result->setPostData(data_string);

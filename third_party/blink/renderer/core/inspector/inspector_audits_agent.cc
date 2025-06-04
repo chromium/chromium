@@ -66,7 +66,7 @@ bool EncodeAsImage(base::span<const uint8_t> body,
   if (!image_to_encode)
     return false;
 
-  String mime_type_name = StringView("image/") + encoding;
+  String mime_type_name = WTF::StrCat({"image/", encoding});
   ImageEncodingMimeType mime_type;
   bool valid_mime_type =
       ImageEncoderUtils::ParseMimeType(mime_type_name, mime_type);

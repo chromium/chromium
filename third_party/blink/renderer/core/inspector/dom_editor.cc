@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -414,12 +415,12 @@ bool DOMEditor::SetNodeValue(Node* node,
 static protocol::Response ToResponse(
     DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
-    String name_prefix = IsDOMExceptionCode(exception_state.Code())
-                             ? DOMException::GetErrorName(
-                                   exception_state.CodeAs<DOMExceptionCode>()) +
-                                   " "
-                             : g_empty_string;
-    String msg = name_prefix + exception_state.Message();
+    String msg = exception_state.Message();
+    if (IsDOMExceptionCode(exception_state.Code())) {
+      msg = WTF::StrCat({DOMException::GetErrorName(
+                             exception_state.CodeAs<DOMExceptionCode>()),
+                         " ", msg});
+    }
     return protocol::Response::ServerError(msg.Utf8());
   }
   return protocol::Response::Success();

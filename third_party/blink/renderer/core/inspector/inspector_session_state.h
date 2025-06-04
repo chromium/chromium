@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
 
@@ -201,7 +202,8 @@ class CORE_EXPORT InspectorAgentState {
       map_.Set(key, value);
       std::vector<uint8_t> encoded_value;
       Serialize(value, &encoded_value);
-      session_state_->EnqueueUpdate(prefix_key_ + key, &encoded_value);
+      session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}),
+                                    &encoded_value);
     }
 
     // Clears the entry for |key|.
@@ -210,14 +212,14 @@ class CORE_EXPORT InspectorAgentState {
       if (it == map_.end())
         return;
       map_.erase(it);
-      session_state_->EnqueueUpdate(prefix_key_ + key, nullptr);
+      session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}), nullptr);
     }
 
     // Clears the entire field.
     void Clear() override {
       // TODO(johannes): Handle this in a single update.
       for (const WTF::String& key : map_.Keys()) {
-        session_state_->EnqueueUpdate(prefix_key_ + key, nullptr);
+        session_state_->EnqueueUpdate(WTF::StrCat({prefix_key_, key}), nullptr);
       }
       map_.clear();
     }

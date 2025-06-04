@@ -219,7 +219,7 @@ String CreateShorthandValue(Document& document,
   auto* style_sheet_contents =
       MakeGarbageCollected<StyleSheetContents>(StrictCSSParserContext(
           document.GetExecutionContext()->GetSecureContextMode()));
-  String text = " div { " + shorthand + ": " + old_text + "; }";
+  String text = WTF::StrCat({" div { ", shorthand, ": ", old_text, "; }"});
   CSSParser::ParseSheet(MakeGarbageCollected<CSSParserContext>(document),
                         style_sheet_contents, text);
 
@@ -1315,8 +1315,9 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
   }
 
   if ((*ranges)->empty()) {
-    String message = "Failed to find selector '" + selector_text +
-                     "' in style sheet " + style_sheet->FinalURL();
+    String message =
+        WTF::StrCat({"Failed to find selector '", selector_text,
+                     "' in style sheet ", style_sheet->FinalURL()});
     return protocol::Response::InvalidParams(message.Utf8());
   }
 
@@ -4291,11 +4292,12 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
       style_sheet_text.Substring(body_range.start, body_range.length());
   SourceRange change_range;
   if (found_index == -1) {
-    String new_property_text = "\n" + longhand + ": " + value +
-                               (force_important ? " !important" : "") + ";";
+    String new_property_text =
+        WTF::StrCat({"\n", longhand, ": ", value,
+                     (force_important ? " !important" : ""), ";"});
     if (!style_text.empty() && !style_text.StripWhiteSpace().EndsWith(';'))
-      new_property_text = ";" + new_property_text;
-    style_text = style_text + new_property_text;
+      new_property_text = WTF::StrCat({";", new_property_text});
+    style_text = WTF::StrCat({style_text, new_property_text});
     change_range.start = body_range.end;
     change_range.end = body_range.end + new_property_text.length();
   } else {
@@ -4308,9 +4310,9 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
       new_value_text = value;
     }
 
-    String new_property_text =
-        declaration.name + ": " + new_value_text +
-        (declaration.important || force_important ? " !important" : "") + ";";
+    String new_property_text = WTF::StrCat(
+        {declaration.name, ": ", new_value_text,
+         (declaration.important || force_important ? " !important" : ""), ";"});
     style_text.replace(declaration.range.start - body_range.start,
                        declaration.range.length(), new_property_text);
     change_range.start = declaration.range.start;
