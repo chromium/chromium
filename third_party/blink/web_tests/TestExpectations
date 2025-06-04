@@ -1689,9 +1689,6 @@ crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.ht
 # crbug.com/40771785 This test fails when SplitCacheByNetworkIsolationKey is enabled.
 crbug.com/40771785 http/tests/devtools/network/network-prefetch.js [ Failure ]
 
-# Temporarily disable to land crrev.com/c/6458357
-crbug.com/397481040 http/tests/devtools/network/network-columns-visible.js [ Failure Pass ]
-
 crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure Pass ]
 crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure Pass ]
 
