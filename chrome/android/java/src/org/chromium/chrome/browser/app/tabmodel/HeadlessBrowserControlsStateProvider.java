@@ -89,9 +89,4 @@ public class HeadlessBrowserControlsStateProvider implements BrowserControlsStat
     public @ControlsPosition int getControlsPosition() {
         return ControlsPosition.NONE;
     }
-
-    @Override
-    public boolean isVisibilityForced() {
-        return false;
-    }
 }

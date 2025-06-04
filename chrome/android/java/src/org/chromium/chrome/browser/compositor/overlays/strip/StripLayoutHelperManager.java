@@ -203,6 +203,7 @@ public class StripLayoutHelperManager
     private float mWidth; // in dp units
     private float mHeight; // Height of the entire tab strip compositor layer in DP.
     private final float mScrollableStripHeight; // Height of the scrollable tab strip layer in DP.
+    private boolean mIsVerticalScrollInProgress; // Is the tab strip is being scrolled by a gesture.
 
     // Padding regions that tabs should remain untouchable.
     private float mLeftPadding; // in dp units
@@ -781,19 +782,17 @@ public class StripLayoutHelperManager
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
             yOffset = 0;
+        } else if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                && mIsVerticalScrollInProgress) {
+            // With bciv, we don't want anything else controlling the offset while scrolling.
+            // Tabstrip currently has no min height, so setting to 0 is ok.
+            yOffset = 0;
         } else if ((getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
                 != 0) {
             // When the tab strip is hidden by a height transition, the stable offset of this scene
             // layer should be a negative value.
             yOffset -= getHeight();
-        } else if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                && !mBrowserControlsStateProvider.isVisibilityForced()) {
-            // With bciv, as long as if the visibility isn't forced by the browser, and if the
-            // tabstrip isn't hidden, the composited layers should positioned at their fully visible
-            // positions.
-            yOffset = 0;
         }
-
         mTabStripTreeProvider.pushAndUpdateStrip(
                 this,
                 mLayerTitleCacheSupplier.get(),
@@ -1428,6 +1427,11 @@ public class StripLayoutHelperManager
                             mTabStripTreeProvider.updateOffsetTag(
                                     offsetTagsInfo.getContentOffsetTag());
                         }
+                    }
+
+                    @Override
+                    public void onContentViewScrollingStateChanged(boolean scrolling) {
+                        mIsVerticalScrollInProgress = scrolling;
                     }
                 };
 
