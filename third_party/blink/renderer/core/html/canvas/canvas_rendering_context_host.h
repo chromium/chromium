@@ -107,6 +107,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   void PageVisibilityChanged() override;
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForWebGL();
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForWebGPU();
 
   bool IsWebGL() const;
   bool IsWebGPU() const;

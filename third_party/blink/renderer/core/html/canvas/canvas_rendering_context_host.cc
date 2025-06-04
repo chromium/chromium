@@ -160,6 +160,12 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
 }
 
 CanvasResourceProvider*
+CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
+  CHECK(IsWebGPU());
+  return GetOrCreateCanvasResourceProvider();
+}
+
+CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
   return GetOrCreateCanvasResourceProviderImpl();
 }

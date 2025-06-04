@@ -51,7 +51,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
   virtual void PageVisibilityChanged() {}
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
   virtual CanvasResourceProvider*
   GetOrCreateCanvasResourceProviderForCanvas2D() = 0;
 
@@ -102,6 +101,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
+  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
  private:

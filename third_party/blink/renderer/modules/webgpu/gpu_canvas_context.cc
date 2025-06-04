@@ -200,7 +200,7 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
   }
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider();
+      Host()->GetOrCreateCanvasResourceProviderForWebGPU();
   if (!resource_provider) {
     return nullptr;
   }
