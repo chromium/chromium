@@ -5,11 +5,29 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_PRELOADING_HEADERS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_PRELOADING_HEADERS_H_
 
+#include <optional>
+#include <string>
+
+#include "third_party/blink/public/common/common_export.h"
+
 namespace blink {
 
 // The header used to indicate the purpose of a request. For more info see
 // https://wicg.github.io/nav-speculation/prefetch.html#sec-purpose-header
+//
+// One of the header values defined below should be used when setting this
+// header in Chromium.
+//
+// When adding a new value below, maybe `IsSecPurposeForPrefetch` should be also
+// updated.
 inline constexpr char kSecPurposeHeaderName[] = "Sec-Purpose";
+
+// Returns true if the given `Sec-Purpose` request header value is for prefetch.
+// Note: this assumes the header value is set by Chromium implementation using
+// the header values below, as this method doesn't perform full structured
+// header value parsing.
+BLINK_COMMON_EXPORT bool IsSecPurposeForPrefetch(
+    std::optional<std::string> sec_purpose_header_value);
 
 // This value indicates that the request is a prefetch request made directly to
 // the server.
