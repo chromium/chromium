@@ -54,16 +54,6 @@
                                               : handleError);
   }
 
-  async function runGetUserMedia(constraints) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      stream.getTracks().forEach((track) => track.stop());
-      return logAndReturn("gum-success");
-    } catch (e) {
-      return `${e}`;
-    }
-  }
-
   function resizeVideoForHiDpiCapture(width, height) {
     video.style.width = width + 'px';
     video.style.height = height + 'px';

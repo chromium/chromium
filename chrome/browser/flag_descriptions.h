@@ -644,11 +644,6 @@ extern const char kGetUserMediaDeferredDeviceSettingsSelectionName[];
 extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-extern const char kGetDisplayMediaConfersActivationName[];
-extern const char kGetDisplayMediaConfersActivationDescription[];
-#endif
-
 extern const char kCanvasHibernationName[];
 extern const char kCanvasHibernationDescription[];
 
