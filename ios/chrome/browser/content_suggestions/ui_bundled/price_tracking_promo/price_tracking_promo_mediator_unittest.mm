@@ -99,7 +99,9 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
                                                   false);
   }
 
-  ~PriceTrackingPromoMediatorTest() override {}
+  ~PriceTrackingPromoMediatorTest() override {
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
 
   void TearDown() override {
     pref_service_.ClearPref(prefs::kFeaturePushNotificationPermissions);
@@ -149,10 +151,11 @@ TEST_F(PriceTrackingPromoMediatorTest, TestAllowPriceTrackingNotifications) {
       .andReturn(UNAuthorizationStatusAuthorized);
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
-  OCMExpect([mockDelegate removePriceTrackingPromo]);
   OCMExpect([mockDelegate promoWasTapped]);
   mediator().delegate = mockDelegate;
   [mediator() allowPriceTrackingNotifications];
+  EXPECT_OCMOCK_VERIFY(settings);
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 // Test disconnecting the mediator.
@@ -209,6 +212,7 @@ TEST_F(PriceTrackingPromoMediatorTest, TestRemovePriceTrackingPromo) {
   OCMExpect([mockDelegate removePriceTrackingPromo]);
   mediator().delegate = mockDelegate;
   [mediator() removePriceTrackingPromo];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 TEST_F(PriceTrackingPromoMediatorTest,
@@ -222,6 +226,7 @@ TEST_F(PriceTrackingPromoMediatorTest,
   mediator().dispatcher = mockDispatcher;
   OCMExpect([mockDispatcher showSnackbarMessage:[OCMArg isNotNil]]);
   [mediator() enablePriceTrackingSettingsAndShowSnackbar];
+  EXPECT_OCMOCK_VERIFY(mockDispatcher);
 }
 
 TEST_F(PriceTrackingPromoMediatorTest, TestDenyPriceTrackingNotifications) {
@@ -240,6 +245,8 @@ TEST_F(PriceTrackingPromoMediatorTest, TestDenyPriceTrackingNotifications) {
                                                    promptShown:YES
                                                          error:nil];
   EXPECT_TRUE(pref_service()->GetBoolean(kPriceTrackingPromoDisabled));
+  EXPECT_OCMOCK_VERIFY(settings);
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
 TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingPromoDisabled) {
@@ -248,4 +255,5 @@ TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingPromoDisabled) {
   OCMExpect([mockDelegate removePriceTrackingPromo]);
   mediator().delegate = mockDelegate;
   pref_service()->SetBoolean(kPriceTrackingPromoDisabled, true);
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
