@@ -1381,16 +1381,14 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
     LoadAccessibility();
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (engine_->IsSearchifyScheduled()) {
-    // To avoid delaying page load for searchify, start searchify after document
-    // load is completed.
-    // Maximum image dimension is asked once and stored for the next usages, so
-    // `BindOnce` is sufficient.
-    client_->SetOcrDisconnectedCallback(engine_->GetOcrDisconnectHandler());
-    engine_->StartSearchify(
-        base::BindOnce(&Client::GetOcrMaxImageDimension, client_->GetWeakPtr()),
-        base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
-  }
+  // To avoid delaying page load for searchify, start searchify after document
+  // load is completed.
+  // Maximum image dimension is asked once and stored for the next usages, so
+  // `BindOnce` is sufficient.
+  client_->SetOcrDisconnectedCallback(engine_->GetOcrDisconnectHandler());
+  engine_->StartSearchify(
+      base::BindOnce(&Client::GetOcrMaxImageDimension, client_->GetWeakPtr()),
+      base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
 #endif
 
   if (!full_frame_)
@@ -3009,7 +3007,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
   // Ensure page is loaded so that it can schedule a searchify operation if
   // needed.
   engine_->GetPage(page_index)->GetPage();
-  if (engine_->IsPageScheduledForSearchify(page_index)) {
+  if (engine_->PageNeedsSearchify(page_index)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,

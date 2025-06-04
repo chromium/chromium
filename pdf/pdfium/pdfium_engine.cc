@@ -4334,19 +4334,19 @@ void PDFiumEngine::UpdatePageCount() {
 #endif  // defined(PDF_ENABLE_XFA)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-bool PDFiumEngine::IsSearchifyScheduled() const {
-  return searchifier_ != nullptr;
-}
-
 void PDFiumEngine::StartSearchify(
     GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
     PerformOcrCallbackAsync perform_ocr_callback) {
   if (!base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
-  // This function is expected to be called only when some pages are already
-  // scheduled to be searchified and `searchifier_` is created.
-  CHECK(searchifier_);
+  // Searchify requests may be sent to the engine when PDF pages are loaded and
+  // before this function is called. In that case, `searchifier_` is already
+  // created and is waiting for the `Start` command to start processing the
+  // requests.
+  if (!searchifier_) {
+    searchifier_ = std::make_unique<PDFiumOnDemandSearchifier>(this);
+  }
   searchifier_->Start(std::move(get_max_dimension),
                       std::move(perform_ocr_callback));
 }
@@ -4362,7 +4362,7 @@ void PDFiumEngine::OnOcrDisconnected() {
   }
 }
 
-bool PDFiumEngine::IsPageScheduledForSearchify(int page_index) const {
+bool PDFiumEngine::PageNeedsSearchify(int page_index) const {
   CHECK(PageIndexInBounds(page_index));
   return searchifier_ && searchifier_->IsPageScheduled(page_index);
 }
@@ -4387,7 +4387,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
   if (not_reported) {
     base::UmaHistogramBoolean("PDF.PageHasText", page_has_text);
   }
-  if (page_has_text || !page->HasImages()) {
+  if (page_has_text) {
     return;
   }
 
