@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -35,6 +34,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -920,23 +920,22 @@ Browser* InteractiveBrowserTestApi::GetBrowserFor(
     ui::ElementContext current_context,
     BrowserSpecifier spec) {
   return std::visit(
-      base::Overloaded{[](AnyBrowser) -> Browser* { return nullptr; },
-                       [current_context](CurrentBrowser) {
-                         Browser* const browser =
-                             InteractionTestUtilBrowser::GetBrowserFromContext(
-                                 current_context);
-                         CHECK(browser) << "Current context is not a browser.";
-                         return browser;
-                       },
-                       [](Browser* browser) {
-                         CHECK(browser)
-                             << "BrowserSpecifier: Browser* is null.";
-                         return browser;
-                       },
-                       [](std::reference_wrapper<Browser*> browser) {
-                         CHECK(browser.get())
-                             << "BrowserSpecifier: Browser* is null.";
-                         return browser.get();
-                       }},
+      absl::Overload{[](AnyBrowser) -> Browser* { return nullptr; },
+                     [current_context](CurrentBrowser) {
+                       Browser* const browser =
+                           InteractionTestUtilBrowser::GetBrowserFromContext(
+                               current_context);
+                       CHECK(browser) << "Current context is not a browser.";
+                       return browser;
+                     },
+                     [](Browser* browser) {
+                       CHECK(browser) << "BrowserSpecifier: Browser* is null.";
+                       return browser;
+                     },
+                     [](std::reference_wrapper<Browser*> browser) {
+                       CHECK(browser.get())
+                           << "BrowserSpecifier: Browser* is null.";
+                       return browser.get();
+                     }},
       spec);
 }
