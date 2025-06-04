@@ -4,28 +4,15 @@
 
 #include "chrome/browser/extensions/extension_view_host.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view.h"
-#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace extensions {
 
@@ -55,19 +42,7 @@ ExtensionViewHost::ExtensionViewHost(
   autofill::ChromeAutofillClient::CreateForWebContents(host_contents());
 }
 
-ExtensionViewHost::~ExtensionViewHost() {
-  // The hosting WebContents will be deleted in the base class, so unregister
-  // this object before it deletes the attached WebContentsModalDialogManager.
-  auto* const manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-          host_contents());
-  if (manager) {
-    manager->SetDelegate(nullptr);
-  }
-  for (auto& observer : modal_dialog_host_observers_) {
-    observer.OnHostDestroying();
-  }
-}
+ExtensionViewHost::~ExtensionViewHost() = default;
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
     content::WebContents* source,
@@ -89,13 +64,13 @@ void ExtensionViewHost::LoadInitialURL() {
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Popups may spawn modal dialogs, which need positioning information.
   if (extension_host_type() == mojom::ViewType::kExtensionPopup) {
-    web_modal::WebContentsModalDialogManager::CreateForWebContents(
-        host_contents());
-    web_modal::WebContentsModalDialogManager::FromWebContents(host_contents())
-        ->SetDelegate(this);
+    web_modal_handler_ = std::make_unique<ExtensionViewHostWebModalHandler>(
+        host_contents(), view_->GetNativeView());
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   ExtensionHost::LoadInitialURL();
 }
@@ -206,42 +181,6 @@ void ExtensionViewHost::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
   ExtensionHost::RenderFrameCreated(frame_host);
   view_->RenderFrameCreated(frame_host);
-}
-
-web_modal::WebContentsModalDialogHost*
-ExtensionViewHost::GetWebContentsModalDialogHost() {
-  return this;
-}
-
-bool ExtensionViewHost::IsWebContentsVisible(
-    content::WebContents* web_contents) {
-  return platform_util::IsVisible(web_contents->GetNativeView());
-}
-
-gfx::NativeView ExtensionViewHost::GetHostView() const {
-  return view_->GetNativeView();
-}
-
-gfx::Point ExtensionViewHost::GetDialogPosition(const gfx::Size& size) {
-  auto* const web_contents = GetVisibleWebContents();
-  const gfx::Size view_size =
-      web_contents ? web_contents->GetViewBounds().size() : gfx::Size();
-  return gfx::Rect(view_size - size).CenterPoint();
-}
-
-gfx::Size ExtensionViewHost::GetMaximumDialogSize() {
-  auto* const web_contents = GetVisibleWebContents();
-  return web_contents ? web_contents->GetViewBounds().size() : gfx::Size();
-}
-
-void ExtensionViewHost::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {
-  modal_dialog_host_observers_.AddObserver(observer);
-}
-
-void ExtensionViewHost::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {
-  modal_dialog_host_observers_.RemoveObserver(observer);
 }
 
 WindowController* ExtensionViewHost::GetExtensionWindowController() const {

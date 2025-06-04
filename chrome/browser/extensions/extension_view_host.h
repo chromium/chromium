@@ -8,13 +8,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_view_host_web_modal_handler.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class SiteInstance;
@@ -30,8 +31,6 @@ class ExtensionView;
 // page.
 class ExtensionViewHost
     : public ExtensionHost,
-      public web_modal::WebContentsModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost,
       public ExtensionHostRegistry::Observer {
  public:
   class Delegate {
@@ -115,18 +114,6 @@ class ExtensionViewHost
   // content::WebContentsObserver
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
 
-  // web_modal::WebContentsModalDialogManagerDelegate
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
-  bool IsWebContentsVisible(content::WebContents* web_contents) override;
-
-  // web_modal::WebContentsModalDialogHost
-  gfx::NativeView GetHostView() const override;
-  gfx::Point GetDialogPosition(const gfx::Size& size) override;
-  gfx::Size GetMaximumDialogSize() override;
-  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
-  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
-
   // extensions::ExtensionFunctionDispatcher::Delegate
   WindowController* GetExtensionWindowController() const override;
   content::WebContents* GetVisibleWebContents() const override;
@@ -152,8 +139,9 @@ class ExtensionViewHost
   // View that shows the rendered content in the UI.
   raw_ptr<ExtensionView, DanglingUntriaged> view_ = nullptr;
 
-  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
-      modal_dialog_host_observers_;
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ExtensionViewHostWebModalHandler> web_modal_handler_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>
