@@ -2377,13 +2377,19 @@ using UserFeedbackDataCallback =
   [self.AIPrototypingCoordinator start];
 }
 
-- (void)showSafariDataImportWorkflow {
+- (void)displaySafariDataImportEntryPointWithUIHandler:
+    (id<SafariDataImportUIHandler>)UIHandler {
+  if (_safariImportCoordinator) {
+    // Currently displaying.
+    return;
+  }
   CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
   SafariDataImportCoordinator* safariDataImportCoordinator =
       [[SafariDataImportCoordinator alloc]
           initWithBaseViewController:self.activeViewController
                              browser:self.currentInterface.browser];
   safariDataImportCoordinator.delegate = self;
+  safariDataImportCoordinator.UIHandler = UIHandler;
   [self closePresentedViews:YES
                  completion:^{
                    [safariDataImportCoordinator start];

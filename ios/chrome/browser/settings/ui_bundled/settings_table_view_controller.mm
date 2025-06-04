@@ -1343,7 +1343,7 @@ struct EnhancedSafeBrowsingActivePromoData
       base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
       id<ApplicationCommands> handler = HandlerForProtocol(
           _browser->GetCommandDispatcher(), ApplicationCommands);
-      [handler showSafariDataImportWorkflow];
+      [handler displaySafariDataImportEntryPointWithUIHandler:nil];
       break;
     }
     case SettingsItemTypeBandwidth:

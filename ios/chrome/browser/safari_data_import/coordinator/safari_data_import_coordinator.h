@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class SafariDataImportCoordinator;
+@protocol SafariDataImportUIHandler;
 
 /// Delegate object for the Safari data import flow.
 @protocol SafariDataImportCoordinatorDelegate
@@ -23,6 +24,9 @@
 
 /// Delegate object that handles Safari import events.
 @property(nonatomic, weak) id<SafariDataImportCoordinatorDelegate> delegate;
+
+/// Handler for Safari import workflow UI events. Optional.
+@property(nonatomic, weak) id<SafariDataImportUIHandler> UIHandler;
 
 @end
 

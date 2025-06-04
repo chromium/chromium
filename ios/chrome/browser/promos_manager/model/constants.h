@@ -49,7 +49,9 @@ enum class Promo {
   SigninFullscreen = 17,           // Sign-in fullscreen promo.
   WelcomeBack = 18,                // Welcome Back promo.
   BWGPromo = 19,                   // BWG promo.
-  kMaxValue = BWGPromo,
+  SafariImportRemindMeLater =
+      20,  // Reminder for the Safari import entry point.
+  kMaxValue = SafariImportRemindMeLater,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in

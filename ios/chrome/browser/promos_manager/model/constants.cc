@@ -92,6 +92,10 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::BWGPromo;
   }
 
+  if (promo == "promos_manager::Promo::SafariImportRemindMeLater") {
+    return promos_manager::Promo::SafariImportRemindMeLater;
+  }
+
   return std::nullopt;
 }
 
@@ -137,6 +141,8 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "WelcomeBack";
     case promos_manager::Promo::BWGPromo:
       return "BWGPromo";
+    case promos_manager::Promo::SafariImportRemindMeLater:
+      return "SafariImportRemindMeLater";
   }
 }
 
