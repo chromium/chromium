@@ -91,12 +91,12 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
 
 sk_sp<SkFontMgr> DefaultFontMgr() {
   static std::once_flag flag;
-  static sk_sp<SkFontMgr> mgr;
+  static SkFontMgr* mgr;
   std::call_once(flag, [] {
-    mgr = fontmgr_factory();
+    mgr = fontmgr_factory().release();
     g_factory_called = true;
   });
-  return mgr;
+  return sk_ref_sp(mgr);
 }
 
 void OverrideDefaultSkFontMgr(sk_sp<SkFontMgr> fontmgr) {
