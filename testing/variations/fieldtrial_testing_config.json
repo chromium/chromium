@@ -8536,22 +8536,6 @@
             ]
         }
     ],
-    "EarlyEstablishGpuChannelAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EarlyEstablishGpuChannel",
-                    "enable_features": [
-                        "EarlyEstablishGpuChannel"
-                    ]
-                }
-            ]
-        }
-    ],
     "EdgeToEdgeDebugging": [
         {
             "platforms": [
@@ -9206,6 +9190,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EsbAsASyncedSetting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EstablishGpuChannelInterventions": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync"
                     ]
                 }
             ]
