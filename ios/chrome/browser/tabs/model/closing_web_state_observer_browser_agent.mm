@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/proto/navigation.pb.h"
@@ -100,9 +99,6 @@ void ClosingWebStateObserverBrowserAgent::WebStateListWillChange(
     RecordHistoryForWebStateAtIndex(detached_web_state,
                                     detach_change.detached_from_index());
   }
-  if (detach_change.is_user_action() || detach_change.is_tabs_cleanup()) {
-    SnapshotTabHelper::FromWebState(detached_web_state)->RemoveSnapshot();
-  }
 }
 
 void ClosingWebStateObserverBrowserAgent::WebStateListDidChange(
@@ -125,10 +121,7 @@ void ClosingWebStateObserverBrowserAgent::WebStateListDidChange(
       // Do nothing when a WebState is moved.
       break;
     case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      SnapshotTabHelper::FromWebState(replace_change.replaced_web_state())
-          ->RemoveSnapshot();
+      // Do nothing whan a WebState is replaced.
       break;
     }
     case WebStateListChange::Type::kInsert:

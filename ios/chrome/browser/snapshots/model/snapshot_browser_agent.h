@@ -9,17 +9,17 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 
 @class SnapshotStorageWrapper;
 
 // Associates a SnapshotStorage to a Browser.
-class SnapshotBrowserAgent : public BrowserObserver,
-                             public WebStateListObserver,
-                             public BrowserUserData<SnapshotBrowserAgent> {
+class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
+                             public WebStateListObserver {
  public:
   SnapshotBrowserAgent(const SnapshotBrowserAgent&) = delete;
   SnapshotBrowserAgent& operator=(const SnapshotBrowserAgent&) = delete;
@@ -43,21 +43,25 @@ class SnapshotBrowserAgent : public BrowserObserver,
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
 
-  explicit SnapshotBrowserAgent(Browser* browser);
+  // Policy for snapshot when detaching a WebState.
+  enum class DetachPolicy {
+    kPurge,
+    kKeep,
+  };
 
-  // BrowserObserver methods
-  void BrowserDestroyed(Browser* browser) override;
+  explicit SnapshotBrowserAgent(Browser* browser);
 
   // WebStateListObserver methods
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-  void WillBeginBatchOperation(WebStateList* web_state_list) override;
-  void BatchOperationEnded(WebStateList* web_state_list) override;
+
+  // Returns the snapshot policy for `change`.
+  DetachPolicy PolicyForChange(const WebStateListChangeDetach& change) const;
 
   // Helper methods to set a snapshot storage for `web_state`.
   void InsertWebState(web::WebState* web_state);
-  void DetachWebState(web::WebState* web_state);
+  void DetachWebState(web::WebState* web_state, DetachPolicy policy);
 
   // Migrates the snapshot storage if a folder exists in the old snapshots
   // storage location.
@@ -70,6 +74,10 @@ class SnapshotBrowserAgent : public BrowserObserver,
   std::vector<SnapshotID> GetSnapshotIDs();
 
   __strong SnapshotStorageWrapper* snapshot_storage_;
+
+  // Scoped observation of the WebStateList.
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_

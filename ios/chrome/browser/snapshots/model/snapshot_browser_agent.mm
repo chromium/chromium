@@ -24,18 +24,10 @@ const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 
 SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  browser->AddObserver(this);
-  browser->GetWebStateList()->AddObserver(this);
+  web_state_list_observation_.Observe(browser_->GetWebStateList());
 }
 
-SnapshotBrowserAgent::~SnapshotBrowserAgent() = default;
-
-#pragma mark - BrowserObserver
-
-void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser, browser_);
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
+SnapshotBrowserAgent::~SnapshotBrowserAgent() {
   [snapshot_storage_ shutdown];
 }
 
@@ -52,7 +44,8 @@ void SnapshotBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      DetachWebState(detach_change.detached_web_state());
+      DetachWebState(detach_change.detached_web_state(),
+                     PolicyForChange(detach_change));
       break;
     }
     case WebStateListChange::Type::kMove:
@@ -61,7 +54,7 @@ void SnapshotBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
-      DetachWebState(replace_change.replaced_web_state());
+      DetachWebState(replace_change.replaced_web_state(), DetachPolicy::kPurge);
       InsertWebState(replace_change.inserted_web_state());
       break;
     }
@@ -86,17 +79,23 @@ void SnapshotBrowserAgent::WebStateListDidChange(
   }
 }
 
-void SnapshotBrowserAgent::WillBeginBatchOperation(
-    WebStateList* web_state_list) {
-  for (int i = 0; i < web_state_list->count(); ++i) {
-    DetachWebState(web_state_list->GetWebStateAt(i));
+SnapshotBrowserAgent::DetachPolicy SnapshotBrowserAgent::PolicyForChange(
+    const WebStateListChangeDetach& change) const {
+  // The tab is detached without being closed, it is likely going to be
+  // moved to another Browser, so keep the snapshot (it will be moved).
+  if (!change.is_closing()) {
+    return DetachPolicy::kKeep;
   }
-}
 
-void SnapshotBrowserAgent::BatchOperationEnded(WebStateList* web_state_list) {
-  for (int i = 0; i < web_state_list->count(); ++i) {
-    InsertWebState(web_state_list->GetWebStateAt(i));
+  // If the tab is closed due to an user action, or due to tab cleanup,
+  // then it won't be reopened and the snapshot can be deleted.
+  if (change.is_user_action() || change.is_tabs_cleanup()) {
+    return DetachPolicy::kPurge;
   }
+
+  // Do not delete the snapshot otherwise (it is likely because the window
+  // is being closed, and the Browser destroyed).
+  return DetachPolicy::kKeep;
 }
 
 void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
@@ -135,8 +134,13 @@ void SnapshotBrowserAgent::InsertWebState(web::WebState* web_state) {
       snapshot_storage_);
 }
 
-void SnapshotBrowserAgent::DetachWebState(web::WebState* web_state) {
-  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotStorage(nil);
+void SnapshotBrowserAgent::DetachWebState(web::WebState* web_state,
+                                          DetachPolicy policy) {
+  SnapshotTabHelper* tab_helper = SnapshotTabHelper::FromWebState(web_state);
+  if (policy == DetachPolicy::kPurge) {
+    tab_helper->RemoveSnapshot();
+  }
+  tab_helper->SetSnapshotStorage(nil);
 }
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
