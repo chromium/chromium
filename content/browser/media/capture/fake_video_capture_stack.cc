@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/capture/frame_test_util.h"
+#include "content/test/gpu_browsertest_helpers.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -39,19 +40,8 @@ namespace content {
 namespace {
 
 scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface() {
-  gpu::GpuChannelEstablishFactory* factory =
-      content::BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
-  if (!factory) {
-    return nullptr;
-  }
-
-  auto gpu_channel = factory->EstablishGpuChannelSync();
-  if (!gpu_channel) {
-    return nullptr;
-  }
-
-  auto sii = gpu_channel->CreateClientSharedImageInterface();
-  return sii;
+  auto gpu_channel = GpuBrowsertestEstablishGpuChannelSyncRunLoop();
+  return gpu_channel->CreateClientSharedImageInterface();
 }
 
 }  // namespace
