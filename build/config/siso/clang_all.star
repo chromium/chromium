@@ -8,6 +8,7 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./ar.star", "ar")
 load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 
@@ -19,18 +20,24 @@ __clang_plugin_configs = [
 ]
 
 def __filegroups(ctx):
+    gn_logs_data = gn_logs.read(ctx)
+
+    # source_root is absolute path of chromium source top directory ("//"),
+    # set only for CrOS's chroot builds that use rbe_exec_root="/".
+    root = gn_logs_data.get("source_root", "")
+
     fg = {
-        "third_party/libc++/src/include:headers": {
+        path.join(root, "third_party/libc++/src/include") + ":headers": {
             "type": "glob",
             "includes": ["*"],
             # can't use "*.h", because c++ headers have no extension.
         },
-        "third_party/libc++abi/src/include:headers": {
+        path.join(root, "third_party/libc++abi/src/include") + ":headers": {
             "type": "glob",
             "includes": ["*.h"],
         },
         # vendor provided headers for libc++.
-        "buildtools/third_party/libc++:headers": {
+        path.join(root, "buildtools/third_party/libc++") + ":headers": {
             "type": "glob",
             "includes": [
                 "__*",
@@ -39,7 +46,7 @@ def __filegroups(ctx):
 
         # toolchain root
         # :headers for compiling
-        "third_party/llvm-build/Release+Asserts:headers": {
+        path.join(root, "third_party/llvm-build/Release+Asserts") + ":headers": {
             "type": "glob",
             "includes": [
                 "*.h",

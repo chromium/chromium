@@ -4,17 +4,24 @@
 # found in the LICENSE file.
 """Siso configuration for clang/linux."""
 
+load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
+load("./gn_logs.star", "gn_logs")
 load("./fuchsia.star", "fuchsia")
 load("./win_sdk.star", "win_sdk")
 
 target_cpus = ["amd64", "i386", "arm64", "armhf"]
 
 def __filegroups(ctx):
+    gn_logs_data = gn_logs.read(ctx)
+
+    # source_root is set only for CrOS's chroot builds that use
+    # rbe_exec_root="/".
+    root = gn_logs_data.get("source_root", "")
     fg = {
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
             "type": "glob",
@@ -50,16 +57,16 @@ def __filegroups(ctx):
     def __add_sysroot_for_target_cpu(fg, cpu):
         fg.update({
             # for precomputed subtrees
-            "build/linux/debian_bullseye_%s-sysroot/usr/include:include" % cpu: {
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/include" % cpu) + ":include": {
                 "type": "glob",
                 "includes": ["*"],
                 # need bits/stab.def, c++/*
             },
-            "build/linux/debian_bullseye_%s-sysroot/usr/lib:headers" % cpu: {
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/lib" % cpu) + ":headers": {
                 "type": "glob",
                 "includes": ["*.h", "crtbegin.o"],
             },
-            "build/linux/debian_bullseye_%s-sysroot:libs" % cpu: {
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":libs": {
                 "type": "glob",
                 "includes": ["*.so*", "*.o", "*.a"],
                 "excludes": [
@@ -85,6 +92,11 @@ __handlers.update(clang_unix.handlers)
 __handlers.update(clang_all.handlers)
 
 def __step_config(ctx, step_config):
+    gn_logs_data = gn_logs.read(ctx)
+
+    # source_root is set only for CrOS's chroot builds that use
+    # rbe_exec_root="/".
+    root = gn_logs_data.get("source_root", "")
     step_config["input_deps"].update({
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
@@ -102,16 +114,16 @@ def __step_config(ctx, step_config):
     def __add_sysroot_for_target_cpu(step_config, cpu):
         step_config["input_deps"].update({
             # sysroot headers for precomputed subtrees
-            "build/linux/debian_bullseye_%s-sysroot:headers" % cpu: [
-                "build/linux/debian_bullseye_%s-sysroot/usr/include:include" % cpu,
-                "build/linux/debian_bullseye_%s-sysroot/usr/lib:headers" % cpu,
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":headers": [
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/include" % cpu) + ":include",
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot/usr/lib" % cpu) + ":headers",
             ],
-            "build/linux/debian_bullseye_%s-sysroot:link" % cpu: [
-                "build/linux/debian_bullseye_%s-sysroot:libs" % cpu,
-                "third_party/llvm-build/Release+Asserts/bin:llddeps",
+            path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":link": [
+                path.join(root, "build/linux/debian_bullseye_%s-sysroot" % cpu) + ":libs",
+                path.join(root, "third_party/llvm-build/Release+Asserts/bin") + ":llddeps",
                 # The following inputs are used for sanitizer builds.
                 # It might be better to add them only for sanitizer builds if there is a performance issue.
-                "third_party/llvm-build/Release+Asserts/lib/clang:libs",
+                path.join(root, "third_party/llvm-build/Release+Asserts/lib/clang") + ":libs",
             ],
         })
 
