@@ -87,9 +87,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableErrorPage",
                           lens::features::GetLensOverlayEnableErrorPage());
   html_source->AddBoolean(
-      "enableCsbMotionTweaks",
-      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
-  html_source->AddBoolean(
       "enableGhostLoader",
       lens::features::EnableContextualSearchboxGhostLoader());
   html_source->AddBoolean(
@@ -161,8 +158,11 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
   html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
   html_source->AddBoolean(
-    "enableThumbnailSizingTweaks",
-    lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+      "enableCsbMotionTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
+  html_source->AddBoolean(
+      "enableThumbnailSizingTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
 }
 
 void LensSidePanelUntrustedUI::BindInterface(

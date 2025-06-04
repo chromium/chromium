@@ -373,13 +373,31 @@
     display: block;
   }
 
-  :host([enable-csb-motion-tweaks]) cr-searchbox-ghost-loader {
-    animation: ghost-loader-enter-animation 483ms cubic-bezier(0, 0, 0, 1) forwards;
+  /**
+   * When CSB motion tweaks are enabled, show the ghost loader when the
+   * searchbox is focused.
+   */
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
+    display: block;
   }
 
-  :host([enable-csb-motion-tweaks][show-ghost-loader]) #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox-ghost-loader {
+  /**
+   * Fade out the ghost loader bars when the searchbox dropdown is showing
+   * (results available).
+   */
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+    #searchboxContainer:has(cr-searchbox[dropdown-is-visible])
+    cr-searchbox-ghost-loader .ghost-loader-item {
     animation: 400ms ghost-loader-exit-animation cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    display: none;
+  }
+
+  /**
+   * Slide in the ghost loader when the searchbox is not already manually
+   * focused (e.g., on initial invocation). Once it has been manually focused,
+   * subsequent focus events will not trigger the slide in animation.
+   */
+  :host([enable-csb-motion-tweaks]:not([is-searchbox-focused])) cr-searchbox-ghost-loader {
+    animation: ghost-loader-enter-animation 483ms cubic-bezier(0, 0, 0, 1) forwards;
   }
 
   @keyframes ghost-loader-enter-animation {
@@ -392,14 +410,27 @@
   }
 
   @keyframes ghost-loader-exit-animation {
-  0% {
-    opacity: 1;
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
   }
 
-  100% {
+  /* Default values for the searchbox dropdown that enable the fade in animation. */
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox::part(searchbox-dropdown) {
     opacity: 0;
+    display: block;
   }
-}
+
+  /* Fade in the searchbox dropdown once the dropdown becomes visible. */
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+    #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox::part(searchbox-dropdown) {
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+  }
 
   /* Set styles for high contrast mode in Windows. */
   @media (forced-colors: active) {
