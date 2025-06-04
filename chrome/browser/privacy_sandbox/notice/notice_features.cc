@@ -60,4 +60,16 @@ BASE_FEATURE(kMeasurementNoticeModalClankCCTFeature,
              "MeasurementNoticeModalClankCCT",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoticeFrameworkTopicsApiFeature,
+             "PSNoticeFrameworkTopicsApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoticeFrameworkProtectedAudienceApiFeature,
+             "PSNoticeFrameworkProtectedAudienceApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNoticeFrameworkMeasurementApiFeature,
+             "PSNoticeFrameworkMeasurementApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

@@ -9,6 +9,11 @@
 
 namespace privacy_sandbox {
 
+// Api Features
+BASE_DECLARE_FEATURE(kNoticeFrameworkTopicsApiFeature);
+BASE_DECLARE_FEATURE(kNoticeFrameworkProtectedAudienceApiFeature);
+BASE_DECLARE_FEATURE(kNoticeFrameworkMeasurementApiFeature);
+
 // Topics Consent Modal Features
 BASE_DECLARE_FEATURE(kTopicsConsentDesktopModalFeature);
 BASE_DECLARE_FEATURE(kTopicsConsentModalClankBrAppFeature);

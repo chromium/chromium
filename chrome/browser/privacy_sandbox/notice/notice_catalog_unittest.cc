@@ -133,6 +133,19 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueApiInstances) {
   EXPECT_EQ(api_pointers.size(), catalog_.GetNoticeApis().size());
 }
 
+// All APIs must point to a unique Feature.
+TEST_F(PrivacySandboxNoticeCatalogTest, UniqueFeaturesPerApiInstance) {
+  EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
+
+  std::set<const base::Feature*> features_seen;
+  for (const auto& api_ptr : catalog_.GetNoticeApis()) {
+    ASSERT_NE(api_ptr, nullptr);
+    const base::Feature* feature = api_ptr->feature();
+    ASSERT_NE(feature, nullptr);
+    EXPECT_TRUE(features_seen.insert(feature).second);
+  }
+}
+
 // All APIs listed as Targets for any Notice must be present in the main list of
 // registered APIs.
 TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {

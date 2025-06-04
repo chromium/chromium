@@ -77,9 +77,12 @@ void NoticeCatalogImpl::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
 
   // Define APIs.
-  NoticeApi* topics = RegisterAndRetrieveNewApi();
-  NoticeApi* protected_audience = RegisterAndRetrieveNewApi();
-  NoticeApi* measurement = RegisterAndRetrieveNewApi();
+  NoticeApi* topics = RegisterAndRetrieveNewApi()->SetFeature(
+      &kNoticeFrameworkTopicsApiFeature);
+  NoticeApi* protected_audience = RegisterAndRetrieveNewApi()->SetFeature(
+      &kNoticeFrameworkProtectedAudienceApiFeature);
+  NoticeApi* measurement = RegisterAndRetrieveNewApi()->SetFeature(
+      &kNoticeFrameworkMeasurementApiFeature);
 
   // Define Notices.
   // Topics EEA Consent.
