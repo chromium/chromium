@@ -23,6 +23,7 @@ import {
   UnknownErrorException,
   type ChromiumBidi,
   type Script,
+  NoSuchFrameException,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -65,6 +66,7 @@ interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
   #bluetoothProcessor: BluetoothProcessor;
+  #browserCdpClient: CdpClient;
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
@@ -97,6 +99,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     logger?: LoggerFn,
   ) {
     super();
+    this.#browserCdpClient = browserCdpClient;
     this.#parser = parser;
     this.#logger = logger;
 
@@ -513,12 +516,15 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       } else {
         const error = e as Error;
         this.#logger?.(LogType.bidi, error);
+        // Heuristic required for processing cases when a browsing context is gone
+        // during the command processing, e.g. like in test
+        // `test_input_keyDown_closes_browsing_context`.
+        const errorException = this.#browserCdpClient.isCloseError(e)
+          ? new NoSuchFrameException(`Browsing context is gone`)
+          : new UnknownErrorException(error.message, error.stack);
         this.emit(CommandProcessorEvents.Response, {
           message: OutgoingMessage.createResolved(
-            new UnknownErrorException(
-              error.message,
-              error.stack,
-            ).toErrorResponse(command.id),
+            errorException.toErrorResponse(command.id),
             command['goog:channel'],
           ),
           event: command.method,

@@ -80,17 +80,6 @@ def http_proxy_server() -> HttpProxyServer:
 
 
 @pytest_asyncio.fixture
-async def _websocket_connection():
-    """ Return a websocket connection to the browser on localhost without an
-    active BiDi session.
-    """
-    port = os.getenv("PORT", 8080)
-    url = f"ws://localhost:{port}/session"
-    async with websockets.connect(url) as connection:
-        yield connection
-
-
-@pytest_asyncio.fixture
 async def test_headless_mode():
     """Return the headless mode to use for the test. The default is "new" mode."""
     maybe_headless = os.getenv("HEADLESS")
@@ -113,45 +102,46 @@ async def capabilities(request):
 
 
 @pytest_asyncio.fixture
-async def websocket(_websocket_connection, test_headless_mode, capabilities,
-                    request):
-    """Return a websocket with an active BiDi session."""
-    default_capabilities = {
-        "webSocketUrl": True,
-        "goog:chromeOptions": {
-            "args": ["--disable-infobars"]
+async def websocket(test_headless_mode, capabilities, request):
+    """Connects to endpoint, creates a session and returns a websocket connection."""
+    async def create_session(connection):
+        """
+        Creates a new session on the given connection. It can time out due to
+        GitHub infra issues.
+        """
+        default_capabilities = {
+            "webSocketUrl": True,
+            "goog:chromeOptions": {
+                "args": ["--disable-infobars"]
+            }
         }
-    }
 
-    if os.getenv(
-            "VERBOSE"
-    ) == "true" and request and request.node and request.node.name:
-        default_capabilities["goog:pytest_name"] = request.node.name
+        if request and request.node and request.node.name:
+            # Add test name to ease log analyse.
+            default_capabilities["goog:pytest_name"] = request.node.name
 
-    maybe_browser_bin = os.getenv("BROWSER_BIN")
-    if maybe_browser_bin:
-        default_capabilities["goog:chromeOptions"][
-            "binary"] = maybe_browser_bin
+        maybe_browser_bin = os.getenv("BROWSER_BIN")
+        if maybe_browser_bin:
+            default_capabilities["goog:chromeOptions"][
+                "binary"] = maybe_browser_bin
 
-    if test_headless_mode != "false":
-        if test_headless_mode == "old":
-            default_capabilities["goog:chromeOptions"]["args"].append(
-                "--headless=old")
-            default_capabilities["goog:chromeOptions"]["args"].append(
-                "--hide-scrollbars")
-            default_capabilities["goog:chromeOptions"]["args"].append(
-                "--mute-audio")
-        else:
-            # Default to new headless mode.
-            default_capabilities["goog:chromeOptions"]["args"].append(
-                "--headless=new")
+        if test_headless_mode != "false":
+            if test_headless_mode == "old":
+                default_capabilities["goog:chromeOptions"]["args"].extend([
+                    # No need in `--headless=old` flag, as it will be handled by
+                    # `BROWSER_BIN` environment variable.
+                    "--hide-scrollbars",
+                    "--mute-audio"
+                ])
+            else:
+                # Default to new headless mode.
+                default_capabilities["goog:chromeOptions"]["args"].append(
+                    "--headless=new")
 
-    session_capabilities = merge_dicts_recursively(default_capabilities,
-                                                   capabilities)
+        session_capabilities = merge_dicts_recursively(default_capabilities,
+                                                       capabilities)
 
-    await execute_command(
-        _websocket_connection,
-        {
+        await execute_command(connection, {
             "method": "session.new",
             "params": {
                 "capabilities": {
@@ -159,24 +149,39 @@ async def websocket(_websocket_connection, test_headless_mode, capabilities,
                 }
             }
         },
-        # The session.new command can take a long time to complete, so we need
-        # to increase the timeout.
-        20)
+                              timeout=20)
 
-    if os.getenv(
-            "VERBOSE"
-    ) == "true" and request and request.node and request.node.name:
-        with pytest.raises(Exception):
-            # Send not existing command with the test name in params, so that it
-            # can be used to anchor the specific test in the log to ease
-            # debugging.
-            await execute_command(
-                _websocket_connection, {
-                    "method": "goog:debug.log",
-                    "params": {
-                        "message": f'Create session for test: "{request.node.name}"'
-                    }
-                })
+    async def connect_and_create_new_session():
+        """
+        Tries to connect to websocket and to create a new session. If session
+        creation timed out, retries several time to avoid infra CI issues.
+        """
+        current_attempt = 0
+        max_attempt = 5
+        while True:
+            connection = await connect_websocket()
+            try:
+                await create_session(connection)
+                return connection
+            except (asyncio.exceptions.CancelledError, asyncio.TimeoutError):
+                # Timeout during creating session is expected due to infra issues.
+                await connection.close()
+                current_attempt = current_attempt + 1
+                if current_attempt >= max_attempt:
+                    raise
+            except Exception:
+                await connection.close()
+                raise
+
+    async def connect_websocket():
+        """ Return a websocket connection to the browser on localhost without an
+        active BiDi session.
+        """
+        port = os.getenv("PORT", 8080)
+        url = f"ws://localhost:{port}/session"
+        return await websockets.connect(url)
+
+    _websocket_connection = await connect_and_create_new_session()
 
     yield _websocket_connection
 

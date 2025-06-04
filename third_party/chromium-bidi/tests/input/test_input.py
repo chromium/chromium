@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from syrupy.filters import props
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           read_JSON_message, send_JSON_command, subscribe,
@@ -968,6 +969,6 @@ async def test_input_keyDown_closes_browsing_context(websocket, context_id,
     assert resp == {
         'error': 'no such frame',
         'id': command_id,
-        'message': f'Context {new_context} not found',
+        'message': ANY_STR,
         'type': 'error',
     }
