@@ -1,0 +1,78 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<!-- LINT.IfChange(ActionResultCode) -->
+
+<enum name="ActionResultCode">
+  <int value="0" label="Ok"/>
+  <int value="10" label="Error"/>
+  <int value="11" label="UrlBlocked"/>
+  <int value="12" label="NewTabCreationFailed"/>
+  <int value="13" label="TabWentAway"/>
+  <int value="14" label="TaskWentAway"/>
+  <int value="15" label="CrossOriginNavigation"/>
+  <int value="16" label="ToolUnknown"/>
+  <int value="17" label="FrameWentAway"/>
+  <int value="18" label="InvalidDomNodeId"/>
+  <int value="19" label="ElementDisabled"/>
+  <int value="20" label="ElementOffscreen"/>
+  <int value="21" label="CoordinatesOutOfBounds"/>
+  <int value="22" label="ArgumentsInvalid"/>
+  <int value="23" label="TaskPaused"/>
+  <int value="100" label="NavigateInvalidUrl"/>
+  <int value="200" label="ClickSuppressed"/>
+  <int value="300" label="DragAndReleaseFromOffscreen"/>
+  <int value="301" label="DragAndReleaseToOffscreen"/>
+  <int value="302" label="DragAndReleaseFromMoveSuppressed"/>
+  <int value="303" label="DragAndReleaseDownSuppressed"/>
+  <int value="304" label="DragAndReleaseToMoveSuppressed"/>
+  <int value="305" label="DragAndReleaseUpSuppressed"/>
+  <int value="400" label="MouseMoveEventSuppressed"/>
+  <int value="500" label="ScrollNoScrollingElement"/>
+  <int value="501" label="ScrollTargetNotUserScrollable"/>
+  <int value="502" label="ScrollOffsetDidNotChange"/>
+  <int value="600" label="SelectInvalidElement"/>
+  <int value="601" label="SelectNoSuchOption"/>
+  <int value="602" label="SelectOptionDisabled"/>
+  <int value="603" label="SelectUnexpectedValue"/>
+  <int value="700" label="TypeTargetNotElement"/>
+  <int value="701" label="TypeTargetNotFocusable"/>
+  <int value="702" label="TypeUnsupportedCharacters"/>
+  <int value="703" label="TypeFailedMappingCharToKey"/>
+  <int value="704" label="TypeKeyDownSuppressed"/>
+  <int value="800" label="HistoryNoNavigationsCreated"/>
+  <int value="801" label="HistoryCancelledBeforeStart"/>
+  <int value="802" label="HistoryNoBackEntries"/>
+  <int value="803" label="HistoryNoForwardEntries"/>
+  <int value="804" label="HistoryFailedBeforeCommit"/>
+  <int value="805" label="HistoryErrorPage"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
+
+</enums>
+
+</histogram-configuration>

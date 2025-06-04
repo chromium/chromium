@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -46,6 +47,8 @@ namespace {
 
 void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
                             mojom::ActionResultPtr result) {
+  UMA_HISTOGRAM_ENUMERATION("Actor.ActorCoordinator.Action.ResultCode",
+                            result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }

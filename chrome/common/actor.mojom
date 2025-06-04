@@ -22,7 +22,7 @@ union ToolTarget {
 
 // Information specific to a click action.
 struct ClickAction {
-    // Corresponds to ClickAction.ClickType
+  // Corresponds to ClickAction.ClickType
   enum Type {
     kLeft = 1,
     kRight = 2,
@@ -119,6 +119,8 @@ union ToolAction {
   SelectAction select;
   TypeAction type;
 };
+
+// LINT.IfChange(ActionResultCode)
 
 // Result codes for outcomes of an action.
 // kOk     - Action was successful.
@@ -286,6 +288,8 @@ enum ActionResultCode {
   // History navigation committed to an error page.
   kHistoryErrorPage = 805,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
 
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {

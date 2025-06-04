@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -29,8 +30,9 @@ namespace actor {
 using ::optimization_guide::proto::BrowserAction;
 
 namespace {
-
 constexpr int kFakeContentNodeId = 123;
+constexpr char kActionResultHistogram[] =
+    "Actor.ActorCoordinator.Action.ResultCode";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -127,6 +129,8 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
   void AssociateTabInterface() { tab_state_.emplace(web_contents()); }
   void ClearTabInterface() { tab_state_.reset(); }
 
+  base::HistogramTester histograms_;
+
  private:
   struct TabState {
     explicit TabState(content::WebContents* web_contents) : weak_factory(&tab) {
@@ -148,6 +152,8 @@ TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
       Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
             return MakeClick(*main_rfh(), kFakeContentNodeId);
           })));
+  histograms_.ExpectUniqueSample(kActionResultHistogram,
+                                 mojom::ActionResultCode::kOk, 1);
 }
 
 TEST_F(ActorCoordinatorTest, ActFailsOnUnsupportedUrl) {
@@ -174,6 +180,8 @@ TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
   DeleteContents();
 
   ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+  histograms_.ExpectUniqueSample(kActionResultHistogram,
+                                 mojom::ActionResultCode::kTabWentAway, 1);
 }
 
 TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
@@ -196,6 +204,9 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   // TODO(mcnee): We currently just fail, but this should do something more
   // graceful.
   ExpectErrorResult(result, mojom::ActionResultCode::kCrossOriginNavigation);
+  histograms_.ExpectUniqueSample(
+      kActionResultHistogram, mojom::ActionResultCode::kCrossOriginNavigation,
+      1);
 }
 
 }  // namespace
