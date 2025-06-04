@@ -8,9 +8,6 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateReloadFunction,
-                   "developerPrivate.reload",
-                   DEVELOPERPRIVATE_RELOAD);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,
                    "developerPrivate.loadUnpacked",
                    DEVELOPERPRIVATE_LOADUNPACKED);

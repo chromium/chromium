@@ -9,10 +9,13 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
+#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -76,6 +79,28 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
       "Extension with ID '*' cannot be uploaded to the user's account.";
 
   static constexpr char kManifestFile[] = "manifest.json";
+
+  // Following helpers are temporarily here during migration for desktop
+  // android. We should move them back to anonymous namespace after the
+  // migration.
+  using GetManifestErrorCallback =
+      base::OnceCallback<void(const base::FilePath& file_path,
+                              const std::string& error,
+                              size_t line_number,
+                              const std::string& manifest)>;
+  // Takes in an |error| string and tries to parse it as a manifest error (with
+  // line number), asynchronously calling |callback| with the results.
+  void GetManifestError(const std::string& error,
+                        const base::FilePath& extension_path,
+                        GetManifestErrorCallback callback);
+
+  // Creates a developer::LoadError from the provided data.
+  developer_private::LoadError CreateLoadError(
+      const base::FilePath& file_path,
+      const std::string& error,
+      size_t line_number,
+      const std::string& manifest,
+      const DeveloperPrivateAPI::UnpackedRetryId& retry_guid);
 
   ~DeveloperPrivateAPIFunction() override;
 
@@ -198,6 +223,54 @@ class DeveloperPrivateUpdateExtensionConfigurationFunction
  protected:
   ~DeveloperPrivateUpdateExtensionConfigurationFunction() override;
   ResponseAction Run() override;
+};
+
+class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
+                                       public ExtensionRegistryObserver,
+                                       public LoadErrorReporter::Observer {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.reload", DEVELOPERPRIVATE_RELOAD)
+
+  DeveloperPrivateReloadFunction();
+
+  DeveloperPrivateReloadFunction(const DeveloperPrivateReloadFunction&) =
+      delete;
+  DeveloperPrivateReloadFunction& operator=(
+      const DeveloperPrivateReloadFunction&) = delete;
+
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnShutdown(ExtensionRegistry* registry) override;
+
+  // LoadErrorReporter::Observer:
+  void OnLoadFailure(content::BrowserContext* browser_context,
+                     const base::FilePath& file_path,
+                     const std::string& error) override;
+
+ protected:
+  ~DeveloperPrivateReloadFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  // Callback once we parse a manifest error from a failed reload.
+  void OnGotManifestError(const base::FilePath& file_path,
+                          const std::string& error,
+                          size_t line_number,
+                          const std::string& manifest);
+
+  // Clears the scoped observers.
+  void ClearObservers();
+
+  // The file path of the extension that's reloading.
+  base::FilePath reloading_extension_path_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<LoadErrorReporter, LoadErrorReporter::Observer>
+      error_reporter_observation_{this};
 };
 
 class DeveloperPrivateInstallDroppedFileFunction

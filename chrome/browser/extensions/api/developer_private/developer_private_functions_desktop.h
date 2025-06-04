@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -35,54 +34,6 @@ class Profile;
 namespace extensions {
 
 namespace api {
-
-class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
-                                       public ExtensionRegistryObserver,
-                                       public LoadErrorReporter::Observer {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.reload", DEVELOPERPRIVATE_RELOAD)
-
-  DeveloperPrivateReloadFunction();
-
-  DeveloperPrivateReloadFunction(const DeveloperPrivateReloadFunction&) =
-      delete;
-  DeveloperPrivateReloadFunction& operator=(
-      const DeveloperPrivateReloadFunction&) = delete;
-
-  // ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const Extension* extension) override;
-  void OnShutdown(ExtensionRegistry* registry) override;
-
-  // LoadErrorReporter::Observer:
-  void OnLoadFailure(content::BrowserContext* browser_context,
-                     const base::FilePath& file_path,
-                     const std::string& error) override;
-
- protected:
-  ~DeveloperPrivateReloadFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  // Callback once we parse a manifest error from a failed reload.
-  void OnGotManifestError(const base::FilePath& file_path,
-                          const std::string& error,
-                          size_t line_number,
-                          const std::string& manifest);
-
-  // Clears the scoped observers.
-  void ClearObservers();
-
-  // The file path of the extension that's reloading.
-  base::FilePath reloading_extension_path_;
-
-  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observation_{this};
-  base::ScopedObservation<LoadErrorReporter, LoadErrorReporter::Observer>
-      error_reporter_observation_{this};
-};
 
 class DeveloperPrivateLoadUnpackedFunction
     : public DeveloperPrivateAPIFunction,

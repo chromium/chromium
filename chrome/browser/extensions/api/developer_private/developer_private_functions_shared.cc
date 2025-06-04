@@ -44,9 +44,11 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -273,6 +275,53 @@ bool MatchesExtension(ui::FileInfo& file_info,
 }  // namespace
 
 namespace api {
+
+void DeveloperPrivateAPIFunction::GetManifestError(
+    const std::string& error,
+    const base::FilePath& extension_path,
+    GetManifestErrorCallback callback) {
+  size_t line = 0u;
+  size_t column = 0u;
+  std::string regex = base::StringPrintf("%s  Line: (\\d+), column: (\\d+), .*",
+                                         manifest_errors::kManifestParseError);
+  // If this was a JSON parse error, we can highlight the exact line with the
+  // error. Otherwise, we should still display the manifest (for consistency,
+  // reference, and so that if we ever make this really fancy and add an editor,
+  // it's ready).
+  //
+  // This regex call can fail, but if it does, we just don't highlight anything.
+  re2::RE2::FullMatch(error, regex, &line, &column);
+
+  // This will read the manifest and call AddFailure with the read manifest
+  // contents.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&ReadFileToString,
+                     extension_path.Append(kManifestFilename)),
+      base::BindOnce(std::move(callback), extension_path, error, line));
+}
+
+developer::LoadError DeveloperPrivateAPIFunction::CreateLoadError(
+    const base::FilePath& file_path,
+    const std::string& error,
+    size_t line_number,
+    const std::string& manifest,
+    const DeveloperPrivateAPI::UnpackedRetryId& retry_guid) {
+  base::FilePath prettified_path = path_util::PrettifyPath(file_path);
+
+  SourceHighlighter highlighter(manifest, line_number);
+  developer::LoadError response;
+  response.error = error;
+  response.path = base::UTF16ToUTF8(prettified_path.LossyDisplayName());
+  response.retry_guid = retry_guid;
+
+  response.source.emplace();
+  response.source->before_highlight = highlighter.GetBeforeFeature();
+  response.source->highlight = highlighter.GetFeature();
+  response.source->after_highlight = highlighter.GetAfterFeature();
+
+  return response;
+}
 
 DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() = default;
 
@@ -560,6 +609,109 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateReloadFunction::DeveloperPrivateReloadFunction() = default;
+DeveloperPrivateReloadFunction::~DeveloperPrivateReloadFunction() = default;
+
+ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
+  std::optional<developer_private::Reload::Params> params =
+      developer_private::Reload::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  reloading_extension_path_ = extension->path();
+
+  bool fail_quietly = false;
+  bool wait_for_completion = false;
+  if (params->options) {
+    fail_quietly =
+        params->options->fail_quietly && *params->options->fail_quietly;
+    // We only wait for completion for unpacked extensions, since they are the
+    // only extensions for which we can show actionable feedback to the user.
+    wait_for_completion = params->options->populate_error_for_unpacked &&
+                          *params->options->populate_error_for_unpacked &&
+                          Manifest::IsUnpackedLocation(extension->location());
+  }
+
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
+  if (fail_quietly) {
+    registrar->ReloadExtensionWithQuietFailure(params->extension_id);
+  } else {
+    registrar->ReloadExtension(params->extension_id);
+  }
+
+  if (!wait_for_completion) {
+    return RespondNow(NoArguments());
+  }
+
+  // Balanced in ClearObservers(), which is called from the first observer
+  // method to be called with the appropriate extension (or shutdown).
+  AddRef();
+  error_reporter_observation_.Observe(LoadErrorReporter::GetInstance());
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context()));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateReloadFunction::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  if (extension->path() == reloading_extension_path_) {
+    // Reload succeeded!
+    Respond(NoArguments());
+    ClearObservers();
+  }
+}
+
+void DeveloperPrivateReloadFunction::OnShutdown(ExtensionRegistry* registry) {
+  Respond(Error("Shutting down."));
+  ClearObservers();
+}
+
+void DeveloperPrivateReloadFunction::OnLoadFailure(
+    content::BrowserContext* browser_context,
+    const base::FilePath& file_path,
+    const std::string& error) {
+  if (file_path == reloading_extension_path_) {
+    // Reload failed - create an error to pass back to the extension.
+    GetManifestError(
+        error, file_path,
+        base::BindOnce(&DeveloperPrivateReloadFunction::OnGotManifestError,
+                       this));  // Creates a reference.
+    ClearObservers();
+  }
+}
+
+void DeveloperPrivateReloadFunction::OnGotManifestError(
+    const base::FilePath& file_path,
+    const std::string& error,
+    size_t line_number,
+    const std::string& manifest) {
+  DeveloperPrivateAPI::UnpackedRetryId retry_guid =
+      DeveloperPrivateAPI::Get(browser_context())
+          ->AddUnpackedPath(GetSenderWebContents(), reloading_extension_path_);
+  // Respond to the caller with the load error, which allows the caller to retry
+  // reloading through developerPrivate.loadUnpacked().
+  // TODO(devlin): This is weird. Really, we should allow retrying through this
+  // function instead of through loadUnpacked(), but
+  // ExtensionRegistrar::ReloadExtension doesn't behave well with an extension
+  // that failed to reload, and untangling that mess is quite significant.
+  // See https://crbug.com/792277.
+  Respond(WithArguments(
+      CreateLoadError(file_path, error, line_number, manifest, retry_guid)
+          .ToValue()));
+}
+
+void DeveloperPrivateReloadFunction::ClearObservers() {
+  registry_observation_.Reset();
+  error_reporter_observation_.Reset();
+
+  Release();  // Balanced in Run().
 }
 
 DeveloperPrivateInstallDroppedFileFunction::
