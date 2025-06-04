@@ -128,8 +128,8 @@ void MLServerManager::StartMLServerIfEnabled() {
     base::CommandLine build_cmdline(base::FilePath("podman"));
     build_cmdline.AppendArg("build");
     build_cmdline.AppendArg("-t");
-    build_cmdline.AppendArg("mycppserver");
-    build_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/MTP");
+    build_cmdline.AppendArg("malabr-model-server");
+    build_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/src/addition_malabr");
 
     // Launch the build process.
     base::Process build_process = base::LaunchProcess(build_cmdline, options);
@@ -153,10 +153,10 @@ void MLServerManager::StartMLServerIfEnabled() {
     run_cmdline.AppendArg("-p");
     run_cmdline.AppendArg("5000:5000");
     run_cmdline.AppendArg("-v");
-    run_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/MTP/uploads:/app/uploads:rw");
+    run_cmdline.AppendArg("/home/bivas_lappy/Desktop/malabr/src/addition_malabr/uploads:/app/uploads:rw");
     run_cmdline.AppendArg("--name");
-    run_cmdline.AppendArg("cpp-server-container");
-    run_cmdline.AppendArg("mycppserver");
+    run_cmdline.AppendArg("malabr-model-server-container");
+    run_cmdline.AppendArg("malabr-model-server");
 
     // Launch the container (in detached mode).
     base::Process run_process = base::LaunchProcess(run_cmdline, options);
@@ -179,7 +179,7 @@ void MLServerManager::StopMLServer() {
   {
     base::CommandLine stop_cmdline(base::FilePath("podman"));
     stop_cmdline.AppendArg("stop");
-    stop_cmdline.AppendArg("cpp-server-container");
+    stop_cmdline.AppendArg("malabr-model-server-container");
 
     base::Process stop_process = base::LaunchProcess(stop_cmdline, options);
     if (!stop_process.IsValid()) {
@@ -197,7 +197,7 @@ void MLServerManager::StopMLServer() {
   {
     base::CommandLine rm_cmdline(base::FilePath("podman"));
     rm_cmdline.AppendArg("rm");
-    rm_cmdline.AppendArg("cpp-server-container");
+    rm_cmdline.AppendArg("malabr-model-server-container");
 
     base::Process rm_process = base::LaunchProcess(rm_cmdline, options);
     if (!rm_process.IsValid()) {
