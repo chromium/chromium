@@ -37,6 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
+import org.chromium.base.MathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -179,6 +180,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -2149,6 +2151,25 @@ public class ToolbarManager
                     () -> TabArchiveSettings.setIphShownThisSession(false));
         }
 
+        Callback<DrawingInfo> onProgressInfoUpdate =
+                (drawingInfo) -> {
+                    mControlContainer.getProgressBarDrawingInfo(drawingInfo);
+
+                    // Control container / progress bar container can have a non-zero translation
+                    // when sitting at the bottom / during animation.
+                    // TODO(crbug.com/419846301): Coordinate the yOffset based on browser controls.
+                    final float controlContainerY = mControlContainer.getY();
+                    final float progressBarContainerY = mProgressBarContainer.getY();
+                    int yOffset =
+                            (int)
+                                    MathUtils.clamp(
+                                            progressBarContainerY - controlContainerY,
+                                            0,
+                                            mControlContainer.getHeight());
+                    drawingInfo.progressBarRect.offset(0, yOffset);
+                    drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
+                };
+
         mToolbar.initializeWithNative(
                 profile,
                 layoutManager::requestUpdate,
@@ -2159,7 +2180,8 @@ public class ToolbarManager
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider,
                 mBottomToolbarControlsOffsetSupplier,
-                mSuppressToolbarSceneLayerSupplier);
+                mSuppressToolbarSceneLayerSupplier,
+                onProgressInfoUpdate);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =

@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.TokenHolder;
@@ -281,6 +283,9 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param bottomToolbarControlsOffsetSupplier Supplier of the offset, relative to the bottom of
      *     the viewport, of the bottom-anchored toolbar.
+     * @param suppressToolbarSceneLayerSupplier Supplier for whether suppress the update to the
+     *     toolbar scene layer.
+     * @param progressInfoCallback Callback when progress bar DrawingInfo has an update.
      */
     public void initializeWithNative(
             Profile profile,
@@ -292,7 +297,8 @@ public class TopToolbarCoordinator implements Toolbar {
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier) {
+            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            Callback<DrawingInfo> progressInfoCallback) {
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         mToolbarLayout.setTabCountSupplier(mTabCountSupplier);
         getLocationBar().updateVisualsForState();
@@ -309,7 +315,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     new TopToolbarOverlayCoordinator(
                             mToolbarLayout.getContext(),
                             layoutManager,
-                            mControlContainer::getProgressBarDrawingInfo,
+                            progressInfoCallback,
                             tabSupplier,
                             browserControlsVisibilityManager,
                             mResourceManagerSupplier,
