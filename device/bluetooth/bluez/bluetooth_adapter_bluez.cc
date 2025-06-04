@@ -129,13 +129,8 @@ UMABluetoothDiscoverySessionOutcome TranslateDiscoveryErrorToUMA(
 
 #if BUILDFLAG(IS_CHROMEOS)
 device::BluetoothDevice::ServiceDataMap ConvertServiceDataMap(
-    const base::flat_map<std::string, std::vector<uint8_t>>& input) {
-  device::BluetoothDevice::ServiceDataMap output;
-  for (auto& i : input) {
-    output[BluetoothUUID(i.first)] = i.second;
-  }
-
-  return output;
+    const base::flat_map<device::BluetoothUUID, std::vector<uint8_t>>& input) {
+  return device::BluetoothDevice::ServiceDataMap(input.begin(), input.end());
 }
 
 device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(

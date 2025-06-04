@@ -3,46 +3,41 @@
 // found in the LICENSE file.
 
 #include "services/data_decoder/ble_scan_parser_impl.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_decoder {
 
 TEST(BleScanParserImplTest, ParseBadUuidLengthReturnsEmptyString) {
   std::vector<uint8_t> bad_uuid(0xab, 5);
-  EXPECT_EQ(
-      0ul,
-      BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat16Bit).size());
-  EXPECT_EQ(
-      0ul,
-      BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat32Bit).size());
-  EXPECT_EQ(
-      0ul,
-      BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat128Bit).size());
+  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat16Bit)
+                   .IsValid());
+  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat32Bit)
+                   .IsValid());
+  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat128Bit)
+                   .IsValid());
 }
 
 TEST(BleScanParserImplTest, Parse16BitUuid) {
   const uint8_t kUuid16[] = {0xab, 0xcd};
-  const char kExpected[] = "0000CDAB-0000-1000-8000-00805F9B34FB";
-  std::string actual =
-      BleScanParserImpl::ParseUuid(kUuid16, UuidFormat::kFormat16Bit);
-  EXPECT_STREQ(kExpected, actual.c_str());
+  const device::BluetoothUUID kExpected("0000CDAB-0000-1000-8000-00805F9B34FB");
+  EXPECT_EQ(kExpected,
+            BleScanParserImpl::ParseUuid(kUuid16, UuidFormat::kFormat16Bit));
 }
 
 TEST(BleScanParserImplTest, Parse32BitUuid) {
   const uint8_t kUuid32[] = {0xab, 0xcd, 0xef, 0x01};
-  const char kExpected[] = "01EFCDAB-0000-1000-8000-00805F9B34FB";
-  std::string actual =
-      BleScanParserImpl::ParseUuid(kUuid32, UuidFormat::kFormat32Bit);
-  EXPECT_STREQ(kExpected, actual.c_str());
+  const device::BluetoothUUID kExpected("01EFCDAB-0000-1000-8000-00805F9B34FB");
+  EXPECT_EQ(kExpected,
+            BleScanParserImpl::ParseUuid(kUuid32, UuidFormat::kFormat32Bit));
 }
 
 TEST(BleScanParserImplTest, Parse128BitUuid) {
   const uint8_t kUuid128[] = {0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
                               0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89};
-  const char kExpected[] = "89674523-01EF-CDAB-8967-452301EFCDAB";
-  std::string actual =
-      BleScanParserImpl::ParseUuid(kUuid128, UuidFormat::kFormat128Bit);
-  EXPECT_STREQ(kExpected, actual.c_str());
+  const device::BluetoothUUID kExpected("89674523-01EF-CDAB-8967-452301EFCDAB");
+  EXPECT_EQ(kExpected,
+            BleScanParserImpl::ParseUuid(kUuid128, UuidFormat::kFormat128Bit));
 }
 
 TEST(BleScanParserImplTest, Parse16BitServiceUuids) {
@@ -110,9 +105,10 @@ TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
   };
 
   std::vector<uint8_t> service_data = {0xa1, 0xb2, 0xc3, 0xd4, 0xe5};
-  base::flat_map<std::string, std::vector<uint8_t>> expected_service_data_map;
-  expected_service_data_map["0000DCAB-0000-1000-8000-00805F9B34FB"] =
-      service_data;
+  base::flat_map<device::BluetoothUUID, std::vector<uint8_t>>
+      expected_service_data_map;
+  expected_service_data_map[device::BluetoothUUID(
+      "0000DCAB-0000-1000-8000-00805F9B34FB")] = service_data;
 
   std::vector<uint8_t> manufacturer_data = {0x1a, 0x2b, 0x3c, 0x4d};
   base::flat_map<uint16_t, std::vector<uint8_t>> expected_manufacturer_data_map;

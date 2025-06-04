@@ -19,7 +19,7 @@ struct ScanRecord {
   // UUIDs for services offered.
   array<bluetooth.mojom.UUID> service_uuids;
   // Service data: 16-bit service UUID, service data
-  map<string, array<uint8>> service_data_map;
+  map<bluetooth.mojom.UUID, array<uint8>> service_data_map;
   // Manufacturer data: company code, data
   map<uint16, array<uint8>> manufacturer_data_map;
 };

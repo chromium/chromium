@@ -43,8 +43,8 @@ class BleScanParserImpl : public mojom::BleScanParser {
   static mojom::ScanRecordPtr ParseBleScan(
       base::span<const uint8_t> advertisement_data);
 
-  static std::string ParseUuid(base::span<const uint8_t> bytes,
-                               UuidFormat format);
+  static device::BluetoothUUID ParseUuid(base::span<const uint8_t> bytes,
+                                         UuidFormat format);
 
   static bool ParseServiceUuids(
       base::span<const uint8_t> bytes,

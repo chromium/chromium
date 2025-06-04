@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/data_decoder/ble_scan_parser_impl.h"
+
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "services/data_decoder/ble_scan_parser_impl.h"
 
 namespace data_decoder {
 
@@ -43,7 +46,7 @@ mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
   uint8_t tx_power;
   std::string advertisement_name;
   std::vector<device::BluetoothUUID> service_uuids;
-  base::flat_map<std::string, std::vector<uint8_t>> service_data_map;
+  base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
   base::flat_map<uint16_t, std::vector<uint8_t>> manufacturer_data_map;
 
   int advertising_flags = -1;
@@ -102,7 +105,11 @@ mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
         base::span<const uint8_t> uuid = advertisement_data.subspan(i, 2u);
         base::span<const uint8_t> data =
             advertisement_data.subspan(i + 2, data_length - 2);
-        service_data_map[ParseUuid(uuid, UuidFormat::kFormat16Bit)] =
+        auto parsed_uuid = ParseUuid(uuid, UuidFormat::kFormat16Bit);
+        if (!parsed_uuid.IsValid()) {
+          return nullptr;
+        }
+        service_data_map[parsed_uuid] =
             std::vector<uint8_t>(data.begin(), data.end());
         break;
       }
@@ -132,13 +139,14 @@ mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
                                 manufacturer_data_map);
 }
 
-std::string BleScanParserImpl::ParseUuid(base::span<const uint8_t> bytes,
-                                         UuidFormat format) {
+device::BluetoothUUID BleScanParserImpl::ParseUuid(
+    base::span<const uint8_t> bytes,
+    UuidFormat format) {
   size_t length = bytes.size();
   if (!(format == UuidFormat::kFormat16Bit && length == 2) &&
       !(format == UuidFormat::kFormat32Bit && length == 4) &&
       !(format == UuidFormat::kFormat128Bit && length == 16)) {
-    return std::string();
+    return device::BluetoothUUID();
   }
 
   std::vector<uint8_t> reversed(bytes.rbegin(), bytes.rend());
@@ -146,15 +154,16 @@ std::string BleScanParserImpl::ParseUuid(base::span<const uint8_t> bytes,
 
   switch (format) {
     case UuidFormat::kFormat16Bit:
-      return kUuidPrefix + uuid + kUuidSuffix;
+      return device::BluetoothUUID(
+          base::StrCat({kUuidPrefix, uuid, kUuidSuffix}));
     case UuidFormat::kFormat32Bit:
-      return uuid + kUuidSuffix;
+      return device::BluetoothUUID(base::StrCat({uuid, kUuidSuffix}));
     case UuidFormat::kFormat128Bit:
       uuid.insert(8, 1, '-');
       uuid.insert(13, 1, '-');
       uuid.insert(18, 1, '-');
       uuid.insert(23, 1, '-');
-      return uuid;
+      return device::BluetoothUUID(uuid);
     case UuidFormat::kFormatInvalid:
       NOTREACHED();
   }
@@ -186,8 +195,11 @@ bool BleScanParserImpl::ParseServiceUuids(
   }
 
   for (size_t start = 0; start < bytes.size(); start += uuid_length) {
-    service_uuids->push_back(device::BluetoothUUID(
-        ParseUuid(bytes.subspan(start, uuid_length), format)));
+    auto uuid = ParseUuid(bytes.subspan(start, uuid_length), format);
+    if (!uuid.IsValid()) {
+      return false;
+    }
+    service_uuids->push_back(uuid);
   }
 
   return true;
