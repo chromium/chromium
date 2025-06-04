@@ -145,7 +145,6 @@ source_set("permissions") {
     "//content/public/browser",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
-    "//extensions/buildflags:buildflags",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",

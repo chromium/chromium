@@ -69,8 +69,6 @@ extern const char kPermissionTypeLoadPlugin[];
 extern const char kPermissionTypeMedia[];
 extern const char kPermissionTypeNewWindow[];
 extern const char kPermissionTypePointerLock[];
-extern const char kPermissionTypeClipboardReadWrite[];
-extern const char kPermissionTypeClipboardSanitizedWrite[];
 extern const char kOldWidth[];
 extern const char kProcessId[];
 extern const char kProgress[];

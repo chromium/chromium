@@ -70,15 +70,10 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           delegates.media_stream_device_enumerator);
   permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
       std::make_unique<permissions::ClipboardReadWritePermissionContext>(
-          browser_context,
-          std::move(
-              delegates.clipboard_read_write_permission_context_delegate));
-
+          browser_context);
   permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
       std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
-          browser_context,
-          std::move(
-              delegates.clipboard_sanitized_write_permission_context_delegate));
+          browser_context);
 #if BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(

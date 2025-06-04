@@ -24,7 +24,6 @@ include_rules = [
   "+content/public/test",
   "+content/test",
   "+device/bluetooth",
-  "+extensions/buildflags",
   "+media/base/android/media_drm_bridge.h",
   "+printing/buildflags/buildflags.h",
   "+services/metrics/public/cpp",

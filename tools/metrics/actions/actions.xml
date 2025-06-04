@@ -47997,24 +47997,6 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="WebView.PermissionAllow.ClipboardReadWrite">
-  <owner>vkrot@google.com</owner>
-  <owner>iwa-team@google.com</owner>
-  <description>
-    Tracks when the user explicitly allows clipboardReadWrite permission on a
-    webview.
-  </description>
-</action>
-
-<action name="WebView.PermissionAllow.ClipboardSanitizedWrite">
-  <owner>vkrot@google.com</owner>
-  <owner>iwa-team@google.com</owner>
-  <description>
-    Tracks when the user explicitly allows clipboardSanitizedWrite permission on
-    a webview.
-  </description>
-</action>
-
 <action name="WebView.PermissionAllow.Download">
   <owner>fsamuel@chromium.org</owner>
   <owner>lazyboy@chromium.org</owner>
@@ -48076,24 +48058,6 @@ should be able to be added at any place in this file.
   <owner>lazyboy@chromium.org</owner>
   <description>
     Tracks when the pointerLock permission is explicitly allowed on a webview.
-  </description>
-</action>
-
-<action name="WebView.PermissionDeny.ClipboardReadWrite">
-  <owner>vkrot@google.com</owner>
-  <owner>iwa-team@google.com</owner>
-  <description>
-    Tracks when the user explicitly denies clipboardReadWrite permission on a
-    webview.
-  </description>
-</action>
-
-<action name="WebView.PermissionDeny.ClipboardSanitizedWrite">
-  <owner>vkrot@google.com</owner>
-  <owner>iwa-team@google.com</owner>
-  <description>
-    Tracks when the user explicitly denies clipboardSanitizedWrite permission on
-    a webview.
   </description>
 </action>
 

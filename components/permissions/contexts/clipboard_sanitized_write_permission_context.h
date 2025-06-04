@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/contexts/clipboard_permission_context_delegate.h"
 #include "components/permissions/permission_context_base.h"
 
 namespace permissions {
@@ -14,8 +13,7 @@ namespace permissions {
 class ClipboardSanitizedWritePermissionContext : public PermissionContextBase {
  public:
   explicit ClipboardSanitizedWritePermissionContext(
-      content::BrowserContext* browser_context,
-      std::unique_ptr<ClipboardPermissionContextDelegate> delegate);
+      content::BrowserContext* browser_context);
   ~ClipboardSanitizedWritePermissionContext() override;
 
   ClipboardSanitizedWritePermissionContext(
@@ -25,16 +23,10 @@ class ClipboardSanitizedWritePermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
-  void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
-                        BrowserPermissionCallback callback) override;
-
-  // PermissionContextBase:
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-
-  std::unique_ptr<ClipboardPermissionContextDelegate> delegate_;
 };
 
 }  // namespace permissions
