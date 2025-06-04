@@ -100,11 +100,6 @@ BASE_FEATURE(kV8ExternalMemoryAccountedInGlobalLimit,
              "V8ExternalMemoryAccountedInGlobalLimit",
              kFeatureDefaultStateControlledByV8);
 
-// Enables using gc tracer counters to directly compute old gen GC speed.
-BASE_FEATURE(kV8GCSpeedUsesCounters,
-             "V8GCSpeedUsesCounters",
-             kFeatureDefaultStateControlledByV8);
-
 // Enables the Turbofan compiler.
 BASE_FEATURE(kV8Turbofan, ("V8Turbofan"), kFeatureDefaultStateControlledByV8);
 
