@@ -29,6 +29,9 @@ public class HubAnimationConstants {
     /** Duration in milliseconds before a fallback animation will occur for the Hub Layout. */
     public static final long HUB_LAYOUT_TIMEOUT_MS = 300L;
 
+    /** Duration in milliseconds of tab list animation for the Hub Layout. */
+    public static final long HUB_LAYOUT_TAB_LIST_FADE_DURATION_MS = 400L;
+
     /**
      * Duration in milliseconds of color blend animations for Hub Pane changes. Chosen to exactly
      * match the length of a consecutive fade-in and fade-out animation.

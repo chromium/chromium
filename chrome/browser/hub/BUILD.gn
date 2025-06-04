@@ -86,6 +86,7 @@ android_library_factory("factory_java") {
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/TabListHubLayoutAnimationFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
   ]
 }

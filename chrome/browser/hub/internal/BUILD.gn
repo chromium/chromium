@@ -48,6 +48,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/SingleHubViewColorBlend.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TabListHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TabListHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImpl.java",
   ]

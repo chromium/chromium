@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_TAB_LIST_FADE_DURATION_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.DESTROY_COORDINATOR_DELAY_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.HARD_CLEANUP_DELAY_MS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
@@ -16,6 +17,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -24,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -52,6 +56,7 @@ import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimationData;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimationFactory;
+import org.chromium.chrome.browser.hub.TabListHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -65,7 +70,9 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleConsumer;
 
@@ -281,11 +288,26 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     @Override
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
-        assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
+        Context context = hubContainerView.getContext();
+        final boolean isFullSpaceModeOnAndroidXr =
+                XrSceneCoreUtils.isSceneCoreSessionInFsm(
+                        XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context));
+
+        assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                || isFullSpaceModeOnAndroidXr;
+
         @Nullable Tab tab = getCurrentTab();
         if (tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
+        } else if (isFullSpaceModeOnAndroidXr && getTabListMode() == TabListMode.GRID) {
+            SyncOneshotSupplier<List<View>> animationDataSupplier =
+                    requestTabListAnimationData(hubContainerView);
+            return TabListHubLayoutAnimationFactory.createFadeInTabListAnimatorProvider(
+                    hubContainerView,
+                    animationDataSupplier,
+                    HUB_LAYOUT_TAB_LIST_FADE_DURATION_MS,
+                    mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
@@ -328,6 +350,33 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             return ContextCompat.getColor(
                     mRootView.getContext(), R.color.home_surface_background_color);
         }
+    }
+
+    private SyncOneshotSupplier<List<View>> requestTabListAnimationData(
+            @NonNull HubContainerView hubContainerView) {
+        assert getTabListMode() == TabListMode.GRID;
+        SyncOneshotSupplierImpl<List<View>> animationDataSupplier = new SyncOneshotSupplierImpl<>();
+        hubContainerView.runOnNextLayout(
+                () -> {
+                    final RecyclerView tab_list_recycler_view =
+                            hubContainerView.findViewById(R.id.tab_list_recycler_view);
+                    if (tab_list_recycler_view != null) {
+                        GridLayoutManager lm =
+                                (GridLayoutManager) tab_list_recycler_view.getLayoutManager();
+                        int first = lm.findFirstVisibleItemPosition();
+                        int last = lm.findLastVisibleItemPosition();
+
+                        List<View> views = new ArrayList<>();
+                        for (int index = first; index <= last; index++) {
+                            View view = lm.findViewByPosition(index);
+                            if (view != null) views.add(view);
+                        }
+                        animationDataSupplier.set(views.isEmpty() ? null : views);
+                    } else {
+                        animationDataSupplier.set(null);
+                    }
+                });
+        return animationDataSupplier;
     }
 
     private SyncOneshotSupplier<ShrinkExpandAnimationData> requestAnimationData(
