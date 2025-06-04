@@ -2150,6 +2150,8 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|Builder",
         short_name = "asn",
     ),
+    # Can hit the default build timeout when building with clean cache.
+    execution_timeout = 4 * time.hour,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
