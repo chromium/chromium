@@ -433,16 +433,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.AIv1.PermissionRequestRelevance"
-    enum="PermissionRequestRelevance" expires_after="2026-03-07">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the generated relevance signal after a successful execution of the
-    AIv1 model.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.AIv1.PreviousSessionFinishedInTime"
     enum="BooleanSuccess" expires_after="2026-01-11">
   <owner>elklm@chromium.org</owner>
@@ -474,6 +464,36 @@ chromium-metrics-reviews@google.com.
     Records whether a session was created successfully for the on-device AIv1
     model each time we inquire the model. We also log failures when the model is
     not available.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv3.ModelHandlerProviderExists"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the PredictionModelHandlerProvider exists for the AIv3.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv3.PermissionsAiv3HandlerExists"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the PermissionsAiv3Handler exists for the AIv3.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv3.RelevanceHasValue" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the AIv3 model execution callback has a relevance value.
   </summary>
 </histogram>
 
@@ -1835,6 +1855,20 @@ chromium-metrics-reviews@google.com.
     the {PredictionModel} and await its response for a permission request.
   </summary>
   <token key="PredictionModel" variants="PredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{Version}.PermissionRequestRelevance"
+    enum="PermissionRequestRelevance" expires_after="2026-03-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the generated relevance signal after a successful execution of the
+    available model.
+  </summary>
+  <token key="Version">
+    <variant name="AIv1"/>
+    <variant name="AIv3"/>
+  </token>
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementScore" units="units"
