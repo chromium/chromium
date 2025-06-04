@@ -7,7 +7,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightSmall"
+    android:layout_height="wrap_content"
     android:layout_gravity="top|start"
     android:orientation="horizontal"
     android:baselineAligned="false" >
@@ -20,8 +20,10 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_one"
-        style="@style/OverflowMenuButton" />
+            android:id="@+id/button_one"
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
     <FrameLayout
@@ -31,7 +33,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_two"
-            style="@style/OverflowMenuButton" />
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
     <FrameLayout
@@ -41,7 +45,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_three"
-            style="@style/OverflowMenuButton" />
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
     <FrameLayout
@@ -51,7 +57,9 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_four"
-            style="@style/OverflowMenuButton" />
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 
     <FrameLayout
@@ -61,6 +69,8 @@ found in the LICENSE file.
         android:layout_weight="1">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_five"
-            style="@style/OverflowMenuButton" />
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            style="?attr/overflowMenuButtonStyle"/>
     </FrameLayout>
 </LinearLayout>

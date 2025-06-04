@@ -30,6 +30,7 @@ android_library("java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
@@ -44,9 +45,6 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color-night/menu_action_bar_bg_color.xml",
-    "java/res/color/menu_action_bar_bg_color.xml",
-    "java/res/drawable/menu_action_bar_bg.xml",
     "java/res/layout/divider_line_menu_item.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
@@ -84,7 +82,9 @@ android_library("unit_device_javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
@@ -116,6 +116,8 @@ android_resources("test_java_resources") {
   ]
   deps = [
     ":java_resources",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/widget/android:java_test_resources",
   ]
 }

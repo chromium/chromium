@@ -47,6 +47,10 @@ android_library_factory("factory_java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/menu_action_bar_bg_color.xml",
+    "java/res/color/menu_action_bar_bg_color.xml",
+    "java/res/drawable/menu_action_bar_bg.xml",
+    "java/res/values/attrs.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]

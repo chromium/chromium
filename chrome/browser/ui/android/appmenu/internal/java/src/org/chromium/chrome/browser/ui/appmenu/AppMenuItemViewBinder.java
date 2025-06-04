@@ -10,17 +10,20 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.button.MaterialButton;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -191,6 +194,29 @@ class AppMenuItemViewBinder {
 
     public static void bindIconRowItem(PropertyModel model, View view, PropertyKey key) {
         if (key == AppMenuItemProperties.ADDITIONAL_ICONS) {
+            ViewGroup root = (ViewGroup) view;
+
+            // Obtain from the current theme a typed array containing all the attributes.
+            TypedArray typedArray =
+                    view.getContext().getTheme().obtainStyledAttributes(R.styleable.AppMenuIconRow);
+            int paddingPx =
+                    typedArray.getDimensionPixelSize(
+                            R.styleable.AppMenuIconRow_appMenuIconRowPadding, 0);
+            int drawableResId =
+                    typedArray.getResourceId(
+                            R.styleable.AppMenuIconRow_overflowMenuActionBarBgDrawable, 0);
+
+            typedArray.recycle();
+
+            // The padding applied will be 0 for the baseline theme.
+            ViewCompat.setPaddingRelative(
+                    root, paddingPx, paddingPx, paddingPx, root.getPaddingBottom());
+
+            // Set the background by resolving it from the current theme.
+            if (drawableResId != 0) {
+                view.setBackgroundResource(drawableResId);
+            }
+
             ModelList iconList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
 
             AppMenuClickHandler appMenuClickHandler =
@@ -207,14 +233,22 @@ class AppMenuItemViewBinder {
                     button.setVisibility(View.VISIBLE);
                     Drawable icon = iconList.get(i).model.get(AppMenuItemProperties.ICON);
                     icon = DrawableCompat.wrap(icon.mutate());
-                    @ColorRes
-                    int resId =
-                            iconList.get(i).model.get(AppMenuItemProperties.CHECKED)
-                                    ? R.color.default_icon_color_accent1_tint_list
-                                    : R.color.default_icon_color_tint_list;
                     button.setIcon(icon);
-                    button.setIconTint(
-                            AppCompatResources.getColorStateList(button.getContext(), resId));
+
+                    boolean isChecked = iconList.get(i).model.get(AppMenuItemProperties.CHECKED);
+
+                    if (!ThemeModuleUtils.isEnabled()) {
+                        @ColorRes
+                        int resId =
+                                isChecked
+                                        ? R.color.default_icon_color_accent1_tint_list
+                                        : R.color.default_icon_color_tint_list;
+                        button.setIconTint(
+                                AppCompatResources.getColorStateList(button.getContext(), resId));
+                    } else {
+                        button.setCheckable(true);
+                        button.setChecked(isChecked);
+                    }
                     setupMenuButton(button, iconList.get(i).model, appMenuClickHandler);
                 } else {
                     buttonWrapper.setVisibility(View.GONE);
@@ -227,9 +261,6 @@ class AppMenuItemViewBinder {
             view.setTag(
                     R.id.menu_item_enter_anim_id,
                     AppMenuUtil.buildIconItemEnterAnimator(buttons, isMenuIconAtStart));
-
-            // Tint action bar's background.
-            view.setBackgroundResource(R.drawable.menu_action_bar_bg);
 
             view.setEnabled(false);
         }
