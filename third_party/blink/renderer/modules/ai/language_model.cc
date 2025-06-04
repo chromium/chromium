@@ -462,13 +462,14 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
   auto promise = resolver->Promise();
 
+  // Use WrapPersistent() to make sure LanguageModel is not garbage collected
+  // during the response.
   auto pending_remote = CreateModelExecutionResponder(
       script_state, options->getSignalOr(nullptr), resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
-      WTF::BindOnce(&LanguageModel::OnResponseComplete,
-                    WrapWeakPersistent(this)),
+      WTF::BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                         WrapWeakPersistent(this)));
+                         WrapPersistent(this)));
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
@@ -495,13 +496,14 @@ ReadableStream* LanguageModel::promptStreaming(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionPromptStreaming);
 
+  // Use WrapPersistent() to make sure LanguageModel is not garbage collected
+  // during the response.
   auto [stream, remote] = CreateModelExecutionStreamingResponder(
       script_state, options->getSignalOr(nullptr), task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
-      WTF::BindOnce(&LanguageModel::OnResponseComplete,
-                    WrapWeakPersistent(this)),
+      WTF::BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                         WrapWeakPersistent(this)));
+                         WrapPersistent(this)));
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
