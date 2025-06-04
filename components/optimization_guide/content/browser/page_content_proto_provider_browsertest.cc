@@ -36,13 +36,18 @@ base::FilePath GetTestDataDir() {
       FILE_PATH_LITERAL("components/test/data/optimization_guide"));
 }
 
+void AssertIsTextNode(const optimization_guide::proto::ContentNode& text_node,
+                      std::string text) {
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(), text);
+}
+
 void AssertHasText(const optimization_guide::proto::ContentNode& node,
                    std::string text) {
   EXPECT_EQ(node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
   EXPECT_EQ(node.children_nodes().size(), 1);
   const auto& text_node = node.children_nodes().at(0);
-  EXPECT_EQ(text_node.content_attributes().text_data().text_content(), text);
+  AssertIsTextNode(text_node, text);
 }
 
 void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
@@ -82,12 +87,29 @@ void AssertValidOrigin(
 }
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto request = blink::mojom::AIPageContentOptions::New();
-  request->include_geometry = true;
+  auto request = DefaultAIPageContentOptions();
   request->on_critical_path = true;
-  request->include_hidden_searchable_content = true;
-
   return request;
+}
+
+blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions() {
+  auto request = ActionableAIPageContentOptions();
+  request->on_critical_path = true;
+  return request;
+}
+
+// Given the root node for a Document, provides the body node which actually has
+// the document's content.
+const optimization_guide::proto::ContentNode&
+ContentRootNodeForFrameActionableMode(
+    const optimization_guide::proto::ContentNode& root) {
+  EXPECT_EQ(root.children_nodes().size(), 1);
+  const auto& html = root.children_nodes().at(0);
+
+  EXPECT_EQ(html.children_nodes().size(), 1);
+  const auto& body = html.children_nodes().at(0);
+
+  return body;
 }
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
@@ -152,7 +174,9 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     CHECK(page_content_);
   }
 
-  void LoadPage(GURL url, bool with_page_content = true) {
+  void LoadPage(GURL url,
+                blink::mojom::AIPageContentOptionsPtr options =
+                    GetAIPageContentOptions()) {
     content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url, 1);
 
     {
@@ -164,8 +188,8 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
       ASSERT_TRUE(future.Wait()) << "Timeout waiting for syncing with renderer";
     }
 
-    if (with_page_content) {
-      LoadData();
+    if (options) {
+      LoadData(std::move(options));
     }
   }
 
@@ -177,6 +201,10 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  const optimization_guide::proto::ContentNode& ActionableContentRootNode() {
+    return ContentRootNodeForFrameActionableMode(page_content().root_node());
+  }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
@@ -184,8 +212,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
-  const gfx::Size window_bounds(web_contents()->GetSize());
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicDefault) {
   LoadPage(https_server()->GetURL("/simple.html"));
 
   EXPECT_EQ(page_content().version(),
@@ -194,9 +221,21 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
   EXPECT_FALSE(
       page_content().root_node().content_attributes().has_interaction_info());
+}
 
-  const auto& root_geometry =
-      page_content().root_node().content_attributes().geometry();
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicActionable) {
+  const gfx::Size window_bounds(web_contents()->GetSize());
+  LoadPage(https_server()->GetURL("/simple.html"),
+           ActionableAIPageContentOptions());
+
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 1);
+  AssertIsTextNode(root_node.children_nodes()[0], "Non empty simple page\n\n");
+
+  const auto& root_geometry = root_node.content_attributes().geometry();
   EXPECT_EQ(root_geometry.outer_bounding_box().x(), 0);
   EXPECT_EQ(root_geometry.outer_bounding_box().y(), 0);
   EXPECT_EQ(root_geometry.outer_bounding_box().width(), window_bounds.width());
@@ -218,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
-  LoadPage(https_server()->GetURL("/simple.html"), false);
+  LoadPage(https_server()->GetURL("/simple.html"), nullptr);
   SelectTextInBody(web_contents()->GetPrimaryMainFrame());
   LoadData();
 
@@ -290,16 +329,6 @@ class PageContentProtoProviderBrowserTestActionableElements
   PageContentProtoProviderBrowserTestActionableElements()
       : features_(features::kAnnotatedPageContentWithActionableElements) {}
 
-  const optimization_guide::proto::ContentNode& ContentRootNode() {
-    EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
-    const auto& html = page_content().root_node().children_nodes().at(0);
-
-    EXPECT_EQ(html.children_nodes().size(), 1);
-    const auto& body = html.children_nodes().at(0);
-
-    return body;
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -315,63 +344,64 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
   EXPECT_TRUE(child.content_attributes().has_interaction_info());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
-                       ForLabel) {
-  LoadPage(https_server()->GetURL("/for_label.html"));
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
+  LoadPage(https_server()->GetURL("/for_label.html"),
+           ActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
 
-  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 2);
 
-  const auto& input = ContentRootNode().children_nodes()[0];
+  const auto& input = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
 
-  const auto& label = ContentRootNode().children_nodes()[1];
+  const auto& label = ActionableContentRootNode().children_nodes()[1];
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes().interaction_info().is_clickable());
   EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        LabelNotActionable) {
-  LoadPage(https_server()->GetURL("/label_not_actionable.html"));
+  LoadPage(https_server()->GetURL("/label_not_actionable.html"),
+           ActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
 
-  EXPECT_EQ(ContentRootNode().children_nodes().size(), 2);
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 2);
 
-  const auto& input = ContentRootNode().children_nodes()[0];
+  const auto& input = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_TRUE(input.content_attributes().interaction_info().is_clickable());
 
-  const auto& label = ContentRootNode().children_nodes()[1];
+  const auto& label = ActionableContentRootNode().children_nodes()[1];
   EXPECT_FALSE(label.content_attributes().has_interaction_info());
   EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
-                       AriaRole) {
-  LoadPage(https_server()->GetURL("/aria_role.html"));
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AriaRole) {
+  LoadPage(https_server()->GetURL("/aria_role.html"),
+           ActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
 
-  EXPECT_EQ(ContentRootNode().children_nodes().size(), 1);
-  const auto& button = ContentRootNode().children_nodes()[0];
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
+  const auto& button = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
   EXPECT_TRUE(button.content_attributes().interaction_info().is_clickable());
   EXPECT_EQ(button.content_attributes().aria_role(),
             optimization_guide::proto::AXRole::AX_ROLE_BUTTON);
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
-                       ZOrder) {
-  LoadPage(https_server()->GetURL("/simple.html"));
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ZOrder) {
+  LoadPage(https_server()->GetURL("/simple.html"),
+           ActionableAIPageContentOptions());
 
   EXPECT_EQ(page_content()
                 .root_node()
@@ -383,11 +413,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoGeometry) {
-  LoadPage(https_server()->GetURL("/simple.html"),
-           /* with_page_content = */ false);
+  LoadPage(https_server()->GetURL("/simple.html"), nullptr);
 
   auto request = blink::mojom::AIPageContentOptions::New();
-  request->include_geometry = false;
   LoadData(std::move(request));
 
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
@@ -397,17 +425,15 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoCriticalPath) {
-  LoadPage(https_server()->GetURL("/simple.html"),
-           /* with_page_content = */ false);
+  LoadPage(https_server()->GetURL("/simple.html"), nullptr);
 
   auto request = blink::mojom::AIPageContentOptions::New();
   request->on_critical_path = false;
-  request->include_geometry = true;
   LoadData(std::move(request));
 
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
-  EXPECT_TRUE(page_content().root_node().content_attributes().has_geometry());
+  EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -570,12 +596,11 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                        LatencyMetricsNotOnCriticalPath) {
   base::HistogramTester tester;
 
-
   LoadPage(https_server()->GetURL(
                "a.com", base::StringPrintf(
                             "/paragraph_iframe_partially_offscreen.html%s",
                             QueryParam())),
-           /* with_page_content = */ false);
+           nullptr);
 
   auto request = optimization_guide::DefaultAIPageContentOptions();
   request->on_critical_path = false;
@@ -623,19 +648,21 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                        AIPageContentIframePartiallyOffscreen) {
   LoadPage(https_server()->GetURL(
-      "a.com",
-      base::StringPrintf("/paragraph_iframe_partially_offscreen.html%s",
-                         QueryParam())));
-  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           ActionableAIPageContentOptions());
 
-  const auto& iframe = page_content().root_node().children_nodes()[0];
+  const auto& root_node = ActionableContentRootNode();
+  ASSERT_EQ(root_node.children_nodes().size(), 1);
+
+  const auto& iframe = root_node.children_nodes()[0];
   ASSERT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
 
   ASSERT_EQ(iframe.children_nodes().size(), 1);
-  const auto& iframe_root = iframe.children_nodes()[0];
-  ASSERT_EQ(iframe_root.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  const auto& iframe_root =
+      ContentRootNodeForFrameActionableMode(iframe.children_nodes()[0]);
 
   ASSERT_EQ(iframe_root.children_nodes().size(), 1);
   const auto& p = iframe_root.children_nodes()[0];
@@ -653,21 +680,23 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
 IN_PROC_BROWSER_TEST_P(
     PageContentProtoProviderBrowserTestSiteIsolation,
     AIPageContentIframePartiallyOffscreenAncestorRootScroller) {
-  LoadPage(https_server()->GetURL(
-      "a.com", base::StringPrintf(
-                   "/paragraph_iframe_partially_scrolled_offscreen.html%s",
-                   QueryParam())));
+  LoadPage(
+      https_server()->GetURL(
+          "a.com", base::StringPrintf(
+                       "/paragraph_iframe_partially_scrolled_offscreen.html%s",
+                       QueryParam())),
+      ActionableAIPageContentOptions());
 
-  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+  const auto& root_node = ActionableContentRootNode();
+  ASSERT_EQ(root_node.children_nodes().size(), 2);
 
-  const auto& iframe = page_content().root_node().children_nodes()[0];
+  const auto& iframe = root_node.children_nodes()[0];
   ASSERT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
 
   ASSERT_EQ(iframe.children_nodes().size(), 1);
-  const auto& iframe_root = iframe.children_nodes()[0];
-  ASSERT_EQ(iframe_root.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  const auto& iframe_root =
+      ContentRootNodeForFrameActionableMode(iframe.children_nodes()[0]);
 
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
@@ -690,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                "a.com", base::StringPrintf(
                             "/paragraph_iframe_partially_offscreen.html%s",
                             QueryParam())),
-           false);
+           nullptr);
 
   SelectTextInBody(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
   LoadData();
@@ -736,11 +765,13 @@ class PageContentProtoProviderBrowserTestMultiProcess
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        AIPageContentMultipleCrossSiteFrames) {
-  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"));
+  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
+           GetActionableAIPageContentOptions());
 
-  EXPECT_EQ(page_content().root_node().children_nodes().size(), 2);
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
 
-  const auto& b_frame = page_content().root_node().children_nodes()[0];
+  const auto& b_frame = root_node.children_nodes()[0];
   EXPECT_EQ(b_frame.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& b_frame_data = b_frame.content_attributes().iframe_data();
@@ -749,13 +780,16 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(b_frame_data.likely_ad_frame());
 
-  EXPECT_EQ(b_frame.children_nodes().size(), 1);
-  AssertHasText(b_frame.children_nodes()[0], "This page has no title.\n\n");
+  const auto& b_frame_root =
+      ContentRootNodeForFrameActionableMode(b_frame.children_nodes()[0]);
+  EXPECT_EQ(b_frame_root.children_nodes().size(), 1);
+  AssertIsTextNode(b_frame_root.children_nodes()[0],
+                   "This page has no title.\n\n");
   const auto& b_geometry = b_frame.content_attributes().geometry();
   AssertRectsEqual(b_geometry.outer_bounding_box(),
                    b_geometry.visible_bounding_box());
 
-  const auto& c_frame = page_content().root_node().children_nodes()[1];
+  const auto& c_frame = root_node.children_nodes()[1];
   EXPECT_EQ(c_frame.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& c_frame_data = c_frame.content_attributes().iframe_data();
@@ -763,8 +797,12 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(c_frame_data.likely_ad_frame());
-  EXPECT_EQ(b_frame.children_nodes().size(), 1);
-  AssertHasText(c_frame.children_nodes()[0], "This page has no title.\n\n");
+
+  const auto& c_frame_root =
+      ContentRootNodeForFrameActionableMode(c_frame.children_nodes()[0]);
+  EXPECT_EQ(c_frame_root.children_nodes().size(), 1);
+  AssertIsTextNode(c_frame_root.children_nodes()[0],
+                   "This page has no title.\n\n");
   const auto& c_geometry = c_frame.content_attributes().geometry();
   AssertRectsEqual(c_geometry.outer_bounding_box(),
                    c_geometry.visible_bounding_box());
@@ -792,7 +830,7 @@ class PageContentProtoProviderBrowserTestFencedFrame
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
                        AIPageContentFencedFrame) {
   LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
-           /* with_page_content = */ false);
+           nullptr);
 
   const GURL fenced_frame_url =
       https_server()->GetURL("b.com", "/fenced_frame/simple.html");
@@ -821,8 +859,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        AIPageContentMetadata) {
   // TODO(crbug.com/403325367) When remote frames are supported, this same test
   // should also work with cross-site iframes ("/iframe_cross_site.html").
-  LoadPage(https_server()->GetURL("a.com", "/iframe_same_site.html"),
-           /* with_page_content = */ false);
+  LoadPage(https_server()->GetURL("a.com", "/iframe_same_site.html"), nullptr);
 
   auto options = blink::mojom::AIPageContentOptions::New();
   options->max_meta_elements = 32;
@@ -852,7 +889,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        AIPageContentFrameIdentifiersTheSame) {
   LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
-           /* with_page_content = */ false);
+           nullptr);
 
   const GURL fenced_frame_url =
       https_server()->GetURL("b.com", "/fenced_frame/simple.html");

@@ -168,9 +168,7 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
   if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
     blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
     ai_page_content_options = optimization_guide::DefaultAIPageContentOptions();
-    ai_page_content_options->include_geometry = false;
     ai_page_content_options->on_critical_path = true;
-    ai_page_content_options->include_hidden_searchable_content = false;
     optimization_guide::GetAIPageContent(
         web_contents, std::move(ai_page_content_options),
         base::BindOnce(

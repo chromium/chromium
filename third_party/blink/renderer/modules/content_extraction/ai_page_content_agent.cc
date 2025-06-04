@@ -494,10 +494,7 @@ void RecordLatencyMetrics(base::TimeTicks start_time,
 // Returns true if extracting the content can't be deferred until the next
 // frame.
 bool NeedsSyncExtraction(const mojom::blink::AIPageContentOptions& options) {
-  // Including hidden searchable content requires layout for nodes which are
-  // skipped during rendering. So we need a special lifecycle for them and can't
-  // use the computed state from the regular lifecycle update.
-  return options.on_critical_path || options.include_hidden_searchable_content;
+  return options.on_critical_path;
 }
 
 }  // namespace
@@ -642,7 +639,6 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
-  if (options_->include_hidden_searchable_content) {
     forced_activatable_locks.emplace_back(
         document.GetDisplayLockDocumentState()
             .GetScopedForceActivatableLocks());
@@ -658,18 +654,17 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
                   ->GetDisplayLockDocumentState()
                   .GetScopedForceActivatableLocks());
         });
-  }
 
   // Running lifecycle beyond layout is expensive and the information is only
   // needed to compute geometry. Limit the update to layout if we don't need
   // the geometry.
-  if (options_->include_geometry) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kUnknown);
-  } else {
-    document.View()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kUnknown);
-  }
+    if (actionable_mode()) {
+      document.View()->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kUnknown);
+    } else {
+      document.View()->UpdateLifecycleToLayoutClean(
+          DocumentUpdateReason::kUnknown);
+    }
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
@@ -1036,7 +1031,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
 void AIPageContentAgent::ContentBuilder::AddLabel(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1083,7 +1078,7 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
 void AIPageContentAgent::ContentBuilder::AddForDomNodeId(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1160,7 +1155,7 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  if (!options_->include_geometry) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1179,7 +1174,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
     const LocalFrame& frame,
     mojom::blink::AIPageContentFrameData& frame_data) {
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1315,7 +1310,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
     const Node* node,
     mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const {
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1328,7 +1323,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
 void AIPageContentAgent::ContentBuilder::AddAriaRole(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) {
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     return;
   }
 
@@ -1383,7 +1378,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   ComputeScrollerInfo(object, *node_interaction_info);
 
   // If experimental data is disabled, only scrollable nodes are included.
-  if (!options_->enable_experimental_actionable_data) {
+  if (!actionable_mode()) {
     if (node_interaction_info->scroller_info) {
       attributes.node_interaction_info = std::move(node_interaction_info);
     }

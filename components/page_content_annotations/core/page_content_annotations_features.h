@@ -128,19 +128,10 @@ bool IsAnnotatedPageContentOnCriticalPath();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 base::TimeDelta GetAnnotatedPageContentCaptureDelay();
 
-// Whether AnnotatedPageContent should include geometry for each ContentNode.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool ShouldAnnotatedPageContentIncludeGeometry();
-
 // Whether the AnnotatedPageContent study should also capture inner text for a
 // comparison.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldAnnotatedPageContentStudyIncludeInnerText();
-
-// Whether the AnnotatedPageContent study should include content which is not
-// being currently rendered but is discoverable via find-in-page.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool ShouldIncludeHiddenButSearchableContent();
 
 }  // namespace page_content_annotations::features
 

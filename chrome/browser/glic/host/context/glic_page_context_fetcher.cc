@@ -189,18 +189,20 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
 
     if (options.include_annotated_page_content) {
       blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
-      ai_page_content_options =
-          optimization_guide::DefaultAIPageContentOptions();
-      ai_page_content_options->include_geometry = false;
-      ai_page_content_options->on_critical_path = true;
-      ai_page_content_options->include_hidden_searchable_content = true;
-      ai_page_content_options->max_meta_elements = options.max_meta_tags;
+
       // TODO(crbug.com/409564704): Move actor page content extraction to the
       // actor coordinator.
       if (include_actionable_data) {
-        ai_page_content_options->include_geometry = true;
-        ai_page_content_options->enable_experimental_actionable_data = true;
+        ai_page_content_options =
+            optimization_guide::ActionableAIPageContentOptions();
+      } else {
+        ai_page_content_options =
+            optimization_guide::DefaultAIPageContentOptions();
       }
+
+      ai_page_content_options->on_critical_path = true;
+      ai_page_content_options->max_meta_elements = options.max_meta_tags;
+
       optimization_guide::GetAIPageContent(
           web_contents(), std::move(ai_page_content_options),
           base::BindOnce(&GlicPageContextFetcher::ReceivedAnnotatedPageContent,

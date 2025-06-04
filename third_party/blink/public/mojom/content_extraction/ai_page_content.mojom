@@ -414,28 +414,31 @@ struct AIPageContent {
   AIPageContentFrameData frame_data;
 };
 
+enum AIPageContentMode {
+  // Includes all rendered content from the Document. The page can have content
+  // which is currently hidden but can be accessed by the user via find-in-page.
+  // Such content is also included.
+  kDefault,
+
+  // Includes additional information to know which nodes are interactive and the
+  // geometry associated each node. This includes both 2D geometry and stacking
+  // order for occlusion.
+  kActionableElements,
+};
+
 struct AIPageContentOptions {
-  // Indicates whether the geometry for each ContentNode should be included in
-  // the content.
-  bool include_geometry = false;
+  // Configures which content is included in the extracted APC.
+  AIPageContentMode mode;
 
   // Indicates whether this request is on the critical path, i.e., user visible.
   // Requests which are not on the critical path can be de-prioritized to avoid
   // blocking higher priority work.
   bool on_critical_path = false;
 
-  // The page can have content which is currently hidden but can be accessed by
-  // the user via find-in-page. This content's style and layout is not kept
-  // up-to-date as an optimization. Including it will force the renderer to
-  // update it's style and layout.
-  bool include_hidden_searchable_content = false;
-
   // The maximum number of meta elements to include in the content.
+  // Note: This option is not folded into AIPageContentMode since this
+  // information is not added to the proto.
   int32 max_meta_elements = 0;
-
-  // Include node-level data for actionable elements captured in
-  // AIPageContentNodeInteractionInfo.
-  bool enable_experimental_actionable_data = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

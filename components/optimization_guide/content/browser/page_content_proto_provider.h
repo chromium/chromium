@@ -23,6 +23,7 @@ class WebContents;
 
 namespace optimization_guide {
 blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions();
+blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions();
 
 // A DocumentUserData that stores a serialized unguessable token for a given
 // RenderFrameHost.

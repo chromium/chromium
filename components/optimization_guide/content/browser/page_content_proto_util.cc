@@ -745,7 +745,8 @@ bool ConvertAIPageContentToProto(
   }
 
   auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
-  if (main_frame_options->enable_experimental_actionable_data) {
+  if (main_frame_options->mode ==
+      blink::mojom::AIPageContentMode::kActionableElements) {
     version = optimization_guide::proto::
         ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
   }

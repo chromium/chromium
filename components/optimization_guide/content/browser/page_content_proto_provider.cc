@@ -49,8 +49,7 @@ void ApplyOptionsOverridesForWebContents(
 
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithActionableElements)) {
-    options.enable_experimental_actionable_data = true;
-    options.include_geometry = true;
+    options.mode = blink::mojom::AIPageContentMode::kActionableElements;
   }
 }
 
@@ -244,7 +243,15 @@ AIPageContentResult& AIPageContentResult::operator=(
     AIPageContentResult&& other) = default;
 
 blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
-  return blink::mojom::AIPageContentOptions::New();
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = blink::mojom::AIPageContentMode::kDefault;
+  return options;
+}
+
+blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions() {
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->mode = blink::mojom::AIPageContentMode::kActionableElements;
+  return options;
 }
 
 void GetAIPageContent(content::WebContents* web_contents,

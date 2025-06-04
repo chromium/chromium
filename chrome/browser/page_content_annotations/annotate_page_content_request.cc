@@ -47,12 +47,9 @@ void RecordPdfPageCountMetrics(
 std::unique_ptr<AnnotatedPageContentRequest>
 AnnotatedPageContentRequest::Create(content::WebContents* web_contents) {
   auto request = blink::mojom::AIPageContentOptions::New();
+  request->mode = blink::mojom::AIPageContentMode::kDefault;
   request->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();
-  request->include_geometry = page_content_annotations::features::
-      ShouldAnnotatedPageContentIncludeGeometry();
-  request->include_hidden_searchable_content = page_content_annotations::
-      features::ShouldIncludeHiddenButSearchableContent();
 
   return std::make_unique<AnnotatedPageContentRequest>(web_contents,
                                                        std::move(request));

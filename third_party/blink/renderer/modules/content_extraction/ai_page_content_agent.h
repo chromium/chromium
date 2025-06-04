@@ -86,6 +86,10 @@ class MODULES_EXPORT AIPageContentAgent final
       int stack_depth = 0;
     };
 
+    bool actionable_mode() const {
+      return options_->mode ==
+             mojom::blink::AIPageContentMode::kActionableElements;
+    }
     // Returns true if any descendant of `object` has a computed value of
     // visible for `visibility`.
     bool WalkChildren(const LayoutObject& object,

@@ -133,8 +133,7 @@ void GetAIPageContentForModelPrototyping(
   TRACE_EVENT("browser", "GetAIPageContentForModelPrototyping");
 
   auto options = optimization_guide::DefaultAIPageContentOptions();
-  options->enable_experimental_actionable_data = false;
-  options->include_geometry = false;
+  options->on_critical_path = true;
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
   optimization_guide::GetAIPageContent(web_contents, std::move(options),
@@ -147,9 +146,8 @@ void GetAIPageContentWithActionableElementsForModelPrototyping(
   TRACE_EVENT("browser",
               "GetAIPageContentWithActionableElementsForModelPrototyping");
 
-  auto options = optimization_guide::DefaultAIPageContentOptions();
-  options->enable_experimental_actionable_data = true;
-  options->include_geometry = true;
+  auto options = optimization_guide::ActionableAIPageContentOptions();
+  options->on_critical_path = true;
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentWithActionableElementsForModelPrototyping,
       std::move(continue_callback));
