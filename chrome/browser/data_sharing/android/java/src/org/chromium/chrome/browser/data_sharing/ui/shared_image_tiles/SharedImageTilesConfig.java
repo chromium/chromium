@@ -16,6 +16,7 @@ import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -220,8 +221,11 @@ public class SharedImageTilesConfig {
         public Builder setTabGroupColor(Context context, @TabGroupColorId int tabGroupColorId) {
             @ColorInt
             int tabGroupColor =
-                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                            context, tabGroupColorId, false);
+                    SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()
+                            ? SurfaceColorUpdateUtils.getCardViewBackgroundColor(
+                                    context, false, tabGroupColorId)
+                            : TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    context, tabGroupColorId, false);
             setBorderColor(tabGroupColor);
             setBackgroundColor(tabGroupColor);
             @ColorRes

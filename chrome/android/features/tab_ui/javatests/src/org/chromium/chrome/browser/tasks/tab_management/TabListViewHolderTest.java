@@ -306,6 +306,7 @@ public class TabListViewHolderTest {
                                     .with(TabProperties.IS_INCOGNITO, false)
                                     .with(TabProperties.TAB_ID, TAB1_ID)
                                     .with(TabProperties.IS_SELECTED, false)
+                                    .with(TabProperties.TAB_GROUP_CARD_COLOR, null)
                                     .with(TabProperties.TAB_CLICK_LISTENER, mMockSelectedListener)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
@@ -324,6 +325,7 @@ public class TabListViewHolderTest {
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                                     .with(TabProperties.TAB_ACTION_STATE, TabActionState.SELECTABLE)
                                     .with(TabProperties.IS_SELECTED, false)
+                                    .with(TabProperties.TAB_GROUP_CARD_COLOR, null)
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_DATA,
                                             new TabActionButtonData(

@@ -10,9 +10,12 @@ import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Utility class that provides color values based on feature flags enabled. */
@@ -32,6 +35,10 @@ public class SurfaceColorUpdateUtils {
     /** Whether new toolbar and omnibox/location bar surface colors are being used. */
     public static boolean useNewToolbarSurfaceColor() {
         return ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
+    }
+
+    public static boolean useNewGm3GtsTabGroupColors() {
+        return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled();
     }
 
     /**
@@ -152,9 +159,15 @@ public class SurfaceColorUpdateUtils {
      * incognito.
      *
      * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param colorId User chosen color ID.
      * @return The background color.
      */
-    public static @ColorInt int getCardViewBackgroundColor(Context context, boolean isIncognito) {
+    public static @ColorInt int getCardViewBackgroundColor(
+            Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardColor(context, isIncognito, colorId);
+        }
         if (useNewGtsSurfaceColor()) {
             // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
             return isIncognito

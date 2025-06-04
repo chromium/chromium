@@ -800,7 +800,10 @@ public class TabUiTestHelper {
                 ViewCompat.getBackgroundTintList(cardView).getDefaultColor();
         final @ColorInt int selectedColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
-                        holder.getContext(), /* isIncognito= */ false, /* isSelected= */ true);
+                        holder.getContext(),
+                        /* isIncognito= */ false,
+                        /* isSelected= */ true,
+                        /* colorId */ null);
         return actualColor == selectedColor;
     }
 

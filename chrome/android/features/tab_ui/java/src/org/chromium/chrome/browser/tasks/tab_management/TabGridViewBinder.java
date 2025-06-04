@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
@@ -149,7 +150,15 @@ class TabGridViewBinder {
             updateColor(
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+                    model.get(TabProperties.IS_SELECTED),
+                    model.get(TabProperties.TAB_GROUP_CARD_COLOR));
+            updateFavicon(view, model);
+        } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey) {
+            updateColor(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED),
+                    model.get(TabProperties.TAB_GROUP_CARD_COLOR));
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             updateFavicon(view, model);
@@ -435,7 +444,10 @@ class TabGridViewBinder {
 
         // To GC on hide set a background color and remove the thumbnail.
         final boolean isSelected = model.get(TabProperties.IS_SELECTED);
-        thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+        thumbnail.updateThumbnailPlaceholder(
+                model.get(TabProperties.IS_INCOGNITO),
+                isSelected,
+                model.get(TabProperties.TAB_GROUP_CARD_COLOR));
 
         final ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
@@ -509,8 +521,19 @@ class TabGridViewBinder {
                 isSelected ? favicon.getSelectedDrawable() : favicon.getDefaultDrawable());
     }
 
+    /**
+     * Bind color updates.
+     *
+     * @param rootView The root view of the item.
+     * @param isIncognito Whether the model is in incognito mode.
+     * @param isSelected Whether the item is selected.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
+     */
     private static void updateColor(
-            ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
+            ViewLookupCachingFrameLayout rootView,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
         View cardView = rootView.fastFindViewById(R.id.card_view);
         TextView titleView = rootView.fastFindViewById(R.id.tab_title);
         TabThumbnailView thumbnail = rootView.fastFindViewById(R.id.tab_thumbnail);
@@ -519,13 +542,13 @@ class TabGridViewBinder {
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
-                        cardView.getContext(), isIncognito, isSelected);
+                        cardView.getContext(), isIncognito, isSelected, colorId);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         titleView.setTextColor(
                 TabUiThemeUtils.getTitleTextColor(titleView.getContext(), isIncognito, isSelected));
 
-        thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
+        thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected, colorId);
 
         ViewCompat.setBackgroundTintList(
                 backgroundView,

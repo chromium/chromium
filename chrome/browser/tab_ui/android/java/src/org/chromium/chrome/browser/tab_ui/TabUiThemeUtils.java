@@ -13,11 +13,14 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /**
  * Utility methods for providing colors and styles for the tab UI.
+ *
  * @deprecated Add new changes to TabUiThemeUtil.java, or TabUiThemeProvider.java.
  */
 @NullMarked
@@ -98,17 +101,22 @@ public class TabUiThemeUtils {
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param isSelected Whether the tab is currently selected.
+     * @param colorId colorId Color chosen by user for the TabGroup, Null if not a tab group.
      * @return The {@link ColorInt} for tab grid card view background.
      */
     public static @ColorInt int getCardViewBackgroundColor(
-            Context context, boolean isIncognito, boolean isSelected) {
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
         if (isSelected) {
             // Incognito does not use dynamic colors, so it can use colors from resources.
             return isIncognito
                     ? ContextCompat.getColor(context, R.color.incognito_tab_bg_selected_color)
                     : MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
         } else {
-            return SurfaceColorUpdateUtils.getCardViewBackgroundColor(context, isIncognito);
+            return SurfaceColorUpdateUtils.getCardViewBackgroundColor(
+                    context, isIncognito, colorId);
         }
     }
 }

@@ -20,6 +20,10 @@ import org.chromium.ui.util.ColorUtils;
 /** Helper class to handle tab group color picker related utilities. */
 @NullMarked
 public class TabGroupColorPickerUtils {
+
+    private static final int COLOR_PICKER_ITEM_COLOR = 0;
+    private static final int TAB_GROUP_CARD_COLOR = 1;
+
     /**
      * Get the color corresponding to the color id that is passed in. Adjust the color depending on
      * light/dark/incognito mode as well as dynamic color themes. This function should only be used
@@ -31,16 +35,7 @@ public class TabGroupColorPickerUtils {
      */
     public static @ColorInt int getTabGroupColorPickerItemColor(
             Context context, @TabGroupColorId int colorId, boolean isIncognito) {
-        @ColorRes int colorRes = getTabGroupColorPickerItemColorResource(colorId, isIncognito);
-        @ColorInt int color = ContextCompat.getColor(context, colorRes);
-
-        if (isIncognito) {
-            return color;
-        } else {
-            // Harmonize the resultant color with dynamic color themes if applicable. This will
-            // no-op and return the passed in color if dynamic colors are not enabled.
-            return MaterialColors.harmonizeWithPrimary(context, color);
-        }
+        return getColor(context, isIncognito, colorId, COLOR_PICKER_ITEM_COLOR);
     }
 
     /**
@@ -128,6 +123,81 @@ public class TabGroupColorPickerUtils {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    /**
+     * Get the color corresponding to the color id that is passed in. Adjust the color depending on
+     * light/dark/incognito mode as well as dynamic color themes. This function should only be used
+     * for retrieving items from the tab group card color.
+     *
+     * @param context The current context.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     * @param colorId The color id corresponding to the color of the Tab Group.
+     */
+    public static @ColorInt int getTabGroupCardColor(
+            Context context, boolean isIncognito, @TabGroupColorId int colorId) {
+        return getColor(context, isIncognito, colorId, TAB_GROUP_CARD_COLOR);
+    }
+
+    /**
+     * Get the color resource corresponding to the respective color item. This function should only
+     * be used for retrieving items from the tab group card color.
+     *
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     * @param colorId The color id corresponding to the color of the Tab Group.
+     */
+    public static @ColorRes int getTabGroupCardColorResource(
+            boolean isIncognito, @TabGroupColorId int colorId) {
+        switch (colorId) {
+            case TabGroupColorId.GREY:
+                return R.color.tab_group_card_color_grey;
+            case TabGroupColorId.BLUE:
+                return R.color.tab_group_card_color_blue;
+            case TabGroupColorId.RED:
+                return R.color.tab_group_card_color_red;
+            case TabGroupColorId.YELLOW:
+                return R.color.tab_group_card_color_yellow;
+            case TabGroupColorId.GREEN:
+                return R.color.tab_group_card_color_green;
+            case TabGroupColorId.PINK:
+                return R.color.tab_group_card_color_pink;
+            case TabGroupColorId.PURPLE:
+                return R.color.tab_group_card_color_purple;
+            case TabGroupColorId.CYAN:
+                return R.color.tab_group_card_color_cyan;
+            case TabGroupColorId.ORANGE:
+                return R.color.tab_group_card_color_orange;
+            default:
+                assert false : "Invalid tab group color id " + colorId;
+                return Resources.ID_NULL;
+        }
+    }
+
+    private static @ColorInt int getColor(
+            Context context, boolean isIncognito, @TabGroupColorId int colorId, int useCase) {
+
+        @ColorRes int colorRes;
+        @ColorInt int color;
+
+        switch (useCase) {
+            case COLOR_PICKER_ITEM_COLOR:
+                colorRes = getTabGroupColorPickerItemColorResource(colorId, isIncognito);
+                break;
+            case TAB_GROUP_CARD_COLOR:
+                colorRes = getTabGroupCardColorResource(isIncognito, colorId);
+                break;
+            default:
+                assert false : "Invalid use case " + useCase;
+                colorRes = Resources.ID_NULL;
+        }
+        color = ContextCompat.getColor(context, colorRes);
+        if (isIncognito) {
+            return color;
+        } else {
+            // Harmonize the resultant color with dynamic color themes if applicable. This will
+            // no-op and return the passed in color if dynamic colors are not enabled.
+            return MaterialColors.harmonizeWithPrimary(context, color);
         }
     }
 }

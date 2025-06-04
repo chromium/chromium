@@ -276,7 +276,7 @@ public class StripDragShadowView extends FrameLayout {
                     mShadowUpdateHost.requestUpdate();
                 });
         mThumbnailView.updateThumbnailPlaceholder(
-                tab.isIncognitoBranded(), /* isSelected= */ false);
+                tab.isIncognitoBranded(), /* isSelected= */ false, /* colorId */ null);
     }
 
     /** Clear state on tab drag end. */

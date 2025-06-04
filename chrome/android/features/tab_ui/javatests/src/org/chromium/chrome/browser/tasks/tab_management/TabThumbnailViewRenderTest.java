@@ -224,10 +224,10 @@ public class TabThumbnailViewRenderTest {
         cardView.getBackground().mutate();
         final @ColorInt int backgroundColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
-                        cardView.getContext(), isIncognito, isSelected);
+                        cardView.getContext(), isIncognito, isSelected, /* colorId */ null);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
-        mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected);
+        mTabThumbnailView.updateThumbnailPlaceholder(isIncognito, isSelected, /* colorId */ null);
 
         mTabCard.setTabActionButtonTint(
                 TabUiThemeProvider.getActionButtonTintList(

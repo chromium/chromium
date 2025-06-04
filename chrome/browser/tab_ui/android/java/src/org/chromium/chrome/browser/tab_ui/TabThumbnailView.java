@@ -31,6 +31,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /**
  * A specialized {@link ImageView} that clips a thumbnail to a card shape with varied corner radii.
@@ -223,10 +224,12 @@ public class TabThumbnailView extends ImageView {
 
     /**
      * Set the thumbnail placeholder based on whether it is used for an incognito / selected tab.
+     *
      * @param isIncognito Whether the thumbnail is on an incognito tab.
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
-    public void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
+    public void updateThumbnailPlaceholder(
+            boolean isIncognito, boolean isSelected, @Nullable @TabGroupColorId Integer colorId) {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
@@ -234,7 +237,7 @@ public class TabThumbnailView extends ImageView {
         final int oldColor = mPaint.getColor();
         final int newColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
-                        getContext(), isIncognito, isSelected);
+                        getContext(), isIncognito, isSelected, colorId);
         mPaint.setColor(newColor);
 
         // Step 2: Placeholder icon.

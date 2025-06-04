@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -138,6 +139,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabGroupColorViewProvider>
             TAB_GROUP_COLOR_VIEW_PROVIDER = new WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableObjectPropertyKey<@TabGroupColorId Integer>
+            TAB_GROUP_CARD_COLOR = new PropertyModel.WritableObjectPropertyKey<>();
+
     // TODO(crbug.com/365973166): Move this to `TabStripProperties` when it is created.
     public static final WritableBooleanPropertyKey HAS_NOTIFICATION_BUBBLE =
             new WritableBooleanPropertyKey();
@@ -175,6 +179,7 @@ public class TabProperties {
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_VIEW_PROVIDER,
+                TAB_GROUP_CARD_COLOR,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
             };

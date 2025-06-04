@@ -115,6 +115,7 @@ public final class TabGridViewBinderUnitTest {
                         .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
                         .with(TabProperties.IS_INCOGNITO, false)
                         .with(TabProperties.IS_SELECTED, true)
+                        .with(TabProperties.TAB_GROUP_CARD_COLOR, null)
                         .with(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, INIT_HEIGHT))
                         .build();
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
@@ -161,7 +162,7 @@ public final class TabGridViewBinderUnitTest {
     public void bindClosableTabWithCardWidth_updateNullFetcher() {
         mModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
         verify(mThumbnailView).setImageDrawable(null);
 
         // Update width.
@@ -171,7 +172,8 @@ public final class TabGridViewBinderUnitTest {
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView, times(2)).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView, times(2))
+                .updateThumbnailPlaceholder(false, true, /* colorId */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mThumbnailView, times(2)).setImageDrawable(null);
@@ -188,7 +190,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
@@ -264,7 +266,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, false, /* colorId */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(any(), eq(false), mCallbackCaptor.capture());
@@ -298,7 +300,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 
@@ -332,7 +334,7 @@ public final class TabGridViewBinderUnitTest {
 
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
-        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true, /* colorId */ null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(any(), eq(true), mCallbackCaptor.capture());
 

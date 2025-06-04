@@ -272,7 +272,9 @@ public class StripTabHoverCardView extends FrameLayout {
                     } else {
                         // Always use the unselected tab version of the thumbnail placeholder.
                         mThumbnailView.updateThumbnailPlaceholder(
-                                hoveredTab.isIncognito(), /* isSelected= */ false);
+                                hoveredTab.isIncognito(),
+                                /* isSelected= */ false,
+                                /* colorId */ null);
                     }
                     mThumbnailView.setVisibility(VISIBLE);
                 });

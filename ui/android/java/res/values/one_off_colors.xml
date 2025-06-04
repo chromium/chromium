@@ -51,6 +51,17 @@ found in the LICENSE file.
     <color name="tab_group_color_picker_yellow_dark">#F9AB00</color>
     <color name="tab_group_color_picker_yellow_light">#FDD663</color>
 
+    <!-- Tab group card related colors. These should not be used elsewhere. -->
+    <color name="tab_group_card_color_grey_gm3">#E3E3E3</color>
+    <color name="tab_group_card_color_blue_gm3">#76ACFF</color>
+    <color name="tab_group_card_color_cyan_gm3">#60D5F3</color>
+    <color name="tab_group_card_color_green_gm3">#44C265</color>
+    <color name="tab_group_card_color_orange_gm3">#FF8D41</color>
+    <color name="tab_group_card_color_pink_gm3">#FF7DD2</color>
+    <color name="tab_group_card_color_purple_gm3">#C597FF</color>
+    <color name="tab_group_card_color_red_gm3">#FF8983</color>
+    <color name="tab_group_card_color_yellow_gm3">#FCBD00</color>
+
     <!-- Colors used in Google Pay icon -->
     <color name="google_pay_icon_grey_dark">#3C4043</color>
 

@@ -26,4 +26,15 @@ found in the LICENSE file.
     <color name="tab_group_color_picker_yellow">@color/tab_group_color_picker_yellow_dark</color>
     <color name="tab_group_color_picker_yellow_incognito">@color/tab_group_color_picker_yellow_light</color>
     <color name="tab_group_tab_strip_title_text_color_incognito">@color/baseline_neutral_20</color>
+
+    <!-- Tab group card related colors. These should not be used elsewhere. -->
+    <color name="tab_group_card_color_grey">@color/tab_group_card_color_grey_gm3</color>
+    <color name="tab_group_card_color_blue">@color/tab_group_card_color_blue_gm3</color>
+    <color name="tab_group_card_color_cyan">@color/tab_group_card_color_cyan_gm3</color>
+    <color name="tab_group_card_color_green">@color/tab_group_card_color_green_gm3</color>
+    <color name="tab_group_card_color_orange">@color/tab_group_card_color_orange_gm3</color>
+    <color name="tab_group_card_color_pink">@color/tab_group_card_color_pink_gm3</color>
+    <color name="tab_group_card_color_purple">@color/tab_group_card_color_purple_gm3</color>
+    <color name="tab_group_card_color_red">@color/tab_group_card_color_red_gm3</color>
+    <color name="tab_group_card_color_yellow">@color/tab_group_card_color_yellow_gm3</color>
 </resources>

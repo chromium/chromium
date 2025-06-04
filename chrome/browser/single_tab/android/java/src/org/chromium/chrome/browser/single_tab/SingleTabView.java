@@ -67,7 +67,7 @@ class SingleTabView extends LinearLayout {
                         getContext().getString(R.string.home_modules_single_tab_title));
             }
             mTabThumbnail.updateThumbnailPlaceholder(
-                    /* isIncognito= */ false, /* isSelected= */ false);
+                    /* isIncognito= */ false, /* isSelected= */ false, /* colorId */ null);
         }
     }
 
