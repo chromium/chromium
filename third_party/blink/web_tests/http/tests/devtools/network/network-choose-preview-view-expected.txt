@@ -59,20 +59,20 @@ Testing with MimeType: text/html, and StatusCode: 500
 Content: This
 <b>is a </b><br /><br />test.
 
-ResourceType(xhr): widget vbox html request-view
-ResourceType(fetch): widget vbox html request-view
-ResourceType(document): widget vbox html request-view
-ResourceType(other): widget vbox html request-view
+ResourceType(xhr): widget vbox
+ResourceType(fetch): widget vbox
+ResourceType(document): widget vbox
+ResourceType(other): widget vbox
 
 Plain Text MIME But HTML/XML
 Testing with MimeType: text/plain, and StatusCode: 200
 Content: This
 <b>is a </b><br /><br />test.
 
-ResourceType(xhr): widget vbox html request-view
-ResourceType(fetch): widget vbox html request-view
-ResourceType(document): widget vbox html request-view
-ResourceType(other): widget vbox html request-view
+ResourceType(xhr): widget vbox
+ResourceType(fetch): widget vbox
+ResourceType(document): widget vbox
+ResourceType(other): widget vbox
 
 XML With Unknown MIME
 Testing with MimeType: text/foobar, and StatusCode: 200
