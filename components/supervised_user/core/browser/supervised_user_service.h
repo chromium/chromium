@@ -28,6 +28,10 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
+#endif
+
 class PrefService;
 class SupervisedUserServiceObserver;
 class SupervisedUserServiceFactory;
@@ -202,6 +206,12 @@ class SupervisedUserService : public KeyedService {
   // Registrar for preferences that control custodian data. They're observed
   // only when the profile is subject to parental controls.
   PrefChangeRegistrar custodian_pref_change_registrar_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Observers for the content filters
+  ContentFiltersObserverBridge browser_content_filters_observer_;
+  ContentFiltersObserverBridge search_content_filters_observer_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;

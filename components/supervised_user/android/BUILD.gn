@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/supervised_user/ContentFiltersObserverBridge.java" ]
+  visibility = [
+    ":*",
+    "//chrome/android:jni_headers",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+  ]
+}
+
+android_library("content_filters_observer_bridge_java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [ "java/src/org/chromium/components/supervised_user/ContentFiltersObserverBridge.java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}

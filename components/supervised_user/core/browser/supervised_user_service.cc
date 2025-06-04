@@ -148,6 +148,20 @@ SupervisedUserService::SupervisedUserService(
               &SupervisedUserService::OnParentalControlsDisabled,
               base::Unretained(this))),
       platform_delegate_(std::move(platform_delegate)),
+      #if BUILDFLAG(IS_ANDROID)
+        browser_content_filters_observer_(
+                kBrowserContentFiltersSettingName,
+                base::BindRepeating(&EnableBrowserContentFilters,
+                                    std::ref(user_prefs_.get())),
+                base::BindRepeating(&DisableBrowserContentFilters,
+                                    std::ref(user_prefs_.get()))),
+        search_content_filters_observer_(
+                kSearchContentFiltersSettingName,
+                base::BindRepeating(&EnableSearchContentFilters,
+                                    std::ref(user_prefs_.get())),
+                base::BindRepeating(&DisableSearchContentFilters,
+                                    std::ref(user_prefs_.get()))),
+      #endif  // BUILDFLAG(IS_ANDROID)
       url_filter_(std::move(url_filter)) {
   CHECK(settings_service_->IsReady())
       << "Settings service is initialized as part of the PrefService, which is "
@@ -166,6 +180,8 @@ SupervisedUserService::SupervisedUserService(
   // Bumps this instance to read the current state of parental controls.
   parental_controls_state_.Notify();
 }
+
+
 
 void SupervisedUserService::SetSettingsServiceActive(bool active) {
   settings_service_->SetActive(active);

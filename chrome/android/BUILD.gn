@@ -696,6 +696,7 @@ if (_is_default_toolchain) {
       "//components/stylus_handwriting/android:feature_list_java",
       "//components/stylus_handwriting/android:java",
       "//components/subresource_filter/android:java",
+      "//components/supervised_user/android:content_filters_observer_bridge_java",
       "//components/sync/android:sync_java",
       "//components/sync/protocol:protocol_java",
       "//components/sync_device_info:sync_device_info_java",
@@ -3342,6 +3343,7 @@ if (_is_default_toolchain) {
       "//components/content_relationship_verification/android:jni_headers",
       "//components/image_fetcher:jni_headers",
       "//components/media_router/browser/android:jni_headers",
+      "//components/supervised_user/android:jni_headers",
       "//components/ukm/android:jni_headers",
       "//components/webauthn/android:jni_headers",
     ]
