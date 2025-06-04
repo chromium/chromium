@@ -76,12 +76,12 @@ export function setGlobalConfig(config: BackgroundElConfig) {
 export class BackgroundEl {
   gap: number;
   xPos: number;
+  remove: boolean = false;
 
   private canvas: HTMLCanvasElement;
   private canvasCtx: CanvasRenderingContext2D;
   private spritePos: SpritePosition;
   private yPos: number = 0;
-  private remove: boolean = false;
   private type: string;
   private animTimer: number = 0;
   private spriteConfig: BackgroundElSpriteConfig;

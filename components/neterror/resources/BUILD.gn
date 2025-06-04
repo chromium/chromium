@@ -19,7 +19,7 @@ js_files = [
   "dino_game/generated_sound_fx.ts",
   "dino_game/game_over_panel.ts",
   "dino_game/horizon_line.ts",
-  "dino_game/horizon.js",
+  "dino_game/horizon.ts",
   "dino_game/sprite_position.ts",
   "dino_game/night_mode.ts",
   "dino_game/obstacle.ts",
