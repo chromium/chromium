@@ -1467,119 +1467,51 @@ class RenderWidgetHostViewMacPinchTest : public RenderWidgetHostViewMacTest {
 };
 
 TEST_F(RenderWidgetHostViewMacPinchTest, PinchThresholding) {
-  // Do a gesture that crosses the threshold.
-  {
-    NSEvent* pinchUpdateEvents[3] = {
-        MockPinchEvent(NSEventPhaseChanged, 0.25),
-        MockPinchEvent(NSEventPhaseChanged, 0.25),
-        MockPinchEvent(NSEventPhaseChanged, 0.25),
-    };
+  NSEvent* pinchUpdateEvents[3] = {
+      MockPinchEvent(NSEventPhaseChanged, 0.25),
+      MockPinchEvent(NSEventPhaseChanged, 0.25),
+      MockPinchEvent(NSEventPhaseChanged, 0.25),
+  };
 
-    SendBeginPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    MockWidgetInputHandler::MessageVector events =
-        host_->GetAndResetDispatchedMessages();
+  SendBeginPinchEvent();
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
 
-    EXPECT_EQ(0U, events.size());
+  EXPECT_EQ(0U, events.size());
 
-    // No zoom is sent for the first update event.
-    [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[0]];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel", GetMessageNames(events));
+  // No zoom is sent for the first update event.
+  [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[0]];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel", GetMessageNames(events));
 
-    // After acking the synthetic mouse wheel, no GesturePinch events are
-    // produced.
-    events[0]->ToEvent()->CallCallback(
-        blink::mojom::InputEventResultState::kNoConsumerExists);
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ(0U, events.size());
+  // After acking the synthetic mouse wheel, no GesturePinch events are
+  // produced.
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNoConsumerExists);
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ(0U, events.size());
 
-    // The second update event crosses the threshold of 0.4, and so zoom is no
-    // longer disabled.
-    [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[1]];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
+  // The second update event crosses the threshold of 0.4, and so zoom is no
+  // longer disabled.
+  [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[1]];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
 
-    EXPECT_EQ("MouseWheel GesturePinchBegin GesturePinchUpdate",
-              GetMessageNames(events));
+  EXPECT_EQ("MouseWheel GesturePinchBegin GesturePinchUpdate",
+            GetMessageNames(events));
 
-    // The third update still has zoom enabled.
-    [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[2]];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel GesturePinchUpdate", GetMessageNames(events));
+  // The third update still has zoom enabled.
+  [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvents[2]];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel GesturePinchUpdate", GetMessageNames(events));
 
-    SendEndPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel GesturePinchEnd", GetMessageNames(events));
-  }
-
-  // Do a gesture that doesn't cross the threshold, but happens when we're not
-  // at page scale factor one, so it should be sent to the renderer.
-  {
-    NSEvent* pinchUpdateEvent = MockPinchEvent(NSEventPhaseChanged, 0.25);
-
-    rwhv_mac_->page_at_minimum_scale_ = false;
-
-    SendBeginPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    MockWidgetInputHandler::MessageVector events =
-        host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ(0U, events.size());
-
-    // Expect that a zoom happen because the time threshold has not passed.
-    [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvent];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel", GetMessageNames(events));
-    events[0]->ToEvent()->CallCallback(
-        blink::mojom::InputEventResultState::kNoConsumerExists);
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("GesturePinchBegin GesturePinchUpdate", GetMessageNames(events));
-
-    SendEndPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel GesturePinchEnd", GetMessageNames(events));
-  }
-
-  // Do a gesture again, after the page scale is no longer at one, and ensure
-  // that it is thresholded again.
-  {
-    NSEvent* pinchUpdateEvent = MockPinchEvent(NSEventTypeMagnify, 0.25);
-
-    rwhv_mac_->page_at_minimum_scale_ = true;
-
-    SendBeginPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    MockWidgetInputHandler::MessageVector events =
-        host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ(0U, events.size());
-
-    // Get back to zoom one right after the begin event. This should still keep
-    // the thresholding in place (it is latched at the begin event).
-    rwhv_mac_->page_at_minimum_scale_ = false;
-
-    // Expect that zoom be disabled because the time threshold has passed.
-    [rwhv_cocoa_ magnifyWithEvent:pinchUpdateEvent];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel", GetMessageNames(events));
-
-    events[0]->ToEvent()->CallCallback(
-        blink::mojom::InputEventResultState::kNoConsumerExists);
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ(0U, events.size());
-
-    // Since no GesturePinchBegin was sent by the time we reach the pinch end,
-    // the GesturePinchBegin and GesturePinchEnd are elided.
-    SendEndPinchEvent();
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    EXPECT_EQ("MouseWheel", GetMessageNames(events));
-  }
+  SendEndPinchEvent();
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel GesturePinchEnd", GetMessageNames(events));
 }
 
 // Tests that the NSEventTypeSmartMagnify event is first offered as a mouse

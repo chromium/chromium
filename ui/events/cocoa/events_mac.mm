@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/event_utils.h"
-
 #include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 #include <stdint.h>
@@ -18,6 +16,7 @@
 #include "ui/events/event_utils.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #include "ui/events/platform_event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -27,6 +26,7 @@ EventType EventTypeFromNative(const PlatformEvent& platform_event) {
   NSEvent* event = platform_event.Get();
   NSEventType type = event.type;
   switch (type) {
+    // Standard types, handled.
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp:
     case NSEventTypeFlagsChanged:
@@ -54,9 +54,10 @@ EventType EventTypeFromNative(const PlatformEvent& platform_event) {
       return EventType::kMouseExited;
     case NSEventTypeSwipe:
       return EventType::kScrollFlingStart;
+
+    // Standard types, not handled.
     case NSEventTypeAppKitDefined:
     case NSEventTypeSystemDefined:
-      return EventType::kUnknown;
     case NSEventTypeApplicationDefined:
     case NSEventTypePeriodic:
     case NSEventTypeCursorUpdate:
@@ -67,13 +68,26 @@ EventType EventTypeFromNative(const PlatformEvent& platform_event) {
     case NSEventTypeRotate:
     case NSEventTypeBeginGesture:
     case NSEventTypeEndGesture:
+    case NSEventTypeSmartMagnify:
+    case NSEventTypeQuickLook:
     case NSEventTypePressure:
-      break;
+    case NSEventTypeDirectTouch:
+    case NSEventTypeChangeMode:
+      return EventType::kUnknown;
+
+    // Non-standard types.
+    case 36:
+      // This is some kind of gesture event, seen during pinch-zooms, but seems
+      // to be distinct from NSEventTypeMagnify. When sent the -description
+      // message, it returns that it has type "Reserved", it has phases
+      // (Began/Changed/Ended), and it has a "translation", printed as an
+      // NSPoint, but with values from -deltaX and -deltaY.
+      return EventType::kUnknown;
+
     default:
       NOTIMPLEMENTED() << type;
-      break;
+      return EventType::kUnknown;
   }
-  return EventType::kUnknown;
 }
 
 int EventFlagsFromNative(const PlatformEvent& platform_event) {

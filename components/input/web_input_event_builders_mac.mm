@@ -249,6 +249,22 @@ blink::WebMouseEvent::Button ButtonFromButtonNumber(NSEvent* event) {
   return blink::WebMouseEvent::Button::kNoButton;
 }
 
+blink::WebInputEvent::Type GesturePinchInputEventTypeFromPhase(
+    NSEventPhase phase) {
+  switch (phase) {
+    case NSEventPhaseBegan:
+      return blink::WebInputEvent::Type::kGesturePinchBegin;
+    case NSEventPhaseStationary:
+    case NSEventPhaseChanged:
+      return blink::WebInputEvent::Type::kGesturePinchUpdate;
+    case NSEventPhaseEnded:
+    case NSEventPhaseCancelled:
+      return blink::WebInputEvent::Type::kGesturePinchEnd;
+    default:
+      return blink::WebInputEvent::Type::kUndefined;
+  }
+}
+
 }  // namespace
 
 blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event) {
@@ -614,17 +630,14 @@ blink::WebGestureEvent WebGestureEventBuilder::Build(NSEvent* event,
   result.SetPositionInWidget(info.position_in_widget);
 
   result.SetModifiers(ModifiersFromEvent(event));
-  result.SetTimeStamp(ui::EventTimeStampFromSeconds([event timestamp]));
+  result.SetTimeStamp(ui::EventTimeStampFromSeconds(event.timestamp));
 
   result.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
 
-  switch ([event type]) {
+  switch (event.type) {
     case NSEventTypeMagnify:
-      // We don't need to set the type based on |[event phase]| as the caller
-      // must set the begin and end types in order to support older Mac
-      // versions.
-      result.SetType(blink::WebInputEvent::Type::kGesturePinchUpdate);
-      result.data.pinch_update.scale = [event magnification] + 1.0;
+      result.SetType(GesturePinchInputEventTypeFromPhase(event.phase));
+      result.data.pinch_update.scale = event.magnification + 1.0;
       result.SetNeedsWheelEvent(true);
       break;
     case NSEventTypeSmartMagnify:
@@ -635,19 +648,6 @@ blink::WebGestureEvent WebGestureEventBuilder::Build(NSEvent* event,
       result.SetType(blink::WebInputEvent::Type::kGestureDoubleTap);
       result.data.tap.tap_count = 1;
       result.SetNeedsWheelEvent(true);
-      break;
-    case NSEventTypeBeginGesture:
-    case NSEventTypeEndGesture:
-      // The specific type of a gesture is not defined when the gesture begin
-      // and end NSEvents come in. Leave them undefined. The caller will need
-      // to specify them when the gesture is differentiated.
-      break;
-    case NSEventTypeScrollWheel:
-      // When building against the 10.11 SDK or later, and running on macOS
-      // 10.11+, Cocoa no longer sends separate Begin/End gestures for scroll
-      // events. However, it's convenient to use the same path as the older
-      // OSes, to avoid logic duplication. We just need to support building a
-      // dummy WebGestureEvent.
       break;
     default:
       NOTIMPLEMENTED();

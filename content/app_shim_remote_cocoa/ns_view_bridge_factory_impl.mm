@@ -147,21 +147,12 @@ class RenderWidgetHostNSViewBridgeOwner
   void ForwardWheelEvent(const blink::WebMouseWheelEvent& web_event) override {
     host_->ForwardWheelEvent(TranslateEvent(web_event));
   }
-  void GestureBegin(blink::WebGestureEvent begin_event,
-                    bool is_synthetically_injected) override {
-    // The gesture type is not yet known, but assign a type to avoid
-    // serialization asserts (the type will be stripped on the other side).
-    begin_event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
-    host_->GestureBegin(TranslateEvent(begin_event), is_synthetically_injected);
+  void PinchEvent(blink::WebGestureEvent pinch_event,
+                  bool is_synthetically_injected) override {
+    host_->PinchEvent(TranslateEvent(pinch_event), is_synthetically_injected);
   }
-  void GestureUpdate(blink::WebGestureEvent update_event) override {
-    host_->GestureUpdate(TranslateEvent(update_event));
-  }
-  void GestureEnd(blink::WebGestureEvent end_event) override {
-    host_->GestureEnd(TranslateEvent(end_event));
-  }
-  void SmartMagnify(const blink::WebGestureEvent& web_event) override {
-    host_->SmartMagnify(TranslateEvent(web_event));
+  void SmartMagnifyEvent(const blink::WebGestureEvent& web_event) override {
+    host_->SmartMagnifyEvent(TranslateEvent(web_event));
   }
 
   mojo::AssociatedRemote<mojom::RenderWidgetHostNSViewHost> host_;

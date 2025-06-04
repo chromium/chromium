@@ -205,14 +205,11 @@ interface RenderWidgetHostNSViewHost {
   ForwardMouseEvent(blink.mojom.Event event);
   ForwardWheelEvent(blink.mojom.Event event);
 
-  // Handling pinch gesture events. Note that for GestureBegin, the type of the
-  // event is ignored, and is inferred from subsequent GestureUpdate calls.
-  GestureBegin(blink.mojom.Event event, bool is_synthetically_injected);
-  GestureUpdate(blink.mojom.Event event);
-  GestureEnd(blink.mojom.Event event);
+  // Handling pinch gesture events.
+  PinchEvent(blink.mojom.Event event, bool is_synthetically_injected);
 
   // Handle a double-tap magnify event.
-  SmartMagnify(blink.mojom.Event event);
+  SmartMagnifyEvent(blink.mojom.Event event);
 
   // Forward the corresponding Ime commands to the appropriate RenderWidgetHost.
   // Appropriate, has two meanings here. If this is during a key-down event,

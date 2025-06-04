@@ -105,8 +105,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
                                        locationInWindow:location_in_window
                                               timestamp:timestamp
                                                   phase:NSEventPhaseBegan];
-        [cocoa_view_ handleBeginGestureWithEvent:cocoa_event
-                         isSyntheticallyInjected:YES];
+        [cocoa_view_ magnifyWithEvent:cocoa_event isSyntheticallyInjected:YES];
         return;
       }
       case WebInputEvent::Type::kGesturePinchEnd: {
@@ -115,7 +114,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
                                        locationInWindow:location_in_window
                                               timestamp:timestamp
                                                   phase:NSEventPhaseEnded];
-        [cocoa_view_ handleEndGestureWithEvent:cocoa_event];
+        [cocoa_view_ magnifyWithEvent:cocoa_event isSyntheticallyInjected:YES];
         return;
       }
       case WebInputEvent::Type::kGesturePinchUpdate: {
@@ -124,7 +123,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
                   locationInWindow:location_in_window
                          timestamp:timestamp
                              phase:NSEventPhaseChanged];
-        [cocoa_view_ magnifyWithEvent:cocoa_event];
+        [cocoa_view_ magnifyWithEvent:cocoa_event isSyntheticallyInjected:YES];
         return;
       }
       default:
