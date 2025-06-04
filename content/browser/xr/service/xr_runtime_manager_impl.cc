@@ -232,6 +232,10 @@ void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
     service->InitializationComplete();
 
   services_.insert(service);
+
+  for (const auto& runtime : runtimes_) {
+    runtime.second->OnServiceAdded(service);
+  }
 }
 
 void XRRuntimeManagerImpl::RemoveService(VRServiceImpl* service) {
