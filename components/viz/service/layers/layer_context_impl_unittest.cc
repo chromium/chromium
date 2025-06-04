@@ -246,11 +246,11 @@ TEST_F(LayerContextImplTest, ScrollingContentsCullRectsAreSynchronized) {
             synchronized_scrolling_contents_cull_rects);
 }
 
-class LayerTreeContextUpdateDisplayTreeScaleFactorTest
+class LayerContextImplUpdateDisplayTreePageScaleFactorTest
     : public LayerContextImplTest,
       public ::testing::WithParamInterface<std::tuple<float, bool>> {};
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, PageScaleFactor) {
+TEST_P(LayerContextImplUpdateDisplayTreePageScaleFactorTest, PageScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
 
@@ -273,7 +273,39 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, PageScaleFactor) {
   }
 }
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, MinPageScaleFactor) {
+INSTANTIATE_TEST_SUITE_P(
+    PageScaleFactor,
+    LayerContextImplUpdateDisplayTreePageScaleFactorTest,
+    ::testing::Values(
+        // Test value below min_page_scale_factor.
+        std::make_tuple(0.25f, true),
+
+        // Test value inside min/max_page_scale_factor.
+        std::make_tuple(1.23f, true),
+
+        // Test value outside min/max_page_scale_factor.
+        std::make_tuple(2.5, true),
+
+        // Test invalid values.
+        std::make_tuple(0.0f, false),
+        std::make_tuple(-1.0f, false),
+        std::make_tuple(std::numeric_limits<float>::infinity(), false),
+        std::make_tuple(std::numeric_limits<float>::quiet_NaN(), false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreePageScaleFactorTest::ParamType>&
+           info) {
+      std::stringstream name;
+      name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
+class LayerContextImplUpdateDisplayTreeMinPageScaleFactorTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<std::tuple<float, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeMinPageScaleFactorTest,
+       MinPageScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
 
@@ -293,7 +325,39 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, MinPageScaleFactor) {
   }
 }
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, MaxPageScaleFactor) {
+INSTANTIATE_TEST_SUITE_P(
+    MinPageScaleFactor,
+    LayerContextImplUpdateDisplayTreeMinPageScaleFactorTest,
+    ::testing::Values(
+        // Test value below max_page_scale_factor.
+        std::make_tuple(kDefaultMaxPageScaleFactor - 0.1f, true),
+
+        // Test value equal to max_page_scale_factor.
+        std::make_tuple(kDefaultMaxPageScaleFactor, true),
+
+        // Test value greater than max_page_scale_factor.
+        std::make_tuple(kDefaultMaxPageScaleFactor + 0.1f, false),
+
+        // Test invalid values.
+        std::make_tuple(0.0f, false),
+        std::make_tuple(-1.0f, false),
+        std::make_tuple(std::numeric_limits<float>::infinity(), false),
+        std::make_tuple(std::numeric_limits<float>::quiet_NaN(), false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeMinPageScaleFactorTest::ParamType>&
+           info) {
+      std::stringstream name;
+      name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
+class LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<std::tuple<float, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest,
+       MaxPageScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
 
@@ -313,7 +377,38 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, MaxPageScaleFactor) {
   }
 }
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest,
+INSTANTIATE_TEST_SUITE_P(
+    MaxPageScaleFactor,
+    LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest,
+    ::testing::Values(
+        // Test value equal to min_page_scale_factor.
+        std::make_tuple(kDefaultMinPageScaleFactor, true),
+
+        // Test value above min_page_scale_factor.
+        std::make_tuple(kDefaultMinPageScaleFactor + 0.1f, true),
+
+        // Test value below min_page_scale_factor.
+        std::make_tuple(kDefaultMinPageScaleFactor - 0.1f, false),
+
+        // Test invalid values.
+        std::make_tuple(0.0f, false),
+        std::make_tuple(-1.0f, false),
+        std::make_tuple(std::numeric_limits<float>::infinity(), false),
+        std::make_tuple(std::numeric_limits<float>::quiet_NaN(), false)),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeMaxPageScaleFactorTest::ParamType>&
+           info) {
+      std::stringstream name;
+      name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
+           << info.index;
+      return name.str();
+    });
+
+class LayerContextImplUpdateDisplayTreeScaleFactorTest
+    : public LayerContextImplTest,
+      public ::testing::WithParamInterface<std::tuple<float, bool>> {};
+
+TEST_P(LayerContextImplUpdateDisplayTreeScaleFactorTest,
        ExternalPageScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
@@ -329,12 +424,12 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest,
                   ->external_page_scale_factor(),
               scale_factor);
   } else {
-    EXPECT_FALSE(result.has_value());
+    ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), "Invalid external page scale factor");
   }
 }
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, DeviceScaleFactor) {
+TEST_P(LayerContextImplUpdateDisplayTreeScaleFactorTest, DeviceScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
 
@@ -348,12 +443,12 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest, DeviceScaleFactor) {
         layer_context_impl_->host_impl()->active_tree()->device_scale_factor(),
         scale_factor);
   } else {
-    EXPECT_FALSE(result.has_value());
+    ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), "Invalid device scale factor");
   }
 }
 
-TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest,
+TEST_P(LayerContextImplUpdateDisplayTreeScaleFactorTest,
        PaintedDeviceScaleFactor) {
   const float scale_factor = std::get<0>(GetParam());
   const bool is_valid = std::get<1>(GetParam());
@@ -376,7 +471,7 @@ TEST_P(LayerTreeContextUpdateDisplayTreeScaleFactorTest,
 
 INSTANTIATE_TEST_SUITE_P(
     TreeScaleFactors,
-    LayerTreeContextUpdateDisplayTreeScaleFactorTest,
+    LayerContextImplUpdateDisplayTreeScaleFactorTest,
     ::testing::Values(
         // Test value below min_page_scale_factor.
         std::make_tuple(0.25f, true),
@@ -393,7 +488,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(std::numeric_limits<float>::infinity(), false),
         std::make_tuple(std::numeric_limits<float>::quiet_NaN(), false)),
     [](const testing::TestParamInfo<
-        LayerTreeContextUpdateDisplayTreeScaleFactorTest::ParamType>& info) {
+        LayerContextImplUpdateDisplayTreeScaleFactorTest::ParamType>& info) {
       std::stringstream name;
       name << (std::get<1>(info.param) ? "Valid" : "Invalid") << "_"
            << info.index;

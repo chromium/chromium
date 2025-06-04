@@ -1544,7 +1544,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->min_page_scale_factor <= 0 ||
       !std::isfinite(update->min_page_scale_factor) ||
       update->max_page_scale_factor <= 0 ||
-      !std::isfinite(update->max_page_scale_factor)) {
+      !std::isfinite(update->max_page_scale_factor) ||
+      update->min_page_scale_factor > update->max_page_scale_factor) {
     return base::unexpected("Invalid page scale factors");
   }
   layers.SetPageScaleFactorAndLimitsForDisplayTree(
