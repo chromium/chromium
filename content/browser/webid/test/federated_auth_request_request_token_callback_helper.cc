@@ -18,15 +18,6 @@ void FederatedAuthRequestRequestTokenCallbackHelper::WaitForCallback() {
   wait_for_callback_loop_.Run();
 }
 
-void FederatedAuthRequestRequestTokenCallbackHelper::Reset() {
-  status_.reset();
-  selected_idp_config_url_.reset();
-  token_.reset();
-  error_.reset();
-  was_called_ = false;
-  wait_for_callback_loop_.Quit();
-}
-
 void FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod(
     blink::mojom::RequestTokenStatus status,
     const std::optional<GURL>& selected_idp_config_url,
