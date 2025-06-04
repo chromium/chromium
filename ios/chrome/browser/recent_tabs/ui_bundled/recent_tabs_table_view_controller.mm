@@ -159,7 +159,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 @interface RecentTabsTableViewController () <
     SigninPromoViewConsumer,
-    SigninPresenter,
+    SigninPromoViewMediatorDelegate,
     SyncObserverModelBridge,
     SyncPresenter,
     TableViewURLDragDataSource,
@@ -748,7 +748,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                               syncService:self.syncService
                               accessPoint:signin_metrics::AccessPoint::
                                               kRecentTabs
-                          signinPresenter:self
+                                 delegate:self
                  accountSettingsPresenter:nil
         changeProfileContinuationProvider:
             base::BindRepeating(&CreateChangeProfileRecentTabsContinuation)];
@@ -1855,9 +1855,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   [_trustedVaultReauthenticationCoordinator start];
 }
 
-#pragma mark - SigninPresenter
+#pragma mark - SigninPromoViewMediatorDelegate
 
-- (void)showSignin:(ShowSigninCommand*)command {
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command {
+  CHECK_EQ(mediator, self.signinPromoViewMediator);
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
     [weakSelf stopSigninCoordinator];

@@ -577,9 +577,6 @@ id<SystemIdentity> GetDisplayedIdentity(
 // type is based on `dataTypeToWaitForInitialSync`.
 @property(nonatomic, assign, readwrite) BOOL initialSyncInProgress;
 
-// Presenter which can show signin UI.
-@property(nonatomic, weak, readonly) id<SigninPresenter> signinPresenter;
-
 // Presenter which can show the signed-in account settings UI.
 @property(nonatomic, weak, readonly) id<AccountSettingsPresenter>
     accountSettingsPresenter;
@@ -617,6 +614,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+  // Presenter which can show signin UI.
+  __weak id<SigninPromoViewMediatorDelegate> _delegate;
 }
 
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -708,7 +707,8 @@ id<SystemIdentity> GetDisplayedIdentity(
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      signinPresenter:(id<SigninPresenter>)signinPresenter
+                             delegate:
+                                 (id<SigninPromoViewMediatorDelegate>)delegate
              accountSettingsPresenter:
                  (id<AccountSettingsPresenter>)accountSettingsPresenter
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
@@ -729,7 +729,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     _signinPromoViewState = SigninPromoViewState::kNeverVisible;
     _signinPromoAction = SigninPromoAction::kInstantSignin;
     _dataTypeToWaitForInitialSync = syncer::DataType::UNSPECIFIED;
-    _signinPresenter = signinPresenter;
+    _delegate = delegate;
     _accountSettingsPresenter = accountSettingsPresenter;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -1050,7 +1050,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                             promoAction:promoAction
                              completion:completion
       changeProfileContinuationProvider:_changeProfileContinuationProvider];
-  [self.signinPresenter showSignin:command];
+  [_delegate showSignin:self command:command];
 }
 
 // Shows account settings.

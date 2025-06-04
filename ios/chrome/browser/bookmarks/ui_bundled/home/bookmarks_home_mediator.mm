@@ -107,7 +107,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                                      BookmarkModelBridgeObserver,
                                      BookmarkPromoControllerDelegate,
                                      PrefObserverDelegate,
-                                     SigninPresenter,
+                                     SigninPromoViewMediatorDelegate,
                                      SyncObserverModelBridge> {
   // Observer to keep track of the signin and syncing status.
   std::unique_ptr<sync_bookmarks::SyncedBookmarksObserverBridge>
@@ -176,7 +176,7 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                            syncService:_syncService
                                               delegate:self
-                                       signinPresenter:self
+                       signinPromoViewMediatorDelegate:self
                               accountSettingsPresenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
@@ -642,10 +642,12 @@ bool IsABookmarkNodeSectionForIdentifier(
   return _syncedBookmarksObserver->IsPerformingInitialSync();
 }
 
-#pragma mark - SigninPresenter
+#pragma mark - SigninPromoViewMediatorDelegate
 
-- (void)showSignin:(ShowSigninCommand*)command {
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command {
   // Proxy this call along to the consumer.
+  CHECK_EQ(mediator, self.bookmarkPromoController.signinPromoViewMediator);
   [self.consumer showSignin:command];
 }
 

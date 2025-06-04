@@ -18,6 +18,7 @@ class PrefService;
 @protocol SigninPresenter;
 @protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
+@class ShowSigninCommand;
 @protocol SigninPromoViewConsumer;
 @protocol SystemIdentity;
 
@@ -68,6 +69,17 @@ enum class SigninPromoAction {
   // Shows account settings.
   kReviewAccountSettings,
 };
+
+@class SigninPromoViewMediator;
+
+// Protocol used to display signin UI.
+@protocol SigninPromoViewMediatorDelegate
+
+// Asks the presenter to display the signin UI configured by `command`.
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command;
+
+@end
 
 // Class that monitors the available identities and creates
 // SigninPromoViewConfigurator. This class makes the link between the model and
@@ -140,7 +152,8 @@ enum class SigninPromoAction {
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      signinPresenter:(id<SigninPresenter>)signinPresenter
+                             delegate:
+                                 (id<SigninPromoViewMediatorDelegate>)delegate
              accountSettingsPresenter:
                  (id<AccountSettingsPresenter>)accountSettingsPresenter
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)

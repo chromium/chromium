@@ -84,8 +84,8 @@
                                       ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
                                       ReadingListListViewControllerDelegate,
-                                      SigninPresenter,
                                       SigninPromoViewConsumer,
+                                      SigninPromoViewMediatorDelegate,
                                       UIAdaptivePresentationControllerDelegate>
 
 // Whether the coordinator is started.
@@ -213,7 +213,7 @@
                             syncService:_syncService
                             accessPoint:signin_metrics::AccessPoint::
                                             kReadingList
-                        signinPresenter:self
+                               delegate:self
                accountSettingsPresenter:self
       changeProfileContinuationProvider:provider];
   _signinPromoViewMediator.signinPromoAction =
@@ -544,9 +544,11 @@
                                                actionProvider:actionProvider];
 }
 
-#pragma mark - SigninPresenter
+#pragma mark - SigninPromoViewMediatorDelegate
 
-- (void)showSignin:(ShowSigninCommand*)command {
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command {
+  CHECK_EQ(mediator, _signinPromoViewMediator);
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
     [weakSelf stopSigninCoordinator];

@@ -41,11 +41,13 @@
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                    syncService:(syncer::SyncService*)syncService
-                       delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                signinPresenter:(id<SigninPresenter>)signinPresenter
-       accountSettingsPresenter:
-           (id<AccountSettingsPresenter>)accountSettingsPresenter {
+                        syncService:(syncer::SyncService*)syncService
+                           delegate:
+                               (id<BookmarkPromoControllerDelegate>)delegate
+    signinPromoViewMediatorDelegate:
+        (id<SigninPromoViewMediatorDelegate>)signinPromoViewMediatorDelegate
+           accountSettingsPresenter:
+               (id<AccountSettingsPresenter>)accountSettingsPresenter {
   DCHECK(browser);
   self = [super init];
   if (self) {
@@ -67,7 +69,7 @@
                               syncService:syncService
                               accessPoint:signin_metrics::AccessPoint::
                                               kBookmarkManager
-                          signinPresenter:signinPresenter
+                                 delegate:signinPromoViewMediatorDelegate
                  accountSettingsPresenter:accountSettingsPresenter
         changeProfileContinuationProvider:base::BindRepeating([]() {
           return CreateChangeProfileBookmarksContinuation();
