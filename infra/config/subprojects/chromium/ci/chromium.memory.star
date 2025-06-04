@@ -1205,6 +1205,15 @@ ci.builder(
                     shards = 6,
                 ),
             ),
+            # TODO(crbug.com/422245278): Reenable print-reftests once the bug is
+            # fixed.
+            "headless_shell_wpt_tests": targets.per_test_modification(
+                replacements = targets.replacements(
+                    args = {
+                        "print-reftest": None,
+                    },
+                ),
+            ),
         },
     ),
     console_view_entry = consoles.console_view_entry(
