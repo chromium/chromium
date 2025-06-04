@@ -10,6 +10,7 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -129,7 +130,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
         new TestLocationBarModel;
     std::unique_ptr<LocationBarModel> location_bar_model(
         test_location_bar_model_);
-    browser()->swap_location_bar_models(&location_bar_model);
+    browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
 
     test_location_bar_model_->set_formatted_full_url(text);
 

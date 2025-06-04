@@ -67,14 +67,12 @@ class BackgroundContents;
 class BreadcrumbManagerBrowserAgent;
 class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
-class BrowserLocationBarModelDelegate;
 class BrowserLiveTabContext;
 class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
 class ExclusiveAccessManager;
 class FindBarController;
-class LocationBarModel;
 class OverscrollPrefManager;
 class Profile;
 class ScopedKeepAlive;
@@ -452,16 +450,6 @@ class Browser : public TabStripModelObserver,
   // Browser without a BrowserView: this is an anti-pattern and should be
   // avoided.
   BrowserView& GetBrowserView();
-  LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
-  const LocationBarModel* location_bar_model() const {
-    return location_bar_model_.get();
-  }
-#if defined(UNIT_TEST)
-  void swap_location_bar_models(
-      std::unique_ptr<LocationBarModel>* location_bar_model) {
-    location_bar_model->swap(location_bar_model_);
-  }
-#endif
 
   // Never nullptr.
   //
@@ -1425,12 +1413,6 @@ class Browser : public TabStripModelObserver,
   // Helper which implements the ContentSettingBubbleModel interface.
   std::unique_ptr<BrowserContentSettingBubbleModelDelegate>
       content_setting_bubble_model_delegate_;
-
-  // Helper which implements the LocationBarModelDelegate interface.
-  std::unique_ptr<BrowserLocationBarModelDelegate> location_bar_model_delegate_;
-
-  // The model for the toolbar view.
-  std::unique_ptr<LocationBarModel> location_bar_model_;
 
   // Helper which implements the LiveTabContext interface.
   std::unique_ptr<BrowserLiveTabContext> live_tab_context_;

@@ -718,11 +718,11 @@ WebContents* ToolbarView::GetWebContents() {
 }
 
 LocationBarModel* ToolbarView::GetLocationBarModel() {
-  return browser_->location_bar_model();
+  return browser_->GetFeatures().location_bar_model();
 }
 
 const LocationBarModel* ToolbarView::GetLocationBarModel() const {
-  return browser_->location_bar_model();
+  return browser_->GetFeatures().location_bar_model();
 }
 
 ContentSettingBubbleModelDelegate*

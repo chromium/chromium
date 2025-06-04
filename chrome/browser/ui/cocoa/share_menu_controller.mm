@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,7 +50,9 @@ NSString* const kRemindersSharingServiceName =
 bool CanShare() {
   Browser* last_active_browser = chrome::FindLastActive();
   return last_active_browser &&
-         last_active_browser->location_bar_model()->ShouldDisplayURL() &&
+         last_active_browser->GetFeatures()
+             .location_bar_model()
+             ->ShouldDisplayURL() &&
          last_active_browser->tab_strip_model()->GetActiveWebContents() &&
          last_active_browser->tab_strip_model()
              ->GetActiveWebContents()

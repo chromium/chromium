@@ -214,6 +214,7 @@ if (!is_android) {
         deps += [
           ":omnibox",
           "//chrome/browser/ui:browser_navigator_params_headers",
+          "//chrome/browser/ui/browser_window:browser_window",
         ]
       }
     }

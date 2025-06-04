@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/omnibox/common/omnibox_features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
@@ -37,6 +36,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -399,7 +399,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
       test_location_bar_model_ = new TestLocationBarModel;
       std::unique_ptr<LocationBarModel> location_bar_model(
           test_location_bar_model_);
-      browser()->swap_location_bar_models(&location_bar_model);
+      browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
     }
 
     test_location_bar_model_->set_formatted_full_url(text);

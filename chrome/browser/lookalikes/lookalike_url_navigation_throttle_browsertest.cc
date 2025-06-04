@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -118,7 +119,10 @@ void SetEngagementScore(Browser* browser, const GURL& url, double score) {
 }
 
 bool IsUrlShowing(Browser* browser) {
-  return !browser->location_bar_model()->GetFormattedFullURL().empty();
+  return !browser->GetFeatures()
+              .location_bar_model()
+              ->GetFormattedFullURL()
+              .empty();
 }
 
 // Navigate to |url| and wait for the load to complete before returning.

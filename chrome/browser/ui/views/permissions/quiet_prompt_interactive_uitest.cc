@@ -7,6 +7,7 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -94,7 +95,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
         new TestLocationBarModel;
     std::unique_ptr<LocationBarModel> location_bar_model(
         test_location_bar_model_);
-    browser()->swap_location_bar_models(&location_bar_model);
+    browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
 
     test_location_bar_model_->set_formatted_full_url(text);
 

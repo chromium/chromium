@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -2191,7 +2192,10 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
     }
 
     // The URL should be hidden to avoid origin confusion issues.
-    EXPECT_TRUE(browser->location_bar_model()->GetFormattedFullURL().empty());
+    EXPECT_TRUE(browser->GetFeatures()
+                    .location_bar_model()
+                    ->GetFormattedFullURL()
+                    .empty());
 
     // Cancel the prompt, which triggers a reload to read the error page content
     // from the server. On HTTPS pages, the error page content still shouldn't
@@ -2210,8 +2214,10 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
             content::EvalJs(contents, "document.documentElement.innerHTML"));
       }
 
-      EXPECT_FALSE(
-          browser->location_bar_model()->GetFormattedFullURL().empty());
+      EXPECT_FALSE(browser->GetFeatures()
+                       .location_bar_model()
+                       ->GetFormattedFullURL()
+                       .empty());
     }
 
     // Reload; this time, supply credentials and check that the page loads.
@@ -2222,7 +2228,10 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
                                      ui::PAGE_TRANSITION_TYPED, false),
                        /*navigation_handle_callback=*/{});
       auth_needed_waiter.Wait();
-      EXPECT_TRUE(browser->location_bar_model()->GetFormattedFullURL().empty());
+      EXPECT_TRUE(browser->GetFeatures()
+                      .location_bar_model()
+                      ->GetFormattedFullURL()
+                      .empty());
     }
 
     auto auth_supplied_waiter = CreateAuthSuppliedObserver();
@@ -2233,7 +2242,10 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
     std::u16string expected_title = u"OK";
     content::TitleWatcher title_watcher(contents, expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-    EXPECT_FALSE(browser->location_bar_model()->GetFormattedFullURL().empty());
+    EXPECT_FALSE(browser->GetFeatures()
+                     .location_bar_model()
+                     ->GetFormattedFullURL()
+                     .empty());
   }
 };
 

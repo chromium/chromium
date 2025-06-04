@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -195,7 +196,8 @@ void LocationBarModelTest::NavigateAndCheckText(
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   controller->LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                       std::string());
-  LocationBarModel* location_bar_model = browser()->location_bar_model();
+  LocationBarModel* location_bar_model =
+      browser()->GetFeatures().location_bar_model();
   EXPECT_EQ(expected_formatted_full_url,
             location_bar_model->GetFormattedFullURL());
   EXPECT_NE(expected_formatted_full_url.empty(),
@@ -219,7 +221,8 @@ void LocationBarModelTest::NavigateAndCheckElided(const GURL& url) {
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   controller->LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                       std::string());
-  LocationBarModel* location_bar_model = browser()->location_bar_model();
+  LocationBarModel* location_bar_model =
+      browser()->GetFeatures().location_bar_model();
   const std::u16string formatted_full_url_before(
       location_bar_model->GetFormattedFullURL());
   EXPECT_LT(formatted_full_url_before.size(), url.spec().size());
@@ -273,7 +276,8 @@ TEST_F(LocationBarModelTest, ShouldElideLongURLs) {
 
 // Regression test for crbug.com/792401.
 TEST_F(LocationBarModelTest, ShouldDisplayURLWhileNavigatingAwayFromNTP) {
-  LocationBarModel* location_bar_model = browser()->location_bar_model();
+  LocationBarModel* location_bar_model =
+      browser()->GetFeatures().location_bar_model();
 
   // Open an NTP. Its URL should not be displayed.
   AddTab(browser(), GURL("chrome://newtab"));
