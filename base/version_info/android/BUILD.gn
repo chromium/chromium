@@ -21,23 +21,10 @@ android_library("version_constants_java") {
   public_deps = [ ":channel_enum_java" ]
   deps = [
     ":generate_version_constants",
+    ":version_constants_bridge_jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
-  ]
-}
-
-# Depend on this on the native side to get version_info::GetChannel. It requires
-# version_constants_java for its JNI call.
-static_library("channel_getter") {
-  sources = [
-    "channel_getter.cc",
-    "channel_getter.h",
-  ]
-  deps = [
-    ":version_constants_bridge_jni",
-    "..:channel",
-    "//base",  # for jni_generator_helper.h
   ]
 }
 

@@ -935,6 +935,7 @@ component("base") {
     "values.h",
     "version.cc",
     "version.h",
+    "version_info/channel.h",
     "vlog.cc",
     "vlog.h",
     _build_date_header,
@@ -1245,6 +1246,8 @@ component("base") {
       "profiler/stack_sampler_android.cc",
       "system/sys_info_android.cc",
       "threading/platform_thread_android.cc",
+      "version_info/android/channel_getter.cc",
+      "version_info/android/channel_getter.h",
 
       # Android uses some Linux sources.
       "debug/elf_reader.cc",
@@ -1280,6 +1283,7 @@ component("base") {
       ":process_launcher_jni",
       ":sys_utils_jni",
       ":tasks_jni",
+      "//base/version_info/android:version_constants_bridge_jni",
       "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
     ]
@@ -4582,6 +4586,7 @@ if (is_android) {
     ]
     deps = [
       ":base_java",
+      "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -4612,7 +4617,6 @@ if (is_android) {
     ]
 
     deps = [
-      "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",

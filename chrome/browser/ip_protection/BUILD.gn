@@ -24,7 +24,6 @@ static_library("ip_protection") {
 
   deps = [
     "//base",
-    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",

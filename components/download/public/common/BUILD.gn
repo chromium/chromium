@@ -179,10 +179,6 @@ source_set("test_support") {
     "//testing/gmock",
     "//url",
   ]
-
-  if (is_android) {
-    deps = [ "//components/download/internal/common:internal_java" ]
-  }
 }
 
 source_set("unit_tests") {

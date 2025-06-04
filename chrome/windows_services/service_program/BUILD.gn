@@ -101,7 +101,7 @@ source_set("crash_integration") {
   deps = [
     ":common",
     ":constants",
-    "//base/version_info:channel",
+    "//base",
     "//chrome/common:version_header",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:constants",

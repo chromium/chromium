@@ -19,7 +19,6 @@ source_set("impl") {
   deps = [
     ":dialogs",
     "//base",
-    "//base/version_info:channel",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",

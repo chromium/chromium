@@ -135,8 +135,8 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "privacy_sandbox_survey_desktop_controller_browsertest.cc" ]
     deps = [
+      "//base",
       "//base/test:test_support",
-      "//base/version_info:channel",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
@@ -316,8 +316,8 @@ source_set("survey_desktop_controller_unittest") {
   if (!is_android) {
     sources = [ "privacy_sandbox_survey_desktop_controller_unittest.cc" ]
     deps = [
+      "//base",
       "//base/test:test_support",
-      "//base/version_info:channel",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",

@@ -19,4 +19,5 @@ parcelable IChildProcessArgs {
   IApkInfo apkInfo;
   IAndroidInfo androidInfo;
   IDeviceInfo deviceInfo;
+  int channel;
 }

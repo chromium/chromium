@@ -11,7 +11,6 @@ source_set("ios_push") {
   ]
   deps = [
     "//base",
-    "//base/version_info:channel",
     "//components/sharing_message",
     "//components/sharing_message/proto",
     "//components/sync/protocol",

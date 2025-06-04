@@ -39,6 +39,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.version_info.VersionConstantsBridge;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -304,6 +305,7 @@ public class ChildProcessService {
         AndroidInfo.sendToNative(mChildProcessArgs.androidInfo);
         ApkInfo.sendToNative(mChildProcessArgs.apkInfo);
         DeviceInfo.sendToNative(mChildProcessArgs.deviceInfo);
+        VersionConstantsBridge.setChannel(mChildProcessArgs.channel);
     }
 
     private void mainThreadMain() {

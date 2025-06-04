@@ -33,7 +33,6 @@ source_set("shortcuts") {
 
     deps += [
       "//base",
-      "//base/version_info:channel",
       "//build:branding_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/profiles:profile",

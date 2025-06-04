@@ -44,7 +44,6 @@ static_library("request_util") {
 
   deps = [
     "//base",
-    "//base/version_info:channel",
     "//google_apis:google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -88,7 +87,6 @@ source_set("common_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/version_info:channel",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

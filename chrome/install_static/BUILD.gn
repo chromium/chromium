@@ -20,7 +20,7 @@ if (is_win) {
   # Please don't add dependencies on other system libraries.
   static_library("install_static_util") {
     deps = [
-      "//base/version_info:channel",
+      "//base",
       "//base/version_info:generate_version_info",
       "//components/nacl/common:buildflags",
     ]

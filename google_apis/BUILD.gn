@@ -167,7 +167,6 @@ component("google_apis") {
 
   deps = [
     ":proto",
-    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//crypto",
     "//mojo/public/cpp/bindings:struct_traits",
@@ -272,7 +271,6 @@ test("google_apis_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//google_apis/calendar:calendar_unittests",
     "//google_apis/common:common_unittests",
