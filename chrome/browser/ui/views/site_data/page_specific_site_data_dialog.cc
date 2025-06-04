@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -56,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -339,13 +339,13 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // (which might not be true). We should either convert to work only with
     // host names or BDM should return origins.
     url::Origin entry_origin = std::visit(
-        base::Overloaded{[&](const std::string& host) {
-                           GURL current_url = web_contents_->GetVisibleURL();
-                           GURL site_url = net::cookie_util::CookieOriginToURL(
-                               host, current_url.SchemeIsCryptographic());
-                           return url::Origin::Create(site_url);
-                         },
-                         [](const url::Origin& origin) { return origin; }},
+        absl::Overload{[&](const std::string& host) {
+                         GURL current_url = web_contents_->GetVisibleURL();
+                         GURL site_url = net::cookie_util::CookieOriginToURL(
+                             host, current_url.SchemeIsCryptographic());
+                         return url::Origin::Create(site_url);
+                       },
+                       [](const url::Origin& origin) { return origin; }},
         *entry.data_owner);
     return CreateSite(entry_origin, from_allowed_model,
                       IsBrowsingDataEntryViewFullyPartitioned(entry) &&

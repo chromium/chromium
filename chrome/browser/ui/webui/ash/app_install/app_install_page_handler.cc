@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -20,6 +19,7 @@
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash::app_install {
 
@@ -191,7 +191,7 @@ void AppInstallPageHandler::TryAgain() {
 mojom::DialogArgsPtr AppInstallPageHandler::ConvertDialogArgsToMojom(
     const AppInstallDialogArgs& dialog_args) {
   return std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&](const AppInfoArgs& app_info_args) {
             return mojom::DialogArgs::NewAppInfoArgs(mojom::AppInfoArgs::New(
                 app_info_args.data.Clone(),

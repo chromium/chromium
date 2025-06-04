@@ -8,7 +8,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/overloaded.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 // UserEducationService is not implemented on Android.
@@ -121,7 +121,7 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
 content::RenderFrameHost* GetRenderFrameHost(
     AutofillSuggestionDelegate& delegate) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](AutofillDriver* driver) {
             return static_cast<ContentAutofillDriver*>(driver)
                 ->render_frame_host();

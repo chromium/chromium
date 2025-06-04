@@ -6,7 +6,6 @@
 #include <sstream>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -40,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -261,7 +261,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
       for (size_t i = 0; i < responsive_elements.size(); ++i) {
         const auto& overflow_id = responsive_elements[i].overflow_id;
         std::visit(
-            base::Overloaded(
+            absl::Overload(
                 [&](ToolbarController::ElementIdInfo overflow_id) {
                   if (std::holds_alternative<ui::ElementIdentifier>(id) &&
                       overflow_id.overflow_identifier ==
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        EveryElementHasActionMetricName) {
   for (auto& it : ToolbarController::GetDefaultResponsiveElements(browser())) {
     std::visit(
-        base::Overloaded(
+        absl::Overload(
             [](actions::ActionId id) {
               EXPECT_NE(
                   ToolbarController::GetActionNameFromElementIdentifier(id), "")

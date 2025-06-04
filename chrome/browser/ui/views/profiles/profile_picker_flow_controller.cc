@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -48,6 +47,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 
@@ -496,7 +496,7 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 
   base::FilePath profile_path;
   // Split the variant information from `profile_info`.
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&suggested_profile_color =
                       suggested_profile_color_](std::optional<SkColor> color) {
                    suggested_profile_color = color;

@@ -20,7 +20,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/values_util.h"
@@ -107,6 +106,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -611,14 +611,13 @@ GroupingKey& GroupingKey::operator=(const GroupingKey& other) = default;
 GroupingKey::~GroupingKey() = default;
 
 std::string GroupingKey::Serialize() const {
-  return std::visit(base::Overloaded{[](const std::string& etld_plus1) {
-                                       return kGroupingKeyEtldPrefix +
-                                              etld_plus1;
-                                     },
-                                     [](const url::Origin& origin) {
-                                       return kGroupingKeyOriginPrefix +
-                                              origin.GetURL().spec();
-                                     }},
+  return std::visit(absl::Overload{[](const std::string& etld_plus1) {
+                                     return kGroupingKeyEtldPrefix + etld_plus1;
+                                   },
+                                   [](const url::Origin& origin) {
+                                     return kGroupingKeyOriginPrefix +
+                                            origin.GetURL().spec();
+                                   }},
                     value_);
 }
 
@@ -638,11 +637,11 @@ std::optional<url::Origin> GroupingKey::GetOrigin() const {
 
 url::Origin GroupingKey::ToOrigin() const {
   return std::visit(
-      base::Overloaded{[](const std::string& etld_plus1) {
-                         return ConvertEtldToOrigin(etld_plus1,
-                                                    /*secure=*/false);
-                       },
-                       [](const url::Origin& origin) { return origin; }},
+      absl::Overload{[](const std::string& etld_plus1) {
+                       return ConvertEtldToOrigin(etld_plus1,
+                                                  /*secure=*/false);
+                     },
+                     [](const url::Origin& origin) { return origin; }},
       value_);
 }
 
