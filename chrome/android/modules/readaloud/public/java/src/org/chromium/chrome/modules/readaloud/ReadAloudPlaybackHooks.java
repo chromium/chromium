@@ -26,6 +26,12 @@ public interface ReadAloudPlaybackHooks {
         void onFailure(Throwable t);
     }
 
+    /** Called when send feedback request is done. */
+    interface SendFeedbackCallback {
+        void onSuccess();
+        void onFailure(Throwable t);
+    }
+
     /**
      * Request playback for the given URL.
      * TODO(basiaz): delete after the other method is implemented in clank.

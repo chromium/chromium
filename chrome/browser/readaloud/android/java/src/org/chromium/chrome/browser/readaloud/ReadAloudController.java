@@ -15,13 +15,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 import android.view.WindowManager;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
-
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -74,6 +76,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
+import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks.SendFeedbackCallback;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksFactory;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
@@ -90,12 +93,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
-
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
@@ -175,6 +172,17 @@ public class ReadAloudController
     private boolean mIsScreenOnAndUnlocked = true;
     private boolean mKeepScreenOnFlagIsSet;
     @Nullable private CallbackController mCallbackController;
+
+  private final SendFeedbackCallback mSendFeedbackCallback =
+      new SendFeedbackCallback() {
+        @Override
+        public void onSuccess() {}
+
+        @Override
+        public void onFailure(Throwable t) {
+          Log.e(TAG, "Failed to send feedback.", t);
+        }
+      };
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -1494,13 +1502,19 @@ public class ReadAloudController
 
     @Override
     public void onPositiveFeedback() {
-      // TODO(crbug.com/401256755): Implement feedback mechanism.
+      if (mPlayback == null) {
+        return;
+      }
+      mPlayback.sendFeedback(FeedbackType.POSITIVE, NegativeFeedbackReason.OTHER, mSendFeedbackCallback);
       mFeedbackType.set(FeedbackType.POSITIVE);
     }
 
     @Override
     public void onNegativeFeedback(NegativeFeedbackReason reason) {
-      // TODO(crbug.com/401256755): Implement feedback mechanism.
+      if (mPlayback == null) {
+        return;
+      }
+      mPlayback.sendFeedback(FeedbackType.NEGATIVE, reason, mSendFeedbackCallback);
       mFeedbackType.set(FeedbackType.NEGATIVE);
     }
 

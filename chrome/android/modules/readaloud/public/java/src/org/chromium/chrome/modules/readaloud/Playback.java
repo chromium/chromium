@@ -155,4 +155,7 @@ public interface Playback {
      * This method must be called when the playback is no longer needed.
      */
     default void release() {}
+
+    /** Send a feedback about this playback to ReadAloud service. */
+    default void sendFeedback(Feedback.FeedbackType feedbackType, Feedback.NegativeFeedbackReason negativeFeedbackReason, ReadAloudPlaybackHooks.SendFeedbackCallback callback) {}
 }

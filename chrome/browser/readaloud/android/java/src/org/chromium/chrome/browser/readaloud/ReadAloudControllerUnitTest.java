@@ -90,6 +90,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
@@ -936,6 +938,24 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(newTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
         verify(mPlayback, times(1)).release();
+    }
+
+    @Test
+    public void testSendPositiveFeedback() {
+      requestAndStartPlayback();
+
+      mController.onPositiveFeedback();
+
+      verify(mPlayback).sendFeedback(eq(FeedbackType.POSITIVE), eq(NegativeFeedbackReason.OTHER), Mockito.any(ReadAloudPlaybackHooks.SendFeedbackCallback.class));
+    }
+
+    @Test
+    public void testSendNegativeFeedback() {
+      requestAndStartPlayback();
+
+      mController.onNegativeFeedback(NegativeFeedbackReason.OFFENSIVE);
+
+      verify(mPlayback).sendFeedback(eq(FeedbackType.NEGATIVE), eq(NegativeFeedbackReason.OFFENSIVE), Mockito.any(ReadAloudPlaybackHooks.SendFeedbackCallback.class));
     }
 
     @Test
