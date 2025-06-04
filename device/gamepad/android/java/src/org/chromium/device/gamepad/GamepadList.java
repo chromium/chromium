@@ -368,9 +368,11 @@ public class GamepadList {
     private void doVibration(int index, double strongMagnitude, double weakMagnitude) {
         GamepadDevice device;
         synchronized (mLock) {
-            device = assumeNonNull(getDevice(index));
+            device = getDevice(index);
         }
-        device.doVibration(strongMagnitude, weakMagnitude);
+        if (device != null) {
+            device.doVibration(strongMagnitude, weakMagnitude);
+        }
     }
 
     @CalledByNative
@@ -381,9 +383,11 @@ public class GamepadList {
     private void cancelVibration(int index) {
         GamepadDevice device;
         synchronized (mLock) {
-            device = assumeNonNull(getDevice(index));
+            device = getDevice(index);
         }
-        device.cancelVibration();
+        if (device != null) {
+            device.cancelVibration();
+        }
     }
 
     private static class LazyHolder {
