@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -1419,6 +1420,17 @@ TEST(CSSParserImplTest, ParseNestedRule) {
             To<StyleRule>(nested)
                 ->FirstSelector()
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+}
+
+TEST(CSSParserImplTest, UnexpectedTokenInVar_IdentFunctionDisabled) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  ScopedCSSIdentFunctionForTest scoped_feature(false);
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  // Don't crash:
+  css_test_helpers::ParseRule(*document, ".a { color: var(42); }");
+  css_test_helpers::ParseRule(*document, ".a { color: var(ident('thing')); }");
 }
 
 }  // namespace blink
