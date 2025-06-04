@@ -30,6 +30,7 @@ wgpu::BindGroupLayoutEntry AsDawnType(
       .binding = webgpu_binding->binding(),
       .visibility =
           AsDawnFlags<wgpu::ShaderStage>(webgpu_binding->visibility()),
+      .bindingArraySize = webgpu_binding->bindingArraySize(),
   };
 
   if (webgpu_binding->hasBuffer()) {
