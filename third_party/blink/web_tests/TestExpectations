@@ -2746,6 +2746,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/history_updated/history_updated.py [ Failure ]
 crbug.com/421746161 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-2 [ Crash Pass ]
 crbug.com/421653422 [ Mac12-arm64 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 crbug.com/421650040 [ Win10.20h2 ] external/wpt/fetch/metadata/xslt.https.sub.html [ Timeout ]

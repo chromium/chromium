@@ -72,6 +72,11 @@ async def test_history_url_update(
           history_updated_events
       )
 
+      # browsingContext.historyUpdated should not contain any navigation id or
+      # any timestamp.
+      assert "navigation" not in history_updated_events[0]
+      assert "timestamp" not in history_updated_events[0]
+
       assert len(fragment_navigated_events) == 0
     finally:
        remove_fragment_navigated_listener()
@@ -204,6 +209,15 @@ async def test_history_document_open(
       # https://html.spec.whatwg.org/#document-open-steps step 12.2.
       recursive_compare(
           [{
+          # This event is for the first document.open before setting the
+          # location hash, per spec it should be set to the parent's document
+          # url.
+              'context': browsing_context_created_events[0]['context'],
+              'url': target_url
+          },{
+          # This is for the second document.open, after setting the hash.
+          # Again this should be set to target_url since the fragment should not
+          # be included.
               'context': browsing_context_created_events[0]['context'],
               'url': target_url
           }],
@@ -214,3 +228,70 @@ async def test_history_document_open(
        remove_fragment_navigated_listener()
        remove_history_updated_listener()
        remove_created_listener()
+
+
+async def test_history_back_forward(
+    bidi_session, new_tab, url, subscribe_events, wait_for_event, wait_for_future_safe
+):
+    target_context = new_tab["context"]
+
+    target_url = url(EMPTY_PAGE)
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=target_url, wait="complete"
+    )
+
+    await subscribe_events([FRAGMENT_NAVIGATED_EVENT, HISTORY_UPDATED_EVENT])
+
+    fragment_navigated_events = []
+    history_updated_events = []
+
+    async def on_event(method, data):
+        if method == FRAGMENT_NAVIGATED_EVENT:
+            fragment_navigated_events.append(data)
+        elif method == HISTORY_UPDATED_EVENT:
+            history_updated_events.append(data)
+
+    remove_fragment_navigated_listener = bidi_session.add_event_listener(
+        FRAGMENT_NAVIGATED_EVENT, on_event
+    )
+    remove_history_updated_listener = bidi_session.add_event_listener(
+        HISTORY_UPDATED_EVENT, on_event
+    )
+
+    try:
+        await bidi_session.script.evaluate(
+            expression="""
+              history.pushState({}, "", "test1.html");
+              history.pushState({}, "", "test2.html");
+          """,
+            await_promise=False,
+            target=ContextTarget(target_context),
+        )
+
+        assert len(history_updated_events) == 2
+        assert len(fragment_navigated_events) == 0
+
+        on_entry = wait_for_event(HISTORY_UPDATED_EVENT)
+        await bidi_session.script.evaluate(
+            expression="history.back();",
+            await_promise=False,
+            target=ContextTarget(target_context),
+        )
+
+        await wait_for_future_safe(on_entry)
+        assert len(history_updated_events) == 3
+        assert len(fragment_navigated_events) == 0
+
+        on_entry = wait_for_event(HISTORY_UPDATED_EVENT)
+        await bidi_session.script.evaluate(
+            expression="history.forward();",
+            await_promise=False,
+            target=ContextTarget(target_context),
+        )
+
+        await wait_for_future_safe(on_entry)
+        assert len(history_updated_events) == 4
+        assert len(fragment_navigated_events) == 0
+    finally:
+        remove_fragment_navigated_listener()
+        remove_history_updated_listener()
