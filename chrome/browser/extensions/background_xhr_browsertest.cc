@@ -133,6 +133,12 @@ class BackgroundFetchPolicyTest : public ExtensionApiTestWithManagementPolicy {
     // needs to come after SetUp has been run in the superclass, but before any
     // subclasses need it in their own SetUpCommandLine functions.
     ASSERT_TRUE(embedded_test_server()->Start());
+    // Treat the test server as public to bypass Local Network Access checks.
+    command_line->AppendSwitchASCII(
+        network::switches::kIpAddressSpaceOverrides,
+        base::StringPrintf(
+            "%s=public",
+            embedded_test_server()->host_port_pair().ToString().c_str()));
   }
 
   void SetUpOnMainThread() override {
