@@ -95,7 +95,6 @@ export class BrowserInstance {
       '--allow-browser-signin=false',
       '--disable-component-update',
       '--disable-default-apps',
-      '--disable-infobars',
       '--disable-notifications',
       '--disable-popup-blocking',
       '--disable-search-engine-choice-screen',

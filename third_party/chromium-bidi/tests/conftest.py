@@ -116,7 +116,18 @@ async def capabilities(request):
 async def websocket(_websocket_connection, test_headless_mode, capabilities,
                     request):
     """Return a websocket with an active BiDi session."""
-    default_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
+    default_capabilities = {
+        "webSocketUrl": True,
+        "goog:chromeOptions": {
+            "args": ["--disable-infobars"]
+        }
+    }
+
+    if os.getenv(
+            "VERBOSE"
+    ) == "true" and request and request.node and request.node.name:
+        default_capabilities["goog:pytest_name"] = request.node.name
+
     maybe_browser_bin = os.getenv("BROWSER_BIN")
     if maybe_browser_bin:
         default_capabilities["goog:chromeOptions"][
@@ -124,14 +135,16 @@ async def websocket(_websocket_connection, test_headless_mode, capabilities,
 
     if test_headless_mode != "false":
         if test_headless_mode == "old":
-            default_capabilities["goog:chromeOptions"]["args"] = [
-                "--headless=old", '--hide-scrollbars', '--mute-audio'
-            ]
+            default_capabilities["goog:chromeOptions"]["args"].append(
+                "--headless=old")
+            default_capabilities["goog:chromeOptions"]["args"].append(
+                "--hide-scrollbars")
+            default_capabilities["goog:chromeOptions"]["args"].append(
+                "--mute-audio")
         else:
             # Default to new headless mode.
-            default_capabilities["goog:chromeOptions"]["args"] = [
-                "--headless=new"
-            ]
+            default_capabilities["goog:chromeOptions"]["args"].append(
+                "--headless=new")
 
     session_capabilities = merge_dicts_recursively(default_capabilities,
                                                    capabilities)
