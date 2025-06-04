@@ -9,12 +9,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/accessibility/render_accessibility_host.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -354,6 +362,23 @@ class AccessibilityPerformanceMeasurementExperimentTest
     NOTREACHED();
   }
 
+  void WaitForExperimentShutDown() {
+    base::RunLoop loop;
+    base::RepeatingClosure check_task;  // Declare upfront for self-capture
+    check_task = base::BindLambdaForTesting([&]() {
+      if (!accessibility_state()
+               .IsAccessibilityPerformanceMeasurementExperimentActive()) {
+        return loop.Quit();
+      }
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, check_task, base::Milliseconds(10));
+    });
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             check_task);
+    loop.Run();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -393,6 +418,8 @@ IN_PROC_BROWSER_TEST_P(
   // new AXMode to be only the one being set.
   auto scoped_mode = accessibility_state().CreateScopedModeForProcess(
       ui::kAXModeBasic & ~kIgnoredModeFlags);
+
+  WaitForExperimentShutDown();
   ASSERT_FALSE(accessibility_state()
                    .IsAccessibilityPerformanceMeasurementExperimentActive());
 
@@ -416,6 +443,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPerformanceMeasurementExperimentTest,
   auto scoped_mode = accessibility_state().CreateScopedModeForBrowserContext(
       &browser_context1(), ui::kAXModeComplete);
 
+  WaitForExperimentShutDown();
   ASSERT_FALSE(accessibility_state()
                    .IsAccessibilityPerformanceMeasurementExperimentActive());
   EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
@@ -432,6 +460,66 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPerformanceMeasurementExperimentTest,
                 &browser_context2()) &
                 ~kIgnoredModeFlags,
             ui::AXMode() & ~kIgnoredModeFlags);
+}
+
+class AccessibilityPerformanceMeasurementExperimentSerializationOnlyResetTest
+    : public AccessibilityPerformanceMeasurementExperimentTest {
+ protected:
+  AccessibilityPerformanceMeasurementExperimentSerializationOnlyResetTest() =
+      default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RendererSerializationOnly,
+    AccessibilityPerformanceMeasurementExperimentSerializationOnlyResetTest,
+    testing::Values("RendererSerializationOnly"));
+
+// This test verifies that accessibility is reset when leaving the Renderer
+// Serialization Only experiment variant.
+IN_PROC_BROWSER_TEST_P(
+    AccessibilityPerformanceMeasurementExperimentSerializationOnlyResetTest,
+    WebContentsResetAfterExperimentShutDown) {
+  ASSERT_TRUE(
+      features::IsAccessibilityPerformanceMeasurementExperimentEnabled());
+  ASSERT_TRUE(accessibility_state()
+                  .IsAccessibilityPerformanceMeasurementExperimentActive());
+
+  base::RunLoop loop;
+  RenderAccessibilityHost::SetAccessibilityDataDiscardedCallbackForTesting(
+      loop.QuitClosure());
+
+  // Navigate to a page and check that the accessibility events have been
+  // discarded.
+  const std::string html = "<p>Hello World</p>";
+  GURL url("data:text/html," + base::EscapeQueryParamValue(html, false));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // This loop will quit once accessibility events arrive in the browser and are
+  // discarded because the "RendererSerializationOnly" variant of the
+  // performance experiment is active.
+  loop.Run();
+  RenderAccessibilityHost::SetAccessibilityDataDiscardedCallbackForTesting({});
+
+  // Check that events have been discarded properly. This means that a
+  // BrowserAccessibilityManager (BAM) was not created for this WebContents,
+  // as a BAM is typically instantiated when processing accessibility events.
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(&web_contents1());
+  ASSERT_FALSE(web_contents_impl->GetRootBrowserAccessibilityManager());
+
+  AccessibilityNotificationWaiter waiter(&web_contents1(),
+                                         ax::mojom::Event::kLoadComplete);
+
+  // Create a new mode, which will stop the experiment.
+  auto scoped_mode =
+      accessibility_state().CreateScopedModeForProcess(ui::kAXModeBasic);
+
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Verify that the accessibility tree has now been loaded as a result of
+  // resetting accessibility on the WebContents.
+  ASSERT_TRUE(web_contents_impl->GetRootBrowserAccessibilityManager());
+  ASSERT_TRUE(web_contents_impl->GetRootBrowserAccessibilityManager()
+                  ->GetBrowserAccessibilityRoot());
 }
 
 }  // namespace content

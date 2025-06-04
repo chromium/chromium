@@ -213,6 +213,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   std::unique_ptr<ScopedAccessibilityMode>
   ConfigureAccessibilityPerformanceExperiment();
 
+  // Helper to disable and clean-up the accessibility performance experiment.
+  void ExitPerformanceExperiment();
+
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
 
