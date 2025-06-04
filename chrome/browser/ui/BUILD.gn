@@ -3240,11 +3240,7 @@ static_library("ui") {
   }
 
   if (is_win || is_mac) {
-    deps += [
-      "//chrome/browser/ui/pdf/infobar",
-      "//chrome/browser/ui/pdf/infobar:impl",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/ui/pdf/infobar:impl" ]
+    deps += [ "//chrome/browser/ui/pdf/infobar" ]
   }
 
   if (is_mac) {
