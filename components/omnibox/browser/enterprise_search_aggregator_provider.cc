@@ -327,14 +327,12 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     std::set<std::u16string> input_words,
     bool in_keyword_mode,
     AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
-    const std::string& description,
-    const std::string& contents,
-    const std::vector<std::string> additional_scoring_fields) {
+    const std::vector<std::string> strong_scoring_fields,
+    const std::vector<std::string> weak_scoring_fields) {
   // Split match fields into words.
   std::set<std::u16string> strong_scoring_words =
-      GetWords({description, contents});
-  std::set<std::u16string> weak_scoring_words =
-      GetWords(additional_scoring_fields);
+      GetWords(strong_scoring_fields);
+  std::set<std::u16string> weak_scoring_words = GetWords(weak_scoring_fields);
 
   // Compute text similarity of the input and match fields. See comment for
   // `kMinCharForStrongTextMatch`.
@@ -878,11 +876,14 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
          adjusted_input_.InKeywordMode())) {
       relevance_data = GetServerRelevanceData(result);
     } else {
-      auto additional_scoring_fields =
-          GetAdditionalScoringFields(result, suggestion_type);
+      auto strong_scoring_fields =
+          GetStrongScoringFields(result, suggestion_type);
+      strong_scoring_fields.push_back(contents);
+      strong_scoring_fields.push_back(description);
+      auto weak_scoring_fields = GetWeakScoringFields(result, suggestion_type);
       relevance_data = CalculateRelevanceData(
           input_words, adjusted_input_.InKeywordMode(), suggestion_type,
-          description, contents, additional_scoring_fields);
+          strong_scoring_fields, weak_scoring_fields);
     }
     if (relevance_data.relevance) {
       // Decrement scores to keep sorting stable. Add 10 to avoid going below
@@ -924,19 +925,9 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     SuggestionType suggestion_type) const {
   std::string destination_uri =
       ptr_to_string(result.FindString("destinationUri"));
-  if (suggestion_type == SuggestionType::CONTENT) {
+  if (suggestion_type == SuggestionType::CONTENT ||
+      suggestion_type == SuggestionType::PEOPLE) {
     return destination_uri;
-  }
-
-  if (suggestion_type == SuggestionType::PEOPLE) {
-    // Return the destination URI if it is present. Otherwise, fall back to the
-    // creating a search URL, below.
-    // TODO(crbug.com/392734200): Remove the fallback to search URL once the
-    //   change to populate "destinationUri" for people suggestions is available
-    //   in prod.
-    if (!destination_uri.empty()) {
-      return destination_uri;
-    }
   }
 
   std::string query = ptr_to_string(result.FindString("suggestion"));
@@ -968,10 +959,9 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
   if (suggestion_type == SuggestionType::QUERY) {
     return ptr_to_string(result.FindString("suggestion"));
   } else if (suggestion_type == SuggestionType::PEOPLE) {
-    std::string url = GetMatchDestinationUrl(result, suggestion_type);
-    return base::UTF16ToUTF8(url_formatter::FormatUrl(
-        GURL(url), AutocompleteMatch::GetFormatTypes(false, true),
-        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+    return l10n_util::GetStringFUTF8(
+        IDS_PERSON_SUGGESTION_DESCRIPTION,
+        template_url_->AdjustedShortNameForLocaleDirection());
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
@@ -1024,7 +1014,7 @@ std::u16string EnterpriseSearchAggregatorProvider::GetLocalizedContentMetadata(
 }
 
 std::vector<std::string>
-EnterpriseSearchAggregatorProvider::GetAdditionalScoringFields(
+EnterpriseSearchAggregatorProvider::GetStrongScoringFields(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
   // Should not return any fields already included in `GetMatchDescription()` &
@@ -1032,6 +1022,19 @@ EnterpriseSearchAggregatorProvider::GetAdditionalScoringFields(
   if (suggestion_type == SuggestionType::PEOPLE) {
     return {
         ptr_to_string(result.FindString("suggestion")),
+    };
+  }
+  return {};
+}
+
+std::vector<std::string>
+EnterpriseSearchAggregatorProvider::GetWeakScoringFields(
+    const base::Value::Dict& result,
+    SuggestionType suggestion_type) const {
+  // Should not return any fields already included in `GetMatchDescription()` &
+  // `GetMatchContents()`.
+  if (suggestion_type == SuggestionType::PEOPLE) {
+    return {
         ptr_to_string(result.FindStringByDottedPath(
             "document.derivedStructData.name.givenName")),
         ptr_to_string(result.FindStringByDottedPath(
@@ -1092,20 +1095,10 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
                                text.size(), ACMatchClassification::MATCH,
                                ACMatchClassification::NONE);
   };
-  ACMatchClassifications secondary_text_class;
-  if (contents.empty() || description.empty()) {
-    secondary_text_class = std::vector<ACMatchClassification>{};
-  } else {
-    secondary_text_class =
-        suggestion_type == SuggestionType::PEOPLE
-            ? ClassifyTermMatches(
-                  FindTermMatches(adjusted_input_.text(), match.contents),
-                  match.contents.size(),
-                  ACMatchClassification::MATCH | ACMatchClassification::URL,
-                  ACMatchClassification::URL)
-            : std::vector<ACMatchClassification>{
-                  {0, ACMatchClassification::DIM}};
-  }
+  ACMatchClassifications secondary_text_class =
+      (contents.empty() || description.empty())
+          ? std::vector<ACMatchClassification>{}
+          : std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
   match.description_class = is_navigation
                                 ? primary_text_class(match.description)
                                 : secondary_text_class;

@@ -1856,22 +1856,6 @@ void AutocompleteController::UpdateKeywordDescriptions(
         last_keyword = i->keyword;
         last_contextual = is_contextual;
       }
-    } else if (i->type == AutocompleteMatchType::NAVSUGGEST &&
-               i->enterprise_search_aggregator_type ==
-                   AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
-      if (i->keyword != last_keyword) {
-        const TemplateURL* template_url =
-            i->GetTemplateURL(template_url_service_, false);
-        if (template_url) {
-          i->description_class.emplace_back(ACMatchClassification(
-              (i->description).size(), ACMatchClassification::DIM));
-          i->description +=
-              u" - " + l10n_util::GetStringFUTF16(
-                           IDS_PERSON_SUGGESTION_DESCRIPTION,
-                           template_url->AdjustedShortNameForLocaleDirection());
-        }
-      }
-      last_keyword = i->keyword;
     } else {
       last_keyword.clear();
     }

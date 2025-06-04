@@ -178,7 +178,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // excluded because the input matching that would be a coincidence and not
   // a sign the user wanted this suggestion. Does not return fields already
   // returned by `GetMatchDescription()` and `GetMatchContents()`.
-  std::vector<std::string> GetAdditionalScoringFields(
+  std::vector<std::string> GetStrongScoringFields(
+      const base::Value::Dict& result,
+      SuggestionType suggestion_type) const;
+  std::vector<std::string> GetWeakScoringFields(
       const base::Value::Dict& result,
       SuggestionType suggestion_type) const;
 
