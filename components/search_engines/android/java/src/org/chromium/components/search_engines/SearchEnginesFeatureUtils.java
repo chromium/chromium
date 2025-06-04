@@ -13,7 +13,7 @@ import org.chromium.build.annotations.Nullable;
 
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
 @NullMarked
-public final class SearchEnginesFeatureUtils {
+public class SearchEnginesFeatureUtils {
 
     static final String ENABLE_CHOICE_APIS_DEBUG_SWITCH = "enable-choice-apis-debug";
     static final String ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH = "enable-choice-apis-fake-backend";
