@@ -210,6 +210,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ViewRectProvider;
+import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -385,6 +386,8 @@ public class ToolbarManager
     private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
     private final NewTabPageDelegate mNtpDelegate;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1645,6 +1648,12 @@ public class ToolbarManager
                             browsingModeThemeColorProvider);
         }
 
+        var xrManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(mActivity);
+        if (xrManager != null) {
+            mXrSpaceModeObservableSupplier = xrManager.getXrSpaceModeObservableSupplier();
+            mXrSpaceModeObservableSupplier.addObserver(mOnXrSpaceModeChanged);
+        }
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
@@ -2481,6 +2490,10 @@ public class ToolbarManager
         mLocationBarFocusHandler.destroy();
 
         mWindowAndroid.setProgressBarConfigProvider(null);
+
+        if (mXrSpaceModeObservableSupplier != null) {
+            mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
+        }
     }
 
     /** Called when the orientation of the activity has changed. */
@@ -3197,5 +3210,12 @@ public class ToolbarManager
      */
     public boolean containsKeyboardFocus() {
         return mToolbar.containsKeyboardFocus();
+    }
+
+    public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
+        boolean isFsm = Boolean.TRUE.equals(fullSpaceMode);
+        mSuppressToolbarSceneLayerSupplier.set(isFsm);
+        setToolbarShadowVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
+        getToolbar().getProgressBar().setVisibility(isFsm ? View.INVISIBLE : View.VISIBLE);
     }
 }

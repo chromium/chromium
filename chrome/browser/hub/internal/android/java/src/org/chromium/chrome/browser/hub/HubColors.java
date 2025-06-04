@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
-import org.chromium.ui.util.XrUtils;
+import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 
 /** Util class to handle various color operations shared between hub classes. */
 @NullMarked
@@ -45,7 +45,10 @@ public final class HubColors {
     public static @ColorInt int getBackgroundColor(
             Context context, @HubColorScheme int colorScheme) {
         // On an XRDevice in FSM the background color of the Hub view is set to transparent always.
-        if (XrUtils.getInstance().isFsmOnXrDevice()) return Color.TRANSPARENT;
+        if (XrSceneCoreUtils.isSceneCoreSessionInFsm(
+                XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context))) {
+            return Color.TRANSPARENT;
+        }
 
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:

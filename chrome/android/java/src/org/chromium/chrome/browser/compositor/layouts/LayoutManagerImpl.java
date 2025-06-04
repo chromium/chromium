@@ -77,7 +77,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -1176,10 +1175,6 @@ public class LayoutManagerImpl
     @Override
     public void showLayout(int layoutType, boolean animate) {
         Layout activeLayout = getActiveLayout();
-        // On XR devices the layout transition animations are not required.
-        if (XrUtils.isXrDevice()) {
-            animate = false;
-        }
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
             setNextLayout(getLayoutForType(layoutType), animate);
             activeLayout.startHiding();
@@ -1287,7 +1282,7 @@ public class LayoutManagerImpl
      */
     protected void setNextLayout(Layout layout, boolean animate) {
         mNextActiveLayout = (layout == null) ? getDefaultLayout() : layout;
-        mAnimateNextLayout = XrUtils.isXrDevice() ? false : animate;
+        mAnimateNextLayout = animate;
     }
 
     @Override

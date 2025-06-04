@@ -106,6 +106,8 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -256,6 +258,8 @@ public class StripLayoutHelperManager
     // Drag-Drop
     @Nullable private TabStripDragHandler mTabStripDragHandler;
 
+    private @Nullable XrSceneCoreSessionManager mXrSessionManager;
+
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
         public void onDown(float x, float y, int buttons) {
@@ -366,6 +370,14 @@ public class StripLayoutHelperManager
     /** Observer for Tab Switcher layout events. */
     class TabSwitcherLayoutObserver implements LayoutStateObserver {
         @Override
+        public void onStartedShowing(int layoutType) {
+            if (layoutType == LayoutType.TAB_SWITCHER
+                    && XrSceneCoreUtils.isSceneCoreSessionInFsm(mXrSessionManager)) {
+                setStripVisibilityState(StripVisibilityState.OBSCURED, /* clear= */ false);
+            }
+        }
+
+        @Override
         public void onFinishedShowing(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             setStripVisibilityState(StripVisibilityState.OBSCURED, /* clear= */ false);
@@ -374,11 +386,21 @@ public class StripLayoutHelperManager
         @Override
         public void onStartedHiding(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            setStripVisibilityState(StripVisibilityState.OBSCURED, /* clear= */ true);
+            if (!XrSceneCoreUtils.isSceneCoreSessionInFsm(mXrSessionManager)) {
+                setStripVisibilityState(StripVisibilityState.OBSCURED, /* clear= */ true);
+            }
 
             // Expand tab group on GTS exit.
             mNormalHelper.expandGroupOnGtsExit();
             mIncognitoHelper.expandGroupOnGtsExit();
+        }
+
+        @Override
+        public void onFinishedHiding(int layoutType) {
+            if (layoutType != LayoutType.TAB_SWITCHER) return;
+            if (XrSceneCoreUtils.isSceneCoreSessionInFsm(mXrSessionManager)) {
+                setStripVisibilityState(StripVisibilityState.OBSCURED, /* clear= */ true);
+            }
         }
     }
 
@@ -575,6 +597,8 @@ public class StripLayoutHelperManager
         if (isAppInDesktopWindow()) {
             onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
         }
+
+        mXrSessionManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context);
     }
 
     private boolean isAppInDesktopWindow() {
@@ -708,6 +732,7 @@ public class StripLayoutHelperManager
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
+        mXrSessionManager = null;
     }
 
     /** Mark whether tab strip is hidden by a height transition. */

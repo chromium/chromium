@@ -211,7 +211,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         if (layoutType == LayoutType.TAB_SWITCHER && mHubLayout == null) {
             initTabSwitcher();
         }
-        super.showLayout(layoutType, XrUtils.isXrDevice() ? false : animate);
+        super.showLayout(layoutType, animate);
     }
 
     /**
@@ -337,7 +337,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      *     disabled.
      */
     public void setEnableAnimations(boolean enabled) {
-        mEnableAnimations = XrUtils.isXrDevice() ? false : enabled;
+        mEnableAnimations = enabled;
     }
 
     /** Returns whether animations should be done for model changes. */
