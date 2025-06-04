@@ -2950,7 +2950,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
 
         // Constants using tensors for weights.
         if (auto id_and_handle_it =
-                graph_info.id_to_constant_tensor_operand_map.find(id);
+                graph_info.id_to_constant_tensor_operand_map.find(operand_id);
             id_and_handle_it !=
             graph_info.id_to_constant_tensor_operand_map.end()) {
           // `id` must correspond to a handle known by the context...
@@ -2977,7 +2977,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
 
         // `id` must correspond to a pending constant operand handle...
         auto id_and_handle_it =
-            graph_info.constant_operand_ids_to_handles.find(id);
+            graph_info.constant_operand_ids_to_handles.find(operand_id);
         if (id_and_handle_it ==
             graph_info.constant_operand_ids_to_handles.end()) {
           return std::nullopt;

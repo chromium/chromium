@@ -92,12 +92,13 @@ mojom_component("mojom") {
         "context_properties_mojom_traits.h",
         "data_type_limits_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
-        "range_traits.h",
         "operand_id_mojom_traits.h",
+        "range_traits.h",
         "supported_data_types_mojom_traits.h",
         "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",
       ]
+
       traits_public_deps = [ ":webnn_mojom_traits" ]
     },
   ]
@@ -110,6 +111,7 @@ component("webnn_mojom_traits") {
   sources = [
     "operand_descriptor_mojom_traits.cc",
     "operand_descriptor_mojom_traits.h",
+    "operand_id_mojom_traits.h",
   ]
 
   public_deps = [
@@ -117,6 +119,7 @@ component("webnn_mojom_traits") {
     "//base",
     "//mojo/public/cpp/bindings:struct_traits",
     "//services/webnn/public/cpp",
+    "//third_party/blink/renderer/modules/ml:operand_id_hash_traits",
   ]
 
   defines = [ "IS_WEBNN_MOJOM_TRAITS_IMPL" ]

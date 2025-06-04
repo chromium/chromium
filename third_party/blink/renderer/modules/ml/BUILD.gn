@@ -47,6 +47,15 @@ blink_modules_sources("ml") {
   ]
 }
 
+source_set("operand_id_hash_traits") {
+  sources = [ "webnn/operand_id_hash_traits.h" ]
+
+  deps = [
+    "//services/webnn/public/cpp",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

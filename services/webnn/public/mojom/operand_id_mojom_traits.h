@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
+#include "third_party/blink/renderer/modules/ml/webnn/operand_id_hash_traits.h"
 
 namespace mojo {
 

@@ -64,8 +64,7 @@ OperandId GraphInfoBuilder::BuildConstant(
 
   graph_builder_remote_->get()->CreatePendingConstant(
       handle, type, mojo_base::BigBuffer(values));
-  graph_info_->constant_operand_ids_to_handles[operand_id.value()] =
-      std::move(handle);
+  graph_info_->constant_operand_ids_to_handles[operand_id] = std::move(handle);
   return operand_id;
 }
 
