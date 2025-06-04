@@ -2510,12 +2510,15 @@ void BrowserView::FullscreenStateChanged() {
     // Enable immersive before the browser refreshes its list of enabled
     // commands.
     // Enable immersive mode when entering browser fullscreen, unless it's in
-    // app mode.
+    // app mode or requested by an extension.
     if (IsFullscreen()) {
+      auto* fullscreen_controller =
+          GetExclusiveAccessManager()->fullscreen_controller();
+
       bool enable_immersive =
-          !IsRunningInAppMode() && GetExclusiveAccessManager()
-                                       ->fullscreen_controller()
-                                       ->IsFullscreenForBrowser();
+          !IsRunningInAppMode() &&
+          !fullscreen_controller->IsExtensionFullscreenOrPending() &&
+          fullscreen_controller->IsFullscreenForBrowser();
       immersive_mode_controller_->SetEnabled(enable_immersive);
     } else if (!immersive_mode_controller_
                     ->ShouldStayImmersiveAfterExitingFullscreen()) {
