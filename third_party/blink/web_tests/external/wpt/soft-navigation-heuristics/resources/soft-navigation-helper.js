@@ -24,7 +24,7 @@ const withTimeoutMessage =
 // Helper method for use with history.back(), when we want to be
 // sure that its asynchronous effect has completed.
 const waitForUrlToEndWith = async (url) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     window.addEventListener('popstate', () => {
       if (location.href.endsWith(url)) {
         resolve();
@@ -44,7 +44,7 @@ const testSoftNavigation = options => {
   const clicks = readValue(options.clicks, 1);
   const extraValidations = readValue(options.extraValidations, () => {});
   const testName = options.testName;
-  const pushUrl = readValue(options.pushUrl, true);
+  const pushUrl = readValue(options.pushUrl, URL);
   const eventType = readValue(options.eventType, 'click');
   const interactionFunc = options.interactionFunc;
   const eventPrepWork = options.eventPrepWork;
@@ -67,7 +67,7 @@ const testSoftNavigation = options => {
       interact(link, interactionFunc);
 
       const navigation_id = await withTimeoutMessage(
-          t, soft_nav_promise, 'Timed out waiting for soft navigation');
+          t, soft_nav_promise, 'Timed out waiting for soft navigation', 3000);
       if (!first_navigation_id) {
         first_navigation_id = navigation_id;
       }
@@ -233,7 +233,7 @@ const validateSoftNavigationEntry =
   for (let i = 0; i < entries.length; ++i) {
     const entry = entries[i];
     assert_true(
-        entry.name.includes(pushUrl ? URL : document.location.href),
+        entry.name.includes(pushUrl ? pushUrl : document.location.href),
         'The soft navigation name is properly set');
     const entryTimestamp = entry.startTime;
     assert_less_than_equal(
