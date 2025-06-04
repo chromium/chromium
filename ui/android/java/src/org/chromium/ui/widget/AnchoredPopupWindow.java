@@ -41,8 +41,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observer {
-    private static final int MINIMAL_POPUP_HEIGHT_DIP = 50; // 48dp touch target plus 1dp margin.
-    private static final int MINIMAL_POPUP_WIDTH_DIP = 50; // 48dp touch target plus 1dp margin.
+    private static final int MIN_TOUCHABLE_HEIGHT_DIP = 50; // 48dp touch target plus 1dp margin.
+    private static final int MIN_TOUCHABLE_WIDTH_DIP = 50; // 48dp touch target plus 1dp margin.
 
     /** An observer that is notified of AnchoredPopupWindow layout changes. */
     public interface LayoutObserver {
@@ -251,6 +251,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private boolean mHorizontalOverlapAnchor;
     private boolean mUpdateOrientationOnChange;
     private boolean mSmartAnchorWithMaxWidth;
+    private boolean mAllowNonTouchableSize;
 
     private boolean mBeingDismissedByTouch;
     private boolean mDismissedByInsideTouch;
@@ -458,12 +459,13 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
-     * Sets the max width for the popup.  This should be called before the popup is shown.
+     * Sets the max width for the popup. This should be called before the popup is shown.
+     *
      * @param maxWidth The max width for the popup.
      */
     public void setMaxWidth(int maxWidth) {
         final float density = mRootView.getResources().getDisplayMetrics().density;
-        mMaxWidthPx = Math.max(maxWidth, (int) Math.ceil(density * MINIMAL_POPUP_WIDTH_DIP));
+        mMaxWidthPx = Math.max(maxWidth, (int) Math.ceil(density * MIN_TOUCHABLE_WIDTH_DIP));
     }
 
     /**
@@ -517,6 +519,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      */
     public void setDesiredContentWidth(int width) {
         mDesiredContentWidth = width;
+    }
+
+    /** Sets whether to allow the popup to have a small non-touchable size. The default is false. */
+    public void setAllowNonTouchableSize(boolean allowNonTouchableSize) {
+        mAllowNonTouchableSize = allowNonTouchableSize;
     }
 
     // RectProvider.Observer implementation.
@@ -616,14 +623,22 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
-     * Helps to figure out whether the actual pixel size is sufficient that users see what they are
-     * tapping. Popups can be very narrow (e.g. in landscape) and still be interactive.
+     * Checks if the popup spec meets the minimal size requirements.
+     *
+     * <p>By default, this method ensures that the size is sufficient for users to see what they are
+     * tapping. Popups can be very narrow (e.g. in landscape) and still be interactive. Use {@link
+     * #setRequireTouchableSize(boolean)} to disable this check.
+     *
      * @return True iff the popup is large enough to be safely shown to users.
      */
     private boolean hasMinimalSize() {
+        if (mAllowNonTouchableSize) {
+            return true;
+        }
+
         final float density = mRootView.getResources().getDisplayMetrics().density;
-        return mPopupSpec.popupRect.height() >= density * MINIMAL_POPUP_HEIGHT_DIP
-                && mPopupSpec.popupRect.width() >= density * MINIMAL_POPUP_WIDTH_DIP;
+        return mPopupSpec.popupRect.height() >= density * MIN_TOUCHABLE_HEIGHT_DIP
+                && mPopupSpec.popupRect.width() >= density * MIN_TOUCHABLE_WIDTH_DIP;
     }
 
     /**

@@ -831,6 +831,27 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
+    public void testAllowVerySmallPopups() {
+        UiWidgetFactory mockFactory = mock(UiWidgetFactory.class);
+        UiWidgetFactory.setInstance(mockFactory);
+        PopupWindow mockPopup = mock(PopupWindow.class);
+        when(mockPopup.isShowing()).thenReturn(false);
+        when(mockPopup.getBackground()).thenReturn(mock(Drawable.class));
+        when(mockFactory.createPopupWindow(any())).thenReturn(mockPopup);
+        View contentView = mock(ViewGroup.class);
+        when(contentView.getMeasuredHeight()).thenReturn(1);
+        when(contentView.getMeasuredWidth()).thenReturn(1);
+        when(mockPopup.getContentView()).thenReturn(contentView);
+
+        AnchoredPopupWindow anchoredPopupWindow =
+                createAnchorPopupWindow(DisplayMetrics.DENSITY_HIGH);
+        anchoredPopupWindow.setAllowNonTouchableSize(true);
+        anchoredPopupWindow.show();
+
+        verify(mockPopup, times(1)).update(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
     public void testWebContentsRectChangesUpdatesPopup() {
         UiWidgetFactory mockFactory = mock(UiWidgetFactory.class);
         UiWidgetFactory.setInstance(mockFactory);
