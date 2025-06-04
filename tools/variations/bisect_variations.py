@@ -16,11 +16,16 @@ switches define the current experiments and variations Chrome runs with.
 
 Sample use:
 
-python bisect_variations.py --input-file="variations_cmd.txt"
+vpython3 bisect_variations.py --input-file="variations_cmd.txt"
     --output-dir=".\out" --browser=canary --url="https://www.youtube.com/"
 
 "variations_cmd.txt" is the command line switches data saved from
 chrome://version/?show-variations-cmd.
+
+Sample use for Android:
+vpython3 bisect_variations.py --input-file="variations_cmd.txt"
+    --output-dir=".\bisect-out" --url="https://www.youtube.com/"
+    --browser-path="out/Android/bin/chrome_apk"
 
 Run with --help to get a complete list of options this script runs with.
 """
@@ -160,7 +165,7 @@ def _LoadVariations(filename):
           switch_name, switch_value in switches.items()]
 
 
-def _BuildBrowserArgs(user_data_dir, extra_browser_args, variations_args):
+def _BuildBrowserArgs(user_data_dir, extra_browser_args, variations_args, is_apk):
   """Builds commandline switches browser runs with.
 
   Args:
@@ -169,6 +174,7 @@ def _BuildBrowserArgs(user_data_dir, extra_browser_args, variations_args):
           with.
       variations_args: A list of commandline switches that defines the
           variations cmd browser runs with.
+      is_apk: Whether we're running an APK.
 
   Returns:
       A list of commandline switches.
@@ -182,10 +188,16 @@ def _BuildBrowserArgs(user_data_dir, extra_browser_args, variations_args):
   ]
   browser_args.extend(extra_browser_args)
   browser_args.extend(variations_args)
+
+  if is_apk:
+      return [
+        "--args={}".format(" ".join(browser_args))
+      ]
+
   return browser_args
 
 
-def _RunVariations(browser_path, url, extra_browser_args, variations_args):
+def _RunVariations(browser_path, url, extra_browser_args, variations_args, is_apk):
   """Launches browser with given variations.
 
   Args:
@@ -195,23 +207,35 @@ def _RunVariations(browser_path, url, extra_browser_args, variations_args):
           with.
       variations_args: A list of commandline switches that defines the
           variations cmd browser runs with.
+      is_apk: Whether we're running an APK.
 
   Returns:
       A set of (returncode, stdout, stderr) from browser subprocess.
   """
   command = [os.path.abspath(browser_path)]
+  if is_apk:
+    command.append("run")
   if url:
     command.append(url)
   tempdir = tempfile.mkdtemp(prefix='bisect_variations_tmp')
   command.extend(_BuildBrowserArgs(user_data_dir=tempdir,
                                    extra_browser_args=extra_browser_args,
-                                   variations_args=variations_args))
+                                   variations_args=variations_args,
+                                   is_apk=is_apk))
   logging.debug(' '.join(command))
 
   subproc = subprocess.Popen(
       command, bufsize=-1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  stdout, stderr = subproc.communicate()
-  shutil.rmtree(tempdir, True)
+  try:
+    stdout, stderr = subproc.communicate(timeout=None if not is_apk else 15)
+  except subprocess.TimeoutExpired:
+    # APK wrapper scripts do not exit (even if the browser's closed on-device),
+    # so hold on for a bit before prompting. After the prompt is dismissed,
+    # the next iteration of the APK run script will close the browser and
+    # reopen it with new command line args.
+    return 0, "", ""
+  if not is_apk:
+    shutil.rmtree(tempdir, True)
   return (subproc.returncode, stdout, stderr)
 
 
@@ -242,30 +266,35 @@ def _AskCanReproduce(exit_status, stdout, stderr):
       logging.info(stderr)
 
 
-def Bisect(browser_type, url, extra_browser_args, variations_file, output_dir):
+def Bisect(browser_type, url, browser_path, extra_browser_args, variations_file, output_dir):
   """Bisect variations interactively.
 
   Args:
       browser_type: One of the supported browser type on this platform. See
           --help for the list.
       url: The webpage URL browser launches with.
+      browser_path: Location of the compiled output browser.
       extra_browser_args: A list of commandline switches browser runs with.
       variations_file: A file contains variations commandline switches that
           need to be bisected.
       output_dir: A folder where intermediate bisecting data are stored.
   """
-  browser_path = _LocateBrowser(browser_type)
+  if not browser_path:
+    browser_path = _LocateBrowser(browser_type)
   if sys.platform.startswith('win'):
     runs = _EnsureCommandLineLength(variations_file, output_dir)
   else:
     runs = [variations_file]
+
+  # All Android wrapper scripts end with _apk
+  is_apk = browser_path.endswith("_apk")
 
   # Verify that the issue not be reproduced without variations.
   while True:
     exit_status, stdout, stderr = _RunVariations(
         browser_path=browser_path, url=url,
         extra_browser_args=extra_browser_args,
-        variations_args=[])
+        variations_args=[], is_apk=is_apk)
     answer = _AskCanReproduce(exit_status, stdout, stderr)
     if answer == 'y':
       raise Exception(
@@ -291,7 +320,7 @@ def Bisect(browser_type, url, extra_browser_args, variations_file, output_dir):
     exit_status, stdout, stderr = _RunVariations(
         browser_path=browser_path, url=url,
         extra_browser_args=extra_browser_args,
-        variations_args=variations_args)
+        variations_args=variations_args, is_apk=is_apk)
 
     answer = _AskCanReproduce(exit_status, stdout, stderr)
     if answer == 'y':
@@ -358,6 +387,9 @@ def main():
   parser.add_option("--output-dir",
                     help="specify a folder where output files are saved. "
                     "If not specified, it is the folder of the input file.")
+  parser.add_option("--browser-path", help="specify location of the browser "
+                    "executable or run script. Overrides the default location " \
+                    "from --browser")
   options, _ = parser.parse_args()
   if options.verbose:
     logging.basicConfig(level=logging.DEBUG)
@@ -375,6 +407,7 @@ def main():
   if options.extra_browser_args is not None:
     extra_browser_args = options.extra_browser_args.split()
   Bisect(browser_type=browser_type, url=options.url,
+         browser_path=options.browser_path,
          extra_browser_args=extra_browser_args,
          variations_file=options.input_file, output_dir=output_dir)
   return 0
