@@ -389,7 +389,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
-  if (!GetOrCreateCanvasResourceProvider()) {
+  if (!GetOrCreateCanvasResourceProviderForCanvas2D()) {
     return false;
   }
 
@@ -439,7 +439,7 @@ bool HTMLCanvasElement::IsCanvas2DResourceValid() {
     return false;
   }
 
-  return !!GetOrCreateCanvasResourceProvider();
+  return !!GetOrCreateCanvasResourceProviderForCanvas2D();
 }
 
 void HTMLCanvasElement::Dispose() {
@@ -836,7 +836,7 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
   // whether the CRP is guaranteed to always be present).
   if (IsRenderingContext2D() && LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
-    GetOrCreateCanvasResourceProvider();
+    GetOrCreateCanvasResourceProviderForCanvas2D();
   }
 }
 
@@ -861,7 +861,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     }
   } else if (IsRenderingContext2D() && LowLatencyEnabled() &&
              frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-             GetOrCreateCanvasResourceProvider()) {
+             GetOrCreateCanvasResourceProviderForCanvas2D()) {
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
       const gfx::Rect src_rect(Size());
