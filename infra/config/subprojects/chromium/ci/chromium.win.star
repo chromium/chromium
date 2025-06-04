@@ -920,8 +920,6 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "10m",
     },
-    # TODO: crbug.com/379584977 - Remove this after fixing the recipe. https://crrev.com/c/6242260
-    reclient_enabled = True,
 )
 
 ci.builder(
