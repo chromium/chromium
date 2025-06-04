@@ -88,7 +88,6 @@ void IwaBundleCacheManager::Start() {
 
   install_manager_observation_.Observe(&provider_->install_manager());
   CleanCacheForIwasDeletedFromPolicy();
-  // TODO(crbug.com/388727598): observe IWA installation to trigger updates.
 }
 
 void IwaBundleCacheManager::SetProvider(base::PassKey<WebAppProvider>,

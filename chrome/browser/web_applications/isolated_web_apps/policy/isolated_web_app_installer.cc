@@ -380,9 +380,6 @@ void IwaInstaller::RunInstallFromInternetCommand(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           install_options_.web_bundle_id());
 
-  // TODO: crbug.com/306638108 - In the time it took to download everything, the
-  // app might have already been installed by other means.
-
   install_command_wrapper_->Install(
       GetIsolatedWebAppInstallSource(install_source_type_, bundle_.path(),
                                      IwaSourceBundleProdFileOp::kMove),

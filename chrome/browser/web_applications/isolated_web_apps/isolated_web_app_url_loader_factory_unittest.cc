@@ -1022,8 +1022,6 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
     EXPECT_THAT(status, IsNetError(net::OK));
     EXPECT_THAT(ResponseInfo(), NotNull());
   } else {
-    // TODO(crbug.com/40239530): This should probably be `ERR_FAILED`, not
-    // `ERR_INVALID_WEB_BUNDLE`.
     EXPECT_THAT(status, IsNetError(net::ERR_INVALID_WEB_BUNDLE));
     EXPECT_THAT(ResponseInfo(), IsNull());
   }

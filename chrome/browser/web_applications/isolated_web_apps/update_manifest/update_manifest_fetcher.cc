@@ -20,7 +20,6 @@ namespace {
 
 // We need to artificially limit the size of the update manifest, because it is
 // loaded into memory.
-// TODO(b/282633201): Document the limit.
 constexpr size_t kMaxUpdateManifestLength = 5 * 1024 * 1024;
 
 }  // namespace

@@ -120,7 +120,6 @@ class ManifestBuilder {
   ManifestBuilder& AddFileHandler(std::string_view action,
                                   const FileHandlerAccept& accept);
 
-  // TODO: Other manifest fields like share_target as needed by tests.
   const std::string& start_url() const;
   const std::vector<IconMetadata>& icons() const;
   base::Version version() const;

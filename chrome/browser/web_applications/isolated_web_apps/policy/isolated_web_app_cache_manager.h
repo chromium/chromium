@@ -23,8 +23,6 @@ class WebAppProvider;
 // Controls whether IWA bundle cache directories should be cleaned or not. If
 // `IsIwaBundleCacheEnabled()` returns false, this class will not clean up
 // anything.
-// TODO(crbug.com/388727598): observe IWA installation to trigger updates
-// manually.
 class IwaBundleCacheManager : public WebAppInstallManagerObserver {
  public:
   explicit IwaBundleCacheManager(Profile& profile);
