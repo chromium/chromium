@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -55,6 +54,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -248,7 +248,7 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
 
     // Get the coordinate of the click target with respect to the target frame.
     gfx::PointF target =
-        std::visit(base::Overloaded(
+        std::visit(absl::Overload(
                        [&target_frame = std::as_const(target_frame)](
                            std::string target_id) {
                          return GetCenterCoordinatesOfElementWithId(
@@ -350,7 +350,7 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
       // Get the coordinate of the click target with respect to the target
       // frame.
       gfx::PointF target = std::visit(
-          base::Overloaded(
+          absl::Overload(
               [&target_frame =
                    std::as_const(target_frame)](std::string target_id) {
                 return GetCenterCoordinatesOfElementWithId(target_frame,
