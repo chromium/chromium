@@ -57,8 +57,8 @@ class PageHandler : public mojom::PageHandler,
       ml::ModelPerformanceHint performance_hint,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
-  void GetEstimatedPerformanceClass(
-      GetEstimatedPerformanceClassCallback callback) override;
+  void GetDevicePerformanceInfo(
+      GetDevicePerformanceInfoCallback callback) override;
   void GetPageData(GetPageDataCallback callback) override;
   void DecodeBitmap(mojo_base::BigBuffer image_buffer,
                     DecodeBitmapCallback callback) override;
@@ -71,10 +71,17 @@ class PageHandler : public mojom::PageHandler,
                          int source_line,
                          const std::string& message) override;
 
+  // Called when device performance info is received. Creates and fully
+  // populates a `PageData` to be returned via `callback`.
+  void OnReceivedPerformanceInfoForPageData(
+      GetPageDataCallback callback,
+      on_device_model::mojom::DevicePerformanceInfoPtr performance_info);
+
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 
   mojo::Remote<Service> service_;
+  on_device_model::mojom::DevicePerformanceInfoPtr performance_info_;
 
   // Logger to receive the debug logs from the optimization guide service. Not
   // owned. Guaranteed to outlive |this|, since the logger is owned by the

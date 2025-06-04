@@ -11,10 +11,19 @@
 
 namespace ml {
 
-// Returns the estimated performance class of this device based on a small
-// benchmark.
+// Returns the low threshold of VRAM in Mib. All devices with VRAM under this
+// value are considered `kVeryLow` as their `PerformanceClass`.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
+uint64_t GetLowRamThresholdMb();
+
+// Returns the high threshold of VRAM in Mib. Only devices with VRAM higher than
+// this value may be considered `kHigh` or better as their `PerformanceClass`.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+uint64_t GetHighRamThresholdMb();
+
+// Returns the performance info of the device based on a small benchmark.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
     const ChromeML& chrome_ml);
 
 }  // namespace ml

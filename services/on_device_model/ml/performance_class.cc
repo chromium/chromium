@@ -59,15 +59,30 @@ void LogVeryLowReason(VeryLowPerformanceReason reason) {
 
 }  // namespace
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+uint64_t GetLowRamThresholdMb() {
+  return static_cast<uint64_t>(kLowRAMThreshold.Get());
+}
+
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+uint64_t GetHighRamThresholdMb() {
+  return static_cast<uint64_t>(kHighRAMThreshold.Get());
+}
+
 DISABLE_CFI_DLSYM
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
+on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
     const ChromeML& chrome_ml) {
+  auto result = on_device_model::mojom::DevicePerformanceInfo::New();
+
   ChromeMLPerformanceInfo info;
   bool success = chrome_ml.api().GetEstimatedPerformance(&info);
   base::UmaHistogramBoolean("OnDeviceModel.BenchmarkSuccess", success);
   if (!success) {
-    return on_device_model::mojom::PerformanceClass::kError;
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kError;
+    result->vram_mb = 0ul;
+    return result;
   }
   const float input_speed = info.input_speed;
   const float output_speed = info.output_speed;
@@ -103,16 +118,23 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
     device_heap_mb =
         std::max(static_cast<uint64_t>(system_ram / 2), device_heap_mb);
   }
+
+  result->vram_mb = device_heap_mb;
+
   // Devices with low RAM are considered very low perf.
-  if (device_heap_mb < static_cast<uint64_t>(kLowRAMThreshold.Get())) {
+  if (device_heap_mb < GetLowRamThresholdMb()) {
     LogVeryLowReason(VeryLowPerformanceReason::kLowRAM);
-    return on_device_model::mojom::PerformanceClass::kVeryLow;
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kVeryLow;
+    return result;
   }
 
   // Devices that output less than 6 tk/s are considered very low perf.
   if (output_speed < kLowOutputThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowOutput);
-    return on_device_model::mojom::PerformanceClass::kVeryLow;
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kVeryLow;
+    return result;
   }
   // VeryLow:  [0, 50)
   // Low:      [50, 100)
@@ -121,17 +143,21 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
   // VeryHigh: [750, inf)
   if (input_speed < kLowThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowInput);
-    return on_device_model::mojom::PerformanceClass::kVeryLow;
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kVeryLow;
   } else if (input_speed < kMediumThreshold.Get()) {
-    return on_device_model::mojom::PerformanceClass::kLow;
+    result->performance_class = on_device_model::mojom::PerformanceClass::kLow;
   } else if (input_speed < kHighThreshold.Get() ||
-             device_heap_mb < static_cast<uint64_t>(kHighRAMThreshold.Get())) {
-    return on_device_model::mojom::PerformanceClass::kMedium;
+             device_heap_mb < GetHighRamThresholdMb()) {
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kMedium;
   } else if (input_speed < kVeryHighThreshold.Get()) {
-    return on_device_model::mojom::PerformanceClass::kHigh;
+    result->performance_class = on_device_model::mojom::PerformanceClass::kHigh;
   } else {
-    return on_device_model::mojom::PerformanceClass::kVeryHigh;
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kVeryHigh;
   }
+  return result;
 }
 
 }  // namespace ml

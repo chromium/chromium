@@ -351,3 +351,10 @@ struct AudioData {
   // Channel data.
   array<float> data;
 };
+
+struct DevicePerformanceInfo {
+  // Performance class of the device.
+  PerformanceClass performance_class;
+  // Detected VRAM for the device, in MiB.
+  uint64 vram_mb;
+};

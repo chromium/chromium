@@ -777,13 +777,16 @@ void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
   }
 
   performance_class_state_ = PerformanceClassState::kComputing;
-  service_client_.Get()->GetEstimatedPerformanceClass(
-      base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
-          .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              base::BindOnce(
-                  &OnDeviceModelServiceController::PerformanceClassUpdated,
-                  base::RetainedRef(this)),
-              OnDeviceModelPerformanceClass::kServiceCrash)));
+  service_client_.Get()->GetDevicePerformanceInfo(
+      base::BindOnce([](on_device_model::mojom::DevicePerformanceInfoPtr info) {
+        return info->performance_class;
+      })
+          .Then(base::BindOnce(&ConvertToOnDeviceModelPerformanceClass)
+                    .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                        base::BindOnce(&OnDeviceModelServiceController::
+                                           PerformanceClassUpdated,
+                                       base::RetainedRef(this)),
+                        OnDeviceModelPerformanceClass::kServiceCrash))));
 }
 
 void OnDeviceModelServiceController::PerformanceClassUpdated(

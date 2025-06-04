@@ -8,6 +8,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './model_status.css.js';
 import {getHtml} from './model_status.html.js';
 import type {PageData} from './on_device_internals_page.mojom-webui.js';
+import {PerformanceClass} from './on_device_model.mojom-webui.js';
 
 export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   constructor() {
@@ -44,6 +45,11 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     modelCrashCount: 0,
     maxModelCrashCount: 0,
     featureAdaptations: [],
+    performanceInfo: {
+      performanceClass: PerformanceClass.kError,
+      vramMb: 0n,
+    },
+    minVramMb: 0n,
   };
 
   protected accessor mayRestartBrowser_: boolean = false;
