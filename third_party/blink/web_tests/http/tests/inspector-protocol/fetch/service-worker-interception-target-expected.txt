@@ -1,0 +1,5 @@
+Tests that service worker script request is intercepted by SW target.
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/empty.html, type: Document
+[service_worker] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js, type: Other
+SW: PASS: intercepted
+
