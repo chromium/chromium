@@ -1810,9 +1810,6 @@ crbug.com/41320107 virtual/threaded/http/tests/devtools/tracing/idle-callback.js
 # Temporarily disabled to unblock https://crrev.com/c/6039744
 crbug.com/311438203 http/tests/devtools/throttling/mobile-throttling.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6058816
-crbug.com/381499491 http/tests/devtools/elements/styles-4/styles-keyframes-display-none.js [ Failure Pass ]
-
 # failures in external/wpt/css/css-animations/ and web-animations/ from Mozilla tests
 crbug.com/849859 external/wpt/css/css-animations/Element-getAnimations-dynamic-changes.tentative.html [ Failure ]
 
