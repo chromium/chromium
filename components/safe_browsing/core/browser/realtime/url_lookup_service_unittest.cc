@@ -413,10 +413,6 @@ TEST_F(RealTimeUrlLookupServiceTest, StartFillingRequestProto) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestFillReferringAppInfo) {
-  // The features kAddReferringAppInfoToProtegoPings and
-  // kAddReferringWebApkToProtegoPings are relevant to this functionality, but
-  // the actual check for the feature state is earlier (not in
-  // RealTimeUrlLookupService).
   EnableRealTimeUrlLookup({}, {});
   struct {
     bool is_enhanced_protection;

@@ -30,16 +30,6 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAddReferringAppInfoToProtegoPings,
-             "AddReferringAppInfoToProtegoPings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAddReferringWebApkToProtegoPings,
-             "AddReferringWebApkToProtegoPings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
              "AddWarningShownTSToClientSafeBrowsingReport",
              base::FEATURE_ENABLED_BY_DEFAULT);

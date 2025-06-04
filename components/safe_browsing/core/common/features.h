@@ -25,15 +25,6 @@ namespace safe_browsing {
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables adding an Android app referrer to Protego pings.
-BASE_DECLARE_FEATURE(kAddReferringAppInfoToProtegoPings);
-
-// Enables adding a WebAPK referrer to Protego pings. (This is a no-op if
-// `kAddReferringAppInfoToProtegoPings` is not enabled.)
-BASE_DECLARE_FEATURE(kAddReferringWebApkToProtegoPings);
-#endif
-
 // Enables Bundled Security Settings UI on chrome://settings/security
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 
