@@ -12,6 +12,7 @@
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_process_host.h"
@@ -130,7 +131,7 @@ JsToBrowserMessaging::JsToBrowserMessaging(
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
         browser_to_js_factory,
     WebMessageHostFactory* factory,
-    const OriginMatcher& origin_matcher)
+    const origin_matcher::OriginMatcher& origin_matcher)
     : render_frame_host_(render_frame_host),
       connection_factory_(factory),
       origin_matcher_(origin_matcher),

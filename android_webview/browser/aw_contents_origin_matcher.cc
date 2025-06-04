@@ -4,8 +4,7 @@
 
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 
-
-#include "components/js_injection/common/origin_matcher.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -15,7 +14,7 @@
 namespace android_webview {
 
 AwContentsOriginMatcher::AwContentsOriginMatcher()
-    : origin_matcher_(std::make_unique<js_injection::OriginMatcher>()) {}
+    : origin_matcher_(std::make_unique<origin_matcher::OriginMatcher>()) {}
 
 AwContentsOriginMatcher::~AwContentsOriginMatcher() = default;
 
@@ -27,8 +26,8 @@ bool AwContentsOriginMatcher::MatchesOrigin(const url::Origin& origin) {
 std::vector<std::string> AwContentsOriginMatcher::UpdateRuleList(
     const std::vector<std::string>& rules) {
   std::vector<std::string> bad_rules;
-  std::unique_ptr<js_injection::OriginMatcher> new_matcher =
-      std::make_unique<js_injection::OriginMatcher>();
+  std::unique_ptr<origin_matcher::OriginMatcher> new_matcher =
+      std::make_unique<origin_matcher::OriginMatcher>();
   for (const std::string& rule : rules) {
     if (!new_matcher->AddRuleFromString(rule))
       bad_rules.push_back(rule);

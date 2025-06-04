@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_INTERNAL_H_
-#define COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_INTERNAL_H_
+#ifndef COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_INTERNAL_H_
+#define COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_INTERNAL_H_
 
 #include <string>
 
 #include "net/base/scheme_host_port_matcher.h"
 
 // NOTE: this file is an implementation detail and only used by code in
-// js_injection.
+// origin_matcher.
 
-namespace js_injection {
+namespace origin_matcher {
 
 enum class OriginMatcherRuleType { kAny, kSubdomain };
 
@@ -84,6 +84,6 @@ class SubdomainMatchingRule : public OriginMatcherRule {
   const int optional_port_;
 };
 
-}  // namespace js_injection
+}  // namespace origin_matcher
 
-#endif  // COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_INTERNAL_H_
+#endif  // COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_INTERNAL_H_

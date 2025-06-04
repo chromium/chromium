@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module js_injection.mojom;
+module origin_matcher.mojom;
 
 // Values correspond to that of SubdomainMatchingRule.
 struct SubdomainMatchingRule {

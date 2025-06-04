@@ -4,8 +4,8 @@
 
 #include "components/js_injection/renderer/js_communication.h"
 
-#include "components/js_injection/common/origin_matcher.h"
 #include "components/js_injection/renderer/js_binding.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -51,14 +51,16 @@ class JsCommunication::JsObjectInfo
     js_binding_ = std::move(js_binding);
   }
 
-  const OriginMatcher& origin_matcher() const { return origin_matcher_; }
+  const origin_matcher::OriginMatcher& origin_matcher() const {
+    return origin_matcher_;
+  }
 
   mojom::JsToBrowserMessaging* js_to_java_messaging() const {
     return js_to_java_messaging_.get();
   }
 
  private:
-  OriginMatcher origin_matcher_;
+  origin_matcher::OriginMatcher origin_matcher_;
   mojo::AssociatedRemote<mojom::JsToBrowserMessaging> js_to_java_messaging_;
   mojo::AssociatedReceiver<mojom::BrowserToJsMessagingFactory>
       factory_receiver_;
@@ -66,7 +68,7 @@ class JsCommunication::JsObjectInfo
 };
 
 struct JsCommunication::DocumentStartJavaScript {
-  OriginMatcher origin_matcher;
+  origin_matcher::OriginMatcher origin_matcher;
   blink::WebString script;
   int32_t script_id;
 };

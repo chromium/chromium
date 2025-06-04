@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/js_injection/common/origin_matcher.h"
+#include "components/origin_matcher/origin_matcher.h"
 
 #include "base/containers/adapters.h"
 #include "base/strings/string_util.h"
-#include "components/js_injection/common/origin_matcher_internal.h"
+#include "components/origin_matcher/origin_matcher_internal.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/parse_number.h"
@@ -16,21 +16,24 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
-namespace js_injection {
+namespace origin_matcher {
 
 namespace {
 
 inline int GetDefaultPortForSchemeIfNoPortInfo(const std::string& scheme,
                                                int port) {
   // The input has explicit port information, so don't modify it.
-  if (port != -1)
+  if (port != -1) {
     return port;
+  }
 
   // Hard code the port for http and https.
-  if (scheme == url::kHttpScheme)
+  if (scheme == url::kHttpScheme) {
     return 80;
-  if (scheme == url::kHttpsScheme)
+  }
+  if (scheme == url::kHttpsScheme) {
     return 443;
+  }
 
   return port;
 }
@@ -50,8 +53,9 @@ OriginMatcher::OriginMatcher(const OriginMatcher& rhs) {
 
 OriginMatcher& OriginMatcher::operator=(const OriginMatcher& rhs) {
   rules_.clear();
-  for (const auto& rule : rhs.Serialize())
+  for (const auto& rule : rhs.Serialize()) {
     AddRuleFromString(rule);
+  }
   return *this;
 }
 
@@ -70,17 +74,20 @@ bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
 
   // Extract scheme-restriction.
   std::string::size_type scheme_pos = raw.find("://");
-  if (scheme_pos == std::string::npos)
+  if (scheme_pos == std::string::npos) {
     return false;
+  }
 
   const std::string scheme = raw.substr(0, scheme_pos);
-  if (!SubdomainMatchingRule::IsValidScheme(scheme))
+  if (!SubdomainMatchingRule::IsValidScheme(scheme)) {
     return false;
+  }
 
   std::string host_and_port = raw.substr(scheme_pos + 3);
   if (host_and_port.empty()) {
-    if (!SubdomainMatchingRule::IsValidSchemeAndHost(scheme, std::string()))
+    if (!SubdomainMatchingRule::IsValidSchemeAndHost(scheme, std::string())) {
       return false;
+    }
     rules_.push_back(
         std::make_unique<SubdomainMatchingRule>(scheme, std::string(), -1));
     return true;
@@ -99,8 +106,9 @@ bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
   if (ip_address.AssignFromIPLiteral(host)) {
     port = GetDefaultPortForSchemeIfNoPortInfo(scheme, port);
     host = ip_address.ToString();
-    if (ip_address.IsIPv6())
+    if (ip_address.IsIPv6()) {
       host = '[' + host + ']';
+    }
     rules_.push_back(
         std::make_unique<SubdomainMatchingRule>(scheme, host, port));
     return true;
@@ -117,8 +125,9 @@ bool OriginMatcher::Matches(const url::Origin& origin) const {
   for (const std::unique_ptr<OriginMatcherRule>& rule :
        base::Reversed(rules_)) {
     net::SchemeHostPortMatcherResult result = rule->Evaluate(origin_url);
-    if (result == net::SchemeHostPortMatcherResult::kInclude)
+    if (result == net::SchemeHostPortMatcherResult::kInclude) {
       return true;
+    }
   }
   return false;
 }
@@ -132,4 +141,4 @@ std::vector<std::string> OriginMatcher::Serialize() const {
   return result;
 }
 
-}  // namespace js_injection
+}  // namespace origin_matcher

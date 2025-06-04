@@ -11,8 +11,7 @@
 #include "components/js_injection/browser/navigation_web_message_sender.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
-#include "components/js_injection/common/origin_matcher.h"
-#include "components/js_injection/common/origin_matcher_mojom_traits.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +23,7 @@ namespace {
 
 std::string ConvertToNativeAllowedOriginRulesWithSanityCheck(
     const std::vector<std::string>& allowed_origin_rules_strings,
-    OriginMatcher& allowed_origin_rules) {
+    origin_matcher::OriginMatcher& allowed_origin_rules) {
   for (auto& rule : allowed_origin_rules_strings) {
     if (!allowed_origin_rules.AddRuleFromString(rule))
       return "allowedOriginRules " + rule + " is invalid";
@@ -56,7 +55,7 @@ void ForEachRenderFrameHostWithinSameWebContents(
 
 struct JsObject {
   JsObject(const std::u16string& name,
-           OriginMatcher allowed_origin_rules,
+           origin_matcher::OriginMatcher allowed_origin_rules,
            std::unique_ptr<WebMessageHostFactory> factory)
       : name(std::move(name)),
         allowed_origin_rules(std::move(allowed_origin_rules)),
@@ -66,13 +65,13 @@ struct JsObject {
   ~JsObject() = default;
 
   std::u16string name;
-  OriginMatcher allowed_origin_rules;
+  origin_matcher::OriginMatcher allowed_origin_rules;
   std::unique_ptr<WebMessageHostFactory> factory;
 };
 
 DocumentStartJavaScript::DocumentStartJavaScript(
     std::u16string script,
-    OriginMatcher allowed_origin_rules,
+    origin_matcher::OriginMatcher allowed_origin_rules,
     int32_t script_id)
     : script_(std::move(script)),
       allowed_origin_rules_(allowed_origin_rules),
@@ -126,7 +125,7 @@ JsCommunicationHost::AddScriptResult
 JsCommunicationHost::AddDocumentStartJavaScript(
     const std::u16string& script,
     const std::vector<std::string>& allowed_origin_rules) {
-  OriginMatcher origin_matcher;
+  origin_matcher::OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
   AddScriptResult result;
@@ -172,7 +171,7 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
     const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules) {
-  OriginMatcher origin_matcher;
+  origin_matcher::OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
   if (!error_message.empty())

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_H_
-#define COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_H_
+#ifndef COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_H_
+#define COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@ namespace url {
 class Origin;
 }  // namespace url
 
-namespace js_injection {
+namespace origin_matcher {
 
 class OriginMatcherRule;
 
@@ -70,6 +70,6 @@ class OriginMatcher {
   RuleList rules_;
 };
 
-}  // namespace js_injection
+}  // namespace origin_matcher
 
-#endif  // COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_H_
+#endif  // COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_H_

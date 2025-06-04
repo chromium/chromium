@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/js_injection/common/origin_matcher.h"
+#include "components/origin_matcher/origin_matcher.h"
 
-#include "components/js_injection/common/origin_matcher.mojom.h"
-#include "components/js_injection/common/origin_matcher_internal.h"
+#include "components/origin_matcher/origin_matcher.mojom.h"
+#include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 
-namespace js_injection {
+namespace origin_matcher {
 
 SubdomainMatchingRule::SubdomainMatchingRule(const std::string& scheme,
                                              const std::string& optional_host,
@@ -291,8 +291,9 @@ namespace {
 void CompareMatcherRules(const OriginMatcherRule& r1,
                          const OriginMatcherRule& r2) {
   ASSERT_EQ(r1.type(), r2.type());
-  if (r1.type() == js_injection::OriginMatcherRuleType::kAny)
+  if (r1.type() == origin_matcher::OriginMatcherRuleType::kAny) {
     return;
+  }
   const SubdomainMatchingRule& s1 =
       static_cast<const SubdomainMatchingRule&>(r1);
   const SubdomainMatchingRule& s2 =
@@ -401,4 +402,4 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeValidWildcard) {
   ASSERT_NO_FATAL_FAILURE(CompareMatchers(matcher, deserialized));
 }
 
-}  // namespace js_injection
+}  // namespace origin_matcher

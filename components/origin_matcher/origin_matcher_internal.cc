@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/js_injection/common/origin_matcher_internal.h"
+#include "components/origin_matcher/origin_matcher_internal.h"
 
 #include <algorithm>
 
@@ -14,22 +14,25 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace js_injection {
+namespace origin_matcher {
 namespace {
 
 // Returns false if |host| has too many wildcards.
 inline bool HostWildcardSanityCheck(const std::string& host) {
   size_t wildcard_count = std::ranges::count(host, '*');
-  if (wildcard_count == 0)
+  if (wildcard_count == 0) {
     return true;
+  }
 
   // We only allow one wildcard.
-  if (wildcard_count > 1)
+  if (wildcard_count > 1) {
     return false;
+  }
 
   // Start with "*." for subdomain matching.
-  if (base::StartsWith(host, "*.", base::CompareCase::SENSITIVE))
+  if (base::StartsWith(host, "*.", base::CompareCase::SENSITIVE)) {
     return true;
+  }
 
   return false;
 }
@@ -83,18 +86,21 @@ bool SubdomainMatchingRule::CanSchemeHaveHost(const std::string& scheme) {
 bool SubdomainMatchingRule::IsValidSchemeAndHost(const std::string& scheme,
                                                  const std::string& host) {
   if (host.empty()) {
-    if (CanSchemeHaveHost(scheme))
+    if (CanSchemeHaveHost(scheme)) {
       return false;
+    }
     return true;
   }
-  if (!CanSchemeHaveHost(scheme))
+  if (!CanSchemeHaveHost(scheme)) {
     return false;
+  }
 
   // |scheme| is either https or http.
 
   // URL like rule is invalid.
-  if (host.find('/') != std::string::npos)
+  if (host.find('/') != std::string::npos) {
     return false;
+  }
 
   return HostWildcardSanityCheck(host);
 }
@@ -119,9 +125,10 @@ net::SchemeHostPortMatcherResult SubdomainMatchingRule::Evaluate(
 std::string SubdomainMatchingRule::ToString() const {
   std::string str;
   base::StringAppendF(&str, "%s://%s", scheme_.c_str(), optional_host_.c_str());
-  if (optional_port_ != -1)
+  if (optional_port_ != -1) {
     base::StringAppendF(&str, ":%d", optional_port_);
+  }
   return str;
 }
 
-}  // namespace js_injection
+}  // namespace origin_matcher

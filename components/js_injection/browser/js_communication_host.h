@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -21,13 +22,12 @@ class RenderFrameHost;
 
 namespace js_injection {
 
-class OriginMatcher;
 struct JsObject;
 class WebMessageHostFactory;
 
 struct DocumentStartJavaScript {
   DocumentStartJavaScript(std::u16string script,
-                          OriginMatcher allowed_origin_rules,
+                          origin_matcher::OriginMatcher allowed_origin_rules,
                           int32_t script_id);
 
   DocumentStartJavaScript(DocumentStartJavaScript&) = delete;
@@ -36,7 +36,7 @@ struct DocumentStartJavaScript {
   DocumentStartJavaScript& operator=(DocumentStartJavaScript&&) = default;
 
   std::u16string script_;
-  OriginMatcher allowed_origin_rules_;
+  origin_matcher::OriginMatcher allowed_origin_rules_;
   int32_t script_id_;
 };
 
@@ -93,7 +93,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
 
   struct RegisteredFactory {
     std::u16string js_name;
-    OriginMatcher allowed_origin_rules;
+    origin_matcher::OriginMatcher allowed_origin_rules;
     raw_ptr<WebMessageHostFactory> factory = nullptr;
   };
 

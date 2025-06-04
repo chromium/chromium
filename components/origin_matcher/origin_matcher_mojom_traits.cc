@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/js_injection/common/origin_matcher_mojom_traits.h"
+#include "components/origin_matcher/origin_matcher_mojom_traits.h"
 
 #include "base/strings/pattern.h"
-#include "components/js_injection/common/origin_matcher_internal.h"
+#include "components/origin_matcher/origin_matcher_internal.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/parse_number.h"
@@ -18,21 +18,22 @@
 
 namespace mojo {
 
-using js_injection::SubdomainMatchingRule;
-using js_injection::mojom::OriginMatcherRuleDataView;
+using origin_matcher::SubdomainMatchingRule;
+using origin_matcher::mojom::OriginMatcherRuleDataView;
 
 // static
-js_injection::mojom::SubdomainMatchingRulePtr
+origin_matcher::mojom::SubdomainMatchingRulePtr
 StructTraits<OriginMatcherRuleDataView, OriginMatcherRuleUniquePtr>::
     subdomain_matching_rule(const OriginMatcherRuleUniquePtr& rule) {
-  if (rule->type() == js_injection::OriginMatcherRuleType::kAny)
+  if (rule->type() == origin_matcher::OriginMatcherRuleType::kAny) {
     return nullptr;
+  }
 
-  DCHECK_EQ(js_injection::OriginMatcherRuleType::kSubdomain, rule->type());
+  DCHECK_EQ(origin_matcher::OriginMatcherRuleType::kSubdomain, rule->type());
   const SubdomainMatchingRule* matching_rule =
       static_cast<SubdomainMatchingRule*>(rule.get());
-  js_injection::mojom::SubdomainMatchingRulePtr matching_rule_ptr(
-      js_injection::mojom::SubdomainMatchingRule::New());
+  origin_matcher::mojom::SubdomainMatchingRulePtr matching_rule_ptr(
+      origin_matcher::mojom::SubdomainMatchingRule::New());
 
   matching_rule_ptr->scheme = matching_rule->scheme();
   matching_rule_ptr->optional_host = matching_rule->optional_host();
@@ -46,17 +47,18 @@ bool StructTraits<OriginMatcherRuleDataView, OriginMatcherRuleUniquePtr>::Read(
     OriginMatcherRuleUniquePtr* out) {
   DCHECK(!out->get());
 
-  js_injection::mojom::SubdomainMatchingRuleDataView
+  origin_matcher::mojom::SubdomainMatchingRuleDataView
       subdomain_matching_rule_data_view;
   r.GetSubdomainMatchingRuleDataView(&subdomain_matching_rule_data_view);
   if (subdomain_matching_rule_data_view.is_null()) {
-    *out = std::make_unique<js_injection::MatchAllOriginsRule>();
+    *out = std::make_unique<origin_matcher::MatchAllOriginsRule>();
     return true;
   }
 
-  js_injection::mojom::SubdomainMatchingRulePtr subdomain_matching_rule;
-  if (!r.ReadSubdomainMatchingRule(&subdomain_matching_rule))
+  origin_matcher::mojom::SubdomainMatchingRulePtr subdomain_matching_rule;
+  if (!r.ReadSubdomainMatchingRule(&subdomain_matching_rule)) {
     return false;
+  }
   if (!SubdomainMatchingRule::IsValidScheme(subdomain_matching_rule->scheme) ||
       !SubdomainMatchingRule::IsValidSchemeAndHost(
           subdomain_matching_rule->scheme,
@@ -70,13 +72,14 @@ bool StructTraits<OriginMatcherRuleDataView, OriginMatcherRuleUniquePtr>::Read(
 }
 
 // static
-bool StructTraits<js_injection::mojom::OriginMatcherDataView,
-                  js_injection::OriginMatcher>::
-    Read(js_injection::mojom::OriginMatcherDataView data,
-         js_injection::OriginMatcher* out) {
+bool StructTraits<origin_matcher::mojom::OriginMatcherDataView,
+                  origin_matcher::OriginMatcher>::
+    Read(origin_matcher::mojom::OriginMatcherDataView data,
+         origin_matcher::OriginMatcher* out) {
   std::vector<OriginMatcherRuleUniquePtr> rules;
-  if (!data.ReadRules(&rules))
+  if (!data.ReadRules(&rules)) {
     return false;
+  }
   out->SetRules(std::move(rules));
   return true;
 }

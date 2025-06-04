@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
-#include "components/js_injection/common/origin_matcher.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -40,7 +40,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
           browser_to_js_factory,
       WebMessageHostFactory* factory,
-      const OriginMatcher& origin_matcher);
+      const origin_matcher::OriginMatcher& origin_matcher);
 
   JsToBrowserMessaging(const JsToBrowserMessaging&) = delete;
   JsToBrowserMessaging& operator=(const JsToBrowserMessaging&) = delete;
@@ -63,7 +63,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
   raw_ptr<WebMessageHostFactory, AcrossTasksDanglingUntriaged>
       connection_factory_;
-  OriginMatcher origin_matcher_;
+  origin_matcher::OriginMatcher origin_matcher_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;
   mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory>

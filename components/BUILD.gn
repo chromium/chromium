@@ -498,6 +498,7 @@ test("components_unittests") {
       "//components/offline_pages:unit_tests",
       "//components/optimization_guide/content/browser:unit_tests",
       "//components/optimization_guide/content/renderer:unit_tests",
+      "//components/origin_matcher:unit_tests",
       "//components/origin_trials:unit_tests",
       "//components/page_content_annotations/core:unit_tests",
       "//components/page_image_annotation/content/renderer:unit_tests",

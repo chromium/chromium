@@ -12,8 +12,8 @@ source_set("renderer") {
 
   deps = [
     "//base",
-    "//components/js_injection/common",
     "//components/js_injection/common:common_mojom",
+    "//components/origin_matcher",
     "//content/public/common",
     "//content/public/renderer",
     "//gin",
