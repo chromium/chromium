@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -1359,7 +1360,9 @@ TEST_F(PasswordManagerViewControllerTest,
   InlinePromoItem* item = static_cast<InlinePromoItem*>(GetTableViewItem(
       GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo), 0));
 
-  EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:WidgetPromoImageName()]);
+  EXPECT_NSEQ(
+      item.promoImage,
+      [UIImage imageNamed:kPasswordManagerTrustedVaultWidgetPromoImage]);
   EXPECT_NSEQ(
       item.promoText,
       l10n_util::GetNSStringF(
@@ -1374,8 +1377,10 @@ TEST_F(PasswordManagerViewControllerTest,
 
   SetEditing(true);
   EXPECT_FALSE(item.enabled);
-  EXPECT_NSEQ(item.promoImage,
-              [UIImage imageNamed:WidgetPromoDisabledImageName()]);
+  EXPECT_NSEQ(
+      item.promoImage,
+      [UIImage
+          imageNamed:kPasswordManagerTrustedVaultWidgetPromoDisabledImage]);
   SetEditing(false);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];

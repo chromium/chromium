@@ -99,6 +99,8 @@ extern NSString* const kMyDriveSymbol;
 extern NSString* const kSharedDrivesSymbol;
 extern NSString* const kEllipsisSquareFillSymbol;
 extern NSString* const kMagnifyingglassSparkSymbol;
+extern NSString* const kPasswordManagerTrustedVaultWidgetPromoImage;
+extern NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.

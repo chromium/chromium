@@ -107,6 +107,10 @@ NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
 NSString* const kEllipsisSquareFillSymbol = @"ellipsis_square_fill";
 NSString* const kMagnifyingglassSparkSymbol = @"magnifyingglass_spark";
+NSString* const kPasswordManagerTrustedVaultWidgetPromoImage =
+    @"password_manager_trusted_vault_widget_promo";
+NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage =
+    @"password_manager_trusted_vault_widget_promo_disabled";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

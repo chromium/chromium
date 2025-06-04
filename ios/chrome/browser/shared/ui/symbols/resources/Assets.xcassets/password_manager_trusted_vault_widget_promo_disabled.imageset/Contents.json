@@ -1,0 +1,25 @@
+{
+  "images" : [
+    {
+      "filename" : "password_manager_trusted_vault_widget_promo_disabled.pdf",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "password_manager_trusted_vault_widget_promo_disabled_dark.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}
