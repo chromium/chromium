@@ -1431,13 +1431,15 @@ base::CancelableTaskTracker::TaskId HistoryService::QueryMostVisitedURLs(
     QueryMostVisitedURLsCallback callback,
     base::CancelableTaskTracker* tracker,
     const std::optional<std::string>& recency_factor_name,
-    std::optional<size_t> recency_window_days) {
+    std::optional<size_t> recency_window_days,
+    bool check_visual_deduplication_flag) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::QueryMostVisitedURLs, history_backend_,
-                     result_count, recency_factor_name, recency_window_days),
+                     result_count, recency_factor_name, recency_window_days,
+                     check_visual_deduplication_flag),
       std::move(callback));
 }
 
