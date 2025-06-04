@@ -22,12 +22,12 @@ class DialogModel;
 namespace views {
 class DialogDelegate;
 class WidgetDelegate;
-}
+}  // namespace views
 
 namespace web_modal {
 class ModalDialogHost;
 class WebContentsModalDialogHost;
-}
+}  // namespace web_modal
 
 namespace constrained_window {
 
@@ -35,35 +35,23 @@ extern const void* kConstrainedWindowWidgetIdentifier;
 
 class ConstrainedWindowViewsClient;
 
-// Sets the ConstrainedWindowClient impl.
-void SetConstrainedWindowViewsClient(
-    std::unique_ptr<ConstrainedWindowViewsClient> client);
-
-// Update the position of dialog |widget| against |dialog_host|. This is used to
-// reposition widgets e.g. when the host dimensions change.
-void UpdateWebContentsModalDialogPosition(
-    views::Widget* widget,
-    web_modal::WebContentsModalDialogHost* dialog_host);
-
-void UpdateWidgetModalDialogPosition(
-    views::Widget* widget,
-    web_modal::ModalDialogHost* dialog_host);
-
-// Returns the top level WebContents of |initiator_web_contents|.
-content::WebContents* GetTopLevelWebContents(
-    content::WebContents* initiator_web_contents);
+// -- Helper functions for showing web modals.
+// -- Please use tabs::TabDialogManager on desktop platforms.
 
 // Shows the dialog with a new SingleWebContentsDialogManager. The dialog will
 // notify via WillClose() when it is being destroyed.
+// Please use tabs::TabDialogManager on desktop platforms.
 void ShowModalDialog(gfx::NativeWindow dialog,
                      content::WebContents* web_contents);
 
 // Calls CreateWebModalDialogViews, shows the dialog, and returns its widget.
+// Please use tabs::TabDialogManager on desktop platforms.
 views::Widget* ShowWebModalDialogViews(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents);
 
 // As above, but with an owned widget.
+// Please use tabs::TabDialogManager on desktop platforms.
 std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents,
@@ -72,8 +60,16 @@ std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
 // Create a widget for |dialog| that is modal to |web_contents|.
 // The modal type of |dialog->GetModalType()| must be
 // ui::mojom::ModalType::kChild.
+// Please use tabs::TabDialogManager on desktop platforms.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents);
+
+// Shows a web/tab-modal dialog based on `dialog_model` and returns its widget.
+// Please use tabs::TabDialogManager on desktop platforms.
+views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                            content::WebContents* web_contents);
+
+// -- Helper function for showing browser modals.
 
 // Create a widget for |dialog| that has a modality given by
 // |dialog->GetModalType()|.  The modal type must be either
@@ -102,9 +98,24 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
                                 gfx::NativeWindow parent);
 
-// Shows a web/tab-modal dialog based on `dialog_model` and returns its widget.
-views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
-                            content::WebContents* web_contents);
+// -- Other utility functions.
+
+// Sets the ConstrainedWindowClient impl.
+void SetConstrainedWindowViewsClient(
+    std::unique_ptr<ConstrainedWindowViewsClient> client);
+
+// Update the position of dialog |widget| against |dialog_host|. This is used to
+// reposition widgets e.g. when the host dimensions change.
+void UpdateWebContentsModalDialogPosition(
+    views::Widget* widget,
+    web_modal::WebContentsModalDialogHost* dialog_host);
+
+void UpdateWidgetModalDialogPosition(views::Widget* widget,
+                                     web_modal::ModalDialogHost* dialog_host);
+
+// Returns the top level WebContents of |initiator_web_contents|.
+content::WebContents* GetTopLevelWebContents(
+    content::WebContents* initiator_web_contents);
 
 // True if the platform supports global screen coordinates. This is typically
 // supported by most platforms except linux-wayland.

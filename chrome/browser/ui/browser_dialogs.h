@@ -77,17 +77,6 @@ task_manager::TaskManagerTableModel* ShowTaskManager(
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void HideTaskManager();
 
-// Creates and shows an HTML dialog with the given delegate and context.
-// The window is automatically destroyed when it is closed.
-// Returns the created window.
-//
-// Make sure to use the returned window only when you know it is safe
-// to do so, i.e. before OnDialogClosed() is called on the delegate.
-gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
-                                content::BrowserContext* context,
-                                ui::WebDialogDelegate* delegate,
-                                bool show = true);
-
 // Show `dialog_model` as a modal dialog to `browser`.
 views::Widget* ShowBrowserModal(Browser* browser,
                                 std::unique_ptr<ui::DialogModel> dialog_model);
@@ -118,8 +107,22 @@ void ShowCreateChromeAppShortcutsDialog(
     base::OnceCallback<void(bool /* created */)> close_callback);
 
 // Shows a tab modal dialog based on `dialog_model`.
+// Please use tabs::TabDialogManager for showing dialogs on desktop platforms.
 void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
                   content::WebContents* web_contents);
+
+// Creates and shows an HTML dialog with the given delegate and context.
+// The window is automatically destroyed when it is closed.
+// Returns the created window.
+//
+// Make sure to use the returned window only when you know it is safe
+// to do so, i.e. before OnDialogClosed() is called on the delegate.
+//
+// Please use tabs::TabDialogManager for showing dialogs on desktop platforms.
+gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
+                                content::BrowserContext* context,
+                                ui::WebDialogDelegate* delegate,
+                                bool show = true);
 
 #if BUILDFLAG(IS_MAC)
 

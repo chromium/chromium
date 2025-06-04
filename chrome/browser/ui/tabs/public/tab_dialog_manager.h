@@ -27,7 +27,8 @@ namespace tabs {
 class TabDialogWidgetObserver;
 class BrowserWindowWidgetObserver;
 
-// Class provides a mechanism to show a tab-scoped dialog.
+// Class provides a mechanism to show a tab-scoped dialog on desktop platforms.
+// Please file a bug if you encounter any issues.
 class TabDialogManager : public content::WebContentsObserver {
  public:
   explicit TabDialogManager(TabInterface* tab_interface);
