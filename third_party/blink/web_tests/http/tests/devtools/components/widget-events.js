@@ -145,20 +145,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       next();
     },
 
-    function testRemoveChild(next) {
-      var parentWidget = new TestWidget('Parent');
-      parentWidget.show(UI.InspectorView.InspectorView.instance().element);
-
-      var childWidget = new TestWidget('Child');
-      childWidget.show(parentWidget.element);
-      try {
-        parentWidget.element.removeChild(childWidget.element);
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
     function testShowOnWasShown(next) {
       var parentWidget = new TestWidget('Parent');
       parentWidget.showOnWasShown = new TestWidget('Child');

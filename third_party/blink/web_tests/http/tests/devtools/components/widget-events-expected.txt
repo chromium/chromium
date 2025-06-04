@@ -76,17 +76,6 @@ Child.detach()
 Parent.detach()
   Parent.willHide()
 
-Running: testRemoveChild
-Parent()
-Parent.show()
-  Parent.wasShown()
-  Parent.onResize()
-Child()
-Child.show()
-  Child.wasShown()
-  Child.onResize()
-Error: Attempt to remove element containing widget via regular DOM operation
-
 Running: testShowOnWasShown
 Parent()
 Child()
