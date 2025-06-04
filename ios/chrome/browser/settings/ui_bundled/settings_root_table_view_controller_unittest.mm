@@ -110,6 +110,7 @@ TEST_F(SettingsRootTableViewControllerTest, TestUpdateUIForEditState) {
               controller.navigationItem.rightBarButtonItem.title);
   EXPECT_FALSE(controller.navigationController.toolbarHidden);
   [navigationController cleanUpSettings];
+  EXPECT_OCMOCK_VERIFY(mockController);
 }
 
 // Tests that the delete button in the bottom toolbar is displayed only when the
@@ -158,6 +159,8 @@ TEST_F(SettingsRootTableViewControllerTest, TestDeleteToolbar) {
       didDeselectRowAtIndexPath:testIndexPath];
   EXPECT_TRUE(navigationController.toolbarHidden);
   [navigationController cleanUpSettings];
+  EXPECT_OCMOCK_VERIFY(mockTableView);
+  EXPECT_OCMOCK_VERIFY(mockController);
 }
 
 // Tests that a subclass of SettingsRootViewController that implements the

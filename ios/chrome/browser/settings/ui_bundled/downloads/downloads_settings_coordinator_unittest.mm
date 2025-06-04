@@ -63,10 +63,10 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
   }
 
   void TearDown() final {
-    [mock_save_to_photos_settings_mediator_ stopMocking];
-    [mock_downloads_settings_table_view_controller_ stopMocking];
-    [mock_save_to_photos_settings_account_selection_view_controller_
-        stopMocking];
+    EXPECT_OCMOCK_VERIFY(mock_save_to_photos_settings_mediator_);
+    EXPECT_OCMOCK_VERIFY(mock_downloads_settings_table_view_controller_);
+    EXPECT_OCMOCK_VERIFY(
+        mock_save_to_photos_settings_account_selection_view_controller_);
     PlatformTest::TearDown();
   }
 
@@ -357,4 +357,5 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_settings_mediator_);
 
   [coordinator stop];
+  EXPECT_OCMOCK_VERIFY((id)signin_coordinator_mock);
 }
