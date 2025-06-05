@@ -78,6 +78,8 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
 
   void SetUserGaiaId(const GaiaId& gaia_id);
 
+  std::map<GroupId, data_sharing_pb::GroupData>* groups() { return &groups_; }
+
  private:
   std::map<GroupId, data_sharing_pb::GroupData> groups_;
   std::map<std::string, GaiaId> email_to_gaia_id_;

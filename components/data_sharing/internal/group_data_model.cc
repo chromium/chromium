@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -388,40 +389,51 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
   for (const auto& member : old_group_data.members) {
     old_members_gaia_ids.insert(member.gaia_id);
   }
-  std::set<GaiaId> new_members_gaia_ids;
+  std::map<GaiaId, base::Time> new_members;
   for (const auto& member : new_group_data.members) {
-    new_members_gaia_ids.insert(member.gaia_id);
+    new_members.emplace(member.gaia_id, member.last_updated_time);
+  }
+  std::map<GaiaId, base::Time> past_members;
+  for (const auto& member : new_group_data.former_members) {
+    past_members.emplace(member.gaia_id, member.last_updated_time);
   }
 
-  std::vector<GaiaId> added_members_gaia_ids;
-  std::ranges::set_difference(
-      new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
-      old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
-      std::back_inserter(added_members_gaia_ids));
+  std::vector<std::pair<GaiaId, base::Time>> added_members;
+  for (const auto& new_pair : new_members) {
+    if (!base::Contains(old_members_gaia_ids, new_pair.first)) {
+      added_members.push_back(new_pair);
+    }
+  }
 
-  std::vector<GaiaId> removed_members_gaia_ids;
-  std::ranges::set_difference(
-      old_members_gaia_ids.begin(), old_members_gaia_ids.end(),
-      new_members_gaia_ids.begin(), new_members_gaia_ids.end(),
-      std::back_inserter(removed_members_gaia_ids));
+  std::vector<std::pair<GaiaId, base::Time>> removed_members;
+  for (const auto& old_gaia_id : old_members_gaia_ids) {
+    if (new_members.find(old_gaia_id) == new_members.end()) {
+      auto iter = past_members.find(old_gaia_id);
+      base::Time event_time =
+          iter != past_members.end() ? iter->second : base::Time::Now();
+      removed_members.push_back(std::make_pair(old_gaia_id, event_time));
+    }
+  }
 
-  // TODO(crbug.com/377215683): pass the actual event time (at least derived
-  // from CollaborationGroupSpecifics).
-  const base::Time event_time = base::Time::Now();
   for (auto& observer : observers_) {
-    for (auto& member_gaia_id : added_members_gaia_ids) {
+    for (const auto& added_pair : added_members) {
+      base::Time event_time =
+          added_pair.second.is_null() ? base::Time::Now() : added_pair.second;
       MaybeRecordGroupEvent(new_group_data.group_token.group_id,
                             GroupEvent::EventType::kMemberAdded, event_time,
-                            member_gaia_id);
+                            added_pair.first);
       observer.OnMemberAdded(new_group_data.group_token.group_id,
-                             member_gaia_id, event_time);
+                             added_pair.first, event_time);
     }
-    for (auto& member_gaia_id : removed_members_gaia_ids) {
+    for (const auto& removed_pair : removed_members) {
+      base::Time event_time = removed_pair.second.is_null()
+                                  ? base::Time::Now()
+                                  : removed_pair.second;
       MaybeRecordGroupEvent(new_group_data.group_token.group_id,
                             GroupEvent::EventType::kMemberRemoved, event_time,
-                            member_gaia_id);
+                            removed_pair.first);
       observer.OnMemberRemoved(new_group_data.group_token.group_id,
-                               member_gaia_id, event_time);
+                               removed_pair.first, event_time);
     }
   }
 }

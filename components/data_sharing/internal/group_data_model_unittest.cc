@@ -264,7 +264,15 @@ class GroupDataModelTest : public testing::Test {
 
   void MimicMemberAddedServerSide(const GroupId& group_id,
                                   const GaiaId& member_gaia_id) {
-    sdk_delegate_.AddMember(group_id, member_gaia_id);
+    auto iter = sdk_delegate_.groups()->find(group_id);
+    ASSERT_TRUE(iter != sdk_delegate_.groups()->end());
+
+    data_sharing_pb::GroupMember member;
+    member.set_gaia_id(member_gaia_id.ToString());
+    member.set_role(data_sharing_pb::MEMBER_ROLE_MEMBER);
+    member.set_last_updated_time_unix_epoch_millis(
+        next_changed_at_millis_since_unix_epoch_++);
+    *iter->second.add_members() = member;
 
     syncer::EntityChangeList entity_changes;
     entity_changes.push_back(EntityChangeUpdateFromSpecifics(
@@ -277,6 +285,15 @@ class GroupDataModelTest : public testing::Test {
   void MimicMemberRemovedServerSide(const GroupId& group_id,
                                     const GaiaId& member_gaia_id) {
     sdk_delegate_.RemoveMember(group_id, member_gaia_id);
+
+    auto iter = sdk_delegate_.groups()->find(group_id);
+    ASSERT_TRUE(iter != sdk_delegate_.groups()->end());
+    data_sharing_pb::GroupMember member;
+    member.set_gaia_id(member_gaia_id.ToString());
+    member.set_role(data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER);
+    member.set_last_updated_time_unix_epoch_millis(
+        next_changed_at_millis_since_unix_epoch_++);
+    *iter->second.add_former_members() = member;
 
     syncer::EntityChangeList entity_changes;
     entity_changes.push_back(EntityChangeUpdateFromSpecifics(
@@ -464,14 +481,17 @@ TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {
   // Test that OnMemberAdded() is called when a member is added.
   const GaiaId member_gaia_id("gaia_id");
   EXPECT_CALL(model_observer(),
-              OnMemberAdded(group_id, member_gaia_id, NotNullTime()));
+              OnMemberAdded(group_id, member_gaia_id,
+                            base::Time::FromMillisecondsSinceUnixEpoch(1001)));
   MimicMemberAddedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
   testing::Mock::VerifyAndClearExpectations(&model_observer());
 
   // Test that OnMemberRemoved() is called when a member is removed.
-  EXPECT_CALL(model_observer(),
-              OnMemberRemoved(group_id, member_gaia_id, NotNullTime()));
+  EXPECT_CALL(
+      model_observer(),
+      OnMemberRemoved(group_id, member_gaia_id,
+                      base::Time::FromMillisecondsSinceUnixEpoch(1003)));
   MimicMemberRemovedServerSide(group_id, member_gaia_id);
   WaitForGroupUpdated(group_id);
 }
@@ -486,21 +506,25 @@ TEST_F(GroupDataModelTest,
   // Test that OnMemberAdded() is called when a member is added.
   const GaiaId member_gaia_id1("gaia_id99");
   EXPECT_CALL(model_observer(),
-              OnMemberAdded(group_id, member_gaia_id1, NotNullTime()));
+              OnMemberAdded(group_id, member_gaia_id1,
+                            base::Time::FromMillisecondsSinceUnixEpoch(1001)));
   MimicMemberAddedServerSide(group_id, member_gaia_id1);
   WaitForGroupUpdated(group_id);
   testing::Mock::VerifyAndClearExpectations(&model_observer());
 
   const GaiaId member_gaia_id2("gaia_id2");
   EXPECT_CALL(model_observer(),
-              OnMemberAdded(group_id, member_gaia_id2, NotNullTime()));
+              OnMemberAdded(group_id, member_gaia_id2,
+                            base::Time::FromMillisecondsSinceUnixEpoch(1003)));
   MimicMemberAddedServerSide(group_id, member_gaia_id2);
   WaitForGroupUpdated(group_id);
   testing::Mock::VerifyAndClearExpectations(&model_observer());
 
   // Test that OnMemberRemoved() is called when a member is removed.
-  EXPECT_CALL(model_observer(),
-              OnMemberRemoved(group_id, member_gaia_id1, NotNullTime()));
+  EXPECT_CALL(
+      model_observer(),
+      OnMemberRemoved(group_id, member_gaia_id1,
+                      base::Time::FromMillisecondsSinceUnixEpoch(1005)));
   MimicMemberRemovedServerSide(group_id, member_gaia_id1);
   WaitForGroupUpdated(group_id);
 }
