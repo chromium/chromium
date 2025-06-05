@@ -23,6 +23,7 @@
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"

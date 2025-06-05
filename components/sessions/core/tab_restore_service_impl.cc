@@ -29,6 +29,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/history/core/common/pref_names.h"
