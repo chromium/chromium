@@ -17,9 +17,10 @@ try_.defaults.set(
     cores = 8,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
+    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
-    # TODO: b/336209927 - Migrate tricium_clang_tidy_script.py to Siso.
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 
     # Make each bot specify its own OS, since we have a variety of these in this
