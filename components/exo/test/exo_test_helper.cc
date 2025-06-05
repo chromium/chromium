@@ -10,6 +10,9 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/display.h"
@@ -40,7 +43,76 @@ ClientControlledShellSurfaceDelegate::~ClientControlledShellSurfaceDelegate() =
 
 void ClientControlledShellSurfaceDelegate::OnGeometryChanged(
     const gfx::Rect& geometry) {}
+
 void ClientControlledShellSurfaceDelegate::OnStateChanged(
+    chromeos::WindowStateType old_state,
+    chromeos::WindowStateType new_state) {
+  pending_task_count_++;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this, old_state, new_state]() {
+        ApplyStateChange(old_state, new_state);
+        pending_task_count_--;
+        operation_signal_callback_.Run(kStateChange);
+      }));
+
+  if (operation_signal_callback_.is_null()) {
+    base::test::TestFuture<Operation> signal;
+    operation_signal_callback_ = signal.GetRepeatingCallback();
+    CHECK_EQ(signal.Get(), kStateChange);
+    operation_signal_callback_ = base::NullCallback();
+  }
+}
+
+void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
+    chromeos::WindowStateType current_state,
+    chromeos::WindowStateType requested_state,
+    int64_t requested_display_id,
+    const gfx::Rect& requested_bounds_in_display,
+    bool is_resize,
+    int bounds_change,
+    bool is_adjusted_bounds) {
+  // Note: bounds_in_display is scaled, so the value may not be correct in
+  // scaled environment.
+  ASSERT_TRUE(requested_display_id != display::kInvalidDisplayId);
+
+  pending_task_count_++;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [this, current_state, requested_state,
+                      requested_display_id, requested_bounds_in_display,
+                      is_resize, bounds_change, is_adjusted_bounds]() {
+                       ApplyBoundsChange(current_state, requested_state,
+                                         requested_display_id,
+                                         requested_bounds_in_display, is_resize,
+                                         bounds_change, is_adjusted_bounds);
+                       pending_task_count_--;
+                       operation_signal_callback_.Run(kBoundsChange);
+                     }));
+
+  if (operation_signal_callback_.is_null()) {
+    base::test::TestFuture<Operation> signal;
+    operation_signal_callback_ = signal.GetRepeatingCallback();
+    CHECK_EQ(signal.Get(), kBoundsChange);
+    operation_signal_callback_ = base::NullCallback();
+  }
+}
+
+void ClientControlledShellSurfaceDelegate::OnDragStarted(int component) {}
+
+void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
+                                                          int y,
+                                                          bool canceled) {}
+
+void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
+    ZoomChange zoom_change) {}
+
+void ClientControlledShellSurfaceDelegate::Commit() {
+  if (!delay_commit_) {
+    shell_surface_->OnSurfaceCommit();
+  }
+}
+
+void ClientControlledShellSurfaceDelegate::ApplyStateChange(
     chromeos::WindowStateType old_state,
     chromeos::WindowStateType new_state) {
   switch (new_state) {
@@ -69,7 +141,8 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
   }
   Commit();
 }
-void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
+
+void ClientControlledShellSurfaceDelegate::ApplyBoundsChange(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType requested_state,
     int64_t display_id,
@@ -77,8 +150,6 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     bool is_resize,
     int bounds_change,
     bool is_adjusted_bounds) {
-  ASSERT_TRUE(display_id != display::kInvalidDisplayId);
-
   auto* window_state =
       ash::WindowState::Get(shell_surface_->GetWidget()->GetNativeWindow());
 
@@ -111,17 +182,6 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
   }
 
   Commit();
-}
-void ClientControlledShellSurfaceDelegate::OnDragStarted(int component) {}
-void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
-                                                          int y,
-                                                          bool canceled) {}
-void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
-    ZoomChange zoom_change) {}
-
-void ClientControlledShellSurfaceDelegate::Commit() {
-  if (!delay_commit_)
-    shell_surface_->OnSurfaceCommit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

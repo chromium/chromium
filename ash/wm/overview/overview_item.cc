@@ -973,6 +973,9 @@ void OverviewItem::OnWindowParentChanged(aura::Window* window,
   }
 
   if (root_window_ != window->GetRootWindow()) {
+    // Restore Window to reset the transform and the clip before adding new
+    // OverviewItem.
+    RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
     overview_session_->AddItemInMruOrder(
         window, /*reposition=*/false, /*animate=*/true,
         /*restack=*/true, /*use_spawn_animation=*/true);

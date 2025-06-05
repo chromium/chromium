@@ -849,8 +849,13 @@ OverviewWindowDragController::CompleteNormalDrag(
     const gfx::RectF target_item_bounds = item_->target_bounds();
     // Remove |item_| from overview. Leave the repositioning to the
     // |OverviewItemMoveHelper|.
-    overview_session_->RemoveItem(item_, /*item_destroying=*/false,
-                                  /*reposition=*/false);
+
+    // For the window that controls its bounds directly, wait until client moves
+    // the window.
+    if (!WindowState::Get(window)->allow_set_bounds_direct()) {
+      overview_session_->RemoveItem(item_, /*item_destroying=*/false,
+                                    /*reposition=*/false);
+    }
     item_ = nullptr;
     event_source_item_ = nullptr;
     // The |OverviewItemMoveHelper| will self destruct when we move |window| to

@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -27,6 +28,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "cc/paint/display_item_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -1388,6 +1390,57 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   // Should fit in the primary display.
   EXPECT_EQ(gfx::Rect(350, 5, 100, 100), delegate->requested_bounds()[0]);
   EXPECT_EQ(primary_display.id(), delegate->requested_display_ids()[0]);
+}
+
+TEST_F(ClientControlledShellSurfaceDisplayTest,
+       MoveToAnotherDisplayInOverview) {
+  UpdateDisplay("800x600,800x600");
+
+  aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
+  auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
+                           .BuildClientControlledShellSurface();
+  auto* delegate = static_cast<test::ClientControlledShellSurfaceDelegate*>(
+      shell_surface->delegate_for_testing());
+  auto* surface = shell_surface->root_surface();
+
+  base::test::TestFuture<test::ClientControlledShellSurfaceDelegate::Operation>
+      signal;
+  delegate->set_operation_signal_callback(signal.GetRepeatingCallback());
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  constexpr gfx::Rect kInitialBounds(100, 100, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), kInitialBounds);
+  surface->Commit();
+  shell_surface->GetWidget()->Show();
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  EXPECT_EQ(root_windows[0], window->GetRootWindow());
+
+  ash::ToggleOverview();
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo({400, 300});
+  generator->PressRightButton();
+  generator->MoveMouseTo({1200, 300});
+  generator->ReleaseRightButton();
+
+  EXPECT_EQ(1, delegate->pending_task_count());
+
+  // Emulate a client sending a bounds change event which results in the out of
+  // display bounds during the display move.  This should not result in sending
+  // back new bounds event to client.
+  shell_surface->SetBounds(GetPrimaryDisplay().id(), {800, 0, 600, 400});
+  surface->Commit();
+  EXPECT_EQ(1, delegate->pending_task_count());
+
+  EXPECT_EQ(root_windows[0], window->GetRootWindow());
+  EXPECT_EQ(signal.Get(),
+            test::ClientControlledShellSurfaceDelegate::kBoundsChange);
+  EXPECT_EQ(root_windows[1], window->GetRootWindow());
+  EXPECT_EQ(0, delegate->pending_task_count());
 }
 
 TEST_P(ClientControlledShellSurfaceTest, CaptionButtonModel) {

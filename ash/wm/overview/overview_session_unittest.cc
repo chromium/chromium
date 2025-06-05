@@ -107,6 +107,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -879,6 +880,40 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
   EXPECT_FALSE(widget->IsClosed());
   event_generator.ClickLeftButton();
   EXPECT_TRUE(widget->IsClosed());
+}
+
+// Tests that exiting overview while waiting for the client controlled state
+// window to update its display will not leave the window in transformed state.
+TEST_P(OverviewSessionTest, CancelOverviewWithClientControlledWindow) {
+  UpdateDisplay("600x400,600x400");
+  base::test::TestFuture<TestWindowBuilder::Operation> signal;
+
+  auto window = TestWindowBuilder()
+                    .SetBounds({0, 100, 200, 200})
+                    .SetTestWindowDelegate()
+                    .AllowAllWindowStates()
+                    .SetClientControlled(signal.GetRepeatingCallback())
+                    .SetShow(true)
+                    .Build();
+  ToggleOverview();
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo({300, 200});
+  generator->PressRightButton();
+  generator->MoveMouseTo({800, 200});
+  generator->ReleaseRightButton();
+  ToggleOverview();
+  EXPECT_TRUE(window->layer()->transform().IsIdentity());
+
+  EXPECT_EQ(
+      GetPrimaryDisplay(),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()));
+
+  EXPECT_EQ(signal.Get(), TestWindowBuilder::kBoundsChange);
+
+  EXPECT_EQ(
+      GetSecondaryDisplay(),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()));
+  EXPECT_TRUE(window->layer()->transform().IsIdentity());
 }
 
 // Test that we mirror the the correct widgets when dragging across displays.

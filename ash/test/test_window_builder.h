@@ -6,8 +6,10 @@
 #define ASH_TEST_TEST_WINDOW_BUILDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -67,6 +69,14 @@ class ASH_EXPORT TestWindowBuilder {
     return *this;
   }
 
+  enum Operation { kStateChange, kBoundsChange };
+
+  // Creates a client controlled state backed window, which executes the
+  // operation asynchronosly in a separate task.  `signal_callback` will be
+  // called every time the operation's task is executed.
+  TestWindowBuilder& SetClientControlled(
+      base::RepeatingCallback<void(Operation)> signal_callback);
+
   // Build a window based on the parameter already set. This can be called only
   // once and the object cannot be used to create multiple windows.
   [[nodiscard]] std::unique_ptr<aura::Window> Build();
@@ -81,6 +91,8 @@ class ASH_EXPORT TestWindowBuilder {
   ui::PropertyHandler init_properties_;
   int window_id_ = aura::Window::kInitialId;
   std::u16string window_title_ = std::u16string();
+  std::optional<base::RepeatingCallback<void(Operation)>>
+      operation_signal_callback_;
   bool show_ = true;
   bool built_ = false;
 };

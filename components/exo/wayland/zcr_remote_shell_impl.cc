@@ -400,15 +400,16 @@ void WaylandRemoteSurfaceDelegate::OnStateChanged(
 void WaylandRemoteSurfaceDelegate::OnBoundsChanged(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType requested_state,
-    int64_t display_id,
-    const gfx::Rect& bounds_in_display,
+    int64_t requested_display_id,
+    const gfx::Rect& requested_bounds_in_display,
     bool is_resize,
     int bounds_change,
     bool is_adjusted_bounds) {
   if (shell_) {
-    shell_->OnRemoteSurfaceBoundsChanged(
-        resource_, current_state, requested_state, display_id,
-        bounds_in_display, is_resize, bounds_change, is_adjusted_bounds);
+    shell_->OnRemoteSurfaceBoundsChanged(resource_, current_state,
+                                         requested_state, requested_display_id,
+                                         requested_bounds_in_display, is_resize,
+                                         bounds_change, is_adjusted_bounds);
   }
 }
 void WaylandRemoteSurfaceDelegate::OnDragStarted(int component) {
