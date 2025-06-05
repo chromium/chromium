@@ -35,13 +35,30 @@ Real example:
   e 0001450:8-AxbSn3 0008303:GWkNbhQ4
   e 0001518:BUQKDaXe 0008244:DBKYJas7
   e 0001518:L97i_bwg 0008303:GWkNbhQ4
-  f 0001450:8-AxbSn3 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8684:::0:::.data()
-  f 0001518:BUQKDaXe 0008244:DBKYJas7 r:::../../base/memory/shared_memory_mapping.h:::8535:::15:::(data() + size()).data()
-  f 0001518:L97i_bwg 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8686:::15:::(data() + size()).data()
+  f 0001450:8-AxbSn3 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8684:::0:::0:::.data()
+  f 0001518:BUQKDaXe 0008244:DBKYJas7 r:::../../base/memory/shared_memory_mapping.h:::8535:::15:::0:::(data() + size()).data()
+  f 0001518:L97i_bwg 0008303:GWkNbhQ4 r:::../../base/memory/shared_memory_mapping.h:::8686:::15:::0:::(data() + size()).data()
   r 0001518:BUQKDaXe include-user-header:::../../base/containers/checked_iterators.h:::-1:::-1:::base/containers/span.h
-  r 0001518:BUQKDaXe r:::../../base/containers/checked_iterators.h:::1518:::9:::base::span<const unsigned char>
-  r 0001946:gKWdIpwv r:::../../base/containers/checked_iterators.h:::1946:::9:::base::span<const unsigned char>
+  r 0001518:BUQKDaXe r:::../../base/containers/checked_iterators.h:::1518:::9:::0:::base::span<const unsigned char>
+  r 0001946:gKWdIpwv r:::../../base/containers/checked_iterators.h:::1946:::9:::0:::base::span<const unsigned char>
 ```
+
+**Important Note on "r:::" Replacement Directive:**
+The `replacement_directive` strings starting with `r:::` (which can appear in
+`r` lines or as the third argument in `f` lines) have been extended and are
+slightly different from the format accepted by apply_edits.py. There is an
+additional `precedence` field before the replacement text.
+
+This `<precedence>` value is used by `extract_edits.py` to merge conflicting
+insertions. If multiple `r` directives are insertions (i.e., `<length>` is
+"0") and target the exact same file and offset:
+    Their `<text>` components are merged into a single replacement.
+    Directives with a lower numerical `<precedence>` value have their text
+    inserted *earlier* (further to the left) in the final merged text.
+
+The `<precedence>` field is **removed** by `extract_edits.py` from all `r`
+directives before they are included in the final list of edits output by this
+script.
 
 extract_edits.py takes input that is concatenated from multiple tool
 invocations and extract just the edits with the following steps:
@@ -71,6 +88,7 @@ import urllib.parse
 
 from os.path import expanduser
 import pprint
+from collections import defaultdict
 
 
 # The connected components in the graph. This is useful to split the rewrite
@@ -226,16 +244,102 @@ def ComputeSizeInfoAvailable(node: Node):
 def assert_valid_replacement(replacement: str):
     try:
         parts = replacement.split(':::')
-        assert len(parts) == 5
-        assert parts[0] in [
+        directive_type = parts[0]
+
+        assert directive_type in [
             'r', 'include-user-header', 'include-system-header'
-        ]
-        assert parts[1] != ''  # File path
-        int(parts[2].isdigit())  # Offset
-        int(parts[3].isdigit())  # Length
+        ], f"Unknown directive type '{directive_type}'"
+
+        assert len(parts) > 1
+        assert parts[1] != '', "File path must not be empty."
+
+        if directive_type == 'r':
+            assert len(
+                parts
+            ) == 6, f"Directive 'r' must have 6 parts, got {len(parts)}"
+
+            # Validate offset.
+            assert parts[2].isdigit()
+
+            # Validate length.
+            assert parts[3].isdigit()
+
+            # Validate precedence. Can be a negative or positive integer.
+            try:
+                int(parts[4])  # Check if it's a valid integer representation
+            except ValueError:
+                raise AssertionError(
+                    f"Precedence '{parts[4]}' must be a valid integer string.")
+        else:
+            assert len(parts) == 5
     except:
         # Augment the error with the replacement text for better debugging.
         assert False, f"Invalid replacement: \"{replacement}\""
+
+
+def merge_insertions_and_remove_precedence_field(changes: set) -> set:
+    """
+    Merges conflicting insertions at the same code location.
+
+    The merge order is determined as follows:
+    Handles "associativity" by grouping insertions based on precedence sign.
+        The final text is formed by concatenating all positive-precedence
+        insertions (i.e., "closing" parts), then zero-precedence, then all
+        negative-precedence insertions ("opening" parts). This ensures that
+        a closing bracket from a left expression is placed before an opening
+        bracket from a right expression (e.g., `...>[...`).
+    Also removes the precedence field from the final replacement directives.
+    """
+    replacements_by_range = defaultdict(list)
+    result = set()
+
+    for change in changes:
+        assert_valid_replacement(change)
+        parts = change.split(':::')
+        directive_type = parts[0]
+
+        if directive_type == 'r':
+            _, file_path, offset, length, precedence, text = parts
+            precedence = int(precedence)
+            # Key identifies the exact code range being replaced
+            key = (file_path, offset, length)
+            replacements_by_range[key].append((precedence, text))
+        else:
+            result.add(change)
+
+    for key, candidates in replacements_by_range.items():
+        assert candidates, "A key should always have at least one candidate."
+
+        file_path, offset, length = key
+
+        if len(candidates) == 1:
+            # No conflict.
+            _, text = candidates[0]
+            reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{text}"
+            result.add(reconstructed_directive)
+            continue
+
+        if int(length) == 0:
+            # Conflicting insertion detected.
+
+            # Assert uniqueness of precedence values to ensure determinism.
+            precedences = [p for p, _ in candidates]
+            assert len(precedences) == len(
+                set(precedences)
+            ), "Conflicting insertions need to have unique precedece values."
+
+            merged_texts = [t for _, t in sorted(candidates)]
+            reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{''.join(merged_texts)}"
+            result.add(reconstructed_directive)
+        else:
+            # Conflicting non-insertion replacement. This is an unresolvable
+            # conflict for now. Just remove the precedence field.
+            for _, text in candidates:
+                reconstructed_directive = f"r:::{file_path}:::{offset}:::{length}:::{text}"
+                result.add(reconstructed_directive)
+
+    return result
+
 
 def main():
     # Since the tool is invoked from multiple compile units, we are using sets
@@ -381,13 +485,16 @@ def main():
     ]
 
     for index, component in enumerate(component_with_changes):
-        for text in component.changes:
+        merged_component_changes = merge_insertions_and_remove_precedence_field(
+            component.changes)
+
+        for text in merged_component_changes:
             print(text)
 
-        summary_file.write(f'patch_{index}: {len(component.changes)}\n')
+        summary_file.write(f'patch_{index}: {len(merged_component_changes)}\n')
 
         with open(expanduser(f'~/scratch/patch_{index}.txt'), 'w') as f:
-            f.write('\n'.join(component.changes))
+            f.write('\n'.join(merged_component_changes))
 
     summary_file.close()
 
