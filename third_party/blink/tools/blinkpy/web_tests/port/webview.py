@@ -37,9 +37,6 @@ class WebviewPort(linux.LinuxPort):
     FALLBACK_PATHS['webview'] = (
         ['webview'] + linux.LinuxPort.latest_platform_fallback_path())
 
-    def configuration_specifier_macros(self):
-        return {self.port_name: list(self.SUPPORTED_VERSIONS)}
-
     def default_expectations_files(self):
         """Returns a list of paths to expectations files that apply by default.
 

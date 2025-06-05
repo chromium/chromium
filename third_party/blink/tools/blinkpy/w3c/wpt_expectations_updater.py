@@ -461,6 +461,10 @@ class WPTExpectationsUpdater:
             # (covered versions that are not skipped). For flag-specific
             # expectations, there should only be one covered version at most
             # that will automatically be promoted to a generic line.
+            #
+            # Unfortunately, we need `configuration_specifier_macros()` here
+            # instead of using `Port.CONFIGURATION_SPECIFIER_MACROS` directly to
+            # isolate tooling tests from real platform configurations.
             macros = {
                 os: set(versions)
                 & self._platform_specifiers(test, port_by_results.values())
