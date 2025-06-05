@@ -13,7 +13,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -39,48 +39,69 @@ suite('FooterTest', () => {
     return microtasksFinished();
   });
 
-  test('clicking footer toggle sets metric', async () => {
-    const toggle = footer.$.showToggle;
-    toggle.click();
-    await microtasksFinished();
+  async function setChecked(checked: boolean): Promise<void> {
+    await handler.whenCalled('updateFooterSettings');
+    callbackRouterRemote.setFooterSettings(checked);
+    await callbackRouterRemote.$.flushForTesting();
+  }
 
-    assertEquals(1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
-    assertEquals(
-        1,
-        metrics.count(
-            'NewTabPage.CustomizeChromeSidePanelAction',
-            CustomizeChromeAction.SHOW_FOOTER_TOGGLE_CLICKED));
+  ([true, false]).forEach((checked) => {
+    test(`initial setting ${checked}`, async () => {
+      await setChecked(checked);
+      assertEquals(checked, footer.$.showToggle.checked);
+    });
   });
 
-  test('turning toggle on updates footer visibility', async () => {
-    // Start with toggle off.
-    await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(false);
-    await callbackRouterRemote.$.flushForTesting();
-    assertFalse(footer.$.showToggle.checked);
+  (['#showToggleContainer', '#showToggle']).forEach((selector: string) => {
+    test(`logs click metrics for ${selector}`, async () => {
+      await setChecked(false);
+      const toggle = footer.shadowRoot.querySelector<HTMLElement>(selector);
+      assertTrue(!!toggle);
 
-    // Turn toggle on.
-    footer.$.showToggle.click();
-    await microtasksFinished();
-    assertEquals(1, handler.getCallCount('setFooterVisible'));
-    assertTrue(footer.$.showToggle.checked);
-    const footerVisible = handler.getArgs('setFooterVisible')[0];
-    assertTrue(footerVisible);
+      toggle.click();
+      await microtasksFinished();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_FOOTER_TOGGLE_CLICKED));
+      assertEquals(1, metrics.count('NewTabPage.Footer.ToggledVisibility'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Footer.ToggledVisibility', true));
+
+      toggle.click();
+      await microtasksFinished();
+
+      assertEquals(2, metrics.count('NewTabPage.Footer.ToggledVisibility'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Footer.ToggledVisibility', false));
+    });
   });
 
-  test('turning toggle off updates footer visibility', async () => {
-    // Start with toggle on.
-    await handler.whenCalled('updateFooterSettings');
-    callbackRouterRemote.setFooterSettings(true);
-    await callbackRouterRemote.$.flushForTesting();
-    assertTrue(footer.$.showToggle.checked);
+  (['#showToggleContainer', '#showToggle']).forEach((selector: string) => {
+    test(`toggles visibility via ${selector}`, async () => {
+      await setChecked(false);
+      const toggle = $$<HTMLElement>(footer, selector);
+      assertTrue(!!toggle);
 
-    // Turn toggle off.
-    footer.$.showToggle.click();
-    await microtasksFinished();
-    assertEquals(1, handler.getCallCount('setFooterVisible'));
-    assertFalse(footer.$.showToggle.checked);
-    const footerVisible = handler.getArgs('setFooterVisible')[0];
-    assertFalse(footerVisible);
+      toggle.click();
+      await microtasksFinished();
+
+      assertTrue(footer.$.showToggle.checked);
+      assertEquals(1, handler.getCallCount('setFooterVisible'));
+      let visibleArg = handler.getArgs('setFooterVisible')[0];
+      assertTrue(visibleArg);
+
+      toggle.click();
+      await microtasksFinished();
+
+      assertFalse(footer.$.showToggle.checked);
+      assertEquals(2, handler.getCallCount('setFooterVisible'));
+      visibleArg = handler.getArgs('setFooterVisible')[1];
+      assertFalse(visibleArg);
+    });
   });
 });
