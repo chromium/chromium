@@ -108,15 +108,26 @@ bool HTMLButtonElement::IsPresentationAttribute(
   return HTMLFormControlElement::IsPresentationAttribute(name);
 }
 
+// static
+std::optional<HTMLButtonElement::Type> HTMLButtonElement::TypeFromString(
+    const AtomicString& string) {
+  if (EqualIgnoringASCIICase(string, "reset")) {
+    return kReset;
+  } else if (EqualIgnoringASCIICase(string, "button")) {
+    return kButton;
+  } else if (EqualIgnoringASCIICase(string, "submit")) {
+    return kSubmit;
+  } else {
+    return std::nullopt;
+  }
+}
+
 void HTMLButtonElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
-    if (EqualIgnoringASCIICase(params.new_value, "reset")) {
-      type_ = kReset;
-    } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
-      type_ = kButton;
-    } else if (EqualIgnoringASCIICase(params.new_value, "submit")) {
-      type_ = kSubmit;
+    if (std::optional<HTMLButtonElement::Type> type =
+            TypeFromString(params.new_value)) {
+      SetTypeInternal(*type);
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
@@ -132,30 +143,45 @@ void HTMLButtonElement::ParseAttribute(
         UseCounter::Count(
             GetDocument(),
             WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
-        type_ = kButton;
+        SetTypeInternal(kButton);
       } else {
-        type_ = kSubmit;
+        SetTypeInternal(kSubmit);
       }
     }
-    UpdateWillValidateCache();
     if (formOwner() && isConnected()) {
       formOwner()->InvalidateDefaultButtonStyle();
     }
   } else if (params.name == html_names::kCommandAttr ||
              params.name == html_names::kCommandforAttr) {
     bool has_type = FastHasAttribute(html_names::kTypeAttr);
-    bool type_is_button = EqualIgnoringASCIICase(
-        FastGetAttribute(html_names::kTypeAttr), "button");
+    auto type = TypeFromString(FastGetAttribute(html_names::kTypeAttr));
+    bool type_is_button = type && *type == kButton;
     if ((!has_type || !type_is_button)) {
       UseCounter::Count(
           GetDocument(),
           WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
+    }
+
+    if (RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
+        !params.new_value.IsNull() && !type) {
+      // https://html.spec.whatwg.org/multipage/form-elements.html#dom-button-type
+      // Type, as reflected in the IDL, must be "button" if there are command
+      // attributes without an explicit valid type attribute set.
+      SetTypeInternal(kButton);
     }
   } else {
     if (params.name == html_names::kFormactionAttr) {
       LogUpdateAttributeIfIsolatedWorldAndInDocument("button", params);
     }
     HTMLFormControlElement::ParseAttribute(params);
+  }
+}
+
+void HTMLButtonElement::SetTypeInternal(Type type) {
+  type_ = type;
+  UpdateWillValidateCache();
+  if (formOwner() && isConnected()) {
+    formOwner()->InvalidateDefaultButtonStyle();
   }
 }
 

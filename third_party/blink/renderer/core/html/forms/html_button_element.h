@@ -113,6 +113,10 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
 
   int DefaultTabIndex() const override;
 
+  static std::optional<Type> TypeFromString(const AtomicString&);
+
+  void SetTypeInternal(Type type);
+
   Type type_ = kSubmit;
   bool is_activated_submit_ = false;
 };
