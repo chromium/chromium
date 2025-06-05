@@ -505,18 +505,21 @@ void CertGenerator::GenerateCert() {
   }
   if (GetBool()) {
     std::vector<std::string> policy_oids;
+    CBB policy_identifier;
+    CBB_init(&policy_identifier, /*initial_capacity=*/10);
     while (GetBool()) {
       std::vector<std::string> oid_parts;
       while (GetBool()) {
         oid_parts.push_back(base::NumberToString(GetUint64()));
       }
-      if (!oid_parts.empty()) {
-        policy_oids.push_back(base::JoinString(oid_parts, "."));
+      std::string oid = base::JoinString(oid_parts, ".");
+      // Check that the OID will be accepted as valid before adding it.
+      if (CBB_add_asn1_oid_from_text(&policy_identifier, oid.data(),
+                                     oid.size())) {
+        policy_oids.push_back(oid);
       }
     }
-    if (!policy_oids.empty()) {
-      cert_builder_->SetCertificatePolicies(policy_oids);
-    }
+    cert_builder_->SetCertificatePolicies(policy_oids);
   }
   if (GetBool()) {
     std::vector<std::pair<std::string, std::string>> policy_mappings;
