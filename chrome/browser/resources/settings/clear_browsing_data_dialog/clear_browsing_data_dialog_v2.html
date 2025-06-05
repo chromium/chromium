@@ -1,13 +1,16 @@
 <style include="settings-shared cr-spinner-style">
   :host {
-    --dbd-container-color: var(--cr-fallback-color-surface3);
-    --dbd-container-border-radius: 12px;
-    --dbd-container-stacked-border-radius: 4px;
     --cr-dialog-button-container-padding-bottom: 20px;
     --cr-dialog-button-container-padding-horizontal: 20px;
     --cr-dialog-button-container-padding-top: 20px;
     --cr-dialog-title-font-size: 16px;
+    --cr-dialog-title-slot-padding-bottom: 14px;
     --cr-section-two-line-min-height: 40px;
+    --dbd-container-border-radius: 12px;
+    --dbd-container-color: var(--cr-fallback-color-surface3);
+    --dbd-container-stacked-border-radius: 4px;
+    --dbd-dialog-body-max-height: 400px;
+    --dbd-dialog-max-height: 600px;
     --settings-checkbox-margin-top: 8px;
   }
 
@@ -23,6 +26,20 @@
     border-top-left-radius: var(--dbd-container-border-radius);
     border-top-right-radius: var(--dbd-container-border-radius);
     margin-bottom: 2px;
+  }
+
+  #deleteBrowsingDataDialog [slot=header] {
+    padding-bottom: var(--cr-section-padding);
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  #deleteBrowsingDataDialog::part(body-container) {
+    max-height: var(--dbd-dialog-body-max-height);
+  }
+
+  #deleteBrowsingDataDialog::part(dialog) {
+    max-height: var(--dbd-dialog-max-height);
   }
 
   #manageOtherGoogleDataRow {
@@ -77,10 +94,12 @@
     show-on-attach ignore-popstate ignore-enter-key
     hidden="[[showOtherGoogleDataDialog_]]">
   <div slot="title" class="dialog-title">$i18n{clearBrowsingData}</div>
-  <div slot="body">
+  <div slot="header">
     <settings-clear-browsing-data-time-picker id="timePicker" prefs="{{prefs}}"
         on-selected-time-period-change="onTimePeriodChanged_">
     </settings-clear-browsing-data-time-picker>
+  </div>
+  <div slot="body">
     <div id="checkboxContainer">
       <template is="dom-repeat"
           items="[[expandedBrowsingDataTypeOptionsList_]]">
