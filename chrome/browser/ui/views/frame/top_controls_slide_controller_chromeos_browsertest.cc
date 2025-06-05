@@ -643,9 +643,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
       browser_view()->GetActiveWebContents()));
 }
 
-// TODO(crbug.com/422318572): Flaky.
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestScrollingPage) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestScrollingPage) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -666,8 +664,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                                TopChromeShownState::kFullyShown);
 }
 
-// TODO(crbug.com/422318572): Flaky.
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DISABLED_TestCtrlL) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   // Switch to tablet mode, and scroll until the top controls are fully hidden.
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
