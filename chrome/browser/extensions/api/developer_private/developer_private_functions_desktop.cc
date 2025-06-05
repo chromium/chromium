@@ -31,7 +31,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -652,19 +651,6 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
   platform_util::ShowItemInFolder(
       Profile::FromBrowserContext(browser_context()),
       extension->path().Append(kManifestFilename));
-  return RespondNow(NoArguments());
-}
-
-DeveloperPrivateSetShortcutHandlingSuspendedFunction::
-    ~DeveloperPrivateSetShortcutHandlingSuspendedFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateSetShortcutHandlingSuspendedFunction::Run() {
-  std::optional<developer::SetShortcutHandlingSuspended::Params> params =
-      developer::SetShortcutHandlingSuspended::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  ExtensionCommandsGlobalRegistry::Get(browser_context())
-      ->SetShortcutHandlingSuspended(params->is_suspended);
   return RespondNow(NoArguments());
 }
 

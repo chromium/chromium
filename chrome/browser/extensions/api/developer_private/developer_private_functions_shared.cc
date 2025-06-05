@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
+#include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -828,6 +829,19 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
   error_console->RemoveErrors(
       ErrorMap::Filter(properties.extension_id, type, error_ids, false));
 
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateSetShortcutHandlingSuspendedFunction::
+    ~DeveloperPrivateSetShortcutHandlingSuspendedFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateSetShortcutHandlingSuspendedFunction::Run() {
+  std::optional<developer::SetShortcutHandlingSuspended::Params> params =
+      developer::SetShortcutHandlingSuspended::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  ExtensionCommandsGlobalRegistry::Get(browser_context())
+      ->SetShortcutHandlingSuspended(params->is_suspended);
   return RespondNow(NoArguments());
 }
 

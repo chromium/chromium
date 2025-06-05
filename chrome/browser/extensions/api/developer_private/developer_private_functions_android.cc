@@ -17,9 +17,6 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowOptionsFunction,
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowPathFunction,
                                         "developerPrivate.showPath")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-    DeveloperPrivateSetShortcutHandlingSuspendedFunction,
-    "developerPrivate.setShortcutHandlingSuspended")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateRemoveMultipleExtensionsFunction,
     "developerPrivate.removeMultipleExtensions")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(

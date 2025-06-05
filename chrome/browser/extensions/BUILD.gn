@@ -252,6 +252,8 @@ source_set("extensions") {
     "extension_allowlist_factory.h",
     "extension_assets_manager.cc",
     "extension_assets_manager.h",
+    "extension_commands_global_registry.cc",
+    "extension_commands_global_registry.h",
     "extension_disabled_ui.h",
     "extension_error_controller.cc",
     "extension_error_controller.h",
@@ -530,6 +532,7 @@ source_set("extensions") {
     "//services/metrics/public/cpp:ukm_builders",
     "//storage/browser",
     "//third_party/zlib/google:zip",
+    "//ui/base/accelerators/global_accelerator_listener",
     "//ui/shell_dialogs",
   ]
   public_deps = [
@@ -739,8 +742,6 @@ source_set("extensions") {
       "device_permissions_dialog_controller.h",
       "extension_browser_window_helper.cc",
       "extension_browser_window_helper.h",
-      "extension_commands_global_registry.cc",
-      "extension_commands_global_registry.h",
       "extension_context_menu_model.cc",
       "extension_context_menu_model.h",
       "extension_disabled_ui_desktop.cc",
@@ -1054,7 +1055,6 @@ source_set("extensions") {
       "//ui/accessibility:ax_enums_mojo",
       "//ui/base",
       "//ui/base:ozone_buildflags",
-      "//ui/base/accelerators/global_accelerator_listener",
       "//ui/base/clipboard",
       "//ui/base/dragdrop/mojom:mojom_shared",
       "//ui/base/idle",

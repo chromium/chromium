@@ -23,6 +23,13 @@ source_set("global_accelerator_listener") {
     "//ui/gfx",
   ]
 
+  if (is_android) {
+    sources += [
+      "global_accelerator_listener_android.cc",
+      "global_accelerator_listener_android.h",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "global_accelerator_listener_mac.h",

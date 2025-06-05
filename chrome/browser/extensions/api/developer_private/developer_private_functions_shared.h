@@ -324,6 +324,17 @@ class DeveloperPrivateDeleteExtensionErrorsFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateSetShortcutHandlingSuspendedFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.setShortcutHandlingSuspended",
+                             DEVELOPERPRIVATE_SETSHORTCUTHANDLINGSUSPENDED)
+
+ protected:
+  ~DeveloperPrivateSetShortcutHandlingSuspendedFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateUpdateExtensionCommandFunction
     : public DeveloperPrivateAPIFunction {
  public:
