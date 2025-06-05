@@ -2362,10 +2362,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   gfx::PointF LocalToAncestorPoint(const gfx::PointF&,
                                    const LayoutBoxModelObject* ancestor,
                                    MapCoordinatesFlags = 0) const;
-  void LocalToAncestorRects(Vector<PhysicalRect>&,
-                            const LayoutBoxModelObject* ancestor,
-                            const PhysicalOffset& pre_offset,
-                            const PhysicalOffset& post_offset) const;
 
   // Return the transformation matrix to map points from local to the coordinate
   // system of a container, taking transforms into account (kIgnoreTransforms is

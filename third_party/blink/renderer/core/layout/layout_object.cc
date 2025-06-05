@@ -3732,28 +3732,6 @@ gfx::QuadF LayoutObject::LocalToAncestorQuad(
   return transform_state.LastPlanarQuad();
 }
 
-void LayoutObject::LocalToAncestorRects(
-    Vector<PhysicalRect>& rects,
-    const LayoutBoxModelObject* ancestor,
-    const PhysicalOffset& pre_offset,
-    const PhysicalOffset& post_offset) const {
-  NOT_DESTROYED();
-  for (wtf_size_t i = 0; i < rects.size(); ++i) {
-    PhysicalRect& rect = rects[i];
-    rect.Move(pre_offset);
-    gfx::QuadF container_quad =
-        LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor);
-    PhysicalRect container_rect =
-        PhysicalRect::EnclosingRect(container_quad.BoundingBox());
-    if (container_rect.IsEmpty()) {
-      rects.EraseAt(i--);
-      continue;
-    }
-    container_rect.Move(post_offset);
-    rects[i] = container_rect;
-  }
-}
-
 gfx::Transform LayoutObject::LocalToAncestorTransform(
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
