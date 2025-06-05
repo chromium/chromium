@@ -41,6 +41,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"

@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/devicetype.h"
 #include "ui/base/l10n/l10n_util.h"

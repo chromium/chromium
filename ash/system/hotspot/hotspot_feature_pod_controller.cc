@@ -15,6 +15,7 @@
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_notification_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

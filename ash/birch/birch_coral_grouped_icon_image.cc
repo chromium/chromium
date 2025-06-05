@@ -4,6 +4,7 @@
 
 #include "ash/birch/birch_coral_grouped_icon_image.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"

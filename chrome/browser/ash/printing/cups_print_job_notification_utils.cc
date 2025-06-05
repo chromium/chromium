@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

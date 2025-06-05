@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/wm/window_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"

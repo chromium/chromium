@@ -12,6 +12,7 @@
 #include "ash/system/hotspot/hotspot_icon.h"
 #include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
