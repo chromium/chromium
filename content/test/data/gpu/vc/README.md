@@ -19,7 +19,7 @@ these videos, 4 are 30 fps, 12 are 15 fps, and the remaining are 7 fps.
 The video stream size is 640x360 at 30 fps if the total video count is equal or
 less than 4.
 
-All default videos are VP9 coding format. It can be changed to VP8.
+All default videos are VP9 coding format. It can be changed to VP8 or AVC.
 
 ### videos_mxn.html
 Video elements are played through the default web media player. The UI are added
@@ -63,6 +63,14 @@ videos_mxn.html?codec=vp8
 ```
 ```
 webgpu_videos_mxn.html?codec=vp8
+```
+
+To force AVC video sources. Use `codec=avc`.
+```
+videos_mxn.html?codec=avc
+```
+```
+webgpu_videos_mxn.html?codec=avc
 ```
 
 To remove the UI icons. Use `ui=none`.
@@ -145,3 +153,16 @@ ffmpeg -i Teddy2_hd.MOV -c:v vp8 -r 15 -s 320x180 teddy2_vp8_320x180_15fps.webm
 
 #### teddy3_vp8_320x180_30fps.webm
 ffmpeg -i Teddy3_hd.MOV -c:v vp8 -r 30 -s 320x180 teddy3_vp8_320x180_30fps.webm
+
+### AVC (Converting From VP9 Videos)
+#### teddy1_avc_640x360_30fps.mp4
+ffmpeg -i teddy1_vp9_640x360_30fps.webm -strict -2 -c:v libx264 -c:a opus teddy1_avc_640x360_30fps.mp4
+
+#### teddy1_avc_320x180_7fps.mp4
+ffmpeg -i teddy1_vp9_320x180_7fps.webm -strict -2 -c:v libx264 -c:a opus teddy1_avc_320x180_7fps.mp4
+
+#### teddy2_avc_320x180_15fps.mp4
+ffmpeg -i teddy2_vp9_320x180_15fps.webm -strict -2 -c:v libx264 -c:a opus teddy2_avc_320x180_15fps.mp4
+
+#### teddy3_avc_320x180_30fps.mp4
+ffmpeg -i teddy3_vp9_320x180_30fps.webm -strict -2 -c:v libx264 -c:a opus teddy3_avc_320x180_30fps.mp4

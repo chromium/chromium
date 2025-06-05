@@ -7318,12 +7318,16 @@ data/gpu/single_face.jpg
 data/gpu/third_party/stats-js/LICENSE
 data/gpu/third_party/stats-js/README.chromium
 data/gpu/third_party/stats-js/stats.js
+data/gpu/vc/teddy1_avc_320x180_7fps.mp4
+data/gpu/vc/teddy1_avc_640x360_30fps.mp4
 data/gpu/vc/teddy1_vp8_320x180_7fps.webm
 data/gpu/vc/teddy1_vp8_640x360_30fps.webm
 data/gpu/vc/teddy1_vp9_320x180_7fps.webm
 data/gpu/vc/teddy1_vp9_640x360_30fps.webm
+data/gpu/vc/teddy2_avc_320x180_15fps.mp4
 data/gpu/vc/teddy2_vp8_320x180_15fps.webm
 data/gpu/vc/teddy2_vp9_320x180_15fps.webm
+data/gpu/vc/teddy3_avc_320x180_30fps.mp4
 data/gpu/vc/teddy3_vp8_320x180_30fps.webm
 data/gpu/vc/teddy3_vp9_320x180_30fps.webm
 data/gpu/vc/test_video_call_fps.html
