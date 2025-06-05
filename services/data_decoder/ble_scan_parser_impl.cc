@@ -43,7 +43,7 @@ void BleScanParserImpl::Parse(const std::vector<uint8_t>& advertisement_data,
 
 mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(
     base::span<const uint8_t> advertisement_data) {
-  uint8_t tx_power;
+  int8_t tx_power = 0;
   std::string advertisement_name;
   std::vector<device::BluetoothUUID> service_uuids;
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;

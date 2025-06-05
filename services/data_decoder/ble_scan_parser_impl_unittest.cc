@@ -132,6 +132,23 @@ TYPED_TEST(BleScanParserImplTest, Parse128BitServiceUuids) {
   EXPECT_EQ(expected, actual);
 }
 
+TYPED_TEST(BleScanParserImplTest, ParseBadServiceUuids) {
+  std::vector<device::BluetoothUUID> actual;
+
+  const uint8_t kBadData[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                              0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+                              0x0c, 0x0d, 0x0e, 0x0f, 0x01};
+
+  // The length of `kBadData` is not a multiple of 2, 4, or 16 bytes. Any
+  // attempt to parse this should fail.
+  EXPECT_FALSE(
+      this->ParseServiceUuids(kBadData, UuidFormat::kFormat16Bit, actual));
+  EXPECT_FALSE(
+      this->ParseServiceUuids(kBadData, UuidFormat::kFormat32Bit, actual));
+  EXPECT_FALSE(
+      this->ParseServiceUuids(kBadData, UuidFormat::kFormat128Bit, actual));
+}
+
 TYPED_TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
   std::vector<device::BluetoothUUID> expected_service_uuids = {
       device::BluetoothUUID("0000ABCD-0000-1000-8000-00805F9B34FB"),
@@ -179,6 +196,337 @@ TYPED_TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
   EXPECT_EQ(expected_service_uuids, actual->service_uuids);
   EXPECT_EQ(expected_service_data_map, actual->service_data_map);
   EXPECT_EQ(expected_manufacturer_data_map, actual->manufacturer_data_map);
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseEmptyBleScan) {
+  mojom::ScanRecordPtr actual = this->ParseBleScan({});
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(-1, actual->advertising_flags);
+  EXPECT_EQ(0, actual->tx_power);
+  EXPECT_EQ("", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithUnknownDataType) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("Steve", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBadLengthPacket) {
+  {
+    const uint8_t kRawData[] = {
+        // Length of the rest of the section, field type, data.
+        // Advertising flag = 0x42
+        0x02, 0x01, 0x42,
+        // TX power = 0x1b
+        0x02, 0x0a, 0x1b,
+        // Local name 'Steve'
+        0x06, 0x08, 0x53, 0x74, 0x65, 0x76, 0x65,
+        // A packet length of 0 should be considered invalid and cause parsing
+        // to fail.
+        0x00};
+    ASSERT_FALSE(this->ParseBleScan(kRawData));
+  }
+
+  {
+    const uint8_t kRawData[] = {
+        // Length of the rest of the section, field type, data.
+        // Advertising flag = 0x42
+        0x02, 0x01, 0x42,
+        // TX power = 0x1b
+        0x02, 0x0a, 0x1b,
+        // Local name 'Steve'
+        0x06, 0x08, 0x53, 0x74, 0x65, 0x76, 0x65,
+        // A packet length of 1 should also be considered invalid and cause
+        // parsing to fail.
+        // 0x01 is under the minimum packet length.
+        0x01};
+    ASSERT_FALSE(this->ParseBleScan(kRawData));
+  }
+
+  {
+    const uint8_t kRawData[] = {
+        // The packet is longer than the data.
+        0xff,
+    };
+    ASSERT_FALSE(this->ParseBleScan(kRawData));
+  }
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBad16BitServiceUuid) {
+  const uint8_t kRawData[] = {
+      // 16-bit service UUID missing the final byte.
+      0x04, 0x02, 0xcd, 0xab, 0x01,
+  };
+
+  ASSERT_FALSE(this->ParseBleScan(kRawData));
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBad32BitServiceUuid) {
+  const uint8_t kRawData[] = {
+      // 32-bit service UUID missing the final byte.
+      0x08, 0x05, 0x01, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45,
+  };
+  ASSERT_FALSE(this->ParseBleScan(kRawData));
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBad128BitServiceUuid) {
+  const uint8_t kRawData[] = {
+      // 128-bit service UUID missing the final byte.
+      0x10, 0x06, 0x89, 0x67, 0x45, 0x23, 0x01, 0xef, 0xcd,
+      0xab, 0x89, 0x67, 0x45, 0x23, 0x01, 0xef, 0xcd,
+  };
+  ASSERT_FALSE(this->ParseBleScan(kRawData));
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBadServiceDataMap) {
+  const uint8_t kRawData[] = {
+      // A service data map entry has a 16-bit UUID followed by data. The entry
+      // has an incomplete 16-bit UUID, so it should fail to parse.
+      0x02,
+      0x16,
+      0xab,
+  };
+  ASSERT_FALSE(this->ParseBleScan(kRawData));
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBadManufacturerDataMap) {
+  const uint8_t kRawData[] = {
+      // A manufacturer data map entry has a 16-bit manufacturer code followed
+      // by data. The entry has only 8 bits of the manufacturer code, so it
+      // should fail to parse.
+      0x02,
+      0xff,
+      0x0d,
+  };
+  ASSERT_FALSE(this->ParseBleScan(kRawData));
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultiByteFlags) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42. Additional trailing bytes should be ignored;
+      // only the first data byte should be used for the flags.
+      0x03,
+      0x01,
+      0x42,
+      0x43,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("Steve", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleFlags) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // Another advertising flag = 0x43. The last one seen should be used.
+      0x02,
+      0x01,
+      0x43,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x43, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("Steve", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultiByteTxPower) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // TX power = 0x1b, Additional trailing bytes should be ignored; only the
+      // first data byte should be used for the TX power.
+      0x03,
+      0x0a,
+      0x1b,
+      0x1c,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("Steve", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleTxPowers) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // TX power = 0x1c. The last one seen should be used.
+      0x02,
+      0x0a,
+      0x1c,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1c, actual->tx_power);
+  EXPECT_EQ("Steve", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleAdvertisementNames) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // Local name 'Steve'
+      0x06,
+      0x08,
+      0x53,
+      0x74,
+      0x65,
+      0x76,
+      0x65,
+      // Local name 'Hello'. The last one seen should be used.
+      0x06,
+      0x08,
+      0x48,
+      0x65,
+      0x6c,
+      0x6c,
+      0x6f,
+      // 0x00 is not a data type supported by the current parser. It should be
+      // ignored and not treated as a parse failure.
+      0x02,
+      0x00,
+      0x00,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("Hello", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
 }
 
 }  // namespace data_decoder
