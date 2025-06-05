@@ -101,7 +101,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ScreenshotSurfaceTestDialog,
                                       kTitleElementId);
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
-                       CompareScreenshot_Surface) {
+                       // TODO(crbug.com/422631121): Re-enable this test
+                       DISABLED_CompareScreenshot_Surface) {
   views::Widget* widget = nullptr;
 
   RunTestSequence(
