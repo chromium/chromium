@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
@@ -60,6 +61,10 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "google_apis/gaia/gaia_auth_util.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/themes/theme_service.h"
@@ -169,6 +174,25 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
 ManagedInstallationMode ExtensionManagement::GetInstallationMode(
     const ExtensionId& extension_id,
     const std::string& update_url) {
+// Block extensions for managed profiles on Desktop Android. This is
+// temporary until extensions are ready for dogfooding.
+// TODO(crbug.com/422307625): Remove this check once extensions are ready for
+// dogfooding.
+#if BUILDFLAG(IS_ANDROID)
+  if (enterprise_util::IsBrowserManaged(profile_)) {
+    // Disable extensions only for specific managed accounts.
+    // This check keeps many tests from failing.
+    std::string user_name = profile_->GetProfileUserName();
+    // Crude check to avoid passing invalid strings to `ExtractDomainName`.
+    if (base::Contains(user_name, "@")) {
+      std::string domain = gaia::ExtractDomainName(user_name);
+      if (domain == "google.com" || domain == "managedchrome.com") {
+        return ManagedInstallationMode::kRemoved;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Check per-extension installation mode setting first.
   auto* setting = GetSettingsForId(extension_id);
   if (setting)
