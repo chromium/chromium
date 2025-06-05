@@ -2633,7 +2633,7 @@ void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
   DispatchToAgents(frame_tree_node_id, &protocol::NetworkHandler::RequestSent,
                    request.devtools_request_id.value(),
                    loader_id.value().ToString(), request.headers, *request_info,
-                   protocol::Network::ResourceTypeEnum::Other, initiator_url,
+                   protocol::Network::ResourceTypeEnum::FedCM, initiator_url,
                    /*initiator_devtools_request_id=*/"", frame_token,
                    base::TimeTicks::Now());
 }
@@ -2668,7 +2668,7 @@ void DidReceiveFedCmNetworkResponse(
     DispatchToAgents(frame_tree_node_id,
                      &protocol::NetworkHandler::ResponseReceived,
                      devtools_request_id, loader_id.value().ToString(), url,
-                     protocol::Network::ResourceTypeEnum::Other, *head_info,
+                     protocol::Network::ResourceTypeEnum::FedCM, *head_info,
                      frame_token.value().ToString());
   }
 

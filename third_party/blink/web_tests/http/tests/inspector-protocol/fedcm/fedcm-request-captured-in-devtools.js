@@ -27,13 +27,14 @@
     const params = event.params;
     const loaderId = event.params.loaderId;
     const frameId = event.params.frameId;
+    const initiatorType = params.initiator.type;
 
     if ((cachedLoaderId === "") && (cachedFramedId === "")) {
       cachedLoaderId = loaderId;
       cachedFramedId = frameId;
     }
 
-    if ((cachedLoaderId === loaderId) && (cachedFramedId === frameId)) {
+    if ((cachedLoaderId === loaderId) && (cachedFramedId === frameId) && (initiatorType === "FedCM")) {
       // Insert into the Map with key as params.requestId and value as params.request.url
       urlByRequestId.set(params.requestId, params.request.url);
     }
