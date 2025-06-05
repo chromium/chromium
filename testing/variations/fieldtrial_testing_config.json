@@ -24749,18 +24749,23 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableDecryption",
+                    "name": "Enabled",
                     "enable_features": [
                         "UseFreedesktopSecretKeyProvider"
-                    ],
-                    "disable_features": [
-                        "UseFreedesktopSecretKeyProviderForEncryption"
                     ]
-                },
+                }
+            ]
+        }
+    ],
+    "UseFreedesktopSecretKeyProviderForEncryption": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
                 {
-                    "name": "EnableDecryptionAndEncryption",
+                    "name": "Enabled",
                     "enable_features": [
-                        "UseFreedesktopSecretKeyProvider",
                         "UseFreedesktopSecretKeyProviderForEncryption"
                     ]
                 }
