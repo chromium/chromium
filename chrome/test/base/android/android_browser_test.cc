@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -34,6 +35,12 @@ AndroidBrowserTest::AndroidBrowserTest() {
       extensions_features::kExtensionDisableUnsupportedDeveloper);
 #endif
   g_current_test = this;
+
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &AndroidBrowserTest::SetUpBrowserContextKeyedServices,
+              base::Unretained(this)));
 }
 
 AndroidBrowserTest::~AndroidBrowserTest() {

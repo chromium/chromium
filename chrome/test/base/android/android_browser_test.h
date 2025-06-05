@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 
+#include "base/callback_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +53,13 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // successful. To set initial prefs, see SetUpLocalStatePrefService.
   [[nodiscard]] virtual bool SetUpUserDataDirectory();
 
+  // Called just before BrowserContextKeyedService creation is started
+  // for each Profile creation.
+  // Test fixtures inheriting AndroidBrowserTest can inject some fake/test
+  // BrowserContextKeyedService as necessary for testing.
+  virtual void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) {}
+
   // Tests can override this to customize the initial local_state.
   virtual void SetUpLocalStatePrefService(PrefService* local_state) {}
 
@@ -78,6 +86,9 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   base::ScopedTempDir temp_user_data_dir_;
 
   base::test::ScopedFeatureList feature_list_;
+
+  // Used to set up test factories for each browser context.
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 #endif  // CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_

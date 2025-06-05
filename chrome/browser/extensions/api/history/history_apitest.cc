@@ -102,10 +102,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          HistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/419057486): Enable for desktop Android once
-// SetUpBrowserContextKeyedServices can be called for Android browser tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class SyncEnabledHistoryApiTest : public HistoryApiTest {
  public:
   void SetUpBrowserContextKeyedServices(
@@ -131,8 +127,6 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          SyncEnabledHistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -160,10 +154,6 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
 }
-
-// TODO(crbug.com/419057486): Enable for desktop Android once
-// SetUpBrowserContextKeyedServices can be called for Android browser tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -227,8 +217,6 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
