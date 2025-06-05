@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
-#define CHROME_BROWSER_UI_TABS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
+#define CHROME_BROWSER_UI_VIEWS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
 
 #include <concepts>
 
@@ -109,4 +109,4 @@ class SplitTabsInteractiveTestMixin : public T {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TEST_SPLIT_TABS_INTERACTIVE_TEST_MIXIN_H_
