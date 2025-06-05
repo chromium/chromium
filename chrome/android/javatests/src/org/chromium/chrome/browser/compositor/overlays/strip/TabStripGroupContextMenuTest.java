@@ -81,7 +81,7 @@ import java.util.List;
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(DeviceFormFactor.TABLET)
+@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class TabStripGroupContextMenuTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

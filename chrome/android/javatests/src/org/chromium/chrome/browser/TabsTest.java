@@ -290,7 +290,7 @@ public class TabsTest {
      */
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Android-TabSwitcher"})
     @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/353910783
     public void testHideKeyboard() throws Exception {

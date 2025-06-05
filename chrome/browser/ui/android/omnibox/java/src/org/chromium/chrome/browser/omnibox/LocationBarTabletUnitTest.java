@@ -27,7 +27,7 @@ import org.chromium.ui.widget.ToastManager;
 
 /** Unit tests for LocationBarTablet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Restriction(DeviceFormFactor.TABLET)
+@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class LocationBarTabletUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

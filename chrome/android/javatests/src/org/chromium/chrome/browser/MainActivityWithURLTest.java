@@ -50,7 +50,7 @@ public class MainActivityWithURLTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
-    @Restriction(DeviceFormFactor.TABLET) // https://crbug.com/1392547
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/1392547
     public void testLaunchActivity() {
         // Launch chrome
         mActivityTestRule.startFromLauncher();

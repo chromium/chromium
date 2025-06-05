@@ -37,7 +37,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
 @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
-@Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+@Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 public class PopupMultiwindowPTTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =

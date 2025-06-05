@@ -227,7 +227,7 @@ public class NavigationPopupTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("Navigation")
     public void testWidth_smallestWidth() throws ExecutionException {
         final TestNavigationController controller =
@@ -249,7 +249,7 @@ public class NavigationPopupTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("Navigation")
     public void testWidth_mediumWidth() throws ExecutionException {
         // The default controller has a moderately long title, so the width is between min & max.
@@ -261,7 +261,7 @@ public class NavigationPopupTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("Navigation")
     public void testWidth_maxWidth() throws ExecutionException {
         // Add an entry with a very long title, so the width is limited by the max.
@@ -283,7 +283,7 @@ public class NavigationPopupTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("Navigation")
     public void testWidth_limitedByScreenWidth() throws ExecutionException {
         final DisplayMetrics displayMetrics =

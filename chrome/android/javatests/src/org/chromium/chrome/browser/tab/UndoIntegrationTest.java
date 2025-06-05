@@ -129,7 +129,7 @@ public class UndoIntegrationTest {
     // Regression test for crbug/1465745.
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTabletCloseTabAndCommitDoesNotCrash() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         sActivityTestRule.loadUrlInNewTab("about:blank");

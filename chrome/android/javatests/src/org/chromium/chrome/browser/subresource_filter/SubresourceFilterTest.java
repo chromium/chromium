@@ -130,7 +130,7 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void resourceFilteredClickLearnMore_MessagesUi_ReshowDialogOnTabletOnBackPress()
             throws Exception {
         testResourceFilteredClickLearnMore_MessagesUiFlow();

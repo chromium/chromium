@@ -162,7 +162,7 @@ public class NavigateTest {
     }
 
     @Test
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @MediumTest
     @Feature({"Navigation"})
     @DisabledTest(message = "Flaky. See crbug.com/380238040")
@@ -473,7 +473,7 @@ public class NavigateTest {
 
     /** Test back and forward buttons. */
     @Test
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @MediumTest
     @Feature({"Navigation"})
     public void testNavigateBackAndForwardButtons() throws Exception {

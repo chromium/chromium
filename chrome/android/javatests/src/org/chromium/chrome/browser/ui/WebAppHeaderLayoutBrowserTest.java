@@ -60,7 +60,7 @@ import java.util.concurrent.TimeoutException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "https://crbug.com/1454648")
-@Restriction({DeviceFormFactor.TABLET})
+@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})

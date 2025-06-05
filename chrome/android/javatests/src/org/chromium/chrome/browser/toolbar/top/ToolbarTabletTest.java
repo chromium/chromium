@@ -36,7 +36,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@Restriction(DeviceFormFactor.TABLET)
+@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class ToolbarTabletTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule activityTestRule =

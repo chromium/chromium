@@ -127,7 +127,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsDisabledOnTablet() {
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
     }
@@ -145,7 +145,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnTablet() {
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
     }

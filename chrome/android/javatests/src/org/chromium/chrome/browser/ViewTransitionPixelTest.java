@@ -343,7 +343,7 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     @MinAndroidSdkLevel(VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
         // Simulate fullscreen window behavior in an environment that supports Android V custom app
         // header APIs.

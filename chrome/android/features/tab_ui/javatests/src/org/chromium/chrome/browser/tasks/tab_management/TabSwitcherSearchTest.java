@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
-import static org.chromium.ui.base.DeviceFormFactor.TABLET;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +65,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -119,7 +119,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @Restriction(TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHubSearchLoupe_Tablet() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mInitialPage.openRegularTabSwitcher();

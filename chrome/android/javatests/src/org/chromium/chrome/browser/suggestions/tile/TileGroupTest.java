@@ -89,7 +89,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
     public void testDismissTileWithContextMenu_Tablets() {
         doTestDismissTileWithContextMenuImpl();
     }
@@ -122,7 +122,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
     public void testDismissTileUndo_Tablets() {
         doTestDismissTileUndoImpl();
     }

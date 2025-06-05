@@ -38,7 +38,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Restriction({DeviceFormFactor.TABLET})
+@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class OptionalNewTabButtonControllerTabletTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 

@@ -795,7 +795,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"RenderTest"})
     public void testMessageResizedOnTablet() throws Exception {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
@@ -815,7 +815,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"RenderTest"})
     public void testIphMessageResizedOnTablet() throws Exception {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();

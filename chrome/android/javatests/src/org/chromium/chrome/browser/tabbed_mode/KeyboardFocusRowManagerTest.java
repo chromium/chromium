@@ -83,7 +83,7 @@ public class KeyboardFocusRowManagerTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
@@ -143,7 +143,7 @@ public class KeyboardFocusRowManagerTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testSwitchKeyboardFocusRow_withBookmarksBar() {
@@ -187,7 +187,7 @@ public class KeyboardFocusRowManagerTest {
     @Test
     @SmallTest
     @Feature("KeyboardShortcuts")
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testSwitchKeyboardFocusRow_withBookmarkBarFocus() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -221,7 +221,7 @@ public class KeyboardFocusRowManagerTest {
     @Test
     @SmallTest
     @Feature("KeyboardShortcuts")
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testSkipStripIfHidden() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

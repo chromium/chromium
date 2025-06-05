@@ -143,7 +143,7 @@ public class ToolbarTest {
     @MediumTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testControlContainerTopMarginWhenBookmarkBarIsDisabledOnTablet() {
         testControlContainerTopMargin(/* expectBookmarkBar= */ false);
     }
@@ -161,7 +161,7 @@ public class ToolbarTest {
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.TABLET})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnTablet() {
         testControlContainerTopMargin(/* expectBookmarkBar= */ true);
     }
@@ -256,7 +256,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Omnibox"})
     public void testFindInPageDismissedOnOmniboxFocus() {
         findInPageFromMenu();
@@ -267,7 +267,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         // Simulate availability of a hardware keyboard.
@@ -307,7 +307,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         // Simulate availability of a hardware keyboard.
@@ -340,7 +340,7 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-    @Restriction(DeviceFormFactor.TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testToggleTabStripVisibility() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         int tabStripHeightResource =

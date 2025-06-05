@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
-import static org.chromium.ui.base.DeviceFormFactor.TABLET;
 
 import androidx.test.filters.MediumTest;
 
@@ -41,6 +40,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -150,7 +150,7 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction(TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testHubSearchLoupe_Tablet(boolean nightModeEnabled) throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
@@ -163,7 +163,7 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction(TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHubSearchLoupe_Tablet_Incognito() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
