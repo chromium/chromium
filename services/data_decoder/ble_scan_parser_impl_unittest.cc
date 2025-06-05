@@ -8,39 +8,76 @@
 
 namespace data_decoder {
 
-TEST(BleScanParserImplTest, ParseBadUuidLengthReturnsEmptyString) {
+template <typename Traits>
+class BleScanParserImplTest : public testing::Test {
+ protected:
+  // These helpers could be static, but at some point in the future, calling a
+  // static method via -> might be a clang-tidy warning. The alternative is
+  // writing out BleScanParserImplTest::ParseUuid, et cetera, and nobody wants
+  // that.
+  device::BluetoothUUID ParseUuid(base::span<const uint8_t> bytes,
+                                  UuidFormat format) {
+    return Traits::ParseUuid(bytes, format);
+  }
+
+  bool ParseServiceUuids(base::span<const uint8_t> bytes,
+                         UuidFormat format,
+                         std::vector<device::BluetoothUUID>& out) {
+    return Traits::ParseServiceUuids(bytes, format, out);
+  }
+
+  mojom::ScanRecordPtr ParseBleScan(base::span<const uint8_t> bytes) {
+    return Traits::ParseBleScan(bytes);
+  }
+};
+
+struct CxxParserTraits {
+  static device::BluetoothUUID ParseUuid(base::span<const uint8_t> bytes,
+                                         UuidFormat format) {
+    return BleScanParserImpl::ParseUuid(bytes, format);
+  }
+
+  static bool ParseServiceUuids(base::span<const uint8_t> bytes,
+                                UuidFormat format,
+                                std::vector<device::BluetoothUUID>& out) {
+    return BleScanParserImpl::ParseServiceUuids(bytes, format, &out);
+  }
+
+  static mojom::ScanRecordPtr ParseBleScan(base::span<const uint8_t> bytes) {
+    return BleScanParserImpl::ParseBleScan(bytes);
+  }
+};
+
+using ParserImpls = ::testing::Types<CxxParserTraits>;
+TYPED_TEST_SUITE(BleScanParserImplTest, ParserImpls);
+
+TYPED_TEST(BleScanParserImplTest, ParseBadUuidLengthReturnsEmptyString) {
   std::vector<uint8_t> bad_uuid(0xab, 5);
-  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat16Bit)
-                   .IsValid());
-  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat32Bit)
-                   .IsValid());
-  EXPECT_FALSE(BleScanParserImpl::ParseUuid(bad_uuid, UuidFormat::kFormat128Bit)
-                   .IsValid());
+  EXPECT_FALSE(this->ParseUuid(bad_uuid, UuidFormat::kFormat16Bit).IsValid());
+  EXPECT_FALSE(this->ParseUuid(bad_uuid, UuidFormat::kFormat32Bit).IsValid());
+  EXPECT_FALSE(this->ParseUuid(bad_uuid, UuidFormat::kFormat128Bit).IsValid());
 }
 
-TEST(BleScanParserImplTest, Parse16BitUuid) {
+TYPED_TEST(BleScanParserImplTest, Parse16BitUuid) {
   const uint8_t kUuid16[] = {0xab, 0xcd};
   const device::BluetoothUUID kExpected("0000CDAB-0000-1000-8000-00805F9B34FB");
-  EXPECT_EQ(kExpected,
-            BleScanParserImpl::ParseUuid(kUuid16, UuidFormat::kFormat16Bit));
+  EXPECT_EQ(kExpected, this->ParseUuid(kUuid16, UuidFormat::kFormat16Bit));
 }
 
-TEST(BleScanParserImplTest, Parse32BitUuid) {
+TYPED_TEST(BleScanParserImplTest, Parse32BitUuid) {
   const uint8_t kUuid32[] = {0xab, 0xcd, 0xef, 0x01};
   const device::BluetoothUUID kExpected("01EFCDAB-0000-1000-8000-00805F9B34FB");
-  EXPECT_EQ(kExpected,
-            BleScanParserImpl::ParseUuid(kUuid32, UuidFormat::kFormat32Bit));
+  EXPECT_EQ(kExpected, this->ParseUuid(kUuid32, UuidFormat::kFormat32Bit));
 }
 
-TEST(BleScanParserImplTest, Parse128BitUuid) {
+TYPED_TEST(BleScanParserImplTest, Parse128BitUuid) {
   const uint8_t kUuid128[] = {0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
                               0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89};
   const device::BluetoothUUID kExpected("89674523-01EF-CDAB-8967-452301EFCDAB");
-  EXPECT_EQ(kExpected,
-            BleScanParserImpl::ParseUuid(kUuid128, UuidFormat::kFormat128Bit));
+  EXPECT_EQ(kExpected, this->ParseUuid(kUuid128, UuidFormat::kFormat128Bit));
 }
 
-TEST(BleScanParserImplTest, Parse16BitServiceUuids) {
+TYPED_TEST(BleScanParserImplTest, Parse16BitServiceUuids) {
   std::vector<device::BluetoothUUID> expected = {
       device::BluetoothUUID("0000CDAB-0000-1000-8000-00805F9B34FB"),
       device::BluetoothUUID("000001EF-0000-1000-8000-00805F9B34FB"),
@@ -56,12 +93,12 @@ TEST(BleScanParserImplTest, Parse16BitServiceUuids) {
                             0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89};
 
   std::vector<device::BluetoothUUID> actual;
-  BleScanParserImpl::ParseServiceUuids(kUuids, UuidFormat::kFormat16Bit,
-                                       &actual);
+  EXPECT_TRUE(
+      this->ParseServiceUuids(kUuids, UuidFormat::kFormat16Bit, actual));
   EXPECT_EQ(expected, actual);
 }
 
-TEST(BleScanParserImplTest, Parse32BitServiceUuids) {
+TYPED_TEST(BleScanParserImplTest, Parse32BitServiceUuids) {
   std::vector<device::BluetoothUUID> expected = {
       device::BluetoothUUID("01EFCDAB-0000-1000-8000-00805F9B34FB"),
       device::BluetoothUUID("89674523-0000-1000-8000-00805F9B34FB"),
@@ -73,12 +110,12 @@ TEST(BleScanParserImplTest, Parse32BitServiceUuids) {
                             0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89};
 
   std::vector<device::BluetoothUUID> actual;
-  BleScanParserImpl::ParseServiceUuids(kUuids, UuidFormat::kFormat32Bit,
-                                       &actual);
+  EXPECT_TRUE(
+      this->ParseServiceUuids(kUuids, UuidFormat::kFormat32Bit, actual));
   EXPECT_EQ(expected, actual);
 }
 
-TEST(BleScanParserImplTest, Parse128BitServiceUuids) {
+TYPED_TEST(BleScanParserImplTest, Parse128BitServiceUuids) {
   std::vector<device::BluetoothUUID> expected = {
       device::BluetoothUUID("89674523-01EF-CDAB-8967-452301EFCDAB"),
       device::BluetoothUUID("89674523-01EF-CDAB-01EF-CDAB89674523"),
@@ -90,12 +127,12 @@ TEST(BleScanParserImplTest, Parse128BitServiceUuids) {
                             0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89};
 
   std::vector<device::BluetoothUUID> actual;
-  BleScanParserImpl::ParseServiceUuids(kUuids, UuidFormat::kFormat128Bit,
-                                       &actual);
+  EXPECT_TRUE(
+      this->ParseServiceUuids(kUuids, UuidFormat::kFormat128Bit, actual));
   EXPECT_EQ(expected, actual);
 }
 
-TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
+TYPED_TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
   std::vector<device::BluetoothUUID> expected_service_uuids = {
       device::BluetoothUUID("0000ABCD-0000-1000-8000-00805F9B34FB"),
       device::BluetoothUUID("0000EF01-0000-1000-8000-00805F9B34FB"),
@@ -134,7 +171,7 @@ TEST(BleScanParserImplTest, ParseBleAdvertisingScan) {
       // Manufacturer data map 0xd00d => { 0x1a, 0x2b, 0x3c, 0x4d }
       0x07, 0xff, 0x0d, 0xd0, 0x1a, 0x2b, 0x3c, 0x4d};
 
-  mojom::ScanRecordPtr actual = BleScanParserImpl::ParseBleScan(kRawData);
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
   EXPECT_EQ(0x42, actual->advertising_flags);
   EXPECT_EQ(0x1b, actual->tx_power);
