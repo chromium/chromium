@@ -1676,6 +1676,10 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
     EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
+
+  // Clear the raw_ptr to tiling_set before it goes out of scope to prevent
+  // dangling pointer when pending_client is destroyed after tiling_set.
+  pending_client.set_twin_tiling_set(nullptr);
 }
 
 TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {

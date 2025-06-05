@@ -639,6 +639,10 @@ TEST_F(PictureLayerTilingIteratorTest, CreateTileJustCoverBorderUp) {
   // respect to the tiles that it invalidates
   EXPECT_FALSE(active_tiling->TileAt(0, 1));
   EXPECT_FALSE(active_tiling->TileAt(0, 2));
+
+  // Clear the raw_ptr to active_tiling before it goes out of scope to prevent
+  // dangling pointer when client_ is destroyed after active_tiling.
+  client_.set_twin_tiling(nullptr);
 }
 
 TEST_F(PictureLayerTilingIteratorTest, LiveTilesExactlyCoverLiveTileRect) {

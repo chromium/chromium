@@ -418,6 +418,10 @@ TEST(PictureLayerTilingSetTest, TileSizeChange) {
   for (auto* tile : active_tiles) {
     EXPECT_EQ(tile_size3, tile->content_rect().size());
   }
+
+  // Clear the raw_ptr to pending_set before it goes out of scope to prevent
+  // dangling pointer when active_client is destroyed after pending_set.
+  active_client.set_twin_tiling_set(nullptr);
 }
 
 TEST(PictureLayerTilingSetTest, ModifyPendingTilingSetTwiceInOneVsync) {
@@ -480,6 +484,10 @@ TEST(PictureLayerTilingSetTest, ModifyPendingTilingSetTwiceInOneVsync) {
   EXPECT_EQ(tile_size2, pending_set->tiling_at(0)->tile_size());
   // The pending tiling should have tiles.
   EXPECT_TRUE(pending_set->tiling_at(0)->has_tiles());
+
+  // Clear the raw_ptr to pending_set before it goes out of scope to prevent
+  // dangling pointer when active_client is destroyed after pending_set.
+  active_client.set_twin_tiling_set(nullptr);
 }
 
 TEST(PictureLayerTilingSetTest, MaxContentScale) {
@@ -537,6 +545,10 @@ TEST(PictureLayerTilingSetTest, MaxContentScale) {
       raster_source.get(), pending_set.get(), Region(), 1.f, max_content_scale);
   // All the tilings are on the active tree.
   EXPECT_EQ(2u, active_set->num_tilings());
+
+  // Clear the raw_ptr to pending_set before it goes out of scope to prevent
+  // dangling pointer when active_client is destroyed after pending_set.
+  active_client.set_twin_tiling_set(nullptr);
 }
 
 TEST(PictureLayerTilingSetTest, SkewportLimits) {
@@ -1093,6 +1105,10 @@ TEST(PictureLayerTilingTest, InvalidateAfterUpdateRasterSourceForCommit) {
   // No changes for active set until activation.
   EXPECT_FALSE(
       active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+
+  // Clear the raw_ptr to pending_set before it goes out of scope to prevent
+  // dangling pointer when active_client is destroyed after pending_set.
+  active_client.set_twin_tiling_set(nullptr);
 }
 
 TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
@@ -1152,6 +1168,10 @@ TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
   ASSERT_EQ(1u, active_set->num_tilings());
   EXPECT_EQ(active_set->tiling_at(0)->raster_transform(), raster_transform2);
   EXPECT_EQ(1u, active_set->tiling_at(0)->AllTilesForTesting().size());
+
+  // Clear the raw_ptr to pending_set before it goes out of scope to prevent
+  // dangling pointer when active_client is destroyed after pending_set.
+  active_client.set_twin_tiling_set(nullptr);
 }
 
 TEST(PictureLayerTilingSetTest, LcdChanges) {
@@ -1205,6 +1225,11 @@ TEST(PictureLayerTilingSetTest, LcdChanges) {
                                     Occlusion(), false);
   // We should have created all tiles because lcd state changed.
   EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
+
+  // Clear the raw_ptrs to prevent dangling pointers when objects go out of
+  // scope.
+  active_client.set_twin_tiling_set(nullptr);
+  pending_client.set_twin_tiling_set(nullptr);
 }
 
 }  // namespace
