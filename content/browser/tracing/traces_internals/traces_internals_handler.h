@@ -39,6 +39,8 @@ class CONTENT_EXPORT TracesInternalsHandler
                          StartTraceSessionCallback callback) override;
   void CloneTraceSession(CloneTraceSessionCallback callback) override;
   void StopTraceSession(StopTraceSessionCallback callback) override;
+  void GetTrackEventCategories(
+      GetTrackEventCategoriesCallback callback) override;
   void GetBufferUsage(GetBufferUsageCallback callback) override;
   void GetAllTraceReports(GetAllTraceReportsCallback callback) override;
   void DeleteSingleTrace(const base::Token& uuid,
@@ -106,6 +108,7 @@ class CONTENT_EXPORT TracesInternalsHandler
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   StartTraceSessionCallback start_callback_;
   StopTraceSessionCallback stop_callback_;
+  GetTrackEventCategoriesCallback get_track_event_categories_callback_;
   GetBufferUsageCallback on_buffer_usage_callback_;
 
   base::WeakPtrFactory<TracesInternalsHandler> weak_factory_{this};

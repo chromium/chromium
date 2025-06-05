@@ -87,6 +87,13 @@ struct Scenario {
   TracingScenarioState current_state;
 };
 
+struct TraceCategory {
+  string name;
+  bool is_group;
+  string description;
+  array<string> tags;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface TracesInternalsHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -109,6 +116,9 @@ interface PageHandler {
   // Stops the current tracing session. If successful, this will read the trace
   // payload and return it via Page::OnTraceComplete().
   StopTraceSession() => (bool success);
+
+  // Return the list of the available tracing categories.
+  GetTrackEventCategories() => (array<TraceCategory> categories);
 
   // Returns buffer usage stats for the current tracing session. PageHandler
   // supports only one request at a time.
