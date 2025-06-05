@@ -7528,9 +7528,6 @@ crbug.com/1464614 [ Win11-arm64 ] http/tests/media/video-play-stall-before-meta-
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state.html [ Failure Pass ] # flaky
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Failure Pass ] # flaky
 
-# Gardener 2023-08-01
-crbug.com/40926041 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
-
 # Gardner 2023-08-10
 crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging.js [ Failure Pass ]
 

@@ -5,7 +5,7 @@ Dumping request name and path for url: http://www.example.com/foo/bar/baz?key=va
     path = www.example.com/foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://www.example.com/foo/bar/?key=value
-    name = ?key=value
+    name = bar/?key=value
     path = www.example.com/foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://www.example.com/foo/bar/baz
@@ -14,7 +14,7 @@ Dumping request name and path for url: http://www.example.com/foo/bar/baz
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://www.example.com/foo/bar/
     name = bar/
-    path = www.example.com/foo
+    path = www.example.com/foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://www.example.com/baz?key=value
     name = baz?key=value
@@ -37,7 +37,7 @@ Dumping request name and path for url: http://127.0.0.1/foo/bar/baz?key=value
     path = /foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://127.0.0.1/foo/bar/?key=value
-    name = ?key=value
+    name = bar/?key=value
     path = /foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://127.0.0.1/foo/bar/baz
@@ -46,7 +46,7 @@ Dumping request name and path for url: http://127.0.0.1/foo/bar/baz
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://127.0.0.1/foo/bar/
     name = bar/
-    path = /foo
+    path = /foo/bar
     targetUrl = http://127.0.0.1/aFolder/aTest.html
 Dumping request name and path for url: http://127.0.0.1/baz?key=value
     name = baz?key=value
