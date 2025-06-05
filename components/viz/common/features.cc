@@ -424,6 +424,12 @@ BASE_FEATURE(kLastVSyncArgsKillswitch,
              "LastVSyncArgsKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables IPCs to directly target Viz's compositor thread for non-root
+// CompositorFrameSink messages without hopping through the IO thread first.
+BASE_FEATURE(kVizDirectCompositorThreadIpcNonRoot,
+             "VizDirectCompositorThreadIpcNonRoot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Null Hypothesis test for viz. This will be used in an meta experiment to
 // judge finch variation.
 BASE_FEATURE(kVizNullHypothesis,
@@ -456,6 +462,10 @@ int DrawQuadSplitLimit() {
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
+}
+
+bool IsVizDirectCompositorThreadIpcNonRootEnabled() {
+  return base::FeatureList::IsEnabled(kVizDirectCompositorThreadIpcNonRoot);
 }
 
 #if BUILDFLAG(IS_ANDROID)

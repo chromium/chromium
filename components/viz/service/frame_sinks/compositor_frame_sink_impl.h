@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/memory/read_only_shared_memory_region.h"
@@ -15,6 +16,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -77,7 +79,9 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
   std::unique_ptr<mojom::CompositorFrameSinkClient> proxying_client_;
 
-  mojo::Receiver<mojom::CompositorFrameSink> compositor_frame_sink_receiver_;
+  using Receiver = mojo::Receiver<mojom::CompositorFrameSink>;
+  using DirectReceiver = mojo::DirectReceiver<mojom::CompositorFrameSink>;
+  std::variant<Receiver, DirectReceiver> compositor_frame_sink_receiver_;
 
   // Must be destroyed before |compositor_frame_sink_client_|. This must never
   // change for the lifetime of CompositorFrameSinkImpl.
