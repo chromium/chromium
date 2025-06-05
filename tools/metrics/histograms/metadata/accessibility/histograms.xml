@@ -3053,7 +3053,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.SpeechStopSource"
-    enum="ReadAnythingSpeechError" expires_after="2026-06-01">
+    enum="ReadAnythingSpeechStopSource" expires_after="2026-06-01">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>Records when speech stops and why.</summary>
