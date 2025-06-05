@@ -1001,8 +1001,6 @@ void DesktopWindowTreeHostWin::HandleClose() {
   }
 }
 
-void DesktopWindowTreeHostWin::HandleRequestClose() {}
-
 bool DesktopWindowTreeHostWin::HandleCommand(int command) {
   if (Widget* widget = GetWidget(); widget && widget->widget_delegate()) {
     return widget->widget_delegate()->ExecuteWindowsCommand(command);

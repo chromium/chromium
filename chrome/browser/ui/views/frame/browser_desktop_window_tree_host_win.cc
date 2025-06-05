@@ -19,7 +19,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -302,16 +301,6 @@ void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
   if (browser_view_) {
     browser_view_->UpdateLoadingAnimations(restored);
   }
-}
-
-void BrowserDesktopWindowTreeHostWin::HandleRequestClose() {
-  if (browser_shutdown::HasShutdownStarted()) {
-    return;
-  }
-  // Ignore unload handlers.
-  browser_shutdown::OnShutdownStarting(
-      browser_shutdown::ShutdownType::kSilentExit);
-  chrome::CloseAllBrowsersAndQuit();
 }
 
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {

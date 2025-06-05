@@ -78,7 +78,6 @@ class BrowserDesktopWindowTreeHostWin
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void HandleWindowMinimizedOrRestored(bool restored) override;
-  void HandleRequestClose() override;
   void ClientDestroyedWidget() override;
 
   // ProfileAttributesStorage::Observer:
