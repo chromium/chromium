@@ -173,6 +173,7 @@ android_library("content_full_java") {
     "//cc:cc_java",
     "//cc/mojom:mojom_java",
     "//components/download/public/common:public_java",
+    "//components/origin_matcher/android:java",
     "//components/payments/mojom:mojom_java",
     "//content/public/common:common_java",
     "//device/bluetooth:java",

@@ -13,12 +13,12 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.origin_matcher.OriginMatcher;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,25 +77,41 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     @Override
-    public List<String> addPossiblyUnsafeInterface(
+    public void addPossiblyUnsafeInterfaceToOrigins(
             @Nullable Object object,
             String name,
             @Nullable Class<? extends Annotation> requiredAnnotation,
-            List<String> originAllowlist) {
+            OriginMatcher matcher) {
         if (object == null || mNativePtr == 0) {
-            return Collections.emptyList();
+            return;
         }
 
         mInjectedObjects.put(
-                name, new InjectedInterface(object, requiredAnnotation, originAllowlist));
-        return JavascriptInjectorImplJni.get()
+                name, new InjectedInterface(object, requiredAnnotation, matcher.serialize()));
+        JavascriptInjectorImplJni.get()
                 .addInterface(
                         mNativePtr,
                         JavascriptInjectorImpl.this,
                         object,
                         name,
                         requiredAnnotation,
-                        originAllowlist);
+                        matcher);
+    }
+
+    @Override
+    public void addPossiblyUnsafeInterface(
+            @Nullable Object object,
+            String name,
+            @Nullable Class<? extends Annotation> requiredAnnotation) {
+        OriginMatcher matcher = new OriginMatcher();
+        try {
+            matcher.setRuleList(List.of("*"));
+            addPossiblyUnsafeInterfaceToOrigins(object, name, requiredAnnotation, matcher);
+            // We always need to clean the matcher when we
+            // are done with it.
+        } finally {
+            matcher.destroy();
+        }
     }
 
     @Override
@@ -114,14 +130,13 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         void setAllowInspection(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, boolean allow);
 
-        @JniType("std::vector<std::string>")
-        List<String> addInterface(
+        void addInterface(
                 long nativeJavascriptInjector,
                 JavascriptInjectorImpl caller,
                 Object object,
                 String name,
                 @Nullable Class requiredAnnotation,
-                @JniType("std::vector<std::string>") List<String> originAllowlist);
+                @JniType("origin_matcher::OriginMatcher") OriginMatcher matcher);
 
         void removeInterface(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);

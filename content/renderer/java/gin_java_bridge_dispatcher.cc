@@ -10,10 +10,10 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
-#include "net/base/scheme_host_port_matcher.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -52,8 +52,7 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // if the origin matches one of the rules.
     url::Origin security_origin = url::Origin(
         render_frame()->GetWebFrame()->GetDocument().GetSecurityOrigin());
-    bool should_inject =
-        iter->second.matcher.Includes(security_origin.GetURL());
+    bool should_inject = iter->second.matcher.Matches(security_origin);
 
     if (should_inject) {
       GinJavaBridgeObject* object = GinJavaBridgeObject::InjectNamed(
@@ -68,16 +67,15 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
   }
 }
 
-void GinJavaBridgeDispatcher::AddNamedObject(const std::string& name,
-                                             ObjectID object_id,
-                                             const std::string& matcher) {
+void GinJavaBridgeDispatcher::AddNamedObject(
+    const std::string& name,
+    ObjectID object_id,
+    const origin_matcher::OriginMatcher& matcher) {
   // We should already have received the `remote_` via the SetHost method.
   CHECK(remote_);
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
-  named_objects_.insert(std::make_pair(
-      name, NamedObject{object_id,
-                        net::SchemeHostPortMatcher::FromRawString(matcher)}));
+  named_objects_.insert(std::make_pair(name, NamedObject{object_id, matcher}));
 }
 
 void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {

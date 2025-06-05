@@ -30,7 +30,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -163,7 +162,7 @@ public class JavaBridgeBasicsTest {
                                 mActivityTestRule
                                         .getJavascriptInjector()
                                         .addPossiblyUnsafeInterface(
-                                                new Object(), "testObject", null, List.of("*"));
+                                                new Object(), "testObject", null);
                             }
                         });
         Assert.assertEquals("undefined", executeJavaScriptAndGetStringResult("typeof testObject"));
@@ -201,8 +200,7 @@ public class JavaBridgeBasicsTest {
                                                     }
                                                 },
                                                 "testObject",
-                                                null,
-                                                List.of("*"));
+                                                null);
                             }
                         });
         mActivityTestRule.executeJavaScript("testObject.method()");

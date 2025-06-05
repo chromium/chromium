@@ -9,6 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -73,6 +80,24 @@ class OriginMatcher {
   RuleList rules_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+OriginMatcher ToNativeOriginMatcher(JNIEnv* env,
+                                    const jni_zero::JavaRef<jobject>& jobject);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace origin_matcher
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+template <>
+inline origin_matcher::OriginMatcher FromJniType(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
+  // This creates a copy of the OriginMatcher in native because the Java object
+  // needs to manage the lifetime of the native instance.
+  return origin_matcher::ToNativeOriginMatcher(env, obj);
+}
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_H_

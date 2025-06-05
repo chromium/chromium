@@ -51,10 +51,7 @@ source_set("origin_matcher") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/origin_matcher_bindings.cc",
-      "android/origin_matcher_bindings.h",
-    ]
+    sources += [ "android/origin_matcher_bindings.cc" ]
 
     deps += [ "//components/origin_matcher/android:jni" ]
   }

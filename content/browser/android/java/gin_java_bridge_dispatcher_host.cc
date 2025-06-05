@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/browser/android/java/gin_java_bound_object_delegate.h"
 #include "content/browser/android/java/java_bridge_thread.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -22,7 +23,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "net/base/scheme_host_port_matcher.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
@@ -93,7 +93,7 @@ mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
     // Initialize with all the current named objects.
     for (auto& object : named_objects_) {
       bound_remote->AddNamedObject(object.first, object.second.object_id,
-                                   object.second.allowlist_rules);
+                                   object.second.matcher);
     }
 
     return bound_remote.get();
@@ -232,7 +232,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     const std::string& name,
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
-    net::SchemeHostPortMatcher matcher) {
+    origin_matcher::OriginMatcher matcher) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GinJavaBoundObject::ObjectID object_id;
   NamedObjectMap::iterator iter = named_objects_.find(name);
@@ -257,8 +257,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
   // in the render process. We pass this around like this because we can
   // then trust that all the rules being fed to the render process are well
   // formed rules.
-  // TODO(crbug.com/407420300): Rely on OriginMatcher instead of a string here.
-  named_objects_[name] = {object_id, matcher.ToString()};
+  named_objects_[name] = {object_id, matcher};
 
   web_contents()
       ->GetPrimaryMainFrame()
@@ -270,7 +269,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
             }
 
             GetJavaBridge(render_frame_host, /*should_create=*/true)
-                ->AddNamedObject(name, object_id, matcher.ToString());
+                ->AddNamedObject(name, object_id, matcher);
           });
 }
 

@@ -6,6 +6,7 @@ package org.chromium.content_public.browser;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.origin_matcher.OriginMatcher;
 import org.chromium.content.browser.JavascriptInjectorImpl;
 
 import java.lang.annotation.Annotation;
@@ -80,16 +81,22 @@ public interface JavascriptInjector {
      * @param name The name used to expose the instance in Javascript.
      * @param requiredAnnotation Restrict exposed methods to ones with this annotation. If {@code
      *     null} all methods are exposed.
-     * @param originAllowlist A list of origins to restrict this interface to. This internally
-     *     relies on the semantics of net::SchemeHostPortMatcher.
-     * @return any bad origins provided to originAllowlist. If this has any entries, the interface
-     *     will not be added.
+     * @param matcher An origin matcher that will be tested against before injecting any origins.
+     *     This matcher will be copied natively so remember to still clean it up after passing over
+     *     to this method.
      */
-    List<String> addPossiblyUnsafeInterface(
+    void addPossiblyUnsafeInterfaceToOrigins(
             Object object,
             String name,
             Class<? extends Annotation> requiredAnnotation,
-            List<String> originAllowlist);
+            OriginMatcher matcher);
+
+    /**
+     * The same as {@link #addPossiblyUnsafeInterface(Object, name, Class<? extends Annotation>,
+     * OriginMatcher)} but will inject on all origins.
+     */
+    void addPossiblyUnsafeInterface(
+            Object object, String name, Class<? extends Annotation> requiredAnnotation);
 
     /**
      * Removes a previously added Javascript interface with the given name.
@@ -101,15 +108,15 @@ public interface JavascriptInjector {
     public final class InjectedInterface {
         private final Object mInjectedObject;
         private final @Nullable Class<? extends Annotation> mRequiredAnnotation;
-        private final @Nullable List<String> mOriginAllowlist;
+        private final List<String> mMatcherRules;
 
         public InjectedInterface(
                 Object object,
                 @Nullable Class<? extends Annotation> annotation,
-                @Nullable List<String> allowlist) {
+                List<String> matcherRules) {
             mInjectedObject = object;
             mRequiredAnnotation = annotation;
-            mOriginAllowlist = allowlist;
+            mMatcherRules = matcherRules;
         }
 
         public Object getInjectedObject() {
@@ -120,8 +127,8 @@ public interface JavascriptInjector {
             return mRequiredAnnotation;
         }
 
-        public @Nullable List<String> getOriginAllowlist() {
-            return mOriginAllowlist;
+        public List<String> getMatcherRules() {
+            return mMatcherRules;
         }
     }
 }

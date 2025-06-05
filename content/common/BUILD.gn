@@ -673,6 +673,10 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_origin",
   ]
 
+  if (is_android) {
+    public_deps += [ "//components/origin_matcher:mojom" ]
+  }
+
   if (is_mac) {
     sources += [
       "render_widget_host_ns_view.mojom",

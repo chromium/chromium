@@ -3429,6 +3429,7 @@ source_set("browser") {
       ":fontations_name_table_ffi",
       ":reflection_jni_headers",
       "//cc/slim",
+      "//components/origin_matcher",
       "//components/tracing:graphics_provider",
       "//content/public/android:browser_jni",
       "//content/public/browser:transfer_input_to_viz_result_enum",

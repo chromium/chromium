@@ -327,6 +327,7 @@ target(link_target_type, "renderer") {
   if (is_android) {
     deps += [
       # Used by Android WebView only.
+      "//components/origin_matcher",
       "//components/viz/service",
       "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",

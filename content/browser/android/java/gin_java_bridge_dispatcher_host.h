@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
 #include "content/common/buildflags.h"
@@ -26,17 +27,13 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace net {
-class SchemeHostPortMatcher;
-}
-
 namespace content {
 
 class WebContentsImpl;
 
 struct NamedObject {
   GinJavaBoundObject::ObjectID object_id;
-  std::string allowlist_rules;
+  origin_matcher::OriginMatcher matcher;
 };
 
 // This class handles injecting Java objects into a single WebContents /
@@ -67,7 +64,7 @@ class GinJavaBridgeDispatcherHost
       const std::string& name,
       const base::android::JavaRef<jobject>& object,
       const base::android::JavaRef<jclass>& safe_annotation_clazz,
-      net::SchemeHostPortMatcher matcher);
+      origin_matcher::OriginMatcher matcher);
   void RemoveNamedObject(const std::string& name);
   void SetAllowObjectContentsInspection(bool allow);
 

@@ -44,7 +44,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -507,10 +506,7 @@ public class VisualStateTest extends AwParameterizedTest {
                         () -> {
                             JavascriptInjector.fromWebContents(awContents.getWebContents())
                                     .addPossiblyUnsafeInterface(
-                                            pageChangeNotifier,
-                                            "pageChangeNotifier",
-                                            null,
-                                            List.of("*"));
+                                            pageChangeNotifier, "pageChangeNotifier", null);
                             awContents.loadUrl(WAIT_FOR_JS_DETACHED_TEST_URL);
                         });
 

@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -50,31 +51,14 @@ void JavascriptInjector::SetAllowInspection(JNIEnv* env,
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
 }
 
-std::vector<std::string> JavascriptInjector::AddInterface(
+void JavascriptInjector::AddInterface(
     JNIEnv* env,
     const JavaParamRef<jobject>& /* obj */,
     const JavaParamRef<jobject>& object,
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jclass>& safe_annotation_clazz,
-    std::vector<std::string> origin_allow_list_rules) {
+    origin_matcher::OriginMatcher matcher) {
   DCHECK(java_bridge_dispatcher_host_);
-
-  std::vector<std::string> bad_origins;
-  net::SchemeHostPortMatcher matcher;
-
-  for (const std::string& string_rule : origin_allow_list_rules) {
-    auto rule =
-        net::SchemeHostPortMatcherRule::FromUntrimmedRawString(string_rule);
-    if (rule) {
-      matcher.AddAsLastRule(std::move(rule));
-    } else {
-      bad_origins.emplace_back(string_rule);
-    }
-  }
-
-  if (!bad_origins.empty()) {
-    return bad_origins;
-  }
 
   // If a new js object is added or removed when a page is in BFCache or
   // prerendered, the change won't apply after activating the page. To avoid
@@ -91,8 +75,6 @@ std::vector<std::string> JavascriptInjector::AddInterface(
   java_bridge_dispatcher_host_->AddNamedObject(
       ConvertJavaStringToUTF8(env, name), object, safe_annotation_clazz,
       std::move(matcher));
-
-  return {};
 }
 
 void JavascriptInjector::RemoveInterface(JNIEnv* env,

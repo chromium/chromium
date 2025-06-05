@@ -17,8 +17,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 
-import java.util.List;
-
 /** Common functionality for testing the Java Bridge. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
@@ -34,7 +32,7 @@ public class JavaBridgeBareboneTest {
                     public void run() {
                         mActivityTestRule
                                 .getJavascriptInjector()
-                                .addPossiblyUnsafeInterface(new Object(), name, null, List.of("*"));
+                                .addPossiblyUnsafeInterface(new Object(), name, null);
                     }
                 });
     }

@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "components/origin_matcher/origin_matcher.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 // Descriptive errors raised by the gin java bridge.
@@ -25,7 +26,8 @@ enum GinJavaBridgeError {
 interface GinJavaBridge {
   // Sent from browser to renderer to add a Java object with the given name.
   // Object IDs are generated on the browser side.
-  AddNamedObject(string name, int32 object_id, string matcher);
+  AddNamedObject(string name, int32 object_id,
+    origin_matcher.mojom.OriginMatcher origin_matcher);
 
   // Sent from browser to renderer to remove a Java object with the given name.
   RemoveNamedObject(string name);

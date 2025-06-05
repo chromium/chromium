@@ -14,12 +14,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/common/android/gin_java_bridge_errors.h"
 #include "content/common/gin_java_bridge.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/scheme_host_port_matcher.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ struct NamedObject {
   using ObjectID = ObjectMap::KeyType;
 
   ObjectID object_id;
-  net::SchemeHostPortMatcher matcher;
+  origin_matcher::OriginMatcher matcher;
 };
 
 // This class handles injecting Java objects into the main frame of a
@@ -64,7 +64,7 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
 
   void AddNamedObject(const std::string& name,
                       ObjectID object_id,
-                      const std::string& matcher) override;
+                      const origin_matcher::OriginMatcher& matcher) override;
   void RemoveNamedObject(const std::string& name) override;
   void SetHost(mojo::PendingRemote<mojom::GinJavaBridgeHost> host) override;
 

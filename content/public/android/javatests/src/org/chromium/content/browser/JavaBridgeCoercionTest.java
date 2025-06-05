@@ -24,7 +24,6 @@ import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.List;
 
 /**
  * Part of the test suite for the Java Bridge. This class tests that we correctly convert JavaScript
@@ -761,7 +760,7 @@ public class JavaBridgeCoercionTest {
                             mActivityTestRule
                                     .getJavascriptInjector()
                                     .addPossiblyUnsafeInterface(
-                                            selfConsuming, "selfConsuming", null, List.of("*"));
+                                            selfConsuming, "selfConsuming", null);
                         }
                     });
             mActivityTestRule.synchronousPageReload();
