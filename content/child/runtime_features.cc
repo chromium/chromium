@@ -29,6 +29,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
+#include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
@@ -191,6 +192,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kUseAXPositionForDocumentMarkers)},
           {wf::EnableAOMAriaRelationshipProperties,
            raw_ref(features::kEnableAriaElementReflection)},
+#if BUILDFLAG(IS_ANDROID)
+          {wf::EnableAudioOutputDevices,
+           raw_ref(features::kAAudioPerStreamDeviceSelection)},
+#endif
           {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
           {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
            raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
