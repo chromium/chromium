@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.ActionConfirmationResult.CONFIRMATION_NEGATIVE;
 import static org.chromium.components.browser_ui.widget.ActionConfirmationResult.CONFIRMATION_POSITIVE;
 import static org.chromium.components.browser_ui.widget.ActionConfirmationResult.IMMEDIATE_CONTINUE;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
@@ -43,11 +44,11 @@ import java.util.List;
  * supplied handler to intervene with a warning dialog and/or the creation of placeholder tabs to
  * ensure the tab group is not unintentionally destroyed.
  */
+@NullMarked
 class TabModelRemover {
     /** Handler implemented by subclasses to provide functions to perform actions. */
     /*package*/ interface TabModelRemoverFlowHandler {
         /** Returns lists of synced and collaboration tab groups destroyed by an operation. */
-        @NonNull
         GroupsPendingDestroy computeGroupsPendingDestroy();
 
         /**
@@ -55,7 +56,7 @@ class TabModelRemover {
          *
          * @param placeholderTabs The list of created placeholder tabs. This may be an empty list.
          */
-        void onPlaceholderTabsCreated(@NonNull List<Tab> placeholderTabs);
+        void onPlaceholderTabsCreated(List<Tab> placeholderTabs);
 
         /**
          * Requests to show a dialog to confirm whether tab group deletion is intended. The dialog
@@ -65,7 +66,7 @@ class TabModelRemover {
          *     the dialog. May be invoked synchronously in some cases.
          */
         void showTabGroupDeletionConfirmationDialog(
-                @NonNull Callback<@ActionConfirmationResult Integer> onResult);
+                Callback<@ActionConfirmationResult Integer> onResult);
 
         /**
          * Requests to show a dialog asking the user whether to keep the collaboration.
@@ -76,9 +77,7 @@ class TabModelRemover {
          *     dialog.
          */
         void showCollaborationKeepDialog(
-                @MemberRole int memberRole,
-                @NonNull String title,
-                @NonNull Callback<MaybeBlockingResult> onResult);
+                @MemberRole int memberRole, String title, Callback<MaybeBlockingResult> onResult);
 
         /** Perform the action. */
         void performAction();
@@ -89,7 +88,7 @@ class TabModelRemover {
     private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     // Lazily created objects use corresponding getters.
-    private @Nullable ActionConfirmationManager mActionConfirmationManager;
+    private @MonotonicNonNull ActionConfirmationManager mActionConfirmationManager;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
     private @Nullable CollaborationService mCollaborationService;
 
@@ -99,29 +98,26 @@ class TabModelRemover {
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
     /*package*/ TabModelRemover(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 
     /** Returns an {@link ActionConfirmationManager}. */
-    /*package*/ @NonNull
-    ActionConfirmationManager getActionConfirmationManager() {
+    /*package*/ ActionConfirmationManager getActionConfirmationManager() {
         if (mActionConfirmationManager == null) {
-            TabGroupModelFilter filter = getTabGroupModelFilter();
             mActionConfirmationManager =
                     new ActionConfirmationManager(
-                            filter.getTabModel().getProfile(), mContext, mModalDialogManager);
+                            getProfile(), mContext, mModalDialogManager);
         }
         return mActionConfirmationManager;
     }
 
     /** Returns the {@link TabGroupModelFilterInternal} for the regular tab model. */
-    /*package*/ @NonNull
-    TabGroupModelFilterInternal getTabGroupModelFilter() {
+    /*package*/ TabGroupModelFilterInternal getTabGroupModelFilter() {
         TabGroupModelFilterInternal filter =
                 (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
         assert filter != null && !filter.getTabModel().isIncognitoBranded();
@@ -133,13 +129,11 @@ class TabModelRemover {
      *
      * @param handler The {@link TabModelRemoverFlowHandler} to conduct aspects of the removal
      *     operation.
-     * @param allowDialg Whether to show dialogs.
+     * @param allowDialog Whether to show dialogs.
      */
-    /*package*/ void doTabRemovalFlow(
-            @NonNull TabModelRemoverFlowHandler handler, boolean allowDialog) {
-        @NonNull GroupsPendingDestroy destroyedGroups = handler.computeGroupsPendingDestroy();
+    /*package*/ void doTabRemovalFlow(TabModelRemoverFlowHandler handler, boolean allowDialog) {
+        GroupsPendingDestroy destroyedGroups = handler.computeGroupsPendingDestroy();
 
-        @NonNull
         List<LocalTabGroupId> collaborationGroupsDestroyed =
                 destroyedGroups.collaborationGroupsDestroyed;
         boolean collaborationsDestroyed = !collaborationGroupsDestroyed.isEmpty();
@@ -151,7 +145,6 @@ class TabModelRemover {
             // to skip the dialog.
             boolean showDialog = allowDialog && collaborationGroupsDestroyed.size() == 1;
             if (showDialog) {
-                @NonNull
                 CollaborationInfo collaborationInfo =
                         getCollaborationInfo(collaborationGroupsDestroyed.get(0));
                 doCollaborationDialogFlow(handler, collaborationInfo, collaborationGroupsDestroyed);
@@ -170,15 +163,15 @@ class TabModelRemover {
     }
 
     private List<Tab> doCreatePlaceholderTabsInGroups(
-            @NonNull TabModelRemoverFlowHandler handler, @NonNull List<LocalTabGroupId> tabGroups) {
+            TabModelRemoverFlowHandler handler, List<LocalTabGroupId> tabGroups) {
         TabModel model = getTabGroupModelFilter().getTabModel();
         List<Tab> newTabs = DataSharingTabGroupUtils.createPlaceholderTabInGroups(model, tabGroups);
         handler.onPlaceholderTabsCreated(newTabs);
         return newTabs;
     }
 
-    private @NonNull Callback<MaybeBlockingResult> createCollaborationKeepCallback(
-            @NonNull CollaborationInfo collaborationInfo) {
+    private Callback<MaybeBlockingResult> createCollaborationKeepCallback(
+            CollaborationInfo collaborationInfo) {
         assert collaborationInfo.isValid();
         return (MaybeBlockingResult maybeBlockingResult) -> {
             switch (maybeBlockingResult.result) {
@@ -202,8 +195,8 @@ class TabModelRemover {
         };
     }
 
-    private @NonNull Callback<Integer> createTabGroupDeletionConfirmationCallback(
-            @NonNull TabModelRemoverFlowHandler handler) {
+    private Callback<Integer> createTabGroupDeletionConfirmationCallback(
+            TabModelRemoverFlowHandler handler) {
         return (confirmationResult) -> {
             switch (confirmationResult) {
                 case IMMEDIATE_CONTINUE: // fallthrough
@@ -220,9 +213,11 @@ class TabModelRemover {
     }
 
     private void leaveOrDeleteCollaboration(
-            @NonNull CollaborationInfo collaborationInfo, @NonNull Runnable finishBlocking) {
+            CollaborationInfo collaborationInfo, Runnable finishBlocking) {
         assert collaborationInfo.isValid();
 
+        // collaborationInfo.collaborationId is @Nullable, but isValid() ensures it's not null here.
+        assert collaborationInfo.collaborationId != null;
         String collaborationId = collaborationInfo.collaborationId;
         @MemberRole int memberRole = collaborationInfo.memberRole;
         @Nullable CollaborationService collaborationService = getCollaborationService();
@@ -243,15 +238,15 @@ class TabModelRemover {
     /** Contains info about a collaboration. */
     private static class CollaborationInfo {
         public final @MemberRole int memberRole;
-        public final String collaborationId;
-        public final @NonNull String title;
+        public final @Nullable String collaborationId;
+        public final String title;
 
         CollaborationInfo() {
             this(MemberRole.UNKNOWN, /* collaborationId= */ null, /* title= */ "");
         }
 
         CollaborationInfo(
-                @MemberRole int memberRole, String collaborationId, @NonNull String title) {
+                @MemberRole int memberRole, @Nullable String collaborationId, String title) {
             this.memberRole = memberRole;
             this.collaborationId = collaborationId;
             this.title = title;
@@ -263,16 +258,16 @@ class TabModelRemover {
         }
     }
 
-    private @NonNull CollaborationInfo getCollaborationInfo(
-            @NonNull LocalTabGroupId localTabGroupId) {
-        @Nullable TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
+    private CollaborationInfo getCollaborationInfo(LocalTabGroupId localTabGroupId) {
+        TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
         if (tabGroupSyncService == null) {
             return new CollaborationInfo();
         }
 
-        @Nullable SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
+        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         String collaborationId = savedTabGroup != null ? savedTabGroup.collaborationId : null;
         if (!TabShareUtils.isCollaborationIdValid(collaborationId)
+                || savedTabGroup == null
                 || savedTabGroup.localId == null
                 || savedTabGroup.localId.tabGroupId == null) {
             return new CollaborationInfo();
@@ -286,16 +281,20 @@ class TabModelRemover {
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, tabGroupId);
 
         CollaborationService collaborationService = getCollaborationService();
+        if (collaborationService == null) {
+            return new CollaborationInfo();
+        }
         @MemberRole
         int memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
         return new CollaborationInfo(memberRole, collaborationId, title);
     }
 
     private void doCollaborationDialogFlow(
-            @NonNull TabModelRemoverFlowHandler handler,
-            @NonNull CollaborationInfo collaborationInfo,
-            @NonNull List<LocalTabGroupId> collaborationGroupsDestroyed) {
+            TabModelRemoverFlowHandler handler,
+            CollaborationInfo collaborationInfo,
+            List<LocalTabGroupId> collaborationGroupsDestroyed) {
         if (collaborationInfo.isValid()) {
+            assumeNonNull(collaborationInfo.collaborationId);
             handler.showCollaborationKeepDialog(
                     collaborationInfo.memberRole,
                     collaborationInfo.title,
@@ -335,8 +334,8 @@ class TabModelRemover {
         }
     }
 
-    private @NonNull Profile getProfile() {
-        return getTabGroupModelFilter().getTabModel().getProfile();
+    private Profile getProfile() {
+        return assumeNonNull(getTabGroupModelFilter().getTabModel().getProfile());
     }
 
     private @Nullable TabGroupSyncService getTabGroupSyncService() {
@@ -347,7 +346,7 @@ class TabModelRemover {
         return mTabGroupSyncService;
     }
 
-    private @NonNull CollaborationService getCollaborationService() {
+    private @Nullable CollaborationService getCollaborationService() {
         if (mCollaborationService == null) {
             Profile profile = getProfile();
             mCollaborationService = CollaborationServiceFactory.getForProfile(profile);

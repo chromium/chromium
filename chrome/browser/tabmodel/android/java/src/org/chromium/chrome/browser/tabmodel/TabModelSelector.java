@@ -87,7 +87,7 @@ public interface TabModelSelector {
      * @param id The id of the {@link Tab} to find the {@link TabModel} for.
      * @return   The {@link TabModel} that owns the {@link Tab} specified by {@code id}.
      */
-    TabModel getModelForTabId(int id);
+    @Nullable TabModel getModelForTabId(int id);
 
     /**
      * TODO(crbug.com/350654700): clean up usages and remove isIncognitoSelected.
