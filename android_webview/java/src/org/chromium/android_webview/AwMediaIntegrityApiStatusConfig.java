@@ -8,9 +8,9 @@ import android.net.Uri;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
+import org.chromium.components.origin_matcher.OriginMatcher;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Stores configuration for the WebView Media Integrity API. Configuration is used to set permission
  * levels for origin sites through defaults and override rules. Origin site URIs are matched against
- * these override rules with an {@link AwContentsOriginMatcher}.
+ * these override rules with an {@link OriginMatcher}.
  */
 @Lifetime.WebView
 public class AwMediaIntegrityApiStatusConfig {
@@ -31,9 +31,8 @@ public class AwMediaIntegrityApiStatusConfig {
         MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY,
         MediaIntegrityApiStatus.ENABLED
     };
-    private final AwContentsOriginMatcher mRuleValidationMatcher = new AwContentsOriginMatcher();
-    private final Map<@MediaIntegrityApiStatus Integer, AwContentsOriginMatcher>
-            mPermissionToMatcher;
+    private final OriginMatcher mRuleValidationMatcher = new OriginMatcher();
+    private final Map<@MediaIntegrityApiStatus Integer, OriginMatcher> mPermissionToMatcher;
 
     private @MediaIntegrityApiStatus int mDefaultStatus;
     private Map<String, @MediaIntegrityApiStatus Integer> mOverrideRulesToPermission;
@@ -41,9 +40,9 @@ public class AwMediaIntegrityApiStatusConfig {
     public AwMediaIntegrityApiStatusConfig() {
         mDefaultStatus = MediaIntegrityApiStatus.ENABLED;
         mOverrideRulesToPermission = Collections.emptyMap();
-        Map<@MediaIntegrityApiStatus Integer, AwContentsOriginMatcher> matcherMap = new HashMap<>();
+        Map<@MediaIntegrityApiStatus Integer, OriginMatcher> matcherMap = new HashMap<>();
         for (@MediaIntegrityApiStatus int status : sStatusByPriority) {
-            matcherMap.put(status, new AwContentsOriginMatcher());
+            matcherMap.put(status, new OriginMatcher());
         }
         mPermissionToMatcher = Collections.unmodifiableMap(matcherMap);
     }
@@ -52,10 +51,11 @@ public class AwMediaIntegrityApiStatusConfig {
             @MediaIntegrityApiStatus int defaultStatus,
             Map<String, @MediaIntegrityApiStatus Integer> permissionConfig) {
         mDefaultStatus = defaultStatus;
-        String[] badRules =
-                mRuleValidationMatcher.updateRuleList(new ArrayList<>(permissionConfig.keySet()));
-        if (badRules.length > 0) {
-            throw new IllegalArgumentException("Badly formed rules: " + Arrays.toString(badRules));
+        List<String> badRules =
+                mRuleValidationMatcher.setRuleList(new ArrayList<>(permissionConfig.keySet()));
+        if (badRules.size() > 0) {
+            throw new IllegalArgumentException(
+                    "Badly formed rules: " + String.join(", ", badRules));
         }
         mOverrideRulesToPermission = permissionConfig;
         populateMatchersForLookup(permissionConfig);
@@ -92,7 +92,7 @@ public class AwMediaIntegrityApiStatusConfig {
             newPatterns.get(entry.getValue()).add(entry.getKey());
         }
         for (int status : sStatusByPriority) {
-            mPermissionToMatcher.get(status).updateRuleList(newPatterns.get(status));
+            mPermissionToMatcher.get(status).setRuleList(newPatterns.get(status));
         }
     }
 }

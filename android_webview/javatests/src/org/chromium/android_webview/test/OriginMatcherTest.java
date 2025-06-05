@@ -17,24 +17,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.AwContentsOriginMatcher;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.origin_matcher.OriginMatcher;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-/** AwContentsOriginMatcher tests. */
+/** OriginMatcher tests. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
-public class AwContentsOriginMatcherTest {
+public class OriginMatcherTest {
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private AwContentsOriginMatcher mMatcher;
+    private OriginMatcher mMatcher;
 
     @Before
     public void setup() {
-        mMatcher = new AwContentsOriginMatcher();
+        mMatcher = new OriginMatcher();
     }
 
     @After
@@ -53,7 +55,7 @@ public class AwContentsOriginMatcherTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testMatchesOrigin_returnsFalse_whenNoMatching() {
-        mMatcher.updateRuleList(Arrays.asList("http://somesite.com", "http://webviewalmost.com"));
+        mMatcher.setRuleList(Arrays.asList("http://somesite.com", "http://webviewalmost.com"));
         Assert.assertFalse(mMatcher.matchesOrigin(Uri.parse("http://webview.com")));
     }
 
@@ -61,7 +63,7 @@ public class AwContentsOriginMatcherTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testMatchesOrigin_returnsTrue_whenMatches() {
-        mMatcher.updateRuleList(Arrays.asList("http://somesite.com", "http://webview.com"));
+        mMatcher.setRuleList(Arrays.asList("http://somesite.com", "http://webview.com"));
         Assert.assertTrue(mMatcher.matchesOrigin(Uri.parse("http://webview.com")));
     }
 
@@ -69,7 +71,7 @@ public class AwContentsOriginMatcherTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testMatchesOrigin_returnsTrue_whenSubDomainMatches() {
-        mMatcher.updateRuleList(Arrays.asList("http://somesite.com", "http://*.webview.com"));
+        mMatcher.setRuleList(Arrays.asList("http://somesite.com", "http://*.webview.com"));
         Assert.assertTrue(mMatcher.matchesOrigin(Uri.parse("http://sub.webview.com")));
     }
 
@@ -77,29 +79,28 @@ public class AwContentsOriginMatcherTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testUpdateRuleList() {
-        String[] badRules =
-                mMatcher.updateRuleList(
+        List<String> badRules =
+                mMatcher.setRuleList(
                         Arrays.asList("http://somesite.com", "oh no", "http://*.webview.com"));
         // Still doesn't match even though that list had a rule that should match.
         // Because updateRuleList won't update the rules if there was a bad one.
         Assert.assertFalse(mMatcher.matchesOrigin(Uri.parse("http://sub.webview.com")));
-        Assert.assertEquals(new String[] {"oh no"}, badRules);
+        Assert.assertEquals(List.of("oh no"), badRules);
 
         // After removing the bad rule, we should no longer get any rules returned and things should
         // match
         badRules =
-                mMatcher.updateRuleList(
-                        Arrays.asList("http://somesite.com", "http://*.webview.com"));
+                mMatcher.setRuleList(Arrays.asList("http://somesite.com", "http://*.webview.com"));
 
         Assert.assertTrue(mMatcher.matchesOrigin(Uri.parse("http://sub.webview.com")));
-        Assert.assertEquals(new String[] {}, badRules);
+        Assert.assertEquals(Collections.emptyList(), badRules);
     }
 
     @Test(expected = IllegalStateException.class)
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testThrowsAfterDestroy() {
-        AwContentsOriginMatcher matcher = new AwContentsOriginMatcher();
+        OriginMatcher matcher = new OriginMatcher();
         matcher.destroy();
         matcher.matchesOrigin(Uri.parse("http://sub.webview.com"));
     }

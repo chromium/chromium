@@ -12,6 +12,8 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/common/aw_features.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"

@@ -53,6 +53,9 @@ class OriginMatcher {
 
   void SetRules(RuleList rules);
 
+  // Moves the rules from one origin matcher to another.
+  void MoveRules(OriginMatcher& matcher);
+
   // Adds a rule given by the string |raw|. Returns true if the rule was
   // successfully added.
   bool AddRuleFromString(const std::string& raw);

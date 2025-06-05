@@ -63,6 +63,10 @@ void OriginMatcher::SetRules(RuleList rules) {
   rules_.swap(rules);
 }
 
+void OriginMatcher::MoveRules(OriginMatcher& matcher) {
+  rules_ = std::move(matcher.rules_);
+}
+
 bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
   std::string raw;
   base::TrimWhitespaceASCII(raw_untrimmed, base::TRIM_ALL, &raw);
