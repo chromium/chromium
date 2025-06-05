@@ -56,6 +56,11 @@ constexpr gfx::Size kMinWindowSize(240, 52);
 constexpr double kMaxWindowSizeRatio = 0.8;
 
 #if !BUILDFLAG(IS_ANDROID)
+// The largest fraction of the screen that Document Picture-in-Picture windows
+// can take up by request of the website. The user can still manually resize to
+// `kMaxWindowSizeRatio`.
+constexpr double kMaxSiteRequestedWindowSizeRatio = 0.25;
+
 // Returns true if a document picture-in-picture window should be focused upon
 // opening it.
 bool ShouldFocusPictureInPictureWindow(const NavigateParams& params) {
@@ -71,6 +76,13 @@ bool ShouldFocusPictureInPictureWindow(const NavigateParams& params) {
   // The picture-in-picture window should be focused unless it's opened by the
   // AutoPictureInPictureTabHelper.
   return !auto_picture_in_picture_tab_helper->IsInAutoPictureInPicture();
+}
+
+// Returns the maximum area in pixels that the site can request a
+// picture-in-picture window to be.
+base::CheckedNumeric<int> GetMaximumSiteRequestedWindowArea(
+    const display::Display& display) {
+  return display.size().GetCheckedArea() * kMaxSiteRequestedWindowSizeRatio;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -286,6 +298,107 @@ bool PictureInPictureWindowManager::IsChildWebContents(
   return instance->GetChildWebContents() == wc;
 }
 
+// static
+gfx::Size PictureInPictureWindowManager::AdjustRequestedSizeIfNecessary(
+    const gfx::Size& requested_size,
+    const display::Display& display) {
+#if BUILDFLAG(IS_ANDROID)
+  return requested_size;
+#else   // BUILDFLAG(IS_ANDROID)
+  base::CheckedNumeric<int> requested_area = requested_size.GetCheckedArea();
+  base::CheckedNumeric<int> max_requested_area =
+      GetMaximumSiteRequestedWindowArea(display);
+
+  // If the website has requested an area too large to calculate, then their
+  // request isn't particularly useful and we will fall back to the minimum
+  // size.
+  if (!requested_area.IsValid()) {
+    return GetMinimumInnerWindowSize();
+  }
+
+  // If the screen size is too large to calculate, then fall back to allowing
+  // the requested size. Note that this should only occur with a ridiculous
+  // monitor size that would only happen in a test environment.
+  if (!max_requested_area.IsValid()) {
+    return requested_size;
+  }
+
+  // If the website's requested size is not too large, then there's nothing that
+  // needs to change.
+  if (requested_area.ValueOrDie() <= max_requested_area.ValueOrDie()) {
+    return requested_size;
+  }
+
+  // Otherwise, if the website's requested size is too large, then shrink it to
+  // the maximum allowed size while maintaining the given aspect ratio.
+  gfx::Size minimum_size(GetMinimumInnerWindowSize());
+  gfx::Size maximum_size(GetMaximumWindowSize(display));
+  maximum_size.SetToMax(minimum_size);
+
+  double original_width = static_cast<double>(requested_size.width());
+  double original_height = static_cast<double>(requested_size.height());
+
+  // Ideally, we could resize to perfectly maintain the aspect ratio while
+  // hitting the max requested area.
+  double ideal_scale_for_area =
+      std::sqrt(static_cast<double>(max_requested_area.ValueOrDie()) /
+                static_cast<double>(requested_area.ValueOrDie()));
+
+  // However, we need to ensure that we remain large enough for the minimum size
+  // in both dimensions.
+  double scale_needed_for_min_width =
+      static_cast<double>(minimum_size.width()) / original_width;
+  double scale_needed_for_min_height =
+      static_cast<double>(minimum_size.height()) / original_height;
+  double minimum_scale =
+      std::max(scale_needed_for_min_width, scale_needed_for_min_height);
+
+  // And also that we remain small enough to be within the maximum size in both
+  // dimensions.
+  double scale_needed_for_max_width =
+      static_cast<double>(maximum_size.width()) / original_width;
+  double scale_needed_for_max_height =
+      static_cast<double>(maximum_size.height()) / original_height;
+  double maximum_scale =
+      std::min(scale_needed_for_max_width, scale_needed_for_max_height);
+
+  gfx::Size output_size;
+
+  // If the smallest scale needed to reach the minimum size is larger than the
+  // largest scale that fits within the maximum bounds, then we can't perfectly
+  // maintain aspect ratio.
+  if (minimum_scale > maximum_scale) {
+    if (original_width > original_height) {
+      // If this is because the requested width is too large, then fall back to
+      // the minimum height with as much width as is allowed.
+      output_size.set_width(
+          static_cast<double>(max_requested_area.ValueOrDie()) /
+          minimum_size.height());
+      output_size.set_height(minimum_size.height());
+    } else {
+      // If this is because the requested height is too large, then fall back to
+      // the minimum width with as much height as is allowed.
+      output_size.set_width(minimum_size.width());
+      output_size.set_height(
+          static_cast<double>(max_requested_area.ValueOrDie()) /
+          minimum_size.width());
+    }
+  } else {
+    // Otherwise, either scale by the ideal factor or make it smaller than that
+    // to fit within the maximum size.
+    double effective_scale = std::min(ideal_scale_for_area, maximum_scale);
+    output_size.set_width(original_width * effective_scale);
+    output_size.set_height(original_height * effective_scale);
+  }
+
+  // Ensure the standard size restrictions are still met.
+  output_size.SetToMax(minimum_size);
+  output_size.SetToMin(maximum_size);
+
+  return output_size;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 std::optional<gfx::Rect>
 PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
   return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
@@ -328,14 +441,27 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
   }
 
   if (pip_options.width > 0 && pip_options.height > 0) {
-    // Use width and height if we have them both, but ensure it's within the
-    // required bounds.  Remember that the pip options are the desired inner
-    // size, so we add any non-client size we need to convert to outer size by
-    // adding back the margin around the inner area.
-    gfx::Size window_size(
-        base::saturated_cast<int>(pip_options.width + excluded_margin.width()),
-        base::saturated_cast<int>(pip_options.height +
-                                  excluded_margin.height()));
+    // Use width and height if we have them both, and ensure that the size isn't
+    // too large.
+    gfx::Size requested_window_size(
+        base::saturated_cast<int>(pip_options.width),
+        base::saturated_cast<int>(pip_options.height));
+    gfx::Size window_size =
+        AdjustRequestedSizeIfNecessary(requested_window_size, display);
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (is_calculating_initial_document_pip_size_) {
+      base::UmaHistogramBoolean(
+          "Media.DocumentPictureInPicture.RequestedLargeInitialSize",
+          requested_window_size != window_size);
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+    // The pip options are the desired inner size, so we add any non-client size
+    // we need to convert to outer size by adding back the margin around the
+    // inner area.
+    window_size += excluded_margin;
+
     window_size.SetToMin(GetMaximumWindowSize(display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
@@ -382,6 +508,8 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const display::Display& display) {
 #if !BUILDFLAG(IS_ANDROID)
   RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options, display);
+  base::AutoReset<bool> auto_reset(&is_calculating_initial_document_pip_size_,
+                                   true);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Use an empty `excluded_margin`, which more or less guarantees that these

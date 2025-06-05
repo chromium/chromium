@@ -2580,6 +2580,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.DocumentPictureInPicture.RequestedLargeInitialSize"
+    enum="BooleanOccurred" expires_after="2026-03-19">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a website opens a document picture-in-picture window. Records
+    `Occurred` if the website requested a window size larger than the maximum
+    allowed window size, otherwise records `Did not occur`.
+  </summary>
+</histogram>
+
+<histogram name="Media.DocumentPictureInPicture.RequestedLargeResize"
+    enum="BooleanOccurred" expires_after="2026-03-19">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a website resizes a document picture-in-picture window via the
+    `resizeTo()` or `resizeBy()` APIs. Records `Occurred` if the website
+    requested a window size larger than the maximum allowed window size,
+    otherwise records `Did not occur`.
+  </summary>
+</histogram>
+
 <histogram name="Media.DocumentPictureInPicture.RequestedSizeToScreenRatio"
     units="%" expires_after="2025-11-30">
   <owner>steimel@chromium.org</owner>
