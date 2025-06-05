@@ -162,7 +162,8 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
       sii->CreateSharedImage({viz::MultiPlaneFormat::kI420, coded_size,
                               gfx::ColorSpace(), usages, "I420Frame"},
                              gpu::kNullSurfaceHandle);
-  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  auto ri_access = shared_image->BeginRasterAccess(
+      ri, shared_image->creation_sync_token(), /*readonly=*/false);
 
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   // SkColorType is always Alpha8 for I420 8 bit video frames.
@@ -183,8 +184,8 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
   ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
   return CreateSharedImageFrame(
       VideoPixelFormat::PIXEL_FORMAT_I420, shared_image, sync_token,
@@ -249,7 +250,8 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
       sii->CreateSharedImage({viz::MultiPlaneFormat::kNV12, coded_size,
                               gfx::ColorSpace(), usages, "NV12Frame"},
                              gpu::kNullSurfaceHandle);
-  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  auto ri_access = shared_image->BeginRasterAccess(
+      ri, shared_image->creation_sync_token(), /*readonly=*/false);
 
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   SkImageInfo y_info =
@@ -267,8 +269,8 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
   ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
   return CreateSharedImageFrame(
       VideoPixelFormat::PIXEL_FORMAT_NV12, shared_image, sync_token,
