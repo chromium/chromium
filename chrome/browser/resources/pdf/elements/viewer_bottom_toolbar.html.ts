@@ -19,8 +19,8 @@ export function getHtml(this: ViewerBottomToolbarElement) {
     <ink-brush-selector class="toolbar-icon" .currentType="${this.currentType}"
         @current-type-changed="${this.onCurrentTypeChanged}">
     </ink-brush-selector>
-    <span id="vertical-separator"></span>
     ${this.shouldShowBrushOptions_() ? html`
+      <span id="vertical-separator"></span>
       <viewer-bottom-toolbar-dropdown id="size" class="toolbar-icon"
           .buttonTitle="${this.getSizeTitle_()}">
         <cr-icon slot="icon" icon="${this.getSizeIcon_()}"></cr-icon>
