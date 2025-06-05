@@ -8,7 +8,6 @@
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
@@ -16,6 +15,7 @@
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace chromeos::auth {
 
@@ -76,7 +76,7 @@ std::unique_ptr<ash::AuthRequest> InSessionAuth::AuthRequestFromReason(
 void InSessionAuth::RequestToken(chromeos::auth::mojom::Reason reason,
                                  const std::optional<std::string>& prompt,
                                  RequestTokenCallback callback) {
-  auto visitor = base::Overloaded(
+  auto visitor = absl::Overload(
       // Legacy code path
       [&](ash::InSessionAuthDialogController::Reason reason) {
         ash::InSessionAuthDialogController::Get()->ShowAuthDialog(

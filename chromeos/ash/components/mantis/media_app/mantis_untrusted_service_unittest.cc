@@ -8,7 +8,6 @@
 #include <memory>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash {
 namespace {
@@ -134,12 +134,12 @@ using ImageInferenceTestCase = std::variant<MantisError, std::vector<uint8_t>>;
 
 MantisResultPtr GetMantisResult(const ImageInferenceTestCase& test_case) {
   return std::visit(
-      base::Overloaded{[](const MantisError& error) {
-                         return MantisResult::NewError(error);
-                       },
-                       [](const std::vector<uint8_t>& result_image) {
-                         return MantisResult::NewResultImage(result_image);
-                       }},
+      absl::Overload{[](const MantisError& error) {
+                       return MantisResult::NewError(error);
+                     },
+                     [](const std::vector<uint8_t>& result_image) {
+                       return MantisResult::NewResultImage(result_image);
+                     }},
       test_case);
 }
 
@@ -220,12 +220,12 @@ INSTANTIATE_TEST_SUITE_P(
                     GetFakeResult()),
     [](const testing::TestParamInfo<ImageInferenceTestCase>& info) {
       return std::visit(
-          base::Overloaded{[](const MantisError& error) {
-                             return testing::PrintToString(error);
-                           },
-                           [](const std::vector<uint8_t>& result_image) {
-                             return std::string("kResultImage");
-                           }},
+          absl::Overload{[](const MantisError& error) {
+                           return testing::PrintToString(error);
+                         },
+                         [](const std::vector<uint8_t>& result_image) {
+                           return std::string("kResultImage");
+                         }},
           info.param);
     });
 
