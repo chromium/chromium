@@ -190,9 +190,7 @@ class GPU_GLES2_EXPORT SharedContextState
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
   // Ganesh/Graphite contexts may only be used on the GPU main thread.
   GrDirectContext* gr_context() const { return gr_context_; }
-  gpu::GraphiteSharedContext* graphite_shared_context() const {
-    return graphite_shared_context_;
-  }
+  gpu::GraphiteSharedContext* graphite_shared_context() const;
   // Graphite recorder for GPU main thread, used by RasterDecoder,
   // SkiaOutputSurfaceImplOnGpu, etc.
   skgpu::graphite::Recorder* gpu_main_graphite_recorder() const {
@@ -356,8 +354,6 @@ class GPU_GLES2_EXPORT SharedContextState
   bool created_on_compositor_gpu_thread_ = false;
   bool is_drdc_enabled_ = false;
   raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
-  raw_ptr<gpu::GraphiteSharedContext, DanglingUntriaged>
-      graphite_shared_context_;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
 
@@ -382,7 +378,6 @@ class GPU_GLES2_EXPORT SharedContextState
   raw_ptr<gl::ProgressReporter, DanglingUntriaged> progress_reporter_ = nullptr;
   sk_sp<GrDirectContext> owned_gr_context_;
   std::unique_ptr<ServiceTransferCache> transfer_cache_;
-  uint64_t skia_resource_cache_size_ = 0;
   std::vector<uint8_t> scratch_deserialization_buffer_;
   raw_ptr<gpu::raster::GrShaderCache, DanglingUntriaged> gr_shader_cache_ =
       nullptr;
