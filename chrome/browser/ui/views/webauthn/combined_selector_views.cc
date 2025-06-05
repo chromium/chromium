@@ -243,11 +243,16 @@ CombinedSelectorListView::CombinedSelectorListView(
     const auto& mechanism = model->dialog_model()->mechanisms[i];
     auto image_model =
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
+    auto texts = mechanism.display_name.empty() ||
+                         (mechanism.display_name == mechanism.name)
+                     ? std::vector<std::u16string_view>{mechanism.name,
+                                                        mechanism.description}
+                     : std::vector<std::u16string_view>{mechanism.display_name,
+                                                        mechanism.name,
+                                                        mechanism.description};
     auto* row = wrapper->AddChildView(std::make_unique<CombinedSelectorRowView>(
-        image_model,
-        std::vector<std::u16string_view>{mechanism.name, mechanism.description},
-        model->GetSelectionStatus(i), !model->dialog_model()->ui_disabled_,
-        delegate, i));
+        image_model, std::move(texts), model->GetSelectionStatus(i),
+        !model->dialog_model()->ui_disabled_, delegate, i));
     if (model->GetSelectionStatus(i) ==
         CombinedSelectorSheetModel::SelectionStatus::kSelected) {
       selected_view_ = row;

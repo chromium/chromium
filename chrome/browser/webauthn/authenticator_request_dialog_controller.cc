@@ -2239,7 +2239,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           base::BindRepeating(
               base::IgnoreResult(
                   &AuthenticatorRequestDialogController::OnAccountPreselected),
-              base::Unretained(this), cred.cred_id));
+              base::Unretained(this), cred.cred_id),
+          base::UTF8ToUTF16(cred.user.display_name.value_or("")));
       mechanism.description =
           AuthenticatorRequestDialogModel::GetMechanismDescription(
               cred, model_->priority_phone_name, ui_presentation());
