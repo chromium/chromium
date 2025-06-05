@@ -73,7 +73,8 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
       VideoPixelFormatToSharedImageFormat(video_frame->format());
   CHECK(format.is_multi_plane());
   return GetOrCreateSharedImage(video_frame, raster_context_provider, usage,
-                                format, video_frame->ColorSpace());
+                                format, kUnpremul_SkAlphaType,
+                                video_frame->ColorSpace());
 }
 
 VideoFrameSharedImageCache::CachedData
@@ -82,6 +83,7 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
     viz::RasterContextProvider* raster_context_provider,
     const gpu::SharedImageUsageSet& usage,
     const viz::SharedImageFormat& format,
+    SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space) {
   if (shared_image_ && provider_ == raster_context_provider) {
     // Return the cached shared image if it is the same video frame.
@@ -92,7 +94,8 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
     // image data.
     if (video_frame->coded_size() == shared_image_->size() &&
         color_space == shared_image_->color_space() &&
-        format == shared_image_->format() && usage == shared_image_->usage()) {
+        format == shared_image_->format() && usage == shared_image_->usage() &&
+        alpha_type == shared_image_->alpha_type()) {
       return {shared_image_, sync_token_, Status::kMatchedSharedImageMetaData};
     }
   }
@@ -107,7 +110,7 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
 
   shared_image_ = sii->CreateSharedImage(
       {format, video_frame->coded_size(), color_space, kTopLeft_GrSurfaceOrigin,
-       kUnpremul_SkAlphaType, usage, "VideoFrameSharedImageCache"},
+       alpha_type, usage, "VideoFrameSharedImageCache"},
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();

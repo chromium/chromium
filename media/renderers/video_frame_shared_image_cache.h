@@ -59,6 +59,7 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
       viz::RasterContextProvider* raster_context_provider,
       const gpu::SharedImageUsageSet& usage,
       const viz::SharedImageFormat& format,
+      SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space);
 
   // Calls the above method but passes in video frame color space and YUV format

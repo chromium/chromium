@@ -171,9 +171,13 @@ gpu::SyncToken CopySharedImageToTexture(
   auto scoped_si_access =
       si_texture->BeginAccess(source_sync_token, /*readonly=*/true);
 
-  // TODO(crbug.com/378688985): This assumes Video is always unpremultiplied,
-  // which might be incorrect if VideoFrame originates from WebGL canvas.
-  const bool do_premultiply_alpha = dst_alpha_type == kPremul_SkAlphaType;
+  const bool do_premultiply_alpha =
+      dst_alpha_type == kPremul_SkAlphaType &&
+      source_shared_image->alpha_type() == kUnpremul_SkAlphaType;
+  const bool do_unpremultiply_alpha =
+      dst_alpha_type == kUnpremul_SkAlphaType &&
+      source_shared_image->alpha_type() == kPremul_SkAlphaType;
+
   const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
   if (visible_rect != gfx::Rect(coded_size)) {
     // Must reallocate the destination texture and copy only a sub-portion.
@@ -189,15 +193,16 @@ gpu::SyncToken CopySharedImageToTexture(
     // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
     // space, so this is incorrect if `source_shared_image` origin is bottom
     // left.
-    gl->CopySubTextureCHROMIUM(
-        scoped_si_access->texture_id(), 0, target, texture, level, 0, 0,
-        visible_rect.x(), visible_rect.y(), visible_rect.width(),
-        visible_rect.height(), do_flip_y, do_premultiply_alpha, false);
+    gl->CopySubTextureCHROMIUM(scoped_si_access->texture_id(), 0, target,
+                               texture, level, 0, 0, visible_rect.x(),
+                               visible_rect.y(), visible_rect.width(),
+                               visible_rect.height(), do_flip_y,
+                               do_premultiply_alpha, do_unpremultiply_alpha);
 
   } else {
     gl->CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
                             level, internal_format, type, do_flip_y,
-                            do_premultiply_alpha, false);
+                            do_premultiply_alpha, do_unpremultiply_alpha);
   }
   return gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_si_access));
@@ -1495,7 +1500,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   auto [rgb_shared_image, rgb_sync_token, status] =
       rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
-          SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
+          SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
+          video_frame->CompatRGBColorSpace());
   CHECK(rgb_shared_image);
 
   // Wait on the `rgb_sync_token` passed from the cache that may have been
@@ -1604,7 +1610,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   auto [rgb_shared_image, rgb_sync_token, status] =
       rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
-          SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
+          SHARED_IMAGE_FORMAT, kPremul_SkAlphaType,
+          video_frame->CompatRGBColorSpace());
   CHECK(rgb_shared_image);
 
   // On the source Raster context, do the YUV->RGB conversion.
