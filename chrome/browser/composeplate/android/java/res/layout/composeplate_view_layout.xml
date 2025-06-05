@@ -9,42 +9,27 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/composeplate_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/voice_search_button"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="@dimen/composeplate_view_height"
-        android:paddingTop="@dimen/composeplate_view_padding_top"
-        android:paddingBottom="@dimen/composeplate_view_padding_top"
-        android:layout_marginEnd="@dimen/composeplate_view_button_margin_end"
-        android:src="@drawable/ic_mic_white_24dp"
-        android:background="@drawable/home_surface_ui_background"
-        android:contentDescription="@string/accessibility_toolbar_btn_mic" />
-
-    <ImageView
-        android:id="@+id/lens_camera_button"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="@dimen/composeplate_view_height"
-        android:paddingTop="@dimen/composeplate_view_padding_top"
-        android:paddingBottom="@dimen/composeplate_view_padding_top"
-        android:layout_marginEnd="@dimen/composeplate_view_button_margin_end"
-        android:src="@drawable/lens_camera_icon"
-        android:background="@drawable/home_surface_ui_background"
-        android:contentDescription="@string/accessibility_btn_lens_camera" />
-
-    <ImageView
+    <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/incognito_button"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="@dimen/composeplate_view_height"
-        android:paddingTop="@dimen/composeplate_view_padding_top"
-        android:paddingBottom="@dimen/composeplate_view_padding_top"
-        android:src="@drawable/incognito_24"
-        android:background="@drawable/home_surface_ui_background"
-        android:contentDescription="@string/new_incognito_tab_title" />
+        android:contentDescription="@string/accessibility_new_incognito_tab_page"
+        android:src="@drawable/ic_incognito"
+        style="@style/ComposeplateViewButton" />
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/voice_search_button"
+        android:contentDescription="@string/accessibility_toolbar_btn_mic"
+        android:src="@drawable/ic_mic_white_24dp"
+        style="@style/ComposeplateViewButton"
+        android:layout_marginStart="@dimen/composeplate_view_button_margin_start"/>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/lens_camera_button"
+        android:contentDescription="@string/accessibility_btn_lens_camera"
+        android:src="@drawable/lens_camera_icon"
+        style="@style/ComposeplateViewButton"
+        android:layout_marginStart="@dimen/composeplate_view_button_margin_start"/>
 
 </LinearLayout>

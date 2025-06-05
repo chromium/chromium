@@ -24,6 +24,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/composeplate_view_layout.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }

@@ -6,8 +6,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="composeplate_view_button_margin_end">8dp</dimen>
+<resources>
+    <dimen name="composeplate_view_margin_top">8dp</dimen>
+    <dimen name="composeplate_view_button_margin_start">8dp</dimen>
     <dimen name="composeplate_view_height">48dp</dimen>
-    <dimen name="composeplate_view_padding_top">12dp</dimen>
 </resources>
