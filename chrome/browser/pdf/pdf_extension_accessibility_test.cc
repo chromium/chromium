@@ -75,12 +75,7 @@
 
 // Fake ScreenAI library returns empty results for all queries, so testing with
 // it is not helpful.
-// The tests are disabled on Linux due to the flakiness of notifications on
-// Linux screen reader (crbug.com/348626870).
-// TODO(crbug.com/360803943): Try to enable on Linux with pdf-searchify without
-// relying on notifications.
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
-    !BUILDFLAG(USE_FAKE_SCREEN_AI) && !BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
 #define PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED
 #endif
 
@@ -1277,11 +1272,18 @@ class PdfSearchifyIntegrationTest
     PDFExtensionAccessibilityTest::TearDownOnMainThread();
   }
 
-  void WaitForTreeStatus(int status_message_id) {
+  // `has_content` should be true when the PDF is not empty.
+  void WaitForTreeUpdate(bool has_content) {
     WebContents* contents = GetActiveWebContents();
     ASSERT_TRUE(contents);
-    const std::string expected_message =
-        l10n_util::GetStringUTF8(status_message_id);
+    std::string expected_message;
+    // Notifications are flaky on Linux screen reader (crbug.com/348626870),
+    // hence text of the last node is used.
+#if BUILDFLAG(IS_LINUX)
+    expected_message = GetExpectedLastNodeText(has_content);
+#else
+    expected_message = l10n_util::GetStringUTF8(GetExpectedStatus(has_content));
+#endif
     WaitForAccessibilityTreeToContainNodeWithName(contents, expected_message);
   }
 
@@ -1302,6 +1304,11 @@ class PdfSearchifyIntegrationTest
       return IDS_PDF_OCR_FEATURE_ALERT;
     }
     return has_content ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_NO_RESULT;
+  }
+
+  std::string_view GetExpectedLastNodeText(bool has_content) {
+    return (has_content && IsOcrAvailable()) ? "End of extracted text"
+                                             : "Unlabeled image";
   }
 
  protected:
@@ -1329,7 +1336,7 @@ class PdfSearchifyIntegrationTest
     return disabled;
   }
 
-  void RunPDFAXTreeDumpTest(const char* pdf_file, int status_message_id) {
+  void RunPDFAXTreeDumpTest(const char* pdf_file, bool has_content) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("accessibility")));
@@ -1339,7 +1346,7 @@ class PdfSearchifyIntegrationTest
         base::StrCat({"/pdf/accessibility/", pdf_file}));
     ASSERT_TRUE(LoadPdf(test_file_url));
 
-    WaitForTreeStatus(status_message_id);
+    WaitForTreeUpdate(has_content);
 
     ui::AXTreeUpdate ax_tree =
         GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
@@ -1444,8 +1451,7 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, EnsureScreenAIInitializes) {
 
 IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, HelloWorld) {
   base::HistogramTester histograms;
-  RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
-                       GetExpectedStatus(/*has_content=*/true));
+  RunPDFAXTreeDumpTest("hello-world-in-image.pdf", /*has_content=*/true);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -1459,7 +1465,7 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, HelloWorld) {
 IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, ThreePagePDF) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf",
-                       GetExpectedStatus(/*has_content=*/true));
+                       /*has_content=*/true);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   int expected_count = IsOcrAvailable() ? 1 : 0;
@@ -1470,8 +1476,7 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, ThreePagePDF) {
 
 IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest,
                        NoOcrResultOnBlankImagePdf) {
-  RunPDFAXTreeDumpTest("blank_image.pdf",
-                       GetExpectedStatus(/*has_content=*/false));
+  RunPDFAXTreeDumpTest("blank_image.pdf", /*has_content=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(
