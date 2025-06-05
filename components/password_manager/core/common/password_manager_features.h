@@ -17,12 +17,13 @@ namespace password_manager::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
+BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+BASE_DECLARE_FEATURE_PARAM(int, kDelaySuggestionsOnAutofocusTimeout);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetAutofocus);
 #endif  // IS_IOS
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
-BASE_DECLARE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys);
 
 // All features parameters are in alphabetical order.
 

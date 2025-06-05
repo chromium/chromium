@@ -160,7 +160,6 @@
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
-#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -474,6 +473,10 @@ void ChromePasswordManagerClient::FocusedInputChanged(
     autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
 #if BUILDFLAG(IS_ANDROID)
+  // If there was a timer waiting for passkeys before showing a bottom sheet,
+  // cancel it because the original element is no longer focused.
+  wait_for_passkeys_timer_.Stop();
+
   // Suppress keyboard accessory if password store is not available.
   if (GetProfilePasswordStore() == nullptr) {
     return;
@@ -573,6 +576,55 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
   }
 }
 
+password_manager::CredManController::PasskeyDelayCallback
+ChromePasswordManagerClient::GetPasskeyDelayCallback(
+    base::OnceClosure continue_closure) {
+  return base::BindOnce(
+      [](base::WeakPtr<ChromePasswordManagerClient> client,
+         base::OnceClosure continue_closure,
+         base::OnceCallback<void(base::OnceClosure)>
+             request_notification_callback) {
+        if (client && !client->wait_for_passkeys_timer_.IsRunning()) {
+          // The callback has to be split because there are two ways for this
+          // to resolve:
+          // 1. It times out, in which case the closure passed to the
+          //    `timer_` fires, resuming the attempt to show the sheet.
+          // 2. Passkeys become available before the timer expires.
+          //    In this case the second callback gets invoked, and cancels
+          //    the timer.
+          auto split_closures =
+              base::SplitOnceCallback(std::move(continue_closure));
+
+          client->wait_for_passkeys_timer_.Start(
+              FROM_HERE,
+              base::Milliseconds(password_manager::features::
+                                     kDelaySuggestionsOnAutofocusTimeout.Get()),
+              std::move(split_closures.first));
+
+          // If passkeys become available before the timer expires, this
+          // closure checks if the timer is still running. If so, it triggers
+          // the bottom sheet to show, and cancels the timer so there won't
+          // be a second attempt to show it.
+          base::OnceClosure passkeys_available_callback = base::BindOnce(
+              [](base::WeakPtr<ChromePasswordManagerClient> client,
+                 base::OnceClosure continue_closure) {
+                if (!client) {
+                  return;
+                }
+                if (client->wait_for_passkeys_timer_.IsRunning()) {
+                  client->wait_for_passkeys_timer_.Stop();
+                  std::move(continue_closure).Run();
+                }
+              },
+              client, std::move(split_closures.second));
+
+          std::move(request_notification_callback)
+              .Run(std::move(passkeys_available_callback));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(continue_closure));
+}
+
 void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
     const autofill::PasswordSuggestionRequest& request) {
@@ -588,24 +640,61 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     return;
   }
 
+  password_manager::CredManController::PasskeyDelayCallback delay_callback;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kDelaySuggestionsOnAutofocusWaitingForPasskeys) &&
+      request.field.trigger_source ==
+          autofill::AutofillSuggestionTriggerSource::
+              kPasswordManagerProcessedFocusedField) {
+    // A null PasskeyDelayCallback is bound to `continue_closure` to prevent
+    // it from delaying again, even if the passkey list has not yet arrived.
+    auto continue_closure = base::BindOnce(
+        &ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface,
+        weak_ptr_factory_.GetWeakPtr(), driver->AsWeakPtr(), request,
+        password_manager::CredManController::PasskeyDelayCallback());
+    delay_callback = GetPasskeyDelayCallback(std::move(continue_closure));
+  } else if (wait_for_passkeys_timer_.IsRunning()) {
+    // If there was an attempt to show the new surface with a different trigger
+    // source while waiting for passkey enumeration, stop the timer and
+    // proceed without waiting.
+    wait_for_passkeys_timer_.Stop();
+  }
+
+  ContinueShowKeyboardReplacingSurface(driver->AsWeakPtr(), request,
+                                       std::move(delay_callback));
+}
+
+void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
+    base::WeakPtr<password_manager::PasswordManagerDriver> weak_driver,
+    const autofill::PasswordSuggestionRequest& request,
+    password_manager::CredManController::PasskeyDelayCallback delay_callback) {
+  // The delay callback gets split because one instance has to be passed to the
+  // CredMan controller. If CredMan will not be used, that instance is destroyed
+  // without being called.
+  auto split_delay_callback =
+      base::SplitOnceCallback(std::move(delay_callback));
+  password_manager::ContentPasswordManagerDriver* content_driver =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(
+          weak_driver.get());
   if (GetOrCreateCredManController()->Show(
-          GetWebAuthnCredManDelegateForDriver(driver),
-          std::make_unique<PasswordCredentialFillerImpl>(driver->AsWeakPtr(),
-                                                         request),
+          GetWebAuthnCredManDelegateForDriver(weak_driver.get()),
+          std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
           content_driver->AsWeakPtrImpl(),
-          request.field.show_webauthn_credentials)) {
+          request.field.show_webauthn_credentials,
+          std::move(split_delay_callback.first))) {
     return;
   }
 
   // base::Unretained() is safe: if the callback is called, AccountStorageNotice
   // is alive, then so is its parent ChromePasswordManagerClient.
-  MaybeShowAccountStorageNotice(
-      base::BindOnce(&ChromePasswordManagerClient::
-                         ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone,
-                     base::Unretained(this), content_driver->AsWeakPtrImpl(),
-                     request.field,  // Intentional & cheap copy.
-                     std::make_unique<PasswordCredentialFillerImpl>(
-                         driver->AsWeakPtr(), request)));
+  MaybeShowAccountStorageNotice(base::BindOnce(
+      &ChromePasswordManagerClient::
+          ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone,
+      base::Unretained(this), content_driver->AsWeakPtrImpl(),
+      request.field,  // Intentional & cheap copy.
+      std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
+      std::move(split_delay_callback.second)));
 }
 
 void ChromePasswordManagerClient::
@@ -613,7 +702,9 @@ void ChromePasswordManagerClient::
         base::WeakPtr<password_manager::ContentPasswordManagerDriver>
             weak_driver,
         autofill::TriggeringField triggering_field,
-        std::unique_ptr<PasswordCredentialFillerImpl> filler) {
+        std::unique_ptr<PasswordCredentialFillerImpl> filler,
+        password_manager::CredManController::PasskeyDelayCallback
+            delay_callback) {
   // TODO(crbug.com/346748438): Maybe don't show TTF if there was a navigation.
   if (!weak_driver) {
     // No further suggestions are possible: without the driver, there is no
@@ -627,12 +718,25 @@ void ChromePasswordManagerClient::
   bool should_show_hybrid_option = false;
   if (webauthn_delegate) {
     webauthn_delegate->NotifyForPasskeysDisplay();
-    if (webauthn_delegate->GetPasskeys().has_value()) {
-      passkeys = *webauthn_delegate->GetPasskeys().value();
+    auto maybe_passkeys = webauthn_delegate->GetPasskeys();
+    if (maybe_passkeys.has_value()) {
+      passkeys = *maybe_passkeys.value();
       should_show_hybrid_option =
           webauthn_delegate->IsSecurityKeyOrHybridFlowAvailable();
+    } else if (!delay_callback.is_null() &&
+               maybe_passkeys.error() ==
+                   password_manager::WebAuthnCredentialsDelegate::
+                       PasskeysUnavailableReason::kNotReceived) {
+      base::OnceCallback<void(base::OnceClosure)> notification_callback =
+          base::BindOnce(&password_manager::WebAuthnCredentialsDelegate::
+                             RequestNotificationWhenPasskeysReady,
+                         webauthn_delegate->AsWeakPtr());
+
+      std::move(delay_callback).Run(std::move(notification_callback));
+      return;
     }
   }
+
   const PasswordForm* form_to_fill = password_manager_.GetParsedObservedForm(
       driver, triggering_field.element_id);
   auto ttf_controller_autofill_delegate =

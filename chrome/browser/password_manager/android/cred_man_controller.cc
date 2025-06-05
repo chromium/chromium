@@ -37,15 +37,32 @@ bool CredManController::Show(
     raw_ptr<WebAuthnCredManDelegate> cred_man_delegate,
     std::unique_ptr<PasswordCredentialFiller> filler,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver,
-    bool is_webauthn_form) {
+    bool is_webauthn_form,
+    PasskeyDelayCallback delay_callback) {
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (!cred_man_delegate || !is_webauthn_form ||
       WebAuthnCredManDelegate::CredManMode() !=
-          WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan ||
-      cred_man_delegate->HasPasskeys() !=
-          WebAuthnCredManDelegate::State::kHasPasskeys) {
+          WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan) {
     return false;
   }
+
+  switch (cred_man_delegate->HasPasskeys()) {
+    case WebAuthnCredManDelegate::State::kHasPasskeys:
+      break;
+    case WebAuthnCredManDelegate::State::kNotReady:
+      if (!delay_callback.is_null()) {
+        base::OnceCallback<void(base::OnceClosure)> notification_callback =
+            base::BindOnce(&WebAuthnCredManDelegate::
+                               RequestNotificationWhenCredentialsReady,
+                           cred_man_delegate->AsWeakPtr());
+        std::move(delay_callback).Run(std::move(notification_callback));
+        return true;
+      }
+      return false;
+    case WebAuthnCredManDelegate::State::kNoPasskeys:
+      return false;
+  }
+
   visibility_controller_->SetVisible(std::move(frame_driver));
   filler_ = std::move(filler);
   cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(

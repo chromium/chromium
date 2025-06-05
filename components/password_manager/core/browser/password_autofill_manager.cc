@@ -73,10 +73,6 @@ using autofill::Suggestion;
 using autofill::password_generation::PasswordGenerationType;
 using IsLoading = autofill::Suggestion::IsLoading;
 
-// This covers the 95th percentile on desktop platforms. See
-// `PasswordManager.PasskeyRetrievalWaitDuration` metric.
-constexpr base::TimeDelta kWaitForPasskeysDelay = base::Milliseconds(4000);
-
 // If `suggestion` was made for an empty username, then return the empty
 // string, otherwise return `suggestion`.
 std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
@@ -420,8 +416,11 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
               &PasswordAutofillManager::ContinueShowingPasswordSuggestions,
               GetWeakPtr(), element_id, text_direction, typed_username,
               show_webauthn_credentials, show_identity_credentials, bounds);
-          wait_for_passkeys_timer_.Start(FROM_HERE, kWaitForPasskeysDelay,
-                                         std::move(continue_callback));
+          wait_for_passkeys_timer_.Start(
+              FROM_HERE,
+              base::Milliseconds(
+                  features::kDelaySuggestionsOnAutofocusTimeout.Get()),
+              std::move(continue_callback));
 
           // If passkeys become available before the timer expires, this closure
           // runs. It is similar to `continue_callback` but it has to check that

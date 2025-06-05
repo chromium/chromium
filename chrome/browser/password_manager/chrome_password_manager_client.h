@@ -47,12 +47,15 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/timer/timer.h"
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
+#include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
@@ -71,7 +74,6 @@ class Profile;
 #if BUILDFLAG(IS_ANDROID)
 class AcknowledgeGroupedCredentialSheetController;
 class PasswordAccessoryController;
-class TouchToFillController;
 #else
 class PasswordCrossDomainConfirmationPopupControllerImpl;
 #endif
@@ -380,7 +382,14 @@ class ChromePasswordManagerClient
     password_generation_driver_receivers_.SetCurrentTargetFrameForTesting(
         render_frame_host);
   }
-#endif
+#if BUILDFLAG(IS_ANDROID)
+  void SetTouchToFillControllerForTesting(
+      std::unique_ptr<TouchToFillController> controller) {
+    touch_to_fill_controller_ = std::move(controller);
+  }
+
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // defined(UNIT_TEST)
 
   void set_cross_domain_confirmation_popup_factory_for_testing(
       CrossDomainConfirmationPopupFactory factory) {
@@ -410,10 +419,16 @@ class ChromePasswordManagerClient
 
   void MaybeShowAccountStorageNotice(base::OnceClosure callback);
 
+  void ContinueShowKeyboardReplacingSurface(
+      base::WeakPtr<password_manager::PasswordManagerDriver> weak_driver,
+      const autofill::PasswordSuggestionRequest& request,
+      password_manager::CredManController::PasskeyDelayCallback delay_callback);
+
   void ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> weak_driver,
       autofill::TriggeringField triggering_field,
-      std::unique_ptr<password_manager::PasswordCredentialFillerImpl> filler);
+      std::unique_ptr<password_manager::PasswordCredentialFillerImpl> filler,
+      password_manager::CredManController::PasskeyDelayCallback delay_callback);
 #endif
 
   // content::WebContentsObserver overrides.
@@ -481,6 +496,15 @@ class ChromePasswordManagerClient
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
   GetOrCreateKeyboardReplacingSurfaceVisibilityController();
+
+  // Returns a callback that should be invoked if passkeys are not available
+  // and we need to delay showing a bottom sheet. `continue_closure` will be
+  // invoked when passkeys arrive, or the wait times out.
+  // The returned callback must be called with the method that registers a
+  // listener for the arrival of a passkey list. The listening registration
+  // method is different depending on whether CredMan is being used.
+  password_manager::CredManController::PasskeyDelayCallback
+  GetPasskeyDelayCallback(base::OnceClosure continue_closure);
 #endif
 
   autofill::LogManager* GetOrCreateLogManager() const;
@@ -580,6 +604,10 @@ class ChromePasswordManagerClient
   std::unique_ptr<CctPasswordSavingMetricsRecorderBridge>
       cct_saving_metrics_recorder_bridge_;
 
+  // This timer is used to delay showing the Touch To Fill or CredMan sheets if
+  // passkey suggestions are allowed but the passkey list has not yet arrived.
+  base::OneShotTimer wait_for_passkeys_timer_;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Observes `AutofillManager`s of the `WebContents` that `this` belongs to.
@@ -590,6 +618,8 @@ class ChromePasswordManagerClient
   // some views specific initializations.
   CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
+
+  base::WeakPtrFactory<ChromePasswordManagerClient> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

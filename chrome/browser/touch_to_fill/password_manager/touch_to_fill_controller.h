@@ -30,7 +30,7 @@ class WebAuthnCredManDelegate;
 class Profile;
 class TouchToFillControllerDelegate;
 
-class TouchToFillController final {
+class TouchToFillController {
  public:
   // Convenience enum for selecting the correct UI that this controller can
   // display.
@@ -50,11 +50,11 @@ class TouchToFillController final {
           grouped_credential_sheet_controller);
   TouchToFillController(const TouchToFillController&) = delete;
   TouchToFillController& operator=(const TouchToFillController&) = delete;
-  ~TouchToFillController();
+  virtual ~TouchToFillController();
 
   // Sets the credentials and passkeys that will be shown in the sheet. Also
   // sets the `frame_driver` for which TTF is expected to be shown.
-  void InitData(
+  virtual void InitData(
       base::span<const password_manager::UiCredential> credentials,
       std::vector<password_manager::PasskeyCredential> passkey_credentials,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
@@ -63,8 +63,8 @@ class TouchToFillController final {
   // Instructs the controller to show the provided the bottom sheet.
   // IMPORTANT: call `InitData` prior to this method to set |credentials| and
   // |passkey_credentials|, that will be displayed.
-  bool Show(std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
-            webauthn::WebAuthnCredManDelegate* cred_man_delegate);
+  virtual bool Show(std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
+                    webauthn::WebAuthnCredManDelegate* cred_man_delegate);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked

@@ -103,6 +103,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "base/i18n/rtl.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
@@ -113,6 +114,14 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
+#include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/webauthn/android/cred_man_support.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #else
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -140,6 +149,8 @@ using password_manager::PasswordStoreConsumer;
 using sessions::GetPasswordStateFromNavigation;
 using sessions::SerializedNavigationEntry;
 using testing::_;
+using testing::Eq;
+using testing::Invoke;
 using testing::Key;
 using testing::NiceMock;
 using testing::Return;
@@ -384,6 +395,31 @@ std::unique_ptr<KeyedService> CreateMockPasswordChangeService(
     content::BrowserContext* context) {
   return std::make_unique<MockPasswordChangeService>();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MockTouchToFillController : public TouchToFillController {
+ public:
+  MockTouchToFillController(
+      Profile* profile,
+      base::WeakPtr<
+          password_manager::KeyboardReplacingSurfaceVisibilityController>
+          visibility_controller)
+      : TouchToFillController(profile, visibility_controller, nullptr) {}
+
+  MOCK_METHOD(void,
+              InitData,
+              (base::span<const password_manager::UiCredential>,
+               std::vector<password_manager::PasskeyCredential>,
+               base::WeakPtr<password_manager::ContentPasswordManagerDriver>),
+              (override));
+
+  MOCK_METHOD(bool,
+              Show,
+              (std::unique_ptr<TouchToFillControllerDelegate>,
+               webauthn::WebAuthnCredManDelegate*),
+              (override));
+};
+#endif  // BUILDFLAG_IS_ANDROID)
 
 }  // namespace
 
@@ -1466,11 +1502,38 @@ class ChromePasswordManagerClientAndroidTest
     task_environment()->AdvanceClock(delta);
   }
 
+  MockTouchToFillController* MakeMockTouchToFillController() {
+    visibility_controller_ = std::make_unique<
+        password_manager::MockKeyboardReplacingSurfaceVisibilityController>();
+    auto owned_ttf_controller = std::make_unique<MockTouchToFillController>(
+        profile(), visibility_controller_->AsWeakPtr());
+    auto* ttf_controller = owned_ttf_controller.get();
+    GetClient()->SetTouchToFillControllerForTesting(
+        std::move(owned_ttf_controller));
+    return ttf_controller;
+  }
+
+  autofill::PasswordSuggestionRequest GetFocusedFieldSuggestionRequest(
+      const FormData& form) {
+    return autofill::PasswordSuggestionRequest(
+        autofill::TriggeringField(form.fields()[0].renderer_id(),
+                                  autofill::AutofillSuggestionTriggerSource::
+                                      kPasswordManagerProcessedFocusedField,
+                                  base::i18n::LEFT_TO_RIGHT, u"",
+                                  /*show_webauthn_credentials=*/true,
+                                  /*show_identity_credentials=*/false,
+                                  gfx::RectF()),
+        form, /*username_field_index=*/0, /*password_field_index=*/1);
+  }
+
  private:
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
+  std::unique_ptr<
+      password_manager::MockKeyboardReplacingSurfaceVisibilityController>
+      visibility_controller_;
 };
 
 void ChromePasswordManagerClientAndroidTest::SetUp() {
@@ -2102,3 +2165,169 @@ TEST_F(ChromePasswordManagerClientTest,
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       DelaySuggestionsSheetWhenPasskeysPending) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+  CreateManualFillingController(web_contents());
+
+  auto* ttf_controller = MakeMockTouchToFillController();
+
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+  NavigateAndCommit(GURL(kUrl));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {CreateTestFormField(
+      "Username:", "username", "", FormControlType::kInputText, "webauthn")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*main_rfh(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
+  }
+
+  GetClient()->ShowKeyboardReplacingSurface(
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh()),
+      GetFocusedFieldSuggestionRequest(form));
+
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<password_manager::PasskeyCredential> credentials{};
+  EXPECT_CALL(*ttf_controller, InitData(_, Eq(credentials), _));
+  EXPECT_CALL(*ttf_controller, Show).WillOnce(Return(true));
+
+  // Simulate an empty passkey list being provided.
+  ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+      ->GetDelegateForFrame(main_rfh())
+      ->OnCredentialsReceived(
+          credentials,
+          ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       DelaySuggestionsSheetWhenPasskeysPendingTimeOut) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+  CreateManualFillingController(web_contents());
+
+  auto* ttf_controller = MakeMockTouchToFillController();
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+  NavigateAndCommit(GURL(kUrl));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {CreateTestFormField(
+      "Username:", "username", "", FormControlType::kInputText, "webauthn")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*main_rfh(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
+  }
+
+  GetClient()->ShowKeyboardReplacingSurface(
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh()),
+      GetFocusedFieldSuggestionRequest(form));
+
+  base::RunLoop().RunUntilIdle();
+
+  base::RunLoop waiter;
+  std::vector<password_manager::PasskeyCredential> credentials{};
+  EXPECT_CALL(*ttf_controller, InitData(_, Eq(credentials), _));
+  EXPECT_CALL(*ttf_controller, Show)
+      .WillOnce(Invoke([&waiter](std::unique_ptr<TouchToFillControllerDelegate>,
+                                 webauthn::WebAuthnCredManDelegate*) {
+        waiter.Quit();
+        return true;
+      }));
+
+  // Simulate a timeout.
+  AdvanceClock(base::Seconds(5));
+  waiter.Run();
+
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  // Simulate an empty passkey list being provided. Nothing should happen
+  // because the timer has already expired.
+  ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+      ->GetDelegateForFrame(main_rfh())
+      ->OnCredentialsReceived(
+          credentials,
+          ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       DelaySuggestionsSheetWhenPasskeysTimerCancelledWhenFocusLost) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+  CreateManualFillingController(web_contents());
+
+  auto* ttf_controller = MakeMockTouchToFillController();
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+  NavigateAndCommit(GURL(kUrl));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {CreateTestFormField(
+      "Username:", "username", "", FormControlType::kInputText, "webauthn")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*main_rfh(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
+  }
+
+  auto* driver =
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
+  GetClient()->ShowKeyboardReplacingSurface(
+      driver, GetFocusedFieldSuggestionRequest(form));
+
+  GetClient()->FocusedInputChanged(driver, FieldRendererId(123),
+                                   FocusedFieldType::kFillablePasswordField);
+
+  // Simulate a timeout. The timer should be cancelled so TTF methods should not
+  // be called.
+  AdvanceClock(base::Seconds(5));
+  base::RunLoop().RunUntilIdle();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)

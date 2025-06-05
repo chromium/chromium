@@ -8,9 +8,33 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
+namespace {
+// This covers the 95th percentile on desktop platforms. See
+// `PasswordManager.PasskeyRetrievalWaitDuration` metric.
+// On Android the target is to get retrieval times under this threshold.
+constexpr int kDefaultDelaySuggestionsTimeout = 4000;
+}  // namespace
+
 namespace password_manager::features {
 // NOTE: It is strongly recommended to use UpperCamelCase style for feature
 //       names, e.g. "MyGreatFeature".
+
+// Only relevant when `kShowSuggestionsOnAutofocus` is on. This prevents
+// suggestions from being shown while waiting for passkeys to become available,
+// if the popup was triggered by autofocus without user interaction. It is
+// enabled by default and can be turned off if it is found to cause any
+// problems.
+BASE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys,
+             "DelaysSuggestionsOnAutofocusWaitingForPasskeys",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Timeout value used when kDelaySuggestionsOnAutofocusWaitingForPasskeys is
+// enabled.
+BASE_FEATURE_PARAM(int,
+                   kDelaySuggestionsOnAutofocusTimeout,
+                   &kDelaySuggestionsOnAutofocusWaitingForPasskeys,
+                   "timeout_ms",
+                   kDefaultDelaySuggestionsTimeout);
 
 #if BUILDFLAG(IS_IOS)
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
@@ -29,15 +53,6 @@ BASE_FEATURE(kNoPasswordSuggestionFiltering,
 BASE_FEATURE(kShowSuggestionsOnAutofocus,
              "ShowSuggestionsOnAutofocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Only relevant when `kShowSuggestionsOnAutofocus` is on. This prevents
-// suggestions from being shown while waiting for passkeys to become available,
-// if the popup was triggered by autofocus without user interaction. It is
-// enabled by default and can be turned off if it is found to cause any
-// problems.
-BASE_FEATURE(kDelaySuggestionsOnAutofocusWaitingForPasskeys,
-             "DelaysSuggestionsOnAutofocusWaitingForPasskeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =
