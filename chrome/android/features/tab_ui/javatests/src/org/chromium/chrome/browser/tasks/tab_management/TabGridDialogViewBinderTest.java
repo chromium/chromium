@@ -24,7 +24,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_JOIN_ONLY;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -124,8 +123,6 @@ public class TabGridDialogViewBinderTest {
     @Mock private GradientDrawable mCardViewBackground;
     @Mock private View.OnClickListener mOnClickListener;
 
-    private Integer mBindingToken;
-
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
@@ -133,7 +130,6 @@ public class TabGridDialogViewBinderTest {
 
     @Before
     public void setUp() throws Exception {
-        mBindingToken = 5;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout parentView = new FrameLayout(sActivity);
@@ -160,9 +156,6 @@ public class TabGridDialogViewBinderTest {
                     LayoutInflater.from(sActivity)
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);
-
-                    // Null out binding token left over from previous test.
-                    mTabGridDialogView.setBindingToken(null);
 
                     mHairline = mTabGridDialogView.findViewById(R.id.tab_grid_dialog_hairline);
                     mSendFeedbackButton =
@@ -194,7 +187,6 @@ public class TabGridDialogViewBinderTest {
                                     .with(
                                             TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER,
                                             mBrowserControlsStateProvider)
-                                    .with(BINDING_TOKEN, mBindingToken)
                                     .build();
 
                     PropertyModelChangeProcessor.create(
@@ -211,25 +203,6 @@ public class TabGridDialogViewBinderTest {
         // might escape the current testcase causing other tests in the suite to fail. By putting
         // this here any flakes should be contained to the testcase in which they are caused.
         validateMockitoUsage();
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testBindingToken() {
-        assertEquals(mTabGridDialogView.getBindingToken().intValue(), mBindingToken.intValue());
-
-        mModel.set(BINDING_TOKEN, null);
-        assertNull(mTabGridDialogView.getBindingToken());
-
-        String title = "1024 tabs";
-        assertNotEquals(title, mTitleTextView.getText().toString());
-        mModel.set(TabGridDialogProperties.HEADER_TITLE, title);
-        assertNotEquals(title, mTitleTextView.getText().toString());
-
-        mModel.set(BINDING_TOKEN, 4);
-        assertEquals(4, mTabGridDialogView.getBindingToken().intValue());
-        assertEquals(title, mTitleTextView.getText().toString());
     }
 
     @Test
@@ -576,8 +549,7 @@ public class TabGridDialogViewBinderTest {
         mModel.set(TabGridDialogProperties.VISIBILITY_LISTENER, () -> {});
         assertNotNull(mTabGridDialogView.getVisibilityListenerForTesting());
 
-        // Important this is removed on unbind, otherwise the callback can keep objects alive.
-        mModel.set(BINDING_TOKEN, null);
+        mModel.set(TabGridDialogProperties.VISIBILITY_LISTENER, null);
         assertNull(mTabGridDialogView.getVisibilityListenerForTesting());
     }
 
@@ -726,8 +698,6 @@ public class TabGridDialogViewBinderTest {
     @UiThreadTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testSetIsContentSensitive() {
-        assertEquals(
-                View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mTabGridDialogView.getContentSensitivity());
         mModel.set(TabGridDialogProperties.IS_CONTENT_SENSITIVE, true);
         assertEquals(
                 View.CONTENT_SENSITIVITY_SENSITIVE, mTabGridDialogView.getContentSensitivity());

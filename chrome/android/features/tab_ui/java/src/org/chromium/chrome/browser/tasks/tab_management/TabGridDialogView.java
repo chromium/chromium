@@ -137,7 +137,6 @@ public class TabGridDialogView extends FrameLayout {
     private int mUngroupBarHoveredBackgroundColor;
     private @ColorInt int mUngroupBarTextColor;
     private @ColorInt int mUngroupBarHoveredTextColor;
-    private @Nullable Integer mBindingToken;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -1174,15 +1173,6 @@ public class TabGridDialogView extends FrameLayout {
 
                     r.run();
                 });
-    }
-
-    void setBindingToken(Integer bindingToken) {
-        assert mBindingToken == null || bindingToken == null;
-        mBindingToken = bindingToken;
-    }
-
-    @Nullable Integer getBindingToken() {
-        return mBindingToken;
     }
 
     @Nullable Animator getCurrentDialogAnimatorForTesting() {

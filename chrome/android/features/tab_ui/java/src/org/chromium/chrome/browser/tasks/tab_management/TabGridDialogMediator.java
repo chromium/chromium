@@ -699,7 +699,6 @@ public class TabGridDialogMediator
         mDialogController.postHiding();
         // Purge the bitmap reference in the animation.
         mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridDialogProperties.BINDING_TOKEN, null);
     }
 
     /**
@@ -729,10 +728,6 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, mScrimClickRunnable);
             updateDialogScrollPosition();
             mDialogController.prepareDialog();
-
-            // Do this after the dialog is updated so most attributes are not set with stale values
-            // when the binding token is set.
-            mModel.set(TabGridDialogProperties.BINDING_TOKEN, hashCode());
 
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 

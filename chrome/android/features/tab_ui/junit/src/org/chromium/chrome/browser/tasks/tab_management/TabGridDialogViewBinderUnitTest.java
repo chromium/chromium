@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PAGE_KEY_LISTENER;
 
 import org.junit.Before;
@@ -49,9 +47,6 @@ public class TabGridDialogViewBinderUnitTest {
                         new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
                                 .with(PAGE_KEY_LISTENER, mPageKeyEventDataCallback)
                                 .build());
-
-        when(propertyModel.get(BINDING_TOKEN)).thenReturn(1);
-        when(mDialogView.getBindingToken()).thenReturn(1);
 
         TabGridDialogViewBinder.bind(propertyModel, mViewHolder, PAGE_KEY_LISTENER);
 

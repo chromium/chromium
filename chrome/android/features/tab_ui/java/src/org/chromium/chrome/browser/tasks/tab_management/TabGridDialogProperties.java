@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -22,10 +21,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** List of properties used by TabGridDialog. */
 @NullMarked
 class TabGridDialogProperties {
-    /** The hashCode() of the {@link TabGridDialogMediator} currently updating the view. */
-    public static final PropertyModel.WritableObjectPropertyKey<Integer> BINDING_TOKEN =
-            new PropertyModel.WritableObjectPropertyKey<>();
-
     public static final ReadableObjectPropertyKey<BrowserControlsStateProvider>
             BROWSER_CONTROLS_STATE_PROVIDER = new ReadableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<OnClickListener> COLLAPSE_CLICK_LISTENER =
@@ -116,7 +111,6 @@ class TabGridDialogProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                BINDING_TOKEN,
                 BROWSER_CONTROLS_STATE_PROVIDER,
                 COLLAPSE_CLICK_LISTENER,
                 ADD_CLICK_LISTENER,
