@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -216,7 +218,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                         mTabContentManagerSupplier.get(),
                         getCurrentTabGroupModelFilterSupplier());
         mMultiThumbnailCardProvider.initWithNative(
-                getTabModelSelector().getModel(/* incognito= */ false).getProfile());
+                assumeNonNull(getTabModelSelector().getModel(/* incognito= */ false).getProfile()));
 
         // Inflate/attach the shadow view. Initialize with the required dependencies.
         View rootView =

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -19,6 +20,7 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import java.util.List;
 
 /** Close action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorCloseAction extends TabListEditorAction {
     /**
      * Create an action for closing tabs.

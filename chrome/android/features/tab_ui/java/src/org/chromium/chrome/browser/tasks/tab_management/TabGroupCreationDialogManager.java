@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
@@ -20,22 +19,24 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Objects;
 
 /** Manager of the observers that trigger a modal dialog on new tab group creation. */
+@NullMarked
 public class TabGroupCreationDialogManager {
     /** Represents a factory for creating an instance of {@link TabGroupCreationDialogManager}. */
     @FunctionalInterface
     public interface TabGroupCreationDialogManagerFactory {
         TabGroupCreationDialogManager create(
-                @NonNull Context context,
-                @NonNull ModalDialogManager modalDialogManager,
+                Context context,
+                ModalDialogManager modalDialogManager,
                 @Nullable Runnable onTabGroupCreation);
     }
 
-    private class TabGroupCreationDialogController implements ModalDialogProperties.Controller {
+    private class TabGroupCreationDialogController implements Controller {
         private final int mRootId;
         private final TabGroupModelFilter mTabGroupModelFilter;
 
@@ -101,14 +102,14 @@ public class TabGroupCreationDialogManager {
         }
     }
 
-    @NonNull private final ModalDialogManager mModalDialogManager;
-    @Nullable private final Runnable mOnTabGroupCreation;
+    private final ModalDialogManager mModalDialogManager;
+    private final @Nullable Runnable mOnTabGroupCreation;
     private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
-    private ModalDialogProperties.Controller mTabGroupCreationDialogController;
+    private @Nullable Controller mTabGroupCreationDialogController;
 
     public TabGroupCreationDialogManager(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            Context context,
+            ModalDialogManager modalDialogManager,
             @Nullable Runnable onTabGroupCreation) {
         mModalDialogManager = modalDialogManager;
         mOnTabGroupCreation = onTabGroupCreation;
@@ -156,7 +157,7 @@ public class TabGroupCreationDialogManager {
         mTabGroupVisualDataDialogManager = manager;
     }
 
-    ModalDialogProperties.Controller getDialogControllerForTesting() {
+    @Nullable Controller getDialogControllerForTesting() {
         return mTabGroupCreationDialogController;
     }
 }

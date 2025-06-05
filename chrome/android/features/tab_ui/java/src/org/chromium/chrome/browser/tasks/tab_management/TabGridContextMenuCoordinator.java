@@ -171,7 +171,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 recordUserActionWithPrefix("ShareTab");
             } else if (menuId == R.id.add_to_new_tab_group) {
                 tabGroupModelFilter.createSingleTabGroup(tab);
-                Token groupId = tab.getTabGroupId();
+                Token groupId = assumeNonNull(tab.getTabGroupId());
                 dialogManager.showDialog(groupId, tabGroupModelFilter);
                 recordUserActionWithPrefix("AddToNewGroup");
             } else if (menuId == R.id.add_to_tab_group) {

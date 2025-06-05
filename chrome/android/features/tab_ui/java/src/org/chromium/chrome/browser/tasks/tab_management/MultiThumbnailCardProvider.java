@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -20,13 +22,14 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +46,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,11 +54,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * A {@link ThumbnailProvider} that will create a single Bitmap Thumbnail for all the related tabs
  * for the given tabs.
  */
+@NullMarked
 public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final TabContentManager mTabContentManager;
     private final TabContentManagerThumbnailProvider mTabContentManagerThumbnailProvider;
-    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
+    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             this::onTabGroupModelFilterChanged;
 
     private final float mRadius;
@@ -78,13 +84,13 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private class MultiThumbnailFetcher {
         private static final int MAX_THUMBNAIL_COUNT = 4;
         private final Tab mInitialTab;
-        private final Callback<Drawable> mResultCallback;
+        private final Callback<@Nullable Drawable> mResultCallback;
         private final boolean mIsTabSelected;
         private final AtomicInteger mThumbnailsToFetch = new AtomicInteger();
 
         private Canvas mCanvas;
         private Bitmap mMultiThumbnailBitmap;
-        private String mText;
+        private @Nullable String mText;
 
         private final List<Rect> mFaviconRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
         private final List<RectF> mThumbnailRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
@@ -105,14 +111,12 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 Tab initialTab,
                 Size thumbnailSize,
                 boolean isTabSelected,
-                Callback<Drawable> resultCallback) {
-            mResultCallback = resultCallback;
+                Callback<@Nullable Drawable> resultCallback) {
+            mResultCallback = Objects.requireNonNull(resultCallback);
             mInitialTab = initialTab;
             mIsTabSelected = isTabSelected;
 
-            if (thumbnailSize == null
-                    || thumbnailSize.getHeight() <= 0
-                    || thumbnailSize.getWidth() <= 0) {
+            if (thumbnailSize.getHeight() <= 0 || thumbnailSize.getWidth() <= 0) {
                 float expectedThumbnailAspectRatio =
                         TabUtils.getTabThumbnailAspectRatio(
                                 mContext, mBrowserControlsStateProvider);
@@ -195,6 +199,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             }
         }
 
+        @Initializer
         private void initializeAndStartFetching(Tab initialTab) {
             // Initialize mMultiThumbnailBitmap.
             mMultiThumbnailBitmap =
@@ -203,8 +208,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             mCanvas.drawColor(Color.TRANSPARENT);
 
             // Initialize Tabs.
-            List<Tab> relatedTabList =
-                    mCurrentTabGroupModelFilterSupplier.get().getRelatedTabList(initialTab.getId());
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            assumeNonNull(filter);
+            List<Tab> relatedTabList = filter.getRelatedTabList(initialTab.getId());
             int relatedTabCount = relatedTabList.size();
             boolean showPlus = relatedTabCount > MAX_THUMBNAIL_COUNT;
             int tabsToShow = showPlus ? MAX_THUMBNAIL_COUNT - 1 : relatedTabCount;
@@ -265,7 +271,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             }
         }
 
-        private void drawThumbnailBitmapOnCanvasWithFrame(Bitmap thumbnail, int index) {
+        private void drawThumbnailBitmapOnCanvasWithFrame(@Nullable Bitmap thumbnail, int index) {
             final RectF rect = mThumbnailRects.get(index);
             if (thumbnail == null) {
                 Paint emptyThumbnailPaint =
@@ -328,10 +334,10 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     }
 
     public MultiThumbnailCardProvider(
-            @NonNull Context context,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
+            Context context,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            TabContentManager tabContentManager,
+            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         Resources resources = context.getResources();
@@ -402,7 +408,6 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         // Run this immediately if non-null as in the TabListEditor context we might try to load
         // tabs thumbnails before the post task normally run by ObservableSupplier#addObserver is
         // run.
-        @Nullable
         TabGroupModelFilter currentFilter =
                 mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged);
         if (currentFilter != null) {
@@ -410,7 +415,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         }
     }
 
-    private void onTabGroupModelFilterChanged(TabGroupModelFilter filter) {
+    private void onTabGroupModelFilterChanged(@Nullable TabGroupModelFilter filter) {
+        assert filter != null;
         boolean isIncognito = filter.getTabModel().isIncognitoBranded();
         mMiniThumbnailPlaceholderColor =
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false);
@@ -460,13 +466,19 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
     @Override
     public void getTabThumbnailWithCallback(
-            int tabId, Size thumbnailSize, boolean isSelected, Callback<Drawable> callback) {
+            int tabId,
+            Size thumbnailSize,
+            boolean isSelected,
+            Callback<@Nullable Drawable> callback) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(filter);
         assert filter.isTabModelRestored();
+
         Tab tab = filter.getTabModel().getTabById(tabId);
+        assert tab != null;
+
         boolean useMultiThumbnail = filter.isTabInTabGroup(tab);
         if (useMultiThumbnail) {
-            assert tab != null;
             new MultiThumbnailFetcher(tab, thumbnailSize, isSelected, callback).fetch();
             return;
         }

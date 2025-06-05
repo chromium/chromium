@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -23,6 +25,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -41,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Share action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorShareAction extends TabListEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
             new ArrayList<>(
@@ -48,10 +52,12 @@ public class TabListEditorShareAction extends TabListEditorAction {
                             UrlConstants.CHROME_SCHEME,
                             UrlConstants.CHROME_NATIVE_SCHEME,
                             ContentUrlConstants.ABOUT_SCHEME));
-    private static Callback<Intent> sIntentCallbackForTesting;
+    private static @Nullable Callback<Intent> sIntentCallbackForTesting;
+
     private final Context mContext;
-    private boolean mSkipUrlCheckForTesting;
     private final BroadcastReceiver mBroadcastReceiver;
+
+    private boolean mSkipUrlCheckForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -149,12 +155,12 @@ public class TabListEditorShareAction extends TabListEditorAction {
         }
 
         boolean isOnlyOneTab = (sortedTabIndexList.size() == 1);
+        Tab tab = tabList.getTabAt(sortedTabIndexList.get(0));
+        assumeNonNull(tab);
         String tabText =
                 isOnlyOneTab ? "" : getTabListStringForSharing(sortedTabIndexList, tabList);
-        String tabTitle =
-                isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getTitle() : "";
-        String tabUrl =
-                isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getUrl().getSpec() : "";
+        String tabTitle = isOnlyOneTab ? tab.getTitle() : "";
+        String tabUrl = isOnlyOneTab ? tab.getUrl().getSpec() : "";
         @TabListEditorActionMetricGroups
         int actionId =
                 isOnlyOneTab
@@ -162,10 +168,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
                         : TabListEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
-                new ShareParams.Builder(
-                                tabList.getTabAt(sortedTabIndexList.get(0)).getWindowAndroid(),
-                                tabTitle,
-                                tabUrl)
+                new ShareParams.Builder(tab.getWindowAndroid(), tabTitle, tabUrl)
                         .setText(tabText)
                         .build();
 
@@ -263,7 +266,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
-            if (!selectedTabs.contains(tab)) continue;
+            if (tab == null || !selectedTabs.contains(tab)) continue;
 
             if (!shouldFilterUrl(tab.getUrl())) {
                 sortedTabIndexList.add(i);
@@ -278,15 +281,14 @@ public class TabListEditorShareAction extends TabListEditorAction {
         // TODO(crbug.com/40871819): Check if this string builder assembles the shareable URLs in
         // accordance with internationalization and translation standards
         for (int i = 0; i < sortedTabIndexList.size(); i++) {
-            sb.append(i + 1)
-                    .append(". ")
-                    .append(list.getTabAt(sortedTabIndexList.get(i)).getUrl().getSpec())
-                    .append("\n");
+            Tab tab = list.getTabAt(sortedTabIndexList.get(i));
+            assumeNonNull(tab);
+            sb.append(i + 1).append(". ").append(tab.getUrl().getSpec()).append("\n");
         }
         return sb.toString();
     }
 
-    private boolean shouldFilterUrl(GURL url) {
+    private boolean shouldFilterUrl(@Nullable GURL url) {
         if (mSkipUrlCheckForTesting) return false;
 
         return url == null

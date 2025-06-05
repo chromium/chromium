@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
@@ -21,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Select all and deselect all toggle action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorSelectionAction extends TabListEditorAction {
     private @ActionState int mActionState;
     private final Drawable mSelectAllIcon;

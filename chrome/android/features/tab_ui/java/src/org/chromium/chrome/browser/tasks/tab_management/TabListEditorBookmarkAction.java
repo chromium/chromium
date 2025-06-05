@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -24,6 +25,7 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import java.util.List;
 
 /** Bookmark action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorBookmarkAction extends TabListEditorAction {
     private final Activity mActivity;
     private TabListEditorBookmarkActionDelegate mDelegate;
@@ -118,7 +120,6 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
         snackbarManager.dismissAllSnackbars();
 
         if (mDelegate != null) {
-            assert snackbarManager != null;
             mDelegate.bookmarkTabsAndShowSnackbar(mActivity, tabs, snackbarManager);
         }
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(

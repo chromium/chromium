@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 
 import android.app.Activity;
@@ -212,7 +213,8 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         } else {
             filter.mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ true);
         }
-        mTabGroupCreationDialogManager.showDialog(destinationTab.getTabGroupId(), filter);
+        mTabGroupCreationDialogManager.showDialog(
+                assumeNonNull(destinationTab.getTabGroupId()), filter);
     }
 
     private void destroy() {

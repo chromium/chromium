@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ButtonCompat;
@@ -27,8 +29,9 @@ import java.lang.ref.WeakReference;
  * Represents a secondary card view in Grid Tab Switcher. The view contains an icon, a description,
  * an action button for acceptance, and a close button for dismissal.
  */
+@NullMarked
 class MessageCardView extends LinearLayout {
-    private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
+    private static @Nullable WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
     /** An interface to get the icon to be shown inside the message card. */
     public interface IconProvider {

@@ -8,8 +8,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 public class CustomMessageCardViewModel {
     public static PropertyModel create(CustomMessageCardProvider provider) {
         return new PropertyModel.Builder(CustomMessageCardViewProperties.ALL_KEYS)

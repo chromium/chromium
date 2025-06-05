@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
@@ -15,9 +17,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for displaying a single tab group row. */
+@NullMarked
 public class TabGroupRowProperties {
-    public static final ReadableObjectPropertyKey<ClusterData> CLUSTER_DATA =
-            new WritableObjectPropertyKey();
+    public static final ReadableObjectPropertyKey<@Nullable ClusterData> CLUSTER_DATA =
+            new WritableObjectPropertyKey<>();
 
     // Data Sharing properties.
     public static final WritableBooleanPropertyKey DISPLAY_AS_SHARED =
