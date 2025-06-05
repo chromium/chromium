@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       LeakCheckBubbleNotDisplayedAutomatically) {
+                       LeakCheckBubbleDisplayedAutomatically) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
@@ -832,9 +832,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kOfferingPasswordChange);
-
-  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  // Now bubble should automatically appear.
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
