@@ -1504,6 +1504,10 @@ source_set("platform_browser_tests") {
         [ "../browser/metrics/cros_pre_consent_metrics_manager_browsertest.cc" ]
   }
 
+  if (!is_android || enable_desktop_android_extensions) {
+    deps += [ "//chrome/browser/ui/prefs:browser_tests" ]
+  }
+
   if (enable_extensions) {
     deps += [
       "//chrome/browser/extensions",
@@ -1523,6 +1527,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/extension_action/extension_action_apitest.cc",
       "../browser/extensions/api/extension_action/test_icon_image_observer.cc",
       "../browser/extensions/api/extension_action/test_icon_image_observer.h",
+      "../browser/extensions/api/font_settings/font_settings_apitest.cc",
       "../browser/extensions/api/history/history_apitest.cc",
       "../browser/extensions/api/i18n/i18n_apitest.cc",
       "../browser/extensions/api/idle/idle_apitest.cc",
@@ -2337,7 +2342,6 @@ if (!is_android) {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/permission_bubble:browser_tests",
-      "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/send_tab_to_self:browser_tests",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/app_service_internals:browser_tests",
@@ -4362,7 +4366,6 @@ if (!is_android) {
         "../browser/extensions/api/favicon/favicon_apitest.cc",
         "../browser/extensions/api/feedback_private/feedback_browsertest.cc",
         "../browser/extensions/api/file_system/file_system_apitest.cc",
-        "../browser/extensions/api/font_settings/font_settings_apitest.cc",
         "../browser/extensions/api/gcm/gcm_apitest.cc",
         "../browser/extensions/api/identity/gaia_remote_consent_flow_browsertest.cc",
         "../browser/extensions/api/identity/identity_apitest.cc",
@@ -6174,6 +6177,7 @@ test("unit_tests") {
     "../browser/first_party_sets/first_party_sets_overrides_policy_handler_unittest.cc",
     "../browser/first_party_sets/first_party_sets_policy_service_factory_unittest.cc",
     "../browser/first_party_sets/first_party_sets_policy_service_unittest.cc",
+    "../browser/font_family_cache_unittest.cc",
     "../browser/font_pref_change_notifier_unittest.cc",
     "../browser/geolocation/geolocation_permission_context_delegate_unittest.cc",
     "../browser/history/history_tab_helper_unittest.cc",
@@ -7770,7 +7774,6 @@ test("unit_tests") {
       "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",
       "../browser/enterprise/signals/client_certificate_fetcher_unittest.cc",
       "../browser/first_run/first_run_unittest.cc",
-      "../browser/font_family_cache_unittest.cc",
       "../browser/hid/chrome_hid_delegate_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
       "../browser/hid/hid_connection_tracker_unittest.cc",

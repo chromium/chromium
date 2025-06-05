@@ -341,9 +341,15 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FontSettingsGetFontListFunction::Run() {
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support a mechanism to get "all installed fonts" like
+  // Windows/Mac/Linux.
+  return RespondNow(WithArguments(base::Value::List()));
+#else
   content::GetFontListAsync(
       BindOnce(&FontSettingsGetFontListFunction::FontListHasLoaded, this));
   return RespondLater();
+#endif
 }
 
 void FontSettingsGetFontListFunction::FontListHasLoaded(

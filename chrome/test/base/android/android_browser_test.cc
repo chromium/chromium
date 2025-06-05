@@ -22,6 +22,11 @@ AndroidBrowserTest* g_current_test = nullptr;
 }  // namespace
 
 AndroidBrowserTest::AndroidBrowserTest() {
+  // chrome::DIR_TEST_DATA isn't going to be setup until after we call
+  // ContentMain. However that is after tests' constructors or SetUp methods,
+  // which sometimes need it. So just override it.
+  chrome_test_utils::OverrideChromeTestDataDir();
+
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Allow unpacked extensions without developer mode for testing.

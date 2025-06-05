@@ -34,6 +34,10 @@ Profile* GetProfile(const PlatformBrowserTest* browser_test);
 // Returns the test data path used by the embedded test server.
 base::FilePath GetChromeTestDataDir();
 
+// Overrides the path chrome::DIR_TEST_DATA. Used early in test startup so the
+// value is available in constructors and SetUp methods.
+void OverrideChromeTestDataDir();
+
 }  // namespace chrome_test_utils
 
 #endif  // CHROME_TEST_BASE_CHROME_TEST_UTILS_H_

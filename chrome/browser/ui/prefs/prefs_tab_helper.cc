@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
@@ -66,7 +67,8 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 // If a font name in prefs default values starts with a comma, consider it's a
 // comma-separated font list and resolve it to the first available font.
 #define PREFS_FONT_LIST 1
@@ -80,16 +82,16 @@ using content::WebContents;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 // Registers a preference under the path |pref_name| for each script used for
 // per-script font prefs.
 // For example, for WEBKIT_WEBPREFS_FONTS_SERIF ("fonts.serif"):
 // "fonts.serif.Arab", "fonts.serif.Hang", etc. are registered.
 // |fonts_with_defaults| contains all |pref_names| already registered since they
 // have a specified default value.
-// On Android there are no default values for these properties and there is no
-// way to set them (because extensions are not supported so the Font Settings
-// API cannot be used), so we can avoid registering them altogether.
+// On non-desktop Android there are no default values for these properties and
+// there is no way to set them (because extensions are not supported so the
+// Font Settings API cannot be used), so we can avoid registering them.
 void RegisterFontFamilyPrefs(user_prefs::PrefRegistrySyncable* registry,
                              const std::set<std::string>& fonts_with_defaults) {
   // Expand the font concatenated with script name so this stays at RO memory
@@ -152,7 +154,8 @@ constexpr auto kFontDefaults = std::to_array<FontDefault>({
     {prefs::kWebKitCursiveFontFamily, IDS_CURSIVE_FONT_FAMILY},
     {prefs::kWebKitFantasyFontFamily, IDS_FANTASY_FONT_FAMILY},
     {prefs::kWebKitMathFontFamily, IDS_MATH_FONT_FAMILY},
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     {prefs::kWebKitStandardFontFamilyJapanese,
      IDS_STANDARD_FONT_FAMILY_JAPANESE},
     {prefs::kWebKitFixedFontFamilyJapanese, IDS_FIXED_FONT_FAMILY_JAPANESE},
@@ -291,7 +294,7 @@ void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
   (*map)[script] = base::UTF8ToUTF16(pref_value);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 void RegisterLocalizedFontPref(user_prefs::PrefRegistrySyncable* registry,
                                const char* path,
                                int default_message_id) {
@@ -445,7 +448,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
   }
 
 // Register font prefs.  This is only configurable on desktop Chrome.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   RegisterFontFamilyPrefs(registry, fonts_with_defaults);
 
   registry->RegisterIntegerPref(prefs::kWebKitDefaultFontSize, 16);

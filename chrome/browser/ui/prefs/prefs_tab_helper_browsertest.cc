@@ -6,27 +6,33 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
- protected:
-  virtual base::FilePath GetPreferencesFilePath() {
-    base::FilePath test_data_directory;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_directory);
-    return test_data_directory.AppendASCII("profiles")
-        .AppendASCII("web_prefs")
-        .AppendASCII("Default")
-        .Append(chrome::kPreferencesFilename);
-  }
+namespace {
 
+base::FilePath GetPreferencesFilePath() {
+  base::FilePath test_data_directory;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_directory);
+  return test_data_directory.AppendASCII("profiles")
+      .AppendASCII("web_prefs")
+      .AppendASCII("Default")
+      .Append(chrome::kPreferencesFilename);
+}
+
+}  // namespace
+
+class PrefsTabHelperBrowserTest : public PlatformBrowserTest {
+ protected:
   bool SetUpUserDataDirectory() override {
     base::FilePath user_data_directory;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_directory);
@@ -64,7 +70,7 @@ class PrefsTabHelperBrowserTest : public InProcessBrowserTest {
 // Tests that a sampling of web prefs are registered and ones with values in the
 // test user preferences file take on those values.
 IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, WebPrefs) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
 
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kWebKitCursiveFontFamily)->IsDefaultValue());
@@ -82,11 +88,12 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, WebPrefs) {
 }
 
 // Tests that changes in browser preferences are reflected in Blink's web
-// preferences. Note that these preferences are not handled on Android, see
-// http://crbug.com/308033.
-#if !BUILDFLAG(IS_ANDROID)
+// preferences. Note that these preferences are not handled on non-desktop
+// Android, see http://crbug.com/308033, but can be modified by extension APIs
+// on desktop Android.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   prefs->SetString(prefs::kWebKitStandardFontFamily, "CustomStandard");
   prefs->SetString(prefs::kWebKitSerifFontFamily, "CustomSerif");
   prefs->SetString(prefs::kWebKitSansSerifFontFamily, "CustomSansSerif");
@@ -96,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
   prefs->SetString(prefs::kWebKitMathFontFamily, "CustomMath");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   web_contents->NotifyPreferencesChanged();
   blink::web_pref::WebPreferences web_prefs =
       web_contents->GetOrCreateWebPreferences();

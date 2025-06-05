@@ -4428,9 +4428,10 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
 
-// Fill font preferences. These are not registered on Android
+// Fill font preferences. These are not registered on Android unless we're built
+// with extensions (the chrome.fontSettings API can change these).
 // - http://crbug.com/308033, http://crbug.com/696364.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Enabling the FontFamilyCache needs some KeyedService that might not be
   // available for some irregular profiles, like the System Profile.
   if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {

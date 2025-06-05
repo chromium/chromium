@@ -4,7 +4,9 @@
 
 #include "chrome/test/base/chrome_test_utils.h"
 
+#include "base/path_service.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -43,6 +45,13 @@ Profile* GetProfile(const PlatformBrowserTest* browser_test) {
 
 base::FilePath GetChromeTestDataDir() {
   return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
+}
+
+void OverrideChromeTestDataDir() {
+  base::FilePath src_dir;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+  CHECK(base::PathService::Override(chrome::DIR_TEST_DATA,
+                                    src_dir.Append(GetChromeTestDataDir())));
 }
 
 }  // namespace chrome_test_utils

@@ -190,6 +190,12 @@
         Latin Modern Math
       </message>
 
+      <!-- The default value for |WebPreference::fixed_font_family_map| for
+           Japanese script. -->
+      <message name="IDS_FIXED_FONT_FAMILY_JAPANESE" use_name_for_id="true">
+        Noto Sans Mono CJK JP
+      </message>
+
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Japanese script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_JAPANESE" use_name_for_id="true">
