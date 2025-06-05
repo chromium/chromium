@@ -9,6 +9,7 @@
 
 #include "components/credential_management/credential_manager_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
@@ -36,6 +37,7 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
   ~ContentCredentialManager() override;
 
   void BindRequest(
+      content::RenderFrameHost* frame_host,
       mojo::PendingReceiver<blink::mojom::CredentialManager> receiver);
   bool HasBinding() const;
   void DisconnectBinding();

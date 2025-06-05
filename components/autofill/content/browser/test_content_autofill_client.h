@@ -26,6 +26,9 @@ class TestContentAutofillClient
   std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) override;
+
+  credential_management::ContentCredentialManager* GetContentCredentialManager()
+      override;
 };
 
 }  // namespace autofill

@@ -32,6 +32,8 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/credential_management/content_credential_manager.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_service_impl.h"
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
@@ -396,6 +398,32 @@ void BindModelBroker(
   }
 }
 
+void BindCredentialManager(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(frame_host);
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  // Not every `WebContents` has a `ContentAutofillClient`.
+  if (!autofill_client) {
+    return;
+  }
+  credential_management::ContentCredentialManager* content_credential_manager =
+      autofill_client->GetContentCredentialManager();
+
+  // Try to bind to the credential manager, but if it's not available for this
+  // render frame host, the request will be just dropped. This will cause the
+  // message pipe to be closed, which will raise a connection error on the peer
+  // side.
+  if (!content_credential_manager) {
+    // TODO(crbug.com/406224744): Retry to bind the credential manager.
+    return;
+  }
+
+  content_credential_manager->BindRequest(frame_host, std::move(receiver));
+}
+
 }  // namespace
 
 void PopulateChromeFrameBinders(
@@ -446,7 +474,7 @@ void PopulateChromeFrameBinders(
   }
 
   map->Add<blink::mojom::CredentialManager>(
-      base::BindRepeating(&ChromePasswordManagerClient::BindCredentialManager));
+      base::BindRepeating(&BindCredentialManager));
 
   map->Add<chrome::mojom::OpenSearchDescriptionDocumentHandler>(
       base::BindRepeating(

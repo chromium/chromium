@@ -25,7 +25,7 @@ enum class DisabledReasonId : uint16_t {
   kDomDistiller_SelfDeletingRequestDelegate = 6,
   kOomInterventionTabHelper = 7,
   kOfflinePage = 8,
-  kChromePasswordManagerClient_BindCredentialManager = 9,
+  kContentCredentialManager_BindCredentialManager = 9,
   kPermissionRequestManager = 10,
   // Modal dialog such as form resubmittion or http password dialog is shown for
   // the page.
