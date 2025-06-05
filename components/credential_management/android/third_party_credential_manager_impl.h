@@ -5,18 +5,16 @@
 #ifndef COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_IMPL_H_
 #define COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/credential_management/android/third_party_credential_manager_bridge.h"
 #include "components/credential_management/credential_manager_interface.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 
 namespace credential_management {
 
 // Class implementing Credential Manager methods for Clank in 3P mode.
-class ThirdPartyCredentialManagerImpl
-    : public content::DocumentUserData<ThirdPartyCredentialManagerImpl>,
-      public CredentialManagerInterface {
+class ThirdPartyCredentialManagerImpl : public CredentialManagerInterface {
  public:
   explicit ThirdPartyCredentialManagerImpl(
       content::RenderFrameHost* render_frame_host);
@@ -24,8 +22,6 @@ class ThirdPartyCredentialManagerImpl
       base::PassKey<class ThirdPartyCredentialManagerImplTest>,
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<CredentialManagerBridge> bridge);
-  friend DocumentUserData;
-  DOCUMENT_USER_DATA_KEY_DECL();
 
   ThirdPartyCredentialManagerImpl(const ThirdPartyCredentialManagerImpl&) =
       delete;
@@ -45,6 +41,7 @@ class ThirdPartyCredentialManagerImpl
 
  private:
   std::unique_ptr<CredentialManagerBridge> bridge_;
+  const raw_ref<content::RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace credential_management

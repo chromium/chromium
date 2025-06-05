@@ -4,6 +4,7 @@
 #include "components/credential_management/android/third_party_credential_manager_impl.h"
 
 #include "base/android/jni_callback.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 
@@ -11,16 +12,15 @@ namespace credential_management {
 
 ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
     content::RenderFrameHost* render_frame_host)
-    : DocumentUserData(render_frame_host),
-      bridge_(std::make_unique<ThirdPartyCredentialManagerBridge>()) {}
+    : bridge_(std::make_unique<ThirdPartyCredentialManagerBridge>()),
+      render_frame_host_(CHECK_DEREF(render_frame_host)) {}
 
 ThirdPartyCredentialManagerImpl::ThirdPartyCredentialManagerImpl(
     base::PassKey<class ThirdPartyCredentialManagerImplTest>,
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<CredentialManagerBridge> bridge)
-    : DocumentUserData(render_frame_host), bridge_(std::move(bridge)) {}
-
-DOCUMENT_USER_DATA_KEY_IMPL(ThirdPartyCredentialManagerImpl);
+    : bridge_(std::move(bridge)),
+      render_frame_host_(CHECK_DEREF(render_frame_host)) {}
 
 ThirdPartyCredentialManagerImpl::~ThirdPartyCredentialManagerImpl() = default;
 
@@ -30,7 +30,7 @@ void ThirdPartyCredentialManagerImpl::Store(
   std::u16string username = credential.id.value_or(u"");
   std::u16string password = credential.password.value_or(u"");
   bridge_->Store(username, password,
-                 render_frame_host().GetLastCommittedOrigin().Serialize(),
+                 render_frame_host_->GetLastCommittedOrigin().Serialize(),
                  std::move(callback));
 }
 
@@ -93,7 +93,7 @@ void ThirdPartyCredentialManagerImpl::Get(
   }
 
   bridge_->Get(ShouldAllowAutoSelect(mediation), include_passwords, federations,
-               render_frame_host().GetLastCommittedOrigin().Serialize(),
+               render_frame_host_->GetLastCommittedOrigin().Serialize(),
                std::move(callback));
 }
 
