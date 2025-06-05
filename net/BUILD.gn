@@ -141,6 +141,12 @@ buildflag_header("cronet_buildflags") {
   flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
+buildflag_header("disk_cache_buildflags") {
+  header = "buildflags.h"
+  header_dir = "net/disk_cache/"
+  flags = [ "ENABLE_DISK_CACHE_SQL_BACKEND=$enable_disk_cache_sql_backend" ]
+}
+
 proto_library("device_bound_sessions_storage_proto") {
   proto_in_dir = "//"
   sources = [ "device_bound_sessions/proto/storage.proto" ]
@@ -1150,6 +1156,7 @@ component("net") {
   ]
 
   public_deps = [
+    ":disk_cache_buildflags",
     ":net_export_header",
     ":net_public_deps",
     "//base",
@@ -1776,6 +1783,13 @@ component("net") {
 
   if (!is_cronet_build) {
     deps += [ "//mojo/public/cpp/bindings:default_construct_tag" ]
+  }
+
+  if (enable_disk_cache_sql_backend) {
+    sources += [
+      "disk_cache/sql/sql_backend_impl.cc",
+      "disk_cache/sql/sql_backend_impl.h",
+    ]
   }
 }
 
@@ -3473,6 +3487,10 @@ target(_test_target_type, "net_unittests") {
       "//components/unexportable_keys:test_support",
       "//components/unexportable_keys:unexportable_keys",
     ]
+  }
+
+  if (enable_disk_cache_sql_backend) {
+    sources += [ "disk_cache/sql/sql_backend_impl_unittest.cc" ]
   }
 }
 

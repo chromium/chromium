@@ -65,6 +65,14 @@ declare_args() {
   # TODO(crbug.com/367400641): If flag is changed or removed, ensure all
   # TODOs for this bug are correctly modified.
   enable_quic_proxy_support = is_debug
+
+  # The SQL disk cache backend is an experimental feature (crbug.com/422065015).
+  # It is enabled only in specific build configurations to avoid increasing the
+  # build size.
+  enable_disk_cache_sql_backend =
+      (is_linux && !is_castos) ||
+      (is_android && !is_cast_android && !is_cronet_build) || is_win ||
+      is_mac || is_chromeos
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,
