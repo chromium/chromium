@@ -54,6 +54,7 @@
 #include "components/account_id/account_id.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
