@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/update_usage_stats_task.h"
+#include "chrome/updater/usage_stats_permissions.h"
 
 #include <memory>
 #include <optional>

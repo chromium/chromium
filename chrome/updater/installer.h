@@ -173,7 +173,6 @@ class Installer final : public update_client::CrxInstaller {
   const UpdateService::PolicySameVersionUpdate policy_same_version_update_;
   scoped_refptr<PersistedData> persisted_data_;
   const crx_file::VerifierFormat crx_verifier_format_;
-  const bool usage_stats_enabled_;
 
   // AppInfo is set only after MakeCrxComponent is called, and is not updated
   // when the installer succeeds.

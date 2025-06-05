@@ -664,18 +664,6 @@ void PersistedData::SetHadApps() {
   }
 }
 
-bool PersistedData::GetUsageStatsEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_ && pref_service_->GetBoolean(kUsageStatsEnabledKey);
-}
-
-void PersistedData::SetUsageStatsEnabled(bool usage_stats_enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pref_service_) {
-    pref_service_->SetBoolean(kUsageStatsEnabledKey, usage_stats_enabled);
-  }
-}
-
 std::optional<PersistedData::Cookie> PersistedData::GetRemoteLoggingCookie()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -841,13 +829,20 @@ void PersistedData::SetLastOSVersion() {
 // kPersistedDataPreference is registered by update_client::RegisterPrefs.
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
-  registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
   registry->RegisterBooleanPref(kEulaRequired, false);
   registry->RegisterTimePref(kNextAllowedLoggingAttemptTime, {});
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
   registry->RegisterStringPref(kLastOSVersion, {});
   registry->RegisterDictionaryPref(kRemoteLoggingCookie, {});
+
+  // TODO(crbug.com/422187975): Remove obsolete pref no earlier than 6/3/2026.
+  registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
+}
+
+void MigrateObsoletePersistedDataPrefs(PrefService* pref_service) {
+  // TODO(crbug.com/422187975): Remove obsolete pref no earlier than 6/3/2026.
+  pref_service->ClearPref(kUsageStatsEnabledKey);
 }
 
 }  // namespace updater

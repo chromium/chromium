@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_UPDATE_USAGE_STATS_TASK_H_
-#define CHROME_UPDATER_UPDATE_USAGE_STATS_TASK_H_
+#ifndef CHROME_UPDATER_USAGE_STATS_PERMISSIONS_H_
+#define CHROME_UPDATER_USAGE_STATS_PERMISSIONS_H_
 
 #include <memory>
 #include <optional>
@@ -26,8 +26,6 @@ class FilePath;
 }
 
 namespace updater {
-
-class PersistedData;
 
 // Returns true if any app besides Omaha 4 or CECA is allowed to send usage
 // stats. The function looks at apps installed on the system to check if they
@@ -65,27 +63,6 @@ bool RemoteEventLoggingAllowed(
     std::optional<std::string> event_logging_permission_provider);
 #endif
 
-class UpdateUsageStatsTask
-    : public base::RefCountedThreadSafe<UpdateUsageStatsTask> {
- public:
-  UpdateUsageStatsTask(UpdaterScope scope,
-                       scoped_refptr<PersistedData> persisted_data);
-  void Run(base::OnceClosure callback);
-
- private:
-  friend class base::RefCountedThreadSafe<UpdateUsageStatsTask>;
-  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, NoApps);
-  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, OneAppEnabled);
-  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, ZeroAppsEnabled);
-  virtual ~UpdateUsageStatsTask();
-  void SetUsageStatsEnabled(scoped_refptr<PersistedData> persisted_data,
-                            bool enabled);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  const UpdaterScope scope_;
-  scoped_refptr<PersistedData> persisted_data_;
-};
-
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_UPDATE_USAGE_STATS_TASK_H_
+#endif  // CHROME_UPDATER_USAGE_STATS_PERMISSIONS_H_

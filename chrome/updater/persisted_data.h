@@ -107,12 +107,6 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   bool GetHadApps() const;
   void SetHadApps();
 
-  // UsageStatsEnabled reflects whether the updater as a whole is allowed to
-  // send usage stats, and is set or reset periodically based on the usage
-  // stats opt-in state of each product.
-  bool GetUsageStatsEnabled() const;
-  void SetUsageStatsEnabled(bool usage_stats_enabled);
-
   struct Cookie {
     std::string value;
     base::Time expiration;
@@ -226,6 +220,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
+void MigrateObsoletePersistedDataPrefs(PrefService* pref_service);
 
 }  // namespace updater
 

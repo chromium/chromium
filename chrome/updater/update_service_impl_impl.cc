@@ -55,9 +55,9 @@
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_block_check.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/usage_stats_permissions.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
@@ -849,10 +849,6 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::BindOnce(&RemoveUninstalledAppsTask::Run,
                      base::MakeRefCounted<RemoveUninstalledAppsTask>(
                          config_, GetUpdaterScope())));
-  new_tasks.push_back(base::BindOnce(
-      &UpdateUsageStatsTask::Run,
-      base::MakeRefCounted<UpdateUsageStatsTask>(
-          GetUpdaterScope(), config_->GetUpdaterPersistedData())));
   new_tasks.push_back(MakeChangeOwnersTask(config_->GetUpdaterPersistedData(),
                                            GetUpdaterScope()));
 
@@ -1304,8 +1300,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
       base::BindOnce(
           [](const AppInfo& app_info, const base::FilePath& installer_path,
              const std::string& install_args, const std::string& install_data,
-             base::RepeatingCallback<void(const UpdateState&)> state_update,
-             bool usage_stats_enabled) {
+             base::RepeatingCallback<void(const UpdateState&)> state_update) {
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
               return InstallerResult(
@@ -1322,7 +1317,10 @@ void UpdateServiceImplImpl::RunInstallerImpl(
             return RunApplicationInstaller(
                 app_info, installer_path, install_args,
                 WriteInstallerDataToTempFile(temp_dir.GetPath(), install_data),
-                usage_stats_enabled, kWaitForAppInstaller,
+                /*usage_stats_enabled=*/
+                IsUpdaterOrCompanionApp(app_info.app_id) &&
+                    AnyAppEnablesUsageStats(GetUpdaterScope()),
+                kWaitForAppInstaller,
                 base::BindRepeating(
                     [](base::RepeatingCallback<void(const UpdateState&)>
                            state_update,
@@ -1336,9 +1334,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
                     },
                     state_update, app_info.app_id));
           },
-          app_info, installer_path, install_args, install_data, state_update,
-          IsUpdaterOrCompanionApp(app_info.app_id) &&
-              config_->GetUpdaterPersistedData()->GetUsageStatsEnabled()),
+          app_info, installer_path, install_args, install_data, state_update),
       base::BindOnce(
           [](scoped_refptr<Configurator> config,
              scoped_refptr<PersistedData> persisted_data,

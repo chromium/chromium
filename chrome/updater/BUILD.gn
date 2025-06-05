@@ -184,10 +184,9 @@ if (is_win || is_mac || is_linux) {
       "update_service_internal_impl_inactive.h",
       "update_service_internal_impl_qualifying.cc",
       "update_service_internal_impl_qualifying.h",
-      "update_usage_stats_task.cc",
-      "update_usage_stats_task.h",
       "updater.cc",
       "updater.h",
+      "usage_stats_permissions.h",
     ]
 
     deps = [
@@ -263,7 +262,7 @@ if (is_win || is_mac || is_linux) {
         "policy/mac/managed_preference_policy_manager_impl.mm",
         "setup_mac.mm",
         "update_service_internal_impl_qualifying_mac.cc",
-        "update_usage_stats_task_mac.mm",
+        "usage_stats_permissions_mac.mm",
       ]
 
       deps += [
@@ -314,7 +313,7 @@ if (is_win || is_mac || is_linux) {
         "setup_win.cc",
         "update_block_check_win.cc",
         "update_service_internal_impl_qualifying_win.cc",
-        "update_usage_stats_task_win.cc",
+        "usage_stats_permissions_win.cc",
         "util/progress_sampler.cc",
         "util/progress_sampler.h",
         "win/action_handler.cc",
@@ -419,7 +418,7 @@ if (is_win || is_mac || is_linux) {
         "net/network_fetcher_linux.cc",
         "setup_linux.cc",
         "update_service_internal_impl_qualifying_linux.cc",
-        "update_usage_stats_task_linux.cc",
+        "usage_stats_permissions_linux.cc",
       ]
 
       libs = [
@@ -886,9 +885,9 @@ if (is_win || is_mac || is_linux) {
       "update_service_impl_impl_unittest.cc",
       "update_service_impl_inactive_unittest.cc",
       "update_service_unittest.cc",
-      "update_usage_stats_task_unittest.cc",
       "updater_scope_unittest.cc",
       "updater_unittest.cc",
+      "usage_stats_permissions_unittest.cc",
       "util/util_unittest.cc",
     ]
     if (!is_component_build) {

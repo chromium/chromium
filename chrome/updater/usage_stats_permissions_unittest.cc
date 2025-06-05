@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/update_usage_stats_task.h"
+#include "chrome/updater/usage_stats_permissions.h"
 
 #include <memory>
 #include <optional>
@@ -45,7 +45,7 @@
 
 namespace updater {
 
-class UpdateUsageStatsTaskTest : public testing::Test {
+class UsageStatsPermissionsTest : public testing::Test {
  protected:
   std::string fake_permission_provider_ = "UsageStatsTestPermissionProvider";
 #if BUILDFLAG(IS_MAC)
@@ -171,29 +171,29 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 };
 
 #if BUILDFLAG(IS_LINUX)
-TEST_F(UpdateUsageStatsTaskTest, LinuxAlwaysFalse) {
+TEST_F(UsageStatsPermissionsTest, LinuxAlwaysFalse) {
   ASSERT_FALSE(AnyAppEnablesUsageStats(scope_));
   ASSERT_FALSE(RemoteEventLoggingAllowed(scope_, fake_permission_provider_));
 }
 #else
 
-TEST_F(UpdateUsageStatsTaskTest, NoApps) {
+TEST_F(UsageStatsPermissionsTest, NoApps) {
   ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, OneAppDisabled) {
+TEST_F(UsageStatsPermissionsTest, OneAppDisabled) {
   SetAppUsageStats("app1", false, scope_);
   SetAppUsageStats("app2", false, scope_);
   ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
+TEST_F(UsageStatsPermissionsTest, OneAppEnabled) {
   SetAppUsageStats("app1", true, scope_);
   SetAppUsageStats("app2", false, scope_);
   ASSERT_TRUE(AnyAppEnablesUsageStats());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, UserInstallIgnoresSystem) {
+TEST_F(UsageStatsPermissionsTest, UserInstallIgnoresSystem) {
   if (IsSystemInstall(scope_)) {
     GTEST_SKIP() << "Not applicable to system-scoped installs";
   }
@@ -202,7 +202,7 @@ TEST_F(UpdateUsageStatsTaskTest, UserInstallIgnoresSystem) {
   ASSERT_FALSE(AnyAppEnablesUsageStats());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, SystemInstallLooksAtUser) {
+TEST_F(UsageStatsPermissionsTest, SystemInstallLooksAtUser) {
   if (!IsSystemInstall(scope_)) {
     GTEST_SKIP() << "Not applicable to user-scoped installs";
   }
@@ -211,12 +211,12 @@ TEST_F(UpdateUsageStatsTaskTest, SystemInstallLooksAtUser) {
   ASSERT_TRUE(AnyAppEnablesUsageStats());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, PermissionProviderAllowsRemoteLogging) {
+TEST_F(UsageStatsPermissionsTest, PermissionProviderAllowsRemoteLogging) {
   SetAppUsageStats(fake_permission_provider_, true, scope_);
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
-TEST_F(UpdateUsageStatsTaskTest,
+TEST_F(UsageStatsPermissionsTest,
        PermissionProviderAllowsRemoteLoggingWithCECAAndUpdater) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
@@ -224,14 +224,14 @@ TEST_F(UpdateUsageStatsTaskTest,
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
-TEST_F(UpdateUsageStatsTaskTest, UsageStatsProviderChecksPermissionProvider) {
+TEST_F(UsageStatsPermissionsTest, UsageStatsProviderChecksPermissionProvider) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_, false, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
-TEST_F(UpdateUsageStatsTaskTest,
+TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppDisabled) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
@@ -240,7 +240,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
-TEST_F(UpdateUsageStatsTaskTest,
+TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppEnabled) {
   SetUpdaterUsageStats(true, scope_);
   SetCECAUsageStats(true, scope_);
@@ -249,7 +249,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
-TEST_F(UpdateUsageStatsTaskTest,
+TEST_F(UsageStatsPermissionsTest,
        SystemPermissionProviderAllowsRemoteLoggingWithUserAppEnabled) {
   if (!IsSystemInstall(scope_)) {
     GTEST_SKIP() << "Not applicable to user-scoped installs";

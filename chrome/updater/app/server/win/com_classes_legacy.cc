@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -48,9 +49,9 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/usage_stats_permissions.h"
 #include "chrome/updater/util/progress_sampler.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
@@ -1278,18 +1279,17 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
                                        ErrorParams error_params) {
-  AppServerWin::PostRpcTask(base::BindOnce(
+  base::OnceCallback<void(bool enable_usage_stats)> rpc_task = base::BindOnce(
       [](UpdaterScope scope, const std::string& app_id,
-         const std::string& command_id, ErrorParams error_params) {
+         const std::string& command_id, ErrorParams error_params,
+         bool enable_usage_stats) {
+        if (!enable_usage_stats) {
+          return;
+        }
         scoped_refptr<Configurator> config =
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
             config->GetUpdaterPersistedData();
-        if (!persisted_data->GetUsageStatsEnabled() &&
-            !AnyAppEnablesUsageStats(scope)) {
-          return;
-        }
-
         update_client::CrxComponent app_command_data;
         app_command_data.ap = persisted_data->GetAP(app_id);
         app_command_data.app_id = app_id;
@@ -1314,7 +1314,18 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
               VLOG(1) << "App command ping completed: " << error;
             }));
       },
-      scope, app_id, command_id, error_params));
+      scope, app_id, command_id, error_params);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](UpdaterScope scope) { return AnyAppEnablesUsageStats(scope); },
+          scope),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> rpc_task, bool enable_usage_stats) {
+            AppServerWin::PostRpcTask(
+                base::BindOnce(std::move(rpc_task), enable_usage_stats));
+          },
+          std::move(rpc_task)));
 }
 
 PolicyStatusImpl::PolicyStatusImpl()

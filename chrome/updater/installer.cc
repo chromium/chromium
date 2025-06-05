@@ -26,8 +26,8 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/usage_stats_permissions.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
@@ -107,8 +107,6 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
-      usage_stats_enabled_(IsUpdaterOrCompanionApp(app_id) &&
-                           persisted_data->GetUsageStatsEnabled()),
       app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;
@@ -208,7 +206,9 @@ Installer::Result Installer::InstallHelper(
                                    client_install_data_.empty()
                                        ? install_params->server_install_data
                                        : client_install_data_),
-      usage_stats_enabled_, kWaitForAppInstaller, std::move(progress_callback));
+      /*usage_stats_enabled=*/IsUpdaterOrCompanionApp(app_id_) &&
+          AnyAppEnablesUsageStats(GetUpdaterScope()),
+      kWaitForAppInstaller, std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
