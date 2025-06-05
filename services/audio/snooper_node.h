@@ -176,6 +176,23 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
 
   // The frame position where recording into the delay buffer always starts.
   static constexpr FrameTicks kWriteStartPosition = 0;
+
+  // Threshold for detecting a time skip in the input audio stream. A skip is
+  // considered to have occurred if the gap between the expected and actual
+  // `reference_time` in OnData() exceeds this value.
+  //
+  // When the `kWebAudioRemoveAudioDestinationResampler` feature is enabled,
+  // resampling for WebAudio output streams moves to the Audio Service. This
+  // can cause OnData() calls to arrive with irregular timing (e.g., in
+  // bursts or after a delay). To accommodate this, the threshold is doubled to
+  // `input_bus_duration_`, preventing valid data from being incorrectly
+  // discarded. Otherwise, it is `input_bus_duration_` / 2.
+  // See http://crbug.com/419853196.
+  const base::TimeDelta input_skip_threshold_;
+
+  // Threshold for detecting a time skip in the output audio stream, used
+  // during the Render() step. It is set to `output_bus_duration_` / 2.
+  const base::TimeDelta output_skip_threshold_;
 };
 
 }  // namespace audio

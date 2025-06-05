@@ -58,6 +58,19 @@ BASE_FEATURE(kMacCatapSystemAudioLoopbackCapture,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// This feature flag controls whether the WebAudio destination resampler is
+// bypassed. When enabled, if the WebAudio context's sample rate differs from
+// the hardware's sample rate, the resampling step that normally occurs within
+// the WebAudio destination node is skipped. This allows the AudioService to
+// handle any necessary resampling, potentially reducing latency and overhead.
+BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
+             "WebAudioRemoveAudioDestinationResampler",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 
 namespace media {

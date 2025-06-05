@@ -21,6 +21,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapSystemAudioLoopbackCapture);
 #endif
 
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebAudioRemoveAudioDestinationResampler);
+
 }  // namespace features
 
 namespace media {

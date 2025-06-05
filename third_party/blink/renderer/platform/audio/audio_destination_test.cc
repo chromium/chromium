@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
@@ -159,7 +159,7 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
   GTEST_SKIP();
 #else
   feature_list_.InitAndDisableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
   platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
                                      kDefaultHardwareBufferSize);
@@ -215,7 +215,7 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   GTEST_SKIP();
 #else
   feature_list_.InitAndDisableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
   platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
                                      kDefaultHardwareBufferSize);
@@ -286,7 +286,7 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
 // and WebAudioBypassOutputBuffering is also enabled.
 TEST_P(AudioDestinationTest, ResamplerIsRemoved) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
 
   // Ideally we should have two separate test for WebAudioBypassOutputBuffering
   // enabled and disabled. The difference here is the

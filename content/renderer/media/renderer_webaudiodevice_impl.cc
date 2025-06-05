@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/renderer/render_frame.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/null_audio_sink.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -269,7 +270,7 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   // sink.
   int resolved_context_sample_rate;
   if (base::FeatureList::IsEnabled(
-          blink::features::kWebAudioRemoveAudioDestinationResampler) &&
+          features::kWebAudioRemoveAudioDestinationResampler) &&
       context_sample_rate.has_value()) {
     resolved_context_sample_rate = *context_sample_rate;
   } else {

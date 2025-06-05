@@ -39,6 +39,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/common/features.h"
@@ -484,7 +485,7 @@ AudioDestination::AudioDestination(
   double scale_factor = 1.0;
 
   if (!base::FeatureList::IsEnabled(
-          features::kWebAudioRemoveAudioDestinationResampler) &&
+          ::features::kWebAudioRemoveAudioDestinationResampler) &&
       context_sample_rate_ != web_audio_device_->SampleRate()) {
     scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
     SendLogMessage(__func__,

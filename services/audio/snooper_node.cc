@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -34,12 +36,6 @@ constexpr int kStepBasisHz = 1000;
 
 // The number of frames the resampler should request at a time.
 constexpr int kResamplerRequestSize = media::SincResampler::kSmallRequestSize;
-
-// Returns the deviation, around an estimated reference time, beyond which a
-// SnooperNode considers a skip in input/output to have occurred.
-base::TimeDelta GetReferenceTimeSkipThreshold(base::TimeDelta bus_duration) {
-  return bus_duration / 2;
-}
 
 }  // namespace
 
@@ -81,7 +77,13 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
               : ((output_params_.channels() < input_params_.channels())
                      ? ChannelMixStrategy::kBefore
                      : ChannelMixStrategy::kAfter)),
-      channel_mixer_(input_params_, output_params_) {
+      channel_mixer_(input_params_, output_params_),
+      input_skip_threshold_(
+          base::FeatureList::IsEnabled(
+              features::kWebAudioRemoveAudioDestinationResampler)
+              ? input_bus_duration_
+              : input_bus_duration_ / 2),
+      output_skip_threshold_(output_bus_duration_ / 2) {
   TRACE_EVENT2("audio", "SnooperNode::SnooperNode", "input_params",
                input_params.AsHumanReadableString(), "output_params",
                output_params.AsHumanReadableString());
@@ -120,10 +122,8 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
   if (write_position_ == kNullPosition) {
     write_position_ = kWriteStartPosition;
   } else {
-    const base::TimeDelta threshold =
-        GetReferenceTimeSkipThreshold(input_bus_duration_);
     const base::TimeDelta delta = reference_time - write_reference_time_;
-    if (delta < -threshold) {
+    if (delta < -input_skip_threshold_) {
       TRACE_EVENT_INSTANT1("audio", "SnooperNode Discards Input",
                            TRACE_EVENT_SCOPE_THREAD, "wait_time_remaining (μs)",
                            (-delta).InMicroseconds());
@@ -133,7 +133,7 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
       // switching in audio::OutputController, where the delay timestamps may
       // shift. http://crbug.com/934770
       return;
-    } else if (delta > threshold) {
+    } else if (delta > input_skip_threshold_) {
       TRACE_EVENT_INSTANT1("audio", "SnooperNode Input Gap",
                            TRACE_EVENT_SCOPE_THREAD, "gap (μs)",
                            delta.InMicroseconds());
@@ -181,14 +181,13 @@ std::optional<base::TimeTicks> SnooperNode::SuggestLatestRenderTime(
   // Suggest a render time by working backwards from the end time of the data
   // currently recorded in the delay buffer. Subtract from the end time: 1) the
   // maximum duration prebufferred in the resampler; 2) the duration to be
-  // rendered; 3) a safety margin (to help avoid underruns when the machine is
-  // under high stress).
+  // rendered; 3) a safety margin (half of the `render_duration`) to help
+  // prevent underruns under high system load.
   const base::TimeDelta max_resampler_prebuffer_duration =
       Helper::FramesToTime(kResamplerRequestSize, input_params_.sample_rate());
   const base::TimeDelta render_duration =
       Helper::FramesToTime(duration, output_params_.sample_rate());
-  const base::TimeDelta safety_margin =
-      GetReferenceTimeSkipThreshold(render_duration);
+  const base::TimeDelta safety_margin = render_duration / 2;
   return checkpoint_time_ - max_resampler_prebuffer_duration - render_duration -
          safety_margin;
 }
@@ -231,10 +230,8 @@ void SnooperNode::Render(base::TimeTicks reference_time,
         estimated_output_position + std::lround(resampler_.BufferedFrames());
     DCHECK_EQ(correction_fps_, 0);
   } else {
-    const base::TimeDelta threshold =
-        GetReferenceTimeSkipThreshold(output_bus_duration_);
     const base::TimeDelta delta = reference_time - render_reference_time_;
-    if (delta.magnitude() < threshold) {  // Normal case: No gap.
+    if (delta.magnitude() < output_skip_threshold_) {  // Normal case: No gap.
       // Compute the drift, which is the number of frames the resampler is
       // behind in reading from the delay buffer. This calculation also accounts
       // for the frames buffered within the resampler.

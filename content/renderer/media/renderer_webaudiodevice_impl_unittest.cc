@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/limits.h"
@@ -235,7 +236,7 @@ class RendererWebAudioDeviceImplBufferSizeTest : public ::testing::Test {
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_FeatureDisabled_UsesDefaultBufferSize) {
   feature_list_.InitAndDisableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -259,7 +260,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_SameSampleRate_ReturnsDefaultBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -281,7 +282,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_LowSampleRate_CapsAtMinBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -301,7 +302,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_HighSampleRate_ScalesBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -322,7 +323,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_CloseSampleRate_ScalesBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -344,7 +345,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_CloseSampleRate2_ScalesBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -365,7 +366,7 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
 TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
        InteractiveLatency_VeryHighSampleRate_CapsAtMaxBufferSize) {
   feature_list_.InitAndEnableFeature(
-      blink::features::kWebAudioRemoveAudioDestinationResampler);
+      features::kWebAudioRemoveAudioDestinationResampler);
   blink::WebAudioLatencyHint latency_hint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
   media::AudioParameters hardware_params(
@@ -691,7 +692,7 @@ class RendererWebAudioDeviceImplLatencyAndSampleRateTest
     }
 
     feature_list_.InitAndEnableFeature(
-        blink::features::kWebAudioRemoveAudioDestinationResampler);
+        features::kWebAudioRemoveAudioDestinationResampler);
   }
 
  protected:
