@@ -146,7 +146,8 @@ CombinedSelectorRowView::CombinedSelectorRowView(
                                      ? ax::mojom::Role::kRadioButton
                                      : ax::mojom::Role::kButton);
   GetViewAccessibility().SetName(base::JoinString(texts, u"\n"));
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, 16)));
+  const int horizontal_padding = radio_status == RadioStatus::kNone ? 0 : 16;
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, horizontal_padding)));
 
   const int icon_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -235,8 +236,13 @@ CombinedSelectorListView::CombinedSelectorListView(
   wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       /*between_child_spacing=*/kRowGap));
+  size_t num_mechanisms = model->dialog_model()->mechanisms.size();
 
-  for (size_t i = 0; i < model->dialog_model()->mechanisms.size(); i++) {
+  if (num_mechanisms > 1) {
+    wrapper->AddChildView(std::make_unique<views::Separator>());
+  }
+
+  for (size_t i = 0; i < num_mechanisms; i++) {
     if (i > 0) {
       wrapper->AddChildView(std::make_unique<views::Separator>());
     }
@@ -257,6 +263,10 @@ CombinedSelectorListView::CombinedSelectorListView(
         CombinedSelectorSheetModel::SelectionStatus::kSelected) {
       selected_view_ = row;
     }
+  }
+
+  if (num_mechanisms > 1) {
+    wrapper->AddChildView(std::make_unique<views::Separator>());
   }
 
   scroll_view->SetContents(std::move(wrapper));
