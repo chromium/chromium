@@ -130,10 +130,9 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return bookmarks_callback_called_; }));
   }
 
-  void ImportHistory(std::string zip_file_name) {
+  void ImportHistory() {
     history_callback_called_ = false;
     importer_.ImportHistory(
-        std::move(zip_file_name),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
@@ -156,9 +155,17 @@ class SafariDataImporterTest : public testing::Test {
 
   void ExecuteImportPasswords() {
     passwords_callback_called_ = false;
-    importer_.ContinuePasswordImport(
+    importer_.ContinueImport(
         std::vector<int>(),
+        // Use of Unretained below is safe because the RunUntil loop below
+        // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
                        base::Unretained(this)));
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
@@ -166,11 +173,17 @@ class SafariDataImporterTest : public testing::Test {
 
   void ResolvePasswordConflicts(const std::vector<int>& selected_ids) {
     passwords_callback_called_ = false;
-    importer_.ContinuePasswordImport(
+    importer_.ContinueImport(
         selected_ids,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
                        base::Unretained(this)));
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
@@ -194,7 +207,7 @@ class SafariDataImporterTest : public testing::Test {
     history_callback_called_ = false;
     payment_cards_callback_called_ = false;
 
-    importer_.Import(
+    importer_.StartImport(
         base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/zip/file")),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -288,7 +301,7 @@ TEST_F(SafariDataImporterTest, NoBookmark) {
 }
 
 TEST_F(SafariDataImporterTest, NoHistory) {
-  ImportHistory("");
+  ImportHistory();
 
   ASSERT_EQ(GetNumberOfURLsImported(), 0);
 }

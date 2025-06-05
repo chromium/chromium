@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use anyhow::Result;
+use anyhow::{anyhow, Error, Result};
 use cxx::CxxString;
 use std::fs;
 use std::io::Read;
@@ -19,14 +19,45 @@ mod ffi {
     }
 
     extern "Rust" {
-        fn unzip_using_rust(
-            zip_filename: &[u8],
+        type ResultOfZipFileArchive;
+        fn err(self: &ResultOfZipFileArchive) -> bool;
+        fn unwrap(self: &mut ResultOfZipFileArchive) -> Box<ZipFileArchive>;
+
+        type ZipFileArchive;
+        fn get_file_size(self: &mut ZipFileArchive, file_to_unzip: FileType) -> u64;
+        fn unzip(
+            self: &mut ZipFileArchive,
             file_to_unzip: FileType,
-            output_bytes: Pin<&mut CxxString>,
+            mut output_bytes: Pin<&mut CxxString>,
         ) -> bool;
 
-        fn get_file_size_using_rust(zip_filename: &[u8], file_to_unzip: FileType) -> u64;
+        fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive>;
     }
+}
+
+/// FFI-friendly wrapper around `Result<T, E>` (`cxx` can't handle arbitrary
+/// generics, so we manually monomorphize here, but still expose a minimal,
+/// somewhat tweaked API of the original type).
+pub struct ResultOfZipFileArchive(Result<ZipFileArchive, Error>);
+
+impl ResultOfZipFileArchive {
+    fn err(&self) -> bool {
+        self.0.as_ref().is_err()
+    }
+
+    fn unwrap(&mut self) -> Box<ZipFileArchive> {
+        // Leaving `self` in a C++-friendly "moved-away" state.
+        let mut result = Err(anyhow!("Failed to get archive!"));
+        std::mem::swap(&mut self.0, &mut result);
+        Box::new(result.unwrap())
+    }
+}
+
+fn create_archive(zip_filename: &[u8]) -> Result<ZipFileArchive> {
+    let path = str::from_utf8(zip_filename)?;
+    let file = fs::File::open(path)?;
+    let archive = zip::ZipArchive::new(file)?;
+    Ok(ZipFileArchive { archive: archive })
 }
 
 // Verifies if the file in the provided path has the desired extension.
@@ -72,70 +103,65 @@ fn matches_requested_type(path: &Path, file_to_unzip: ffi::FileType) -> bool {
     }
 }
 
-fn unzip(
-    zip_filename: &[u8],
-    file_to_unzip: ffi::FileType,
-    mut output_bytes: Pin<&mut CxxString>,
-) -> Result<()> {
-    let path = str::from_utf8(zip_filename)?;
-    let file = fs::File::open(path)?;
-    let mut archive = zip::ZipArchive::new(file)?;
+pub fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive> {
+    Box::new(ResultOfZipFileArchive(create_archive(zip_filename)))
+}
 
-    for i in 0..archive.len() {
-        let Ok(mut file) = archive.by_index(i) else {
-            continue;
-        };
-        let Some(outpath) = file.enclosed_name() else {
-            continue;
-        };
+/// FFI-friendly wrapper around `zip::ZipArchive` (`cxx` can't handle arbitrary
+/// generics, so we manually monomorphize here, but still expose a minimal,
+/// somewhat tweaked API of the original type).
+struct ZipFileArchive {
+    archive: zip::ZipArchive<std::fs::File>,
+}
 
-        // Read the first file matching the requested type found within the zip file.
-        if matches_requested_type(&outpath.as_path(), file_to_unzip) {
-            let mut file_contents = String::new();
-            file.read_to_string(&mut file_contents)?;
+impl ZipFileArchive {
+    fn get_file_size(&mut self, file_to_unzip: ffi::FileType) -> u64 {
+        for i in 0..self.archive.len() {
+            let Ok(file) = self.archive.by_index(i) else {
+                continue;
+            };
+            let Some(outpath) = file.enclosed_name() else {
+                continue;
+            };
 
-            // Copy the contents of the file to the output.
-            if file_contents.len() > 0 {
-                output_bytes.as_mut().reserve(file_contents.len());
-                output_bytes.as_mut().push_str(&file_contents);
+            // Read the first file matching the requested type found within the zip file.
+            if matches_requested_type(&outpath.as_path(), file_to_unzip) {
+                return file.size();
             }
-            break;
         }
+
+        return 0;
     }
 
-    Ok(())
-}
+    fn unzip(
+        self: &mut ZipFileArchive,
+        file_to_unzip: ffi::FileType,
+        mut output_bytes: Pin<&mut CxxString>,
+    ) -> bool {
+        for i in 0..self.archive.len() {
+            let Ok(mut file) = self.archive.by_index(i) else {
+                continue;
+            };
+            let Some(outpath) = file.enclosed_name() else {
+                continue;
+            };
 
-pub fn unzip_using_rust(
-    zip_filename: &[u8],
-    file_to_unzip: ffi::FileType,
-    output_bytes: Pin<&mut CxxString>,
-) -> bool {
-    unzip(zip_filename, file_to_unzip, output_bytes).is_ok()
-}
+            // Read the first file matching the requested type found within the zip file.
+            if matches_requested_type(&outpath.as_path(), file_to_unzip) {
+                let mut file_contents = String::new();
+                let Ok(_) = file.read_to_string(&mut file_contents) else {
+                    return false;
+                };
 
-fn get_file_size(zip_filename: &[u8], file_to_unzip: ffi::FileType) -> Result<u64> {
-    let path = str::from_utf8(zip_filename)?;
-    let file = fs::File::open(path)?;
-    let mut archive = zip::ZipArchive::new(file)?;
-
-    for i in 0..archive.len() {
-        let Ok(file) = archive.by_index(i) else {
-            continue;
-        };
-        let Some(outpath) = file.enclosed_name() else {
-            continue;
-        };
-
-        // Read the first file matching the requested type found within the zip file.
-        if matches_requested_type(&outpath.as_path(), file_to_unzip) {
-            return Ok(file.size());
+                // Copy the contents of the file to the output.
+                if file_contents.len() > 0 {
+                    output_bytes.as_mut().reserve(file_contents.len());
+                    output_bytes.as_mut().push_str(&file_contents);
+                }
+                return true;
+            }
         }
+
+        return false;
     }
-
-    anyhow::bail!("File not found inside the zip archive.")
-}
-
-pub fn get_file_size_using_rust(zip_filename: &[u8], file_to_unzip: ffi::FileType) -> u64 {
-    get_file_size(zip_filename, file_to_unzip).unwrap_or(0)
 }

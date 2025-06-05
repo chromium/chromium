@@ -6,9 +6,9 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
 #include "base/files/scoped_temp_file.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
+#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
 namespace user_data_importer {
 
@@ -43,23 +43,37 @@ class SafariDataImporter {
   // "bookmarks_callback", "history_callback" and "payment_cards_callback" will
   // be called at the end of the import processes of each type of data to return
   // the number of successful imports.
-  void Import(const base::FilePath& path,
-              PasswordImportCallback passwords_callback,
-              ImportCallback bookmarks_callback,
-              ImportCallback history_callback,
-              ImportCallback payment_cards_callback);
+  void StartImport(const base::FilePath& path,
+                   PasswordImportCallback passwords_callback,
+                   ImportCallback bookmarks_callback,
+                   ImportCallback history_callback,
+                   ImportCallback payment_cards_callback);
 
-  // Called after calling "Import" in order to import passwords. In case of
-  // conflicts, "selected_ids" provides the list of conflicting passwords to
-  // import.
-  void ContinuePasswordImport(const std::vector<int>& selected_ids,
-                              PasswordImportCallback passwords_callback);
+  // Called after calling "Import" in order to complete the import process. In
+  // case of password conflicts, "selected_password_ids" provides the list of
+  // conflicting passwords to import.
+  void ContinueImport(const std::vector<int>& selected_password_ids,
+                      PasswordImportCallback passwords_callback,
+                      ImportCallback bookmarks_callback,
+                      ImportCallback history_callback,
+                      ImportCallback payment_cards_callback);
+
+  // Called after calling "Import" in order to cancel the import process.
+  void CancelImport();
 
  private:
   friend class SafariDataImporterTest;
 
-  // Gets a weak pointer to this object.
-  base::WeakPtr<SafariDataImporter> AsWeakPtr();
+  // Creates the zip file Rust archive from file provided by "zip_filename".
+  // Returns whether `zip_file_archive_` was created successfully.
+  bool CreateZipFileArchive(std::string zip_filename);
+
+  // Returns the contents of the file of the desired type contained in the
+  // zip file archive. Returns an empty string on failure.
+  std::string Unzip(FileType filetype);
+
+  // Returns the uncompressed size of a file within the zip file archive.
+  size_t UncompressedFileSize(FileType filetype);
 
   // This function imports the various data types present in the file provided
   // by "zip_filename" and should be called from a worker thread.
@@ -75,15 +89,12 @@ class SafariDataImporter {
                        ImportCallback bookmarks_callback);
 
   // Calls "history_callback" with an approximation of the number of URLs
-  // contains in the history file contained in the file provided by
-  // "zip_filename".
-  void StartImportHistory(const std::string& zip_filename,
-                          ImportCallback history_callback);
+  // contains in the history file contained in the zip file archive.
+  void StartImportHistory(ImportCallback history_callback);
 
-  // Attempts to import history from the file provided by "zip_filename".
+  // Attempts to import history from the zip file archive.
   // Calls "history_callback" when done.
-  void ImportHistory(const std::string& zip_filename,
-                     ImportCallback history_callback);
+  void ImportHistory(ImportCallback history_callback);
 
   // Attempts to import passwords by parsing the provided CSV data.
   // Calls "results_callback" when done.
@@ -96,19 +107,22 @@ class SafariDataImporter {
                           ImportCallback payment_cards_callback);
 
   // Launches the task which will call "ImportBookmarks".
-  void LaunchImportBookmarksTask(const std::string& zip_filename,
-                                 ImportCallback bookmarks_callback);
+  void LaunchImportBookmarksTask(ImportCallback bookmarks_callback);
 
   // Launches the task which will call "ImportPasswords".
-  void LaunchImportPasswordsTask(const std::string& zip_filename,
-                                 PasswordImportCallback passwords_callback);
+  void LaunchImportPasswordsTask(PasswordImportCallback passwords_callback);
 
   // Launches the task which will call "ImportPaymentCards".
-  void LaunchImportPaymentCardsTask(const std::string& zip_filename,
-                                    ImportCallback payment_cards_callback);
+  void LaunchImportPaymentCardsTask(ImportCallback payment_cards_callback);
 
   // Posts a task on "task_runner_" to call the provided callback.
   void PostCallback(auto callback, auto results);
+
+  // Closes the zip file archive once it is no longer needed.
+  void CloseZipFileArchive();
+
+  // The Rust zip file archive.
+  std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;
 
   // The password importer used to import passwords and resolve conflicts.
   std::unique_ptr<password_manager::PasswordImporter> password_importer_;
@@ -122,10 +136,6 @@ class SafariDataImporter {
   // Encapsulates model-layer logic that has to be injected (e.g.,
   // platform-specific logic).
   std::unique_ptr<SafariDataImportManager> manager_;
-
-  // This is necessary because this object could be deleted during any callback,
-  // and we don't want to risk a UAF if that happens.
-  base::WeakPtrFactory<SafariDataImporter> weak_factory_{this};
 };
 
 }  // namespace user_data_importer
