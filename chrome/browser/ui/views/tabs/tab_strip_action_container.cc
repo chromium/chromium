@@ -254,7 +254,7 @@ TabStripActionContainer::TabStripActionContainer(
   // `glic_nudge_controller_` will be null if feature is not enabled.
   if (glic_nudge_controller_) {
 #if BUILDFLAG(ENABLE_GLIC)
-    tab_glic_nudge_observation_.Observe(glic_nudge_controller_);
+    glic_nudge_controller_->SetDelegate(this);
 #else
     NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -323,6 +323,9 @@ TabStripActionContainer::TabStripActionContainer(
 TabStripActionContainer::~TabStripActionContainer() {
   if (scoped_tab_strip_modal_ui_) {
     scoped_tab_strip_modal_ui_.reset();
+  }
+  if (glic_nudge_controller_) {
+    glic_nudge_controller_->SetDelegate(nullptr);
   }
 }
 
@@ -510,8 +513,6 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 
   CHECK(glic_button_);
   if (!label.empty()) {
-    glic_nudge_controller_->OnNudgeActivity(
-        tabs::GlicNudgeActivity::kNudgeShown);
     glic_button_->SetText(base::UTF8ToUTF16(label));
     ShowTabStripNudge(glic_button_);
   } else {
@@ -521,6 +522,14 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 
 #else
   NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+bool TabStripActionContainer::GetIsShowingGlicNudge() {
+#if BUILDFLAG(ENABLE_GLIC)
+  return glic_button_ && glic_button_->GetIsShowingNudge();
+#else
+  return false;
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

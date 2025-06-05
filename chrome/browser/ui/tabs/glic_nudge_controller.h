@@ -5,9 +5,8 @@
 #define CHROME_BROWSER_UI_TABS_GLIC_NUDGE_CONTROLLER_H_
 
 #include "base/callback_list.h"
-#include "base/observer_list.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ui/tabs/glic_nudge_observer.h"
+#include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
@@ -43,17 +42,7 @@ class GlicNudgeController {
   GlicNudgeController& operator=(const GlicNudgeController& other) = delete;
   virtual ~GlicNudgeController();
 
-  void AddObserver(GlicNudgeObserver* observer) {
-    observers_.AddObserver(observer);
-  }
-
-  void RemoveObserver(GlicNudgeObserver* observer) {
-    observers_.RemoveObserver(observer);
-  }
-
-  bool HasObserver(GlicNudgeObserver* observer) {
-    return observers_.HasObserver(observer);
-  }
+  void SetDelegate(GlicNudgeDelegate* delegate) { delegate_ = delegate; }
 
   // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   // The nudge will be removed from `web_contents` if `nudge_label` is empty.
@@ -76,7 +65,7 @@ class GlicNudgeController {
   // The BrowserWindowInterface that owns `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
-  base::ObserverList<GlicNudgeObserver> observers_;
+  raw_ptr<GlicNudgeDelegate> delegate_ = nullptr;
 
   // Callback to invoke for user actions on the nudge.
   GlicNudgeActivityCallback nudge_activity_callback_;

@@ -169,9 +169,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(browser->GetProfile())) {
       DCHECK(features::IsTabSearchMoving());
+      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
-      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
@@ -335,7 +335,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
           glic_service);
     }
-#endif
+
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
     memory_saver_opt_in_iph_controller_ =
         std::make_unique<MemorySaverOptInIPHController>(

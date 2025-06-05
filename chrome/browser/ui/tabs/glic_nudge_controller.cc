@@ -57,14 +57,16 @@ void GlicNudgeController::UpdateNudgeLabel(
   PrefService* const pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
-    for (auto& observer : observers_) {
-      observer.OnTriggerGlicNudgeUI(nudge_label);
+    if (delegate_) {
+      delegate_->OnTriggerGlicNudgeUI(nudge_label);
     }
   }
 
   if (nudge_label.empty()) {
     CHECK(activity);
     OnNudgeActivity(*activity);
+  } else {
+    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeShown);
   }
 }
 
@@ -113,10 +115,10 @@ void GlicNudgeController::SetNudgeActivityCallbackForTesting() {
 
 void GlicNudgeController::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
-  for (auto& observer : observers_) {
-    observer.OnTriggerGlicNudgeUI(std::string());
+  if (delegate_ && delegate_->GetIsShowingGlicNudge()) {
+    delegate_->OnTriggerGlicNudgeUI(std::string());
+    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
-  OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
 }
 
 }  // namespace tabs

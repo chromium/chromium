@@ -470,7 +470,10 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
               },
               base::Unretained(&run_loop)));
 
-  tab_strip_action_container()->OnTriggerGlicNudgeUI("test");
+  nudge_controller->UpdateNudgeLabel(
+      browser()->tab_strip_model()->GetActiveWebContents(), "test",
+      std::nullopt, base::DoNothing());
+
   ShowTabStripNudgeButton(GlicNudgeButton());
 
   // Wait for the FRE to preload.
