@@ -247,32 +247,32 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
 TEST_F(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // Check that the controller correctly keeps track of whether the effective
   // cookie blocking setting for the page has been changed by
-  // `SetUserChangedCookieBlockingForSite`.
+  // `SetStateChangedViaBypass`.
   cookie_controls()->Update(web_contents());
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  EXPECT_FALSE(cookie_controls()->StateChangedViaBypass());
 
-  cookie_controls()->SetUserChangedCookieBlockingForSite(false);
-  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  cookie_controls()->SetStateChangedViaBypass(false);
+  EXPECT_FALSE(cookie_controls()->StateChangedViaBypass());
 
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
-  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  cookie_controls()->SetStateChangedViaBypass(true);
+  EXPECT_TRUE(cookie_controls()->StateChangedViaBypass());
 
   // Changing the toggle back should clear it.
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
-  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  cookie_controls()->SetStateChangedViaBypass(true);
+  EXPECT_FALSE(cookie_controls()->StateChangedViaBypass());
 
   // Navigating to the same page should clear it.
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
-  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  cookie_controls()->SetStateChangedViaBypass(true);
+  EXPECT_TRUE(cookie_controls()->StateChangedViaBypass());
   NavigateAndCommit(GURL(kUrl));
-  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  EXPECT_FALSE(cookie_controls()->StateChangedViaBypass());
 
   // Navigating to a different page should also clear it.
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
-  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  cookie_controls()->SetStateChangedViaBypass(true);
+  EXPECT_TRUE(cookie_controls()->StateChangedViaBypass());
   NavigateAndCommit(GURL("https://thirdparty.com"));
-  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
+  EXPECT_FALSE(cookie_controls()->StateChangedViaBypass());
 }
 
 TEST_F(CookieControlsUserBypassTest, SiteCounts) {
@@ -1293,7 +1293,7 @@ TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   NavigateAndCommit(GURL(kUrl));
 
   // Loading a different page after making an effective change should not fire.
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
+  cookie_controls()->SetStateChangedViaBypass(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1307,7 +1307,7 @@ TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
 
   // Observer should fire when reloaded after change.
   EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(2);
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
+  cookie_controls()->SetStateChangedViaBypass(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1317,7 +1317,7 @@ TEST_F(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
       ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses);
 
   NavigateAndCommit(GURL("https://example2.com"));
-  cookie_controls()->SetUserChangedCookieBlockingForSite(true);
+  cookie_controls()->SetStateChangedViaBypass(true);
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   NavigateAndCommit(GURL("https://example2.com"));
 }

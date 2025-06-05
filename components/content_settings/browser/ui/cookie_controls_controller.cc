@@ -155,7 +155,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (!tab_observer_ || GetWebContents() != web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(this, web_contents);
-    SetUserChangedCookieBlockingForSite(false);
+    SetStateChangedViaBypass(false);
   }
   if (observers_.empty()) {
     return;
@@ -366,14 +366,13 @@ void CookieControlsController::OnEntryPointAnimated() {
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
 }
 
-bool CookieControlsController::HasUserChangedCookieBlockingForSite() {
-  return user_changed_cookie_blocking_;
+bool CookieControlsController::StateChangedViaBypass() {
+  return user_changed_ub_state_;
 }
 
-void CookieControlsController::SetUserChangedCookieBlockingForSite(
-    bool changed) {
+void CookieControlsController::SetStateChangedViaBypass(bool changed) {
   // Avoid a toggle back and forth being marked as "changed".
-  user_changed_cookie_blocking_ = changed && !user_changed_cookie_blocking_;
+  user_changed_ub_state_ = changed && !user_changed_ub_state_;
 }
 
 int CookieControlsController::GetAllowedThirdPartyCookiesSitesCount() const {
@@ -474,10 +473,10 @@ void CookieControlsController::UpdateLastVisitedSitesMap() {
 
 void CookieControlsController::UpdatePageReloadStatus(
     int recent_reloads_count) {
-  if (HasUserChangedCookieBlockingForSite() && recent_reloads_count > 0) {
+  if (StateChangedViaBypass() && recent_reloads_count > 0) {
     waiting_for_page_load_finish_ = true;
   }
-  SetUserChangedCookieBlockingForSite(false);
+  SetStateChangedViaBypass(false);
   recent_reloads_count_ = recent_reloads_count;
 
   if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {

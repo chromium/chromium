@@ -122,6 +122,10 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     view_controller()->OnToggleButtonPressed(new_value);
   }
 
+  void SimulateTrackingProtectionsButtonPress() {
+    view_controller()->OnTrackingProtectionsButtonPressed();
+  }
+
   void CheckCookiesException(const GURL& first_party_url, bool should_exist) {
     content_settings::SettingInfo info;
     EXPECT_EQ(host_content_settings_map()->GetContentSetting(
@@ -182,43 +186,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   CheckCookiesException(third_party_cookie_page_url(), /*should_exist=*/false);
 }
 
-class TrackingProtectionBubbleViewBrowserTest
-    : public CookieControlsBubbleViewBrowserTest {
- public:
-  TrackingProtectionBubbleViewBrowserTest() {
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    // Enable FPP to display UB UX with ACT features
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kActUserBypassUx,
-         privacy_sandbox::kFingerprintingProtectionUx},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-};
-
-IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
-                       ToggleCreatesTrackingProtectionException) {
-  // Set FPP pref to display UB UX with ACT feature.
-  // Note: this value is set in the incognito profile for testing, in reality
-  // this will be set on the regular profile.
-  incognito_profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
-  ShowIncognitoBubble();
-  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
-      third_party_cookie_page_url()));
-  SimulateTogglePress(false);
-  EXPECT_TRUE(tracking_protection_settings->HasTrackingProtectionException(
-      third_party_cookie_page_url()));
-  SimulateTogglePress(true);
-  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
-      third_party_cookie_page_url()));
-}
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
                        HidingControlsClosesBubble) {
@@ -304,4 +271,40 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
       views::Widget::ClosedReason::kUnspecified);
 
   WaitForBubbleClose();
+}
+
+class TrackingProtectionBubbleViewBrowserTest
+    : public CookieControlsBubbleViewBrowserTest {
+ public:
+  TrackingProtectionBubbleViewBrowserTest() {
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    // Enable FPP to display UB UX with ACT features
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kActUserBypassUx,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TrackingProtectionBubbleViewBrowserTest,
+    TrackingProtectionsButtonUpdatesTrackingProtectionException) {
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
+  ShowIncognitoBubble();
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
+  SimulateTrackingProtectionsButtonPress();
+  EXPECT_TRUE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
+  // Reset reloading state before pressing button again.
+  view_controller()->SetIsReloadingState(false);
+  SimulateTrackingProtectionsButtonPress();
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
 }

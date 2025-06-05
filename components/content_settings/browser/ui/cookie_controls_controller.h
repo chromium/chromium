@@ -80,10 +80,10 @@ class CookieControlsController final
   // Record UMA for toggling ACT User Bypass.
   void RecordActMetrics(bool pause_protections);
 
-  // Returns whether the cookie blocking setting for the current site was
-  // changed by the user via user bypass.
-  bool HasUserChangedCookieBlockingForSite();
-  void SetUserChangedCookieBlockingForSite(bool changed);
+  // Returns whether the user has changed their protections state via user
+  // bypass.
+  bool StateChangedViaBypass();
+  void SetStateChangedViaBypass(bool changed);
 
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
@@ -245,7 +245,7 @@ class CookieControlsController final
       cookie_observation_{this};
 
   bool should_reload_ = false;
-  bool user_changed_cookie_blocking_ = false;
+  bool user_changed_ub_state_ = false;
 
   // The number of page reloads in last 30 seconds.
   int recent_reloads_count_ = 0;

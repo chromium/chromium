@@ -53,6 +53,7 @@ class CookieControlsBubbleViewController
   void OnUserTriggeredReloadingAction();
   void OnToggleButtonPressed(bool toggled_on);
   void OnFeedbackButtonPressed();
+  void OnTrackingProtectionsButtonPressed();
 
   void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;
 
@@ -64,11 +65,15 @@ class CookieControlsBubbleViewController
                                           base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
 
+  void ApplyTrackingProtectionsActiveState();
+  void ApplyTrackingProtectionsPausedState();
+
   void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
                                 base::Time expiration);
 
   void FillViewForThirdPartyCookies(CookieControlsEnforcement enforcement,
                                     base::Time expiration);
+  void FillViewForTrackingProtections();
 
   void CloseBubble();
 
@@ -98,6 +103,7 @@ class CookieControlsBubbleViewController
   base::CallbackListSubscription on_user_triggered_reloading_action_callback_;
   base::CallbackListSubscription toggle_button_callback_;
   base::CallbackListSubscription feedback_button_callback_;
+  base::CallbackListSubscription tracking_protections_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
   base::WeakPtr<content::WebContents> web_contents_;
   base::ScopedObservation<content_settings::CookieControlsController,
