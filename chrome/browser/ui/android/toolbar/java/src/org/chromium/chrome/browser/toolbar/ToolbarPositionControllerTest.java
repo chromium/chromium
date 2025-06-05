@@ -226,6 +226,11 @@ public class ToolbarPositionControllerTest {
                 public int getControlsPosition() {
                     return mControlsPosition;
                 }
+
+                @Override
+                public boolean isVisibilityForced() {
+                    return false;
+                }
             };
 
     private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =

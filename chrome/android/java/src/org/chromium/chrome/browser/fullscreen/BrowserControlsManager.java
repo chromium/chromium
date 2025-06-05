@@ -685,6 +685,24 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     @Override
+    public boolean isVisibilityForced() {
+        Tab tab = getTab();
+
+        // If the tab gets destroyed, we should be transitioning to a state
+        // where there are no tabs (in which case we show the grid tab
+        // switcher) or we change to another tab (in which case we force the
+        // controls to be visible for a while.)
+        if (tab != null && tab.isDestroyed()) {
+            return true;
+        }
+
+        @BrowserControlsState
+        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(tab);
+        return constraints == BrowserControlsState.HIDDEN
+                || constraints == BrowserControlsState.SHOWN;
+    }
+
+    @Override
     public void setControlsPosition(
             @ControlsPosition int controlsPosition,
             int newTopControlsHeight,
@@ -893,13 +911,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         && getBottomContentOffset() == getBottomControlsMinHeight());
         updateControlOffset();
         notifyControlOffsetChanged();
-    }
-
-    private boolean isVisibilityForced() {
-        @BrowserControlsState
-        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
-        return constraints == BrowserControlsState.HIDDEN
-                || constraints == BrowserControlsState.SHOWN;
     }
 
     private void notifyControlOffsetChanged() {
