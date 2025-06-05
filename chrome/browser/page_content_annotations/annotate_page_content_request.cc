@@ -45,17 +45,7 @@ void RecordPdfPageCountMetrics(
 
 // static
 std::unique_ptr<AnnotatedPageContentRequest>
-AnnotatedPageContentRequest::MaybeCreate(content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* page_content_extraction_service = page_content_annotations::
-      PageContentExtractionServiceFactory::GetForProfile(profile);
-
-  if (!page_content_extraction_service ||
-      !page_content_extraction_service->ShouldEnablePageContentExtraction()) {
-    return nullptr;
-  }
-
+AnnotatedPageContentRequest::Create(content::WebContents* web_contents) {
   auto request = blink::mojom::AIPageContentOptions::New();
   request->on_critical_path = page_content_annotations::features::
       IsAnnotatedPageContentOnCriticalPath();

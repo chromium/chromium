@@ -18,8 +18,8 @@ namespace page_content_annotations {
 // extracts page content.
 class AnnotatedPageContentRequest {
  public:
-  static std::unique_ptr<AnnotatedPageContentRequest> MaybeCreate(
-      content::WebContents* web_contents);
+  static std::unique_ptr<AnnotatedPageContentRequest> Create(
+                                 content::WebContents* web_contents);
 
   AnnotatedPageContentRequest(content::WebContents* web_contents,
                               blink::mojom::AIPageContentOptionsPtr request);
