@@ -171,14 +171,12 @@ public class AutofillFallbackSurfaceLauncherTest {
     }
 
     @Test
-    public void testOpenManagePasses_OpensCct() {
+    public void testOpenManagePasses_OpensNewActivity() {
         AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(mWindowAndroid);
 
         ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
         Intent cctIntent = shadowActivity.getNextStartedActivity();
         assertNotNull(cctIntent);
-        assertEquals(
-                AutofillFallbackSurfaceLauncher.GOOGLE_WALLET_PASSES_URL,
-                cctIntent.getDataString());
+        assertEquals(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL, cctIntent.getDataString());
     }
 }

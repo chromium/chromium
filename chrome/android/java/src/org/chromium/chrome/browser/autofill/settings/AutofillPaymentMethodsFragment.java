@@ -35,6 +35,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -407,7 +408,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     R.string.payment_methods_settings_loyalty_cards_description);
             loyalty_cards_pref.setKey(PREF_LOYALTY_CARDS);
             getPreferenceScreen().addPreference(loyalty_cards_pref);
-            // TODO: crbug.com/420397847 - add functionality to link to wallet app.
+            loyalty_cards_pref.setOnPreferenceClickListener(
+                    (preference) -> {
+                        GoogleWalletLauncher.openGoogleWallet(
+                                getActivity(), getActivity().getPackageManager());
+                        return true;
+                    });
         }
     }
 
