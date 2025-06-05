@@ -56,6 +56,8 @@ export function getHtml(this: LanguageMenuElement) {
     <language-toast .numAvailableVoices="${this.availableVoices.length}">
     </language-toast>
   </div>
+  <div slot="footer" class="language-menu-footer">
+  </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
   // clang-format on

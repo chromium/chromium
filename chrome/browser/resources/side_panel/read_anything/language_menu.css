@@ -70,6 +70,12 @@ cr-icon {
   padding-bottom: 16px;
 }
 
+.language-menu-footer {
+  padding-bottom: 8px;
+  padding-top: 0px;
+  border-top: 0px;
+}
+
 .search-field {
   padding: 0 var(--sp-body-padding) 0 var(--sp-body-padding);
 }
