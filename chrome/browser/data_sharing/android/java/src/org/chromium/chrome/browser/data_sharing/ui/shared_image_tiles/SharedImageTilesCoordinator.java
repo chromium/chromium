@@ -179,6 +179,7 @@ public class SharedImageTilesCoordinator {
         mAvailableMemberCount = count;
         mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
         mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
+        mModel.set(SharedImageTilesProperties.SHOW_MANAGE_TILE, false);
         initializeSharedImageTiles();
     }
 
@@ -313,6 +314,9 @@ public class SharedImageTilesCoordinator {
 
         // Add icon tile(s).
         mModel.set(SharedImageTilesProperties.ICON_TILES, mIconTilesCount);
+
+        // Add manage tile.
+        mModel.set(SharedImageTilesProperties.SHOW_MANAGE_TILE, mIconTilesCount == 1);
 
         // Add number tile.
         if (showNumberTile) {

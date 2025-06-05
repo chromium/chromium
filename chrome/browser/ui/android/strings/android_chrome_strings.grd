@@ -6821,6 +6821,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name ="IDS_COLLABORATION_MANAGE_GROUP_TITLE" desc="The Title for the manage flow dialog for a shared group.">
         Manage access
       </message>
+      <message name ="IDS_COLLABORATION_MANAGE_ICON" desc="The text for the manage icon." formatter_data="android_java">
+        Manage icon
+      </message>
       <message name ="IDS_COLLABORATION_MANAGE_STOP_SHARING_OPTION" desc="The Label for the manage flow stop sharing option and confirmation button.">
         Stop sharing
       </message>

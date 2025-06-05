@@ -37,6 +37,17 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
             android:visibility="gone"/>
 
+        <ImageView
+            android:src="@drawable/ic_person_manage_24dp"
+            android:id="@+id/shared_image_tiles_manage"
+            android:contentDescription="@string/collaboration_manage_icon"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            app:tint="@color/default_icon_color_secondary_tint_list"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView>

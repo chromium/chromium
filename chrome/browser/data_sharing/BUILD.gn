@@ -50,6 +50,7 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "android/java/res/drawable/ic_person_manage_24dp.xml",
       "android/java/res/drawable/round_image_filled.xml",
       "android/java/res/layout/recent_activity_bottom_sheet.xml",
       "android/java/res/layout/recent_activity_log_item.xml",

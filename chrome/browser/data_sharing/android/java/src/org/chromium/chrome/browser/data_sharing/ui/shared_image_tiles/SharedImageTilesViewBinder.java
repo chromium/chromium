@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.ICON_TILES;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.IS_LOADING;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.REMAINING_TILES;
+import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.SHOW_MANAGE_TILE;
 import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.VIEW_CONFIG;
 
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +33,8 @@ class SharedImageTilesViewBinder {
             if (model.get(REMAINING_TILES) > 0) {
                 view.showCountTile(model.get(REMAINING_TILES));
             }
+        } else if (SHOW_MANAGE_TILE == propertyKey) {
+            view.showManageTile(model.get(SHOW_MANAGE_TILE));
         }
     }
 }

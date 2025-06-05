@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -12,6 +13,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +27,7 @@ public class SharedImageTilesView extends LinearLayout {
     private final Context mContext;
     private TextView mCountTileView;
     private LinearLayout mLastButtonTileView;
+    private ImageView mManageIcon;
 
     /**
      * Constructor for a SharedImageTilesView.
@@ -42,6 +45,7 @@ public class SharedImageTilesView extends LinearLayout {
         super.onFinishInflate();
         mCountTileView = findViewById(R.id.tiles_count);
         mLastButtonTileView = findViewById(R.id.last_tile_container);
+        mManageIcon = findViewById(R.id.shared_image_tiles_manage);
     }
 
     void applyConfig(SharedImageTilesConfig config) {
@@ -67,6 +71,11 @@ public class SharedImageTilesView extends LinearLayout {
         mCountTileView.setTextColor(config.textColor);
         mCountTileView.setPadding(
                 /* left= */ textPadding, /* top= */ 0, /* right= */ textPadding, /* bottom= */ 0);
+
+        // Style the manage icon.
+        mManageIcon.setImageTintList(ColorStateList.valueOf(config.textColor));
+        mManageIcon.setMaxHeight(config.iconSizeDp);
+        mManageIcon.setMaxWidth(config.iconSizeDp);
     }
 
     void resetIconTiles(int count) {
@@ -76,6 +85,7 @@ public class SharedImageTilesView extends LinearLayout {
             removeViewAt(i);
         }
         mCountTileView.setVisibility(View.GONE);
+        mManageIcon.setVisibility(View.GONE);
         mLastButtonTileView.setVisibility(View.GONE);
 
         // Add icon views.
@@ -94,5 +104,15 @@ public class SharedImageTilesView extends LinearLayout {
         String countText =
                 res.getString(R.string.shared_image_tiles_count, Integer.toString(count));
         mCountTileView.setText(countText);
+    }
+
+    void showManageTile(boolean show) {
+        if (show) {
+            mLastButtonTileView.setVisibility(View.VISIBLE);
+            mCountTileView.setVisibility(View.GONE);
+            mManageIcon.setVisibility(View.VISIBLE);
+        } else {
+            mManageIcon.setVisibility(View.GONE);
+        }
     }
 }
