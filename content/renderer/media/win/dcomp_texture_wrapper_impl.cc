@@ -192,7 +192,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_GLES2_READ |
             gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-        GL_TEXTURE_EXTERNAL_OES);
+        GL_TEXTURE_EXTERNAL_OES, "DCOMPTextureWrapperImpl");
 
     CHECK(shared_image);
     dcomp_texture_resources_ =

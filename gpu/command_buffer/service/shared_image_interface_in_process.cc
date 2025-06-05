@@ -239,9 +239,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
             base::Unretained(this), mailbox, si_info, surface_handle),
         /*sync_token_fences=*/{}, MakeSyncToken(next_fence_sync_release_++));
   }
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
-                                                 GenUnverifiedSyncToken(),
-                                                 holder_, gfx::EMPTY_BUFFER);
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info, GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
@@ -285,9 +284,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                     /*sync_token_fences=*/{},
                     MakeSyncToken(next_fence_sync_release_++));
   }
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
-                                                 GenUnverifiedSyncToken(),
-                                                 holder_, gfx::EMPTY_BUFFER);
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info, GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
@@ -344,8 +342,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     si_info_copy.meta.format.ClearPrefersExternalSampler();
   }
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info_copy.meta, GenUnverifiedSyncToken(),
-      std::move(handle_info), holder_);
+      mailbox, si_info_copy, GenUnverifiedSyncToken(), std::move(handle_info),
+      holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
@@ -451,7 +449,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(),
+      mailbox, si_info, GenUnverifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
                                 si_info.meta.format, si_info.meta.size,
                                 buffer_usage),
@@ -485,7 +483,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, gmb_type);
+      mailbox, si_info, GenUnverifiedSyncToken(), holder_, gmb_type);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -518,9 +516,8 @@ SharedImageInterfaceInProcess::CreateSharedImageForSoftwareCompositor(
                                    std::move(handle)),
                     /*sync_token_fences=*/{}, sync_token);
   }
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
-                                                 GenUnverifiedSyncToken(),
-                                                 holder_, std::move(mapping));
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox, si_info, GenUnverifiedSyncToken(), holder_, std::move(mapping));
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(
@@ -553,7 +550,8 @@ SharedImageInterfaceInProcess::CreateSwapChain(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage) {
+    gpu::SharedImageUsageSet usage,
+    std::string_view debug_label) {
   NOTREACHED();
 }
 

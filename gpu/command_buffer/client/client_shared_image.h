@@ -95,14 +95,14 @@ class GPU_EXPORT ClientSharedImage
 
   // `sii_holder` must not be null.
   ClientSharedImage(const Mailbox& mailbox,
-                    const SharedImageMetadata& metadata,
+                    const SharedImageInfo& info,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     gfx::GpuMemoryBufferType gmb_type);
 
   // `sii_holder` must not be null.
   ClientSharedImage(const Mailbox& mailbox,
-                    const SharedImageMetadata& metadata,
+                    const SharedImageInfo& info,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     base::WritableSharedMemoryMapping mapping);
@@ -111,7 +111,7 @@ class GPU_EXPORT ClientSharedImage
   // used on windows platform.
   ClientSharedImage(
       const Mailbox& mailbox,
-      const SharedImageMetadata& metadata,
+      const SharedImageInfo& info,
       const SyncToken& sync_token,
       GpuMemoryBufferHandleInfo handle_info,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder,
@@ -125,6 +125,7 @@ class GPU_EXPORT ClientSharedImage
   SkAlphaType alpha_type() const { return metadata_.alpha_type; }
   SharedImageUsageSet usage() const { return metadata_.usage; }
   std::optional<gfx::BufferUsage> buffer_usage() const { return buffer_usage_; }
+  std::string debug_label() const { return debug_label_; }
   bool is_software() const { return is_software_; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }
@@ -216,9 +217,9 @@ class GPU_EXPORT ClientSharedImage
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       gfx::BufferUsage buffer_usage,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
+    SharedImageInfo info(metadata, "CSICreateForTesting");
     auto client_si = base::MakeRefCounted<ClientSharedImage>(
-        mailbox, metadata, sync_token, sii_holder,
-        gpu_memory_buffer->GetType());
+        mailbox, info, sync_token, sii_holder, gpu_memory_buffer->GetType());
     client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
     client_si->buffer_usage_ = buffer_usage;
     return client_si;
@@ -325,7 +326,7 @@ class GPU_EXPORT ClientSharedImage
   friend class TestSharedImageInterface;
   friend class media::VideoFrame;
   ClientSharedImage(const Mailbox& mailbox,
-                    const SharedImageMetadata& metadata,
+                    const SharedImageInfo& info,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     uint32_t texture_target);
@@ -369,6 +370,7 @@ class GPU_EXPORT ClientSharedImage
 
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
+  const std::string debug_label_;
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
   // Helper to hold the instance of GpuMemoryBufferManager.
@@ -416,6 +418,7 @@ struct GPU_EXPORT ExportedSharedImage {
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
                       const SyncToken& sync_token,
+                      std::string debug_label,
                       std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                       std::optional<gfx::BufferUsage> buffer_usage,
                       uint32_t texture_target);
@@ -423,6 +426,7 @@ struct GPU_EXPORT ExportedSharedImage {
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
+  std::string debug_label_;
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   uint32_t texture_target_ = 0;

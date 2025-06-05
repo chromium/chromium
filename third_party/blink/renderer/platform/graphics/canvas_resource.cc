@@ -1011,7 +1011,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainSharedImages shared_images =
       sii->CreateSwapChain(format, size, color_space, kTopLeft_GrSurfaceOrigin,
-                           kPremul_SkAlphaType, usage);
+                           kPremul_SkAlphaType, usage,
+                           "CanvasResourceSwapChain");
   CHECK(shared_images.back_buffer);
   CHECK(shared_images.front_buffer);
   back_buffer_shared_image_ = std::move(shared_images.back_buffer);

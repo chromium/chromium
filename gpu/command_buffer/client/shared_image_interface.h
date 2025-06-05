@@ -91,6 +91,8 @@ struct SharedImageInfo {
              kPremul_SkAlphaType,
              usage),
         debug_label(debug_label) {}
+  SharedImageInfo(const SharedImageMetadata& meta, std::string_view debug_label)
+      : meta(meta), debug_label(debug_label) {}
 
   SharedImageMetadata meta;
   std::string debug_label;
@@ -290,7 +292,8 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage) = 0;
+      gpu::SharedImageUsageSet usage,
+      std::string_view debug_label) = 0;
 
   // Swaps front and back buffer of a swap chain. Back buffer mailbox still
   // refers to the back buffer of the swap chain after calling PresentSwapChain.
@@ -356,7 +359,8 @@ class GPU_EXPORT SharedImageInterface
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
-      uint32_t texture_target);
+      uint32_t texture_target,
+      std::string_view debug_label);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 

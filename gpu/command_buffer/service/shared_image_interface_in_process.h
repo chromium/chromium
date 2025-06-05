@@ -117,7 +117,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage) override;
+                                        SharedImageUsageSet usage,
+                                        std::string_view debug_label) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_FUCHSIA)

@@ -42,7 +42,7 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       const gpu::SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle handle) override {
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::Generate(), si_info.meta, gpu::SyncToken(), holder_,
+        gpu::Mailbox::Generate(), si_info, gpu::SyncToken(), holder_,
         handle.type);
   }
 
@@ -53,7 +53,7 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::Generate(), si_info.meta, gpu::SyncToken(),
+        gpu::Mailbox::Generate(), si_info, gpu::SyncToken(),
         gpu::GpuMemoryBufferHandleInfo(std::move(buffer_handle),
                                        si_info.meta.format, si_info.meta.size,
                                        buffer_usage),

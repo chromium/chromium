@@ -91,7 +91,8 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
     GrSurfaceOrigin /*surface_origin*/,
     SkAlphaType /*alpha_type*/,
     SharedImageUsageSet /*usage*/,
-    uint32_t /*texture_target*/) {
+    uint32_t /*texture_target*/,
+    std::string_view /*debug_label*/) {
   return nullptr;
 }
 

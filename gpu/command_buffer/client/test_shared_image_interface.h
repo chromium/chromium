@@ -96,7 +96,8 @@ class TestSharedImageInterface : public SharedImageInterface {
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage) override;
+                                        SharedImageUsageSet usage,
+                                        std::string_view debug_label) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 

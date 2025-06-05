@@ -37,6 +37,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
     return shared_image.creation_sync_token_;
   }
 
+  static std::string debug_label(const gpu::ExportedSharedImage& shared_image) {
+    return shared_image.debug_label_;
+  }
+
   static uint32_t texture_target(const gpu::ExportedSharedImage& shared_image) {
     return shared_image.texture_target_;
   }
@@ -55,6 +59,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
                    gpu::ExportedSharedImage* out) {
     if (!data.ReadMailbox(&out->mailbox_) ||
         !data.ReadMetadata(&out->metadata_) ||
+        !data.ReadDebugLabel(&out->debug_label_) ||
         !data.ReadCreationSyncToken(&out->creation_sync_token_) ||
         !data.ReadBufferHandle(&out->buffer_handle_) ||
         !data.ReadBufferUsage(&out->buffer_usage_)) {

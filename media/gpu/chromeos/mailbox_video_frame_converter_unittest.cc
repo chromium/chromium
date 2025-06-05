@@ -153,13 +153,14 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
   MOCK_METHOD1(ImportSharedImage,
                scoped_refptr<gpu::ClientSharedImage>(
                    gpu::ExportedSharedImage exported_shared_image));
-  MOCK_METHOD6(CreateSwapChain,
+  MOCK_METHOD7(CreateSwapChain,
                SwapChainSharedImages(viz::SharedImageFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,
                                      GrSurfaceOrigin surface_origin,
                                      SkAlphaType alpha_type,
-                                     gpu::SharedImageUsageSet usage));
+                                     gpu::SharedImageUsageSet usage,
+                                     std::string_view debug_label));
   MOCK_METHOD2(PresentSwapChain,
                void(const gpu::SyncToken& sync_token,
                     const gpu::Mailbox& mailbox));
