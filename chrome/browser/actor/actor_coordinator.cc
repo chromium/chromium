@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -133,8 +132,10 @@ void ActorCoordinator::Act(const BrowserAction& action,
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  TaskId task_id(action.task_id());
   if (tab_scoped_actions_deprecated_ && !tab_) {
-    ACTOR_LOG() << "Unable to perform action: tab has been destroyed";
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "Unable to perform action: tab has been destroyed");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
@@ -142,8 +143,9 @@ void ActorCoordinator::Act(const BrowserAction& action,
 
   // NOTE: Improve this API by queuing the action instead.
   if (actions_) {
-    ACTOR_LOG()
-        << "Unable to perform action: task already has action in progress";
+    journal_->Log(
+        LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+        "Unable to perform action: task already has action in progress");
     PostTaskForActCallback(std::move(callback),
                            MakeResult(mojom::ActionResultCode::kError,
                                       "Task already has action in progress"));
@@ -154,7 +156,7 @@ void ActorCoordinator::Act(const BrowserAction& action,
   action_index_ = 0;
 
   MayActOnTab(*tab_, base::BindOnce(&ActorCoordinator::OnMayActOnTabResponse,
-                                    GetWeakPtr(), TaskId(action.task_id()),
+                                    GetWeakPtr(), task_id,
                                     tab_->GetContents()
                                         ->GetPrimaryMainFrame()
                                         ->GetLastCommittedOrigin()));
@@ -172,8 +174,9 @@ void ActorCoordinator::OnMayActOnTabResponse(
   }
 
   if (tab_scoped_actions_deprecated_ && !tab_.get()) {
-    ACTOR_LOG()
-        << "Unable to perform action: Tab closed while checking site policy";
+    journal_->Log(
+        LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+        "Unable to perform action: Tab closed while checking site policy");
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "Tab closed while checking site policy"));
     return;
@@ -185,7 +188,8 @@ void ActorCoordinator::OnMayActOnTabResponse(
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    NOTIMPLEMENTED() << "Acting after cross-origin navigation occurred";
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "Acting after cross-origin navigation occurred");
     CompleteActions(
         MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                    "Acting after cross-origin navigation occurred"));
@@ -193,6 +197,8 @@ void ActorCoordinator::OnMayActOnTabResponse(
   }
 
   if (!may_act) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "URL blocked for actions");
     CompleteActions(MakeResult(mojom::ActionResultCode::kUrlBlocked,
                                "URL blocked for actions"));
     return;
@@ -226,6 +232,8 @@ void ActorCoordinator::PerformOneAction(
   // TODO(https://crbug.com/411462297): tabs should not be required for all
   // actions.
   if (!tab_) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "The tab is no longer present");
     CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
                                "The tab is no longer present."));
     return;
@@ -234,6 +242,8 @@ void ActorCoordinator::PerformOneAction(
   RenderFrameHost* target_frame = FindTargetFrame(*tab_->GetContents(), action);
 
   if (!target_frame) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "The target frame is no longer present in the tab.");
     CompleteActions(
         MakeResult(mojom::ActionResultCode::kFrameWentAway,
                    "The target frame is no longer present in the tab."));
@@ -266,7 +276,9 @@ void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   }
 
   if (!IsOk(*result)) {
-    ACTOR_LOG() << "Action Failed: " << ToDebugString(*result);
+    journal_->Log(LastCommittedURLOfCurrentTask(),
+                  TaskId(actions_->proto.task_id()), "Act Failed",
+                  ToDebugString(*result));
   }
 
   PostTaskForActCallback(std::move(actions_->callback), std::move(result));
@@ -286,6 +298,13 @@ const AnnotatedPageContent* ActorCoordinator::GetLastObservedPageContent() {
 
 base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+const GURL& ActorCoordinator::LastCommittedURLOfCurrentTask() {
+  if (!tab_) {
+    return GURL::EmptyGURL();
+  }
+  return tab_->GetContents()->GetLastCommittedURL();
 }
 
 }  // namespace actor

@@ -7,6 +7,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/rand_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -96,6 +97,7 @@ AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
 void AggregatedJournal::PendingAsyncEntry::EndEntry(std::string_view details) {
   CHECK(!terminated_);
   terminated_ = true;
+  ACTOR_LOG() << "End " << event_name_ << ": " << details;
   journal_->AddEndEvent(pass_key_, task_id_, trace_id_, event_name_, details);
 }
 
@@ -108,6 +110,8 @@ AggregatedJournal::CreatePendingAsyncEntry(const std::string& url,
                                            TaskId task_id,
                                            std::string_view event_name,
                                            std::string_view details) {
+  ACTOR_LOG() << "Begin " << event_name << ": " << details;
+
   uint64_t trace_id = next_trace_id_++;
   AddEntry(std::make_unique<Entry>(
       url, mojom::JournalEntry::New(mojom::JournalEntryType::kBegin,
@@ -117,6 +121,18 @@ AggregatedJournal::CreatePendingAsyncEntry(const std::string& url,
   return base::WrapUnique(new PendingAsyncEntry(
       base::PassKey<AggregatedJournal>(), weak_ptr_factory_.GetSafeRef(),
       task_id, trace_id, event_name));
+}
+
+void AggregatedJournal::Log(const GURL& url,
+                            TaskId task_id,
+                            std::string_view event_name,
+                            std::string_view details) {
+  ACTOR_LOG() << event_name << ": " << details;
+  AddEntry(std::make_unique<Entry>(
+      url.possibly_invalid_spec(),
+      mojom::JournalEntry::New(mojom::JournalEntryType::kInstant,
+                               task_id.GetUnsafeValue(), 0, base::Time::Now(),
+                               std::string(event_name), std::string(details))));
 }
 
 void AggregatedJournal::EnsureJournalBound(content::RenderFrameHost& rfh) {

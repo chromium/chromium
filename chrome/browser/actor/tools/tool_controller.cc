@@ -20,7 +20,6 @@
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -111,8 +110,6 @@ void ToolController::Invoke(const ActionInformation& action_information,
   auto journal_event = journal.CreatePendingAsyncEntry(
       target_frame.GetLastCommittedURL().possibly_invalid_spec(), task_id,
       created_tool->JournalEvent(), created_tool->DebugString());
-
-  ACTOR_LOG() << "Starting Tool Use: " << created_tool->DebugString();
   active_state_.emplace(std::move(created_tool), std::move(result_callback),
                         target_frame.GetWeakDocumentPtr(),
                         std::move(journal_event));
@@ -156,8 +153,6 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   CHECK(active_state_);
   active_state_->journal_entry->EndEntry(ToDebugString(*result));
-  ACTOR_LOG() << "Completed Tool Invoke[" << ToDebugString(*result)
-              << "]: " << active_state_->tool->DebugString();
   PostResponseTask(std::move(active_state_->completion_callback),
                    std::move(result));
   observation_delayer_.reset();

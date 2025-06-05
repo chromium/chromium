@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -81,6 +82,12 @@ class AggregatedJournal {
       TaskId task_id,
       std::string_view event_name,
       std::string_view details);
+
+  // Log an instant event.
+  void Log(const GURL& url,
+           TaskId task_id,
+           std::string_view event_name,
+           std::string_view details);
 
   void EnsureJournalBound(content::RenderFrameHost& rfh);
   void AppendJournalEntries(content::RenderFrameHost* rfh,

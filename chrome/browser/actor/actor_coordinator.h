@@ -22,6 +22,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class GURL;
 class Profile;
 
 namespace mojo_base {
@@ -111,6 +112,8 @@ class ActorCoordinator {
 
   // Fires the callback and clears `actions`.
   void CompleteActions(mojom::ActionResultPtr result);
+
+  const GURL& LastCommittedURLOfCurrentTask();
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
