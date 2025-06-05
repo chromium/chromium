@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_INLINE_PROMO_CELL_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_INLINE_PROMO_CELL_H_
 
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 
 // TableViewCell with:
@@ -22,6 +23,9 @@
 
 // Button to dismiss the promo.
 @property(nonatomic, readonly) UIButton* closeButton;
+
+// New feature badge that is overlaying part of the promo image view.
+@property(nonatomic, readonly) NewFeatureBadgeView* badgeView;
 
 // Image view of the cell.
 @property(nonatomic, readonly) UIImageView* promoImageView;

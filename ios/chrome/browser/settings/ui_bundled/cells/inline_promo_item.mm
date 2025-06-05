@@ -14,6 +14,7 @@
   if (self) {
     self.cellClass = [InlinePromoCell class];
     _shouldShowCloseButton = YES;
+    _shouldDisplayBadge = YES;
     _enabled = YES;
   }
   return self;
@@ -25,6 +26,7 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   cell.closeButton.hidden = !self.shouldShowCloseButton;
+  cell.badgeView.hidden = !self.shouldDisplayBadge;
   cell.promoImageView.image = self.promoImage;
   cell.promoTextLabel.text = self.promoText;
   cell.enabled = self.enabled;

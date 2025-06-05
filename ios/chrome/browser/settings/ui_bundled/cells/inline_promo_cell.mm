@@ -68,9 +68,6 @@ constexpr CGFloat kPromoTextLabelMinHeightWideLayout = 60;
 }  // namespace
 
 @implementation InlinePromoCell {
-  // New feature badge that is overlaying part of the promo image view.
-  NewFeatureBadgeView* _badgeView;
-
   // View containing the image view and the new feature badge.
   UIView* _badgedImageView;
 

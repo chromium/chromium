@@ -721,6 +721,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   _trustedVaultWidgetPromoItem =
       [[InlinePromoItem alloc] initWithType:ItemTypeTrustedVaultWidgetPromo];
   _trustedVaultWidgetPromoItem.shouldShowCloseButton = NO;
+  _trustedVaultWidgetPromoItem.shouldDisplayBadge = NO;
   _trustedVaultWidgetPromoItem.promoImage =
       [UIImage imageNamed:kPasswordManagerTrustedVaultWidgetPromoImage];
   _trustedVaultWidgetPromoItem.promoText = l10n_util::GetNSStringF(

@@ -30,6 +30,9 @@
 // Whether or not the cell should be configured with its wide layout.
 @property(nonatomic, assign) BOOL shouldHaveWideLayout;
 
+// Whether or not the badge should be displayed. `YES` by default.
+@property(nonatomic, assign) BOOL shouldDisplayBadge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_INLINE_PROMO_ITEM_H_

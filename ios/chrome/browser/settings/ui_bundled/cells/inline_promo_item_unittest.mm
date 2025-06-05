@@ -108,6 +108,26 @@ TEST_F(InlinePromoItemTest, CloseButtonVisibility) {
   EXPECT_TRUE(promo_cell.closeButton.hidden);
 }
 
+// Tests that the badge visibility follows the item's `shouldDisplayBadge`
+// property.
+TEST_F(InlinePromoItemTest, BadgeVisibility) {
+  InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
+  item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  item.promoText = @"Test text";
+  item.moreInfoButtonTitle = @"Button Title";
+
+  id cell = [[[item cellClass] alloc] init];
+  InlinePromoCell* promo_cell =
+      base::apple::ObjCCastStrict<InlinePromoCell>(cell);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_FALSE(promo_cell.badgeView.hidden);
+
+  item.shouldDisplayBadge = NO;
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_TRUE(promo_cell.badgeView.hidden);
+}
+
 // Tests that the cell is as expected when disabled.
 TEST_F(InlinePromoItemTest, DisableCell) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
