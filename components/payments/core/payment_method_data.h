@@ -5,17 +5,10 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_METHOD_DATA_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_METHOD_DATA_H_
 
-#include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
-
-namespace base {
-class Value;
-}
 
 namespace payments {
 
