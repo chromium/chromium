@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/overloaded.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -52,6 +51,7 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
@@ -84,7 +84,7 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
 FillingProduct GetFillingProductFromFillingPayload(
     const FillingPayload& filling_payload) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const AutofillProfile*) { return FillingProduct::kAddress; },
           [](const CreditCard*) { return FillingProduct::kCreditCard; },
           [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
@@ -401,7 +401,7 @@ FormFiller::RefillContext::RefillContext(const AutofillField& field,
       filled_origin(field.origin()),
       original_fill_time(base::TimeTicks::Now()) {
   profile_or_credit_card = std::visit(
-      base::Overloaded{
+      absl::Overload{
           // Autofill with AI doesn't support refills.
           [](const EntityInstance*)
               -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
@@ -986,7 +986,7 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
             /*value_is_an_override=*/true};
   }
   const auto& [value_to_fill, filling_type] = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const AutofillProfile* profile)
               -> std::pair<std::u16string, std::optional<FieldType>> {
             return GetFillingValueAndTypeForProfile(

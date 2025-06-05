@@ -39,7 +39,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -166,6 +165,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
@@ -185,7 +185,7 @@ namespace {
 FillDataType GetFillDataTypeFromFillingPayload(
     const FillingPayload& filling_payload) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
           [](const CreditCard*) { return FillDataType::kCreditCard; },
           [](const EntityInstance*) { return FillDataType::kAutofillAi; },
@@ -1671,7 +1671,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
                              &autofill_field)) {
     return;
   }
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](const AutofillProfile*) {
                    form_filler_->FillOrPreviewForm(
                        action_persistence, form, filling_payload,
@@ -2523,37 +2523,35 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
-      base::Overloaded{[&](const AutofillProfile* profile) {
-                         LogAndRecordProfileFill(
-                             form_structure, trigger_autofill_field,
-                             safe_filled_fields, safe_filled_autofill_fields,
-                             *profile, trigger_source,
-                             refill_trigger_reason.has_value());
-                         MaybeShowPlusAddressEmailOverrideNotification(
-                             safe_filled_autofill_fields, safe_filled_fields,
-                             *profile, form_structure);
-                       },
-                       [&](const CreditCard* credit_card) {
-                         LogAndRecordCreditCardFill(
-                             form_structure, trigger_autofill_field,
-                             safe_filled_fields, safe_filled_autofill_fields,
-                             filled_field_ids, safe_field_ids, *credit_card,
-                             trigger_source, refill_trigger_reason.has_value());
-                       },
-                       [&](const EntityInstance* entity) {
-                         if (AutofillAiDelegate* delegate =
-                                 client().GetAutofillAiDelegate()) {
-                           delegate->OnDidFillSuggestion(
-                               entity->guid(), form_structure,
-                               trigger_autofill_field,
-                               safe_filled_autofill_fields,
-                               driver().GetPageUkmSourceId());
-                         }
-                       },
-                       [&](const VerifiedProfile*) {
-                         // TODO(crbug.com/380367784): consider moving the
-                         // notification to the delegate here.
-                       }},
+      absl::Overload{
+          [&](const AutofillProfile* profile) {
+            LogAndRecordProfileFill(
+                form_structure, trigger_autofill_field, safe_filled_fields,
+                safe_filled_autofill_fields, *profile, trigger_source,
+                refill_trigger_reason.has_value());
+            MaybeShowPlusAddressEmailOverrideNotification(
+                safe_filled_autofill_fields, safe_filled_fields, *profile,
+                form_structure);
+          },
+          [&](const CreditCard* credit_card) {
+            LogAndRecordCreditCardFill(
+                form_structure, trigger_autofill_field, safe_filled_fields,
+                safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
+                *credit_card, trigger_source,
+                refill_trigger_reason.has_value());
+          },
+          [&](const EntityInstance* entity) {
+            if (AutofillAiDelegate* delegate =
+                    client().GetAutofillAiDelegate()) {
+              delegate->OnDidFillSuggestion(
+                  entity->guid(), form_structure, trigger_autofill_field,
+                  safe_filled_autofill_fields, driver().GetPageUkmSourceId());
+            }
+          },
+          [&](const VerifiedProfile*) {
+            // TODO(crbug.com/380367784): consider moving the
+            // notification to the delegate here.
+          }},
       filling_payload);
 }
 

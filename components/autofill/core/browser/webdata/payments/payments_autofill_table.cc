@@ -22,7 +22,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
-#include "base/functional/overloaded.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -60,6 +59,7 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1643,7 +1643,7 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
         credit_card_benefit);
 
     int benefit_type =
-        std::visit(base::Overloaded{
+        std::visit(absl::Overload{
                        // WARNING: Do not renumber, since the identifiers are
                        // stored in the database.
                        [](const CreditCardFlatRateBenefit&) { return 0; },
@@ -1665,7 +1665,7 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
     insert_benefit.BindInt(index++, benefit_type);
     insert_benefit.BindInt(
         index++, base::to_underlying(std::visit(
-                     base::Overloaded{
+                     absl::Overload{
                          [](const CreditCardCategoryBenefit& a) {
                            return a.benefit_category();
                          },

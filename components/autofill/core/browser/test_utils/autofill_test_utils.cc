@@ -10,7 +10,6 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,6 +62,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect.h"
 
 using base::ASCIIToUTF16;
@@ -706,7 +706,7 @@ void SetUpCreditCardAndBenefitData(
     TestPersonalDataManager& personal_data,
     AutofillOptimizationGuide* optimization_guide) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&card](const CreditCardFlatRateBenefit& flat_rate_benefit) {
             card.set_instrument_id(
                 *flat_rate_benefit.linked_card_instrument_id());

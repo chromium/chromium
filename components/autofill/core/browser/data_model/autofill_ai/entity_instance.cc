@@ -8,7 +8,6 @@
 #include <ranges>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -21,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
@@ -61,7 +61,7 @@ std::u16string AttributeInstance::GetInfo(
   }
   CHECK(GetSupportedTypes().contains(type));
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const CountryInfo& country) {
             return country.GetCountryName(app_locale);
           },
@@ -87,7 +87,7 @@ std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
   }
   CHECK(GetSupportedTypes().contains(type));
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const CountryInfo& country) {
             return base::UTF8ToUTF16(country.GetCountryCode());
           },
@@ -106,7 +106,7 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
   }
   CHECK(GetSupportedTypes().contains(type));
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const CountryInfo&) { return VerificationStatus::kNoStatus; },
           [&](const DateInfo&) { return VerificationStatus::kNoStatus; },
           [&](const NameInfo& name) {
@@ -127,7 +127,7 @@ void AttributeInstance::SetInfo(FieldType type,
     return;
   }
   CHECK(GetSupportedTypes().contains(type));
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](CountryInfo& country) {
                    // We assume that the given `value` is either a valid
                    // country code or a valid country name localized to the
@@ -158,7 +158,7 @@ void AttributeInstance::SetRawInfo(FieldType type,
     return;
   }
   CHECK(GetSupportedTypes().contains(type));
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](CountryInfo& country) {
                    if (!country.SetCountryFromCountryCode(value)) {
                      // In case `value` isn't a valid country
@@ -178,7 +178,7 @@ void AttributeInstance::SetRawInfo(FieldType type,
 
 FieldTypeSet AttributeInstance::GetSupportedTypes() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo& name) { return name.GetSupportedTypes(); },
@@ -191,7 +191,7 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
 
 FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo&) { return NameInfo::kDatabaseStoredTypes; },
@@ -213,7 +213,7 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     // be classified by Autofill's logic but was classified by the ML model. In
     // that case, we assume the type is the top-level type of the attribute.
     return std::visit(
-        base::Overloaded{
+        absl::Overload{
             [&](const CountryInfo&) { return type().field_type(); },
             [&](const DateInfo&) { return type().field_type(); },
             [&](const NameInfo&) { return NAME_FULL; },
@@ -232,9 +232,9 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
 
 void AttributeInstance::FinalizeInfo() {
   std::visit(
-      base::Overloaded{[&](const CountryInfo&) {}, [&](const DateInfo&) {},
-                       [&](NameInfo& name) { name.FinalizeAfterImport(); },
-                       [&](const StateInfo&) {}, [&](const std::u16string&) {}},
+      absl::Overload{[&](const CountryInfo&) {}, [&](const DateInfo&) {},
+                     [&](NameInfo& name) { name.FinalizeAfterImport(); },
+                     [&](const StateInfo&) {}, [&](const std::u16string&) {}},
       info_);
 }
 

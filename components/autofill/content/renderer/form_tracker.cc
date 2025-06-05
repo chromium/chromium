@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -480,7 +481,7 @@ void FormTracker::UpdateLastInteractedElement(
   //
   // `form` is null if `element_id` is a FieldRendererId.
   auto [document, form_element] = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](FormRendererId form_id) {
             CHECK(form_id);
             WebFormElement form = form_util::GetFormByRendererId(form_id);
