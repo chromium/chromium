@@ -1328,10 +1328,10 @@ public class ChildProcessConnection {
         assert isRunningOnLauncherThread();
         synchronized (mBindingStateLock) {
             // This will handle all processes with only a WAIVED binding, and
-            // the last visible tab, which covers all renderers (W or WV), but
+            // the last visible tab, which covers all renderers (W or WN), but
             // excludes the GPU process (WS).
             if (mBindingState != ChildBindingState.WAIVED
-                    && mBindingState != ChildBindingState.VISIBLE) return;
+                    && mBindingState != ChildBindingState.NOT_PERCEPTIBLE) return;
         }
         if (mService == null) return;
         try {
