@@ -407,6 +407,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
  private:
+  friend class MockWebContentsAccessibilityAndroid;
+
+  WebContentsAccessibilityAndroid();
+
   BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager();
 
   BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id);

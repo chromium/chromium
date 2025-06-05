@@ -14,6 +14,11 @@ class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
  public:
   TestAXPlatformTreeManagerDelegate();
 
+  void SetWebContentsAccessibility(
+      content::WebContentsAccessibility* web_contents_accessibility) {
+    web_contents_accessibility_ = web_contents_accessibility;
+  }
+
   void AccessibilityPerformAction(const AXActionData& data) override;
   bool AccessibilityViewHasFocus() override;
   void AccessibilityViewSetFocus() override;
@@ -40,6 +45,8 @@ class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
 
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;
+  raw_ptr<content::WebContentsAccessibility> web_contents_accessibility_ =
+      nullptr;
 };
 
 }  // namespace ui

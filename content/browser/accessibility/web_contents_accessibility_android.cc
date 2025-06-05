@@ -1023,6 +1023,8 @@ WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
   return GetCanonicalJNIString(env, all_keys).AsLocalRef(env);
 }
 
+WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid() {}
+
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
           GetRootBrowserAccessibilityManager()) {
