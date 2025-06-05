@@ -901,7 +901,9 @@ public class NewTabPageLayout extends LinearLayout
 
         boolean showLensButton = !shouldShowComposeplateButton && shouldShowLensButton;
         mSearchBoxCoordinator.setLensButtonVisibility(showLensButton);
-        LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, showLensButton);
+        // The lens button will be shown either in the fake search box or the composeplate view.
+        LensMetrics.recordShown(
+                LensEntryPoint.NEW_TAB_PAGE, showLensButton || shouldShowComposeplateButton);
 
         mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
         mComposeplateCoordinator.setVisibility(shouldShowComposeplateButton);
