@@ -30,6 +30,14 @@ class TailoredSecurityConsentedModalAndroid {
 
  private:
   friend class TailoredSecurityConsentedModalAndroidTest;
+  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityConsentedModalAndroidTest,
+                           HandleMessageDismissedWithSelfDeletingCallback);
+  FRIEND_TEST_ALL_PREFIXES(
+      TailoredSecurityConsentedModalAndroidTest,
+      HandleAccepted_EsbSynced_NullWebContents_EnabledMessage_LogsFailed);
+  FRIEND_TEST_ALL_PREFIXES(
+      TailoredSecurityConsentedModalAndroidTest,
+      HandleAccepted_EsbSynced_NullWebContents_DisabledMessage_LogsFailed);
   void DismissMessageInternal(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
   void HandleMessageAccepted();
