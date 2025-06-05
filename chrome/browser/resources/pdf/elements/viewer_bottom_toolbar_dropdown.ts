@@ -80,16 +80,16 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
 
   // Exit out of the dropdown when focus shifts away from the dropdown menu.
   private handleFocusOut_(e: FocusEvent) {
-    if (!(e.relatedTarget instanceof HTMLElement)) {
+    // toggleDropdown_() should have already removed this event handler.
+    assert(this.showDropdown_);
+
+    // Skip if the focus target is the menu.
+    const nextElement = e.relatedTarget;
+    if (nextElement instanceof HTMLElement && nextElement !== this &&
+        this.contains(nextElement)) {
       return;
     }
 
-    // Skip if dropdown is not shown or if the focus target is the menu.
-    const nextElement = e.relatedTarget;
-    if (!this.showDropdown_ ||
-        (nextElement !== this && this.contains(nextElement))) {
-      return;
-    }
     this.toggleDropdown_();
   }
 
