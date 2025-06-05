@@ -1416,7 +1416,6 @@ if (use_blink && !is_cronet_build) {
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
-      "//third_party/blink/web_tests/android/",
       "//third_party/blink/web_tests/animations/",
       "//third_party/blink/web_tests/app_banner/",
       "//third_party/blink/web_tests/bindings/",

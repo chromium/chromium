@@ -58,10 +58,6 @@ if (is_android) {
       "//third_party/blink/web_tests/SlowTests",
       "//third_party/blink/web_tests/StaleTestExpectations",
       "//third_party/blink/web_tests/TestExpectations",
-
-      # Android-specific expectations
-      "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
-      "//third_party/blink/web_tests/android/WPTSmokeTestCases",
     ]
     data_deps = [
       ":wpt_tests_isolate",
