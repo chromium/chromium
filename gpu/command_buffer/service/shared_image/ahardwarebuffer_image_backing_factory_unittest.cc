@@ -153,7 +153,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, Basic) {
 // Test to check interaction between GL and skia representations.
 // We write to a GL texture using gl representation and then read from skia
 // representation.
-TEST_F(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
+TEST_P(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
