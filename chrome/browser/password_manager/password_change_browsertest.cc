@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       FailureBubbleNotDisplayedAutomatically) {
+                       FailureDialogDisplayedAutomatically) {
   SetPrivacyNoticeAcceptedPref();
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -813,9 +813,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
     return delegate->GetCurrentState() ==
            PasswordChangeDelegate::State::kPasswordChangeFailed;
   }));
-
-  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
-  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  // Now bubble should automatically appear.
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
