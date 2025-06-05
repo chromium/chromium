@@ -5713,8 +5713,12 @@ if (!is_android) {
     sources += metric_integration_sources
 
     if (!is_chromeos) {
-      sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
-      deps += [ "//chrome/browser/webauthn:test_support" ]
+      sources += [
+        "../browser/webauthn/enclave_authenticator_browsertest.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest_base.cc",
+        "../browser/webauthn/enclave_authenticator_browsertest_base.h",
+      ]
+      deps += [ "//components/os_crypt/sync:test_support" ]
     }
 
     if (!is_chromeos) {
@@ -11504,7 +11508,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/user_education/impl/browser_feature_promo_preconditions_interactive_uitest.cc",
         "../browser/ui/views/user_education/product_messaging_controller_interactive_uitest.cc",
         "../browser/ui/views/user_education/tutorial_interactive_uitest.cc",
-        "../browser/webauthn/webauthn_immediate_mediation_interactive_uitest.cc",
         "interaction/interaction_sequence_interactive_uitest.cc",
         "interaction/interaction_test_util_browser_interactive_uitest.cc",
         "interaction/interaction_test_util_interactive_uitest.cc",
@@ -11536,7 +11539,6 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/page_action:interactive_ui_tests",
         "//chrome/browser/ui/views/webid:interactive_ui_tests",
         "//chrome/browser/ui/views/zoom:interactive_ui_tests",
-        "//chrome/browser/webauthn:test_support",
         "//chrome/test/data/webui:resources_grit",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",

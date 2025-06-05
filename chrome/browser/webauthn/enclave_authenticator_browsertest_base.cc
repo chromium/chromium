@@ -4,25 +4,17 @@
 
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <utility>
-
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "build/buildflag.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
@@ -38,27 +30,16 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
-#include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/features.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
-#include "device/fido/mac/fake_icloud_keychain.h"
-#include "device/fido/mac/util.h"
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -204,6 +185,9 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   https_server_.StartAcceptingConnections();
   host_resolver()->AddRule("*", "127.0.0.1");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 }
 
 void EnclaveAuthenticatorTestBase::TearDownOnMainThread() {

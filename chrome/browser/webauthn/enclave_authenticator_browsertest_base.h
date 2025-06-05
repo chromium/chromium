@@ -7,12 +7,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <variant>
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/test_util.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/render_frame_host.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
@@ -39,7 +39,13 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/test/test_future.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
+#include "chrome/common/chrome_version.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/mac/fake_icloud_keychain.h"
 #include "device/fido/mac/util.h"
 #endif  // BUILDFLAG(IS_MAC)
