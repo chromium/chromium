@@ -47,7 +47,11 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #endif
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             privacy_sandbox::kFingerprintingProtectionUx},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+#if BUILDFLAG(ENABLE_GLIC)
+            features::kGlicClosedCaptioning
+#endif
+        });
     set_test_loader_host(chrome::kChromeUISettingsHost);
   }
 

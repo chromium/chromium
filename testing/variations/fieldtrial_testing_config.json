@@ -10298,6 +10298,22 @@
             ]
         }
     ],
+    "GlicClosedCaptioning": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicClosedCaptioning"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicContextualCueingDogfood": [
         {
             "platforms": [
