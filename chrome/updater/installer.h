@@ -73,8 +73,9 @@ std::string LookupString(const base::FilePath& path,
                          const std::string& keyname,
                          const std::string& default_value);
 
-// Retrieves the version of the installed application. If the version cannot
-// be determined the `default_value` is returned.
+// Retrieves the installed version of the provided `app_id`. If `app_id` is not
+// installed, the `default_value` is returned. `version_path` and `version_key`
+// are not used on Windows.
 base::Version LookupVersion(UpdaterScope scope,
                             const std::string& app_id,
                             const base::FilePath& version_path,

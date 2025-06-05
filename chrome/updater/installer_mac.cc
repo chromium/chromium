@@ -59,7 +59,7 @@ base::Version LookupVersion(UpdaterScope scope,
   std::optional<std::string> value =
       ReadValueFromPlist(version_path, version_key);
   if (value) {
-    base::Version value_version(*value);
+    const base::Version value_version(*value);
     return value_version.IsValid() ? value_version : default_value;
   }
   return default_value;

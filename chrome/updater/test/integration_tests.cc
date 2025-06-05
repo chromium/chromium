@@ -5433,11 +5433,6 @@ TEST_F(IntegrationTestMsi, RunOfflineMetaInstallTwice) {
       ExpectInstallEvent(*test_server_, kUpdaterAppId);
     }
     ExpectInstallEvent(*test_server_, kMsiAppId);
-    if (i) {
-      // TODO(crbug.com/413081282): offline overinstalls result in an extra app
-      // ping, which needs to be fixed.
-      ExpectInstallEvent(*test_server_, kMsiAppId);
-    }
     ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
         kMsiAppId, /*is_silent_install=*/true,
         /*tag=*/

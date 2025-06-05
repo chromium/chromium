@@ -581,14 +581,14 @@ std::string LookupString(const base::FilePath& path,
 
 base::Version LookupVersion(UpdaterScope scope,
                             const std::string& app_id,
-                            const base::FilePath& version_path,
-                            const std::string& version_key,
+                            const base::FilePath& /*version_path*/,
+                            const std::string& /*version_key*/,
                             const base::Version& default_value) {
   std::wstring pv;
   if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
                         GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ))
           .ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS) {
-    base::Version value_version = base::Version(base::WideToUTF8(pv));
+    const base::Version value_version = base::Version(base::WideToUTF8(pv));
     return value_version.IsValid() ? value_version : default_value;
   }
   return default_value;

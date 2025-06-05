@@ -1270,14 +1270,6 @@ void UpdateServiceImplImpl::RunInstallerImpl(
       config_->GetUpdaterPersistedData()->GetBrandCode(app_id), pv,
       config_->GetUpdaterPersistedData()->GetExistenceCheckerPath(app_id));
 
-  // Pre-register the app in case there is no registration for it. This app
-  // registration is removed later if `new_install` is `true and if the app
-  // install encounters an error.
-  RegistrationRequest request;
-  request.app_id = app_id;
-  request.lang = language;
-  config_->GetUpdaterPersistedData()->RegisterApp(request);
-
   const base::Version installer_version([&install_settings]() -> std::string {
     std::unique_ptr<base::Value> install_settings_deserialized =
         JSONStringValueDeserializer(install_settings)

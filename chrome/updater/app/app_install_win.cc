@@ -63,6 +63,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
+#include "chrome/updater/win/installer_api.h"
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/protocol_parser_xml.h"
 #include "chrome/updater/win/ui/l10n_util.h"
@@ -641,7 +642,10 @@ void AppInstallControllerImpl::DoInstallAppOffline(
 
   RegistrationRequest request;
   request.app_id = app_id_;
-  request.version = base::Version(kNullVersion);
+  const base::Version installed_version =
+      LookupVersion(GetUpdaterScope(), app_id_, {}, {}, {});
+  request.version = installed_version.IsValid() ? installed_version
+                                                : base::Version(kNullVersion);
 
   std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args) {
