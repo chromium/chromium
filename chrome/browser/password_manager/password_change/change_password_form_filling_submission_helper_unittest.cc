@@ -4,12 +4,14 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -118,7 +120,7 @@ autofill::FormData CreateTestPasswordFormData() {
 }
 
 template <bool success>
-void PostResponse(
+void PostResponseForSubmissionVerification(
     optimization_guide::OptimizationGuideModelExecutionResultCallback
         callback) {
   optimization_guide::proto::PasswordChangeResponse response;
@@ -128,6 +130,21 @@ void PostResponse(
                 PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME
           : PasswordChangeOutcome::
                 PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
+  auto result = optimization_guide::OptimizationGuideModelExecutionResult(
+      optimization_guide::AnyWrapProto(response),
+      /*execution_info=*/nullptr);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
+                                /*log_entry=*/nullptr));
+}
+
+template <bool success>
+void PostResponseForSubmissionButtonClick(
+    optimization_guide::OptimizationGuideModelExecutionResultCallback
+        callback) {
+  optimization_guide::proto::PasswordChangeResponse response;
+  response.mutable_submit_form_data()->set_dom_node_id_to_click(success ? 1
+                                                                        : 0);
   auto result = optimization_guide::OptimizationGuideModelExecutionResult(
       optimization_guide::AnyWrapProto(response),
       /*execution_info=*/nullptr);
@@ -187,9 +204,13 @@ class ChangePasswordFormFillingSubmissionHelperTest
 
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper> CreateVerifier(
       password_manager::PasswordFormManager* manager,
-      base::OnceCallback<void(bool)> result_callback) {
+      base::OnceCallback<void(bool)> result_callback,
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+          capture_annotated_page_content = base::NullCallback()) {
     auto verifier = std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-        web_contents(), logs_uploader_.get(), std::move(result_callback));
+        base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>(),
+        web_contents(), logs_uploader_.get(),
+        std::move(capture_annotated_page_content), std::move(result_callback));
     verifier->FillChangePasswordForm(manager, kOldPassword, kNewPassword);
     return verifier;
   }
@@ -241,7 +262,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Succeeded) {
       capture_annotated_page_content.Get());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(completion_future.Get());
@@ -280,7 +302,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
       capture_annotated_page_content.Get());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<false>)));
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<false>)));
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_FALSE(completion_future.Get());
@@ -320,7 +343,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
 
   EXPECT_TRUE(completion_future.Wait());
   EXPECT_TRUE(completion_future.Take());
@@ -382,7 +406,8 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   verifier->submission_verifier()->set_annotated_page_callback(
       capture_annotated_page_content.Get());
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(completion_future.Get());
@@ -416,10 +441,42 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
       capture_annotated_page_content.Get());
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(1)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionVerification<true>)));
   verifier->OnPasswordFormSubmission(web_contents());
   verifier->OnPasswordFormSubmission(web_contents());
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(completion_future.Get());
+}
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SubmissionWithEnterFailingTriggersButtonSearch) {
+  auto form_manager = CreateFormManager();
+
+  base::test::TestFuture<bool> completion_future;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback(),
+                     capture_annotated_page_content.Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<1>(/*success=*/false)));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionButtonClick<false>)));
+  run_loop.Run();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+
+  EXPECT_FALSE(completion_future.Get());
 }

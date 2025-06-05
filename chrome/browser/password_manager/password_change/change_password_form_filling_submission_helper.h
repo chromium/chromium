@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace content {
@@ -35,6 +37,15 @@ class ChangePasswordFormFillingSubmissionHelper {
   ChangePasswordFormFillingSubmissionHelper(
       content::WebContents* web_contents,
       ModelQualityLogsUploader* logs_uploader,
+      base::OnceCallback<void(bool)> result_callback);
+
+  // Test constructor (allows to mock `capture_annotated_page_content`).
+  ChangePasswordFormFillingSubmissionHelper(
+      base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>,
+      content::WebContents* web_contents,
+      ModelQualityLogsUploader* logs_uploader,
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+          capture_annotated_page_content,
       base::OnceCallback<void(bool)> result_callback);
   ~ChangePasswordFormFillingSubmissionHelper();
 
@@ -75,9 +86,23 @@ class ChangePasswordFormFillingSubmissionHelper {
       autofill::FieldRendererId field_id,
       const std::optional<autofill::FormData>& submitted_form);
 
-  void OnFormSubmitted(
+  void OnSubmitWithEnterResult(
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       bool success);
+
+  void OnPageContentReceived(
+      std::optional<optimization_guide::AIPageContentResult> content);
+
+  OptimizationGuideKeyedService* GetOptimizationService();
+
+  void OnExecutionResponseCallback(
+      optimization_guide::OptimizationGuideModelExecutionResult
+          execution_result,
+      std::unique_ptr<
+          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+          logging_data);
+
+  void OnFormSubmitted();
 
   void OnSubmissionDetectedOrTimeout();
 
@@ -90,6 +115,8 @@ class ChangePasswordFormFillingSubmissionHelper {
   bool submission_detected_ = false;
 
   std::unique_ptr<PasswordChangeSubmissionVerifier> submission_verifier_;
+  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+      capture_annotated_page_content_;
 
   base::WeakPtrFactory<ChangePasswordFormFillingSubmissionHelper>
       weak_ptr_factory_{this};

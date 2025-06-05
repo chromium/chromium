@@ -6,11 +6,27 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
+namespace {
+
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  auto options = blink::mojom::AIPageContentOptions::New();
+  // WebContents where password change is happening is hidden, and renderer
+  // won't capture a snapshot unless it becomes visible again or
+  // on_critical_path is set to true.
+  options->on_critical_path = true;
+  return options;
+}
+
+}  // namespace
 
 ChangePasswordFormFillingSubmissionHelper::
     ChangePasswordFormFillingSubmissionHelper(
@@ -19,7 +35,25 @@ ChangePasswordFormFillingSubmissionHelper::
         base::OnceCallback<void(bool)> callback)
     : web_contents_(web_contents->GetWeakPtr()),
       callback_(std::move(callback)),
-      logs_uploader_(logs_uploader) {}
+      logs_uploader_(logs_uploader) {
+  capture_annotated_page_content_ =
+      base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
+                     GetAIPageContentOptions());
+}
+
+ChangePasswordFormFillingSubmissionHelper::
+    ChangePasswordFormFillingSubmissionHelper(
+        base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>,
+        content::WebContents* web_contents,
+        ModelQualityLogsUploader* logs_uploader,
+        base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+            capture_annotated_page_content,
+        base::OnceCallback<void(bool)> result_callback)
+    : web_contents_(web_contents->GetWeakPtr()),
+      callback_(std::move(result_callback)),
+      logs_uploader_(logs_uploader),
+      capture_annotated_page_content_(
+          std::move(capture_annotated_page_content)) {}
 
 ChangePasswordFormFillingSubmissionHelper::
     ~ChangePasswordFormFillingSubmissionHelper() = default;
@@ -126,19 +160,71 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
   driver->SubmitFormWithEnter(
-      field_id, base::BindOnce(
-                    &ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted,
-                    weak_ptr_factory_.GetWeakPtr(), driver));
+      field_id,
+      base::BindOnce(
+          &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
+          weak_ptr_factory_.GetWeakPtr(), driver));
 }
 
-void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted(
+void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     bool success) {
   if (!success) {
-    // TODO(crbug.com/407487665): Attempt to submit change password form by
-    // looking for a submit button.
+    std::move(capture_annotated_page_content_)
+        .Run(base::BindOnce(
+            &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
+            weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+  OnFormSubmitted();
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
+    std::optional<optimization_guide::AIPageContentResult> content) {
+  if (!content || !web_contents_) {
+    return;
+  }
+
+  optimization_guide::proto::PasswordChangeRequest request;
+  request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
+                       PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP);
+  *request.mutable_page_context()->mutable_annotated_page_content() =
+      std::move(content->proto);
+  optimization_guide::ExecuteModelWithLogging(
+      GetOptimizationService(),
+      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
+      request, /*execution_timeout=*/std::nullopt,
+      base::BindOnce(&ChangePasswordFormFillingSubmissionHelper::
+                         OnExecutionResponseCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+OptimizationGuideKeyedService*
+ChangePasswordFormFillingSubmissionHelper::GetOptimizationService() {
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
+    optimization_guide::OptimizationGuideModelExecutionResult execution_result,
+    std::unique_ptr<
+        optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+        logging_data) {
+  if (!web_contents_ || !execution_result.response.has_value()) {
+    return;
+  }
+  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::PasswordChangeResponse>(
+          execution_result.response.value());
+  if (!response) {
+    return;
+  }
+
+  // TODO(crbug.com/407487665): Click the button specified in execution_result.
+}
+
+void ChangePasswordFormFillingSubmissionHelper::OnFormSubmitted() {
   submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
       web_contents_.get(), logs_uploader_);
 }
