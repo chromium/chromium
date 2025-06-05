@@ -34,7 +34,9 @@
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/common/content_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -133,6 +135,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // same flag.
   // TODO(crbug.com/368058472): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(chrome::android::kDisableInstanceLimit);
+
+  // Enables media capture (tab+window+screen sharing).
+  // TODO(crbug.com/352187279): Remove when tablet rollout is complete.
+  feature_overrides.EnableFeature(kAndroidMediaPicker);
+  feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
