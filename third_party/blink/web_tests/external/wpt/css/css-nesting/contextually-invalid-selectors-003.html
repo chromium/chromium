@@ -5,6 +5,7 @@
     specificity
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-nesting/#nest-selector" />
+<link rel="help" href="https://bugs.webkit.org/show_bug.cgi?id=293230">
 <link
     rel="match"
     href="/css/reference/ref-filled-green-100px-square-only.html"
@@ -21,15 +22,10 @@
         color: initial;
     }
 
-    *,
-    ::before {
-        & * {
+    div::before {
+        & { /* `&` must not match the originating element */
             color: red;
         }
-    }
-
-    :is(*, ::before) * {
-        color: purple;
     }
 </style>
 
