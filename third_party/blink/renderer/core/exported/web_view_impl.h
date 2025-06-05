@@ -461,8 +461,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void ZoomToFindInPageRect(const gfx::Rect&);
 
   void ComputeScaleAndScrollForBlockRect(
-      const gfx::Point& hit_point,
-      const gfx::Rect& block_rect,
+      gfx::Rect hit_rect_in_root_frame,
+      gfx::Rect block_rect_in_root_frame,
       float padding,
       float default_scale_when_already_legible,
       float& scale,

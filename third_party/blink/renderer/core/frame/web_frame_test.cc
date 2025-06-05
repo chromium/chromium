@@ -174,6 +174,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -3649,8 +3650,9 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
 
   gfx::Rect wide_div(200, 100, 400, 150);
   gfx::Rect tall_div(200, 300, 400, 800);
-  gfx::Point double_tap_point_wide(wide_div.x() + 50, wide_div.y() + 50);
-  gfx::Point double_tap_point_tall(tall_div.x() + 50, tall_div.y() + 50);
+  gfx::Rect double_tap_rect_wide(wide_div.x() + 50, wide_div.y() + 50, 1, 1);
+  gfx::Rect double_tap_rect_tall(tall_div.x() + 50, tall_div.y() + 50, 1, 1);
+
   float scale;
   gfx::Point scroll;
 
@@ -3660,9 +3662,9 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
 
   // Test double-tap zooming into wide div.
   gfx::Rect wide_block_bound = ComputeBlockBoundHelper(
-      web_view_helper.GetWebView(), double_tap_point_wide, false);
+      web_view_helper.GetWebView(), double_tap_rect_wide.origin(), false);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
-      double_tap_point_wide, wide_block_bound, kTouchPointPadding,
+      double_tap_rect_wide, wide_block_bound, kTouchPointPadding,
       double_tap_zoom_already_legible_scale, scale, scroll);
   // The div should horizontally fill the screen (modulo margins), and
   // vertically centered (modulo integer rounding).
@@ -3673,10 +3675,10 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
 
   // Test zoom out back to minimum scale.
-  wide_block_bound = ComputeBlockBoundHelper(web_view_helper.GetWebView(),
-                                             double_tap_point_wide, false);
+  wide_block_bound = ComputeBlockBoundHelper(
+      web_view_helper.GetWebView(), double_tap_rect_wide.origin(), false);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
-      double_tap_point_wide, wide_block_bound, kTouchPointPadding,
+      double_tap_rect_wide, wide_block_bound, kTouchPointPadding,
       double_tap_zoom_already_legible_scale, scale, scroll);
   // FIXME: Looks like we are missing EXPECTs here.
 
@@ -3685,9 +3687,9 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
 
   // Test double-tap zooming into tall div.
   gfx::Rect tall_block_bound = ComputeBlockBoundHelper(
-      web_view_helper.GetWebView(), double_tap_point_tall, false);
+      web_view_helper.GetWebView(), double_tap_rect_tall.origin(), false);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
-      double_tap_point_tall, tall_block_bound, kTouchPointPadding,
+      double_tap_rect_tall, tall_block_bound, kTouchPointPadding,
       double_tap_zoom_already_legible_scale, scale, scroll);
   // The div should start at the top left of the viewport.
   EXPECT_NEAR(viewport_width / (float)tall_div.width(), scale, 0.1);
@@ -3752,16 +3754,16 @@ TEST_F(WebFrameTest, DivAutoZoomVeryTallTest) {
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
 
   gfx::Rect div(200, 300, 400, 5000);
-  gfx::Point point(div.x() + 50, div.y() + 3000);
+  gfx::Rect rect(div.x() + 50, div.y() + 3000, 1, 1);
   float scale;
   gfx::Point scroll;
 
-  gfx::Rect block_bound =
-      ComputeBlockBoundHelper(web_view_helper.GetWebView(), point, true);
+  gfx::Rect block_bound = ComputeBlockBoundHelper(web_view_helper.GetWebView(),
+                                                  rect.origin(), true);
   web_view_helper.GetWebView()->ComputeScaleAndScrollForBlockRect(
-      point, block_bound, 0, 1.0f, scale, scroll);
+      rect, block_bound, 0, 1.0f, scale, scroll);
   EXPECT_EQ(scale, 1.0f);
-  EXPECT_EQ(scroll.y(), 2660);
+  EXPECT_EQ(scroll.y(), 2980);
 }
 
 TEST_F(WebFrameTest, DivAutoZoomMultipleDivsTest) {
@@ -12568,6 +12570,57 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
       << "]";
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(WebFrameSimTest, TallBlockRectFindTest) {
+  // When a block is taller/wider than the viewport then align active
+  // highlighted match to center of viewport during 'Find in Page' Operation.
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+  <div style="position: absolute; left: 0px; top: 0px; width: 3000px; height: 5000px">
+    <span id="textnode" style="display:inline-block;margin-left:1500px;margin-top:3000px">
+    TextSearch </span>
+  </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* local_frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
+  auto* frame_view = local_frame->View();
+
+  Element* target = GetDocument().getElementById(AtomicString("textnode"));
+  gfx::Rect span_rect = target->GetLayoutObject()->AbsoluteBoundingBoxRect();
+  WebView().ZoomToFindInPageRect(span_rect);
+
+  ScrollableArea* scrollable_area = frame_view->GetScrollableArea();
+  gfx::Rect viewport_rect(scrollable_area->VisibleContentRect());
+
+  // Ensure the target is vertically centered by checking that it's in
+  // the central 100px band of the viewport. Centering includes an arbitrary
+  // padding so this checks it's roughly centered.
+  const int center_band = 100;
+  const int v_inset = (viewport_rect.height() - center_band) / 2;
+  viewport_rect.Inset(gfx::Insets::VH(v_inset, 0));
+
+  ASSERT_LT(span_rect.height(), center_band);
+  EXPECT_TRUE(viewport_rect.Contains(span_rect))
+      << "Expected node to be visible in viewport. Bounds relative to frame: ["
+      << span_rect.ToString() << "] vs. frame bounds [ "
+      << viewport_rect.ToString() << " ]";
+
+  // Ensure the target is horizontally centered also by checking that it's in
+  // the central 100px band of the viewport. Centering includes an arbitrary
+  // padding so this checks it's roughly centered.
+  const int h_inset = (viewport_rect.width() - center_band) / 2;
+  viewport_rect.Inset(gfx::Insets::VH(0, h_inset));
+
+  ASSERT_LT(span_rect.width(), center_band);
+  EXPECT_TRUE(viewport_rect.Contains(span_rect))
+      << "Expected node to be visible in viewport. Bounds relative to frame: ["
+      << span_rect.ToString() << "] vs. frame bounds [ "
+      << viewport_rect.ToString() << " ]";
+}
 
 // Check that removing an element whilst focusing it does not cause a null
 // pointer deference. This test passes if it does not crash.

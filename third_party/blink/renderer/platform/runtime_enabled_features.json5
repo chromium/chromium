@@ -417,6 +417,10 @@
       public: true,
     },
     {
+      name: "AlignZoomToCenter",
+      status: "stable",
+    },
+    {
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },
