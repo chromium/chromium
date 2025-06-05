@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.SingleChildViewManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -89,6 +91,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
     private @Nullable PropertyModelChangeProcessor mModelChangeProcessor;
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
+    private @Nullable SingleChildViewManager mSingleChildViewManager;
     private @Nullable LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private @Nullable TabListCoordinator mTabStripCoordinator;
@@ -148,10 +151,15 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         assert mTabGridDialogControllerSupplier != null;
         if (mTabGridDialogCoordinator != null) return mTabGridDialogCoordinator;
 
+        ViewGroup containerView = mActivity.findViewById(R.id.coordinator);
+        ViewGroup dialogContainer = containerView.findViewById(R.id.tab_group_ui_dialog_container);
+
         var currentTabGroupModelFilterSupplier =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getCurrentTabGroupModelFilterSupplier();
+        ObservableSupplierImpl<View> childViewSupplier = new ObservableSupplierImpl<>();
+        mSingleChildViewManager = new SingleChildViewManager(dialogContainer, childViewSupplier);
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
@@ -160,7 +168,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mDataSharingTabManager,
                         currentTabGroupModelFilterSupplier,
                         mTabContentManager,
-                        mActivity.findViewById(R.id.coordinator),
                         null,
                         null,
                         null,
@@ -169,7 +176,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         /* desktopWindowStateManager= */ null,
                         mUndoBarThrottle,
                         mTabBookmarkerSupplier,
-                        mShareDelegateSupplier);
+                        mShareDelegateSupplier,
+                        childViewSupplier::set);
         mTabGridDialogCoordinator.setPageKeyEvent(
                 event ->
                         onPageKeyEvent(
@@ -354,6 +362,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     public void destroy() {
         if (mTabStripCoordinator != null) {
             mTabStripCoordinator.onDestroy();
+        }
+        if (mSingleChildViewManager != null) {
+            mSingleChildViewManager.destroy();
         }
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();

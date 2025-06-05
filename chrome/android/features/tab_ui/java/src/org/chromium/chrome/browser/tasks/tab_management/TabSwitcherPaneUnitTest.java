@@ -250,6 +250,7 @@ public class TabSwitcherPaneUnitTest {
                         mHairlineVisibilityCallbackCaptor.capture(),
                         anyBoolean(),
                         any(),
+                        any(),
                         any());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())

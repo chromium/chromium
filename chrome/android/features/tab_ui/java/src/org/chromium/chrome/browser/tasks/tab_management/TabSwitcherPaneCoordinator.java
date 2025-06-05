@@ -199,6 +199,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
+     * @param undoBarThrottle Throttle to block undo snackbar.
+     * @param setOverlayViewCallback Callback to set the current overlay view.
      */
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
@@ -225,7 +227,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            UndoBarThrottle undoBarThrottle) {
+            UndoBarThrottle undoBarThrottle,
+            Callback<View> setOverlayViewCallback) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
             mProfileProviderSupplier = profileProviderSupplier;
             mIsVisibleSupplier = isVisibleSupplier;
@@ -276,7 +279,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 dataSharingTabManager,
                                                 tabGroupModelFilterSupplier,
                                                 tabContentManager,
-                                                coordinatorView,
                                                 resetHandler,
                                                 getGridCardOnClickListenerProvider(),
                                                 TabSwitcherPaneCoordinator.this
@@ -286,7 +288,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 desktopWindowStateManager,
                                                 undoBarThrottle,
                                                 tabBookmarkerSupplier,
-                                                shareDelegateSupplier);
+                                                shareDelegateSupplier,
+                                                setOverlayViewCallback);
                                 mTabGridDialogCoordinator.setPageKeyEvent(
                                         event ->
                                                 onPageKeyEvent(

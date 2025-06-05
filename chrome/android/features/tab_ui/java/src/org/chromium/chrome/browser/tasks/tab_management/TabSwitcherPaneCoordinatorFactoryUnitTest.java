@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -122,6 +123,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Callback<Integer> mOnTabClickedCallback;
     @Mock private Callback<Boolean> mHairlineVisibilityCallback;
+    @Mock private Callback<View> mSetOverlayViewCallback;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -226,7 +228,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSetOverlayViewCallback);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -251,7 +254,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSetOverlayViewCallback);
         assertNotNull(coordinator1);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -268,7 +272,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSetOverlayViewCallback);
         assertNotNull(coordinator2);
         assertEquals(messageManager, mFactory.getMessageManagerForTesting());
 
@@ -292,7 +297,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSetOverlayViewCallback);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();

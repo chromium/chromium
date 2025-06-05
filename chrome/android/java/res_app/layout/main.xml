@@ -200,10 +200,11 @@ found in the LICENSE file.
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
 
-        <ViewStub
-            android:id="@+id/tab_grid_dialog_stub"
+        <FrameLayout
+            android:id="@+id/tab_group_ui_dialog_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
         <FrameLayout
             android:id="@+id/sheet_container"

@@ -4,13 +4,21 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:orientation="vertical">
+  android:layout_height="match_parent">
 
-  <include layout="@layout/hub_toolbar_layout" />
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-  <include layout="@layout/hub_pane_host_layout" />
+    <include layout="@layout/hub_toolbar_layout" />
 
-</LinearLayout>
+    <include layout="@layout/hub_pane_host_layout" />
+
+  </LinearLayout>
+
+  <!-- z-index above everything else. -->
+  <include layout="@layout/hub_overlay_container" />
+</FrameLayout>

@@ -98,6 +98,7 @@ android_resources("java_resources") {
     "android/res/drawable/hub_search_box_background.xml",
     "android/res/drawable/new_tab_button_background.xml",
     "android/res/layout/hub_layout.xml",
+    "android/res/layout/hub_overlay_container.xml",
     "android/res/layout/hub_pane_host_layout.xml",
     "android/res/layout/hub_toolbar_layout.xml",
     "android/res/layout/hub_xr_layout.xml",

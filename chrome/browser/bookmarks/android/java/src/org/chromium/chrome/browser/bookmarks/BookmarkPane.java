@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_F
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -50,6 +51,8 @@ public class BookmarkPane implements Pane {
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
@@ -173,6 +176,11 @@ public class BookmarkPane implements Pane {
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
+    }
+
+    @Override
+    public ObservableSupplier<View> getHubOverlayViewSupplier() {
+        return mHubOverlayViewSupplier;
     }
 
     @Nullable

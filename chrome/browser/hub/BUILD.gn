@@ -44,6 +44,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/SingleChildViewManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/TabSwitcherDrawableButtonData.java",
   ]
 
@@ -101,6 +102,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageViewUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/SingleChildViewManagerUnitTest.java",
   ]
 
   deps = [

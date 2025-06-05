@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -59,6 +60,8 @@ public class TabGroupsPane implements Pane {
     private final ObservableSupplierImpl<FullButtonData> mActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
@@ -197,6 +200,11 @@ public class TabGroupsPane implements Pane {
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
+    }
+
+    @Override
+    public ObservableSupplier<View> getHubOverlayViewSupplier() {
+        return mHubOverlayViewSupplier;
     }
 
     @Nullable

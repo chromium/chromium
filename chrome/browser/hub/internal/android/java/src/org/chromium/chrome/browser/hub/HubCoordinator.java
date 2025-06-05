@@ -38,10 +38,11 @@ import org.chromium.ui.util.XrUtils;
 @NullMarked
 public class HubCoordinator implements PaneHubController, BackPressHandler {
     private final FrameLayout mContainerView;
-    private final View mMainHubParent;
+    private final ViewGroup mMainHubParent;
     private final PaneManager mPaneManager;
     private final HubToolbarCoordinator mHubToolbarCoordinator;
     private final HubPaneHostCoordinator mHubPaneHostCoordinator;
+    private final SingleChildViewManager mOverlayViewManager;
     private final HubLayoutController mHubLayoutController;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
     private final HubSearchBoxBackgroundCoordinator mHubSearchBoxBackgroundCoordinator;
@@ -99,7 +100,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         mContainerView = containerView;
         int layoutId = XrUtils.isXrDevice() ? R.layout.hub_xr_layout : R.layout.hub_layout;
-        mMainHubParent = LayoutInflater.from(context).inflate(layoutId, null);
+        mMainHubParent = (ViewGroup) LayoutInflater.from(context).inflate(layoutId, null);
         mContainerView.addView(mMainHubParent);
 
         ProfileProvider profileProvider = profileProviderSupplier.get();
@@ -125,6 +126,15 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mHubPaneHostCoordinator =
                 new HubPaneHostCoordinator(
                         hubPaneHostView, paneManager.getFocusedPaneSupplier(), hubColorMixer);
+
+        TransitiveObservableSupplier<Pane, View> overlayViewSupplier =
+                new TransitiveObservableSupplier<>(
+                        mPaneManager.getFocusedPaneSupplier(),
+                        (pane) -> pane.getHubOverlayViewSupplier());
+        mOverlayViewManager =
+                new SingleChildViewManager(
+                        mContainerView.findViewById(R.id.hub_overlay_container),
+                        overlayViewSupplier);
 
         mHubLayoutController = hubLayoutController;
         mHandleBackPressSupplier = new ObservableSupplierImpl<>();
@@ -163,6 +173,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         mHubToolbarCoordinator.destroy();
         mHubPaneHostCoordinator.destroy();
+        mOverlayViewManager.destroy();
 
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();

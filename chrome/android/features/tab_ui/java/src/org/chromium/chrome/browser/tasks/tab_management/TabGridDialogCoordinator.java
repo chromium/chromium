@@ -13,7 +13,7 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -99,13 +100,15 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
     private final TabContentManager mTabContentManager;
-    private TabListEditorCoordinator mTabListEditorCoordinator;
-    private TabGridDialogView mDialogView;
-    private ColorPickerCoordinator mColorPickerCoordinator;
     private final @Nullable SnackbarManager mSnackbarManager;
+    private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
+    private final TabGridDialogView mDialogView;
+    private final Callback<View> mAttachViewCallback;
+
+    private TabListEditorCoordinator mTabListEditorCoordinator;
+    private ColorPickerCoordinator mColorPickerCoordinator;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
-    private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private @Nullable Integer mUndoBarThrottleToken;
 
     TabGridDialogCoordinator(
@@ -115,7 +118,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
-            ViewGroup containerView,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
@@ -124,7 +126,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             UndoBarThrottle undoBarThrottle,
             ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            Callback<View> attachViewCallback) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
             mComponentName =
@@ -137,6 +140,15 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
             mUndoBarThrottle = undoBarThrottle;
+            mAttachViewCallback = attachViewCallback;
+
+            mDialogView =
+                    (TabGridDialogView)
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.tab_grid_dialog_layout, null);
+            mDialogView.setLayoutParams(
+                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            mDialogView.setupScrimManager(scrimManager);
 
             Profile originalProfile =
                     mCurrentTabGroupModelFilterSupplier
@@ -159,18 +171,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
                                     getColorIconClickListener())
                             .build();
-
-            mDialogView = containerView.findViewById(R.id.dialog_parent_view);
-            if (mDialogView == null) {
-                ViewStub dialogStub = containerView.findViewById(R.id.tab_grid_dialog_stub);
-                assert dialogStub != null;
-
-                dialogStub.setLayoutResource(R.layout.tab_grid_dialog_layout);
-                dialogStub.inflate();
-
-                mDialogView = containerView.findViewById(R.id.dialog_parent_view);
-                mDialogView.setupScrimManager(scrimManager);
-            }
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {
                 mSnackbarManager =
@@ -239,7 +239,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             TabProperties.TabActionState.CLOSABLE,
                             /* selectionDelegateProvider= */ null,
                             /* priceWelcomeMessageControllerSupplier= */ null,
-                            containerView,
+                            mDialogView,
                             /* attachToParent= */ false,
                             mComponentName,
                             /* onModelTokenChange= */ null,
@@ -444,6 +444,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
+        mAttachViewCallback.onResult(null);
         mTabListCoordinator.onDestroy();
         mMediator.destroy();
         mModelChangeProcessor.destroy();
@@ -502,6 +503,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Override
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
+        mAttachViewCallback.onResult(mDialogView);
         mTabListCoordinator.resetWithListOfTabs(
                 tabs, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         boolean startedToShow = mMediator.onReset(tabs);
@@ -513,6 +515,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // TabGridDialogMediator instead. During animations we should instead queue the
             // snackbars so that talkback announcements will not get clobbered.
             throttleUndoBar();
+        } else {
+            mAttachViewCallback.onResult(null);
         }
         mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
 
@@ -542,6 +546,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         // called. Find out why this helps and fix upstream if possible.
         mTabListCoordinator.softCleanup();
         mShowingOrAnimationSupplier.set(false);
+        mAttachViewCallback.onResult(null);
 
         // Stop throttling the undo snackbar and allow any pending snackbars to show. At this
         // point a11y announcements will work correctly as there isn't an ongoing animation

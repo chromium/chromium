@@ -99,6 +99,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<View> mOverlayViewSupplier =
+            new ObservableSupplierImpl<>();
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final Handler mHandler = new Handler();
     private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
@@ -278,6 +280,11 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     @Override
     public @NonNull ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
+    }
+
+    @Override
+    public ObservableSupplier<View> getHubOverlayViewSupplier() {
+        return mOverlayViewSupplier;
     }
 
     @Override
@@ -644,7 +651,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         mHairlineVisibilitySupplier::set,
                         mIsIncognito,
                         getOnTabGroupCreationRunnable(),
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mOverlayViewSupplier::set);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         mTabSwitcherCustomViewManager.setDelegate(
                 coordinator.getTabSwitcherCustomViewManagerDelegate());

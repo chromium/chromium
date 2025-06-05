@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.recent_tabs;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -46,6 +47,8 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<@Nullable View> mHubOverlayViewSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
@@ -140,6 +143,11 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
+    }
+
+    @Override
+    public ObservableSupplier<@Nullable View> getHubOverlayViewSupplier() {
+        return mHubOverlayViewSupplier;
     }
 
     @Override

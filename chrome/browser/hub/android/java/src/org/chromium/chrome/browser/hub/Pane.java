@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -61,9 +62,11 @@ public interface Pane extends BackPressHandler {
     /** Returns whether to show the hairline for the pane. */
     ObservableSupplier<Boolean> getHairlineVisibilitySupplier();
 
+    /** Returns a supplier for a view to overlay the hub with. */
+    ObservableSupplier<@Nullable View> getHubOverlayViewSupplier();
+
     /** Returns an optional listener for animation progress. */
-    @Nullable
-    HubLayoutAnimationListener getHubLayoutAnimationListener();
+    @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener();
 
     /**
      * Create a {@link HubLayoutAnimatorProvider} to use when showing the {@link HubLayout} if this

@@ -365,9 +365,10 @@ public class TabGridDialogView extends FrameLayout {
     private void clearBackgroundViewAccessibilityImportance() {
         assert mAccessibilityImportanceMap.isEmpty();
         ViewGroup parent = (ViewGroup) getParent();
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View view = parent.getChildAt(i);
-            if (view == TabGridDialogView.this) {
+        ViewGroup grandparent = (ViewGroup) parent.getParent();
+        for (int i = 0; i < grandparent.getChildCount(); i++) {
+            View view = grandparent.getChildAt(i);
+            if (view == parent) {
                 // Views earlier than us in the child list draw below us. We occlude them, and we
                 // need to turn off their accessibility focus. Views that come after us, like bottom
                 // sheet, may occlude us, and we should not turn off their accessibility focus.
@@ -380,9 +381,10 @@ public class TabGridDialogView extends FrameLayout {
 
     private void restoreBackgroundViewAccessibilityImportance() {
         ViewGroup parent = (ViewGroup) getParent();
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View view = parent.getChildAt(i);
-            if (view == TabGridDialogView.this) {
+        ViewGroup grandparent = (ViewGroup) parent.getParent();
+        for (int i = 0; i < grandparent.getChildCount(); i++) {
+            View view = grandparent.getChildAt(i);
+            if (view == parent) {
                 break;
             }
             Integer importance = mAccessibilityImportanceMap.get(view);
@@ -981,9 +983,14 @@ public class TabGridDialogView extends FrameLayout {
         if (mScrimPropertyModel != null && isVisible) {
             mScrimManager.hideScrim(mScrimPropertyModel, /* animate= */ true);
         }
+        // Use the grandparent as the custom parent. This view is hosted in a container and its
+        // parent is where we want the scrim.
+        ViewGroup parent = (ViewGroup) getParent();
+        ViewGroup customParent = parent == null ? null : (ViewGroup) parent.getParent();
         mScrimPropertyModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, mDialogContainerView)
+                        .with(ScrimProperties.CUSTOM_PARENT, customParent)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.CLICK_DELEGATE, scrimClickRunnable)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)

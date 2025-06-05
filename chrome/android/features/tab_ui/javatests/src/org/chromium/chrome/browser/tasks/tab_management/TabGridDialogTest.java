@@ -1648,10 +1648,10 @@ public class TabGridDialogTest {
 
         // Verify accessibility importance adjustment when opening dialog from tab switcher.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        verifyBackgroundViewAccessibilityImportance(cta, true);
+        verifyBackgroundViewAccessibilityImportanceInSwitcher(cta, true);
         Espresso.pressBack();
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        verifyBackgroundViewAccessibilityImportance(cta, false);
+        verifyBackgroundViewAccessibilityImportanceInSwitcher(cta, false);
 
         // Verify accessibility importance adjustment when opening dialog from tab strip.
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
@@ -2120,7 +2120,7 @@ public class TabGridDialogTest {
 
     private boolean isDialogHidden(ChromeTabbedActivity cta) {
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
-        return dialogView.getVisibility() == View.GONE;
+        return dialogView == null || dialogView.getVisibility() == View.GONE;
     }
 
     private void showDialogFromStrip(ChromeTabbedActivity cta) {
@@ -2391,6 +2391,15 @@ public class TabGridDialogTest {
 
     private boolean isTablet(ChromeTabbedActivity cta) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta);
+    }
+
+    private void verifyBackgroundViewAccessibilityImportanceInSwitcher(
+            ChromeTabbedActivity cta, boolean isDialogFullyVisible) {
+        View toolbarAndPaneContainer = (View) cta.findViewById(R.id.hub_pane_host).getParent();
+        assertEquals(
+                isDialogFullyVisible,
+                IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        == toolbarAndPaneContainer.getImportantForAccessibility());
     }
 
     private void verifyBackgroundViewAccessibilityImportance(
