@@ -135,7 +135,7 @@ following arguments:
 target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
 use_remoteexec = true  # Enables distributed builds. See "Faster Builds".
-android_static_analysis = "build_server"  # Does static checks in background. See "Faster Builds".
+is_component_build = false  # Unless you do a lot of native code edits. See "Faster Builds".
 ```
 
 * You only have to run this once for each new build directory, Ninja will
@@ -373,11 +373,16 @@ Args that affect build speed:
  * `use_remoteexec = true` *(default=false)*
    * What it does: Enables distributed builds via Reclient
  * `symbol_level = 0` *(default=1)*
-   * What it does: Disables debug information in native code.
-   * Use this when doing primarily Java development.
+   * What it does: Disables most debug information in native code.
+     * Stack traces will still show, but be missing frames for inlined functions and source lines.
+   * Mostly impacts link time. Lower settings ==> faster links.
    * To disable symbols only in Blink / V8: `blink_symbol_level = 0`, `v8_symbol_level = 0`
- * `is_component_build = true` *(default=`is_debug`)*
-   * What it does: Uses multiple `.so` files instead of just one (faster links)
+ * `is_component_build = false` *(default=`is_debug`)*
+   * See: [docs/component_build.md](/docs/component_build.md)
+   * The size of native code for a component build is ~2x that of a
+     non-component build, but link times increase for non-component builds.
+   * When mostly iterating on Java code, use `is_component_build=false` for
+     faster .apk installs.
  * `is_java_debug = true` *(default=`is_debug`)*
    * What it does: Disables R8 (whole-program Java optimizer)
  * `treat_warnings_as_errors = false` *(default=`true`)*
