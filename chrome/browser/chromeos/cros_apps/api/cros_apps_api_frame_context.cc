@@ -6,11 +6,11 @@
 
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 CrosAppsApiFrameContext::CrosAppsApiFrameContext(content::RenderFrameHost& rfh)
     : context_(raw_ref(rfh)) {}
@@ -23,7 +23,7 @@ CrosAppsApiFrameContext::~CrosAppsApiFrameContext() = default;
 
 const GURL& CrosAppsApiFrameContext::GetUrl() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const raw_ref<content::RenderFrameHost> rfh) -> const GURL& {
             return rfh->GetLastCommittedURL();
           },
@@ -34,7 +34,7 @@ const GURL& CrosAppsApiFrameContext::GetUrl() const {
 
 bool CrosAppsApiFrameContext::IsPrimaryMainFrame() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const raw_ref<content::RenderFrameHost> rfh) {
             return rfh->IsInPrimaryMainFrame();
           },
@@ -46,7 +46,7 @@ bool CrosAppsApiFrameContext::IsPrimaryMainFrame() const {
 
 const Profile* CrosAppsApiFrameContext::Profile() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const raw_ref<content::RenderFrameHost> rfh) {
             return Profile::FromBrowserContext(rfh->GetBrowserContext());
           },
