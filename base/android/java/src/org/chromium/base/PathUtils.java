@@ -25,7 +25,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -359,8 +358,10 @@ public abstract class PathUtils {
             StorageManager storageManager =
                     ContextUtils.getApplicationContext().getSystemService(StorageManager.class);
             UUID storageUuid = storageManager.getUuidForPath(new File(getCacheDirectory()));
+            // This can throw `SecurityException` if the app doesn't have sufficient privileges.
+            // See crbug.com/422174715
             return storageManager.getCacheQuotaBytes(storageUuid);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return -1;
         }
     }
