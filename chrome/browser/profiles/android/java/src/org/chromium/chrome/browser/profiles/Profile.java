@@ -73,7 +73,7 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns the OffTheRecord profile with given OtrProfileiD. If the profile does not exist and
+     * Returns the OffTheRecord profile with given OtrProfileId. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
      *
      * @param profileId {@link OtrProfileId} object.
@@ -86,6 +86,16 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
+     * Returns the OffTheRecord profile with given OtrProfileId, creating a new profile if
+     * necessary.
+     */
+    public Profile getOrCreateOffTheRecordProfile(OtrProfileId profileId) {
+        Profile profile = getOffTheRecordProfile(profileId, /* createIfNeeded= */ true);
+        assert profile != null : "OTR Profile should have been created";
+        return profile;
+    }
+
+    /**
      * Returns the OffTheRecord profile for incognito tabs. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
      *
@@ -93,6 +103,13 @@ public class Profile implements BrowserContextHandle {
      */
     public @Nullable Profile getPrimaryOtrProfile(boolean createIfNeeded) {
         return ProfileJni.get().getPrimaryOtrProfile(mNativeProfile, createIfNeeded);
+    }
+
+    /** Returns the OffTheRecord profile for incognito tabs, creating a new profile if necessary. */
+    public Profile getOrCreatePrimaryOtrProfile() {
+        Profile profile = getPrimaryOtrProfile(/* createIfNeeded= */ true);
+        assert profile != null : "Primary OTR Profile should have been created";
+        return profile;
     }
 
     /**

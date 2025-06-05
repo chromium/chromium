@@ -11,6 +11,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -28,8 +30,9 @@ import java.util.List;
  * Communicates between ClearBrowsingData, HatsService, ImportantSitesUtils (C++) and
  * ClearBrowsingDataFragment (Java UI).
  */
+@NullMarked
 public final class BrowsingDataBridge implements Destroyable {
-    private static ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
+    private static @Nullable ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
 
     /**
      * List of observers to track the active tab in each {@link TabModelSelector}. This is used to
@@ -107,7 +110,9 @@ public final class BrowsingDataBridge implements Destroyable {
      * @param timePeriod The time period for which to delete the data.
      */
     public void clearBrowsingData(
-            OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
+            @Nullable OnClearBrowsingDataListener listener,
+            int[] dataTypes,
+            @TimePeriod int timePeriod) {
         clearBrowsingDataExcludingDomains(
                 listener,
                 dataTypes,
@@ -134,7 +139,7 @@ public final class BrowsingDataBridge implements Destroyable {
      * @param ignoredDomainReasons A list of reason metadata for the ignored domains.
      */
     public void clearBrowsingDataExcludingDomains(
-            OnClearBrowsingDataListener listener,
+            @Nullable OnClearBrowsingDataListener listener,
             int[] dataTypes,
             @TimePeriod int timePeriod,
             String[] excludedDomains,
@@ -164,7 +169,7 @@ public final class BrowsingDataBridge implements Destroyable {
             OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
-                        mProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),
+                        mProfile.getOrCreatePrimaryOtrProfile(),
                         listener,
                         dataTypes,
                         timePeriod,
@@ -318,7 +323,7 @@ public final class BrowsingDataBridge implements Destroyable {
     public interface Natives {
         void clearBrowsingData(
                 @JniType("Profile*") Profile profile,
-                OnClearBrowsingDataListener callback,
+                @Nullable OnClearBrowsingDataListener callback,
                 @JniType("std::vector<int32_t>") int[] dataTypes,
                 int timePeriod,
                 @JniType("std::vector<std::string>") String[] excludedDomains,
