@@ -116,7 +116,7 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x50 LayoutBlockFlow BODY
-        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutBlockFlow DIV id='multicol'
+        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutBlockFlow (multicol) DIV id='multicol'
           Box (column block-flow) offset:0,0 size:260.65625x50
             Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
           Box (column block-flow) offset:261.65625,0 size:260.65625x50

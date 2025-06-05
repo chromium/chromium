@@ -2206,6 +2206,9 @@ String LayoutObject::DecoratedName() const {
   if (IsLayoutBlockFlow() && ChildrenInline() && SlowFirstChild()) {
     attributes.push_back("children-inline");
   }
+  if (IsMulticolContainer()) {
+    attributes.push_back("multicol");
+  }
   if (!attributes.empty()) {
     name.Append(" (");
     name.Append(attributes[0]);
