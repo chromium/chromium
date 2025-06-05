@@ -35,7 +35,10 @@ const float kDefaultMaxPageScaleFactor = 2.0f;
 class LayerContextImplTest : public testing::Test {
  public:
   LayerContextImplTest()
-      : frame_sink_manager_(FrameSinkManagerImpl::InitParams()) {}
+      : frame_sink_manager_(FrameSinkManagerImpl::InitParams()),
+        default_local_surface_id_(
+            LocalSurfaceId(1,
+                           base::UnguessableToken::CreateForTesting(2u, 3u))) {}
 
   void SetUp() override {
     compositor_frame_sink_support_ =
@@ -48,6 +51,17 @@ class LayerContextImplTest : public testing::Test {
 
   mojom::LayerTreeUpdatePtr CreateDefaultUpdate() {
     auto update = mojom::LayerTreeUpdate::New();
+
+    if (first_update_) {
+      AddFirstTimeDefaultProperties(update.get());
+      first_update_ = false;
+    }
+    AddDefaultPropertyUpdates(update.get());
+
+    return update;
+  }
+
+  void AddDefaultPropertyUpdates(mojom::LayerTreeUpdate* update) {
     update->source_frame_number = 1;
     update->trace_id = 1;
     update->primary_main_frame_item_sequence_number = 1;
@@ -62,36 +76,10 @@ class LayerContextImplTest : public testing::Test {
     update->device_scale_factor = 1.0f;
     update->painted_device_scale_factor = 1.0f;
 
-    // Root & Secondary transform nodes are always expected 1st
-    update->num_transform_nodes = 0;
-    AddTransformNode(update.get(), cc::kInvalidPropertyNodeId);
-    AddTransformNode(update.get(), cc::kRootPropertyNodeId);
-
-    // Updating the page scale requires that a page_scale_transform node is
-    // set up.
-    viewport_property_ids.overscroll_elasticity_transform =
-        AddTransformNode(update.get(), cc::kSecondaryRootPropertyNodeId);
-    viewport_property_ids.page_scale_transform = AddTransformNode(
-        update.get(), viewport_property_ids.overscroll_elasticity_transform);
-    update->transform_nodes.back()->in_subtree_of_page_scale_layer = true;
-
-    // Root & Secondary clip nodes are always expected
-    update->num_clip_nodes = 0;
-    AddClipNode(update.get(), cc::kInvalidPropertyNodeId);
-    AddClipNode(update.get(), cc::kRootPropertyNodeId);
-
-    // Root & Secondary effect nodes are always expected
-    update->num_effect_nodes = 0;
-    AddEffectNode(update.get(), cc::kInvalidPropertyNodeId);
-    AddEffectNode(update.get(), cc::kRootPropertyNodeId);
-    update->effect_nodes.back()->render_surface_reason =
-        cc::RenderSurfaceReason::kRoot;
-    update->effect_nodes.back()->element_id = cc::ElementId(1ULL);
-
-    // Root & Secondary scroll nodes are always expected
-    update->num_scroll_nodes = 0;
-    AddScrollNode(update.get(), cc::kInvalidPropertyNodeId);
-    AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+    update->num_transform_nodes = next_transform_id_;
+    update->num_clip_nodes = next_clip_id_;
+    update->num_effect_nodes = next_effect_id_;
+    update->num_scroll_nodes = next_scroll_id_;
 
     // Viewport property IDs
     update->overscroll_elasticity_transform =
@@ -101,13 +89,9 @@ class LayerContextImplTest : public testing::Test {
     update->outer_clip = viewport_property_ids.outer_clip;
     update->outer_scroll = viewport_property_ids.outer_scroll;
 
-    // Root layer
-    AddDefaultLayerToUpdate(update.get());
-
     // Other defaults
     update->display_color_spaces = gfx::DisplayColorSpaces();
-    update->local_surface_id_from_parent =
-        LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2u, 3u));
+    update->local_surface_id_from_parent = default_local_surface_id_;
 
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta interval = base::Milliseconds(16);
@@ -115,8 +99,38 @@ class LayerContextImplTest : public testing::Test {
         BEGINFRAME_FROM_HERE, BeginFrameArgs::kStartingSourceId,
         BeginFrameArgs::kStartingFrameNumber, now, now + interval, interval,
         BeginFrameArgs::NORMAL);
+  }
 
-    return update;
+  void AddFirstTimeDefaultProperties(mojom::LayerTreeUpdate* update) {
+    // Root & Secondary transform nodes are always expected 1st
+    AddTransformNode(update, cc::kInvalidPropertyNodeId);
+    AddTransformNode(update, cc::kRootPropertyNodeId);
+
+    // Updating the page scale requires that a page_scale_transform node is
+    // set up.
+    viewport_property_ids.overscroll_elasticity_transform =
+        AddTransformNode(update, cc::kSecondaryRootPropertyNodeId);
+    viewport_property_ids.page_scale_transform = AddTransformNode(
+        update, viewport_property_ids.overscroll_elasticity_transform);
+    update->transform_nodes.back()->in_subtree_of_page_scale_layer = true;
+
+    // Root & Secondary clip nodes are always expected
+    AddClipNode(update, cc::kInvalidPropertyNodeId);
+    AddClipNode(update, cc::kRootPropertyNodeId);
+
+    // Root & Secondary effect nodes are always expected
+    AddEffectNode(update, cc::kInvalidPropertyNodeId);
+    AddEffectNode(update, cc::kRootPropertyNodeId);
+    update->effect_nodes.back()->render_surface_reason =
+        cc::RenderSurfaceReason::kRoot;
+    update->effect_nodes.back()->element_id = cc::ElementId(1ULL);
+
+    // Root & Secondary scroll nodes are always expected
+    AddScrollNode(update, cc::kInvalidPropertyNodeId);
+    AddScrollNode(update, cc::kRootPropertyNodeId);
+
+    // Root layer
+    AddDefaultLayerToUpdate(update);
   }
 
   int AddTransformNode(mojom::LayerTreeUpdate* update, int parent) {
@@ -164,11 +178,25 @@ class LayerContextImplTest : public testing::Test {
     return id;
   }
 
+  // Adds the current layer order, if it hasn't already been added.
+  void AddCurrentLayerOrder(mojom::LayerTreeUpdate* update) {
+    if (!update->layer_order) {
+      update->layer_order.emplace();
+      for (int id = 1; id < next_layer_id_; ++id) {
+        update->layer_order->push_back(id);
+      }
+    }
+  }
+
   // Helper to add a default layer to the update.
   // Returns the ID of the added layer.
   int AddDefaultLayerToUpdate(
       mojom::LayerTreeUpdate* update,
       cc::mojom::LayerType type = cc::mojom::LayerType::kLayer) {
+    // The current layer order should be added before we update
+    // next_layer_id_.
+    AddCurrentLayerOrder(update);
+
     auto layer = mojom::Layer::New();
     const auto id = next_layer_id_++;
     layer->id = id;
@@ -179,19 +207,20 @@ class LayerContextImplTest : public testing::Test {
 
     update->layers.push_back(std::move(layer));
 
-    if (!update->layer_order) {
-      update->layer_order.emplace();
-    }
     update->layer_order->push_back(id);
     return id;
   }
 
  protected:
   static constexpr FrameSinkId kDefaultFrameSinkId = FrameSinkId(1, 1);
+
   FakeCompositorFrameSinkClient dummy_client_;
   FrameSinkManagerImpl frame_sink_manager_;
+  LocalSurfaceId default_local_surface_id_;
+
   std::unique_ptr<CompositorFrameSinkSupport> compositor_frame_sink_support_;
   std::unique_ptr<LayerContextImpl> layer_context_impl_;
+  bool first_update_ = true;
   // Layer IDs start at 1, as 0 is reserved for cc::kInvalidLayerId.
   int next_layer_id_ = 1;
   // Property tree IDs start at 0.
@@ -201,6 +230,28 @@ class LayerContextImplTest : public testing::Test {
   int next_scroll_id_ = 0;
   cc::ViewportPropertyIds viewport_property_ids;
 };
+
+namespace {
+
+mojom::TransferableUIResourceRequestPtr CreateUIResourceRequest(
+    int uid,
+    mojom::TransferableUIResourceRequest::Type type) {
+  auto request = mojom::TransferableUIResourceRequest::New();
+  request->uid = uid;
+  request->type = type;
+  if (type == mojom::TransferableUIResourceRequest::Type::kCreate) {
+    // Add a minimal valid resource.
+    request->transferable_resource = TransferableResource::MakeGpu(
+        gpu::Mailbox::Generate(), GL_TEXTURE_2D,
+        gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
+                       gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
+        gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888,
+        false /* is_overlay_candidate */);
+  }
+  return request;
+}
+
+}  // namespace
 
 TEST_F(LayerContextImplTest, EmptyScrollingContentsCullRectsByDefault) {
   EXPECT_TRUE(layer_context_impl_->host_impl()
@@ -606,4 +657,117 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 }  // namespace
+
+TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {
+  cc::LayerTreeHostImpl* host_impl = layer_context_impl_->host_impl();
+
+  // Initial state: No resources.
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(1), kInvalidResourceId);
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(3), kInvalidResourceId);
+
+  // Test Case 1: Create UIResource 1. Verify it exists.
+  auto update1 = CreateDefaultUpdate();
+  update1->ui_resource_requests.push_back(CreateUIResourceRequest(
+      1, mojom::TransferableUIResourceRequest::Type::kCreate));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_NE(host_impl->ResourceIdForUIResource(1), kInvalidResourceId);
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 2: Create UIResource 2. Verify both 1 and 2 exist.
+  auto update2 = CreateDefaultUpdate();
+  update2->ui_resource_requests.push_back(CreateUIResourceRequest(
+      2, mojom::TransferableUIResourceRequest::Type::kCreate));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_NE(host_impl->ResourceIdForUIResource(1), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 3: Remove UIResource 1. Verify 1 is gone, 2 exists.
+  auto update3 = CreateDefaultUpdate();
+  update3->ui_resource_requests.push_back(CreateUIResourceRequest(
+      1, mojom::TransferableUIResourceRequest::Type::kDelete));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(1), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 4: Edge Case - Try to remove UIResource 1 again (already
+  // removed). Verify no crash and 2 still exists.
+  auto update4 = CreateDefaultUpdate();
+  update4->ui_resource_requests.push_back(CreateUIResourceRequest(
+      1, mojom::TransferableUIResourceRequest::Type::kDelete));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(1), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 5: Edge Case - Try to remove UIResource 3 (never created).
+  // Verify no crash and 2 still exists.
+  auto update5 = CreateDefaultUpdate();
+  update5->ui_resource_requests.push_back(CreateUIResourceRequest(
+      3, mojom::TransferableUIResourceRequest::Type::kDelete));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update5)).has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(3), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 6: Edge Case - Try to create UIResource 2 again (duplicate
+  // create). Verify 2 still exists (it's replaced).
+  ResourceId old_resource_2_id = host_impl->ResourceIdForUIResource(2);
+  auto update6 = CreateDefaultUpdate();
+  update6->ui_resource_requests.push_back(CreateUIResourceRequest(
+      2, mojom::TransferableUIResourceRequest::Type::kCreate));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update6)).has_value());
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+  // The resource ID might change upon re-creation.
+  EXPECT_NE(host_impl->ResourceIdForUIResource(2), old_resource_2_id);
+
+  // Test Case 7: Remove UIResource 2. Verify it's gone.
+  auto update7 = CreateDefaultUpdate();
+  update7->ui_resource_requests.push_back(CreateUIResourceRequest(
+      2, mojom::TransferableUIResourceRequest::Type::kDelete));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update7)).has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(2), kInvalidResourceId);
+
+  // Test Case 8: Operations within the same update.
+  // Create UID 10, then Delete UID 10. Should result in no resource 10.
+  // Delete UID 11 (non-existent), then Create UID 11. Should result in
+  // resource 11. Create UID 12, then Create UID 12 again. Should result in
+  // resource 12.
+  auto update8 = CreateDefaultUpdate();
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      10, mojom::TransferableUIResourceRequest::Type::kCreate));
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      10, mojom::TransferableUIResourceRequest::Type::kDelete));
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      11, mojom::TransferableUIResourceRequest::Type::kDelete));
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      11, mojom::TransferableUIResourceRequest::Type::kCreate));
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      12, mojom::TransferableUIResourceRequest::Type::kCreate));
+  update8->ui_resource_requests.push_back(CreateUIResourceRequest(
+      12, mojom::TransferableUIResourceRequest::Type::kCreate));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update8)).has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(10), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(11), kInvalidResourceId);
+  EXPECT_NE(host_impl->ResourceIdForUIResource(12), kInvalidResourceId);
+
+  // Cleanup remaining resources
+  auto update_cleanup = CreateDefaultUpdate();
+  update_cleanup->ui_resource_requests.push_back(CreateUIResourceRequest(
+      11, mojom::TransferableUIResourceRequest::Type::kDelete));
+  update_cleanup->ui_resource_requests.push_back(CreateUIResourceRequest(
+      12, mojom::TransferableUIResourceRequest::Type::kDelete));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_cleanup))
+          .has_value());
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(11), kInvalidResourceId);
+  EXPECT_EQ(host_impl->ResourceIdForUIResource(12), kInvalidResourceId);
+}
+
 }  // namespace viz
