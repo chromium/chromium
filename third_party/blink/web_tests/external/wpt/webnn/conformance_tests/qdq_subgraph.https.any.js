@@ -2700,6 +2700,82 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'quantized clamp',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            8.413617134094238, 6.108623504638672, 3.549168109893799,
+            1.6811466217041016, -0.1988269537687301, -8.413617134094238,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'scale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'zeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'clamp',
+          'arguments': [
+            {'input': 'dequantizedInput'},
+            {'options': {'minValue': 0, 'maxValue': 6}}
+          ],
+          'outputs': 'clampOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'clampOutput'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'quantizedClampOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedClampOutput'},
+            {'scale': 'scale', 'zeroPoint': 'zeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            5.832579612731934, 5.832579612731934, 3.430929183959961,
+            1.7154645919799805, 0, 0,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {

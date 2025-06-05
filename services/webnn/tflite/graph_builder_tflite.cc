@@ -1422,6 +1422,35 @@ GraphBuilderTflite::CanFuseActivationAndGetOutput(OperandId output_operand_id) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Clamp& clamp) {
+  if (!IsDequantizeOutput(clamp.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, quantized clamp is not supported.
+  // WebNN clamp maps to TFLite RELU, RELU_N1_TO_1, RELU6 and RELU_0_TO_1
+  // without emulation. For those TFLite kernels, input and output have to be
+  // dequantized from ints8.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/activations.cc;l=220;drc=736622ed7d9cf605750afa417b3f4e681eef686c
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(clamp.input_operand_id);
+  const OperandDataType quantized_type =
+      GetOperand(input_dequantize.input_operand_id).descriptor.data_type();
+  if (!DataTypeConstraint::kInts8.Has(quantized_type)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(clamp.output_operand_id, {quantized_type});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const mojom::Conv2d& conv2d,
     std::optional<OperandId> activation_output_operand_id) {
@@ -3455,23 +3484,31 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
   CHECK(context_properties_.data_type_limits.clamp_input.Supports(
       GetOperand(clamp.input_operand_id).descriptor));
 
-  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(clamp.input_operand_id));
-  const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(clamp.output_operand_id).index;
-
   const float min_value = clamp.min_value;
   const float max_value = clamp.max_value;
   std::optional<::tflite::BuiltinOperator> operator_code =
       GetClampOperatorCode(min_value, max_value);
-  if (operator_code.has_value()) {
-    return SerializeUnaryOperation(*operator_code, input_tensor_info.index,
-                                   output_tensor_index);
-  } else {
+  const bool is_emulated = !operator_code.has_value();
+  std::optional<TensorInfo> quantized_output =
+      is_emulated ? std::nullopt : CanFuseQuantizeAndGetOutput(clamp);
+  const bool fuse_dequantize = quantized_output.has_value();
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(
+                       clamp.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+  const TensorIndex output_tensor_index =
+      fuse_dequantize
+          ? quantized_output->index
+          : SerializeOutputTensorInfo(clamp.output_operand_id).index;
+
+  if (is_emulated) {
     // Emulate clamp operation with min and max.
     return SerializeSubGraphMaxMin<float>(
         input_tensor_info, output_tensor_index, std::array<float, 1>{min_value},
         std::array<float, 1>{max_value});
+  } else {
+    return SerializeUnaryOperation(*operator_code, input_tensor_info.index,
+                                   output_tensor_index);
   }
 }
 
