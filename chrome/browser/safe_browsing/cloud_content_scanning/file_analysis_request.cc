@@ -149,7 +149,7 @@ GetFileDataBlocking(const base::FilePath& path,
 
   size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
   if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableNewUploadDownloadLimit)) {
+          enterprise_connectors::kEnableNewUploadSizeLimit)) {
     max_file_size_bytes =
         1024 * 1024 * enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
   }

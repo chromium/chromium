@@ -20,8 +20,8 @@ BASE_DECLARE_FEATURE(kEnableResumableUploadOnConsumerScan);
 // Controls the number of content analysis requests concurrently uploaded.
 BASE_DECLARE_FEATURE_PARAM(size_t, kParallelContentAnalysisRequestCount);
 
-// Controls the new upload/download limit for content analysis.
-BASE_DECLARE_FEATURE(kEnableNewUploadDownloadLimit);
+// Controls the new upload/download and print limit for content analysis.
+BASE_DECLARE_FEATURE(kEnableNewUploadSizeLimit);
 
 // Controls the maximum file size for content analysis in MB.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxContentAnalysisFileSizeMB);

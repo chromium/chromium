@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -23,9 +24,17 @@ constexpr size_t kMaxPagePrintUploadSizeMetricsKB = 500 * 1024;
 
 bool ShouldNotUploadLargePage(const AnalysisSettings& settings,
                               size_t page_size) {
+  size_t max_page_size_bytes =
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes;
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableNewUploadSizeLimit)) {
+    max_page_size_bytes =
+        1024 * 1024 *
+        enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
+  }
+
   return settings.cloud_or_local_settings.is_cloud_analysis() &&
-         page_size > safe_browsing::BinaryUploadService::kMaxUploadSizeBytes &&
-         settings.block_large_files;
+         page_size > max_page_size_bytes && settings.block_large_files;
 }
 
 PagePrintRequestHandler::TestFactory* TestFactoryStorage() {

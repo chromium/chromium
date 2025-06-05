@@ -270,7 +270,7 @@ TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      enterprise_connectors::kEnableNewUploadDownloadLimit,
+      enterprise_connectors::kEnableNewUploadSizeLimit,
       {{"max_file_size_mb", "100"}});
 
   base::test::TaskEnvironment task_environment;
