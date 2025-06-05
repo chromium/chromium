@@ -56,6 +56,7 @@ public class AndroidPaymentApp extends PaymentApp
     private final SupportedDelegations mSupportedDelegations;
     private final boolean mShowReadyToPayDebugInfo;
     private final boolean mRemoveDeprecatedFields;
+    private final int mPaymentDetailsUpdateServiceMaxRetryNumber;
 
     private @Nullable IsReadyToPayCallback mIsReadyToPayCallback;
     private @Nullable InstrumentDetailsCallback mInstrumentDetailsCallback;
@@ -89,6 +90,9 @@ public class AndroidPaymentApp extends PaymentApp
      * @param showReadyToPayDebugInfo Whether IS_READY_TO_PAY intent should be displayed in a debug
      *     dialog.
      * @param removeDeprecatedFields Whether intents should omit deprecated fields.
+     * @param paymentDetailsUpdateServiceMaxRetryNumber The maximum number of times to attempt to
+     *     reconnect to the UPDATE_PAYMENT_DETAILS service in the payment app, if it unexpectedly
+     *     disconnects during payment.
      */
     public AndroidPaymentApp(
             AndroidIntentLauncher launcher,
@@ -103,7 +107,8 @@ public class AndroidPaymentApp extends PaymentApp
             @Nullable String appToHide,
             SupportedDelegations supportedDelegations,
             boolean showReadyToPayDebugInfo,
-            boolean removeDeprecatedFields) {
+            boolean removeDeprecatedFields,
+            int paymentDetailsUpdateServiceMaxRetryNumber) {
         super(packageName, label, null, icon);
         ThreadUtils.assertOnUiThread();
         mHandler = new Handler();
@@ -125,6 +130,7 @@ public class AndroidPaymentApp extends PaymentApp
         mSupportedDelegations = supportedDelegations;
         mShowReadyToPayDebugInfo = showReadyToPayDebugInfo;
         mRemoveDeprecatedFields = removeDeprecatedFields;
+        mPaymentDetailsUpdateServiceMaxRetryNumber = paymentDetailsUpdateServiceMaxRetryNumber;
         mIsPreferred = false;
     }
 
@@ -395,7 +401,8 @@ public class AndroidPaymentApp extends PaymentApp
                                             .getPackageName(),
                                     mPackageName,
                                     mPaymentDetailsUpdateServiceName),
-                            new PaymentDetailsUpdateService().getBinder());
+                            new PaymentDetailsUpdateService().getBinder(),
+                            mPaymentDetailsUpdateServiceMaxRetryNumber);
             mPaymentDetailsUpdateConnection.connectToService();
         }
     }

@@ -127,6 +127,8 @@ android_library("service_java") {
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperType.java",
+    "java/src/org/chromium/components/payments/service/Reconnectable.java",
+    "java/src/org/chromium/components/payments/service/ServiceReconnector.java",
   ]
   deps = [
     ":feature_list_java",
@@ -355,6 +357,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/payments/PaymentManifestResolverTest.java",
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
     "junit/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverterTest.java",
+    "junit/src/org/chromium/components/payments/service/ServiceReconnectorUnitTest.java",
   ]
   deps = [
     ":java",

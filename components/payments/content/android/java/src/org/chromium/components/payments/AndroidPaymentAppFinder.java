@@ -51,6 +51,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     /** The maximum number of payment method manifests to download. */
     private static final int MAX_NUMBER_OF_MANIFESTS = 10;
 
+    private static final int DEFAULT_PAYMENT_DETAILS_UPDATE_SERVICE_MAX_RETRY_NUMBER = 5;
+
     /** Meta data name of an app's supported payment method names. */
     public static final String META_DATA_NAME_OF_PAYMENT_METHOD_NAMES =
             "org.chromium.payment_method_names";
@@ -153,6 +155,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      */
     private final Map<String, String> mUpdatePaymentDetailsServices = new HashMap<>();
 
+    private final int mPaymentDetailsUpdateServiceMaxRetryNumber;
+
     private int mPendingVerifiersCount;
     private int mPendingIsReadyToPayQueries;
     private int mPendingResourceUsersCount;
@@ -231,6 +235,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mFactory = factory;
         assert mFactoryDelegate.getParams() != null;
         mIsOffTheRecord = mFactoryDelegate.getParams().isOffTheRecord();
+
+        mPaymentDetailsUpdateServiceMaxRetryNumber =
+                PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                PaymentFeatureList
+                                        .RECONNECT_ON_LOST_CONNECTION_TO_UPDATE_PAYMENT_DETAILS_SERVICE)
+                        ? DEFAULT_PAYMENT_DETAILS_UPDATE_SERVICE_MAX_RETRY_NUMBER
+                        : 0; // No reconnect attempts.
     }
 
     private void findAppStoreBillingApp(List<ResolveInfo> allInstalledPaymentApps) {
@@ -867,7 +878,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             /* removeDeprecatedFields= */ PaymentFeatureList
                                     .isEnabledOrExperimentalFeaturesEnabled(
                                             PaymentFeatureList
-                                                    .ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS));
+                                                    .ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS),
+                            mPaymentDetailsUpdateServiceMaxRetryNumber);
             mValidApps.put(packageName, app);
         }
 
