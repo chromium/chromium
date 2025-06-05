@@ -231,6 +231,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     /** The desired width for the content. */
     private int mDesiredContentWidth;
 
+    /** The desired height for the content. */
+    private int mDesiredContentHeight;
+
     // Preferred orientation for the popup with respect to the anchor.
     // Preferred vertical orientation for the popup with respect to the anchor.
     @VerticalOrientation
@@ -514,11 +517,32 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
-     * Sets the width for the content of the popup window. The popup window will be shown in this
-     * exact width unless certain constraint presents (e.g. desiredContentWidth > maxWidthPx).
+     * Sets the desired width for the content of the popup window.
+     *
+     * <p>You can call this method only before {@link #show()} as it does not trigger relayout,
+     * whereas {@link #setDesiredContentSize(int, int)} triggers it.
+     *
+     * @deprecated Use {@link #setDesiredContentSize(int, int)} instead.
      */
+    @Deprecated
     public void setDesiredContentWidth(int width) {
         mDesiredContentWidth = width;
+    }
+
+    /**
+     * Sets the desired dimensions for the content of the popup window.
+     *
+     * <p>Pass 0 to either dimension to have it determine its own size. The popup window will be
+     * shown in this exact size unless certain constraint presents (e.g. desiredContentWidth >
+     * maxWidthPx).
+     *
+     * <p>This method triggers an update of the layout if the popup is already shown. You can call
+     * it to resize the popup at any time.
+     */
+    public void setDesiredContentSize(int width, int height) {
+        mDesiredContentWidth = width;
+        mDesiredContentHeight = height;
+        updatePopupLayout();
     }
 
     /** Sets whether to allow the popup to have a small non-touchable size. The default is false. */
@@ -580,6 +604,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                         mMarginPx,
                         mMaxWidthPx,
                         mDesiredContentWidth,
+                        mDesiredContentHeight,
                         mPreferredHorizontalOrientation,
                         mPreferredVerticalOrientation,
                         currentPositionBelow,
@@ -681,6 +706,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             int marginPx,
             int maxWidthPx,
             int desiredContentWidth,
+            int desiredContentHeight,
             @HorizontalOrientation int preferredHorizontalOrientation,
             @VerticalOrientation int preferredVerticalOrientation,
             boolean currentPositionBelow,
@@ -689,7 +715,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             boolean horizontalOverlapAnchor,
             boolean verticalOverlapAnchor,
             boolean smartAnchorWithMaxWidth) {
-        // Determine the size of the text popup.
         final int maxContentWidth =
                 getMaxContentWidth(maxWidthPx, rootViewWidth, marginPx, paddingX);
         final int widthSpec =
@@ -698,11 +723,24 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                                 Math.min(desiredContentWidth, maxContentWidth), MeasureSpec.EXACTLY)
                         : MeasureSpec.makeMeasureSpec(maxContentWidth, MeasureSpec.AT_MOST);
 
-        contentView.measure(widthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-        final int idealContentHeight = contentView.getMeasuredHeight();
-        final int idealContentWidth = contentView.getMeasuredWidth();
+        // Calculate the ideal content size.
+        int idealContentWidth;
+        int idealContentHeight;
+        if (desiredContentWidth > 0 && desiredContentHeight > 0) {
+            idealContentWidth = desiredContentWidth;
+            idealContentHeight = desiredContentHeight;
+        } else {
+            // If the desired content size is not fully specified, query the content view.
+            final int queryHeightSpec =
+                    desiredContentHeight > 0
+                            ? MeasureSpec.makeMeasureSpec(desiredContentHeight, MeasureSpec.EXACTLY)
+                            : MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+            contentView.measure(widthSpec, queryHeightSpec);
+            idealContentWidth = contentView.getMeasuredWidth();
+            idealContentHeight = contentView.getMeasuredHeight();
+        }
 
-        // Width adjustments based on the anchor and settings.
+        // Choose whether to place the popup, left or right of the anchor.
         boolean isPositionToLeft = currentPositionToLeft;
         boolean allowHorizontalOverlap = horizontalOverlapAnchor;
         boolean allowVerticalOverlap = verticalOverlapAnchor;
@@ -728,7 +766,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             isPositionToLeft = LocalizationUtils.isLayoutRtl();
         }
 
-        // Height adjustment based on anchorRect and settings.
+        // Choose whether to place the popup, below or above the anchor.
 
         // TODO(dtrainor): This follows the previous logic.  But we should look into if we want to
         // use the root view dimensions instead of the window dimensions here so the popup can't
@@ -768,10 +806,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             isPositionBelow = false;
         }
 
+        // Decide the actual dimensions.
         final int maxContentHeight = isPositionBelow ? spaceBelowAnchor : spaceAboveAnchor;
-        final int heightMeasureSpec =
-                MeasureSpec.makeMeasureSpec(maxContentHeight, MeasureSpec.AT_MOST);
-        contentView.measure(widthSpec, heightMeasureSpec);
+        final int heightSpec =
+                desiredContentHeight > 0
+                        ? MeasureSpec.makeMeasureSpec(
+                                Math.min(desiredContentHeight, maxContentHeight),
+                                MeasureSpec.EXACTLY)
+                        : MeasureSpec.makeMeasureSpec(maxContentHeight, MeasureSpec.AT_MOST);
+        contentView.measure(widthSpec, heightSpec);
 
         int width = contentView.getMeasuredWidth() + paddingX;
         int height = contentView.getMeasuredHeight() + paddingY;
