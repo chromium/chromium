@@ -155,6 +155,9 @@ BASE_DECLARE_FEATURE(kIpadZeroSuggestMatches);
 // Site search allow user override feature.
 BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);
 
+// Preconnect/prerender behavior for suggestions
+BASE_DECLARE_FEATURE(kPreconnectNonSearchOmniboxSuggestions);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

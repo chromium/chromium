@@ -403,6 +403,15 @@ struct AutocompleteMatch {
   // starter pack and featured site search engines created by policy.
   static bool IsFeaturedSearchType(Type type);
 
+  // Convenience function to check if `type` is preconnectable.
+  // Preconnecting allows connecting to an origin before requesting any
+  // resources from that origin, effectively "warming up" the connection. When a
+  // resource from that origin is requested, we can immediately use the
+  // established connection, saving valuable round-trips. This differs from
+  // preloading and prefetching in that it does not actually fetch any resources
+  // from the origin, it just establishes the connection to the origin earlier.
+  static bool IsPreconnectableType(Type type);
+
   // Convenience function to check if |type| is a search (as opposed to a URL or
   // an extension).
   static bool IsSearchType(Type type);

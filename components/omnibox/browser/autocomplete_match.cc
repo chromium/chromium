@@ -873,6 +873,27 @@ bool AutocompleteMatch::IsFeaturedSearchType(Type type) {
 }
 
 // static
+bool AutocompleteMatch::IsPreconnectableType(Type type) {
+  CHECK(base::FeatureList::IsEnabled(
+      omnibox::kPreconnectNonSearchOmniboxSuggestions));
+  return IsSearchType(type) ||
+         type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+         type == AutocompleteMatchType::HISTORY_URL ||
+         type == AutocompleteMatchType::HISTORY_TITLE ||
+         type == AutocompleteMatchType::HISTORY_BODY ||
+         type == AutocompleteMatchType::HISTORY_KEYWORD ||
+         type == AutocompleteMatchType::NAVSUGGEST ||
+         type == AutocompleteMatchType::BOOKMARK_TITLE ||
+         type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
+         type == AutocompleteMatchType::CLIPBOARD_URL ||
+         type == AutocompleteMatchType::DOCUMENT_SUGGESTION ||
+         type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+         type == AutocompleteMatchType::OPEN_TAB ||
+         type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
+         type == AutocompleteMatchType::HISTORY_EMBEDDINGS;
+}
+
+// static
 bool AutocompleteMatch::IsSearchType(Type type) {
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::SEARCH_HISTORY ||

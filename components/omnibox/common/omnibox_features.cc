@@ -447,4 +447,9 @@ BASE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy,
              "EnableSiteSearchAllowUserOverridePolicy",
              DISABLED);
 
+// Enables preconnecting to omnibox suggestions that are not only Search types.
+BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions,
+             "PreconnectNonSearchOmniboxSuggestions",
+             DISABLED);
+
 }  // namespace omnibox

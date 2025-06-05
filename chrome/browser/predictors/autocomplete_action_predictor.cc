@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
@@ -279,6 +280,10 @@ AutocompleteActionPredictor::RecommendAction(
 // static
 bool AutocompleteActionPredictor::IsPreconnectable(
     const AutocompleteMatch& match) {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kPreconnectNonSearchOmniboxSuggestions)) {
+    return AutocompleteMatch::IsPreconnectableType(match.type);
+  }
   return AutocompleteMatch::IsSearchType(match.type);
 }
 
