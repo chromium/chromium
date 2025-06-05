@@ -6111,11 +6111,6 @@ crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Failu
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Failure Skip ]
 crbug.com/1312164 webaudio/internals/audioworkletnode-gc.https.html [ Failure Skip ]
 
-
-# Tests that need updates due to rounding math in layout
-crbug.com/40219666 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
-crbug.com/40219666 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
-
 # Sheriff 2022-03-23: More flaky tests.
 crbug.com/1309483 [ Win ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1309633 [ Debug Mac13-arm64 ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
