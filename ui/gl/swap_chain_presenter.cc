@@ -1685,7 +1685,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     return false;
   }
 
-  HRESULT hr, device_removed_reason;
+  HRESULT hr;
   if (first_present_) {
     first_present_ = false;
     UINT flags = DXGI_PRESENT_USE_DURATION;
@@ -1727,27 +1727,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     hr = dxgi_device2->EnqueueSetEvent(event.handle());
     if (SUCCEEDED(hr)) {
       event.Wait();
-    } else {
-      device_removed_reason = d3d11_device_->GetDeviceRemovedReason();
-      base::debug::Alias(&hr);
-      base::debug::Alias(&device_removed_reason);
-
-      // Add a crash key. The minidump might be discarded due to large size.
-      static auto* hr_enqueue_set_event_key =
-          base::debug::AllocateCrashKeyString(
-              "hr-EnqueueSetEvent", base::debug::CrashKeySize::Size64);
-      base::debug::ScopedCrashKeyString scoped_crash_key_1(
-          hr_enqueue_set_event_key, base::StringPrintf("0x%x", hr));
-      static auto* hr_device_removed_reason_key =
-          base::debug::AllocateCrashKeyString(
-              "hr-DeviceRemovedReason", base::debug::CrashKeySize::Size64);
-      base::debug::ScopedCrashKeyString scoped_crash_key_2(
-          hr_device_removed_reason_key,
-          base::StringPrintf("0x%x", device_removed_reason));
-
-      base::debug::DumpWithoutCrashing();
     }
   }
+
   UINT flags = DXGI_PRESENT_USE_DURATION;
   UINT interval = 1;
   if (DirectCompositionSwapChainTearingEnabled()) {
