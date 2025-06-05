@@ -210,8 +210,12 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
       }
 
       if (base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing)) {
-        if (codec != VideoCodec::kVP9 ||
-            !workarounds_.disable_vp9_shared_image_encode) {
+        bool is_unsupported_for_gpu =
+            (codec == VideoCodec::kVP9 &&
+             workarounds_.disable_vp9_shared_image_encode) ||
+            (codec == VideoCodec::kAV1 &&
+             workarounds_.disable_av1_shared_image_encode);
+        if (!is_unsupported_for_gpu) {
           std::ranges::copy(
               kSupportedPixelFormatsD3DVideoProcessing,
               std::back_inserter(profile.gpu_supported_pixel_formats));

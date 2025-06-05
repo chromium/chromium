@@ -3524,6 +3524,21 @@
       "features": [
         "disable_direct_composition_letterbox_video_optimization"
       ]
+    },
+    {
+      "id": 447,
+      "description": "Disable shared image encode for AV1 MFVEA on NVidia",
+      "comment":[
+        "AV1 encode accelerator corrupts color output when accepting RGB shared images",
+        "as input."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "features": [
+        "disable_av1_shared_image_encode"
+      ]
     }
   ]
 }
