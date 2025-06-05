@@ -218,13 +218,13 @@ public class SharedImageTilesConfig {
          * @return This builder instance for chaining.
          */
         public Builder setTabGroupColor(Context context, @TabGroupColorId int tabGroupColorId) {
+            if (SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()) {
+                return setTabGroupColorGm3(context, tabGroupColorId);
+            }
             @ColorInt
             int tabGroupColor =
-                    SurfaceColorUpdateUtils.useNewGm3GtsTabGroupColors()
-                            ? SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                                    context, false, tabGroupColorId)
-                            : TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                                    context, tabGroupColorId, false);
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                            context, tabGroupColorId, false);
             setBorderColor(tabGroupColor);
             setBackgroundColor(tabGroupColor);
             @ColorRes
@@ -233,7 +233,6 @@ public class SharedImageTilesConfig {
                             ? R.color.small_shared_image_tiles_text_color_dark
                             : R.color.small_shared_image_tiles_text_color_light;
             setTextColor(ContextCompat.getColor(context, textColorRes));
-
             return this;
         }
 
@@ -244,6 +243,28 @@ public class SharedImageTilesConfig {
          */
         public SharedImageTilesConfig build() {
             return new SharedImageTilesConfig(this);
+        }
+
+        /**
+         * Sets the a new tab group color and updates all relevant colors to match.
+         *
+         * @param context The Android context.
+         * @param tabGroupColorId The color associated with the tab group.
+         * @return This builder instance for chaining.
+         */
+        private Builder setTabGroupColorGm3(Context context, @TabGroupColorId int tabGroupColorId) {
+            @ColorInt
+            int tabGroupColor =
+                    SurfaceColorUpdateUtils.getCardViewBackgroundColor(
+                            context, /* isIncognito= */ false, tabGroupColorId);
+            setBorderColor(tabGroupColor);
+            setBackgroundColor(tabGroupColor);
+            @ColorInt
+            int textColor =
+                    SurfaceColorUpdateUtils.getCardViewTextColor(
+                            context, /* isIncognito= */ false, tabGroupColorId);
+            setTextColor(textColor);
+            return this;
         }
     }
 }

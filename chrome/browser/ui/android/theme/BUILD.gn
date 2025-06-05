@@ -47,6 +47,8 @@ android_resources("java_resources") {
     "java/res/values/values.xml",
   ]
   deps = [
+    "//chrome/browser/tab_ui/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]

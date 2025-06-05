@@ -38,7 +38,7 @@ public class TabUiThemeUtils {
      */
     public static @ColorInt int getChromeOwnedFaviconTintColor(
             Context context, boolean isIncognito, boolean isTabSelected) {
-        return getTitleTextColor(context, isIncognito, isTabSelected);
+        return getTitleTextColor(context, isIncognito, isTabSelected, null);
     }
 
     /**
@@ -46,21 +46,20 @@ public class TabUiThemeUtils {
      *
      * @param isIncognito Whether the text appearance is used for incognito mode.
      * @param isSelected Whether the tab is currently selected.
+     * @param colorId colorId Color chosen by user for the TabGroup, Null if not a tab group.
      * @return The text appearance for the tab grid card title.
      */
     public static @ColorInt int getTitleTextColor(
-            Context context, boolean isIncognito, boolean isSelected) {
-        if (isIncognito) {
-            @ColorRes
-            int colorRes =
-                    isSelected
-                            ? R.color.incognito_tab_title_selected_color
-                            : R.color.incognito_tab_title_color;
-            return context.getColor(colorRes);
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
+        if (isSelected) {
+            return isIncognito
+                    ? context.getColor(R.color.incognito_tab_title_selected_color)
+                    : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
         } else {
-            return isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+            return SurfaceColorUpdateUtils.getCardViewTextColor(context, isIncognito, colorId);
         }
     }
 

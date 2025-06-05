@@ -546,7 +546,8 @@ class TabGridViewBinder {
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         titleView.setTextColor(
-                TabUiThemeUtils.getTitleTextColor(titleView.getContext(), isIncognito, isSelected));
+                TabUiThemeUtils.getTitleTextColor(
+                        titleView.getContext(), isIncognito, isSelected, colorId));
 
         thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected, colorId);
 

@@ -187,6 +187,24 @@ public class SurfaceColorUpdateUtils {
     }
 
     /**
+     * Returns the text color for the card view in grid tab switcher on the enabled flag
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param colorId USer chosen color ID.
+     * @return The text color.
+     */
+    public static @ColorInt int getCardViewTextColor(
+            Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardTextColor(context, colorId, isIncognito);
+        }
+        return isIncognito
+                ? context.getColor(R.color.incognito_tab_title_color)
+                : SemanticColorUtils.getDefaultTextColor(context);
+    }
+
+    /**
      * Returns the background color for the grid tab switcher message card based on the enabled flag
      * and incognito.
      *

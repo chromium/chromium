@@ -151,6 +151,45 @@ public class TabGroupColorPickerUtils {
         };
     }
 
+    /**
+     * Get the color corresponding to the color id that is passed in. Adjust the color depending on
+     * light/dark/incognito mode as well as dynamic color themes. This function should only be used
+     * for retrieving items from the tab group card text color.
+     *
+     * @param context The current context.
+     * @param colorId The color id corresponding to the color of the Tab Group.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     */
+    public static @ColorInt int getTabGroupCardTextColor(
+            Context context, @TabGroupColorId int colorId, boolean isIncognito) {
+        @ColorRes int colorRes = getTabGroupCardTextColorResource(colorId);
+        return resolveGroupRelatedColor(context, colorRes, isIncognito);
+    }
+
+    /**
+     * Get the color resource corresponding to the respective Tab Group Text color. This function
+     * should only be used for retrieving items from the tab group text color.
+     *
+     * @param colorId The color id corresponding to the color of the Tab Group.
+     */
+    public static @ColorRes int getTabGroupCardTextColorResource(@TabGroupColorId int colorId) {
+        return switch (colorId) {
+            case TabGroupColorId.GREY -> R.color.tab_group_card_text_color_grey;
+            case TabGroupColorId.BLUE -> R.color.tab_group_card_text_color_blue;
+            case TabGroupColorId.RED -> R.color.tab_group_card_text_color_red;
+            case TabGroupColorId.YELLOW -> R.color.tab_group_card_text_color_yellow;
+            case TabGroupColorId.GREEN -> R.color.tab_group_card_text_color_green;
+            case TabGroupColorId.PINK -> R.color.tab_group_card_text_color_pink;
+            case TabGroupColorId.PURPLE -> R.color.tab_group_card_text_color_purple;
+            case TabGroupColorId.CYAN -> R.color.tab_group_card_text_color_cyan;
+            case TabGroupColorId.ORANGE -> R.color.tab_group_card_text_color_orange;
+            default -> {
+                assert false : "Invalid tab group text color id " + colorId;
+                yield Resources.ID_NULL;
+            }
+        };
+    }
+
     private static @ColorInt int resolveGroupRelatedColor(
             Context context, @ColorRes int colorRes, boolean isIncognito) {
         @ColorInt int color = ContextCompat.getColor(context, colorRes);
