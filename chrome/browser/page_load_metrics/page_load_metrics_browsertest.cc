@@ -3822,18 +3822,23 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
   // entry to report at the time of killing the page.
   double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
 
-  // Kill the page.
-  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-  NavigateParams params(
-      browser(), GURL(GetParam()),
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  ui_test_utils::NavigateToURL(&params);
+  // Crash the page.
+  content::RenderProcessHostWatcher crash_observer(
+      RenderFrameHost()->GetProcess(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  browser()->OpenURL(
+      content::OpenURLParams(GURL(GetParam()), content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
+  crash_observer.Wait();
+
   // Page being crashed is only verifiable in these crashes.
   if (GetParam() == blink::kChromeUIKillURL ||
       GetParam() == blink::kChromeUICrashURL) {
-    EXPECT_TRUE(
-        browser()->tab_strip_model()->GetActiveWebContents()->IsCrashed());
+    EXPECT_TRUE(web_contents()->IsCrashed());
+    EXPECT_FALSE(crash_observer.did_exit_normally());
   }
 
   // Verify page load metric is recorded.
