@@ -30,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
@@ -314,9 +315,7 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   if (!device_fd_.is_valid()) {
-    constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-    device_fd_.reset(HANDLE_EINTR(
-        open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+    device_fd_ = V4L2Device::OpenFDForType(V4L2Device::Type::kDecoder);
     if (!device_fd_.is_valid()) {
       std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
       return;
@@ -1195,9 +1194,7 @@ int V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances() {
   if (!base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances)) {
     return std::numeric_limits<int>::max();
   }
-  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-  base::ScopedFD device_fd(HANDLE_EINTR(
-      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  auto device_fd = V4L2Device::OpenFDForType(V4L2Device::Type::kDecoder);
   if (!device_fd.is_valid()) {
     return std::numeric_limits<int>::max();
   }

@@ -94,6 +94,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return true on success.
   // The device will be closed in the destructor.
   [[nodiscard]] bool Open(Type type, uint32_t v4l2_pixfmt);
+  static base::ScopedFD OpenFDForType(Type type);
 
   // Returns whether Open() has been succeeded.
   bool IsValid();

@@ -149,6 +149,27 @@ bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
   return true;
 }
 
+base::ScopedFD V4L2Device::OpenFDForType(Type type) {
+  DVLOGF(3);
+  base::ScopedFD devfd;
+  auto dev = base::MakeRefCounted<V4L2Device>();
+
+  const auto& devices = dev->GetDevicesForType(type);
+  if (!devices.empty()) {
+    std::string path = devices.front().first;
+    DCHECK(!path.empty());
+
+    devfd.reset(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+    VLOGF(3) << "Using device " << path
+             << " for type: " << static_cast<int>(type);
+  } else {
+    VLOGF(1) << "No devices for type: " << static_cast<int>(type);
+  }
+
+  return devfd;
+}
+
 bool V4L2Device::IsValid() {
   return device_poll_interrupt_fd_.is_valid();
 }
@@ -870,27 +891,33 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
 #endif
 
   std::string device_pattern;
-  v4l2_buf_type buf_type;
+  v4l2_buf_type input_buf_type;
+  v4l2_buf_type output_buf_type;
   switch (type) {
     case Type::kDecoder:
       device_pattern = kDecoderDevicePattern;
-      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      input_buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      output_buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
       break;
     case Type::kEncoder:
       device_pattern = kEncoderDevicePattern;
-      buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      input_buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      output_buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
       break;
     case Type::kImageProcessor:
       device_pattern = kImageProcessorDevicePattern;
-      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      input_buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      output_buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
       break;
     case Type::kJpegDecoder:
       device_pattern = kJpegDecoderDevicePattern;
-      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      input_buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      output_buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
       break;
     case Type::kJpegEncoder:
       device_pattern = kJpegEncoderDevicePattern;
-      buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      input_buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      output_buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
       break;
   }
 
@@ -922,12 +949,76 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
     if (!OpenDevicePath(path)) {
       continue;
     }
-    const auto supported_pixelformats = EnumerateSupportedPixFmts(
-        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
+    const auto supported_pixelformats_input = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), input_buf_type);
+    const auto supported_pixelformats_output = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), output_buf_type);
 
-    if (!supported_pixelformats.empty()) {
+    bool found_valid_device;
+#if BUILDFLAG(IS_CHROMEOS)
+    found_valid_device = !supported_pixelformats_input.empty() &&
+                         !supported_pixelformats_output.empty();
+#else
+    const auto is_video_format = [](uint32_t fmt) {
+      return fmt == V4L2_PIX_FMT_H264 || fmt == V4L2_PIX_FMT_HEVC ||
+             fmt == V4L2_PIX_FMT_MPEG || fmt == V4L2_PIX_FMT_VP8 ||
+             fmt == V4L2_PIX_FMT_VP9 || fmt == V4L2_PIX_FMT_AV1 ||
+             fmt == V4L2_PIX_FMT_H264_SLICE || fmt == V4L2_PIX_FMT_HEVC_SLICE ||
+             fmt == V4L2_PIX_FMT_MPEG2_SLICE || fmt == V4L2_PIX_FMT_VP8_FRAME ||
+             fmt == V4L2_PIX_FMT_VP9_FRAME || fmt == V4L2_PIX_FMT_AV1_FRAME;
+    };
+    const auto is_jpeg_format = [](uint32_t fmt) {
+      return fmt == V4L2_PIX_FMT_JPEG;
+    };
+    const auto is_pixel_format = [](uint32_t fmt) {
+      return Fourcc::FromV4L2PixFmt(fmt).has_value();
+    };
+
+    switch (type) {
+      case Type::kDecoder:
+      case Type::kEncoder:
+        found_valid_device =
+            std::all_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(),
+                        [&](uint32_t fmt) {
+                          return !is_jpeg_format(fmt) && !is_pixel_format(fmt);
+                        }) &&
+            std::any_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(), is_video_format) &&
+            std::any_of(supported_pixelformats_output.begin(),
+                        supported_pixelformats_output.end(), is_pixel_format);
+        break;
+      case Type::kJpegDecoder:
+      case Type::kJpegEncoder:
+        found_valid_device =
+            std::all_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(),
+                        [&](uint32_t fmt) {
+                          return !is_video_format(fmt) && !is_pixel_format(fmt);
+                        }) &&
+            std::any_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(), is_jpeg_format) &&
+            std::any_of(supported_pixelformats_output.begin(),
+                        supported_pixelformats_output.end(), is_pixel_format);
+        break;
+      case Type::kImageProcessor:
+        found_valid_device =
+            std::all_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(),
+                        [&](uint32_t fmt) {
+                          return !is_video_format(fmt) && !is_jpeg_format(fmt);
+                        }) &&
+            std::any_of(supported_pixelformats_input.begin(),
+                        supported_pixelformats_input.end(), is_pixel_format) &&
+            std::any_of(supported_pixelformats_output.begin(),
+                        supported_pixelformats_output.end(), is_pixel_format);
+        break;
+    }
+#endif
+
+    if (found_valid_device) {
       DVLOGF(3) << "Found device: " << path;
-      devices.push_back(std::make_pair(path, supported_pixelformats));
+      devices.push_back(std::make_pair(path, supported_pixelformats_input));
     }
 
     CloseDevice();
