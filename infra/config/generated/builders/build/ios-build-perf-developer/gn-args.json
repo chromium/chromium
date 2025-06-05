@@ -6,6 +6,7 @@
         "target_cpu": "arm64",
         "target_environment": "simulator",
         "target_os": "ios",
+        "use_reclient": true,
         "use_remoteexec": true,
         "use_siso": false
       }
@@ -17,17 +18,6 @@
         "target_environment": "simulator",
         "target_os": "ios",
         "use_reclient": false,
-        "use_remoteexec": true,
-        "use_siso": true
-      }
-    },
-    "siso_reproxy": {
-      "gn_args": {
-        "is_debug": true,
-        "target_cpu": "arm64",
-        "target_environment": "simulator",
-        "target_os": "ios",
-        "use_reclient": true,
         "use_remoteexec": true,
         "use_siso": true
       }

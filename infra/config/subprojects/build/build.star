@@ -193,13 +193,13 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/android-arm64-rel", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/android-arm64-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "siso",
     ),
+    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -254,13 +254,13 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/linux-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "siso",
     ),
+    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -314,13 +314,13 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/win-rel", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/win-rel", "reclient"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "windows",
         short_name = "siso",
     ),
+    reclient_enabled = False,
 )
 
 ci_build_perf_builder(
@@ -345,7 +345,6 @@ ci_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["ci/Win x64 Builder", "reclient"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -411,13 +410,13 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/linux-chromeos-rel", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/linux-chromeos-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "cros",
         short_name = "siso",
     ),
+    reclient_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -477,7 +476,6 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/mac-rel", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/mac-rel", "reclient"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -485,6 +483,7 @@ cq_build_perf_builder(
         category = "mac",
         short_name = "siso",
     ),
+    reclient_enabled = False,
     siso_configs = ["builder"],
 )
 
@@ -548,7 +547,6 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/ios-simulator", "no_reclient"]),
-        "reproxy": gn_args.config(configs = ["try/ios-simulator", "reclient"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -556,6 +554,7 @@ cq_build_perf_builder(
         category = "ios",
         short_name = "siso",
     ),
+    reclient_enabled = False,
     siso_configs = ["builder"],
     xcode = xcode.xcode_default,
 )
@@ -603,8 +602,7 @@ This builder measures build performance for Android developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_siso"]),
-        "siso_reproxy": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "reclient"]),
+        "ninja": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_siso", "reclient"]),
         "siso_native": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_reclient"]),
     },
     os = os.LINUX_DEFAULT,
@@ -637,8 +635,7 @@ This builder measures build performance for Linux developer builds, by simulatin
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "linux", "x64"]),
-        "siso_reproxy": gn_args.config(configs = ["developer", "remoteexec", "reclient", "linux", "x64"]),
+        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "linux", "x64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "linux", "x64"]),
     },
     os = os.LINUX_DEFAULT,
@@ -671,8 +668,7 @@ This builder measures build performance for Windows developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "win", "x64"]),
-        "siso_reproxy": gn_args.config(configs = ["developer", "remoteexec", "reclient", "win", "x64"]),
+        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "win", "x64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "win", "x64"]),
     },
     os = os.WINDOWS_DEFAULT,
@@ -705,8 +701,7 @@ This builder measures build performance for Mac developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "mac", "arm64"]),
-        "siso_reproxy": gn_args.config(configs = ["developer", "remoteexec", "reclient", "mac", "arm64"]),
+        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "mac", "arm64"]),
         "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "mac", "arm64"]),
     },
     os = os.MAC_DEFAULT,
@@ -744,8 +739,7 @@ This builder measures build performance for iOS developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["ios_developer", "remoteexec", "no_siso", "arm64"]),
-        "siso_reproxy": gn_args.config(configs = ["ios_developer", "remoteexec", "reclient", "arm64"]),
+        "ninja": gn_args.config(configs = ["ios_developer", "remoteexec", "no_siso", "reclient", "arm64"]),
         "siso_native": gn_args.config(configs = ["ios_developer", "remoteexec", "no_reclient", "arm64"]),
     },
     os = os.MAC_DEFAULT,
