@@ -270,6 +270,12 @@
   // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
 }
 
+- (void)deleteBackgroundFromRecentlyUsedAtIndex:(NSInteger)index {
+  // TODO(crbug.com/408243803): Remove the background at the given index from
+  // the "Recently Used" list. If the background being removed is also set as
+  // the current NTP background, clear the current background as well.
+}
+
 - (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL
                                            completion:
                                                (void (^)(UIImage*))completion {

@@ -67,6 +67,10 @@ extern NSString* const kBackgroundCellIdentifier;
 // The identifier for the background picker cell.
 extern NSString* const kBackgroundPickerCellIdentifier;
 
+// The name of the system icon used for the "Delete Background" action in the
+// background customization context menu.
+extern NSString* const kBackgroundCustomizationDeleteIcon;
+
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];

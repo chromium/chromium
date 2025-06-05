@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -202,6 +203,49 @@
   return nil;
 }
 
+- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
+    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
+                                         point:(CGPoint)point {
+  CustomizationSection* section =
+      [self.diffableDataSource snapshot].sectionIdentifiers[indexPath.section];
+  NSString* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  if (![section isEqualToString:kCustomizationSectionBackground] ||
+      ![itemIdentifier hasPrefix:kBackgroundCellIdentifier]) {
+    return nil;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+
+  return [UIContextMenuConfiguration
+      configurationWithIdentifier:indexPath
+                  previewProvider:nil
+                   actionProvider:^UIMenu*(
+                       NSArray<UIMenuElement*>* suggestedActions) {
+                     UIAction* deleteAction = [UIAction
+                         actionWithTitle:
+                             l10n_util::GetNSString(
+                                 IDS_IOS_HOME_CUSTOMIZATION_CONTEXT_MENU_DELETE_RECENT_BACKGROUND_TITLE)
+                                   image:DefaultSymbolWithPointSize(
+                                             kBackgroundCustomizationDeleteIcon,
+                                             [[UIFont preferredFontForTextStyle:
+                                                          UIFontTextStyleBody]
+                                                 pointSize])
+                              identifier:nil
+                                 handler:^(UIAction* action) {
+                                   [weakSelf
+                                       handleDeleteBackgroundActionAtIndexPath:
+                                           indexPath];
+                                 }];
+                     deleteAction.attributes =
+                         UIMenuElementAttributesDestructive;
+
+                     return [UIMenu menuWithTitle:@""
+                                         children:@[ deleteAction ]];
+                   }];
+}
+
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   CustomizationSection* section =
@@ -345,4 +389,20 @@
   cell.mutator = self.mutator;
 }
 
+// Handles the "Delete Background" context menu action for the given index path.
+// This method removes the background from the model (via the mutator) and
+// updates the collection view by removing the associated item from the
+// diffable data source.
+- (void)handleDeleteBackgroundActionAtIndexPath:(NSIndexPath*)indexPath {
+  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
+  NSString* identifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  if (identifier) {
+    [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
+    [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
+    [_backgroundCustomizationConfigurationMap removeObjectForKey:identifier];
+    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+  }
+}
 @end
