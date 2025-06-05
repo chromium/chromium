@@ -443,7 +443,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-  services.Add(RunMediaDrmSupportService);
+  if (base::FeatureList::IsEnabled(media::kMediaDrmQueryInSeparateProcess)) {
+    services.Add(RunMediaDrmSupportService);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
