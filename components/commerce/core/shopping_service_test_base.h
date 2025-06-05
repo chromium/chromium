@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
+#include "components/commerce/core/mock_discount_infos_storage.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_extractor.h"
@@ -302,6 +304,8 @@ class ShoppingServiceTestBase : public testing::Test {
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
 
   std::unique_ptr<MockTabRestoreService> tab_restore_service_;
+
+  raw_ptr<MockDiscountInfosStorage> discount_infos_storage_;
 
   std::unique_ptr<ShoppingService> shopping_service_;
 };

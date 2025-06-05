@@ -291,6 +291,12 @@ class ShoppingService : public KeyedService,
   virtual void GetDiscountInfoForUrl(const GURL& url,
                                      DiscountInfoCallback callback);
 
+  // This API fetches available valid discounts information on the provided
+  // |url| and passes the payload back to the caller via |callback|.
+  // Call will run after the fetch is completed.
+  virtual void GetAvailableDiscountInfoForUrl(const GURL& url,
+                                          DiscountInfoCallback callback);
+
   virtual void GetProductSpecificationsForUrls(
       const std::vector<GURL>& urls,
       ProductSpecificationsCallback callback);

@@ -34,7 +34,31 @@ class DiscountInfosStorage : public history::HistoryServiceObserver {
   DiscountInfosStorage& operator=(const DiscountInfosStorage&) = delete;
   ~DiscountInfosStorage() override;
 
+  // Load all discounts with prefix matching the given url.
+  virtual void LoadDiscountsWithPrefix(const GURL& url,
+                                       DiscountInfoCallback callback);
+
+  // Save discounts for the given url.
+  virtual void SaveDiscounts(const GURL& url,
+                             const std::vector<DiscountInfo>& infos);
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+
  private:
+  void DeleteDiscountsForUrl(const std::string& url);
+
+  void OnLoadDiscounts(const GURL& url,
+                       DiscountInfoCallback callback,
+                       bool succeeded,
+                       DiscountInfosKeyAndValues data);
+
+  // When loading from local db, discard expired discounts and only convert &
+  // return unexpired ones.
+  std::vector<DiscountInfo> GetUnexpiredDiscountsFromProto(
+      const DiscountInfosContent& proto);
+
   raw_ptr<SessionProtoStorage<DiscountInfosContent>> proto_db_;
 
   base::ScopedObservation<history::HistoryService,

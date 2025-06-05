@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
+#include "components/commerce/core/mock_discount_infos_storage.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/discounts.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
@@ -488,14 +490,21 @@ void ShoppingServiceTestBase::SetUp() {
       sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr, nullptr,
-      nullptr, nullptr, std::make_unique<testing::NiceMock<MockWebExtractor>>(),
+      nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr,
+      nullptr, nullptr, nullptr,
+      std::make_unique<testing::NiceMock<MockWebExtractor>>(),
       tab_restore_service_.get());
+
+  auto discounts_storage =
+      std::make_unique<testing::NiceMock<MockDiscountInfosStorage>>();
+  discount_infos_storage_ = discounts_storage.get();
+  shopping_service_->discount_infos_storage_ = std::move(discounts_storage);
 }
 
 void ShoppingServiceTestBase::TestBody() {}
 
 void ShoppingServiceTestBase::TearDown() {
+  discount_infos_storage_ = nullptr;
   // Reset the enabled/disabled features after each test.
   test_features_.Reset();
 }

@@ -288,6 +288,8 @@ source_set("shopping_service_test_support") {
   sources = [
     "mock_cluster_manager.cc",
     "mock_cluster_manager.h",
+    "mock_discount_infos_storage.cc",
+    "mock_discount_infos_storage.h",
     "mock_shopping_service.cc",
     "mock_shopping_service.h",
     "shopping_service_test_base.cc",
@@ -304,6 +306,7 @@ source_set("shopping_service_test_support") {
     ":pref_names",
     ":shopping_service",
     ":utils",
+    "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
@@ -337,6 +340,7 @@ source_set("shopping_service_unit_tests") {
   sources = [
     "bookmark_update_manager_unittest.cc",
     "commerce_info_cache_unittest.cc",
+    "discount_infos_storage_unittest.cc",
     "feature_utils_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
@@ -351,6 +355,7 @@ source_set("shopping_service_unit_tests") {
     ":account_checker_test_support",
     ":commerce_constants",
     ":commerce_info_cache",
+    ":discount_infos_db_content_proto",
     ":discounts_db_content_proto",
     ":feature_utils",
     ":metrics",
