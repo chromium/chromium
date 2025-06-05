@@ -44,6 +44,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -738,6 +739,19 @@ class LocationBarMediator
             LensMetrics.recordClicked(entryPoint);
         }
         startLens(entryPoint);
+    }
+
+    /** package */
+    void composeplateButtonClicked(View view) {
+        if (!mNativeInitialized
+                || mLocationBarDataProvider == null
+                || mTabModelSelectorSupplier == null
+                || !mTabModelSelectorSupplier.hasValue()) return;
+
+        Tab tab = mTabModelSelectorSupplier.get().getCurrentTab();
+        if (tab == null || tab.isIncognito()) return;
+
+        tab.loadUrl(new LoadUrlParams(ComposeplateUtils.getComposeplateURL()));
     }
 
     /** package */

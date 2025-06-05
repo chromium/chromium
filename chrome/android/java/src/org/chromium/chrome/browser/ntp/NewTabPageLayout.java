@@ -33,6 +33,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -65,7 +66,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
-import org.chromium.url.GURL;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
@@ -368,7 +368,7 @@ public class NewTabPageLayout extends LinearLayout
                 v -> {
                     mManager.getNativePageHost()
                             .loadUrl(
-                                    new LoadUrlParams(new GURL("about:blank")),
+                                    new LoadUrlParams(ComposeplateUtils.getComposeplateURL()),
                                     /* incognito= */ false);
                 });
 

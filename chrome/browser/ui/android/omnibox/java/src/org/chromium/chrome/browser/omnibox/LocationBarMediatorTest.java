@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -1623,6 +1624,22 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout).setMicButtonVisibility(eq(true));
         verify(mLocationBarLayout).setLensButtonVisibility(eq(true));
         verify(mLocationBarLayout).setComposeplateButtonVisibility(eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
+    public void testComposeplateButtonClicked() {
+        mMediator.onFinishNativeInitialization();
+
+        when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+        when(mTab.isIncognito()).thenReturn(false);
+        mMediator.composeplateButtonClicked(null);
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(
+                ChromeFeatureList.sAndroidComposeplateButtonUrl.getValue(),
+                mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

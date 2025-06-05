@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -118,6 +119,7 @@ public class LocationBarCoordinator
     private @Nullable View mDeleteButton;
     private @Nullable View mMicButton;
     private @Nullable View mLensButton;
+    private @Nullable View mComposeplateButton;
     private @Nullable View mBookmarksButton;
     private @Nullable View mSaveOfflineButton;
     private CallbackController mCallbackController = new CallbackController();
@@ -320,6 +322,11 @@ public class LocationBarCoordinator
         mLensButton = mLocationBarLayout.findViewById(R.id.lens_camera_button);
         mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
 
+        mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
+        if (ChromeFeatureList.sAndroidComposeplate.isEnabled()) {
+            mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
+        }
+
         mSaveOfflineButton = mLocationBarLayout.findViewById(R.id.save_offline_button);
         if (mSaveOfflineButton != null) {
             mSaveOfflineButton.setOnClickListener(mLocationBarMediator::saveOfflineButtonClicked);
@@ -388,6 +395,9 @@ public class LocationBarCoordinator
 
         mLensButton.setOnClickListener(null);
         mLensButton = null;
+
+        mComposeplateButton.setOnClickListener(null);
+        mComposeplateButton = null;
 
         if (mBookmarksButton != null) {
             mBookmarksButton.setOnClickListener(null);

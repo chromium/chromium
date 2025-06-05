@@ -1261,6 +1261,10 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
+    public static final StringCachedFeatureParam sAndroidComposeplateButtonUrl =
+            newStringCachedFeatureParam(
+                    ANDROID_COMPOSEPLATE, "composeplate_button_url", "about:blank");
+
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 0);
 
@@ -1580,6 +1584,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBottomToolbarDefaultToTop,
+                    sAndroidComposeplateButtonUrl,
                     sAndroidThemeModuleForceDependencies,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sBatchTabRestoreBatchSize,
