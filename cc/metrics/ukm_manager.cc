@@ -218,6 +218,9 @@ void UkmManager::RecordEventLatencyUKM(
         EventMetrics::DispatchStage::kGenerated;
     base::TimeTicks dispatch_timestamp = generated_timestamp;
     while (dispatch_stage != EventMetrics::DispatchStage::kMaxValue) {
+      // If this DCHECK fails, it is because the timestamps on events are
+      // incorrect. If this failure is encountered in tests, then double-check
+      // the timestamps on any synthesized events that the tests create.
       DCHECK(!dispatch_timestamp.is_null());
       int dispatch_index = static_cast<int>(dispatch_stage);
 
