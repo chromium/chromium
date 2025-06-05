@@ -483,7 +483,7 @@
     {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "AnimationTrigger",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "AnimationWorklet",
