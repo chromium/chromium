@@ -239,4 +239,27 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         mRenderTestRule.render(mContentView, "rtl_chevron");
         ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRtlWithAccountBookmarkSubtitle() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalizationUtils.setRtlForTesting(true);
+                    // IDS_ACCOUNT_BOOKMARK_SAVE_FLOW_TITLE in ar.
+                    String arabicSavedBookmarkString = "تم الحفظ في \"الإشارات المرجعية للجوال\"";
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.TITLE,
+                            BookmarkSaveFlowMediator.createHighlightedCharSequence(
+                                    mActivity, new FolderText(arabicSavedBookmarkString, 13, 25)));
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.ADJUST_SUBTITLE_LAYOUT_DIRECTION,
+                            true);
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "test@gmail.com");
+                });
+
+        mRenderTestRule.render(mContentView, "rtl_with_account_bookmark_subtitle");
+        ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
+    }
 }

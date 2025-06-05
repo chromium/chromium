@@ -25,6 +25,10 @@ class ImprovedBookmarkSaveFlowViewBinder {
             improvedSaveFlow.setTitle(model.get(ImprovedBookmarkSaveFlowProperties.TITLE));
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.SUBTITLE) {
             improvedSaveFlow.setSubtitle(model.get(ImprovedBookmarkSaveFlowProperties.SUBTITLE));
+        } else if (propertyKey
+                == ImprovedBookmarkSaveFlowProperties.ADJUST_SUBTITLE_LAYOUT_DIRECTION) {
+            improvedSaveFlow.setAdjustSubtitleLayoutDirection(
+                    model.get(ImprovedBookmarkSaveFlowProperties.ADJUST_SUBTITLE_LAYOUT_DIRECTION));
         } else if (propertyKey == ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE) {
             improvedSaveFlow.setPriceTrackingUiVisible(
                     model.get(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE));

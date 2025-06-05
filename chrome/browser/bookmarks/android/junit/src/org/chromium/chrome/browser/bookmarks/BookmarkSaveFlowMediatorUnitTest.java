@@ -40,6 +40,7 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
@@ -115,6 +116,10 @@ public class BookmarkSaveFlowMediatorUnitTest {
 
         mMediator.show(bookmarkId, null, /* fromExplicitTrackUi= */ false, false, false);
 
+        Assert.assertFalse(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.ADJUST_SUBTITLE_LAYOUT_DIRECTION));
+
         Mockito.verify(mMockPriceTrackingUtilsJni, Mockito.never())
                 .setPriceTrackingStateForBookmark(
                         Mockito.any(),
@@ -122,6 +127,36 @@ public class BookmarkSaveFlowMediatorUnitTest {
                         Mockito.anyBoolean(),
                         Mockito.any(),
                         Mockito.anyBoolean());
+    }
+
+    @Test
+    public void testShow_misalignedSubtitleLayoutDirection() {
+        BookmarkId accountBookmarkId = new BookmarkId(0, 0);
+        BookmarkItem accountBookmarkItem =
+                new BookmarkItem(
+                        accountBookmarkId,
+                        "",
+                        new GURL("http://example.com"),
+                        false,
+                        new BookmarkId(1, 0),
+                        true,
+                        false,
+                        0,
+                        false,
+                        0, /* isAccountBookmark */
+                        true);
+        Mockito.doReturn(accountBookmarkItem).when(mModel).getBookmarkById(Mockito.any());
+        Mockito.doReturn("title").when(mModel).getBookmarkTitle(Mockito.any());
+
+        LocalizationUtils.setRtlForTesting(true);
+
+        mMediator.show(accountBookmarkId, null, /* fromExplicitTrackUi= */ false, false, false);
+
+        // We should see that the ADJUST_SUBTITLE_LAYOUT_DIRECTION property is set to true for when
+        // the bookmark being saved is an accountBookmark and the layout is RTL.
+        Assert.assertTrue(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.ADJUST_SUBTITLE_LAYOUT_DIRECTION));
     }
 
     // Tests related to price-tracking bookmarks.

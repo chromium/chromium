@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -65,6 +66,13 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
 
     void setSubtitle(CharSequence charSequence) {
         mBookmarkSubtitleView.setText(charSequence);
+    }
+
+    void setAdjustSubtitleLayoutDirection(boolean adjustSubtitleLayoutDirection) {
+        // Handle when account bookmark is added when under an RTL locale, ensure account email
+        // is not LTR and follows locale RTL layout.
+        mBookmarkSubtitleView.setGravity(
+                adjustSubtitleLayoutDirection ? Gravity.END : Gravity.START);
     }
 
     void setPriceTrackingUiVisible(boolean visible) {
