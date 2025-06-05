@@ -138,6 +138,11 @@ void GlicActorController::Act(
   }
 
   tabs::TabInterface* tab = handle.Get();
+  if (!tab && focused_tab_data.is_focus()) {
+    // The glic actor does not yet specify tab IDs. Just use the focused tab
+    // until it does.
+    tab = focused_tab_data.focus();
+  }
   ActImpl(tab ? tab->GetWeakPtr() : nullptr, action, options,
           std::move(callback));
 }
