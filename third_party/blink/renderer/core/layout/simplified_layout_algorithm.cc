@@ -157,6 +157,10 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);
 
+  if (auto* gap_geometry = physical_fragment.GetGapGeometry()) {
+    container_builder_.SetGapGeometry(gap_geometry);
+  }
+
   if (auto first_baseline = physical_fragment.FirstBaseline())
     container_builder_.SetFirstBaseline(*first_baseline);
   if (auto last_baseline = physical_fragment.LastBaseline())
