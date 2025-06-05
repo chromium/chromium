@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/check.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace resource_attribution {
 
@@ -174,7 +174,7 @@ ProcessNode* ProcessContext::GetProcessNode() const {
 
 std::string ProcessContext::ToString() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const BrowserProcessTag&) -> std::string {
             return "ProcessContext:Browser";
           },

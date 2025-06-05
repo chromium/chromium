@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -352,7 +352,7 @@ std::string PerformanceManagerTestHarness::ServiceWorkerFactory::AddClient(
   // Get the worker-type specific token. Service workers can't be clients of
   // shared workers.
   std::optional<content::ServiceWorkerClientInfo> service_worker_client_info =
-      worker_node->GetWorkerToken().Visit(base::Overloaded(
+      worker_node->GetWorkerToken().Visit(absl::Overload(
           [](const blink::ServiceWorkerToken& service_worker_token)
               -> std::optional<content::ServiceWorkerClientInfo> {
             return std::nullopt;

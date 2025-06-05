@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -22,6 +21,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -176,7 +176,7 @@ void WorkerWatcher::OnWorkerCreated(
   DCHECK(insertion_result.second);
 
   std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&,
            this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
             AddFrameClientConnection(insertion_result.first->second.get(),
@@ -202,7 +202,7 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   // First disconnect the creator's node from this worker node.
 
   std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&,
            this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
             RemoveFrameClientConnection(worker_node.get(),
@@ -391,7 +391,7 @@ void WorkerWatcher::OnControlleeAdded(
     const std::string& client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
   std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
             // For window clients, it is necessary to wait until the navigation
             // has committed to a RenderFrameHost.
@@ -469,7 +469,7 @@ void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
     return;
 
   std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
             RemoveFrameClientConnection(worker_node, render_frame_host_id);
           },
@@ -755,7 +755,7 @@ void WorkerWatcher::ConnectAllServiceWorkerClients(
 
   for (const auto& kv : it->second) {
     std::visit(
-        base::Overloaded(
+        absl::Overload(
             [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
               AddFrameClientConnection(service_worker_node,
                                        render_frame_host_id);
@@ -782,7 +782,7 @@ void WorkerWatcher::DisconnectAllServiceWorkerClients(
 
   for (const auto& kv : it->second) {
     std::visit(
-        base::Overloaded(
+        absl::Overload(
             [&, this](
                 const content::GlobalRenderFrameHostId& render_frame_host_id) {
               RemoveFrameClientConnection(service_worker_node,
