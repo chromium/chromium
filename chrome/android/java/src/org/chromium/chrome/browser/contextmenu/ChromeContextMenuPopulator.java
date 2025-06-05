@@ -665,14 +665,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onOpenImageUrl(mParams.getSrcUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_image_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_NEW_TAB);
-            verifyCopyImageIsAllowedByPolicy(
+            verifyGenericCopyImageActionIsAllowedByPolicy(
                     mParams.getSrcUrl().getSpec(),
                     () ->
                             mItemDelegate.onOpenImageInNewTab(
                                     mParams.getSrcUrl(), mParams.getReferrer()));
         } else if (itemId == R.id.contextmenu_open_image_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_EPHEMERAL_TAB);
-            verifyCopyImageIsAllowedByPolicy(
+            verifyGenericCopyImageActionIsAllowedByPolicy(
                     mParams.getSrcUrl().getSpec(),
                     () -> {
                         String title = mParams.getTitleText();
@@ -956,8 +956,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 }));
     }
 
-    private void verifyCopyImageIsAllowedByPolicy(String imageUri, Runnable continueIfCopyAllowed) {
-        DataProtectionBridge.verifyCopyImageIsAllowedByPolicy(
+    private void verifyGenericCopyImageActionIsAllowedByPolicy(
+            String imageUri, Runnable continueIfCopyAllowed) {
+        DataProtectionBridge.verifyGenericCopyImageActionIsAllowedByPolicy(
                 imageUri,
                 mItemDelegate.getWebContents().getMainFrame(),
                 (isAllowed) -> {

@@ -112,6 +112,30 @@ void VerifyShareIsAllowedByPolicy(
           std::move(boolean_java_callback)));
 }
 
+void VerifyGenericCopyActionIsAllowedByPolicy(
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data) {
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+
+  base::OnceCallback<void(bool)> boolean_java_callback =
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     ScopedJavaGlobalRef<jobject>(j_callback));
+
+  enterprise_data_protection::IsClipboardGenericCopyActionAllowedByPolicy(
+      CreateClipboardEndpoint(render_frame_host), metadata, data,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             const ui::ClipboardFormatType& type,
+             const ClipboardPasteData& data,
+             std::optional<std::u16string> replacement_data) {
+            std::move(callback).Run(!data.empty());
+          },
+          std::move(boolean_java_callback)));
+}
+
 }  // namespace
 
 // TODO(crbug.com/387484337) Add instrumentation tests
@@ -229,6 +253,28 @@ void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
   data.text = image_uri;
 
   VerifyShareIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
+          //  needed by the data controls logic.
+          .format_type = ui::ClipboardFormatType::BitmapType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyGenericCopyImageActionIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_image_uri,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string image_uri =
+      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
+
+  ClipboardPasteData data;
+  data.text = image_uri;
+
+  VerifyGenericCopyActionIsAllowedByPolicy(
       jrender_frame_host, j_callback,
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's

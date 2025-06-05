@@ -322,7 +322,7 @@ public class ContextMenuTest {
     public void testLongPressOnImage_notAllowedByPolicy() throws TimeoutException {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -347,7 +347,7 @@ public class ContextMenuTest {
                 R.id.contextmenu_open_image_in_new_tab);
 
         verify(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class ContextMenuTest {
     public void testOpenInEphemeralTab_notAllowedByPolicy() throws TimeoutException {
         doAnswer(sCopyIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -382,7 +382,7 @@ public class ContextMenuTest {
                 R.id.contextmenu_open_image_in_ephemeral_tab);
 
         verify(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
         verify(mItemDelegate, Mockito.never()).onOpenInEphemeralTab(any(), anyString());
     }
 
