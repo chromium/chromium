@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"

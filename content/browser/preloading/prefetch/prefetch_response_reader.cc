@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/debug/alias.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"

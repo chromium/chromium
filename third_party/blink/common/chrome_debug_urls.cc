@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
+#include "base/debug/alias.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
