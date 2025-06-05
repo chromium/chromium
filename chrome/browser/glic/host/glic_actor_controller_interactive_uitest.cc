@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -30,6 +32,7 @@ namespace glic::test {
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::optimization_guide::proto::AnnotatedPageContent;
 using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
@@ -363,6 +366,20 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         expected)));
   }
 
+  // Check ActorCoordinator caches the last apc observation.
+  auto CheckActorCoordinatorHasAnnotatedPageContentCache() {
+    return Steps(Do([&]() {
+      GlicKeyedService* glic_service =
+          GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
+      ASSERT_TRUE(glic_service);
+
+      const AnnotatedPageContent& cached_apc =
+          *glic_service->GetActorCoordinatorForTesting(nullptr)
+               .GetLastObservedPageContent();
+      EXPECT_THAT(*annotated_page_content_, EqualsProto(cached_apc));
+    }));
+  }
+
  private:
   int32_t SearchAnnotatedPageContent(std::string_view label) {
     CHECK(annotated_page_content_)
@@ -406,6 +423,20 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
                   InstrumentNextTab(kNewActorTabId),
                   ExecuteAction(navigate, UpdatedContextOptions()),
                   WaitForWebContentsReady(kNewActorTabId, task_url));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       CachesLastObservedPageContentAfterActionFinish) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  BrowserAction navigate = actor::MakeNavigate(task_url.spec());
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  CheckActorCoordinatorHasAnnotatedPageContentCache());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,

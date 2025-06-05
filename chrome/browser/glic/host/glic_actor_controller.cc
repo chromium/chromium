@@ -56,12 +56,21 @@ void PostTaskForActionResultCallback(
 
 void OnGetContextFromFocusedTab(
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
+    base::WeakPtr<actor::ActorCoordinator> actor_coordinator,
     mojom::GetContextResultPtr tab_context_result) {
   if (tab_context_result->is_error_reason()) {
     mojom::ActInFocusedTabResultPtr result = MakeActErrorResult(
         mojom::ActInFocusedTabErrorReason::kGetContextFailed);
     std::move(callback).Run(std::move(result));
     return;
+  }
+
+  if (actor_coordinator &&
+      tab_context_result->get_tab_context()
+          ->annotated_page_data->annotated_page_content.has_value()) {
+    actor_coordinator->DidObserveContext(
+        tab_context_result->get_tab_context()
+            ->annotated_page_data->annotated_page_content.value());
   }
 
   mojom::ActInFocusedTabResultPtr result =
@@ -244,7 +253,8 @@ void GlicActorController::OnActionFinished(
   if (tab) {
     FetchPageContext(
         tab.get(), options, /*include_actionable_data=*/true,
-        base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
+        base::BindOnce(OnGetContextFromFocusedTab, std::move(callback),
+                       this->GetActorCoordinator()->GetWeakPtr()));
   } else {
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);

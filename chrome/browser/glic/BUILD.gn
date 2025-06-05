@@ -303,6 +303,7 @@ source_set("interactive_ui_tests") {
     ":impl",
     "//chrome/browser",
     "//chrome/browser:global_features",
+    "//chrome/browser/actor:actor",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",

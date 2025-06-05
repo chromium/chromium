@@ -24,6 +24,10 @@
 
 class Profile;
 
+namespace mojo_base {
+class ProtoWrapper;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -83,6 +87,16 @@ class ActorCoordinator {
   void Act(const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
 
+  // Gets called when a new observation is made for the actor task.
+  void DidObserveContext(const mojo_base::ProtoWrapper&);
+
+  // Returns last observed page content, nullptr if no observation has been
+  // made.
+  const optimization_guide::proto::AnnotatedPageContent*
+  GetLastObservedPageContent();
+
+  base::WeakPtr<ActorCoordinator> GetWeakPtr();
+
  private:
   class NewTabWebContentsObserver;
 
@@ -98,12 +112,14 @@ class ActorCoordinator {
   // Fires the callback and clears `actions`.
   void CompleteActions(mojom::ActionResultPtr result);
 
-  base::WeakPtr<ActorCoordinator> GetWeakPtr();
-
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
   raw_ptr<Profile> profile_;
   base::SafeRef<AggregatedJournal> journal_;
+
+  // Stores the last observed page content for TOCTOU check.
+  std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
+      last_observed_page_content_;
 
   struct Actions {
     Actions(const optimization_guide::proto::BrowserAction& actions,

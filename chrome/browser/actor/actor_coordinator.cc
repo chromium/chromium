@@ -34,6 +34,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "url/origin.h"
 
 using content::RenderFrameHost;
@@ -41,6 +42,7 @@ using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
 using optimization_guide::proto::ActionInformation;
 using optimization_guide::proto::ActionTarget;
+using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::BrowserAction;
 using tabs::TabInterface;
 
@@ -270,6 +272,16 @@ void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   PostTaskForActCallback(std::move(actions_->callback), std::move(result));
   actions_.reset();
   action_index_ = 0;
+}
+
+void ActorCoordinator::DidObserveContext(
+    const mojo_base::ProtoWrapper& apc_proto) {
+  last_observed_page_content_ = std::make_unique<AnnotatedPageContent>(
+      apc_proto.As<AnnotatedPageContent>().value());
+}
+
+const AnnotatedPageContent* ActorCoordinator::GetLastObservedPageContent() {
+  return last_observed_page_content_.get();
 }
 
 base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {
