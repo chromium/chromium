@@ -9228,6 +9228,7 @@ from previous Chrome versions.
   <int value="-1747383699" label="QueryTilesInNTP:disabled"/>
   <int value="-1746767834" label="ssl-interstitial-v2-gray"/>
   <int value="-1746708491" label="RemoteCopyPersistentNotification:disabled"/>
+  <int value="-1746461061" label="NtpModuleSignInRequirement:disabled"/>
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
   <int value="-1745909884" label="LibAssistantV2:disabled"/>
   <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
@@ -16936,6 +16937,7 @@ from previous Chrome versions.
   <int value="1149741132" label="RecordPermissionExpirationTimestamps:enabled"/>
   <int value="1149823105" label="enable-input-ime-api"/>
   <int value="1150622273" label="enable-apps-file-associations"/>
+  <int value="1151907729" label="NtpModuleSignInRequirement:enabled"/>
   <int value="1152491093" label="MediaSessionService:disabled"/>
   <int value="1153454438"
       label="AutofillCreditCardLastUsedDateDisplay:disabled"/>

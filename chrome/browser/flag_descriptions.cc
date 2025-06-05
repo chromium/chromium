@@ -5779,6 +5779,12 @@ const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";
 
+const char kNtpModuleSignInRequirementName[] =
+    "NTP Modules Sign-in Requirement";
+const char kNtpModuleSignInRequirementDescription[] =
+    "Makes NTP Sign-in Requirement per module, removing the requirement for "
+    "Microsoft Modules";
+
 const char kNtpPhotosModuleName[] = "NTP Photos Module";
 const char kNtpPhotosModuleDescription[] =
     "Shows the Google Photos module on the New Tab Page";

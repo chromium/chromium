@@ -7362,6 +7362,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceNtpMobilePromoName, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kForceNtpMobilePromo)},
 
+    {"ntp-module-sign-in-requirement",
+     flag_descriptions::kNtpModuleSignInRequirementName,
+     flag_descriptions::kNtpModuleSignInRequirementDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModuleSignInRequirement)},
+
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
      flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},

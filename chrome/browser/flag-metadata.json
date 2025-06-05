@@ -6904,6 +6904,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "ntp-module-sign-in-requirement",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ntp-modules-drag-and-drop",
     "owners": [ "pauladedeji@chromium.org", "mahmadi@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 108
