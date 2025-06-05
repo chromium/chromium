@@ -74,6 +74,7 @@ PATCHES = [
     'xslt-locale.patch',
     'new-unified-atype-extra.patch',
     'fix-tracking-for-generated-IDs-for-most-XML-nodes.patch',
+    '0004-Use-a-dedicated-node-type-to-maintain-the-list-of-ca.patch',
 ]
 
 
