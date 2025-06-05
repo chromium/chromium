@@ -18,7 +18,10 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -31,6 +34,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -38,9 +42,6 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace {
 
@@ -140,7 +141,10 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       username_(std::move(username)),
       original_password_(std::move(password)),
       profile_(Profile::FromBrowserContext(originator->GetBrowserContext())),
-      originator_(originator->GetWeakPtr()) {
+      originator_(originator->GetWeakPtr()),
+      ui_controller_(std::make_unique<PasswordChangeUIController>(
+          this,
+          originator->GetWeakPtr())) {
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
@@ -318,17 +322,18 @@ void PasswordChangeDelegateImpl::UpdateState(
   current_state_ = new_state;
   observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
                     new_state);
+  ui_controller_->UpdateState(new_state);
 
   switch (current_state_) {
     case State::kWaitingForChangePasswordForm:
     case State::kChangingPassword:
+    case State::kOfferingPasswordChange:
       return;
     case State::kPasswordSuccessfullyChanged:
       NotifyPasswordChangeFinishedSuccessfully(originator_);
       // Fallthrough to trigger bubble display.
       [[fallthrough]];
     case State::kChangePasswordFormNotFound:
-    case State::kOfferingPasswordChange:
     case State::kWaitingForAgreement:
     case State::kPasswordChangeFailed:
     case State::kOtpDetected:

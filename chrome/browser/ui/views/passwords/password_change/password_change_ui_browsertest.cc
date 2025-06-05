@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -72,8 +71,6 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
           GURL("https://example.com/"), u"username", u"password",
           /*in_account_store=*/false));
     }
-    PasswordBubbleViewBase::ShowBubble(
-        web_contents, LocationBarBubbleDelegateView::USER_GESTURE);
   }
 
   ChromePasswordChangeService* password_change_service() {
