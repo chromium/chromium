@@ -66,6 +66,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.OptimizedFrameLayout;
+import org.chromium.ui.xr.scenecore.XrSceneCoreUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,6 +95,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private boolean mShowLocationBarOnly;
     private @Nullable View mLocationBarView;
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
+    private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     /**
      * Constructs a new control container.
@@ -107,6 +110,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         super(context, attrs);
         mToolbarLayoutHeight =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+
+        var xrManager = XrSceneCoreUtils.getXrSceneCoreSessionManagerFromContext(context);
+        if (xrManager != null) {
+            mXrSpaceModeObservableSupplier = xrManager.getXrSpaceModeObservableSupplier();
+            mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
+        }
     }
 
     @Override
@@ -254,6 +263,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         if (mToolbarContainerDragListener != null) {
             mToolbarContainer.setOnDragListener(null);
             mToolbarContainerDragListener = null;
+        }
+
+        if (mXrSpaceModeObservableSupplier != null) {
+            mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
         }
     }
 
@@ -852,5 +865,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     ToolbarViewResourceFrameLayout getToolbarContainerForTesting() {
         return mToolbarContainer;
+    }
+
+    public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
+        setVisibility(Boolean.TRUE.equals(fullSpaceMode) ? View.INVISIBLE : View.VISIBLE);
     }
 }
