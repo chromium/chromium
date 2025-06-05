@@ -53,11 +53,11 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.startDebuggerTest(step1);
 
-  TestRunner.addResult('Number of expressions: ' + expressions.length);
-  TestRunner.addResult('Names [temp3..temp7] are reserved\n');
-
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
+
+    TestRunner.addResult('Number of expressions: ' + expressions.length);
+    TestRunner.addResult('Names [temp3..temp7] are reserved\n');
   }
 
   function didPause() {
@@ -73,11 +73,16 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
     function didEvaluate(result) {
       TestRunner.assertTrue(!result.exceptionDetails, 'FAIL: was thrown. Expression: ' + expression);
-      SDK.consoleModel.saveToTempVariable(UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.RuntimeModel.ExecutionContext), result.object);
+      const executionContext = UIModule.Context.Context.instance().flavor(
+          SDK.RuntimeModel.ExecutionContext);
+      const consoleModel =
+          executionContext.target().model(SDK.ConsoleModel.ConsoleModel);
+      consoleModel.saveToTempVariable(executionContext, result.object);
       ConsoleTestRunner.waitUntilNthMessageReceived(2, evaluateNext);
     }
 
-    UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.RuntimeModel.ExecutionContext)
+    UIModule.Context.Context.instance()
+        .flavor(SDK.RuntimeModel.ExecutionContext)
         .evaluate({expression: expression, objectGroup: 'console'})
         .then(didEvaluate);
   }

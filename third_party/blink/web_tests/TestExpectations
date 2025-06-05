@@ -6620,8 +6620,6 @@ crbug.com/1413726 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
 
-crbug.com/40240869 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Crash Failure Pass Timeout ]
-
 
 # Sheriff 2022-10-12
 # Temporarily disable tests to investigate test_driver.click issue
