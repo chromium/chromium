@@ -49,6 +49,10 @@ inline constexpr int kUnscopedExtensionZeroSuggestRelevance = 400;
 // IPH suggestions get a default relevance of 300 to ensure they appear at the
 // bottom.
 inline constexpr int kIPHZeroSuggestRelevance = 300;
+// The toolbelt appears even lower than IPH. It's almost like a UI element that
+// comes after all the matches, but it works like a match because it still needs
+// to be accessible as a popup selection, follow tab order, read a11y text, etc.
+inline constexpr int kToolbeltRelevance = 200;
 
 using GroupConfigMap = std::unordered_map<GroupId, GroupConfig>;
 

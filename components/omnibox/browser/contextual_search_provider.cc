@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -80,6 +81,17 @@ bool ParseRemoteResponse(const std::string& response_json,
       /*is_keyword_result=*/true, results);
 }
 
+// Requirements: web or SRP, non-NTP, with empty input, and local files are
+// allowed but not other local schemes.
+bool IsLensEntrypointAvailable(const AutocompleteInput& input,
+                               AutocompleteProviderClient* client) {
+  return (omnibox::IsOtherWebPage(input.current_page_classification()) ||
+          omnibox::IsSearchResultsPage(input.current_page_classification())) &&
+         (input.current_url().SchemeIsHTTPOrHTTPS() ||
+          input.current_url().SchemeIs(url::kFileScheme)) &&
+         input.IsZeroSuggest() && client->IsLensEnabled();
+}
+
 }  // namespace
 
 void ContextualSearchProvider::Start(
@@ -97,16 +109,13 @@ void ContextualSearchProvider::Start(
 
   const auto [input, starter_pack_engine] = AdjustInputForStarterPackKeyword(
       autocomplete_input, client()->GetTemplateURLService());
+  const bool toolbelted = MaybeAddToolbeltMatch(input, starter_pack_engine);
   if (!starter_pack_engine) {
-    // Only surface the action match that helps the user find their way to Lens.
-    // Requirements: web or SRP, non-NTP, with empty input, and local files are
-    // allowed but not other local schemes.
-    if ((omnibox::IsOtherWebPage(input.current_page_classification()) ||
-         omnibox::IsSearchResultsPage(input.current_page_classification())) &&
-        (input.current_url().SchemeIsHTTPOrHTTPS() ||
-         input.current_url().SchemeIs(url::kFileScheme)) &&
-        input.IsZeroSuggest() && client()->IsLensEnabled()) {
-      AddPageSearchActionMatches(input);
+    // Note, the dedicated entrypoint match is not added if the toolbelt is
+    // included because the toolbelt will already have an action to serve
+    // as the Lens entrypoint.
+    if (!toolbelted && IsLensEntrypointAvailable(input, client())) {
+      AddLensEntrypointMatch(input);
     }
     return;
   }
@@ -300,9 +309,9 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   }
 }
 
-void ContextualSearchProvider::AddPageSearchActionMatches(
+void ContextualSearchProvider::AddLensEntrypointMatch(
     const AutocompleteInput& input) {
-  // These matches are effectively pedals that don't require any query matching.
+  // This match is effectively a pedal that doesn't require any query matching.
   // Relevance depends on the page class, and selecting an appropriate score is
   // necessary to avoid downstream conflicts in grouping framework sort order.
   AutocompleteMatch match(
@@ -373,6 +382,42 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
         /*accepted_suggestion=*/0, ShouldAppendExtraParams(verbatim));
   }
   matches_.push_back(match);
+}
+
+bool ContextualSearchProvider::MaybeAddToolbeltMatch(
+    const AutocompleteInput& input,
+    const TemplateURL* input_starter_pack_engine) {
+  const auto& config = omnibox_feature_configs::Toolbelt::Get();
+  if (!config.enabled ||
+      (!config.keep_toolbelt_after_zps && !input.IsZeroSuggest())) {
+    return false;
+  }
+  AutocompleteMatch match(this, omnibox::kToolbeltRelevance, false,
+                          AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  match.transition = ui::PAGE_TRANSITION_GENERATED;
+  match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
+
+  match.description = l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLBELT_LABEL);
+  if (!match.description.empty()) {
+    match.description_class = {{0, ACMatchClassification::NONE}};
+  }
+
+  if (config.always_include_lens_action ||
+      IsLensEntrypointAvailable(input, client())) {
+    match.actions.push_back(
+        base::MakeRefCounted<ContextualSearchOpenLensAction>());
+  }
+  for (const std::u16string query :
+       {u"launch incognito", u"clear data", u"update chrome"}) {
+    if (OmniboxPedal* pedal =
+            client()->GetPedalProvider()->FindPedalMatch(query)) {
+      match.actions.push_back(pedal);
+    }
+  }
+
+  matches_.push_back(match);
+  return true;
 }
 
 const TemplateURL* ContextualSearchProvider::GetKeywordTemplateURL() const {

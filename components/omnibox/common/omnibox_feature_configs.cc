@@ -178,6 +178,21 @@ MiaZPS::MiaZPS() {
           .Get();
 }
 
+BASE_FEATURE(Toolbelt::kOmniboxToolbelt,
+             "OmniboxToolbelt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+Toolbelt::Toolbelt() {
+  enabled = base::FeatureList::IsEnabled(kOmniboxToolbelt);
+  keep_toolbelt_after_zps =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "KeepToolbeltAfterZps", false)
+          .Get();
+  always_include_lens_action =
+      base::FeatureParam<bool>(&kOmniboxToolbelt, "AlwaysIncludeLensAction",
+                               false)
+          .Get();
+}
+
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =

@@ -580,6 +580,11 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       }
+      if (omnibox_feature_configs::Toolbelt::Get().enabled) {
+        sections.push_back(
+            std::make_unique<DesktopWebSearchZpsContextualOnlySection>(
+                suggestion_groups_map_, 1u, 0u));
+      }
     } else if constexpr (is_ios) {
       if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
         size_t num_trending_queries =
@@ -762,8 +767,14 @@ void AutocompleteResult::SplitActionsToSuggestions() {
   if (size_before == 0) {
     return;
   }
+  const bool toolbelt_enabled =
+      omnibox_feature_configs::Toolbelt::Get().enabled;
   for (size_t i = 0; i < matches_.size(); i++) {
     for (size_t j = 0; j < matches_[i].actions.size(); j++) {
+      if (toolbelt_enabled &&
+          matches_[i].type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+        continue;
+      }
       if (matches_[i].actions[j]->ActionId() == OmniboxActionId::PEDAL) {
         *matches_.insert(matches_.begin() + i + 1,
                          matches_[i].CreateActionMatch(j));

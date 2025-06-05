@@ -19,6 +19,23 @@
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2" desc="Second alternative label text for the action match that opens lens.">
     Ask Google Search about this page
   </message>
+  <message name="IDS_OMNIBOX_TOOLBELT_LABEL" desc="The label shown before actions in the omnibox toolbelt." translateable="false">
+    Your tools
+  </message>
+
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT" desc="The button text contents to suggest an omnibox action that opens lens" translateable="false">
+    Ask Google about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that opens lens" translateable="false">
+    Ask Google about this page
+  </message>
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to open lens." translateable="false">
+    <ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask Google about this page
+  </message>
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION" desc="Announcement when lens action button is focused" translateable="false">
+    Ask Google about this page button, activate to ask Google about this page
+  </message>
+
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
     &lt;Type search term&gt;
   </message>

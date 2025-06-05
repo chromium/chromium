@@ -218,6 +218,24 @@ struct MiaZPS : Config<MiaZPS> {
   bool local_history_non_normalized_contents;
 };
 
+// A config struct for the omnibox toolbelt.
+struct Toolbelt : Config<Toolbelt> {
+  DECLARE_FEATURE(kOmniboxToolbelt);
+
+  Toolbelt();
+
+  // Whether the toolbelt is to be included in the omnibox.
+  bool enabled;
+
+  // Whether the toolbelt will be preserved after zero suggest when user types.
+  bool keep_toolbelt_after_zps;
+
+  // Whether the lens entrypoint action should stay unconditionally on the
+  // toolbelt. When this is false, the regular triggering conditions apply
+  // so the action can sometimes be included or sometimes not.
+  bool always_include_lens_action;
+};
+
 // If enabled, adjusts the indentation of the omnibox input and matches to fix
 // the visual shift in omnibox input text when the omnibox popup opens.
 struct AdjustOmniboxIndent : Config<AdjustOmniboxIndent> {

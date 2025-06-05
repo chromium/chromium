@@ -2391,7 +2391,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
 
   // NULL_RESULT_MESSAGE matches are informational only and cannot be acted
   // upon. Immediately return when attempting to open one.
-  if (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+  // When the toolbelt is enabled, a non-selectable match may still have
+  // selectable actions on it, and these can still be executed.
+  if (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
+      (!omnibox_feature_configs::Toolbelt::Get().enabled || !action)) {
     return;
   }
 

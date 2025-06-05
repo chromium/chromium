@@ -26,6 +26,8 @@ class SimpleURLLoader;
 // distinct from the ZeroSuggestProvider. It does its main work when explicitly
 // invoked via the '@page' keyword mode, and also surfaces action matches for
 // empty/zero inputs to help the user find their way into the '@page' scope.
+// It also produces the omnibox toolbelt which can be used to enter various
+// forms of scoped search (Lens or some starter pack keywords, for example).
 class ContextualSearchProvider : public BaseSearchProvider {
  public:
   ContextualSearchProvider(AutocompleteProviderClient* client,
@@ -71,14 +73,20 @@ class ContextualSearchProvider : public BaseSearchProvider {
       const SearchSuggestionParser::Results& results,
       const AutocompleteInput& input);
 
-  // Populates `matches_` with special matches that help the user find their
-  // way into the '@page' scope.
-  void AddPageSearchActionMatches(const AutocompleteInput& input);
+  // Adds the Lens entrypoint takeover action match.
+  void AddLensEntrypointMatch(const AutocompleteInput& input);
 
   // Adds a default match for verbatim input, or keyword instructions if there
   // is no input yet. This is the match that holds the omnibox in keyword mode
   // when no other matches are available yet.
   void AddDefaultVerbatimMatch(const AutocompleteInput& input);
+
+  // Conditionally appends a special toolbelt match with various actions.
+  // The `input_starter_pack_engine` may be nullptr and its value can affect the
+  // actions included on the toolbelt. Returns true if toolbelt is added; false
+  // otherwise.
+  bool MaybeAddToolbeltMatch(const AutocompleteInput& input,
+                             const TemplateURL* input_starter_pack_engine);
 
   // Gets the '@page' starter pack engine using `input_keyword_`.
   const TemplateURL* GetKeywordTemplateURL() const;

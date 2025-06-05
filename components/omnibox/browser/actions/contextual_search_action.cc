@@ -61,12 +61,19 @@ ContextualSearchFulfillmentAction::~ContextualSearchFulfillmentAction() =
 ////////////////////////////////////////////////////////////////////////////////
 
 ContextualSearchOpenLensAction::ContextualSearchOpenLensAction()
-    : OmniboxAction(OmniboxAction::LabelStrings(
-                        l10n_util::GetStringUTF16(GetOpenLensActionLabelId()),
-                        u"",
-                        u"",
-                        u""),
-                    GURL()) {}
+    : OmniboxAction(
+          omnibox_feature_configs::Toolbelt::Get().enabled
+              ? OmniboxAction::LabelStrings(
+                    IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT,
+                    IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS,
+                    IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUFFIX,
+                    IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION)
+              : OmniboxAction::LabelStrings(
+                    l10n_util::GetStringUTF16(GetOpenLensActionLabelId()),
+                    u"",
+                    u"",
+                    u""),
+          GURL()) {}
 
 OmniboxActionId ContextualSearchOpenLensAction::ActionId() const {
   return OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS;
