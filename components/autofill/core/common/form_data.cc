@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/logging/stream_operator_util.h"
 
 namespace autofill {
 
@@ -129,13 +130,45 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 }
 
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
-  os << base::UTF16ToUTF8(form.name()) << " " << form.url() << " "
-     << form.action() << " " << form.main_frame_origin() << " " << "Fields:";
-  for (const FormFieldData& field : form.fields()) {
-    os << field << ",";
+  return internal::PrintWithIndentation(os, form, /*indentation=*/0);
+}
+
+namespace internal {
+
+std::ostream& PrintWithIndentation(std::ostream& os,
+                                   const FormData& form,
+                                   int indentation,
+                                   std::string_view title) {
+  std::string space = std::string(indentation, ' ');
+  os << space << "{";
+  if (!title.empty()) {
+    os << " /*" << title << "*/";
   }
+  os << '\n';
+#define PRINT_PROPERTY(property)                                            \
+  os << space << "  " << #property << ": " << PrintWrapper(form.property()) \
+     << ",\n"
+  PRINT_PROPERTY(global_id);
+  PRINT_PROPERTY(name);
+  PRINT_PROPERTY(url);
+  PRINT_PROPERTY(main_frame_origin);
+#undef PRINT_PROPERTY
+  os << space << "  fields: [ /*length " << form.fields().size() << "*/\n";
+  for (size_t i = 0; i < form.fields().size(); ++i) {
+    internal::PrintWithIndentation(
+        os, form.fields()[i], /*indentation=*/indentation + 4,
+        base::StrCat({"FormFieldData index ", base::NumberToString(i)}));
+    if (i < form.fields().size()) {
+      os << ",";
+    }
+    os << '\n';
+  }
+  os << space << "  ]\n";
+  os << space << "}";
   return os;
 }
+
+}  // namespace internal
 
 const FormFieldData* FormData::FindFieldByGlobalId(
     const FieldGlobalId& global_id) const {

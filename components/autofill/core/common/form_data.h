@@ -375,8 +375,14 @@ class FormData {
 // Whether any of the fields in |form| is a non-empty password field.
 bool FormHasNonEmptyPasswordField(const FormData& form);
 
-// For testing.
 std::ostream& operator<<(std::ostream& os, const FormData& form);
+
+namespace internal {
+std::ostream& PrintWithIndentation(std::ostream& os,
+                                   const FormData& field,
+                                   int indentation,
+                                   std::string_view title = "FormData");
+}  // namespace internal
 
 #if defined(UNIT_TEST)
 inline bool operator==(const FormData& lhs, const FormData& rhs) {
