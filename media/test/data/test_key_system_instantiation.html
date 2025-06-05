@@ -58,6 +58,11 @@
         // This is using promises which will run asynchronously.
         navigator.requestMediaKeySystemAccess(keySystem, [configuration])
             .then(function(response) {
+              if (keySystem != response.keySystem) {
+                console.log("response.keySystem: " + response.keySystem);
+                setResultInTitle("keySystem mismatch");
+                return;
+              }
               var allowedConfig = response.getConfiguration();
               if (allowedConfig.initDataTypes.length !== 1) {
                 setResultInTitle("initDataType length mismatch");

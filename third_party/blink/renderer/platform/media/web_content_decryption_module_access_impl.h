@@ -30,11 +30,13 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   static std::unique_ptr<WebContentDecryptionModuleAccessImpl> Create(
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
+      const WebString& requested_key_system,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
       const WebSecurityOrigin& security_origin,
       const WebMediaKeySystemConfiguration& configuration,
+      const WebString& requested_key_system,
       const media::CdmConfig& cdm_config,
       const base::WeakPtr<WebEncryptedMediaClientImpl>& client);
   WebContentDecryptionModuleAccessImpl(
@@ -54,6 +56,10 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
  private:
   const WebSecurityOrigin security_origin_;
   const WebMediaKeySystemConfiguration configuration_;
+
+  // The requested key system by `requestMediaKeySystemAccess()`.
+  const WebString requested_key_system_;
+
   const media::CdmConfig cdm_config_;
 
   // Keep a WeakPtr as client is owned by render_frame_impl.

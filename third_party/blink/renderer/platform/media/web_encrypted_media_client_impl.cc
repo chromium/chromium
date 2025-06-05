@@ -337,7 +337,7 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
 
   // Use the returned key system which should be used for CDM creation.
   request.RequestSucceeded(WebContentDecryptionModuleAccessImpl::Create(
-      origin, *accumulated_configuration, *cdm_config,
+      origin, *accumulated_configuration, request.KeySystem(), *cdm_config,
       weak_factory_.GetWeakPtr()));
 }
 
