@@ -88,6 +88,9 @@ class VisitSegmentDatabase {
   // `from_segment_id` are updated to `to_segment_id` and `from_segment_id` is
   // deleted. Returns true on success.
   bool MergeSegments(SegmentID from_segment_id, SegmentID to_segment_id);
+  // Tracks if the visual deduplication histogram has been recorded for this
+  // instance.
+  bool histogram_recorded_ = false;
 };
 
 }  // namespace history

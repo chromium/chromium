@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/browser/segment_scorer.h"
@@ -334,6 +335,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
   DCHECK_GE(max_result_count, 0);
   // Tracks (hostname, title) pairs already added.
   std::set<HostTitleKey> added_host_titles;
+  // Tracks the number of duplicate tiles.
+  int duplicate_tiles = 0;
   for (std::unique_ptr<PageUsageData>& pud : segments) {
     statement2.BindInt64(0, pud->GetID());
     if (statement2.Step()) {
@@ -352,12 +355,18 @@ VisitSegmentDatabase::QuerySegmentUsage(
           if (results.size() >= static_cast<size_t>(max_result_count)) {
             break;
           }
+        } else {
+          duplicate_tiles++;
         }
       }
     }
     statement2.Reset(true);
   }
-
+  if (visual_deduplication_enabled && !histogram_recorded_) {
+    base::UmaHistogramCounts100("History.MostVisitedTilesVisualDeduplication",
+                                duplicate_tiles);
+    histogram_recorded_ = true;
+  }
   return results;
 }
 

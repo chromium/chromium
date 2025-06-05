@@ -2717,6 +2717,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
+    expires_after="2025-11-30">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Records the number of most visited site suggestions that are removed because
+    they are considered visual duplicates of a higher-scoring suggestion. The
+    deduplication logic is triggered when two tiles share the same hostname and
+    have titles that are identical within the first 10 characters.
+
+    This metric is recorded on the first call to
+    VisitSegmentDatabase::QuerySegmentUsage during a browser session where the
+    visual deduplication feature is active. This function is called each time
+    the user loads the New Tab Page (NTP).
+  </summary>
+</histogram>
+
 <histogram name="History.QueryAppDuration" units="ms"
     expires_after="2025-11-30">
   <owner>jinsukkim@google.com</owner>
