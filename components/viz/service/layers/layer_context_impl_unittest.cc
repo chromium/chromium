@@ -178,27 +178,16 @@ class LayerContextImplTest : public testing::Test {
     return id;
   }
 
-  // Adds the current layer order, if it hasn't already been added.
-  void AddCurrentLayerOrder(mojom::LayerTreeUpdate* update) {
-    if (!update->layer_order) {
-      update->layer_order.emplace();
-      for (int id = 1; id < next_layer_id_; ++id) {
-        update->layer_order->push_back(id);
-      }
-    }
-  }
-
   // Helper to add a default layer to the update.
   // Returns the ID of the added layer.
   int AddDefaultLayerToUpdate(
       mojom::LayerTreeUpdate* update,
-      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer) {
-    // The current layer order should be added before we update
-    // next_layer_id_.
-    AddCurrentLayerOrder(update);
-
+      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
+      int id = -1) {
     auto layer = mojom::Layer::New();
-    const auto id = next_layer_id_++;
+    if (id == -1) {
+      id = next_layer_id_++;
+    }
     layer->id = id;
     layer->type = type;
     layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
@@ -207,8 +196,21 @@ class LayerContextImplTest : public testing::Test {
 
     update->layers.push_back(std::move(layer));
 
-    update->layer_order->push_back(id);
+    // Update the local layer order, and in the LayerTreeUpdate.
+    layer_order_.push_back(id);
+    update->layer_order = layer_order_;
     return id;
+  }
+
+  void RemoveLayerInUpdate(mojom::LayerTreeUpdate* update, int id) {
+    // Remove the ID from the local list of layers if it exists.
+    auto it = std::find(layer_order_.begin(), layer_order_.end(), id);
+    if (it != layer_order_.end()) {
+      layer_order_.erase(it);
+    }
+
+    // Update the layer order in the LayerTreeUpdate.
+    update->layer_order = layer_order_;
   }
 
  protected:
@@ -229,6 +231,7 @@ class LayerContextImplTest : public testing::Test {
   int next_effect_id_ = 0;
   int next_scroll_id_ = 0;
   cc::ViewportPropertyIds viewport_property_ids;
+  std::vector<int> layer_order_;
 };
 
 namespace {
@@ -768,6 +771,280 @@ TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {
           .has_value());
   EXPECT_EQ(host_impl->ResourceIdForUIResource(11), kInvalidResourceId);
   EXPECT_EQ(host_impl->ResourceIdForUIResource(12), kInvalidResourceId);
+}
+
+class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
+ protected:
+  cc::LayerImpl* GetLayerFromActiveTree(int layer_id) {
+    return layer_context_impl_->host_impl()->active_tree()->LayerById(layer_id);
+  }
+
+  void VerifyLayerExists(int layer_id, bool should_exist) {
+    if (should_exist) {
+      EXPECT_NE(nullptr, GetLayerFromActiveTree(layer_id))
+          << "Layer " << layer_id << " should exist.";
+    } else {
+      EXPECT_EQ(nullptr, GetLayerFromActiveTree(layer_id))
+          << "Layer " << layer_id << " should not exist.";
+    }
+  }
+
+  void VerifyLayerBounds(int layer_id, const gfx::Size& expected_bounds) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    ASSERT_NE(nullptr, layer) << "Layer " << layer_id << " not found.";
+    EXPECT_EQ(expected_bounds, layer->bounds());
+  }
+
+  void VerifyLayerOrder(const std::vector<int>& expected_order) {
+    cc::LayerTreeImpl* active_tree =
+        layer_context_impl_->host_impl()->active_tree();
+    ASSERT_EQ(expected_order.size(), active_tree->NumLayers());
+    size_t i = 0;
+    for (cc::LayerImpl* layer : *active_tree) {
+      ASSERT_LT(i, expected_order.size());
+      EXPECT_EQ(expected_order[i], layer->id()) << "Mismatch at index " << i;
+      i++;
+    }
+  }
+
+  // Helper to manually add a layer to an update, bypassing AddDefaultLayer.
+  // This is useful for testing specific ID scenarios or invalid properties.
+  mojom::LayerPtr CreateManualLayer(
+      int id,
+      cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
+      const gfx::Size& bounds = gfx::Size(10, 10),
+      int transform_idx = cc::kSecondaryRootPropertyNodeId,
+      int clip_idx = cc::kRootPropertyNodeId,
+      int effect_idx = cc::kSecondaryRootPropertyNodeId) {
+    auto layer = mojom::Layer::New();
+    layer->id = id;
+    layer->type = type;
+    layer->bounds = bounds;
+    layer->transform_tree_index = transform_idx;
+    layer->clip_tree_index = clip_idx;
+    layer->effect_tree_index = effect_idx;
+    return layer;
+  }
+};
+
+TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
+  constexpr int kLayerId1 = 2;  // Start after default root layer (ID 1).
+  constexpr int kLayerId2 = 3;
+  constexpr int kLayerId3 = 4;
+  constexpr int kNonExistentLayerId = 99;
+
+  (void)kLayerId2;
+  (void)kLayerId3;
+  (void)kNonExistentLayerId;
+
+  // Test Case 1: Basic Layer Lifecycle (Create, Update Bounds, Remove)
+  // Update 1: Create Layer ID kLayerId1.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerBounds(kLayerId1, gfx::Size(0, 0));  // Default bounds
+
+  // Update 2: Update bounds of Layer ID kLayerId1.
+  auto update2 = CreateDefaultUpdate();
+  update2->layers.push_back(CreateManualLayer(
+      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(20, 20)));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerBounds(kLayerId1, gfx::Size(20, 20));
+
+  // Update 3: Remove Layer ID kLayerId1.
+  auto update3 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update3.get(), kLayerId1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  VerifyLayerExists(kLayerId1, false);
+
+  // Test Case 2: Multiple Layers and Interleaved Operations
+  // Update 4: Re-Create Layer ID kLayerId1.
+  auto update4 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update4.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerOrder({1, kLayerId1});
+
+  // Update 5: Create Layer ID kLayerId2.
+  auto update5 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update5.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId2);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update5)).has_value());
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerExists(kLayerId2, true);
+  VerifyLayerOrder({1, kLayerId1, kLayerId2});
+
+  // Update 6: Update Layer ID kLayerId1.
+  auto update6 = CreateDefaultUpdate();
+  update6->layers.push_back(CreateManualLayer(
+      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(30, 30)));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update6)).has_value());
+  VerifyLayerBounds(kLayerId1, gfx::Size(30, 30));
+  VerifyLayerBounds(kLayerId2, gfx::Size(0, 0));  // Unaffected
+
+  // Update 7: Remove Layer ID kLayerId1.
+  auto update7 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update7.get(), kLayerId1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update7)).has_value());
+  VerifyLayerExists(kLayerId1, false);
+  VerifyLayerExists(kLayerId2, true);
+  VerifyLayerOrder({1, kLayerId2});
+
+  // Update 8: Remove Layer ID kLayerId2.
+  auto update8 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update8.get(), kLayerId2);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update8)).has_value());
+  VerifyLayerExists(kLayerId2, false);
+  VerifyLayerOrder({1});
+
+  // Test Case 3: Updating a Never Existing Layer should fail
+  // Update 9: Create kLayerId1 again.
+  auto update9 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update9.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update9)).has_value());
+  VerifyLayerExists(kLayerId1, true);
+
+  // Update 10: Attempt to update kNonExistentLayerId.
+  auto update10 = CreateDefaultUpdate();
+  update10->layers.push_back(
+      CreateManualLayer(kNonExistentLayerId, cc::mojom::LayerType::kLayer,
+                        gfx::Size(5, 5)));  // Update non-existent
+  auto result10 = layer_context_impl_->DoUpdateDisplayTree(std::move(update10));
+  ASSERT_FALSE(result10.has_value());
+  EXPECT_EQ(result10.error(), "Invalid layer ID");
+  VerifyLayerExists(kLayerId1, true);  // Unaffected
+  VerifyLayerExists(kNonExistentLayerId, false);
+  VerifyLayerOrder({1, kLayerId1});
+
+  // Test Case 4: Updating on Previously Removed Layer shoulf fail
+  // Update 11: Remove kLayerId1.
+  auto update11 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update11.get(), kLayerId1);
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update11))
+                  .has_value());
+  VerifyLayerExists(kLayerId1, false);
+
+  // Update 12: Attempt to update kLayerId1 (removed).
+  auto update12 = CreateDefaultUpdate();
+  update12->layers.push_back(CreateManualLayer(
+      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(40, 40)));
+  auto result12 = layer_context_impl_->DoUpdateDisplayTree(std::move(update12));
+  ASSERT_FALSE(result12.has_value());
+  EXPECT_EQ(result12.error(), "Invalid layer ID");
+
+  VerifyLayerExists(kLayerId1, false);  // Should not be re-created
+
+  // Test Case 5: Duplicate or non existent layer IDs in the Layer Order should
+  // fail. Update 13: Create kLayerId1 again.
+  auto update13 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update13.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId1);
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update13))
+                  .has_value());
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerBounds(kLayerId1, gfx::Size(0, 0));
+  VerifyLayerOrder({1, kLayerId1});
+
+  // Update 14: Try to add another instance of kLayerId1 with different bounds.
+  auto update14 = CreateDefaultUpdate();
+  update14->layers.push_back(CreateManualLayer(
+      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(50, 50)));
+  update14->layer_order = layer_order_;
+  update14->layer_order->push_back(kLayerId1);
+
+  auto result14 = layer_context_impl_->DoUpdateDisplayTree(std::move(update14));
+  ASSERT_FALSE(result14.has_value());
+  EXPECT_EQ(result14.error(), "Invalid or duplicate layer ID");
+
+  VerifyLayerExists(kLayerId1, true);
+  VerifyLayerBounds(kLayerId1, gfx::Size(50, 50));  // Layer should be updated
+  VerifyLayerOrder({1, kLayerId1});  // Layer Order should not update
+
+  // Update 15: Try to add a Non Existent layer to Layer Order
+  auto update15 = CreateDefaultUpdate();
+  update15->layer_order = layer_order_;
+  update15->layer_order->push_back(kNonExistentLayerId);
+
+  auto result15 = layer_context_impl_->DoUpdateDisplayTree(std::move(update15));
+  ASSERT_FALSE(result15.has_value());
+  EXPECT_EQ(result15.error(), "Invalid or duplicate layer ID");
+
+  // Test Case 7: Invalid Property Tree Indices on Creation
+  // Update 16: Try to send a layer update with an invalid transform node index
+  auto update16 = CreateDefaultUpdate();
+  update16->layers.push_back(
+      CreateManualLayer(kLayerId2, cc::mojom::LayerType::kLayer,
+                        gfx::Size(10, 10), /*transform_idx=*/999));
+  update16->layer_order = layer_order_;
+  update16->layer_order->push_back(kLayerId2);
+  EXPECT_FALSE(layer_context_impl_->DoUpdateDisplayTree(std::move(update16))
+                   .has_value());
+  VerifyLayerExists(kLayerId2, false);  // Should not have been created
+
+  // Test Case 8: Layer Order Manipulation
+  // Update 17: Re-Create 1, kLayerId1, kLayerId2. Order [1, kLayerId1,
+  // kLayerId2]
+  auto update17 = CreateDefaultUpdate();
+  layer_order_.clear();
+  AddDefaultLayerToUpdate(update17.get(), cc::mojom::LayerType::kLayer, 1);
+  AddDefaultLayerToUpdate(update17.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId1);
+  AddDefaultLayerToUpdate(update17.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId2);
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update17))
+                  .has_value());
+  VerifyLayerOrder({1, kLayerId1, kLayerId2});
+
+  // Update 18: Change order to [1, kLayerId2, kLayerId1]
+  auto update18 = CreateDefaultUpdate();
+  layer_order_.clear();
+  layer_order_.push_back(1);
+  layer_order_.push_back(kLayerId2);
+  layer_order_.push_back(kLayerId1);
+  update18->layer_order = layer_order_;
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update18))
+                  .has_value());
+  VerifyLayerOrder({1, kLayerId2, kLayerId1});
+
+  // Update 19: Create kLayerId3. Order [1, kLayerId2, kLayerId3, kLayerId1]
+  auto update19 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update19.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId3);  // kLayerId3
+  layer_order_.clear();
+  layer_order_.push_back(1);
+  layer_order_.push_back(kLayerId2);
+  layer_order_.push_back(kLayerId3);
+  layer_order_.push_back(kLayerId1);
+  update19->layer_order = layer_order_;
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update19))
+                  .has_value());
+  VerifyLayerOrder({1, kLayerId2, kLayerId3, kLayerId1});
+
+  // Update 20: Remove kLayerId2. Order [1, kLayerId3, kLayerId1]
+  auto update20 = CreateDefaultUpdate();
+  layer_order_.clear();
+  layer_order_.push_back(1);
+  layer_order_.push_back(kLayerId3);
+  layer_order_.push_back(kLayerId1);
+  update20->layer_order = layer_order_;
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update20))
+                  .has_value());
+  VerifyLayerExists(kLayerId2, false);
+  VerifyLayerOrder({1, kLayerId3, kLayerId1});
 }
 
 }  // namespace viz
