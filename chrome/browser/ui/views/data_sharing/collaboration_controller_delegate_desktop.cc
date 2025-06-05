@@ -137,6 +137,9 @@ void CollaborationControllerDelegateDesktop::ShowError(const ErrorInfo& error,
 }
 
 void CollaborationControllerDelegateDesktop::Cancel(ResultCallback result) {
+  if (browser_) {
+    DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+  }
   MaybeCloseDialogs();
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
@@ -496,8 +499,6 @@ void CollaborationControllerDelegateDesktop::MaybeCloseDialogs() {
   if (!browser_) {
     return;
   }
-
-  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
 
   if (prompt_dialog_widget_) {
     if (!prompt_dialog_widget_->IsClosed()) {
