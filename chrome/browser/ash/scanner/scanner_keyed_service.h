@@ -40,11 +40,13 @@ class IdentityManager;
 class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
                             public KeyedService {
  public:
-  explicit ScannerKeyedService(
+  ScannerKeyedService(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<manta::ScannerProvider> scanner_provider);
+      std::unique_ptr<manta::ScannerProvider> scanner_provider,
+      specialized_features::FeatureAccessChecker::VariationsServiceCallback
+          variations_service_callback);
   ScannerKeyedService(const ScannerKeyedService&) = delete;
   ScannerKeyedService& operator=(const ScannerKeyedService&) = delete;
   ~ScannerKeyedService() override;

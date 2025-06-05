@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -67,9 +69,13 @@ std::unique_ptr<KeyedService> ScannerKeyedServiceFactory::BuildInstanceFor(
   if (manta_service) {
     scanner_provider = manta_service->CreateScannerProvider();
   }
+
+  auto variations_service_callback = base::BindRepeating(
+      []() { return g_browser_process->variations_service(); });
+
   return std::make_unique<ScannerKeyedService>(
       profile->GetPrefs(), identity_manager, std::move(url_loader_factory),
-      std::move(scanner_provider));
+      std::move(scanner_provider), std::move(variations_service_callback));
 }
 
 std::unique_ptr<KeyedService>

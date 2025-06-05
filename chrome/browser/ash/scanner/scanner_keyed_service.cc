@@ -23,7 +23,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/service/drive_api_service.h"
@@ -107,14 +106,14 @@ ScannerKeyedService::ScannerKeyedService(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<manta::ScannerProvider> scanner_provider)
+    std::unique_ptr<manta::ScannerProvider> scanner_provider,
+    specialized_features::FeatureAccessChecker::VariationsServiceCallback
+        variations_service_callback)
     : identity_manager_(identity_manager),
       access_checker_(CreateFeatureAccessConfig(),
                       /*prefs=*/pref_service,
                       /*identity_manager=*/identity_manager_,
-                      base::BindRepeating([]() {
-                        return g_browser_process->variations_service();
-                      })),
+                      std::move(variations_service_callback)),
       scanner_provider_(std::move(scanner_provider)) {
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
