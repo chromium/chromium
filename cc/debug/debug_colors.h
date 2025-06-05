@@ -114,9 +114,6 @@ class CC_DEBUG_EXPORT DebugColors {
   static int LayerAnimationBoundsBorderWidth();
   static SkColor4f LayerAnimationBoundsFillColor();
 
-  static SkColor4f NonPaintedFillColor();
-  static SkColor4f MissingPictureFillColor();
-  static SkColor4f MissingResizeInvalidations();
   static SkColor4f PictureBorderColor();
 
   static base::span<const float> TintCompositedContentColorTransformMatrix();
