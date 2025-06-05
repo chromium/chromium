@@ -923,14 +923,12 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 #if BUILDFLAG(IS_ANDROID)
   const GURL& current_domain = client_->GetLastCommittedPrimaryMainFrameURL();
 
-  auto non_affiliated_loyalty_cards = std::ranges::stable_partition(
-      loyalty_cards_to_suggest,
-      [&current_domain](const autofill::LoyaltyCard& card) {
-        return card.HasMatchingMerchantDomain(current_domain);
-      });
-
-  std::vector<autofill::LoyaltyCard> affiliated_loyalty_cards(
-      loyalty_cards_to_suggest.begin(), non_affiliated_loyalty_cards.begin());
+  std::vector<autofill::LoyaltyCard> affiliated_loyalty_cards;
+  std::ranges::copy_if(loyalty_cards_to_suggest,
+                       std::back_inserter(affiliated_loyalty_cards),
+                       [&current_domain](const autofill::LoyaltyCard& card) {
+                         return card.HasMatchingMerchantDomain(current_domain);
+                       });
 
   return touch_to_fill_payment_method_controller_.ShowLoyaltyCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
