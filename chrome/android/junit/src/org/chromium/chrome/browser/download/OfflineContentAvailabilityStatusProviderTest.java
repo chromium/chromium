@@ -63,14 +63,13 @@ public final class OfflineContentAvailabilityStatusProviderTest {
                 provider.isSuggestedContentAvailable());
 
         // Add some non-prefetch items.
-        provider.onItemsAdded(
-                new ArrayList<OfflineItem>(Arrays.asList(mTransientItem, mPersistentItem)));
+        provider.onItemsAdded(new ArrayList<>(Arrays.asList(mTransientItem, mPersistentItem)));
         assertFalse(
                 "Added non-prefetch content should not affect prefetch content availability.",
                 provider.isSuggestedContentAvailable());
 
         // Add a prefetch item.
-        provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mPrefetchItem)));
+        provider.onItemsAdded(new ArrayList<>(Arrays.asList(mPrefetchItem)));
         assertTrue(
                 "Prefetch content should be available after adding prefetch content.",
                 provider.isSuggestedContentAvailable());
@@ -97,19 +96,19 @@ public final class OfflineContentAvailabilityStatusProviderTest {
                 provider.isPersistentContentAvailable());
 
         // Add a transient item.
-        provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mTransientItem)));
+        provider.onItemsAdded(new ArrayList<>(Arrays.asList(mTransientItem)));
         assertFalse(
                 "Added transient content should not affect persistent content availability.",
                 provider.isSuggestedContentAvailable());
 
         // Add a persistent item.
-        provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mPersistentItem)));
+        provider.onItemsAdded(new ArrayList<>(Arrays.asList(mPersistentItem)));
         assertTrue(
                 "Persistent content should be available after adding persistent content.",
                 provider.isPersistentContentAvailable());
 
         // Add a persistent prefetch item.
-        provider.onItemsAdded(new ArrayList<OfflineItem>(Arrays.asList(mPrefetchItem)));
+        provider.onItemsAdded(new ArrayList<>(Arrays.asList(mPrefetchItem)));
         assertTrue(
                 "Persistent content should still be available after adding persistent prefetch "
                         + "content.",

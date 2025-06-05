@@ -245,7 +245,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     /** Creates an intent that launches an activity that retrieves the trusted vault key. */
     private Promise<Intent> createTrustedVaultKeyRetrievalIntent() {
         assert mSyncService.getAccountInfo() != null;
-        Promise<Intent> promise = new Promise<Intent>();
+        Promise<Intent> promise = new Promise<>();
         mTrustedVaultClient
                 .createKeyRetrievalIntent(mSyncService.getAccountInfo())
                 // Cf. SyncTrustedVaultProxyActivity as to why use a proxy intent.

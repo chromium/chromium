@@ -35,7 +35,7 @@ public class VariationsSession {
 
         mRestrictModeFetchStarted = true;
         getRestrictModeValue(
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {
                         VariationsSessionJni.get()
@@ -59,7 +59,7 @@ public class VariationsSession {
             return;
         }
         getRestrictMode(
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {
                         assert restrictMode != null;

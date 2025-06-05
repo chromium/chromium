@@ -554,7 +554,7 @@ public class FeedV2NewTabPageTest {
      */
     private int getFakeboxTop(final NewTabPage ntp) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Integer>() {
+                new Callable<>() {
                     @Override
                     public Integer call() {
                         final View fakebox = ntp.getView().findViewById(R.id.search_box);

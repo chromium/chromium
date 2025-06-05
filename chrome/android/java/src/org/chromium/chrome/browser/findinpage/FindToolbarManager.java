@@ -44,7 +44,7 @@ public class FindToolbarManager {
         mWindowAndroid = windowAndroid;
         mCallback = callback;
         mBackPressManager = backPressManager;
-        mObservers = new ObserverList<FindToolbarObserver>();
+        mObservers = new ObserverList<>();
     }
 
     /**

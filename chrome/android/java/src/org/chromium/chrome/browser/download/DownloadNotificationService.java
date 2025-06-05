@@ -748,8 +748,7 @@ public class DownloadNotificationService {
                         && ProfileManager.getLastUsedRegularProfile().hasPrimaryOtrProfile();
 
         List<DownloadSharedPreferenceEntry> entries = mDownloadSharedPreferenceHelper.getEntries();
-        List<DownloadSharedPreferenceEntry> copies =
-                new ArrayList<DownloadSharedPreferenceEntry>(entries);
+        List<DownloadSharedPreferenceEntry> copies = new ArrayList<>(entries);
         for (DownloadSharedPreferenceEntry entry : copies) {
             if (!OtrProfileId.isOffTheRecord(entry.otrProfileId)) continue;
             ContentId id = entry.id;

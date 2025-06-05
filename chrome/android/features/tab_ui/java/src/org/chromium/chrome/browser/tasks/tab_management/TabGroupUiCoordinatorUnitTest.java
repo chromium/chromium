@@ -48,7 +48,7 @@ public class TabGroupUiCoordinatorUnitTest {
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<TestActivity>(TestActivity.class);
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ScrimManager mScrimManager;

@@ -226,7 +226,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     private void checkMenuOptions(int[]... groups) {
-        checkMenuOptions(/* disabled= */ new ArrayList<Integer>(), groups);
+        checkMenuOptions(/* disabled= */ new ArrayList<>(), groups);
     }
 
     @Test

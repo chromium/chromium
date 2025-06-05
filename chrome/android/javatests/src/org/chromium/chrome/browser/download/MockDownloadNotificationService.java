@@ -24,7 +24,7 @@ import java.util.List;
 
 /** Mock class to DownloadNotificationService for testing purpose. */
 public class MockDownloadNotificationService extends DownloadNotificationService {
-    private final List<Integer> mNotificationIds = new ArrayList<Integer>();
+    private final List<Integer> mNotificationIds = new ArrayList<>();
     private boolean mPaused;
     private int mLastNotificationId = DEFAULT_NOTIFICATION_ID;
     private int mNumberOfNotifications;

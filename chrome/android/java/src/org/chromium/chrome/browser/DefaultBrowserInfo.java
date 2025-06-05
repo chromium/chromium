@@ -51,7 +51,7 @@ public final class DefaultBrowserInfo {
                             @Override
                             protected ArrayList<String> doInBackground() {
                                 Context context = ContextUtils.getApplicationContext();
-                                ArrayList<String> menuTitles = new ArrayList<String>(2);
+                                ArrayList<String> menuTitles = new ArrayList<>(2);
                                 // Store the package label of current application.
                                 menuTitles.add(
                                         getTitleFromPackageLabel(

@@ -63,7 +63,7 @@ public class RestoreMigrateTest {
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
         TabModelSelectorMetadata data =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<TabModelSelectorMetadata>() {
+                        new Callable<>() {
                             @Override
                             public TabModelSelectorMetadata call() throws Exception {
                                 return TabPersistentStore.saveTabModelSelectorMetadata(

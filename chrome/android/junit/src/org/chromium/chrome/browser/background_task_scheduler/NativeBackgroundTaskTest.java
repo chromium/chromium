@@ -266,7 +266,7 @@ public class NativeBackgroundTaskTest {
         switch (setup) {
             case SUCCESS:
                 doAnswer(
-                                new Answer<Void>() {
+                                new Answer<>() {
                                     @Override
                                     public Void answer(InvocationOnMock invocation) {
                                         mBrowserParts.getValue().finishNativeInitialization();
@@ -278,7 +278,7 @@ public class NativeBackgroundTaskTest {
                 break;
             case FAILURE:
                 doAnswer(
-                                new Answer<Void>() {
+                                new Answer<>() {
                                     @Override
                                     public Void answer(InvocationOnMock invocation) {
                                         mBrowserParts.getValue().onStartupFailure(null);

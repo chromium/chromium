@@ -508,7 +508,7 @@ public class WarmupManager {
     public void transferViewHierarchyTo(ViewGroup contentView) {
         ThreadUtils.assertOnUiThread();
         ViewGroup from = mMainView;
-        Set<Theme> rebasedThemes = new ArraySet<Theme>(from.getChildCount());
+        Set<Theme> rebasedThemes = new ArraySet<>(from.getChildCount());
         mMainView = null;
         if (from == null) return;
         ((CctContextWrapper) from.getContext()).mActivityContext = contentView.getContext();

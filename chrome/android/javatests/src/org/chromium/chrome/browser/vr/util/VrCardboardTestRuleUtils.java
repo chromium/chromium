@@ -52,11 +52,11 @@ public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
      *     a VrTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
-        ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
+        ArrayList<ParameterSet> parameters = new ArrayList<>();
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<ChromeTabbedActivityVrCardboardTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public ChromeTabbedActivityVrCardboardTestRule call() {
                                         return new ChromeTabbedActivityVrCardboardTestRule();
@@ -67,7 +67,7 @@ public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<CustomTabActivityVrCardboardTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public CustomTabActivityVrCardboardTestRule call() {
                                         return new CustomTabActivityVrCardboardTestRule();
@@ -78,7 +78,7 @@ public class VrCardboardTestRuleUtils extends XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<WebappActivityVrCardboardTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public WebappActivityVrCardboardTestRule call() {
                                         return new WebappActivityVrCardboardTestRule();

@@ -238,7 +238,7 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.when(
                         mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
                                 ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
-                .thenReturn(new ArrayList<ResolveInfo>());
+                .thenReturn(new ArrayList<>());
 
         verifyNoAppsFound(
                 findApps(

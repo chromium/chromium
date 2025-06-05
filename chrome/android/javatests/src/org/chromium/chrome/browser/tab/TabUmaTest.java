@@ -29,8 +29,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -80,7 +78,7 @@ public class TabUmaTest {
         return new TabbedModeTabDelegateFactory(
                 sActivityTestRule.getActivity(),
                 visibilityDelegate,
-                new ObservableSupplierImpl<ShareDelegate>(),
+                new ObservableSupplierImpl<>(),
                 null,
                 CallbackUtils.emptyRunnable(),
                 rootUiCoordinator.getBottomSheetController(),
@@ -101,7 +99,7 @@ public class TabUmaTest {
                 null,
                 null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
-                new OneshotSupplierImpl<ModuleRegistry>(),
+                new OneshotSupplierImpl<>(),
                 new ObservableSupplierImpl<>(),
                 cta.getStartupMetricsTracker());
     }

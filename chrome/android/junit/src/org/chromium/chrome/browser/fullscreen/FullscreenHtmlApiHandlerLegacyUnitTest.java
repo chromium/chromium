@@ -69,7 +69,7 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
 
-        mAreControlsHidden = new ObservableSupplierImpl<Boolean>();
+        mAreControlsHidden = new ObservableSupplierImpl<>();
         mFullscreenHtmlApiHandlerLegacy =
                 new FullscreenHtmlApiHandlerLegacy(
                         mActivity, mAreControlsHidden, false, mMultiWindowModeStateDispatcher) {

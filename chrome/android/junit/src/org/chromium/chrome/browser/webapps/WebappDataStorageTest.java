@@ -104,7 +104,7 @@ public class WebappDataStorageTest {
                 .apply();
         WebappDataStorage.open("test")
                 .getSplashScreenImage(
-                        new WebappDataStorage.FetchCallback<Bitmap>() {
+                        new WebappDataStorage.FetchCallback<>() {
                             @Override
                             public void onDataRetrieved(Bitmap actual) {
                                 mCallbackCalled = true;

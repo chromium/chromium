@@ -448,7 +448,7 @@ public class PictureInPictureActivityTest {
                 ActivityTestUtils.launchActivityWithTimeout(
                         InstrumentationRegistry.getInstrumentation(),
                         PictureInPictureActivity.class,
-                        new Callable<Void>() {
+                        new Callable<>() {
                             @Override
                             public Void call() throws TimeoutException {
                                 ThreadUtils.runOnUiThreadBlocking(

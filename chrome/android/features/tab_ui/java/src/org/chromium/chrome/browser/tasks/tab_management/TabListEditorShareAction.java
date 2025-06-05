@@ -258,9 +258,9 @@ public class TabListEditorShareAction extends TabListEditorAction {
     // no shareable URLs are present after filtering.
     private List<Integer> filterTabs(List<Tab> tabs, TabList tabList) {
         assert tabs.size() > 0;
-        List<Integer> sortedTabIndexList = new ArrayList<Integer>();
+        List<Integer> sortedTabIndexList = new ArrayList<>();
 
-        HashSet<Tab> selectedTabs = new HashSet<Tab>(tabs);
+        HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
             if (!selectedTabs.contains(tab)) continue;

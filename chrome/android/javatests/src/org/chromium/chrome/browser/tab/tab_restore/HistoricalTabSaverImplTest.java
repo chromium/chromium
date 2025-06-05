@@ -568,7 +568,7 @@ public class HistoricalTabSaverImplTest {
 
         Assert.assertEquals(
                 "Entry " + i + " group count mismatch.",
-                new HashSet<String>(groupTitles.values()).size(),
+                new HashSet<>(groupTitles.values()).size(),
                 recentBulk.getTabGroupIdToTitleMap().size());
         for (int j = 0; j < expectedTabs.size(); j++) {
             Assert.assertEquals(

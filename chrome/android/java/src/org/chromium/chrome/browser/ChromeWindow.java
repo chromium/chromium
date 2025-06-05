@@ -62,7 +62,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
                 compositorViewHolderSupplier,
                 modalDialogManagerSupplier,
                 sKeyboardVisibilityDelegateFactory.create(
-                        new WeakReference<Activity>(activity), manualFillingComponentSupplier),
+                        new WeakReference<>(activity), manualFillingComponentSupplier),
                 activityTopResumedSupported,
                 intentRequestTracker,
                 insetObserver);

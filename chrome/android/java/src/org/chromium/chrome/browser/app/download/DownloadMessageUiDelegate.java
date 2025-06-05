@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference;
 
 /** Delegate for {@link DownloadMessageUiController} to provide chrome layer dependencies. */
 public class DownloadMessageUiDelegate implements DownloadMessageUiController.Delegate {
-    private WeakReference<ChromeActivity> mActivity = new WeakReference<ChromeActivity>(null);
+    private WeakReference<ChromeActivity> mActivity = new WeakReference<>(null);
 
     /** Constructor. */
     public DownloadMessageUiDelegate() {
@@ -61,7 +61,7 @@ public class DownloadMessageUiDelegate implements DownloadMessageUiController.De
         boolean shouldSwitchToFocusedActivity =
                 focusedActivity instanceof ChromeActivity && focusedActivity != mActivity.get();
         if (!shouldSwitchToFocusedActivity) return false;
-        mActivity = new WeakReference<ChromeActivity>((ChromeActivity) focusedActivity);
+        mActivity = new WeakReference<>((ChromeActivity) focusedActivity);
         return true;
     }
 

@@ -41,16 +41,14 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     private final String mTitleText;
     private String mDescriptionText;
     private String mLearnMoreLinkText;
-    private final LinkedList<LegalMessageLine> mGoogleLegalMessageLines =
-            new LinkedList<LegalMessageLine>();
-    private final LinkedList<LegalMessageLine> mIssuerLegalMessageLines =
-            new LinkedList<LegalMessageLine>();
+    private final LinkedList<LegalMessageLine> mGoogleLegalMessageLines = new LinkedList<>();
+    private final LinkedList<LegalMessageLine> mIssuerLegalMessageLines = new LinkedList<>();
 
     /**
      * Creates a new instance of the infobar.
      *
      * @param nativeAutofillVirtualCardEnrollmentInfoBar The pointer to the native object for
-     *         callbacks.
+     *     callbacks.
      * @param iconId ID corresponding to the icon that will be shown for the InfoBar.
      * @param iconBitmap Bitmap to use if there is no equivalent Java resource for iconId.
      * @param message Title of the infobar to display along the icon.

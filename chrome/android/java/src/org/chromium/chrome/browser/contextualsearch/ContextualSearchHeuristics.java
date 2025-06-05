@@ -19,7 +19,7 @@ public class ContextualSearchHeuristics {
 
     /** Manages a set of heuristics. */
     ContextualSearchHeuristics() {
-        mHeuristics = new HashSet<ContextualSearchHeuristic>();
+        mHeuristics = new HashSet<>();
     }
 
     /**

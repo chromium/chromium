@@ -492,7 +492,7 @@ public class BookmarksTest {
             List<Pair<String, JSONObject>> rawBookmarks =
                     SyncTestUtil.getLocalData(
                             mSyncTestRule.getTargetContext(), BOOKMARKS_TYPE_STRING);
-            List<Bookmark> bookmarks = new ArrayList<Bookmark>(rawBookmarks.size());
+            List<Bookmark> bookmarks = new ArrayList<>(rawBookmarks.size());
             for (Pair<String, JSONObject> rawBookmark : rawBookmarks) {
                 String id = rawBookmark.first;
                 JSONObject json = rawBookmark.second;
@@ -518,7 +518,7 @@ public class BookmarksTest {
                     mSyncTestRule
                             .getFakeServerHelper()
                             .getSyncEntitiesByDataType(DataType.BOOKMARKS);
-            List<Bookmark> bookmarks = new ArrayList<Bookmark>(entities.size());
+            List<Bookmark> bookmarks = new ArrayList<>(entities.size());
             for (SyncEntity entity : entities) {
                 String id = entity.getIdString();
                 String parentId = entity.getParentIdString();

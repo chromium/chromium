@@ -49,7 +49,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 .queryHistory(
                         mNativeHistoryBridge,
                         BrowsingHistoryBridge.this,
-                        new ArrayList<HistoryItem>(),
+                        new ArrayList<>(),
                         query,
                         appId,
                         false);
@@ -61,7 +61,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 .queryHistory(
                         mNativeHistoryBridge,
                         BrowsingHistoryBridge.this,
-                        new ArrayList<HistoryItem>(),
+                        new ArrayList<>(),
                         hostName,
                         null,
                         true);
@@ -71,16 +71,13 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     public void queryHistoryContinuation() {
         BrowsingHistoryBridgeJni.get()
                 .queryHistoryContinuation(
-                        mNativeHistoryBridge,
-                        BrowsingHistoryBridge.this,
-                        new ArrayList<HistoryItem>());
+                        mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<>());
     }
 
     @Override
     public void queryApps() {
         BrowsingHistoryBridgeJni.get()
-                .getAllAppIds(
-                        mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<String>());
+                .getAllAppIds(mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<>());
     }
 
     @CalledByNative

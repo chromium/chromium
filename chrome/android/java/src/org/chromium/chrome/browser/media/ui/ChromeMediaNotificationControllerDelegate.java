@@ -57,7 +57,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
     @VisibleForTesting static SparseArray<NotificationOptions> sMapNotificationIdToOptions;
 
     static {
-        sMapNotificationIdToOptions = new SparseArray<NotificationOptions>();
+        sMapNotificationIdToOptions = new SparseArray<>();
 
         sMapNotificationIdToOptions.put(
                 PlaybackListenerServiceImpl.NOTIFICATION_ID,

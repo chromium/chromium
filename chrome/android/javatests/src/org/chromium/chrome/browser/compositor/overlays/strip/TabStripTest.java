@@ -1553,7 +1553,7 @@ public class TabStripTest {
         // Only tabs that can currently be seen on the screen should be visible.
         Boolean shouldBeVisible =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
+                        new Callable<>() {
                             @Override
                             public Boolean call() {
                                 return (tabView.getDrawX() + tabView.getWidth()) >= 0
@@ -1573,7 +1573,7 @@ public class TabStripTest {
             throws ExecutionException {
         Boolean isVisible =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
+                        new Callable<>() {
                             @Override
                             public Boolean call() {
                                 return tabView.isVisible();
@@ -1597,7 +1597,7 @@ public class TabStripTest {
             throws ExecutionException {
         Float tabDrawX =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Float>() {
+                        new Callable<>() {
                             @Override
                             public Float call() {
                                 return tabView.getDrawX();

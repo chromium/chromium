@@ -216,7 +216,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             // Move folders to the beginning of the list.
             Collections.sort(
                     items,
-                    new Comparator<BookmarkItem>() {
+                    new Comparator<>() {
                         @Override
                         public int compare(BookmarkItem lhs, BookmarkItem rhs) {
                             return lhs.isFolder() == rhs.isFolder() ? 0 : lhs.isFolder() ? -1 : 1;

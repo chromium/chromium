@@ -272,7 +272,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     Matcher<BitmapDrawable> drawableWithSameBitmap(Bitmap expectedBitmap) {
-        return new TypeSafeMatcher<BitmapDrawable>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(BitmapDrawable drawable) {
                 return drawable.getBitmap().sameAs(expectedBitmap);
@@ -394,7 +394,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
                 mModelBuilder.with(
                         property,
                         new LegalMessages(
-                                new LinkedList<LegalMessageLine>(),
+                                new LinkedList<>(),
                                 VirtualCardEnrollmentLinkType
                                         .VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                                 /* linkOpener= */ this)));

@@ -40,13 +40,13 @@ public class PendingTabClosureManagerTest {
     private PendingTabClosureManager mPendingTabClosureManager;
 
     private static class FakeTabModel extends EmptyTabModel {
-        private LinkedList<Tab> mTabs = new LinkedList<Tab>();
+        private LinkedList<Tab> mTabs = new LinkedList<>();
         private int mIndex = TabModel.INVALID_TAB_INDEX;
 
         public FakeTabModel() {}
 
         public void setTabs(Tab[] tabs) {
-            mTabs = new LinkedList<Tab>(Arrays.asList(tabs));
+            mTabs = new LinkedList<>(Arrays.asList(tabs));
         }
 
         public void clear() {

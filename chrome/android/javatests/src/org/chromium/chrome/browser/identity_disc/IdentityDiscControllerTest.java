@@ -415,7 +415,7 @@ public class IdentityDiscControllerTest {
                     mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
                     ObservableSupplierImpl<Profile> profileSupplier =
-                            new ObservableSupplierImpl<Profile>();
+                            new ObservableSupplierImpl<>();
                     IdentityDiscController identityDiscController =
                             new IdentityDiscController(
                                     mActivityTestRule.getActivity(), mDispatcher, profileSupplier);

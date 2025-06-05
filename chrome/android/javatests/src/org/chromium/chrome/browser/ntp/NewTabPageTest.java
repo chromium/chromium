@@ -1018,7 +1018,7 @@ public class NewTabPageTest {
 
     private boolean getUrlFocusAnimationsDisabled() {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Boolean>() {
+                new Callable<>() {
                     @Override
                     public Boolean call() {
                         return mNtp.getNewTabPageLayout().urlFocusAnimationsDisabled();
@@ -1061,7 +1061,7 @@ public class NewTabPageTest {
      */
     private int getFakeboxTop(final NewTabPage ntp) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Integer>() {
+                new Callable<>() {
                     @Override
                     public Integer call() {
                         final View fakebox = ntp.getView().findViewById(R.id.search_box);

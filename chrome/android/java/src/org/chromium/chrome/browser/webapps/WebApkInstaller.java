@@ -139,7 +139,7 @@ public class WebApkInstaller {
         }
 
         Callback<Integer> callback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         WebApkInstaller.this.notify(result);

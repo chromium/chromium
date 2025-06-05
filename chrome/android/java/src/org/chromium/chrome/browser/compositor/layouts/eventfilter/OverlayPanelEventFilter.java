@@ -111,7 +111,7 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
     private float mSyntheticActionDownY;
 
     /** The list of recorded events. */
-    private final ArrayList<MotionEvent> mRecordedEvents = new ArrayList<MotionEvent>();
+    private final ArrayList<MotionEvent> mRecordedEvents = new ArrayList<>();
 
     /** The initial Y position of the current gesture. */
     private float mInitialEventY;

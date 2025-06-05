@@ -43,7 +43,7 @@ public class TabPrinter implements Printable {
     }
 
     public TabPrinter(Tab tab) {
-        mTab = new WeakReference<Tab>(tab);
+        mTab = new WeakReference<>(tab);
         mDefaultTitle = ContextUtils.getApplicationContext().getString(R.string.menu_print);
         mErrorMessage =
                 ContextUtils.getApplicationContext().getString(R.string.error_printing_failed);

@@ -40,7 +40,7 @@ public class CustomTabFileUtilsUnitTest {
     public void testDeletableMetadataSelection_NoFiles() {
         List<File> deletableFiles =
                 CustomTabFileUtils.getFilesForDeletion(
-                        System.currentTimeMillis(), new ArrayList<File>());
+                        System.currentTimeMillis(), new ArrayList<>());
         assertThat(deletableFiles, Matchers.emptyIterableOf(File.class));
     }
 

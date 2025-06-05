@@ -442,7 +442,7 @@ public class ReadingListTest {
         onView(withText("Reading list"))
                 .check(
                         matches(
-                                new TypeSafeMatcher<View>() {
+                                new TypeSafeMatcher<>() {
                                     @Override
                                     public void describeTo(Description description) {
                                         description.appendText(

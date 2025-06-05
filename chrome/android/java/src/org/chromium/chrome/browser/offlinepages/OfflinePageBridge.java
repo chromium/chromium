@@ -334,7 +334,7 @@ public class OfflinePageBridge {
     @VisibleForTesting
     public void deletePage(final ClientId clientId, Callback<Integer> callback) {
         assert mIsNativeOfflinePageModelLoaded;
-        ArrayList<ClientId> ids = new ArrayList<ClientId>();
+        ArrayList<ClientId> ids = new ArrayList<>();
         ids.add(clientId);
 
         deletePagesByClientId(ids, callback);

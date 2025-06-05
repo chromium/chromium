@@ -145,8 +145,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         private final WeakReference<FullscreenHtmlApiHandlerBase> mFullscreenHtmlApiHandler;
 
         public FullscreenHandler(FullscreenHtmlApiHandlerBase fullscreenHtmlApiHandlerBase) {
-            mFullscreenHtmlApiHandler =
-                    new WeakReference<FullscreenHtmlApiHandlerBase>(fullscreenHtmlApiHandlerBase);
+            mFullscreenHtmlApiHandler = new WeakReference<>(fullscreenHtmlApiHandlerBase);
         }
 
         @Override

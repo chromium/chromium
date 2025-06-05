@@ -256,7 +256,7 @@ public class SiteChannelsManagerTest {
 
     private static Matcher<Integer> matchesChannelStatus(
             @NotificationChannelStatus final int status) {
-        return new BaseMatcher<Integer>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(Object o) {
                 return status == (int) o;

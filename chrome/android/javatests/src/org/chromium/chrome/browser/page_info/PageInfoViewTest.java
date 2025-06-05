@@ -528,8 +528,7 @@ public class PageInfoViewTest {
             @ContentSettingsType.EnumType int type) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    List<ContentSettingException> exceptions =
-                            new ArrayList<ContentSettingException>();
+                    List<ContentSettingException> exceptions = new ArrayList<>();
                     WebsitePreferenceBridgeJni.get()
                             .getContentSettingsExceptions(
                                     ProfileManager.getLastUsedRegularProfile(), type, exceptions);

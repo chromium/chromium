@@ -36,7 +36,7 @@ public class HostBrowserUtils {
 
     /** The package names of the browsers that support WebAPK notification delegation. */
     private static final Set<String> sBrowsersSupportingNotificationDelegation =
-            new HashSet<String>(
+            new HashSet<>(
                     Arrays.asList(
                             "com.google.android.apps.chrome",
                             "com.android.chrome",

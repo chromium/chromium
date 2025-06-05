@@ -245,7 +245,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     @SuppressWarnings("DuplicateDateFormatField") // There's probably a bug here...
     void addSpinnerAdapters() {
         ArrayAdapter<CharSequence> adapter =
-                new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
 
         // Populate the month dropdown.
         Calendar calendar = Calendar.getInstance();
@@ -260,8 +260,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         assumeNonNull(mExpirationMonth).setAdapter(adapter);
 
         // Populate the year dropdown.
-        adapter =
-                new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
         int initialYear = calendar.get(Calendar.YEAR);
         for (int year = initialYear; year < initialYear + 10; year++) {
             adapter.add(Integer.toString(year));

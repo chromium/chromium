@@ -702,7 +702,7 @@ public class StripLayoutHelper
         // Create tab menu
         mCloseButtonMenu = new ListPopupWindow(mContext);
         mCloseButtonMenu.setAdapter(
-                new ArrayAdapter<String>(
+                new ArrayAdapter<>(
                         mContext,
                         R.layout.one_line_list_item,
                         new String[] {

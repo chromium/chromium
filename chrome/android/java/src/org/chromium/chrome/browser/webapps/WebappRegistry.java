@@ -273,7 +273,7 @@ public class WebappRegistry {
      */
     public List<WebApkSpecifics> getWebApkSpecificsImpl(
             GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting) {
-        List<WebApkSpecifics> webApkSpecificsList = new ArrayList<WebApkSpecifics>();
+        List<WebApkSpecifics> webApkSpecificsList = new ArrayList<>();
         for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) {

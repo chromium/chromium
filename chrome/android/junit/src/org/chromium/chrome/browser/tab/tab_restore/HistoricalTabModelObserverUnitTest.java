@@ -338,7 +338,7 @@ public class HistoricalTabModelObserverUnitTest {
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0});
         when(mTabGroupModelFilter.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
 
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
 

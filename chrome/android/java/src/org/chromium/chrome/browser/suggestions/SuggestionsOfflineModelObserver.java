@@ -86,7 +86,7 @@ public abstract class SuggestionsOfflineModelObserver<T extends OfflinableSugges
         mOfflinePageBridge.selectPageForOnlineUrl(
                 suggestion.getUrl(),
                 /* tabId= */ 0,
-                new Callback<OfflinePageItem>() {
+                new Callback<>() {
                     @Override
                     public void onResult(OfflinePageItem item) {
                         onSuggestionOfflineIdChanged(suggestion, item);

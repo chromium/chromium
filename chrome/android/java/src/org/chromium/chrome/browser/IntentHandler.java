@@ -719,7 +719,7 @@ public class IntentHandler {
                     IntentUtils.safeGetStringExtra(
                             intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS);
             if (testResult != null) {
-                results = new ArrayList<String>();
+                results = new ArrayList<>();
                 results.add(testResult);
             }
         }

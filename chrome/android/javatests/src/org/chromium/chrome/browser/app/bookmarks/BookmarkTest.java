@@ -1789,7 +1789,7 @@ public class BookmarkTest {
 
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Boolean>() {
+                new Callable<>() {
                     @Override
                     public Boolean call() {
                         for (int i = 0; i < getBookmarkCount(); i++) {
@@ -1895,7 +1895,7 @@ public class BookmarkTest {
      */
     private static View getViewWithText(final ViewGroup viewGroup, final String expectedText) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<View>() {
+                new Callable<>() {
                     @Override
                     public View call() {
                         ArrayList<View> outViews = new ArrayList<>();

@@ -19,21 +19,19 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * This class manages the visibility of an overlay border when tab capture is ongoing.
- * The border will be visible if any of the captured/tracked tabs are user interactible
- * (e.g. visible with no overlays hiding the content), and hidden otherwise. It attempts
- * to respond to control state events to resize the UI as the size of the currently
- * visible captured tab is changed.
+ * This class manages the visibility of an overlay border when tab capture is ongoing. The border
+ * will be visible if any of the captured/tracked tabs are user interactible (e.g. visible with no
+ * overlays hiding the content), and hidden otherwise. It attempts to respond to control state
+ * events to resize the UI as the size of the currently visible captured tab is changed.
  */
 public class MediaCaptureOverlayController implements UnownedUserData {
     private static final UnownedUserDataKey<MediaCaptureOverlayController> KEY =
-            new UnownedUserDataKey<MediaCaptureOverlayController>(
-                    MediaCaptureOverlayController.class);
+            new UnownedUserDataKey<>(MediaCaptureOverlayController.class);
 
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 
     private View mOverlayView;
-    private final SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
+    private final SparseArray<Tab> mCapturedTabs = new SparseArray<>();
     private Tab mVisibleTab;
 
     private class CaptureOverlayTabObserver extends EmptyTabObserver {

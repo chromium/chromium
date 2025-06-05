@@ -109,7 +109,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (isReadAloudTapToSeekEnabled()) {
             mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
             if (mReadAloudControllerSupplier != null) {
-                new OneShotCallback<ReadAloudController>(
+                new OneShotCallback<>(
                         mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
             }
         }

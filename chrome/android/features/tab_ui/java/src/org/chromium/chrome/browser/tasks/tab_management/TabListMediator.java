@@ -1405,7 +1405,7 @@ class TabListMediator implements TabListNotificationHandler {
                 && mTabActionState != TabActionState.SELECTABLE
                 && PriceTrackingFeatures.isPriceAnnotationsEnabled(originalProfile)) {
             mListObserver =
-                    new ListObserver<Void>() {
+                    new ListObserver<>() {
                         @Override
                         public void onItemRangeInserted(
                                 ListObservable source, int index, int count) {

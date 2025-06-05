@@ -67,7 +67,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorObservableSupplier =
             new ObservableSupplierImpl<>();
     private final Supplier<Intent> mIntentSupplier =
-            new Supplier<Intent>() {
+            new Supplier<>() {
                 @Nullable
                 @Override
                 public Intent get() {
@@ -75,7 +75,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 }
             };
     private final Supplier<Boolean> mShouldIgnoreIntentSupplier =
-            new Supplier<Boolean>() {
+            new Supplier<>() {
                 @Nullable
                 @Override
                 public Boolean get() {

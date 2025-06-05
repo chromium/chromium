@@ -58,12 +58,13 @@ class RelatedSearchesList {
 
     /**
      * Returns a list of queries. This implementation may change based on whether we're showing
-     * suggestions in more than one place or not. This just returns the "default" list with
-     * the current interpretation of that concept.
+     * suggestions in more than one place or not. This just returns the "default" list with the
+     * current interpretation of that concept.
+     *
      * @return A {@code List<String>} of search suggestions.
      */
     List<String> getQueries() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         JSONArray suggestions = getSuggestions();
         if (suggestions == null) return results;
         for (int i = 0; i < suggestions.length(); i++) {

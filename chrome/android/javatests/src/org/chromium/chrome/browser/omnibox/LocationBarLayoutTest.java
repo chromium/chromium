@@ -145,7 +145,7 @@ public class LocationBarLayoutTest {
         CriteriaHelper.pollUiThread(() -> urlBar.hasFocus());
 
         ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Void>() {
+                new Callable<>() {
                     @Override
                     public Void call() throws InterruptedException {
                         mActivityTestRule.typeInOmnibox(text, false);

@@ -130,7 +130,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
     @Override
     public List<RecentlyClosedEntry> getRecentlyClosedEntries(int maxEntryCount) {
-        List<RecentlyClosedEntry> entries = new ArrayList<RecentlyClosedEntry>();
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
         boolean received =
                 RecentlyClosedBridgeJni.get()
                         .getRecentlyClosedEntries(mNativeBridge, entries, maxEntryCount);

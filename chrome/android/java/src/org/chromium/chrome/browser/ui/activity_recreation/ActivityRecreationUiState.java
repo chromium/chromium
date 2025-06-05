@@ -19,7 +19,7 @@ final class ActivityRecreationUiState implements Parcelable {
     boolean mIsTabSwitcherShown;
 
     public static final Parcelable.Creator<ActivityRecreationUiState> CREATOR =
-            new Parcelable.Creator<ActivityRecreationUiState>() {
+            new Parcelable.Creator<>() {
                 @Override
                 public ActivityRecreationUiState createFromParcel(Parcel in) {
                     return new ActivityRecreationUiState(in);

@@ -97,7 +97,7 @@ public class NotificationSuspender {
      */
     public List<String> storeNotificationResources(List<NotificationWrapper> notifications) {
         if (notifications.isEmpty()) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         String[] notificationIds = new String[notifications.size()];
@@ -117,7 +117,7 @@ public class NotificationSuspender {
 
         NotificationSuspenderJni.get()
                 .storeNotificationResources(mProfile, notificationIds, origins, resources);
-        return new ArrayList<String>(Arrays.asList(notificationIds));
+        return new ArrayList<>(Arrays.asList(notificationIds));
     }
 
     /**
@@ -172,7 +172,7 @@ public class NotificationSuspender {
 
     private List<Uri> getOriginsForDomains(List<String> fqdns) {
         final String[] notificationSchemes = {UrlConstants.HTTPS_SCHEME, UrlConstants.HTTP_SCHEME};
-        ArrayList<Uri> origins = new ArrayList<Uri>();
+        ArrayList<Uri> origins = new ArrayList<>();
         for (String fqdn : fqdns) {
             for (String scheme : notificationSchemes) {
                 origins.add(new Uri.Builder().scheme(scheme).authority(fqdn).build());

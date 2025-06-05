@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.download.home;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.SnackbarActivity;
@@ -72,8 +71,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
         boolean showPrefetchContent =
                 DownloadActivityLauncher.shouldShowPrefetchContent(getIntent());
-        mPermissionDelegate =
-                new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
+        mPermissionDelegate = new ActivityAndroidPermissionDelegate(new WeakReference<>(this));
         mOtrProfileId = DownloadUtils.getOtrProfileIdFromIntent(getIntent());
 
         DownloadManagerUiConfig config =

@@ -72,7 +72,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         public boolean customTilesIndicator;
 
         /** List of tasks to run after tiles are reloaded and re-rendered. */
-        public final LinkedList<Runnable> taskToRunAfterTileReload = new LinkedList<Runnable>();
+        public final LinkedList<Runnable> taskToRunAfterTileReload = new LinkedList<>();
     }
 
     /**

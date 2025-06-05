@@ -163,11 +163,10 @@ public class RequestCoordinatorBridge {
      * @param url The given URL to save for later.
      * @param clientId the clientId for the offline page to be saved later.
      * @param userRequested Whether this request should be prioritized because the user explicitly
-     *                      requested it.
+     *     requested it.
      * @param origin The app that initiated the request.
      * @param callback Callback for whether the URL is successfully added to queue. Non-zero number
-     *                 represents a failure reason (See offline_pages::AddRequestResult enum). 0 is
-     * success.
+     *     represents a failure reason (See offline_pages::AddRequestResult enum). 0 is success.
      */
     public void savePageLater(
             final String url,
@@ -176,7 +175,7 @@ public class RequestCoordinatorBridge {
             OfflinePageOrigin origin,
             Callback<Integer> callback) {
         Callback<Integer> wrapper =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer i) {
                         if (callback != null) {

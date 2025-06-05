@@ -92,7 +92,7 @@ public class WebPaymentIntentHelperTest {
 
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
-        List<PaymentItem> displayItems = new ArrayList<PaymentItem>();
+        List<PaymentItem> displayItems = new ArrayList<>();
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "50")));
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "150")));
 
@@ -111,7 +111,7 @@ public class WebPaymentIntentHelperTest {
                         /* requestShipping= */ true,
                         /* shippingType= */ "delivery");
 
-        List<PaymentShippingOption> shippingOptions = new ArrayList<PaymentShippingOption>();
+        List<PaymentShippingOption> shippingOptions = new ArrayList<>();
         shippingOptions.add(
                 new PaymentShippingOption(
                         "shippingId",
@@ -227,7 +227,7 @@ public class WebPaymentIntentHelperTest {
 
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
-        List<PaymentItem> displayItems = new ArrayList<PaymentItem>();
+        List<PaymentItem> displayItems = new ArrayList<>();
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "50")));
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "150")));
 
@@ -300,7 +300,7 @@ public class WebPaymentIntentHelperTest {
 
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
-        List<PaymentItem> displayItems = new ArrayList<PaymentItem>();
+        List<PaymentItem> displayItems = new ArrayList<>();
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "50")));
         displayItems.add(new PaymentItem(new PaymentCurrencyAmount("CAD", "150")));
 

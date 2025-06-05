@@ -148,7 +148,7 @@ public class OmniboxUrlEmphasizerTest {
         EmphasizedUrlSpanHelper[] spans = EmphasizedUrlSpanHelper.getSpansForEmphasizedUrl(url);
         Arrays.sort(
                 spans,
-                new Comparator<EmphasizedUrlSpanHelper>() {
+                new Comparator<>() {
                     @Override
                     public int compare(EmphasizedUrlSpanHelper o1, EmphasizedUrlSpanHelper o2) {
                         return o1.getStartIndex() - o2.getStartIndex();

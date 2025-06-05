@@ -626,7 +626,7 @@ public class ContextMenuCoordinatorTest {
                         /* additionalNavigationParams= */ null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
-        doReturn(new WeakReference<Activity>(mActivity)).when(windowAndroid).getActivity();
+        doReturn(new WeakReference<>(mActivity)).when(windowAndroid).getActivity();
 
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
 

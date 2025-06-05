@@ -441,7 +441,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         BookmarkId bookmarkId = mock(BookmarkId.class);
         doReturn(bookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
-        doReturn(new ArrayList<BookmarkId>())
+        doReturn(new ArrayList<>())
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
 

@@ -128,7 +128,7 @@ public class AccountChooserDialog
 
     private ArrayAdapter<Credential> generateAccountsArrayAdapter(
             Context context, Credential[] credentials) {
-        return new ArrayAdapter<Credential>(context, /* resource= */ 0, credentials) {
+        return new ArrayAdapter<>(context, /* resource= */ 0, credentials) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {

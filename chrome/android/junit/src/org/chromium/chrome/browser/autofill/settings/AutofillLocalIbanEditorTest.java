@@ -103,7 +103,7 @@ public class AutofillLocalIbanEditorTest {
         // Mock isValidIban to return true for specific test IBANs.
         when(mMockPersonalDataManager.isValidIban(anyString()))
                 .thenAnswer(
-                        new Answer<Boolean>() {
+                        new Answer<>() {
                             @Override
                             public Boolean answer(InvocationOnMock invocation) {
                                 List<String> validIbans =

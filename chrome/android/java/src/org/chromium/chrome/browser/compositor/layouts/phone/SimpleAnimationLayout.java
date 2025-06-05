@@ -168,7 +168,7 @@ public class SimpleAnimationLayout extends Layout {
         sourceLayoutTab.setBorderAlpha(0.0f);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
-        updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(sourceTabId)));
+        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
     }
 
     @Override
@@ -221,7 +221,7 @@ public class SimpleAnimationLayout extends Layout {
         } else {
             mLayoutTabs = new LayoutTab[] {mLayoutTabs[0], newLayoutTab};
         }
-        updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
 
         newLayoutTab.setBorderAlpha(0.0f);
 
@@ -292,7 +292,7 @@ public class SimpleAnimationLayout extends Layout {
         assert mLayoutTabs.length == 1;
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab, newLayoutTab};
-        updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(id, sourceId)));
+        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(id, sourceId)));
 
         forceAnimationToFinish();
 

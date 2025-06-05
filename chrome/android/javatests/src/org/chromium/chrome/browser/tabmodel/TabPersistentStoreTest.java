@@ -174,7 +174,7 @@ public class TabPersistentStoreTest {
             mMockTabContentManager = mock(TabContentManager.class);
             mTabPersistentStore =
                     ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<TabPersistentStore>() {
+                            new Callable<>() {
                                 @Override
                                 public TabPersistentStore call() {
                                     TabPersistencePolicy persistencePolicy =
@@ -196,7 +196,7 @@ public class TabPersistentStoreTest {
             NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
 
             Callable<TabModelImpl> callable =
-                    new Callable<TabModelImpl>() {
+                    new Callable<>() {
                         @Override
                         public TabModelImpl call() {
                             TabRemover tabRemover =
@@ -1397,7 +1397,7 @@ public class TabPersistentStoreTest {
      */
     private static boolean restoredFromDisk(Tab tab) throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Boolean>() {
+                new Callable<>() {
                     @Override
                     public Boolean call() {
                         if (tab.getUserDataHost().getUserData(MockTabAttributes.class) == null) {

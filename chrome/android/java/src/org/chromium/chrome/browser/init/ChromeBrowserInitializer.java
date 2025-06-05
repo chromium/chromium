@@ -68,7 +68,7 @@ public class ChromeBrowserInitializer {
             task.run();
         } else {
             if (mTasksToRunWithFullBrowser == null) {
-                mTasksToRunWithFullBrowser = new ArrayList<Runnable>();
+                mTasksToRunWithFullBrowser = new ArrayList<>();
             }
             mTasksToRunWithFullBrowser.add(task);
         }

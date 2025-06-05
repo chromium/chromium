@@ -2002,7 +2002,7 @@ public class TabPersistentStore {
     /** Asynchronously triggers a cleanup of any unused persistent data. */
     private void cleanUpPersistentData() {
         mPersistencePolicy.cleanupUnusedFiles(
-                new Callback<TabPersistenceFileInfo>() {
+                new Callback<>() {
                     @Override
                     public void onResult(TabPersistenceFileInfo result) {
                         if (result == null) return;
@@ -2047,7 +2047,7 @@ public class TabPersistentStore {
     public void cleanupStateFile(int instanceId) {
         mPersistencePolicy.cleanupInstanceState(
                 instanceId,
-                new Callback<TabPersistenceFileInfo>() {
+                new Callback<>() {
                     @Override
                     public void onResult(TabPersistenceFileInfo result) {
                         // Delete the instance state file (tab_stateX) as well.
@@ -2080,7 +2080,7 @@ public class TabPersistentStore {
      */
     private void deleteFileAsync(final String file, boolean useSerialExecution) {
         if (useSerialExecution) {
-            new BackgroundOnlyAsyncTask<Void>() {
+            new BackgroundOnlyAsyncTask<>() {
                 @Override
                 protected Void doInBackground() {
                     deleteStateFile(file);

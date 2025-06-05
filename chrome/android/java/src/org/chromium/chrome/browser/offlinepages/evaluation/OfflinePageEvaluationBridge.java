@@ -84,8 +84,7 @@ public class OfflinePageEvaluationBridge {
 
     private long mNativeOfflinePageEvaluationBridge;
     private boolean mIsOfflinePageModelLoaded;
-    private ObserverList<OfflinePageEvaluationObserver> mObservers =
-            new ObserverList<OfflinePageEvaluationObserver>();
+    private ObserverList<OfflinePageEvaluationObserver> mObservers = new ObserverList<>();
 
     private OutputStreamWriter mLogOutput;
 

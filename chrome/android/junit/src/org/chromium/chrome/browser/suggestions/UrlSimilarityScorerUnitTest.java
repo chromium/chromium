@@ -344,7 +344,7 @@ public class UrlSimilarityScorerUnitTest {
     public void testFindTabWithMostSimilarUrl() {
         int bad = TabList.INVALID_TAB_INDEX;
 
-        ArrayList<GURL> candidateUrls = new ArrayList<GURL>();
+        ArrayList<GURL> candidateUrls = new ArrayList<>();
         candidateUrls.add(new GURL("https://not-example.com"));
         candidateUrls.add(new GURL("https://www.example.com/path?query#ref"));
         candidateUrls.add(new GURL("https://www.example.com/?query#ref"));

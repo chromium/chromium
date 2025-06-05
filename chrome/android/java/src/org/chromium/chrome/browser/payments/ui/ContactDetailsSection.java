@@ -48,7 +48,7 @@ public class ContactDetailsSection extends SectionInformation {
         mContext = context;
         mContactEditor = contactEditor;
         // Copy the profiles from which this section is derived.
-        mProfiles = new ArrayList<AutofillProfile>(unmodifiableProfiles);
+        mProfiles = new ArrayList<>(unmodifiableProfiles);
 
         // Refresh the contact section items and selection.
         createContactListFromAutofillProfiles(journeyLogger);
@@ -114,7 +114,7 @@ public class ContactDetailsSection extends SectionInformation {
         // The sort is stable, so contacts with the same relevance score are sorted by frecency.
         Collections.sort(
                 contacts,
-                new Comparator<AutofillContact>() {
+                new Comparator<>() {
                     @Override
                     public int compare(AutofillContact a, AutofillContact b) {
                         return b.getRelevanceScore() - a.getRelevanceScore();

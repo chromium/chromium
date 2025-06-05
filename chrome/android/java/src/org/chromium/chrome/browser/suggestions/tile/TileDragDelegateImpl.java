@@ -174,7 +174,7 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
 
     @Override
     public List<TileView> getDraggableTileViews() {
-        List<TileView> draggableTileViews = new ArrayList<TileView>();
+        List<TileView> draggableTileViews = new ArrayList<>();
         int tileCount = mMvTilesLayout.getTileCount();
         for (int i = 0; i < tileCount; ++i) {
             TileView tileView = mMvTilesLayout.getTileAt(i);

@@ -121,7 +121,7 @@ public class CustomTabActivityAppMenuTest {
                         @Override
                         public List<ResolveInfo> queryBroadcastReceivers(
                                 Intent intent, int filters) {
-                            return new ArrayList<ResolveInfo>();
+                            return new ArrayList<>();
                         }
                     });
         }

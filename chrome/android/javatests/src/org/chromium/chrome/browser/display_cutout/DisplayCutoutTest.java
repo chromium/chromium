@@ -44,8 +44,7 @@ import java.util.concurrent.TimeoutException;
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class DisplayCutoutTest {
     @Rule
-    public DisplayCutoutTestRule mTestRule =
-            new DisplayCutoutTestRule<ChromeActivity>(ChromeActivity.class);
+    public DisplayCutoutTestRule mTestRule = new DisplayCutoutTestRule<>(ChromeActivity.class);
 
     /** Test that no safe area is applied when we have viewport fit auto */
     @Test
@@ -205,7 +204,7 @@ public class DisplayCutoutTest {
         final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new ObservableSupplierImpl<Integer>();
+                            return new ObservableSupplierImpl<>();
                         });
 
         ThreadUtils.runOnUiThreadBlocking(

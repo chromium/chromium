@@ -533,7 +533,7 @@ public class ChromeBackupAgentTest {
 
         when(backupData.getKey())
                 .thenAnswer(
-                        new Answer<String>() {
+                        new Answer<>() {
                             private int mPos;
 
                             @Override
@@ -544,7 +544,7 @@ public class ChromeBackupAgentTest {
 
         when(backupData.getDataSize())
                 .thenAnswer(
-                        new Answer<Integer>() {
+                        new Answer<>() {
                             private int mPos;
 
                             @Override
@@ -555,7 +555,7 @@ public class ChromeBackupAgentTest {
 
         when(backupData.readEntityData(any(byte[].class), anyInt(), anyInt()))
                 .thenAnswer(
-                        new Answer<Integer>() {
+                        new Answer<>() {
                             private int mPos;
 
                             @Override
@@ -570,7 +570,7 @@ public class ChromeBackupAgentTest {
 
         when(backupData.readNextHeader())
                 .thenAnswer(
-                        new Answer<Boolean>() {
+                        new Answer<>() {
                             private int mPos;
 
                             @Override

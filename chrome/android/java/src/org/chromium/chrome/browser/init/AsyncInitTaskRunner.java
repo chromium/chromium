@@ -111,7 +111,7 @@ public abstract class AsyncInitTaskRunner {
             ChromeActivitySessionTracker sessionTracker =
                     ChromeActivitySessionTracker.getInstance();
             sessionTracker.getVariationsRestrictModeValue(
-                    new Callback<String>() {
+                    new Callback<>() {
                         @Override
                         public void onResult(String restrictMode) {
                             mFetchSeedTask = new FetchSeedTask(restrictMode);

@@ -106,7 +106,7 @@ public class AppRestrictionSupplier {
         Context appContext = ContextUtils.getApplicationContext();
         try {
             mFetchAppRestrictionAsyncTask =
-                    new AsyncTask<Boolean>() {
+                    new AsyncTask<>() {
                         @Override
                         protected Boolean doInBackground() {
                             UserManager userManager =

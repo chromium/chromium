@@ -36,7 +36,7 @@ public class WebappDirectoryManager {
     public static void cleanUpDirectories() {
         if (!sMustCleanUpOldDirectories.getAndSet(false)) return;
 
-        new BackgroundOnlyAsyncTask<Void>() {
+        new BackgroundOnlyAsyncTask<>() {
             @Override
             protected final Void doInBackground() {
                 recordNumberOfStaleWebApkUpdateRequestFiles();

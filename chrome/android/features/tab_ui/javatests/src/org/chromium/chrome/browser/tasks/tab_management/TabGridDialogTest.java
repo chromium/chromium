@@ -973,7 +973,7 @@ public class TabGridDialogTest {
                 sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL);
         sActivityTestRule.loadUrlInNewTab(httpCanonicalUrl);
 
-        ArrayList<String> urls = new ArrayList<String>();
+        ArrayList<String> urls = new ArrayList<>();
         urls.add(httpsCanonicalUrl);
         urls.add(httpCanonicalUrl);
 

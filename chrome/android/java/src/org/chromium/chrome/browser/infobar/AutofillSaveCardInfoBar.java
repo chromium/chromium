@@ -45,8 +45,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private final String mTitleText;
     private @Nullable String mDescriptionText;
     private final boolean mIsGooglePayBrandingEnabled;
-    private final LinkedList<LegalMessageLine> mLegalMessageLines =
-            new LinkedList<LegalMessageLine>();
+    private final LinkedList<LegalMessageLine> mLegalMessageLines = new LinkedList<>();
 
     /**
      * Creates a new instance of the infobar.
@@ -58,10 +57,10 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
-     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterAvatar| are provided.
-     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterEmail| are provided.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterEmail| are provided.
      */
     private AutofillSaveCardInfoBar(
             long nativeAutofillSaveCardInfoBar,

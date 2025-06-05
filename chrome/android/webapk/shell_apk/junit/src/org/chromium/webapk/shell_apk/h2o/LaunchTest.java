@@ -775,7 +775,7 @@ public final class LaunchTest {
     @SuppressWarnings("unchecked")
     private ArrayList<Intent> runActivityChain(
             Intent launchIntent, Class<? extends Activity> launchActivity, String browserPackage) {
-        ArrayList<Intent> activityIntentChain = new ArrayList<Intent>();
+        ArrayList<Intent> activityIntentChain = new ArrayList<>();
 
         // Android modifies the intent when the intent is used to launch an activity. Clone the
         // intent so as not to affect test cases which use the same intent.

@@ -71,7 +71,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Before
     public void setup() {
         mContext = ContextUtils.getApplicationContext();
-        mLayoutStateProviderSupplierImpl = new OneshotSupplierImpl<LayoutStateProvider>();
+        mLayoutStateProviderSupplierImpl = new OneshotSupplierImpl<>();
         mLayoutStateProviderSupplierImpl.set(mLayoutStateProvider);
         mChromeTabbedOnDragListener =
                 new ChromeTabbedOnDragListener(

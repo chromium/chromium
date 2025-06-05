@@ -141,7 +141,7 @@ public class WebApkDataProvider {
 
         if (offlineData == null) return null;
 
-        List<String> fieldValues = new ArrayList<String>();
+        List<String> fieldValues = new ArrayList<>();
         for (int field : fields) {
             switch (field) {
                 case WebApkDetailsForDefaultOfflinePage.SHORT_NAME:

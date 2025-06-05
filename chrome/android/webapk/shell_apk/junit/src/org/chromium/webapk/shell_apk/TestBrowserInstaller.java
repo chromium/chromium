@@ -24,7 +24,7 @@ import java.util.Set;
 public class TestBrowserInstaller {
     public static final String COMPONENT_CLASS = "com.component.class.name";
 
-    Set<String> mInstalledBrowsers = new HashSet<String>();
+    Set<String> mInstalledBrowsers = new HashSet<>();
 
     /** Changes the installed browsers to the passed-in list. */
     public void setInstalledModernBrowsers(String defaultBrowserPackage, String[] newPackages) {

@@ -143,7 +143,7 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     private static class TestTabModel extends EmptyTabModel {
-        public final ArrayList<TabModelObserver> mObservers = new ArrayList<TabModelObserver>();
+        public final ArrayList<TabModelObserver> mObservers = new ArrayList<>();
 
         @Override
         public void addObserver(TabModelObserver observer) {

@@ -387,7 +387,7 @@ public class PaymentRequestUi
 
         // This callback will be fired if mIsClientCheckingSelection is true.
         mUpdateSectionsCallback =
-                new Callback<PaymentInformation>() {
+                new Callback<>() {
                     @Override
                     public void onResult(PaymentInformation result) {
                         mIsClientCheckingSelection = false;
@@ -436,7 +436,7 @@ public class PaymentRequestUi
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
         mClient.getDefaultPaymentInformation(
                 waitForUpdatedDetails,
-                new Callback<PaymentInformation>() {
+                new Callback<>() {
                     @Override
                     public void onResult(PaymentInformation result) {
                         updateOrderSummarySection(result.getShoppingCart());
@@ -1117,7 +1117,7 @@ public class PaymentRequestUi
         mSelectedSection = section;
         if (mSelectedSection == mOrderSummarySection) {
             mClient.getShoppingCart(
-                    new Callback<ShoppingCart>() {
+                    new Callback<>() {
                         @Override
                         public void onResult(ShoppingCart result) {
                             updateOrderSummarySection(result);
@@ -1202,7 +1202,7 @@ public class PaymentRequestUi
     }
 
     private Callback<SectionInformation> createUpdateSectionCallback(@DataType final int type) {
-        return new Callback<SectionInformation>() {
+        return new Callback<>() {
             @Override
             public void onResult(SectionInformation result) {
                 updateSection(type, result);

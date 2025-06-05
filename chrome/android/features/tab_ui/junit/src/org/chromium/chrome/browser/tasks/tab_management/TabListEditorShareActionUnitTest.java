@@ -145,7 +145,7 @@ public class TabListEditorShareActionUnitTest {
     public void testShareActionNoTabs() {
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
 
-        mAction.onSelectionStateChange(new ArrayList<TabListEditorItemSelectionId>());
+        mAction.onSelectionStateChange(new ArrayList<>());
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(

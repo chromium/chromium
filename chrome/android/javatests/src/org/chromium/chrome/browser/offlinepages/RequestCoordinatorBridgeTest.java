@@ -189,7 +189,7 @@ public class RequestCoordinatorBridgeTest {
                             namespace,
                             /* userRequested= */ true,
                             new OfflinePageOrigin(),
-                            new Callback<Integer>() {
+                            new Callback<>() {
                                 @Override
                                 public void onResult(Integer i) {
                                     Assert.assertEquals(

@@ -89,7 +89,7 @@ public class TemplateUrlServiceTest {
 
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
+                        new Callable<>() {
                             @Override
                             public Boolean call() {
                                 return mTemplateUrlService.isLoaded();
@@ -111,7 +111,7 @@ public class TemplateUrlServiceTest {
             throws ExecutionException {
         GURL result =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<GURL>() {
+                        new Callable<>() {
                             @Override
                             public GURL call() {
                                 return mTemplateUrlService.getUrlForContextualSearchQuery(
@@ -137,7 +137,7 @@ public class TemplateUrlServiceTest {
             throws ExecutionException {
         String result =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<String>() {
+                        new Callable<>() {
                             @Override
                             public String call() {
                                 return mTemplateUrlService.getUrlForSearchQuery(
@@ -162,7 +162,7 @@ public class TemplateUrlServiceTest {
 
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
+                        new Callable<>() {
                             @Override
                             public Boolean call() {
                                 return mTemplateUrlService.isLoaded();
@@ -362,7 +362,7 @@ public class TemplateUrlServiceTest {
 
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
+                        new Callable<>() {
                             @Override
                             public Boolean call() {
                                 return mTemplateUrlService.isLoaded();
@@ -372,9 +372,9 @@ public class TemplateUrlServiceTest {
         validateSearchQuery("cat", null, null);
         Map<String, String> params = new HashMap();
         params.put("xyz", "a");
-        validateSearchQuery("cat", new ArrayList<String>(Arrays.asList("xyz=a")), params);
+        validateSearchQuery("cat", new ArrayList<>(Arrays.asList("xyz=a")), params);
         params.put("abc", "b");
-        validateSearchQuery("cat", new ArrayList<String>(Arrays.asList("xyz=a", "abc=b")), params);
+        validateSearchQuery("cat", new ArrayList<>(Arrays.asList("xyz=a", "abc=b")), params);
     }
 
     private boolean setPlayAPISearchEngine(

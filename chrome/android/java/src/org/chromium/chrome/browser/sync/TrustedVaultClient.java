@@ -149,7 +149,7 @@ public class TrustedVaultClient {
     private Backend mBackend;
 
     // Registered native TrustedVaultClientAndroid instances. Usually exactly one.
-    private final Set<Long> mNativeTrustedVaultClientAndroidSet = new TreeSet<Long>();
+    private final Set<Long> mNativeTrustedVaultClientAndroidSet = new TreeSet<>();
 
     @VisibleForTesting
     public TrustedVaultClient(Backend backend) {

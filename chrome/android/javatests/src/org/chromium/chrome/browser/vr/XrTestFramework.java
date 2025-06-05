@@ -465,7 +465,7 @@ public abstract class XrTestFramework {
                                         WebContentsUtils.getFocusedFrame(webContents)));
         Assert.assertTrue("Did not get a focused frame", rfh != null);
         final CountDownLatch latch = new CountDownLatch(1);
-        final AtomicReference<String> result = new AtomicReference<String>();
+        final AtomicReference<String> result = new AtomicReference<>();
         // The JS execution needs to be started on the UI thread to avoid hitting a DCHECK.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -133,7 +133,7 @@ public class NotificationChannelPreserverTest {
 
     private void setChannelStatus(boolean enabled) {
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
                                 String channelIdArg = invocation.getArgument(0);

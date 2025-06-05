@@ -197,7 +197,7 @@ public class AutofillTest {
     private List<Autofill> getClientAutofillProfiles() throws JSONException {
         List<Pair<String, JSONObject>> entities =
                 SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), AUTOFILL_TYPE);
-        List<Autofill> autofills = new ArrayList<Autofill>(entities.size());
+        List<Autofill> autofills = new ArrayList<>(entities.size());
         for (Pair<String, JSONObject> entity : entities) {
             String id = entity.first;
             JSONObject profile = entity.second;

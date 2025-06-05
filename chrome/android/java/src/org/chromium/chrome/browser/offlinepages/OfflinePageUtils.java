@@ -494,7 +494,7 @@ public class OfflinePageUtils {
             final Callback<ShareParams> shareCallback) {
         RecordUserAction.record("OfflinePages.Sharing.SharePageFromOverflowMenu");
         AsyncTask<Uri> task =
-                new AsyncTask<Uri>() {
+                new AsyncTask<>() {
                     @Override
                     protected Uri doInBackground() {
                         // Android Q+: If we already have a content URI for the published page,
@@ -765,7 +765,7 @@ public class OfflinePageUtils {
 
             bridge.deletePagesByClientId(
                     clientIds,
-                    new Callback<Integer>() {
+                    new Callback<>() {
                         @Override
                         public void onResult(Integer result) {
                             // Result is ignored.

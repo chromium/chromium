@@ -108,7 +108,7 @@ public class UrlSimilarityScorer {
         mLaxQuery = laxQuery;
         mLaxPath = laxPath;
 
-        mCompatibleSchemes = new HashSet<String>();
+        mCompatibleSchemes = new HashSet<>();
         String keyScheme = mKeyUrl.getScheme();
         mCompatibleSchemes.add(keyScheme);
         if (laxSchemeHost && keyScheme.contentEquals(UrlConstants.HTTP_SCHEME)) {

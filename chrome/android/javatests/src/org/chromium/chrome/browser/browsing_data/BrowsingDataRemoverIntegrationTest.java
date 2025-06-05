@@ -109,7 +109,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         // The last two webapps should have been unregistered.
         Assert.assertEquals(
-                new HashSet<String>(Arrays.asList("webapp1")),
+                new HashSet<>(Arrays.asList("webapp1")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
         CallbackHelper dataClearedNoUrlFilterHelper = new CallbackHelper();

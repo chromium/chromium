@@ -164,7 +164,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 controlsVisibilityManager.getBottomControlsHeight());
 
         mOmniboxFocusObserver =
-                new Callback<Boolean>() {
+                new Callback<>() {
                     /** A token held while this object is suppressing the bottom sheet. */
                     private int mToken;
 

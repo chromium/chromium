@@ -202,7 +202,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         float normalHeight = mPanel.getHeight();
 
         // Simulate a response that includes both a definition and Related Searches
-        List<String> inBarSuggestions = new ArrayList<String>();
+        List<String> inBarSuggestions = new ArrayList<>();
         inBarSuggestions.add("Related Suggestion 1");
         inBarSuggestions.add("Related Suggestion 2");
         ThreadUtils.runOnUiThreadBlocking(

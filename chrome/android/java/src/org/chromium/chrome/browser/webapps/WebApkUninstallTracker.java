@@ -55,7 +55,7 @@ public class WebApkUninstallTracker {
             }
         }
         preferencesManager.writeStringSet(
-                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<String>());
+                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<>());
     }
 
     /** Sets WebAPK uninstall to be recorded next time that native is loaded. */

@@ -58,10 +58,10 @@ class PermissionUpdateRequester implements PermissionCallback {
         mNativePtr = nativePtr;
         mWebContents = webContents;
 
-        mRequiredAndroidPermissions = new HashSet<String>();
+        mRequiredAndroidPermissions = new HashSet<>();
         Collections.addAll(mRequiredAndroidPermissions, requiredPermissions);
 
-        Set<String> allPermissions = new HashSet<String>();
+        Set<String> allPermissions = new HashSet<>();
         Collections.addAll(allPermissions, requiredPermissions);
         Collections.addAll(allPermissions, optionalPermissions);
         mAndroidPermisisons = allPermissions.toArray(new String[allPermissions.size()]);

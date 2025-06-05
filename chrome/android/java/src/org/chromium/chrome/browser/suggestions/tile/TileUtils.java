@@ -21,7 +21,7 @@ import java.util.Set;
 /** Utility class for {@link Tile}s related queries or operations. */
 public class TileUtils {
     private static final Set<String> CUSTOM_TILE_SCHEMES =
-            new HashSet<String>(
+            new HashSet<>(
                     Arrays.asList(
                             UrlConstants.CHROME_SCHEME,
                             UrlConstants.CHROME_NATIVE_SCHEME,

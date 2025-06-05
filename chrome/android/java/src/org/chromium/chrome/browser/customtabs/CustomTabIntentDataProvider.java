@@ -1455,7 +1455,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return mAllTrustedWebActivityOrigins;
         }
 
-        mAllTrustedWebActivityOrigins = new HashSet<Origin>();
+        mAllTrustedWebActivityOrigins = new HashSet<>();
         Origin initialOrigin = Origin.create(getUrlToLoad());
         if (initialOrigin != null) mAllTrustedWebActivityOrigins.add(initialOrigin);
         if (mTrustedWebActivityAdditionalOrigins != null) {

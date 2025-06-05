@@ -116,8 +116,7 @@ public class DistilledPagePrefsView extends LinearLayout
             getResources().getString(R.string.monospace)
         };
         ArrayAdapter<CharSequence> adapter =
-                new ArrayAdapter<CharSequence>(
-                        getContext(), android.R.layout.simple_spinner_item, fonts) {
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, fonts) {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
                         View view = super.getView(position, convertView, parent);

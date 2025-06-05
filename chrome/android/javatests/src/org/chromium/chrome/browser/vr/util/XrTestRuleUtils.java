@@ -37,11 +37,11 @@ public class XrTestRuleUtils {
      *     an XrTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
-        ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
+        ArrayList<ParameterSet> parameters = new ArrayList<>();
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<ChromeTabbedActivityXrTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public ChromeTabbedActivityXrTestRule call() {
                                         return new ChromeTabbedActivityXrTestRule();
@@ -52,7 +52,7 @@ public class XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<CustomTabActivityXrTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public CustomTabActivityXrTestRule call() {
                                         return new CustomTabActivityXrTestRule();
@@ -63,7 +63,7 @@ public class XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<WebappActivityXrTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public WebappActivityXrTestRule call() {
                                         return new WebappActivityXrTestRule();

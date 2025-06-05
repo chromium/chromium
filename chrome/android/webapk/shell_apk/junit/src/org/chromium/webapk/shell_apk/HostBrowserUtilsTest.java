@@ -293,7 +293,7 @@ public class HostBrowserUtilsTest {
 
     @SafeVarargs
     private static String[] mergeStringArrays(String[]... toMerge) {
-        List<String> out = new ArrayList<String>();
+        List<String> out = new ArrayList<>();
         for (String[] toMergeArray : toMerge) {
             out.addAll(Arrays.asList(toMergeArray));
         }

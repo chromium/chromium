@@ -79,7 +79,7 @@ public class OverlayPanelManager {
         mSuppressedPanels =
                 new PriorityQueue<>(
                         INITIAL_QUEUE_CAPACITY,
-                        new Comparator<OverlayPanel>() {
+                        new Comparator<>() {
                             @Override
                             public int compare(OverlayPanel p1, OverlayPanel p2) {
                                 // The head of the queue is the smallest element, so subtract p1's

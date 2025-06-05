@@ -292,7 +292,7 @@ public class CustomTabToolbarCoordinator {
                 /* bookmarkClickHandler= */ null,
                 /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
                 /* archivedTabCountSupplier= */ null,
-                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<TabModelDotInfo>(
+                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<>(
                         TabModelDotInfo.HIDE),
                 /* undoBarThrottle= */ null);
         mInitializedToolbarWithNative = true;

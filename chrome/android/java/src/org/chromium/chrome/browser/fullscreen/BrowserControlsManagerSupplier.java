@@ -12,14 +12,13 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
- * {@link BrowserControlsManager}.
+ * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
+ * BrowserControlsManager}.
  */
 public class BrowserControlsManagerSupplier
         extends UnownedUserDataSupplier<BrowserControlsManager> {
     private static final UnownedUserDataKey<BrowserControlsManagerSupplier> KEY =
-            new UnownedUserDataKey<BrowserControlsManagerSupplier>(
-                    BrowserControlsManagerSupplier.class);
+            new UnownedUserDataKey<>(BrowserControlsManagerSupplier.class);
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
     public static ObservableSupplier<BrowserControlsManager> from(

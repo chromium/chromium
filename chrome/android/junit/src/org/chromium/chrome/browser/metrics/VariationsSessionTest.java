@@ -64,7 +64,7 @@ public class VariationsSessionTest {
     @Test
     public void testGetRestrictModeValue() {
         mSession.getRestrictModeValue(
-                new Callback<String>() {
+                new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {}
                 });

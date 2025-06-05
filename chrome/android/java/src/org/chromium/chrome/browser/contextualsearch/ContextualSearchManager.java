@@ -131,8 +131,7 @@ public class ContextualSearchManager
     // A separator that we expect in the title of a dictionary response.
     private static final String DEFINITION_MID_DOT = "\u00b7";
 
-    private final ObserverList<ContextualSearchObserver> mObservers =
-            new ObserverList<ContextualSearchObserver>();
+    private final ObserverList<ContextualSearchObserver> mObservers = new ObserverList<>();
 
     private final Activity mActivity;
     private final Profile mProfile;
@@ -1900,7 +1899,7 @@ public class ContextualSearchManager
             return queries;
         }
 
-        List<String> relatedSearches = new ArrayList<String>(queries.size() + 1);
+        List<String> relatedSearches = new ArrayList<>(queries.size() + 1);
         relatedSearches.add(defaultSearch);
         relatedSearches.addAll(queries);
 

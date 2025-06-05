@@ -78,7 +78,7 @@ public class CanonicalCookieTest {
 
     @Test
     public void testSaveRestoreEmptyList() throws Exception {
-        doSaveRestoreCookiesListTest(new ArrayList<CanonicalCookie>());
+        doSaveRestoreCookiesListTest(new ArrayList<>());
     }
 
     @Test

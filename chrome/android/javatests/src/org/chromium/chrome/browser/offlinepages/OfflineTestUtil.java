@@ -62,7 +62,7 @@ public class OfflineTestUtil {
                 () -> {
                     OfflineTestUtilJni.get()
                             .getAllPages(
-                                    new ArrayList<OfflinePageItem>(),
+                                    new ArrayList<>(),
                                     (List<OfflinePageItem> items) -> {
                                         result.set(items);
                                         callbackHelper.notifyCalled();
@@ -76,7 +76,7 @@ public class OfflineTestUtil {
     // For logging out to debug test failures.
     public static String dumpRequestCoordinatorState() throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
-        final AtomicReference<String> result = new AtomicReference<String>();
+        final AtomicReference<String> result = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OfflineTestUtilJni.get()
@@ -139,7 +139,7 @@ public class OfflineTestUtil {
     // Waits for the offline model to initialize and returns an OfflinePageBridge.
     public static OfflinePageBridge getOfflinePageBridge() throws TimeoutException {
         final CallbackHelper ready = new CallbackHelper();
-        final AtomicReference<OfflinePageBridge> result = new AtomicReference<OfflinePageBridge>();
+        final AtomicReference<OfflinePageBridge> result = new AtomicReference<>();
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {

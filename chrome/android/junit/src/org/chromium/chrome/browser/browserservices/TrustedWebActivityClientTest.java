@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -160,7 +159,7 @@ public class TrustedWebActivityClientTest {
                 mClient.createLaunchIntentForTwa(
                         RuntimeEnvironment.application,
                         "mailto:miranda@example.com",
-                        new ArrayList<ResolveInfo>()));
+                        new ArrayList<>()));
     }
 
     private static Token createDummyToken() {

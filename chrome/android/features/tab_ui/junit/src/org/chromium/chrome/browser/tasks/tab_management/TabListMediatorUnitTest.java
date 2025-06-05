@@ -990,7 +990,7 @@ public class TabListMediatorUnitTest {
                         mTabModelActionListenerCaptor.capture());
         assertTrue(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
 
-        when(mTabGroupModelFilter.getRelatedTabList(anyInt())).thenReturn(new ArrayList<Tab>());
+        when(mTabGroupModelFilter.getRelatedTabList(anyInt())).thenReturn(new ArrayList<>());
         TabModelActionListener listener = mTabModelActionListenerCaptor.getValue();
         listener.onConfirmationDialogResult(
                 DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_POSITIVE);
@@ -5118,7 +5118,7 @@ public class TabListMediatorUnitTest {
             @OptimizationGuideDecision int decision, Map<GURL, Any> responses) {
         for (Map.Entry<GURL, Any> responseEntry : responses.entrySet()) {
             doAnswer(
-                            new Answer<Void>() {
+                            new Answer<>() {
                                 @Override
                                 public Void answer(InvocationOnMock invocation) {
                                     OptimizationGuideCallback callback =

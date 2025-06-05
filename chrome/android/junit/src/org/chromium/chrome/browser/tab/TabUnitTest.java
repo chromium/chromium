@@ -340,7 +340,7 @@ public class TabUnitTest {
         mTab.onProvideAutofillVirtualStructure(mock(ViewStructure.class), 0);
         verify(mAutofillProvider, never()).onProvideAutoFillVirtualStructure(any(), anyInt());
 
-        mTab.autofill(new SparseArray<AutofillValue>());
+        mTab.autofill(new SparseArray<>());
         verify(mAutofillProvider, never()).autofill(any());
     }
 
@@ -355,7 +355,7 @@ public class TabUnitTest {
         mTab.onProvideAutofillVirtualStructure(mock(ViewStructure.class), 0);
         verify(mAutofillProvider, never()).onProvideAutoFillVirtualStructure(any(), anyInt());
 
-        mTab.autofill(new SparseArray<AutofillValue>());
+        mTab.autofill(new SparseArray<>());
         verify(mAutofillProvider, never()).autofill(any());
     }
 
@@ -374,7 +374,7 @@ public class TabUnitTest {
                 .onProvideAutoFillVirtualStructure(
                         structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
 
-        SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
+        SparseArray<AutofillValue> values = new SparseArray<>();
         mTab.autofill(values);
         verify(mAutofillProvider).autofill(values);
     }

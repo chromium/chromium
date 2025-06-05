@@ -235,7 +235,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
 
         mCountryField.set(
                 DROPDOWN_CALLBACK,
-                new Callback<String>() {
+                new Callback<>() {
                     /** Load admin areas for the selected country. */
                     @Override
                     public void onResult(String countryCode) {

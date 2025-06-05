@@ -907,7 +907,7 @@ public class ClearBrowsingDataFragmentTest {
     }
 
     private void setDataTypesToClear(final Integer... typesToClear) {
-        Set<Integer> typesToClearSet = new ArraySet<Integer>(Arrays.asList(typesToClear));
+        Set<Integer> typesToClearSet = new ArraySet<>(Arrays.asList(typesToClear));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (@DialogOption Integer option : ClearBrowsingDataFragment.getAllOptions()) {

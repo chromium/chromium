@@ -37,7 +37,7 @@ public class ContextualSearchTranslationImplTest {
     private static final ArrayList<String> ENGLISH_AND_SPANISH;
 
     static {
-        ArrayList<String> langs = new ArrayList<String>();
+        ArrayList<String> langs = new ArrayList<>();
         langs.add(ENGLISH);
         langs.add(SPANISH);
         ENGLISH_AND_SPANISH = langs;
@@ -46,7 +46,7 @@ public class ContextualSearchTranslationImplTest {
     private static final ArrayList<String> ENGLISH_LIST;
 
     static {
-        ArrayList<String> langs = new ArrayList<String>();
+        ArrayList<String> langs = new ArrayList<>();
         langs.add(ENGLISH);
         ENGLISH_LIST = langs;
     }
@@ -66,9 +66,7 @@ public class ContextualSearchTranslationImplTest {
     @Test
     @Feature("TranslateUtilities")
     public void testNeedsTranslationEmptyFluentLanguages() {
-        doReturn(new ArrayList<String>())
-                .when(mTranslateBridgeWrapperMock)
-                .getNeverTranslateLanguages();
+        doReturn(new ArrayList<>()).when(mTranslateBridgeWrapperMock).getNeverTranslateLanguages();
         assertThat(mImpl.needsTranslation(ENGLISH), is(true));
     }
 

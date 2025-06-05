@@ -530,7 +530,7 @@ public final class PageViewObserverTest {
     }
 
     private ArgumentMatcher<WebsiteEvent> isStartEvent(String fqdn) {
-        return new ArgumentMatcher<WebsiteEvent>() {
+        return new ArgumentMatcher<>() {
             @Override
             public boolean matches(WebsiteEvent event) {
                 return event.getType() == WebsiteEvent.EventType.START
@@ -545,7 +545,7 @@ public final class PageViewObserverTest {
     }
 
     private ArgumentMatcher<WebsiteEvent> isStopEvent(String fqdn) {
-        return new ArgumentMatcher<WebsiteEvent>() {
+        return new ArgumentMatcher<>() {
             @Override
             public boolean matches(WebsiteEvent event) {
                 return event.getType() == WebsiteEvent.EventType.STOP

@@ -55,7 +55,7 @@ public class ClearBrowsingDataFetcher
     }
 
     public static final Creator<ClearBrowsingDataFetcher> CREATOR =
-            new Creator<ClearBrowsingDataFetcher>() {
+            new Creator<>() {
                 @Override
                 public ClearBrowsingDataFetcher createFromParcel(Parcel in) {
                     return new ClearBrowsingDataFetcher(in);

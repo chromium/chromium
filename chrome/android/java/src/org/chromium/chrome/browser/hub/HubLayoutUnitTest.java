@@ -296,7 +296,7 @@ public class HubLayoutUnitTest {
         when(mTab.isNativePage()).thenReturn(false);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
 
-        mHubLayoutAnimatorSupplier = new SyncOneshotSupplierImpl<HubLayoutAnimator>();
+        mHubLayoutAnimatorSupplier = new SyncOneshotSupplierImpl<>();
         when(mHubLayoutAnimatorProviderMock.getAnimatorSupplier())
                 .thenReturn(mHubLayoutAnimatorSupplier);
     }

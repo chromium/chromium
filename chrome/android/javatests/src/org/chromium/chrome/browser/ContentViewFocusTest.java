@@ -58,7 +58,7 @@ public class ContentViewFocusTest {
 
     private static final int WAIT_RESPONSE_MS = 2000;
 
-    private final ArrayDeque<Boolean> mFocusChanges = new ArrayDeque<Boolean>();
+    private final ArrayDeque<Boolean> mFocusChanges = new ArrayDeque<>();
 
     private String mTitle;
 

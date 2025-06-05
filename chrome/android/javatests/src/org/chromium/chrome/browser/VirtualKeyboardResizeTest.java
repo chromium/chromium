@@ -184,7 +184,7 @@ public class VirtualKeyboardResizeTest {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         getWebContents(), "window.resizeEventLog");
         JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
-        ArrayList<Integer> pageHeights = new ArrayList<Integer>();
+        ArrayList<Integer> pageHeights = new ArrayList<>();
         try {
             jsonReader.beginArray();
             while (jsonReader.hasNext()) {

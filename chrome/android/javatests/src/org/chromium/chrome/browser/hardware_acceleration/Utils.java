@@ -106,7 +106,7 @@ public class Utils {
     }
 
     private static Set<String> collectThreadNames() {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (Thread thread : Thread.getAllStackTraces().keySet()) {
             names.add(thread.getName());
         }

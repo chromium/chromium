@@ -113,7 +113,7 @@ public class FakeServerHelper {
                         () ->
                                 FakeServerHelperJni.get()
                                         .getSyncEntitiesByDataType(mNativeFakeServer, dataType));
-        List<SyncEntity> entities = new ArrayList<SyncEntity>(serializedEntities.length);
+        List<SyncEntity> entities = new ArrayList<>(serializedEntities.length);
         for (byte[] serializedEntity : serializedEntities) {
             entities.add(SyncEntity.parseFrom(serializedEntity));
         }

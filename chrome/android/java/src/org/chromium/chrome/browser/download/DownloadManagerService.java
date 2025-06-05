@@ -89,7 +89,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private static final long UPDATE_DELAY_MILLIS = 1000;
     public static final long UNKNOWN_BYTES_RECEIVED = -1;
 
-    private static final Set<String> sFirstSeenDownloadIds = new HashSet<String>();
+    private static final Set<String> sFirstSeenDownloadIds = new HashSet<>();
 
     private static DownloadManagerService sDownloadManagerService;
     private static boolean sIsNetworkListenerDisabled;
@@ -123,8 +123,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         default void broadcastDownloadSuccessful(DownloadInfo downloadInfo) {}
     }
 
-    @VisibleForTesting
-    protected final List<String> mAutoResumableDownloadIds = new ArrayList<String>();
+    @VisibleForTesting protected final List<String> mAutoResumableDownloadIds = new ArrayList<>();
 
     private final ObserverList<DownloadObserver> mDownloadObservers = new ObserverList<>();
 
@@ -486,7 +485,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         if (mIsUiUpdateScheduled) return;
 
         mIsUiUpdateScheduled = true;
-        final List<DownloadProgress> progressPendingUpdate = new ArrayList<DownloadProgress>();
+        final List<DownloadProgress> progressPendingUpdate = new ArrayList<>();
         Iterator<DownloadProgress> iter = mDownloadProgressMap.values().iterator();
         while (iter.hasNext()) {
             DownloadProgress progress = iter.next();
@@ -1230,7 +1229,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     // Deprecated after new download backend.
     @CalledByNative
     private List<DownloadItem> createDownloadItemList() {
-        return new ArrayList<DownloadItem>();
+        return new ArrayList<>();
     }
 
     // Deprecated after new download backend.
@@ -1399,7 +1398,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         assert (downloadItem.getDownloadInfo().state() == DownloadState.COMPLETE);
 
         AsyncTask<Boolean> task =
-                new AsyncTask<Boolean>() {
+                new AsyncTask<>() {
                     @Override
                     public Boolean doInBackground() {
                         DownloadInfo info = downloadItem.getDownloadInfo();

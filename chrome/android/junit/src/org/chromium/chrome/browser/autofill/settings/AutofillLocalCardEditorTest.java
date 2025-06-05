@@ -208,7 +208,7 @@ public class AutofillLocalCardEditorTest {
         // Mock a card recognition logic
         when(mMockPersonalDataManagerJni.getBasicCardIssuerNetwork(anyString(), anyBoolean()))
                 .thenAnswer(
-                        new Answer<String>() {
+                        new Answer<>() {
                             @Override
                             public String answer(InvocationOnMock invocation) throws Throwable {
                                 String cardNumber = invocation.getArgument(0);

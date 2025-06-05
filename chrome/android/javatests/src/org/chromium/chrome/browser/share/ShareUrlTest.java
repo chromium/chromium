@@ -50,7 +50,7 @@ public class ShareUrlTest {
 
     @Before
     public void setup() {
-        Mockito.doReturn(new WeakReference<Activity>(mActivity)).when(mWindow).getActivity();
+        Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindow).getActivity();
     }
 
     private void assertCorrectUrl(final String originalUrl, final String sharedUrl) {

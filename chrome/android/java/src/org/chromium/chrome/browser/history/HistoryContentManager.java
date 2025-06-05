@@ -212,7 +212,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
-                        : new SelectionDelegate<HistoryItem>() {
+                        : new SelectionDelegate<>() {
                             @Override
                             public boolean toggleSelectionForItem(HistoryItem bookmark) {
                                 return false;

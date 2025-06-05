@@ -131,7 +131,7 @@ public class OfflinePageBridgeUnitTest {
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
         mBridge.getAllPages(callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         verify(callback, times(1)).onResult(itemList);
     }
 
@@ -145,7 +145,7 @@ public class OfflinePageBridgeUnitTest {
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
         mBridge.getAllPages(callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         verify(callback, times(1)).onResult(itemList);
@@ -162,7 +162,7 @@ public class OfflinePageBridgeUnitTest {
         List<ClientId> list = new ArrayList<>();
         mBridge.getPagesByClientIds(list, callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         verify(callback, times(1)).onResult(itemList);
     }
 
@@ -180,7 +180,7 @@ public class OfflinePageBridgeUnitTest {
         list.add(secondClientId);
         mBridge.getPagesByClientIds(list, callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         verify(callback, times(1)).onResult(itemList);
@@ -275,7 +275,7 @@ public class OfflinePageBridgeUnitTest {
 
     private Callback<Integer> createDeletePageCallback() {
         return spy(
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {}
                 });
@@ -283,7 +283,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerNativeGetAllPages(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         List<OfflinePageItem> result = mResultArgument.getValue();
@@ -307,7 +307,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerGetPagesByClientIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         List<OfflinePageItem> result = mResultArgument.getValue();
@@ -340,7 +340,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerDeletePagesByOfflineIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         long[] offlineIds = mOfflineIdsArgument.getValue();
@@ -367,7 +367,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerDeletePagesByClientIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         String[] namespaces = mNamespacesArgument.getValue();

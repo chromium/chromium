@@ -111,7 +111,7 @@ public class TileRenderer {
         void put(SiteSuggestion key, @NonNull SuggestionsTileView value) {
             LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
             if (bucket == null) {
-                bucket = new LinkedList<SuggestionsTileView>();
+                bucket = new LinkedList<>();
                 mStorage.put(key, bucket);
             }
             bucket.addLast(value);

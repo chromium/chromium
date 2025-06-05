@@ -1594,7 +1594,7 @@ public class ToolbarManager
         mFindToolbarManager.addObserver(mFindToolbarObserver);
 
         Callback<Profile> profileObserver =
-                new Callback<Profile>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Profile profile) {
                         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);

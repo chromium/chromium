@@ -117,9 +117,9 @@ public class UrlBarTest {
 
     private AutocompleteState getAutocompleteState(final Runnable action) {
         final AtomicBoolean hasAutocomplete = new AtomicBoolean();
-        final AtomicReference<String> textWithoutAutocomplete = new AtomicReference<String>();
-        final AtomicReference<String> textWithAutocomplete = new AtomicReference<String>();
-        final AtomicReference<String> additionalText = new AtomicReference<String>();
+        final AtomicReference<String> textWithoutAutocomplete = new AtomicReference<>();
+        final AtomicReference<String> textWithAutocomplete = new AtomicReference<>();
+        final AtomicReference<String> additionalText = new AtomicReference<>();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -221,7 +221,7 @@ public class UrlBarTest {
         mOmnibox.setAutocompleteText(inlineAutocomplete, Optional.of(additionalText));
 
         final CallbackHelper autocompleteHelper = new CallbackHelper();
-        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
+        final AtomicReference<String> requestedAutocompleteText = new AtomicReference<>();
         final AtomicBoolean didPreventInlineAutocomplete = new AtomicBoolean();
         mUrlBar.setTextChangeListener(
                 (textWithoutAutocomplete) -> {

@@ -930,7 +930,7 @@ public class PaymentUiService
     private void editContactOnPaymentRequestUi(@Nullable final AutofillContact toEdit) {
         mContactEditor.showEditPrompt(
                 toEdit,
-                new Callback<AutofillContact>() {
+                new Callback<>() {
                     @Override
                     public void onResult(AutofillContact editedContact) {
                         if (mPaymentRequestUi == null) return;
@@ -977,7 +977,7 @@ public class PaymentUiService
     private void editAddress(@Nullable final AutofillAddress toEdit) {
         mAddressEditor.showEditPrompt(
                 toEdit,
-                new Callback<AutofillAddress>() {
+                new Callback<>() {
                     @Override
                     public void onResult(AutofillAddress editedAddress) {
                         if (mPaymentRequestUi == null) return;

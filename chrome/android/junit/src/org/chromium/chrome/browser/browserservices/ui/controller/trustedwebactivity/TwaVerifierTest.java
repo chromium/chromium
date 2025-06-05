@@ -58,7 +58,7 @@ public class TwaVerifierTest {
     public void setUp() {
 
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
-        HashSet<Origin> trustedOrigins = new HashSet<Origin>();
+        HashSet<Origin> trustedOrigins = new HashSet<>();
         Collections.addAll(
                 trustedOrigins, Origin.create(INITIAL_URL), Origin.create(ADDITIONAL_ORIGIN));
         when(mIntentDataProvider.getAllTrustedWebActivityOrigins()).thenReturn(trustedOrigins);

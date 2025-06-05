@@ -183,7 +183,7 @@ public class DownloadManagerServiceTest {
         private final HashSet<Object> mMatches;
 
         OneTimeMatchSet(Object... params) {
-            mMatches = new HashSet<Object>();
+            mMatches = new HashSet<>();
             Collections.addAll(mMatches, params);
         }
 

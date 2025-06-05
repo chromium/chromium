@@ -242,7 +242,7 @@ public class NewTabPage
 
             // Fallback added for metric records only.
             restoringState.addObserver(
-                    new Callback<Integer>() {
+                    new Callback<>() {
                         long mStart;
 
                         @Override

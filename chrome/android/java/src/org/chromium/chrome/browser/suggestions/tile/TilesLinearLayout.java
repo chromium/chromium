@@ -25,7 +25,7 @@ import java.util.List;
  */
 @NullMarked
 public class TilesLinearLayout extends LinearLayout {
-    private final List<TileView> mTileList = new ArrayList<TileView>();
+    private final List<TileView> mTileList = new ArrayList<>();
 
     protected float mNonTileViewsTotalWidthDp;
 

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webauthn;
 
-import android.content.Context;
 import android.widget.Button;
 
 import org.junit.After;
@@ -72,7 +71,7 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     public void setUp() {
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         setWindowAndroid(windowAndroid, mWebContents);
-        Mockito.doReturn(new WeakReference<Context>(RuntimeEnvironment.application))
+        Mockito.doReturn(new WeakReference<>(RuntimeEnvironment.application))
                 .when(windowAndroid)
                 .getContext();
 

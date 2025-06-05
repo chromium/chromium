@@ -61,8 +61,8 @@ public class OmahaBaseTest {
     }
 
     private static class MockOmahaDelegate extends OmahaDelegate {
-        private final List<Integer> mPostResults = new ArrayList<Integer>();
-        private final List<Boolean> mGenerateAndPostRequestResults = new ArrayList<Boolean>();
+        private final List<Integer> mPostResults = new ArrayList<>();
+        private final List<Boolean> mGenerateAndPostRequestResults = new ArrayList<>();
 
         private final boolean mIsOnTablet;
         private final boolean mIsInForeground;

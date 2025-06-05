@@ -148,7 +148,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
             GURL url,
             @ShoppingServiceResponse int expectedResponse) {
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 ProductInfoCallback callback =

@@ -79,17 +79,16 @@ public class PermissionUpdateMessageTest {
                 List<String> requestablePermissions,
                 List<String> policyRevokedPermissions) {
             mHasPermissions =
-                    new HashSet<>(
-                            hasPermissions == null ? new ArrayList<String>() : hasPermissions);
+                    new HashSet<>(hasPermissions == null ? new ArrayList<>() : hasPermissions);
             mRequestablePermissions =
                     new HashSet<>(
                             requestablePermissions == null
-                                    ? new ArrayList<String>()
+                                    ? new ArrayList<>()
                                     : requestablePermissions);
             mPolicyRevokedPermissions =
                     new HashSet<>(
                             policyRevokedPermissions == null
-                                    ? new ArrayList<String>()
+                                    ? new ArrayList<>()
                                     : policyRevokedPermissions);
         }
 
@@ -344,7 +343,7 @@ public class PermissionUpdateMessageTest {
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
         final PermissionInfo geolocationSettings =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<PermissionInfo>() {
+                        new Callable<>() {
                             @Override
                             public PermissionInfo call() {
                                 return new PermissionInfo(
@@ -386,7 +385,7 @@ public class PermissionUpdateMessageTest {
 
             final WebContents webContents =
                     ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<WebContents>() {
+                            new Callable<>() {
                                 @Override
                                 public WebContents call() {
                                     return mActivityTestRule

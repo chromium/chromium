@@ -513,7 +513,7 @@ public class WebApkUpdateManagerTest {
         creationData.startUrl =
                 mTestServer.getURL("/chrome/test/data/banners/manifest_test_page.html");
 
-        List<Integer> expectedUpdateReasons = new ArrayList<Integer>();
+        List<Integer> expectedUpdateReasons = new ArrayList<>();
         creationData.name += "!";
         creationData.shortName += "!";
         creationData.backgroundColor -= 1;
@@ -554,7 +554,7 @@ public class WebApkUpdateManagerTest {
         creationData.startUrl =
                 mTestServer.getURL("/chrome/test/data/banners/manifest_test_page.html");
 
-        List<Integer> expectedUpdateReasons = new ArrayList<Integer>();
+        List<Integer> expectedUpdateReasons = new ArrayList<>();
 
         boolean expectIconChange = false;
 

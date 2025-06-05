@@ -203,7 +203,7 @@ public class CustomTabTabPersistencePolicyTest {
         final AtomicReference<TabPersistenceFileInfo> tabDataToDelete = new AtomicReference<>();
         final CallbackHelper callbackSignal = new CallbackHelper();
         Callback<TabPersistenceFileInfo> tabDataToDeleteCallback =
-                new Callback<TabPersistenceFileInfo>() {
+                new Callback<>() {
                     @Override
                     public void onResult(TabPersistenceFileInfo tabData) {
                         tabDataToDelete.set(tabData);

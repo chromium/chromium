@@ -111,7 +111,7 @@ public class TabListEditorBookmarkActionUnitTest {
 
     @Test
     public void testBookmarkActionNoTabs() {
-        mAction.onSelectionStateChange(new ArrayList<TabListEditorItemSelectionId>());
+        mAction.onSelectionStateChange(new ArrayList<>());
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(

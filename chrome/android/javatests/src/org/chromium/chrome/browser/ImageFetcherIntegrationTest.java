@@ -61,7 +61,7 @@ public class ImageFetcherIntegrationTest {
             throws Exception {
         TestImageFetcherCallback callbackWaiter = new TestImageFetcherCallback();
         ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Void>() {
+                new Callable<>() {
                     @Override
                     public Void call() throws TimeoutException {
                         ImageFetcher.Params params =

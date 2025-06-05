@@ -1660,7 +1660,7 @@ public class UndoTabModelUnitTest {
         checkState(model, fullList, tab4, sEmptyList, fullList, tab4);
         assertFalse(model.supportsPendingClosures());
 
-        final ArrayList<Tab> lastClosedTabs = new ArrayList<Tab>();
+        final ArrayList<Tab> lastClosedTabs = new ArrayList<>();
         model.addObserver(
                 new TabModelObserver() {
                     @Override

@@ -319,7 +319,7 @@ public class ToolbarSwipeLayout extends Layout {
         // Prioritize toTabId because fromTabId likely has a live layer.
         int fromTabId = dragFromLeftEdge ? rightTabId : leftTabId;
         int toTabId = !dragFromLeftEdge ? rightTabId : leftTabId;
-        List<Integer> visibleTabs = new ArrayList<Integer>();
+        List<Integer> visibleTabs = new ArrayList<>();
         if (toTabId != Tab.INVALID_TAB_ID) visibleTabs.add(toTabId);
         if (fromTabId != Tab.INVALID_TAB_ID) visibleTabs.add(fromTabId);
         updateCacheVisibleIds(visibleTabs);

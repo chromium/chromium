@@ -10,7 +10,7 @@ import android.util.IntProperty;
 /** Holds different {@link android.util.Property} types that can be used with ObjectAnimators. */
 class AnimatorProperties {
     static final IntProperty<Drawable> DRAWABLE_ALPHA_PROPERTY =
-            new IntProperty<Drawable>("alpha") {
+            new IntProperty<>("alpha") {
                 @Override
                 public Integer get(Drawable d) {
                     return d.getAlpha();

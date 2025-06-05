@@ -126,7 +126,7 @@ public class WebApkSyncService {
 
     @CalledByNative
     private static List<Bitmap> createBitmapList() {
-        return new ArrayList<Bitmap>();
+        return new ArrayList<>();
     }
 
     @CalledByNative

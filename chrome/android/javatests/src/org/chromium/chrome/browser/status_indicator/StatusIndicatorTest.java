@@ -390,7 +390,7 @@ public class StatusIndicatorTest {
     }
 
     private static Matcher<View> withTopMargin(final int expected) {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             private int mActual;
 
             @Override

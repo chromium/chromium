@@ -68,7 +68,7 @@ public class NativePageAssassin {
      * @param tab The tab being hidden.
      */
     public void tabHidden(Tab tab) {
-        mRecentTabs.add(new WeakReference<Tab>(tab));
+        mRecentTabs.add(new WeakReference<>(tab));
 
         // If a tab has just passed the threshold from "recent" to "not recent" and it's displaying
         // a native page, freeze the native page.

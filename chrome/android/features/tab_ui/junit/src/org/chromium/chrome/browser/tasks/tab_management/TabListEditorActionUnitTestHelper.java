@@ -131,9 +131,7 @@ public class TabListEditorActionUnitTestHelper {
         List<Tab> selectedTabs = new ArrayList<>();
         List<Tab> selectedAndRelatedTabs = new ArrayList<>();
         Set<TabListEditorItemSelectionId> selectedItemIds =
-                deterministicSetOrder
-                        ? new LinkedHashSet<TabListEditorItemSelectionId>()
-                        : new HashSet<TabListEditorItemSelectionId>();
+                deterministicSetOrder ? new LinkedHashSet<>() : new HashSet<>();
 
         for (TabIdGroup group : tabIdGroups) {
             List<Tab> groupTabs = new ArrayList<>();

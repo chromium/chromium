@@ -194,7 +194,7 @@ public class IntentHandlerRobolectricTest {
     private ShadowKeyguardManager mShadowKeyguardManager;
 
     private void processUrls(String[] urls, boolean isValid) {
-        List<String> failedTests = new ArrayList<String>();
+        List<String> failedTests = new ArrayList<>();
 
         for (String url : urls) {
             mIntent.setData(Uri.parse(url));
@@ -302,7 +302,7 @@ public class IntentHandlerRobolectricTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testRejectedGoogleChromeSchemeUrls() {
-        List<String> failedTests = new ArrayList<String>();
+        List<String> failedTests = new ArrayList<>();
 
         for (String url : REJECTED_GOOGLECHROME_URLS) {
             mIntent.setData(Uri.parse(url));

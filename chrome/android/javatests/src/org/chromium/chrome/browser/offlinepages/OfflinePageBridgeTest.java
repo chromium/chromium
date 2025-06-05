@@ -606,7 +606,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mOfflinePageBridge.deletePagesByOfflineId(
                             offlineIds,
-                            new Callback<Integer>() {
+                            new Callback<>() {
                                 @Override
                                 public void onResult(Integer deletePageResult) {
                                     semaphore.release();
@@ -624,7 +624,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mOfflinePageBridge.deletePage(
                             bookmarkId,
-                            new Callback<Integer>() {
+                            new Callback<>() {
                                 @Override
                                 public void onResult(Integer deletePageResult) {
                                     deletePageResultRef.set(deletePageResult.intValue());
@@ -638,7 +638,7 @@ public class OfflinePageBridgeTest {
 
     private List<OfflinePageItem> getPagesByNamespace(final String namespace)
             throws InterruptedException {
-        final List<OfflinePageItem> result = new ArrayList<OfflinePageItem>();
+        final List<OfflinePageItem> result = new ArrayList<>();
         final Semaphore semaphore = new Semaphore(0);
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,

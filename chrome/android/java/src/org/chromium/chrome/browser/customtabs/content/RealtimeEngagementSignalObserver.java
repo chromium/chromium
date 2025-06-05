@@ -338,7 +338,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             long currentTimeInNanos = SystemClock.elapsedRealtimeNanos();
 
             if (ChromeFeatureList.sCctRealtimeEngagementEventsInBackground.isEnabled()) {
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<>() {
                     @Override
                     protected Void doInBackground() {
                         mCallback.onVerticalScrollEvent(isDirectionUp, Bundle.EMPTY);
@@ -365,7 +365,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         try {
             long currentTimeInNanos = SystemClock.elapsedRealtimeNanos();
             if (ChromeFeatureList.sCctRealtimeEngagementEventsInBackground.isEnabled()) {
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<>() {
                     @Override
                     protected Void doInBackground() {
                         mCallback.onGreatestScrollPercentageIncreased(
@@ -397,7 +397,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         try {
             long currentTimeInNanos = SystemClock.elapsedRealtimeNanos();
             if (ChromeFeatureList.sCctRealtimeEngagementEventsInBackground.isEnabled()) {
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<>() {
                     @Override
                     protected Void doInBackground() {
                         mCallback.onSessionEnded(didGetUserInteraction, Bundle.EMPTY);

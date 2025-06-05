@@ -141,7 +141,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
                 new PaymentCurrencyAmount(/* currency= */ "CAD", /* value= */ "10.00");
 
         // Populate shipping options.
-        List<PaymentShippingOption> shippingOptions = new ArrayList<PaymentShippingOption>();
+        List<PaymentShippingOption> shippingOptions = new ArrayList<>();
         shippingOptions.add(
                 new PaymentShippingOption(
                         "shippingId",
@@ -150,7 +150,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
                         /* selected= */ true));
 
         // Populate modifiers.
-        List<PaymentHandlerModifier> modifiers = new ArrayList<PaymentHandlerModifier>();
+        List<PaymentHandlerModifier> modifiers = new ArrayList<>();
         modifiers.add(
                 new PaymentHandlerModifier(
                         new PaymentCurrencyAmount(/* currency= */ "CAD", /* value= */ "2.00"),
@@ -655,7 +655,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Feature({"Payments"})
     public void testIsCallerAuthorizedEmptyPackageInfos() throws Throwable {
         final int callerUid = 7;
-        mPackageManager.overridePackageInfosForUid(callerUid, new ArrayList<PackageInfo>());
+        mPackageManager.overridePackageInfosForUid(callerUid, new ArrayList<>());
 
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();

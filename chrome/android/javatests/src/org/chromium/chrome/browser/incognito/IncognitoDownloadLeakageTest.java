@@ -92,9 +92,9 @@ public class IncognitoDownloadLeakageTest {
                 public void onAllDownloadsRetrieved(
                         List<DownloadItem> list, ProfileKey profileKey) {
                     if (profileKey.isOffTheRecord()) {
-                        mOffTheRecordDownloadItems = new ArrayList<DownloadItem>(list);
+                        mOffTheRecordDownloadItems = new ArrayList<>(list);
                     } else {
-                        mRegularDownloadItems = new ArrayList<DownloadItem>(list);
+                        mRegularDownloadItems = new ArrayList<>(list);
                     }
                     mRetrieveDownloadsCallback.notifyCalled();
                 }

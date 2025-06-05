@@ -28,7 +28,7 @@ public class CompositorButton extends StripLayoutView {
      * org.chromium.chrome.browser.layouts.animation.CompositorAnimator}.
      */
     public static final FloatProperty<CompositorButton> OPACITY =
-            new FloatProperty<CompositorButton>("opacity") {
+            new FloatProperty<>("opacity") {
                 @Override
                 public void setValue(CompositorButton object, float value) {
                     object.setOpacity(value);
