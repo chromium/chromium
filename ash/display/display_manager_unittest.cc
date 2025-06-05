@@ -5218,7 +5218,10 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
           display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
   transformed_rect2 =
       host_list[0]->window()->transform().MapRect(transformed_rect2);
-  EXPECT_EQ(gfx::RectF(50.0f, 0.0f, 600.0f, 800.0f), transformed_rect2);
+  // Use gfx::ToEnclosingRect because `transformed_rect2` has rounding errors.
+  // External display shouldn't be rotated.
+  EXPECT_EQ(gfx::Rect(137.0f, 0.0f, 525.0f, 700.0f),
+            gfx::ToEnclosingRect(transformed_rect2));
 
   // Change the bounds of the source display and rotate the source display by 90
   // degrees.
@@ -5238,7 +5241,8 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
   transformed_rect3 =
       host_list[0]->window()->transform().MapRect(transformed_rect3);
   // Use gfx::ToEnclosingRect because `transformed_rect3` has rounding errors.
-  EXPECT_EQ(gfx::Rect(0.0f, 137.0f, 700.0f, 525.0f),
+  // External display shouldn't be rotated.
+  EXPECT_EQ(gfx::Rect(0.0f, 50.0f, 800.0f, 600.0f),
             gfx::ToEnclosingRect(transformed_rect3));
 }
 

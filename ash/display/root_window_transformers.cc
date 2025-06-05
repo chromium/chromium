@@ -205,6 +205,8 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
         gfx::Rect(source_display_info.GetSizeInPixelWithPanelOrientation());
     display::Display::Rotation active_root_rotation =
         source_display_info.GetActiveRotation();
+    display::Display::Rotation active_mirror_rotation =
+        mirror_display_info.GetActiveRotation();
 
     const bool should_undo_rotation = ShouldUndoRotationForMirror();
     gfx::Transform rotation_transform;
@@ -229,11 +231,12 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     // `transform_` needs to be calculated without the rotation.
     // E.g. host native size 1600x1200. Rotation 90 degree. `transform_` needs
     // to fit 1200x1600 rather than 1600x1200.
-    const bool need_transpose =
-        active_root_rotation == display::Display::ROTATE_90 ||
-        active_root_rotation == display::Display::ROTATE_270;
-    if (need_transpose) {
+    if (active_root_rotation == display::Display::ROTATE_90 ||
+        active_root_rotation == display::Display::ROTATE_270) {
       root_bounds_.Transpose();
+    }
+    if (active_mirror_rotation == display::Display::ROTATE_90 ||
+        active_mirror_rotation == display::Display::ROTATE_270) {
       mirror_display_rect.Transpose();
     }
 
