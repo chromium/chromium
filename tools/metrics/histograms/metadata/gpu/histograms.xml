@@ -1788,8 +1788,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     An enum status result for attempted delegated compositing (success or
-    failure reason) recorded every drawn frame. Currently only recorded for
-    LaCros delegated compositing.
+    failure reason) recorded every drawn frame.
   </summary>
 </histogram>
 
@@ -1875,7 +1874,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent computing the number of active File Descriptors. This is logged
     once every 5 minutes as the cost of this computation is estimated to be at
-    least 1ms. Currently only recorded for LaCros delegated compositing.
+    least 1ms.
 
     Warning: This metric does not include reports from clients with
     low-resolution clocks.
@@ -1889,7 +1888,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     {FdStat} File Descriptors for the GPU process. This is logged once every 5
     minutes as the cost of this computation is estimated to be at least 1ms.
-    Currently only recorded for LaCros delegated compositing.
   </summary>
   <token key="FdStat">
     <variant name="NumActive" summary="Current number of active"/>
