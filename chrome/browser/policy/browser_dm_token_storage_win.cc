@@ -30,135 +30,36 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
-#include "base/win/scoped_bstr.h"
 #include "build/branding_buildflags.h"
-#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "chrome/browser/google/google_update_app_command.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace policy {
 namespace {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Explicitly allow DMTokenStorage impersonate the client since some COM code
-// elsewhere in the browser process may have previously used
-// CoInitializeSecurity to set the impersonation level to something other than
-// the default. Ignore errors since an attempt to use Google Update may succeed
-// regardless.
-void ConfigureProxyBlanket(IUnknown* interface_pointer) {
-  ::CoSetProxyBlanket(
-      interface_pointer, RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
-      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING);
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-Microsoft::WRL::ComPtr<IAppCommandWeb> GetUpdaterAppCommand(
-    const std::wstring& command_name) {
-  Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebSystemClass, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&server));
-  if (FAILED(hr))
-    return nullptr;
-
-  ConfigureProxyBlanket(server.Get());
-
-  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
-  // Without this change, marshaling can load the typelib from the wrong hive
-  // (HKCU instead of HKLM, or vice-versa).
-  Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-  hr = server.CopyTo(__uuidof(IGoogleUpdate3WebSystem),
-                     IID_PPV_ARGS_Helper(&google_update));
-  if (FAILED(hr)) {
-    hr = server.As(&google_update);
-    if (FAILED(hr)) {
-      return nullptr;
-    }
-  }
-
-  Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = google_update->createAppBundleWeb(&dispatch);
-  if (FAILED(hr))
-    return nullptr;
-
-  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
-  // Without this change, marshaling can load the typelib from the wrong hive
-  // (HKCU instead of HKLM, or vice-versa).
-  Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
-  hr = dispatch.CopyTo(__uuidof(IAppBundleWebSystem),
-                       IID_PPV_ARGS_Helper(&app_bundle));
-  if (FAILED(hr)) {
-    hr = dispatch.As(&app_bundle);
-    if (FAILED(hr)) {
-      return nullptr;
-    }
-  }
-
-  dispatch.Reset();
-  ConfigureProxyBlanket(app_bundle.Get());
-  app_bundle->initialize();
-  const wchar_t* app_guid = install_static::GetAppGuid();
-  hr = app_bundle->createInstalledApp(base::win::ScopedBstr(app_guid).Get());
-  if (FAILED(hr))
-    return nullptr;
-
-  hr = app_bundle->get_appWeb(0, &dispatch);
-  if (FAILED(hr))
-    return nullptr;
-
-  Microsoft::WRL::ComPtr<IAppWeb> app;
-  hr = dispatch.CopyTo(__uuidof(IAppWebSystem), IID_PPV_ARGS_Helper(&app));
-  if (FAILED(hr)) {
-    hr = dispatch.As(&app);
-    if (FAILED(hr)) {
-      return nullptr;
-    }
-  }
-
-  dispatch.Reset();
-  ConfigureProxyBlanket(app.Get());
-
-  hr = app->get_command(base::win::ScopedBstr(command_name).Get(), &dispatch);
-  if (FAILED(hr) || !dispatch)
-    return nullptr;
-
-  Microsoft::WRL::ComPtr<IAppCommandWeb> app_command;
-  hr = dispatch.CopyTo(__uuidof(IAppCommandWebSystem),
-                       IID_PPV_ARGS_Helper(&app_command));
-  if (FAILED(hr)) {
-    hr = dispatch.As(&app_command);
-    if (FAILED(hr)) {
-      return nullptr;
-    }
-  }
-
-  ConfigureProxyBlanket(app_command.Get());
-  return app_command;
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 bool StoreDMTokenInRegistry(const std::string& token) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (token.empty())
     return false;
 
-  Microsoft::WRL::ComPtr<IAppCommandWeb> app_command =
-      GetUpdaterAppCommand(installer::kCmdStoreDMToken);
-  if (!app_command)
+  auto app_command = GetUpdaterAppCommand(installer::kCmdStoreDMToken);
+  if (!app_command.has_value()) {
     return false;
+  }
 
   std::string token_base64 = base::Base64Encode(token);
   VARIANT var;
   VariantInit(&var);
   _variant_t token_var = token_base64.c_str();
-  if (FAILED(app_command->execute(token_var, var, var, var, var, var, var, var,
-                                  var)))
+  if (FAILED(app_command.value()->execute(token_var, var, var, var, var, var,
+                                          var, var, var))) {
     return false;
+  }
 
   // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call
@@ -171,15 +72,17 @@ bool StoreDMTokenInRegistry(const std::string& token) {
 
 bool DeleteDMTokenFromRegistry() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  Microsoft::WRL::ComPtr<IAppCommandWeb> app_command =
-      GetUpdaterAppCommand(installer::kCmdDeleteDMToken);
-  if (!app_command)
+  auto app_command = GetUpdaterAppCommand(installer::kCmdDeleteDMToken);
+  if (!app_command.has_value()) {
     return false;
+  }
 
   VARIANT var;
   VariantInit(&var);
-  if (FAILED(app_command->execute(var, var, var, var, var, var, var, var, var)))
+  if (FAILED(app_command.value()->execute(var, var, var, var, var, var, var,
+                                          var, var))) {
     return false;
+  }
 
   // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call

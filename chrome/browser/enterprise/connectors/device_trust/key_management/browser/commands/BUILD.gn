@@ -40,6 +40,7 @@ source_set("commands") {
       "win_key_rotation_command.h",
     ]
     deps += [
+      "//chrome/browser/google",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
       "//chrome/updater/app/server/win:updater_legacy_idl",

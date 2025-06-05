@@ -41,6 +41,8 @@ source_set("google") {
     sources += [
       "did_run_updater_win.cc",
       "did_run_updater_win.h",
+      "google_update_app_command.cc",
+      "google_update_app_command.h",
     ]
     if (is_chrome_branded) {
       sources += [
@@ -53,8 +55,6 @@ source_set("google") {
         "switches.cc",
         "switches.h",
       ]
-
-      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
     }
 
     deps += [
@@ -62,6 +62,7 @@ source_set("google") {
       "//chrome/common",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",
+      "//chrome/updater/app/server/win:updater_legacy_idl",
       "//components/policy/core/browser",
       "//components/policy/core/common",
     ]

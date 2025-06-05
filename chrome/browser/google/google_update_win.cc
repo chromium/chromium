@@ -37,6 +37,7 @@
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/win_util.h"
+#include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/browser/google/switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -116,18 +117,6 @@ GoogleUpdateErrorCode CanUpdateCurrentChrome(
                                                  install_dir.value()))
              ? GOOGLE_UPDATE_NO_ERROR
              : CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY;
-}
-
-// Explicitly allow the Google Update service to impersonate the client since
-// some COM code elsewhere in the browser process may have previously used
-// CoInitializeSecurity to set the impersonation level to something other than
-// the default. Ignore errors since an attempt to use Google Update may succeed
-// regardless.
-void ConfigureProxyBlanket(IUnknown* interface_pointer) {
-  ::CoSetProxyBlanket(
-      interface_pointer, RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
-      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING);
 }
 
 // Creates a class factory for a COM Local Server class using the Elevation
