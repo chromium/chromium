@@ -1151,16 +1151,18 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
        PassTheLoyaltyCardsToTheClient) {
-  // TODO: crbug.com/404437211 - Test that the loyalty cards are sorted.
-  LoyaltyCard card = test::CreateLoyaltyCard();
-  std::vector<LoyaltyCard> loyalty_cards{card};
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  std::vector<LoyaltyCard> loyalty_cards{card2, card1};
+  // Makes sure there is at least one affiliated card available.
   autofill_client_.set_last_committed_primary_main_frame_url(
-      card.merchant_domains()[0]);
+      card1.merchant_domains()[0]);
   test_api(*autofill_client_.GetValuablesDataManager())
       .SetLoyaltyCards(loyalty_cards);
 
+  // Cards must be sorted by merchant name.
   EXPECT_CALL(payments_autofill_client(),
-              ShowTouchToFillLoyaltyCard(_, ElementsAreArray(loyalty_cards)));
+              ShowTouchToFillLoyaltyCard(_, ElementsAre(card1, card2)));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
