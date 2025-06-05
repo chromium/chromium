@@ -1745,7 +1745,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             if (hideUrlBar && mState == STATE_DOMAIN_AND_TITLE) {
                 mState = STATE_TITLE_ONLY;
-                mAnimDelegate.setTitleAnimationEnabled(false);
+                mAnimDelegate.disableTitleAnimation();
                 mUrlBar.setVisibility(View.GONE);
                 mTitleBar.setVisibility(View.VISIBLE);
                 LayoutParams lp = (LayoutParams) mTitleBar.getLayoutParams();

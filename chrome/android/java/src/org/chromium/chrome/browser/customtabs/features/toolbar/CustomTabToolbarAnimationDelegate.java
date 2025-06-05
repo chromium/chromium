@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -15,6 +17,9 @@ import android.widget.TextView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ViewUtils;
@@ -37,14 +42,15 @@ import org.chromium.ui.interpolators.Interpolators;
  * </p>
  * See {@link SecurityButtonAnimationDelegate} and {@link BrandingSecurityButtonAnimationDelegate}.
  */
+@NullMarked
 class CustomTabToolbarAnimationDelegate {
     private final SecurityButtonAnimationDelegate mSecurityButtonAnimationDelegate;
     private final BrandingSecurityButtonAnimationDelegate mBrandingAnimationDelegate;
     private final Runnable mAnimationEndRunnable;
     private final View mSecurityButtonOffsetTarget;
 
-    private TextView mUrlBar;
-    private TextView mTitleBar;
+    private @MonotonicNonNull TextView mUrlBar;
+    private @MonotonicNonNull TextView mTitleBar;
     // A flag controlling whether the animation has run before.
     private boolean mShouldRunTitleAnimation;
     private boolean mUseRotationTransition;
@@ -69,6 +75,7 @@ class CustomTabToolbarAnimationDelegate {
             new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                    assumeNonNull(mTitleBar);
                     mTitleBar
                             .animate()
                             .alpha(1f)
@@ -113,9 +120,9 @@ class CustomTabToolbarAnimationDelegate {
         mSecurityButtonAnimationDelegate.setSecurityButtonWidth(width);
     }
 
-    /** Sets whether the title scaling animation is enabled. */
-    void setTitleAnimationEnabled(boolean enabled) {
-        mShouldRunTitleAnimation = enabled;
+    /** Disables the title scaling animation. */
+    void disableTitleAnimation() {
+        mShouldRunTitleAnimation = false;
     }
 
     void prepareTitleAnim(TextView urlBar, TextView titleBar) {
@@ -126,12 +133,18 @@ class CustomTabToolbarAnimationDelegate {
         mShouldRunTitleAnimation = true;
     }
 
+    @EnsuresNonNullIf({"mTitleBar", "mUrlBar"})
+    @SuppressWarnings("NullAway")
+    private boolean shouldRunTitleAnimation() {
+        return mShouldRunTitleAnimation;
+    }
+
     /**
      * Starts animation for urlbar scaling and title fading-in. If this animation has already run
      * once, does nothing.
      */
     void startTitleAnimation(Context context) {
-        if (!mShouldRunTitleAnimation) return;
+        if (!shouldRunTitleAnimation()) return;
         mShouldRunTitleAnimation = false;
 
         var titleBar = mTitleBar;
@@ -208,7 +221,7 @@ class CustomTabToolbarAnimationDelegate {
      *     When this is null, the icon is animated to the left and faded out.
      */
     void updateSecurityButton(@DrawableRes int securityIconResource) {
-        if (mShouldRunTitleAnimation) {
+        if (shouldRunTitleAnimation()) {
             mPendingSecurityIconRes = securityIconResource;
             return;
         }

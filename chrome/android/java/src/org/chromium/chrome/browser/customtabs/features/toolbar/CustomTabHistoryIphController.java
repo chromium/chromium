@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -27,13 +29,14 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 
 /** Controls showing IPH for Custom Tabs history. */
+@NullMarked
 public class CustomTabHistoryIphController {
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final Supplier<Profile> mProfileSupplier;
     private final AppMenuHandler mAppMenuHandler;
-    private ActivityTabTabObserver mTabObserver;
-    private UserEducationHelper mUserEducationHelper;
+    private @Nullable ActivityTabTabObserver mTabObserver;
+    private @Nullable UserEducationHelper mUserEducationHelper;
 
     /**
      * Constructs the controller.
@@ -116,7 +119,7 @@ public class CustomTabHistoryIphController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    ActivityTabTabObserver getTabObserverForTesting() {
+    @Nullable ActivityTabTabObserver getTabObserverForTesting() {
         return mTabObserver;
     }
 

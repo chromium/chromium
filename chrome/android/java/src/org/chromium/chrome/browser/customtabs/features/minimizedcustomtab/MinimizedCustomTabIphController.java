@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -23,13 +25,14 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
 
 /** Controls showing IPH for Minimized Custom Tabs. */
+@NullMarked
 public class MinimizedCustomTabIphController
         implements MinimizedCustomTabFeatureEngagementDelegate {
     private final Activity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final UserEducationHelper mUserEducationHelper;
     private final Supplier<Profile> mProfileSupplier;
-    private ActivityTabTabObserver mTabObserver;
+    private @Nullable ActivityTabTabObserver mTabObserver;
 
     /**
      * Constructs the controller.
@@ -99,7 +102,7 @@ public class MinimizedCustomTabIphController
                         .build());
     }
 
-    ActivityTabTabObserver getTabObserverForTesting() {
+    @Nullable ActivityTabTabObserver getTabObserverForTesting() {
         return mTabObserver;
     }
 }

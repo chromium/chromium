@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.content;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * Records a histogram that tracks usage of Launch Handler API. All actions must be kept in sync
  * with the definition in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
  */
+@NullMarked
 public class WebAppLaunchHandlerHistogram {
     private WebAppLaunchHandlerHistogram() {}
 

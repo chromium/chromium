@@ -8,24 +8,26 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.SplashImageHolder;
 
 /** Processes the files received via Custom Tab connection from client apps. */
+@NullMarked
 public class CustomTabsClientFileProcessor {
 
     private static final String TAG = "CustomTabFiles";
 
     private boolean mTwaSplashImageHolderCreated;
 
-    private static CustomTabsClientFileProcessor sInstance;
+    private static @Nullable CustomTabsClientFileProcessor sInstance;
 
     public static CustomTabsClientFileProcessor getInstance() {
         if (sInstance == null) sInstance = new CustomTabsClientFileProcessor();
@@ -64,7 +66,7 @@ public class CustomTabsClientFileProcessor {
     }
 
     /** Cleans up files associated with the session that has been disconnected. */
-    public void onSessionDisconnected(@NonNull SessionHolder<?> session) {
+    public void onSessionDisconnected(SessionHolder<?> session) {
         if (mTwaSplashImageHolderCreated && session.isCustomTab()) {
             // If the image still hasn't been claimed, delete it.
             SplashImageHolder.getInstance().takeImage(session);

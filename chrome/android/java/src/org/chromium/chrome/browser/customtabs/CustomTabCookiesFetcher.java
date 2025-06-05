@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 /**
  * Handles the Custom Tab specific behaviors of cookies persistence for off the record Custom tabs.
  */
+@NullMarked
 public class CustomTabCookiesFetcher extends CookiesFetcher {
     @VisibleForTesting static final String COOKIE_FILE_PREFIX = "COOKIES_";
     @VisibleForTesting static final String COOKIE_FILE_EXTENSION = ".DAT";
@@ -65,7 +66,7 @@ public class CustomTabCookiesFetcher extends CookiesFetcher {
     }
 
     @Override
-    public void restoreCookies(@NonNull Runnable restoreCompletedAction) {
+    public void restoreCookies(Runnable restoreCompletedAction) {
         super.restoreCookies(restoreCompletedAction);
 
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, this::cleanupUnneededCookieFiles);

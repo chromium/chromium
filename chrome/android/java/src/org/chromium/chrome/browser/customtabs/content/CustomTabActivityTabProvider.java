@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
@@ -20,12 +19,13 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
  * navigating by links with target="_blank". Thus it is a single source of truth about the current
  * Tab of a Custom Tab activity.
  */
-public class CustomTabActivityTabProvider implements Supplier<Tab> {
+@NullMarked
+public class CustomTabActivityTabProvider implements Supplier<@Nullable Tab> {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    @Nullable private Tab mTab;
+    private @Nullable Tab mTab;
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
-    @Nullable private String mSpeculatedUrl;
+    private @Nullable String mSpeculatedUrl;
 
     public CustomTabActivityTabProvider(String speculatedUrl) {
         mSpeculatedUrl = speculatedUrl;
@@ -73,7 +73,7 @@ public class CustomTabActivityTabProvider implements Supplier<Tab> {
         return mSpeculatedUrl;
     }
 
-    public void setInitialTab(@NonNull Tab tab, @TabCreationMode int creationMode) {
+    public void setInitialTab(Tab tab, @TabCreationMode int creationMode) {
         assert mTab == null;
         assert creationMode != TabCreationMode.NONE;
         mTab = tab;
@@ -99,7 +99,7 @@ public class CustomTabActivityTabProvider implements Supplier<Tab> {
         if (mTab == tab) return;
         assert mTab != null : "swapTab shouldn't be called before setInitialTab";
         mTab = tab;
-        if (mTab == null) {
+        if (tab == null) {
             for (Observer observer : mObservers) {
                 observer.onAllTabsClosed();
             }
@@ -116,13 +116,13 @@ public class CustomTabActivityTabProvider implements Supplier<Tab> {
      */
     public abstract static class Observer {
         /** Fired when the initial tab has been created. */
-        public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {}
+        public void onInitialTabCreated(Tab tab, @TabCreationMode int mode) {}
 
         /**
          * Fired when the currently visible tab has changed when navigating by a link with
          * target="_blank" or backwards.
          */
-        public void onTabSwapped(@NonNull Tab tab) {}
+        public void onTabSwapped(Tab tab) {}
 
         /**
          * Fired when all the Tabs are closed (during shutdown or reparenting).

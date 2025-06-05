@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Implements CustomTab-specific behavior of adaptive toolbar button. */
+@NullMarked
 public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;

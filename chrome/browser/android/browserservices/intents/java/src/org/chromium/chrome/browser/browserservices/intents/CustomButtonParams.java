@@ -17,6 +17,7 @@ import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,7 +80,7 @@ public interface CustomButtonParams {
     /**
      * @return The {@link PendingIntent} that will be sent when user clicks the customized button.
      */
-    PendingIntent getPendingIntent();
+    @Nullable PendingIntent getPendingIntent();
 
     /**
      * @return The {@link ButtonType} of the customized button.
