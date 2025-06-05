@@ -279,7 +279,7 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
 
   app->show_system_notifications_settings_link = false;
 #if BUILDFLAG(IS_MAC)
-  if (web_app::UseNotificationAttributionForWebAppShims()) {
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
     auto system_permission_status =
         AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(app->id);
     app->show_system_notifications_settings_link =

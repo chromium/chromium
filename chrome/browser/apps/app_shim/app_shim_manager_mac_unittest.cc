@@ -1234,9 +1234,7 @@ TEST_F(AppShimManagerTest, NotificationAction) {
   };
 
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // Use SetAppCanCreateHost to simulate the case where there isn't already a
   // loaded profile.
@@ -2010,9 +2008,7 @@ TEST_F(AppShimManagerTest,
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2039,9 +2035,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2066,9 +2060,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2096,9 +2088,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2130,9 +2120,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2164,9 +2152,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithoutAppRunningAndBrowserClosing) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2211,9 +2197,7 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        AppShimFailToConnectForNotificationPermissionAfterBrowserClosed) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2257,9 +2241,7 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithAppShimFailingToLaunch) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2292,9 +2274,7 @@ TEST_F(AppShimManagerTest,
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2311,9 +2291,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
 TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
   using PermissionStatus = mac_notifications::mojom::PermissionStatus;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // Create and launch shim for app A in profile A.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,

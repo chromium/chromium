@@ -36,10 +36,6 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
-#endif
-
 namespace web_app {
 
 // static
@@ -78,7 +74,8 @@ const webapps::AppId* WebAppTabHelper::GetAppId(
 std::optional<webapps::AppId>
 WebAppTabHelper::GetAppIdForNotificationAttribution(
     content::WebContents* web_contents) {
-  if (!UseNotificationAttributionForWebAppShims()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAppShimNotificationAttribution)) {
     return std::nullopt;
   }
   const webapps::AppId* app_id = GetAppId(web_contents);

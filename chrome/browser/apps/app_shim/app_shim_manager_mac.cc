@@ -502,7 +502,8 @@ void AppShimManager::UpdateAppBadge(
 
 mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
 AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
-  CHECK(web_app::UseNotificationAttributionForWebAppShims());
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
 
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
   auto bind_provider = base::BindOnce(
@@ -542,7 +543,8 @@ AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
 void AppShimManager::ShowNotificationPermissionRequest(
     const webapps::AppId& app_id,
     RequestNotificationPermissionCallback callback) {
-  CHECK(web_app::UseNotificationAttributionForWebAppShims());
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
 
   if (notification_permission_result_for_testing_.has_value()) {
     std::move(callback).Run(*notification_permission_result_for_testing_);
@@ -765,7 +767,7 @@ void AppShimManager::OnShimProcessConnected(
 
   auto notification_action_handler = bootstrap->TakeNotificationActionHandler();
   std::optional<mojo::ReceiverId> notification_action_receiver_id;
-  if (web_app::UseNotificationAttributionForWebAppShims() &&
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
       notification_action_handler) {
     notification_action_receiver_id =
         notification_action_handler_receivers_.Add(
@@ -788,7 +790,8 @@ void AppShimManager::OnShimProcessConnected(
       break;
     }
     case chrome::mojom::AppShimLaunchType::kNotificationAction:
-      if (web_app::UseNotificationAttributionForWebAppShims() &&
+      if (base::FeatureList::IsEnabled(
+              features::kAppShimNotificationAttribution) &&
           notification_action_receiver_id.has_value()) {
         // Wait for the notification action to be handled before finishing up
         // the connection process to ensure Chrome and the App Shim stay alive

@@ -561,13 +561,6 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
 class NotificationPlatformBridgeMacTestWithNotificationAttribution
     : public NotificationPlatformBridgeMacTest {
  public:
-  NotificationPlatformBridgeMacTestWithNotificationAttribution() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAppShimNotificationAttribution,
-                              features::kUseAdHocSigningForWebAppShims},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     NotificationPlatformBridgeMacTest::SetUp();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -583,7 +576,8 @@ class NotificationPlatformBridgeMacTestWithNotificationAttribution
   webapps::AppId installed_app_id_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAppShimNotificationAttribution};
 };
 
 TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
