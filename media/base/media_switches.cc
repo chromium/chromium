@@ -1096,6 +1096,13 @@ BASE_FEATURE(kMediaDrmGetStatusForPolicy,
              "MediaDrmGetStatusForPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature allows for some MediaDrm functions to be executed in a separate
+// process so that crashes do not bring down the browser. Flag is available so
+// that it can be disabled for WebView as separate processes are not allowed.
+BASE_FEATURE(kMediaDrmQueryInSeparateProcess,
+             "MediaDrmQueryInSeparateProcess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, Playing media sessions will request audio focus from the
 // Android system.
 BASE_FEATURE(kRequestSystemAudioFocus,
@@ -1122,13 +1129,6 @@ BASE_FEATURE(kUseSecurityLevelWhenCheckingMediaDrmVersion,
 BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
              "AllowMediaCodecSoftwareDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature allows for some MediaDrm functions to be executed in a separate
-// process so that crashes do not bring down the browser. Flag is available so
-// that it can be disabled for WebView as separate processes are not allowed.
-BASE_FEATURE(kAllowMediaCodecCallsInSeparateProcess,
-             "AllowMediaCodecCallsInSeparateProcess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows Chrome to query Android for supported layouts, and forces the use
 // of the layout with the maximum number of channels. This avoids

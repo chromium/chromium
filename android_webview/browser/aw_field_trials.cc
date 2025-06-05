@@ -121,8 +121,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // WebView does not support multiple processes, so don't try to call some
   // MediaDrm APIs in a separate process.
-  aw_feature_overrides.DisableFeature(
-      media::kAllowMediaCodecCallsInSeparateProcess);
+  aw_feature_overrides.DisableFeature(media::kMediaDrmQueryInSeparateProcess);
 
   aw_feature_overrides.DisableFeature(::features::kBackgroundFetch);
 

@@ -248,9 +248,9 @@ class CdmRegistryImplTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
   // On Android checking for key system support can be run on a separate
   // thread. Disable this for testing.
-  void DisableMediaCodecCallsInSeparateThread() {
+  void DisableMediaDrmQueryInSeparateProcess() {
     scoped_feature_list_.InitAndDisableFeature(
-        media::kAllowMediaCodecCallsInSeparateProcess);
+        media::kMediaDrmQueryInSeparateProcess);
   }
 #endif
 
@@ -1072,7 +1072,7 @@ TEST_F(
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
 #if BUILDFLAG(IS_ANDROID)
-  DisableMediaCodecCallsInSeparateThread();
+  DisableMediaDrmQueryInSeparateProcess();
 #endif
 
   // kTestKeySystem doesn't exist on any platform, but this should at least
