@@ -85,10 +85,10 @@ int GetExtraFieldType(const std::vector<uint8_t>* service_data, int index) {
          kExtraFieldTypeOffset;
 }
 
-// TODO(399163998): Remove deprecated code after feature launch.
+// TODO(399163998): Deprecate this code after feature launch. This function is
+// also used when parsing not discoverable advertisements for subsequent pair,
+// so we'll have to audit that code as well.
 int GetIdLength(const std::vector<uint8_t>* service_data) {
-  CHECK(!features::IsFastPairAdvertisingFormat2025Enabled());
-
   return service_data->size() == kMinModelIdLength
              ? kMinModelIdLength
              : ((*service_data)[kHeaderIndex] & kHeaderLengthBitmask2018) >>
