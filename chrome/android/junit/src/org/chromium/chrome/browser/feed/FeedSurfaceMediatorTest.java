@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -407,6 +409,72 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator.onSurfaceClosed();
         verify(mForYouStream).unbind(anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FEED_HEADER_REMOVAL)
+    public void testshowOrHideFeed_GseOnAndThenOffAndThenOn_feedHeaderRemovalEnabled() {
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        // When FEED_HEADER_REMOVAL is enabled, sectionHeaderModel is passed as NULL.
+        mFeedSurfaceMediator =
+                createMediator(
+                        FeedSurfaceCoordinator.StreamTabId.FOR_YOU, /* sectionHeaderModel= */ null);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNotNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
+
+        // Turn GSE off.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
+
+        // Turn GSE on.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNotNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FEED_HEADER_REMOVAL)
+    public void testshowOrHideFeed_GseOnAndThenOffAndThenOn_feedHeaderRemovalDisabled() {
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNotNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
+
+        // Turn GSE off.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
+
+        // Turn GSE on.
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
+        mFeedSurfaceMediator.showOrHideFeed();
+
+        assertNotNull(mFeedSurfaceMediator.getCurrentStreamForTesting());
     }
 
     @Test
