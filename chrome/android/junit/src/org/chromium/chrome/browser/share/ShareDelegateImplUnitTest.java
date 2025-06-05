@@ -242,7 +242,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareText_allowedByPolicy() {
         doAnswer(sShareIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyTextIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareTextIsAllowedByPolicy(anyString(), any(), any());
         String shareText = "shareText";
 
         ShareParams shareParams =
@@ -259,7 +259,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareText_notAllowedByPolicy() {
         doAnswer(sShareIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyTextIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareTextIsAllowedByPolicy(anyString(), any(), any());
         String shareText = "shareText";
 
         ShareParams shareParams =
@@ -275,7 +275,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareText_emptyText_bypassesPolicyCheck() {
         doAnswer(sShareIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyTextIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareTextIsAllowedByPolicy(anyString(), any(), any());
 
         ShareParams shareParams =
                 new ShareParams.Builder(mWindowAndroid, "", "").setText("").build();
@@ -290,7 +290,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareLink_allowedByPolicy() {
         doAnswer(sShareIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyUrlIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareUrlIsAllowedByPolicy(anyString(), any(), any());
         String shareUrl = "share_url.com";
 
         ShareParams shareParams =
@@ -309,7 +309,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareLink_notAllowedByPolicy() {
         doAnswer(sShareIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyUrlIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareUrlIsAllowedByPolicy(anyString(), any(), any());
         String shareUrl = "share_url.com";
 
         ShareParams shareParams =
@@ -327,7 +327,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareLink_emptyUrl_bypassesPolicyCheck() {
         doAnswer(sShareIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyUrlIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareUrlIsAllowedByPolicy(anyString(), any(), any());
 
         ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
         ChromeShareExtras chromeShareExtras =
@@ -341,11 +341,15 @@ public class ShareDelegateImplUnitTest {
     public void testShareImage_allowedByPolicy() {
         doAnswer(sShareIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareImageIsAllowedByPolicy(anyString(), any(), any());
         Uri imageUri = Mockito.mock(Uri.class);
+        doReturn("imageUriPath").when(imageUri).getPath();
 
         ShareParams shareParams =
-                new ShareParams.Builder(mWindowAndroid, "", "").setSingleImageUri(imageUri).build();
+                new ShareParams.Builder(mWindowAndroid, "", "")
+                        .setSingleImageUri(imageUri)
+                        .setFileContentType("image/png")
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setRenderFrameHost(mRenderFrameHost).build();
 
@@ -358,7 +362,7 @@ public class ShareDelegateImplUnitTest {
     public void testShareImage_notAllowedByPolicy() {
         doAnswer(sShareIsNotAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
-                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+                .verifyShareImageIsAllowedByPolicy(anyString(), any(), any());
         Uri imageUri = Mockito.mock(Uri.class);
         doReturn("imageUriPath").when(imageUri).getPath();
 

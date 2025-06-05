@@ -88,6 +88,30 @@ void VerifyCopyIsAllowedByPolicy(
           std::move(boolean_java_callback)));
 }
 
+void VerifyShareIsAllowedByPolicy(
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback,
+    const content::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data) {
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+
+  base::OnceCallback<void(bool)> boolean_java_callback =
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     ScopedJavaGlobalRef<jobject>(j_callback));
+
+  enterprise_data_protection::IsClipboardShareAllowedByPolicy(
+      CreateClipboardEndpoint(render_frame_host), metadata, data,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             const ui::ClipboardFormatType& type,
+             const ClipboardPasteData& data,
+             std::optional<std::u16string> replacement_data) {
+            std::move(callback).Run(!data.empty());
+          },
+          std::move(boolean_java_callback)));
+}
+
 }  // namespace
 
 // TODO(crbug.com/387484337) Add instrumentation tests
@@ -143,6 +167,68 @@ void JNI_DataProtectionBridge_VerifyCopyImageIsAllowedByPolicy(
   data.text = image_uri;
 
   VerifyCopyIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          // TODO(crbug.com/344593255): Retrieve the bitmap size when it's
+          //  needed by the data controls logic.
+          .format_type = ui::ClipboardFormatType::BitmapType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyShareTextIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_text,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string text = base::android::ConvertJavaStringToUTF16(env, j_text);
+
+  ClipboardPasteData data;
+  data.text = text;
+
+  VerifyShareIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          .size = text.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyShareUrlIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_url,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string url = base::android::ConvertJavaStringToUTF16(env, j_url);
+
+  ClipboardPasteData data;
+  data.text = url;
+
+  VerifyShareIsAllowedByPolicy(
+      jrender_frame_host, j_callback,
+      {
+          .size = url.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::UrlType(),
+      },
+      data);
+}
+
+// TODO(crbug.com/387484337) Add instrumentation tests
+void JNI_DataProtectionBridge_VerifyShareImageIsAllowedByPolicy(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_image_uri,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    const JavaParamRef<jobject>& j_callback) {
+  std::u16string image_uri =
+      base::android::ConvertJavaStringToUTF16(env, j_image_uri);
+
+  ClipboardPasteData data;
+  data.text = image_uri;
+
+  VerifyShareIsAllowedByPolicy(
       jrender_frame_host, j_callback,
       {
           // TODO(crbug.com/344593255): Retrieve the bitmap size when it's

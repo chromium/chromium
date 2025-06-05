@@ -55,9 +55,12 @@ public class DataProtectionBridge {
      */
     public static void verifyShareTextIsAllowedByPolicy(
             String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
-        //  copy flow.
-        verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
+        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
+            callback.onResult(true);
+            return;
+        }
+        DataProtectionBridgeJni.get()
+                .verifyShareTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
     /**
@@ -94,9 +97,12 @@ public class DataProtectionBridge {
      */
     public static void verifyShareUrlIsAllowedByPolicy(
             String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
-        //  copy flow.
-        verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
+        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
+            callback.onResult(true);
+            return;
+        }
+        DataProtectionBridgeJni.get()
+                .verifyShareUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
     /**
@@ -133,9 +139,12 @@ public class DataProtectionBridge {
      */
     public static void verifyShareImageIsAllowedByPolicy(
             String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback) {
-        // TODO(crbug.com/406591712): Update to use dedicated share flow instead of reusing the
-        //  copy flow.
-        verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+        if (!ChromeFeatureList.isEnabled(ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID)) {
+            callback.onResult(true);
+            return;
+        }
+        DataProtectionBridgeJni.get()
+                .verifyShareImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
     @NativeMethods
@@ -148,6 +157,15 @@ public class DataProtectionBridge {
                 String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
 
         void verifyCopyImageIsAllowedByPolicy(
+                String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+
+        void verifyShareTextIsAllowedByPolicy(
+                String text, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+
+        void verifyShareUrlIsAllowedByPolicy(
+                String url, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
+
+        void verifyShareImageIsAllowedByPolicy(
                 String imageUri, RenderFrameHost renderFrameHost, Callback<Boolean> callback);
     }
 }
