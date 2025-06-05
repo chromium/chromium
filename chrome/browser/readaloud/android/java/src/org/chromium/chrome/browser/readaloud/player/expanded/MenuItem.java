@@ -95,7 +95,7 @@ public class MenuItem extends FrameLayout {
                 });
         mLayout = layout;
         mLayoutSupplier = new ObservableSupplierImpl(mLayout);
-        new OneShotCallback<LinearLayout>(mLayoutSupplier, this::onLayoutInflated);
+        new OneShotCallback<>(mLayoutSupplier, this::onLayoutInflated);
         if (iconId != 0) {
             ImageView icon = layout.findViewById(R.id.icon);
             icon.setImageResource(iconId);

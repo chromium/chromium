@@ -92,7 +92,7 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testEmptyWebFeedList() {
-        mFollowManagementMediator.fillRecyclerView(new ArrayList<WebFeedMetadata>());
+        mFollowManagementMediator.fillRecyclerView(new ArrayList<>());
 
         assertEquals("<empty>", modelListToString());
     }

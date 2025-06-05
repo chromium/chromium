@@ -35,7 +35,7 @@ public class FeedManagementCoordinator {
         ModelListAdapter adapter = new ModelListAdapter(listItems);
         adapter.registerType(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE,
-                new LayoutViewBuilder<FeedManagementItemView>(R.layout.feed_management_list_item),
+                new LayoutViewBuilder<>(R.layout.feed_management_list_item),
                 FeedManagementItemViewBinder::bind);
 
         // Inflate the XML.

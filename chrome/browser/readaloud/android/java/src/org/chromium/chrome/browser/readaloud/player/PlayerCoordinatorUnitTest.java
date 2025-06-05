@@ -40,10 +40,8 @@ import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoord
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
-import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -115,13 +113,9 @@ public class PlayerCoordinatorUnitTest {
         doReturn(new ObservableSupplierImpl<List<PlaybackVoice>>())
                 .when(mDelegate)
                 .getCurrentLanguageVoicesSupplier();
-        doReturn(new ObservableSupplierImpl<String>()).when(mDelegate).getVoiceIdSupplier();
-        doReturn(new ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>())
-                .when(mDelegate)
-                .getPlaybackModeSelectionEnabled();
-        doReturn(new ObservableSupplierImpl<FeedbackType>())
-                .when(mDelegate)
-                .getFeedbackTypeSupplier();
+        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getVoiceIdSupplier();
+        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getPlaybackModeSelectionEnabled();
+        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getFeedbackTypeSupplier();
         doReturn(mActivity).when(mDelegate).getActivity();
 
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);

@@ -116,6 +116,6 @@ public interface ReadAloudReadabilityHooks {
      * @return a hashset of compatible languages with the voices.
      */
     default HashSet<String> getCompatibleLanguages() {
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 }

@@ -77,8 +77,7 @@ public class FeedResourceFetcher implements ResourceFetcher {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    List<String> headerNamesAndValues =
-                            new ArrayList<String>(request.headers.size() * 2);
+                    List<String> headerNamesAndValues = new ArrayList<>(request.headers.size() * 2);
                     for (Header header : request.headers) {
                         headerNamesAndValues.add(header.name);
                         headerNamesAndValues.add(header.value);

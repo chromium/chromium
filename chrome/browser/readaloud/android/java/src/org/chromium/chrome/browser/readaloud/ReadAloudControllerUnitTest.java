@@ -264,7 +264,7 @@ public class ReadAloudControllerUnitTest {
                         });
         when(mHooksImpl.isEnabled()).thenReturn(true);
         when(mHooksImpl.getCompatibleLanguages())
-                .thenReturn(new HashSet<String>(Arrays.asList("en", "es", "fr", "ja")));
+                .thenReturn(new HashSet<>(Arrays.asList("en", "es", "fr", "ja")));
         initPlaybackHooks();
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         ReadAloudController.setPlaybackHooks(mPlaybackHooks);

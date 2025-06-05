@@ -52,7 +52,7 @@ public class PlayerCoordinator implements Player {
     }
 
     public PlayerCoordinator(Delegate delegate) {
-        mObserverList = new ObserverList<Observer>();
+        mObserverList = new ObserverList<>();
         PropertyModel model =
                 new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
                         // TODO Set voice and highlighting from settings when needed.
@@ -87,7 +87,7 @@ public class PlayerCoordinator implements Player {
             PlayerMediator mediator,
             Delegate delegate,
             ExpandedPlayerCoordinator player) {
-        mObserverList = new ObserverList<Observer>();
+        mObserverList = new ObserverList<>();
         mMiniPlayer = miniPlayer;
         mMediator = mediator;
         mDelegate = delegate;

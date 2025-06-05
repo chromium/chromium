@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed.followmanagement;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,15 +37,15 @@ public class FollowManagementCoordinator {
         // Register types for both the full and empty states.
         adapter.registerType(
                 FollowManagementItemProperties.DEFAULT_ITEM_TYPE,
-                new LayoutViewBuilder<FollowManagementItemView>(R.layout.follow_management_item),
+                new LayoutViewBuilder<>(R.layout.follow_management_item),
                 FollowManagementItemViewBinder::bind);
         adapter.registerType(
                 FollowManagementItemProperties.EMPTY_ITEM_TYPE,
-                new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_empty_state),
+                new LayoutViewBuilder<>(R.layout.follow_management_empty_state),
                 (unusedModel, unusedView, unusedKey) -> {});
         adapter.registerType(
                 FollowManagementItemProperties.LOADING_ITEM_TYPE,
-                new LayoutViewBuilder<LinearLayout>(R.layout.feed_spinner),
+                new LayoutViewBuilder<>(R.layout.feed_spinner),
                 (unusedModel, unusedView, unusedKey) -> {});
 
         // Inflate the XML for the activity.

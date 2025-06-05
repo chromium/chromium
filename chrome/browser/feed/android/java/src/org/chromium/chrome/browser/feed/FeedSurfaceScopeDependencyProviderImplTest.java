@@ -57,7 +57,7 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
         FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
                 new FeedSurfaceScopeDependencyProviderImpl(
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
-        ArrayList<String> calls = new ArrayList<String>();
+        ArrayList<String> calls = new ArrayList<>();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -82,7 +82,7 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
         FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
                 new FeedSurfaceScopeDependencyProviderImpl(
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
-        ArrayList<String> calls = new ArrayList<String>();
+        ArrayList<String> calls = new ArrayList<>();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -107,7 +107,7 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
         FeedSurfaceScopeDependencyProviderImpl dependencyProvider =
                 new FeedSurfaceScopeDependencyProviderImpl(
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
-        ArrayList<String> calls = new ArrayList<String>();
+        ArrayList<String> calls = new ArrayList<>();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

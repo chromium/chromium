@@ -30,6 +30,6 @@ public class ReadAloudReadabilityHooksUpstreamImpl implements ReadAloudReadabili
 
     @Override
     public HashSet<String> getCompatibleLanguages() {
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 }
