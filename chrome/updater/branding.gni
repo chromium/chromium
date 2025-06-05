@@ -107,3 +107,4 @@ if (is_chrome_branded) {
 
 # Chrome and Chromium share the same endpoints for now.
 update_check_url = "https://update.googleapis.com/service/update2/json"
+updater_event_logging_url = "https://play.googleapis.com/log"

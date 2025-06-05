@@ -41,6 +41,8 @@ template("apply_updater_branding") {
     "-e",
     "APP_LOGO_URL=\"$app_logo_url\"",
     "-e",
+    "UPDATER_EVENT_LOGGING_URL=\"$updater_event_logging_url\"",
+    "-e",
     "KEYSTONE_NAME=\"$keystone_app_name\"",
     "-e",
     "PRIVILEGED_HELPER_NAME=\"$privileged_helper_name\"",

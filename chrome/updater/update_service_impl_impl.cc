@@ -726,12 +726,15 @@ void UpdateServiceImplImpl::FetchPolicies(
   if (!config_->GetUpdaterPersistedData()
            ->GetProductVersion(enterprise_companion::kCompanionAppId)
            .IsValid()) {
-    config_->GetPolicyService()->IsCloudManaged(base::BindOnce(
-        &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
-        base::WrapRefCounted(this),
-        base::BindOnce(&PolicyService::FetchPolicies,
-                       config_->GetPolicyService(), reason,
-                       std::move(callback))));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::BindOnce(&IsCloudManaged),
+        base::BindOnce(
+            &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
+            base::WrapRefCounted(this),
+            base::BindOnce(&PolicyService::FetchPolicies,
+                           config_->GetPolicyService(), reason,
+                           std::move(callback))));
   } else {
     config_->GetPolicyService()->FetchPolicies(reason, std::move(callback));
   }

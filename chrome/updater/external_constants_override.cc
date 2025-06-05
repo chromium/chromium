@@ -131,6 +131,18 @@ GURL ExternalConstantsOverrider::AppLogoURL() const {
   return CheckURL({GURL(app_logo_url_value->GetString())});
 }
 
+GURL ExternalConstantsOverrider::EventLoggingURL() const {
+  if (!override_values_.contains(kDevOverrideKeyEventLoggingUrl)) {
+    return next_provider_->EventLoggingURL();
+  }
+  const base::Value* event_logging_url_value =
+      override_values_.Find(kDevOverrideKeyEventLoggingUrl);
+  CHECK(event_logging_url_value->is_string())
+      << "Unexpected type of override[" << kDevOverrideKeyEventLoggingUrl
+      << "]: " << base::Value::GetTypeName(event_logging_url_value->type());
+  return CheckURL({GURL(event_logging_url_value->GetString())});
+}
+
 bool ExternalConstantsOverrider::UseCUP() const {
   if (!override_values_.contains(kDevOverrideKeyUseCUP)) {
     return next_provider_->UseCUP();

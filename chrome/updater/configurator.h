@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/updater/event_logger.h"
 #include "components/update_client/configurator.h"
 
 class GURL;
@@ -83,6 +84,7 @@ class Configurator : public update_client::Configurator {
   bool IsConnectionMetered() const override;
 
   scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
+  scoped_refptr<UpdaterEventLogger> GetEventLogger() const;
   virtual GURL CrashUploadURL() const;
 
   base::TimeDelta ServerKeepAliveTime() const;
@@ -104,6 +106,7 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
   scoped_refptr<update_client::CrxCache> crx_cache_;
+  scoped_refptr<UpdaterEventLogger> event_logger_;
   const std::optional<bool> is_managed_device_;
 };
 

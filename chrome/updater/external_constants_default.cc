@@ -34,6 +34,10 @@ class DefaultExternalConstants : public ExternalConstants {
 
   GURL AppLogoURL() const override { return GURL(APP_LOGO_URL); }
 
+  GURL EventLoggingURL() const override {
+    return GURL(UPDATER_EVENT_LOGGING_URL);
+  }
+
   bool UseCUP() const override { return true; }
 
   base::TimeDelta InitialDelay() const override { return kInitialDelay; }

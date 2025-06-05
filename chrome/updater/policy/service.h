@@ -171,10 +171,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 
-  // Queries whether the machine appears to be cloud managed by Chrome
-  // Enterprise Core (formerly Chrome Enterprise Cloud Management).
-  void IsCloudManaged(base::OnceCallback<void(bool)> callback) const;
-
   void SetManagersForTesting(
       std::vector<scoped_refptr<PolicyManagerInterface>> managers);
 
@@ -254,6 +250,11 @@ struct PolicyServiceProxyConfiguration {
   std::optional<std::string> proxy_pac_url;
   std::optional<std::string> proxy_url;
 };
+
+// Queries whether the machine appears to be cloud managed by Chrome
+// Enterprise Core (formerly Chrome Enterprise Cloud Management). Performs
+// blocking IO.
+bool IsCloudManaged();
 
 }  // namespace updater
 

@@ -253,6 +253,7 @@ inline constexpr char kUninstallScript[] = "uninstall.cmd";
 inline constexpr char kDevOverrideKeyUrl[] = "url";
 inline constexpr char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
 inline constexpr char kDevOverrideKeyAppLogoUrl[] = "app_logo_url";
+inline constexpr char kDevOverrideKeyEventLoggingUrl[] = "event_logging_url";
 inline constexpr char kDevOverrideKeyUseCUP[] = "use_cup";
 inline constexpr char kDevOverrideKeyInitialDelay[] = "initial_delay";
 inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =

@@ -18,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/usage_stats_permissions.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/crx_verifier.h"
@@ -42,6 +44,7 @@
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
+#include "event_logger.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -81,6 +84,17 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
       crx_cache_(base::MakeRefCounted<update_client::CrxCache>(
           GetCrxCacheDirectory(scope))),
+      event_logger_(RemoteEventLoggingAllowed(
+                        scope,
+                        external_constants->GetEventLoggingPermissionProvider())
+                        ? UpdaterEventLogger::Create(
+                              std::make_unique<RemoteLoggingDelegate>(
+                                  scope,
+                                  external_constants->EventLoggingURL(),
+                                  IsCloudManaged(),
+                                  base::WrapRefCounted(this),
+                                  std::make_unique<base::DefaultClock>()))
+                        : nullptr),
       is_managed_device_([] {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
@@ -235,6 +249,11 @@ update_client::PersistedData* Configurator::GetPersistedData() const {
 scoped_refptr<PersistedData> Configurator::GetUpdaterPersistedData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return persisted_data_;
+}
+
+scoped_refptr<UpdaterEventLogger> Configurator::GetEventLogger() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return event_logger_;
 }
 
 bool Configurator::IsPerUserInstall() const {

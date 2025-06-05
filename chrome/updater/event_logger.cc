@@ -31,6 +31,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "components/update_client/network.h"
+#include "event_logger.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "url/gurl.h"
 

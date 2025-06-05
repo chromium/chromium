@@ -150,9 +150,11 @@ PolicyService::~PolicyService() = default;
 void PolicyService::FetchPolicies(policy::PolicyFetchReason reason,
                                   base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IsCloudManaged(base::BindOnce(&PolicyService::DoFetchPolicies,
-                                base::WrapRefCounted(this), reason,
-                                std::move(callback)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+      base::BindOnce(&IsCloudManaged),
+      base::BindOnce(&PolicyService::DoFetchPolicies,
+                     base::WrapRefCounted(this), reason, std::move(callback)));
 }
 
 void PolicyService::DoFetchPolicies(policy::PolicyFetchReason reason,
@@ -648,20 +650,6 @@ bool PolicyService::AreUpdatesSuppressedNow(base::Time now) const {
   return are_updates_suppressed;
 }
 
-void PolicyService::IsCloudManaged(
-    base::OnceCallback<void(bool)> callback) const {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-      base::BindOnce([] {
-        scoped_refptr<device_management_storage::DMStorage> dm_storage =
-            device_management_storage::GetDefaultDMStorage();
-        return dm_storage && (dm_storage->IsValidDMToken() ||
-                              (!dm_storage->GetEnrollmentToken().empty() &&
-                               !dm_storage->IsDeviceDeregistered()));
-      }),
-      std::move(callback));
-}
-
 template <typename T, typename U>
 PolicyStatus<U> PolicyService::QueryPolicy(
     PolicyQueryFunction<T> policy_query_function,
@@ -767,6 +755,14 @@ PolicyServiceProxyConfiguration::Get(
   }
 
   return policy_service_proxy_configuration;
+}
+
+bool IsCloudManaged() {
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  return dm_storage && (dm_storage->IsValidDMToken() ||
+                        (!dm_storage->GetEnrollmentToken().empty() &&
+                         !dm_storage->IsDeviceDeregistered()));
 }
 
 }  // namespace updater

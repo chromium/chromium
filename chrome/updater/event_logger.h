@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
-#include "chrome/updater/configurator.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "chrome/updater/updater_scope.h"
@@ -34,19 +33,13 @@ class Omaha4Metric;
 class Omaha4UsageStatsMetadata;
 }  // namespace proto
 
-class UpdaterEventLogger
-    : public base::RefCountedThreadSafe<UpdaterEventLogger> {
- public:
-  void LogNetworkEvent(const proto::NetworkEvent& event);
+class Configurator;
 
- private:
-  friend class base::RefCountedThreadSafe<UpdaterEventLogger>;
-  virtual ~UpdaterEventLogger() = default;
-};
+using UpdaterEventLogger =
+    ::enterprise_companion::telemetry_logger::TelemetryLogger<
+        proto::Omaha4Metric>;
 
-class RemoteLoggingDelegate final
-    : enterprise_companion::telemetry_logger::TelemetryLogger<
-          proto::Omaha4Metric>::Delegate {
+class RemoteLoggingDelegate final : public UpdaterEventLogger::Delegate {
  public:
   RemoteLoggingDelegate(UpdaterScope scope,
                         const GURL& event_logging_url,
@@ -56,7 +49,7 @@ class RemoteLoggingDelegate final
 
   ~RemoteLoggingDelegate() override;
 
-  // Overrides for TelemetryLogger.
+  // Overrides for TelemetryLogger::Delegate.
   bool StoreNextAllowedAttemptTime(base::Time time) override;
   std::optional<base::Time> GetNextAllowedAttemptTime() const override;
   void DoPostRequest(
