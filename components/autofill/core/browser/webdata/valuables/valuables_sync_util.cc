@@ -68,6 +68,7 @@ bool AreAutofillLoyaltyCardSpecificsValid(
 
   return !specifics.id().empty() && specifics.has_loyalty_card() &&
          !specifics.loyalty_card().loyalty_card_number().empty() &&
+         !specifics.loyalty_card().merchant_name().empty() &&
          HasEmptyOrValidProgramLogo(specifics);
 }
 

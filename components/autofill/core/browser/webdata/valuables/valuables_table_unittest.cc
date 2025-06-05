@@ -103,6 +103,14 @@ TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_EmptyLoyaltyCardNumber) {
   EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
 }
 
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_EmptyMerchantName) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  card1.set_merchant_name("");
+
+  EXPECT_FALSE(valuables_table().SetLoyaltyCards({card1}));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
+}
+
 TEST_F(ValuablesTableTest, RemoveLoyaltyCard) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
