@@ -1327,6 +1327,29 @@
         Discover feed bottom sheet
       </message>
 
+      <!-- Time Last Accessed strings -->
+      <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">
+        Today
+      </message>
+      <message name="IDS_TIME_LAST_ACCESSED_DAYS" desc="A subtitle explaining how many days ago a given component was last accessed.">
+        {NUM_DAYS, plural,
+          =1 {Yesterday}
+          other {<ph name="NUM_DAYS_MANY">%d<ex>2</ex></ph> days ago}
+        }
+      </message>
+      <message name="IDS_TIME_LAST_ACCESSED_WEEKS" desc="A subtitle explaining how many weeks ago a given component was last accessed.">
+        {NUM_WEEKS, plural,
+          =1 {<ph name="NUM_WEEKS_ONE">%d<ex>1</ex></ph> week ago}
+          other {<ph name="NUM_WEEKS_MANY">%d<ex>2</ex></ph> weeks ago}
+        }
+      </message>
+      <message name="IDS_TIME_LAST_ACCESSED_MONTHS" desc="A subtitle explaining how many months ago a given component was last accessed.">
+        {NUM_MONTHS, plural,
+          =1 {<ph name="NUM_MONTHS_ONE">%d<ex>1</ex></ph> month ago}
+          other {<ph name="NUM_MONTHS_MANY">%d<ex>2</ex></ph> months ago}
+        }
+      </message>
+
       <!-- What's New page strings -->
       <!-- TODO(crbug.com/390190615): Make the strings translateable. -->
       <message name="IDS_WHATS_NEW_PAGE_TITLE" translateable="false" desc="Title of the what's new page.">
