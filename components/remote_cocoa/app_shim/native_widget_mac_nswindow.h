@@ -107,6 +107,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // ordering.
 @property(assign, nonatomic) BOOL isShufflingForOrdering;
 
+// Prevents the window from becoming the key window.
+@property(assign, nonatomic) BOOL preventKeyWindow;
+
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);
 

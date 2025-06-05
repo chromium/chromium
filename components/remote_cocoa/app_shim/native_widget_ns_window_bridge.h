@@ -183,7 +183,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   remote_cocoa::mojom::TextInputHost* text_input_host() const {
     return text_input_host_;
   }
-  NSWindow* ns_window();
+  NativeWidgetMacNSWindow* ns_window();
 
   remote_cocoa::DragDropClient* drag_drop_client();
   bool is_translucent_window() const { return is_translucent_window_; }
@@ -348,6 +348,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Called by the ImmersiveModeController at the end of fullscreen transition
   // with the height of the menu bar if it autohides, or 0 if it doesn't.
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height);
+
+  base::WeakPtr<NativeWidgetNSWindowBridge> GetWeakPtr();
 
  private:
   friend class views::test::BridgedNativeWidgetTestApi;

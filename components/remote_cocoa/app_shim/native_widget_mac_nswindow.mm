@@ -209,7 +209,6 @@ struct NSEdgeAndCornerThicknesses {
   BOOL _willUpdateRestorableState;
   BOOL _willSaveRestorableStateAfterDelay;
   BOOL _isEnforcingNeverMadeVisible;
-  BOOL _preventKeyWindow;
   BOOL _activationIndependence;
   BOOL _isTooltip;
   BOOL _isHeadless;
@@ -221,6 +220,7 @@ struct NSEdgeAndCornerThicknesses {
 @synthesize isTooltip = _isTooltip;
 @synthesize isHeadless = _isHeadless;
 @synthesize isShufflingForOrdering = _isShufflingForOrdering;
+@synthesize preventKeyWindow = _preventKeyWindow;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
 @synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
 @synthesize commandDispatchParentOverride = _commandDispatchParentOverride;

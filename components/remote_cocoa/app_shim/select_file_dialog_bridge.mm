@@ -20,6 +20,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -405,6 +406,18 @@ void SelectFileDialogBridge::Show(
           base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
     sheet_parent = [sheet_parent_widget_window preferredSheetParent];
   }
+
+  // The sheet parent will be activated by AppKit on sheet close, which may
+  // cause auto-dismissal of the owning window (e.g. extension popup).
+  // Therefore, prevent the sheet parent from becoming key.
+  if (sheet_parent != owning_window_) {
+    if (NativeWidgetMacNSWindow* sheet_parent_widget_window =
+            base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
+      scoped_prevent_key_window_ =
+          std::make_unique<ScopedPreventKeyWindow>(sheet_parent_widget_window);
+    }
+  }
+
   [panel_ beginSheetModalForWindow:sheet_parent
                  completionHandler:^(NSInteger result) {
                    ended_callback.Run(result != NSModalResponseOK);
@@ -577,6 +590,26 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
 
   std::move(show_callback_).Run(did_cancel, paths, index, file_tags);
 }
+
+class SelectFileDialogBridge::ScopedPreventKeyWindow {
+ public:
+  ScopedPreventKeyWindow(NativeWidgetMacNSWindow* window) {
+    bridge_ = window.bridge->GetWeakPtr();
+    window.preventKeyWindow = YES;
+  }
+
+  ScopedPreventKeyWindow(const SelectFileDialogBridge&) = delete;
+  ScopedPreventKeyWindow& operator=(const SelectFileDialogBridge&) = delete;
+
+  ~ScopedPreventKeyWindow() {
+    if (bridge_) {
+      bridge_->ns_window().preventKeyWindow = NO;
+    }
+  }
+
+ private:
+  base::WeakPtr<NativeWidgetNSWindowBridge> bridge_;
+};
 
 // static
 NSSavePanel* SelectFileDialogBridge::GetLastCreatedNativePanelForTesting() {
