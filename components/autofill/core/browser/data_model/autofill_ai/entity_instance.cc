@@ -189,7 +189,8 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
       info_);
 }
 
-FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
+FieldTypeSet AttributeInstance::GetDatabaseStoredTypes(
+    base::PassKey<EntityTable> pass_key) const {
   return std::visit(
       absl::Overload{
           [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },

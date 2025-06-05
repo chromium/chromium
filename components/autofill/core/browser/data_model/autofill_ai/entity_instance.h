@@ -165,7 +165,8 @@ class AttributeInstance final {
 
   // Returns the types which are stored in the database for this attribute
   // to be able to correctly reconstruct it at database loading time.
-  FieldTypeSet GetDatabaseStoredTypes() const;
+  FieldTypeSet GetDatabaseStoredTypes(
+      base::PassKey<EntityTable> pass_key) const;
 
   // This is a no-op for unstructured attributes, and for structured attributes
   // the function propagates changes in a component to its subcomponents. This
