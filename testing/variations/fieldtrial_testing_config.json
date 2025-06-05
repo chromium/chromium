@@ -9594,7 +9594,6 @@
             "platforms": [
                 "android",
                 "android_weblayer",
-                "chromeos",
                 "linux",
                 "mac",
                 "windows"
@@ -9603,7 +9602,7 @@
                 {
                     "name": "SegmentationPlatform",
                     "enable_features": [
-                        "FedCmSegmentationPlatform"
+                        "SegmentationPlatformFedCmUser"
                     ]
                 }
             ]
