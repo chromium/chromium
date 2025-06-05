@@ -27,14 +27,6 @@ bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
 // Determines if the Translator API is enabled.
 bool IsTranslatorAllowed(content::BrowserContext* browser_context);
 
-// When the `TranslationAPIAcceptLanguagesCheck` feature is enabled, the
-// Translation API will fail if neither the source nor destination language is
-// in Accept Languages. This is intended to mitigate privacy concerns.
-bool PassAcceptLanguagesCheck(
-    const std::vector<std::string_view>& accept_languages,
-    const std::string& source_lang,
-    const std::string& target_lang);
-
 // Implementation of LookupMatchingLocaleByBestFit
 // (https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit) as
 // LookupMatchingLocaleByPrefix

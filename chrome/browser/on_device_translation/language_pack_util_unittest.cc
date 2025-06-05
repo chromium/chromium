@@ -106,49 +106,6 @@ TEST(LanguagePackUtilTest, ToSupportedLanguage) {
   EXPECT_EQ(ToSupportedLanguage(""), std::nullopt);
 }
 
-TEST(LanguagePackUtilTest, IsPopularLanguage) {
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kEn));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kEn));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kEs));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kJa));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kAr));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kBn));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kDe));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kFr));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kHi));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kIt));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kKo));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kNl));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kPl));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kPt));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kRu));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kTh));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kTr));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kVi));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kZh));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kZhHant));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kBg));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kCs));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kDa));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kEl));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kFi));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kHr));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kHu));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kId));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kIw));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kLt));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kNo));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kRo));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kSk));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kSl));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kSv));
-  EXPECT_FALSE(IsPopularLanguage(SupportedLanguage::kUk));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kKn));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kTa));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kTe));
-  EXPECT_TRUE(IsPopularLanguage(SupportedLanguage::kMr));
-}
-
 TEST(LanguagePackUtilTest, GetLanguagePackComponentConfig) {
   // En to Es.
   EXPECT_EQ(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Es).language1,
