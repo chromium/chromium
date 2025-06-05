@@ -6859,6 +6859,16 @@
     "expiry_milestone": 122
   },
   {
+    "name": "ntp-compose-entrypoint",
+    "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "ntp-composebox",
+    "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 125
@@ -7021,11 +7031,6 @@
   {
     "name": "ntp-sharepoint-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 150
-  },
-    {
-    "name": "ntp-show-compose-button",
-    "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 150
   },
   {

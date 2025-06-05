@@ -3336,8 +3336,11 @@ extern const char kNtpCalendarModuleDescription[];
 extern const char kNtpChromeCartModuleName[];
 extern const char kNtpChromeCartModuleDescription[];
 
-extern const char kNtpSearchboxShowComposeButtonName[];
-extern const char kNtpSearchboxShowComposeButtonDescription[];
+extern const char kNtpSearchboxComposeboxName[];
+extern const char kNtpSearchboxComposeboxDescription[];
+
+extern const char kNtpSearchboxComposeEntrypointName[];
+extern const char kNtpSearchboxComposeEntrypointDescription[];
 
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];

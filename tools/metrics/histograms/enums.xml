@@ -10057,6 +10057,7 @@ from previous Chrome versions.
   <int value="-1443261188" label="DesktopPWAsTabStripLinkCapturing:disabled"/>
   <int value="-1442521127" label="FedCmCooldownOnIgnore:disabled"/>
   <int value="-1441695001" label="OmniboxOnFocusSuggestions:enabled"/>
+  <int value="-1441386544" label="NtpSearchboxComposeEntrypoint:disabled"/>
   <int value="-1441340278" label="NewTabPageIcons:enabled"/>
   <int value="-1440440375" label="WebVrAutopresent:enabled"/>
   <int value="-1440152291" label="disable-gesture-typing"/>
@@ -10863,6 +10864,7 @@ from previous Chrome versions.
   <int value="-1144296865"
       label="ServiceWorkerSkipIgnorableFetchHandler:disabled"/>
   <int value="-1144170722" label="DisableProcessReuse:enabled"/>
+  <int value="-1144127577" label="NtpSearchboxComposebox:disabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143452448" label="NtpComprehensiveThemeRealbox:enabled"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
@@ -11882,7 +11884,6 @@ from previous Chrome versions.
   <int value="-752707368" label="HistoryPagePromoCtaStringVariation:disabled"/>
   <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
-  <int value="-751869398" label="NtpSearchboxShowComposeButton:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
   <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
   <int value="-749306189" label="QsRevamp:enabled"/>
@@ -11997,7 +11998,6 @@ from previous Chrome versions.
   <int value="-714064808" label="PrivacySandboxPrivacyPolicy:disabled"/>
   <int value="-714043324" label="OutOfBlinkCORS:enabled"/>
   <int value="-713705575" label="PhoneHubCallNotification:enabled"/>
-  <int value="-713496369" label="NtpSearchboxShowComposeButton:disabled"/>
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
       label="DisablePeripheralDataAccessProtection:enabled"/>
@@ -12855,6 +12855,7 @@ from previous Chrome versions.
   <int value="-384589459" label="disable-supervised-user-safesites"/>
   <int value="-384349472" label="ReadAnythingWithAlgorithm:disabled"/>
   <int value="-383795921" label="IpProtectionV1:disabled"/>
+  <int value="-383240557" label="NtpSearchboxComposebox:enabled"/>
   <int value="-382542238" label="CWSInfoFastCheck:disabled"/>
   <int value="-381181808" label="DragAppsInTabletMode:enabled"/>
   <int value="-380992110"
@@ -14457,6 +14458,7 @@ from previous Chrome versions.
   <int value="220654375" label="SearchResultInlineIcon:disabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
   <int value="221363150" label="ForceEnableFaceAe:disabled"/>
+  <int value="221417441" label="NtpSearchboxComposeEntrypoint:enabled"/>
   <int value="221647839" label="IsolatedWebApps:enabled"/>
   <int value="221707633" label="AutofillFixOfferInIncognito:disabled"/>
   <int value="222055978" label="OsFeedback:disabled"/>

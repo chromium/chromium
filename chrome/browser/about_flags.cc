@@ -7316,6 +7316,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpChromeCartModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-compose-entrypoint",
+     flag_descriptions::kNtpSearchboxComposeEntrypointName,
+     flag_descriptions::kNtpSearchboxComposeEntrypointDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpSearchboxComposeEntrypoint)},
+
+    {"ntp-composebox", flag_descriptions::kNtpSearchboxComposeboxName,
+     flag_descriptions::kNtpSearchboxComposeboxDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpSearchboxComposebox)},
+
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,
@@ -7435,10 +7444,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSharepointModule,
                                     kNtpSharepointModuleVariations,
                                     "DesktopNtpModules")},
-    {"ntp-show-compose-button",
-     flag_descriptions::kNtpSearchboxShowComposeButtonName,
-     flag_descriptions::kNtpSearchboxShowComposeButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpSearchboxShowComposeButton)},
 
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,
