@@ -43,7 +43,6 @@ ci/android-desktop-x64-rel-15-tests
 ci/android-official
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
-ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
 try/3pp-mac-arm64-packager
 try/android-10-x86-fyi-rel
