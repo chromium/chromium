@@ -42,6 +42,10 @@ std::string WaitTool::DebugString() const {
   return "WaitTool";
 }
 
+std::string WaitTool::JournalEvent() const {
+  return "Wait";
+}
+
 ObservationDelayType WaitTool::GetObservationDelayType() const {
   return ObservationDelayType::kNone;
 }

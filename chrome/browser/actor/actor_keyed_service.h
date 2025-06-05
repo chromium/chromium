@@ -8,8 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -40,9 +42,14 @@ class ActorKeyedService : public KeyedService {
   // not to modify them.
   const std::vector<std::unique_ptr<ActorTask>>& GetTasks();
 
+  // The associated journal for the associated profile.
+  AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
+
  private:
   // In the future we may want to divide this between active and inactive tasks.
   std::vector<std::unique_ptr<ActorTask>> tasks_;
+
+  AggregatedJournal journal_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

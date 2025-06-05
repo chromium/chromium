@@ -10,9 +10,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -101,6 +103,7 @@ class ActorCoordinator {
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
   raw_ptr<Profile> profile_;
+  base::SafeRef<AggregatedJournal> journal_;
 
   struct Actions {
     Actions(const optimization_guide::proto::BrowserAction& actions,

@@ -4,6 +4,7 @@
 
 module actor.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This interface is meant to largely mirror the
@@ -293,6 +294,9 @@ enum ActionResultCode {
 
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {
+  // The task ID owning this invocation.
+  int32 task_id;
+
   ToolAction action;
 };
 
@@ -302,4 +306,43 @@ struct ActionResult {
 
   // If the code is not kOk, an English language message describing the error.
   string message;
+};
+
+// The type of the journal entry.
+enum JournalEntryType {
+  kBegin,
+  kEnd,
+  kInstant,
+};
+
+// Represents a journal entry. This should only be used for logging and
+// debugging. It should not be used to make logic decisions since a
+// compromised renderer could lie about events (such as mismatched
+// or missing begin and end events).
+struct JournalEntry {
+  // What type of entry this is.
+  JournalEntryType type;
+
+  // The task ID associated with this entry.
+  int32 task_id;
+
+  // Unique identifier for entry. Begin/End types
+  // should use the same id.
+  uint64 id;
+
+  // The time the event occurred at.
+  mojo_base.mojom.Time timestamp;
+
+  // The event name.
+  string event;
+
+  // Specific details of the event logged.
+  string details;
+};
+
+// Use to listen for new journal entries. Lives in the browser process and
+// is used to receive entries from renderer processes.
+interface JournalClient {
+  // New log messages are sent in batches to limit the frequency of calls.
+  AddEntriesToJournal(array<JournalEntry> entries);
 };

@@ -19,7 +19,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -74,15 +74,18 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
                   InvokeToolCallback callback) override {
     std::move(callback).Run(MakeOkResult());
   }
+  void StartActorJournal(
+      mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
+      override {}
 
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(
-        mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>(
-            std::move(handle)));
+    receivers_.Add(
+        this, mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>(
+                  std::move(handle)));
   }
 
-  mojo::AssociatedReceiver<chrome::mojom::ChromeRenderFrame> receiver_{this};
+  mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 };
 
 class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {

@@ -29,9 +29,11 @@ using ::blink::WebLocalFrame;
 using ::blink::WebMouseEvent;
 using ::blink::mojom::EventType;
 
-DragAndReleaseTool::DragAndReleaseTool(mojom::DragAndReleaseActionPtr action,
-                                       content::RenderFrame& frame)
-    : frame_(frame), action_(std::move(action)) {}
+DragAndReleaseTool::DragAndReleaseTool(content::RenderFrame& frame,
+                                       Journal::TaskId task_id,
+                                       Journal& journal,
+                                       mojom::DragAndReleaseActionPtr action)
+    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
 
 DragAndReleaseTool::~DragAndReleaseTool() = default;
 

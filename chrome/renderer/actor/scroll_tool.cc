@@ -28,9 +28,11 @@ using ::blink::WebElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 
-ScrollTool::ScrollTool(mojom::ScrollActionPtr action,
-                       content::RenderFrame& frame)
-    : frame_(frame), action_(std::move(action)) {}
+ScrollTool::ScrollTool(content::RenderFrame& frame,
+                       Journal::TaskId task_id,
+                       Journal& journal,
+                       mojom::ScrollActionPtr action)
+    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
 
 ScrollTool::~ScrollTool() = default;
 

@@ -71,6 +71,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
+#include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/tool_executor.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -185,6 +186,9 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     : content::RenderFrameObserver(render_frame),
       translate_agent_(nullptr),
       page_text_agent_(new optimization_guide::PageTextAgent(render_frame)),
+#if !BUILDFLAG(IS_ANDROID)
+      actor_journal_(std::make_unique<actor::Journal>()),
+#endif
       web_cache_impl_(web_cache_impl) {
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<chrome::mojom::ChromeRenderFrame>(base::BindRepeating(
@@ -618,8 +622,13 @@ void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
 void ChromeRenderFrameObserver::InvokeTool(
     actor::mojom::ToolInvocationPtr request,
     InvokeToolCallback callback) {
-  actor::ToolExecutor executor(render_frame());
+  actor::ToolExecutor executor(render_frame(), *actor_journal_);
   executor.InvokeTool(std::move(request), std::move(callback));
+}
+
+void ChromeRenderFrameObserver::StartActorJournal(
+    mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client) {
+  actor_journal_->Bind(std::move(client));
 }
 #endif
 

@@ -21,7 +21,10 @@ namespace actor {
 // A tool that can be invoked to choose an option from a <select> element.
 class SelectTool : public ToolBase {
  public:
-  SelectTool(mojom::SelectActionPtr action, content::RenderFrame& frame);
+  SelectTool(content::RenderFrame& frame,
+             Journal::TaskId task_id,
+             Journal& journal,
+             mojom::SelectActionPtr action);
   ~SelectTool() override;
 
   // actor::ToolBase
@@ -37,9 +40,6 @@ class SelectTool : public ToolBase {
       base::expected<TargetAndValue, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
-  // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
-  // RenderFrame.
-  base::raw_ref<content::RenderFrame> frame_;
   mojom::SelectActionPtr action_;
 };
 

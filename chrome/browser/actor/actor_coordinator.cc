@@ -16,9 +16,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
@@ -75,12 +77,15 @@ ActorCoordinator::Actions::Actions(const BrowserAction& actions,
 
 ActorCoordinator::Actions::~Actions() = default;
 
-ActorCoordinator::ActorCoordinator(Profile* profile) : profile_(profile) {
+ActorCoordinator::ActorCoordinator(Profile* profile)
+    : profile_(profile),
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()) {
   CHECK(profile_);
 }
 
 ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_scoped_actions_deprecated_(true),
       tab_(tab->GetWeakPtr()) {
   CHECK(profile_);
@@ -232,7 +237,7 @@ void ActorCoordinator::PerformOneAction(
                    "The target frame is no longer present in the tab."));
     return;
   }
-  tool_controller_.Invoke(action, *target_frame,
+  tool_controller_.Invoke(action, *journal_, task_id, *target_frame,
                           base::BindOnce(&ActorCoordinator::FinishOneAction,
                                          GetWeakPtr(), task_id));
 }

@@ -39,6 +39,9 @@ class Tool {
   // debugging purposes.
   virtual std::string DebugString() const = 0;
 
+  // Provides a journal event name.
+  virtual std::string JournalEvent() const = 0;
+
   // Returns the method to use to determine when the page is ready for a new
   // observation after this tool is executed.
   virtual ObservationDelayType GetObservationDelayType() const;

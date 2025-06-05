@@ -89,8 +89,11 @@ void HistoryTool::Invoke(InvokeCallback callback) {
 }
 
 std::string HistoryTool::DebugString() const {
-  return absl::StrFormat("HistoryTool[%s]",
-                         direction_ == kBack ? "Back" : "Forward");
+  return absl::StrFormat("HistoryTool[%s]", JournalEvent());
+}
+
+std::string HistoryTool::JournalEvent() const {
+  return direction_ == kBack ? "Back" : "Forward";
 }
 
 ObservationDelayType HistoryTool::GetObservationDelayType() const {

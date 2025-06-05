@@ -25,6 +25,10 @@
 
 class SkBitmap;
 
+namespace actor {
+class Journal;
+}
+
 namespace gfx {
 class Size;
 }
@@ -123,6 +127,9 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #if !BUILDFLAG(IS_ANDROID)
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override;
+  void StartActorJournal(
+      mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
+      override;
 #endif
 
   // Initialize a |phishing_classifier_delegate_|.
@@ -171,6 +178,10 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       nullptr;
   raw_ptr<safe_browsing::PhishingImageEmbedderDelegate>
       phishing_image_embedder_ = nullptr;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<actor::Journal> actor_journal_;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.

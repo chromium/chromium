@@ -21,6 +21,7 @@ class WaitTool : public Tool {
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
+  std::string JournalEvent() const override;
   ObservationDelayType GetObservationDelayType() const override;
 
   static void SetNoDelayForTesting();

@@ -9,6 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -23,6 +25,7 @@ class ActionInformation;
 
 namespace actor {
 
+class AggregatedJournal;
 class Tool;
 
 // Entry point into actor tool usage. ToolController is a profile-scoped,
@@ -39,6 +42,8 @@ class ToolController {
 
   // Invokes a tool action.
   void Invoke(const optimization_guide::proto::ActionInformation& action,
+              AggregatedJournal& journal,
+              TaskId task_id,
               content::RenderFrameHost& target_frame,
               ResultCallback result_callback);
 
@@ -51,6 +56,8 @@ class ToolController {
   void CompleteToolRequest(mojom::ActionResultPtr result);
 
   std::unique_ptr<Tool> CreateTool(
+      AggregatedJournal& journal,
+      TaskId task_id,
       content::RenderFrameHost& frame,
       const optimization_guide::proto::ActionInformation& action_information);
 
@@ -58,9 +65,11 @@ class ToolController {
 
   // This state is non-null whenever a tool invocation is in progress.
   struct ActiveState {
-    ActiveState(std::unique_ptr<Tool> tool,
-                ResultCallback completion_callback,
-                content::WeakDocumentPtr weak_document_ptr);
+    ActiveState(
+        std::unique_ptr<Tool> tool,
+        ResultCallback completion_callback,
+        content::WeakDocumentPtr weak_document_ptr,
+        std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry);
     ~ActiveState();
     ActiveState(const ActiveState&) = delete;
     ActiveState& operator=(const ActiveState&) = delete;
@@ -70,6 +79,7 @@ class ToolController {
     std::unique_ptr<Tool> tool;
     ResultCallback completion_callback;
     content::WeakDocumentPtr weak_document_ptr;
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
   };
   std::optional<ActiveState> active_state_;
 

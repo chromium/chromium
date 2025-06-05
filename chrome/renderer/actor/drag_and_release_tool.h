@@ -27,8 +27,10 @@ namespace actor {
 // A tool that can be invoked to perform a drag and release over a target.
 class DragAndReleaseTool : public ToolBase {
  public:
-  DragAndReleaseTool(mojom::DragAndReleaseActionPtr action,
-                     content::RenderFrame& frame);
+  DragAndReleaseTool(content::RenderFrame& frame,
+                     Journal::TaskId task_id,
+                     Journal& journal,
+                     mojom::DragAndReleaseActionPtr action);
 
   ~DragAndReleaseTool() override;
 
@@ -48,9 +50,6 @@ class DragAndReleaseTool : public ToolBase {
                         const gfx::PointF& position_in_widget,
                         blink::WebMouseEvent::Button button);
 
-  // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
-  // RenderFrame.
-  base::raw_ref<content::RenderFrame> frame_;
   mojom::DragAndReleaseActionPtr action_;
 };
 

@@ -11,6 +11,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/history_tool.h"
 #include "chrome/browser/actor/tools/navigate_tool.h"
 #include "chrome/browser/actor/tools/page_tool.h"
@@ -36,10 +37,12 @@ namespace actor {
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
     ResultCallback completion_callback,
-    content::WeakDocumentPtr weak_document_ptr)
+    content::WeakDocumentPtr weak_document_ptr,
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry)
     : tool(std::move(tool)),
       completion_callback(std::move(completion_callback)),
-      weak_document_ptr(weak_document_ptr) {
+      weak_document_ptr(weak_document_ptr),
+      journal_entry(std::move(journal_entry)) {
   CHECK(this->tool);
   CHECK(!this->completion_callback.is_null());
   CHECK(this->weak_document_ptr.AsRenderFrameHostIfValid());
@@ -53,6 +56,8 @@ ToolController::ToolController() {
 ToolController::~ToolController() = default;
 
 std::unique_ptr<Tool> ToolController::CreateTool(
+    AggregatedJournal& journal,
+    TaskId task_id,
     RenderFrameHost& frame,
     const ActionInformation& action_information) {
   WebContents* web_contents = WebContents::FromRenderFrameHost(&frame);
@@ -67,7 +72,7 @@ std::unique_ptr<Tool> ToolController::CreateTool(
     case ActionInformation::kSelect: {
       // PageTools are all implemented in the renderer so share the PageTool
       // implementation to shuttle them there.
-      return std::make_unique<PageTool>(frame, action_information);
+      return std::make_unique<PageTool>(journal, frame, action_information);
     }
     case ActionInformation::kNavigate: {
       GURL url(action_information.navigate().url());
@@ -89,10 +94,12 @@ std::unique_ptr<Tool> ToolController::CreateTool(
 }
 
 void ToolController::Invoke(const ActionInformation& action_information,
+                            AggregatedJournal& journal,
+                            TaskId task_id,
                             RenderFrameHost& target_frame,
                             ResultCallback result_callback) {
   std::unique_ptr<Tool> created_tool =
-      CreateTool(target_frame, action_information);
+      CreateTool(journal, task_id, target_frame, action_information);
 
   if (!created_tool) {
     // Tool not found.
@@ -101,9 +108,14 @@ void ToolController::Invoke(const ActionInformation& action_information,
     return;
   }
 
+  auto journal_event = journal.CreatePendingAsyncEntry(
+      target_frame.GetLastCommittedURL().possibly_invalid_spec(), task_id,
+      created_tool->JournalEvent(), created_tool->DebugString());
+
   ACTOR_LOG() << "Starting Tool Use: " << created_tool->DebugString();
   active_state_.emplace(std::move(created_tool), std::move(result_callback),
-                        target_frame.GetWeakDocumentPtr());
+                        target_frame.GetWeakDocumentPtr(),
+                        std::move(journal_event));
 
   active_state_->tool->Validate(base::BindOnce(
       &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));
@@ -143,6 +155,7 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   CHECK(active_state_);
+  active_state_->journal_entry->EndEntry(ToDebugString(*result));
   ACTOR_LOG() << "Completed Tool Invoke[" << ToDebugString(*result)
               << "]: " << active_state_->tool->DebugString();
   PostResponseTask(std::move(active_state_->completion_callback),

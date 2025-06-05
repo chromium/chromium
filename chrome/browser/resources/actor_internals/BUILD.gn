@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "actor_internals"
+
+  static_files = [
+    "actor_internals.css",
+    "actor_internals.html",
+  ]
+  ts_files = [
+    "actor_internals.ts",
+    "browser_proxy.ts",
+  ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/actor_internals:mojo_bindings_ts__generator",
+  ]
+
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/actor_internals/actor_internals.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "trusted"
+}

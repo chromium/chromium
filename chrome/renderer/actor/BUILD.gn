@@ -12,6 +12,8 @@ source_set("actor") {
     "click_tool.h",
     "drag_and_release_tool.cc",
     "drag_and_release_tool.h",
+    "journal.cc",
+    "journal.h",
     "mouse_move_tool.cc",
     "mouse_move_tool.h",
     "scroll_tool.cc",

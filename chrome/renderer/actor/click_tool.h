@@ -29,7 +29,10 @@ namespace actor {
 // A tool that can be invoked to perform a click on a target.
 class ClickTool : public ToolBase {
  public:
-  ClickTool(mojom::ClickActionPtr action, content::RenderFrame& frame);
+  ClickTool(content::RenderFrame& frame,
+            Journal::TaskId task_id,
+            Journal& journal,
+            mojom::ClickActionPtr action);
   ~ClickTool() override;
 
   // actor::ToolBase
@@ -43,9 +46,6 @@ class ClickTool : public ToolBase {
   void SendMouseUp(blink::WebMouseEvent mouse_event,
                    ToolFinishedCallback callback);
 
-  // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
-  // RenderFrame.
-  base::raw_ref<content::RenderFrame> frame_;
   mojom::ClickActionPtr action_;
 };
 

@@ -16,6 +16,7 @@ source_set("actor") {
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
     "actor_task.h",
+    "aggregated_journal.h",
   ]
 
   sources = [
@@ -25,6 +26,7 @@ source_set("actor") {
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
     "actor_task.cc",
+    "aggregated_journal.cc",
     "browser_action_util.cc",
     "browser_action_util.h",
     "site_policy.cc",

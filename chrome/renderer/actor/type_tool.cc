@@ -135,8 +135,11 @@ TypeTool::KeyParams::KeyParams() = default;
 TypeTool::KeyParams::~KeyParams() = default;
 TypeTool::KeyParams::KeyParams(const KeyParams& other) = default;
 
-TypeTool::TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame)
-    : frame_(frame), action_(std::move(action)) {}
+TypeTool::TypeTool(content::RenderFrame& frame,
+                   Journal::TaskId task_id,
+                   Journal& journal,
+                   mojom::TypeActionPtr action)
+    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
 
 TypeTool::~TypeTool() = default;
 

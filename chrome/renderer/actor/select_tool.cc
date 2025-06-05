@@ -28,9 +28,11 @@ using blink::WebOptionElement;
 using blink::WebSelectElement;
 using blink::WebString;
 
-SelectTool::SelectTool(mojom::SelectActionPtr action,
-                       content::RenderFrame& frame)
-    : frame_(frame), action_(std::move(action)) {}
+SelectTool::SelectTool(content::RenderFrame& frame,
+                       Journal::TaskId task_id,
+                       Journal& journal,
+                       mojom::SelectActionPtr action)
+    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
 
 SelectTool::~SelectTool() = default;
 

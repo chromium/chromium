@@ -19,6 +19,8 @@ class RenderFrame;
 
 namespace actor {
 
+class Journal;
+
 // Renderer-side tool executor.
 //
 // This class is responsible for receiving tool request messages and invoking
@@ -32,7 +34,7 @@ class ToolExecutor {
 
  public:
   using ToolExecutorCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  explicit ToolExecutor(content::RenderFrame* frame);
+  explicit ToolExecutor(content::RenderFrame* frame, Journal& journal);
   ~ToolExecutor();
 
   ToolExecutor(const ToolExecutor&) = delete;
@@ -49,6 +51,7 @@ class ToolExecutor {
   // render frame so it must be outlived.
   base::raw_ref<content::RenderFrame> frame_;
   std::unique_ptr<ToolBase> tool_;
+  base::raw_ref<Journal> journal_;
 };
 
 }  // namespace actor

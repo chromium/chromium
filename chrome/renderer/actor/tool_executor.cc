@@ -9,10 +9,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
+#include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
 #include "chrome/renderer/actor/scroll_tool.h"
 #include "chrome/renderer/actor/select_tool.h"
@@ -25,7 +26,8 @@ using content::RenderFrame;
 
 namespace actor {
 
-ToolExecutor::ToolExecutor(RenderFrame* frame) : frame_(*frame) {}
+ToolExecutor::ToolExecutor(RenderFrame* frame, Journal& journal)
+    : frame_(*frame), journal_(journal) {}
 
 ToolExecutor::~ToolExecutor() = default;
 
@@ -37,42 +39,50 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       // Check the mojom we received is in good shape.
       CHECK(request->action->get_click());
       tool_ = std::make_unique<ClickTool>(
-          std::move(request->action->get_click()), frame_.get());
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_click()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kMouseMove: {
       CHECK(request->action->get_mouse_move());
       tool_ = std::make_unique<MouseMoveTool>(
-          std::move(request->action->get_mouse_move()), frame_.get());
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_mouse_move()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kType: {
       CHECK(request->action->get_type());
-      tool_ = std::make_unique<TypeTool>(std::move(request->action->get_type()),
-                                         frame_.get());
+      tool_ = std::make_unique<TypeTool>(
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_type()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kScroll: {
       CHECK(request->action->get_scroll());
       tool_ = std::make_unique<ScrollTool>(
-          std::move(request->action->get_scroll()), frame_.get());
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_scroll()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kSelect: {
       CHECK(request->action->get_select());
       tool_ = std::make_unique<SelectTool>(
-          std::move(request->action->get_select()), frame_.get());
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_select()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kDragAndRelease: {
       CHECK(request->action->get_drag_and_release());
       tool_ = std::make_unique<DragAndReleaseTool>(
-          std::move(request->action->get_drag_and_release()), frame_.get());
+          frame_.get(), request->task_id, journal_.get(),
+          std::move(request->action->get_drag_and_release()));
       break;
     }
+    default:
+      NOTREACHED();
   }
 
-  ACTOR_LOG() << "Renderer InvokeTool: " << tool_->DebugString();
+  journal_->Log(request->task_id, "Renderer InvokeTool", tool_->DebugString());
 
   // It's safe to use base::Unretained as tool_ is owned by this object and
   // tool_ has its own weak factory to manage the callback.

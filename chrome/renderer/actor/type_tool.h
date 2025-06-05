@@ -23,10 +23,15 @@ class RenderFrame;
 
 namespace actor {
 
+class Journal;
+
 // A tool that simulates typing text into a target DOM node.
 class TypeTool : public ToolBase {
  public:
-  TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame);
+  TypeTool(content::RenderFrame& frame,
+           Journal::TaskId task_id,
+           Journal& journal,
+           mojom::TypeActionPtr action);
   ~TypeTool() override;
 
   // actor::ToolBase
@@ -77,9 +82,6 @@ class TypeTool : public ToolBase {
       KeyParams key_params);
   mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
-  // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
-  // RenderFrame.
-  base::raw_ref<content::RenderFrame> frame_;
   mojom::TypeActionPtr action_;
 };
 

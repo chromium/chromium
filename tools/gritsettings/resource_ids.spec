@@ -168,6 +168,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2740],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/actor_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2750],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_home/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2760],

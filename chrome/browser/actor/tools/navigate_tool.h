@@ -30,6 +30,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
+  std::string JournalEvent() const override;
   ObservationDelayType GetObservationDelayType() const override;
 
   // content::WebContentsObserver

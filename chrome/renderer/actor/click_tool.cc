@@ -37,8 +37,11 @@ using ::blink::WebInputEventResult;
 using ::blink::WebMouseEvent;
 using ::blink::WebNode;
 
-ClickTool::ClickTool(mojom::ClickActionPtr action, content::RenderFrame& frame)
-    : frame_(frame), action_(std::move(action)) {}
+ClickTool::ClickTool(content::RenderFrame& frame,
+                     Journal::TaskId task_id,
+                     Journal& journal,
+                     mojom::ClickActionPtr action)
+    : ToolBase(frame, task_id, journal), action_(std::move(action)) {}
 
 ClickTool::~ClickTool() = default;
 

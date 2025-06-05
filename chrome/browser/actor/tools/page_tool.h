@@ -16,12 +16,15 @@ class RenderFrameHost;
 
 namespace actor {
 
+class AggregatedJournal;
+
 // A page tool is any tool implemented in the renderer by ToolExecutor. This
 // class is shared by multiple tools and serves to implement the mojo shuttling
 // of the request to the renderer.
 class PageTool : public Tool {
  public:
   PageTool(
+      AggregatedJournal& journal,
       content::RenderFrameHost& frame,
       const optimization_guide::proto::ActionInformation& action_information);
   ~PageTool() override;
@@ -30,6 +33,7 @@ class PageTool : public Tool {
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
+  std::string JournalEvent() const override;
 
  private:
   optimization_guide::proto::ActionInformation action_information_;

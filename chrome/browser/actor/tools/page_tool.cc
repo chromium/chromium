@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/page_tool.h"
 
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -178,10 +179,12 @@ void SetDragAndReleaseToolArgs(
 
 namespace actor {
 
-PageTool::PageTool(RenderFrameHost& frame,
+PageTool::PageTool(AggregatedJournal& journal,
+                   RenderFrameHost& frame,
                    const ActionInformation& action_information)
     : action_information_(action_information) {
   frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
+  journal.EnsureJournalBound(frame);
 }
 
 PageTool::~PageTool() = default;
@@ -257,32 +260,29 @@ void PageTool::Invoke(InvokeCallback callback) {
 }
 
 std::string PageTool::DebugString() const {
-  std::string tool_type;
   // TODO(crbug.com/402210051): Add more details here about tool params.
+  return absl::StrFormat("PageTool:%s", JournalEvent().c_str());
+}
+
+std::string PageTool::JournalEvent() const {
   switch (action_information_.action_info_case()) {
     case ActionInformation::ActionInfoCase::kClick: {
-      tool_type = "Click";
-      break;
+      return "Click";
     }
     case ActionInformation::ActionInfoCase::kType: {
-      tool_type = "Type";
-      break;
+      return "Type";
     }
     case ActionInformation::ActionInfoCase::kScroll: {
-      tool_type = "Scroll";
-      break;
+      return "Scroll";
     }
     case ActionInformation::ActionInfoCase::kMoveMouse: {
-      tool_type = "MoveMouse";
-      break;
+      return "MoveMouse";
     }
     case ActionInformation::ActionInfoCase::kDragAndRelease: {
-      tool_type = "DragAndRelease";
-      break;
+      return "DragAndRelease";
     }
     case ActionInformation::ActionInfoCase::kSelect: {
-      tool_type = "Select";
-      break;
+      return "Select";
     }
     case ActionInformation::ActionInfoCase::kNavigate:
     case ActionInformation::ActionInfoCase::kBack:
@@ -291,8 +291,6 @@ std::string PageTool::DebugString() const {
     case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }
-
-  return absl::StrFormat("PageTool:%s", tool_type.c_str());
 }
 
 }  // namespace actor
