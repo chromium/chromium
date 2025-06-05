@@ -459,11 +459,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           is_restricted_notice_enabled);
 
   html_source->AddBoolean(
-      "safetyHubAbusiveNotificationRevocationEnabled",
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation));
-
-  html_source->AddBoolean(
       "isRelatedWebsiteSetsV2UiEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi));

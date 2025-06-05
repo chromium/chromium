@@ -575,12 +575,6 @@ export class SettingsSiteSettingsPageElement extends
         value: false,
       },
 
-      safetyHubAbusiveNotificationRevocationEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean(
-            'safetyHubAbusiveNotificationRevocationEnabled'),
-      },
-
       unusedSitePermissionsHeader_: String,
       unusedSitePermissionsSubheader_: String,
     };
@@ -605,7 +599,6 @@ export class SettingsSiteSettingsPageElement extends
   declare private contentExpanded_: boolean;
   declare private noRecentSitePermissions_: boolean;
   declare private showUnusedSitePermissions_: boolean;
-  declare private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
   declare private unusedSitePermissionsHeader_: string;
   declare private unusedSitePermissionsSubheader_: string;
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
@@ -665,10 +658,7 @@ export class SettingsSiteSettingsPageElement extends
     // TODO(crbug/342210522): Add test for this.
     this.unusedSitePermissionsSubheader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
-                'safetyHubRevokedPermissionsSecondaryLabel' :
-                'safetyHubUnusedSitePermissionsSecondaryLabel',
-            permissions.length);
+            'safetyHubRevokedPermissionsSecondaryLabel', permissions.length);
   }
 
   /** @return Class for the all site settings link */

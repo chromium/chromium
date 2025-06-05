@@ -351,10 +351,7 @@ RevokedPermissionsService::RevokedPermissionsResult::GetNotificationString()
     return std::u16string();
   }
   return l10n_util::GetPluralStringFUTF16(
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)
-          ? IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION
-          : IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION,
       revoked_permissions_.size());
 }
 
