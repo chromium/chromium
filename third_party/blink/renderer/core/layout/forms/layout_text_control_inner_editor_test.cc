@@ -134,4 +134,17 @@ TEST_F(LayoutTextControlInnerEditorTest, AddChildBeforeTestRenderingHolder) {
   // Pass if no crashes.
 }
 
+// crbug.com/422003155
+TEST_F(LayoutTextControlInnerEditorTest, EnableDynamic) {
+  SetBodyInnerHTML("<textarea id=ta disabled></textarea>");
+  auto* ta = GetElementById("ta");
+  const auto* inner_editor =
+      To<LayoutBlockFlow>(ta->GetLayoutBox()->FirstChildBox());
+  ASSERT_TRUE(inner_editor);
+
+  ta->SetBooleanAttribute(html_names::kDisabledAttr, false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_GT(inner_editor->Size().height, LayoutUnit());
+}
+
 }  // namespace blink

@@ -91,4 +91,20 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   anonymous->AddChild(new_child);
 }
 
+void LayoutTextControlInnerEditor::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style) {
+  LayoutBlockFlow::StyleDidChange(diff, old_style);
+
+  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() && old_style &&
+      old_style->UsedUserModify() != StyleRef().UsedUserModify() &&
+      !FirstChild()) {
+    // If this has no children and the UserModify state is changed from
+    // non-editable to editable, the box height was zero and this box should be
+    // relayout to ensure one-line height.
+    SetNeedsLayoutAndIntrinsicWidthsRecalc(
+        layout_invalidation_reason::kStyleChange);
+  }
+}
+
 }  // namespace blink
