@@ -62,6 +62,8 @@ def __filegroups(ctx):
                 "includes": [
                     "include/*.h",
                     "include/*/*.h",
+                    "include/*/*/*.h",
+                    "include/*/*/*/*.h",
                     "include/c++/*/*",
                     "bin/ccache",
                     "bin/*clang*",
@@ -70,6 +72,7 @@ def __filegroups(ctx):
                     "lib64/*.so.*",
                     "lib64/clang/*/include/*",
                     "lib64/clang/*/include/*/*",
+                    "lib64/*/include/*.h",
                 ],
             }
             fg["/lib64:solibs"] = {
