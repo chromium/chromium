@@ -232,7 +232,8 @@ void DigitalIdentityMultiStepDialog::TryShow(
     base::OnceClosure cancel_callback,
     const std::u16string& dialog_title,
     const std::u16string& body_text,
-    std::unique_ptr<views::View> custom_body_field) {
+    std::unique_ptr<views::View> custom_body_field,
+    bool show_progress_bar) {
   if (!web_contents_) {
     // Post task so that the callback is guaranteed to be called asynchronously
     // in all cases.
@@ -260,6 +261,9 @@ void DigitalIdentityMultiStepDialog::TryShow(
                   new_dialog_delegate.release(), web_contents_.get())
                   ->GetWeakPtr();
   }
+
+  delegate->GetBubbleFrameView()->SetProgress(
+      show_progress_bar ? std::optional<double>(-1) : std::nullopt);
 }
 
 ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() {

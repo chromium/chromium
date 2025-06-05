@@ -272,7 +272,8 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
-      dialog_title, dialog_body, MakeQrCodeImageView(qr_url));
+      dialog_title, dialog_body, MakeQrCodeImageView(qr_url),
+      /*show_progress_bar=*/false);
 }
 
 void DigitalIdentityProviderDesktop::ShowBluetoothManualTurnOnDialog() {
@@ -308,7 +309,8 @@ void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
                      weak_ptr_factory_.GetWeakPtr()),
       /*dialog_title=*/u"", /*dialog_body=*/u"",
       DigitalIdentityMultiStepDialog::CreateHeaderView(
-          std::move(title_text), /*body_text=*/u"", std::move(illustration)));
+          std::move(title_text), /*body_text=*/u"", std::move(illustration)),
+      /*show_progress_bar=*/true);
 }
 
 void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
@@ -329,7 +331,8 @@ void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
                      weak_ptr_factory_.GetWeakPtr()),
       /*dialog_title=*/u"", /*dialog_body=*/u"",
       DigitalIdentityMultiStepDialog::CreateHeaderView(
-          std::move(title_text), /*body_text=*/u"", std::move(illustration)));
+          std::move(title_text), /*body_text=*/u"", std::move(illustration)),
+      /*show_progress_bar=*/true);
 }
 
 void DigitalIdentityProviderDesktop::OnCableConnectingTimerComplete() {

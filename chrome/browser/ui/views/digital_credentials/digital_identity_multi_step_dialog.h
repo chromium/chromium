@@ -135,7 +135,8 @@ class DigitalIdentityMultiStepDialog {
       base::OnceClosure cancel_callback,
       const std::u16string& dialog_title,
       const std::u16string& body_text,
-      std::unique_ptr<views::View> custom_body_field);
+      std::unique_ptr<views::View> custom_body_field,
+      bool show_progress_bar);
 
   ui::ColorVariant GetBackgroundColor();
 

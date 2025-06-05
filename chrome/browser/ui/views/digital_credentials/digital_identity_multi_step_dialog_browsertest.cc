@@ -112,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 
     dialog->TryShow(accept_button_params, base::DoNothing(),
                     cancel_button_params, base::DoNothing(), kStep1Title,
-                    kStep1Body, nullptr);
+                    kStep1Body, /*custom_body_field=*/nullptr,
+                    /*show_progress_bar=*/false);
   }
 
   views::Widget* widget = dialog_test_api.GetWidget();
@@ -144,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 
     dialog->TryShow(accept_button_params, base::DoNothing(),
                     cancel_button_params, base::DoNothing(), kStep2Title,
-                    kStep2Body, nullptr);
+                    kStep2Body, /*custom_body_field=*/nullptr,
+                    /*show_progress_bar=*/false);
   }
 
   // The same widget should be showing.
@@ -181,11 +183,11 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
       GetActiveWebContents()->GetWeakPtr());
   auto dialog_test_api =
       std::make_unique<DigitalIdentityMultiStepDialog::TestApi>(dialog.get());
-  dialog->TryShow(std::make_optional<ButtonParams>(),
-                  base::BindRepeating(ok_callback, &was_ok_callback_called),
-                  ButtonParams(),
-                  base::BindOnce(cancel_callback, &was_cancel_callback_called),
-                  u"Title", u"Body", nullptr);
+  dialog->TryShow(
+      std::make_optional<ButtonParams>(),
+      base::BindRepeating(ok_callback, &was_ok_callback_called), ButtonParams(),
+      base::BindOnce(cancel_callback, &was_cancel_callback_called), u"Title",
+      u"Body", /*custom_body_field=*/nullptr, /*show_progress_bar=*/false);
   EXPECT_TRUE(dialog_test_api->GetWidget()->IsVisible());
 
   // Accept dialog and run any pending tasks.
@@ -215,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
         std::make_optional<ButtonParams>();
     accept_button_params->SetEnabled(false);
     dialog->TryShow(accept_button_params, base::DoNothing(), ButtonParams(),
-                    base::DoNothing(), u"Title", u"Body", nullptr);
+                    base::DoNothing(), u"Title", u"Body",
+                    /*custom_body_field=*/nullptr, /*show_progress_bar=*/false);
     EXPECT_FALSE(dialog_test_api.GetWidgetDelegate()->IsDialogButtonEnabled(
         ui::mojom::DialogButton::kOk));
   }
@@ -225,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
         std::make_optional<ButtonParams>();
     accept_button_params->SetEnabled(true);
     dialog->TryShow(accept_button_params, base::DoNothing(), ButtonParams(),
-                    base::DoNothing(), u"Title", u"Body", nullptr);
+                    base::DoNothing(), u"Title", u"Body",
+                    /*custom_body_field=*/nullptr, /*show_progress_bar=*/false);
     EXPECT_TRUE(dialog_test_api.GetWidgetDelegate()->IsDialogButtonEnabled(
         ui::mojom::DialogButton::kOk));
   }
