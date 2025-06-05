@@ -4,7 +4,7 @@
 
 #include "components/account_manager_core/account_upsertion_result.h"
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace account_manager {

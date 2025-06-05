@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_COMMON_CONTEXT_DATA_H_
 #define EXTENSIONS_COMMON_CONTEXT_DATA_H_
 
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace extensions {

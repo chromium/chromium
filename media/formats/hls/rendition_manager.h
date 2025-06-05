@@ -25,7 +25,6 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 #include "ui/gfx/geometry/size.h"
-#include "url/gurl.h"
 
 namespace media::hls {
 

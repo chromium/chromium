@@ -11,7 +11,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

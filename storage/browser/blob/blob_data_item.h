@@ -23,7 +23,6 @@
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "url/gurl.h"
 
 namespace storage {
 class BlobDataBuilder;

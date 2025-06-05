@@ -13,7 +13,6 @@
 #include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/video_decode_perf_history.h"
-#include "url/gurl.h"
 
 namespace media {
 

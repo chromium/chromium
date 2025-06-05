@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "services/media_session/public/cpp/chapter_information.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 

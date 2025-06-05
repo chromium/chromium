@@ -46,7 +46,6 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
-#include "url/gurl.h"
 
 namespace gpu {
 class DecoderContext;

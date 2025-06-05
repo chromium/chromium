@@ -11,10 +11,11 @@
 #ifndef GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_
 #define GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
-#include "url/gurl.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"

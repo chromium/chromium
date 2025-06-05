@@ -22,7 +22,6 @@
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "url/gurl.h"
 
 namespace net {
 class HttpResponseHeaders;

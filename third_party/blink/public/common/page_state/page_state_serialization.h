@@ -18,7 +18,6 @@
 #include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {

@@ -9,8 +9,7 @@
 
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;

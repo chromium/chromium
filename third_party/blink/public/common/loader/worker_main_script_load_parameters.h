@@ -11,7 +11,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "url/gurl.h"
 
 namespace blink {
 

@@ -10,7 +10,6 @@
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;

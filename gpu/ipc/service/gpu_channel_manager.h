@@ -43,7 +43,6 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface.h"
-#include "url/gurl.h"
 
 namespace base::trace_event {
 class TracedValue;

@@ -17,7 +17,6 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
-#include "url/gurl.h"
 
 // Values for the 'status' field of multilogin responses.
 // These values are persisted to logs. Entries should not be renumbered and

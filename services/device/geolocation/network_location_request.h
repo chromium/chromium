@@ -17,7 +17,6 @@
 #include "services/device/public/cpp/geolocation/network_location_request_source.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
-#include "url/gurl.h"
 
 namespace net {
 struct PartialNetworkTrafficAnnotationTag;

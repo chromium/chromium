@@ -17,7 +17,6 @@
 #include "media/base/cdm_key_information.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
-#include "url/gurl.h"
 
 namespace base {
 class Time;

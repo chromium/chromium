@@ -18,7 +18,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "ui/gfx/color_space.h"
-#include "url/gurl.h"
 
 namespace media {
 

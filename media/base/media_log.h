@@ -27,7 +27,6 @@
 #include "media/base/media_log_properties.h"
 #include "media/base/media_log_record.h"
 #include "media/base/pipeline_status.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/osstatus_logging.h"
