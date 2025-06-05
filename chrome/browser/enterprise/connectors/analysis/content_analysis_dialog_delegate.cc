@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -35,6 +36,71 @@ const views::Widget* ContentAnalysisDialogDelegate::GetWidget() const {
 
 ui::mojom::ModalType ContentAnalysisDialogDelegate::GetModalType() const {
   return ui::mojom::ModalType::kChild;
+}
+
+int ContentAnalysisDialogDelegate::GetTopImageId() const {
+  if (color_utils::IsDark(contents_view_->GetColorProvider()->GetColor(
+          ui::kColorDialogBackground))) {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING_DARK;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS_DARK;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION_DARK;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING_DARK;
+    }
+  } else {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING;
+    }
+  }
+}
+
+ui::ColorId ContentAnalysisDialogDelegate::GetSideImageLogoColor() const {
+  DCHECK(contents_view_);
+
+  switch (dialog_state_) {
+    case State::PENDING:
+      // In the dialog's pending state, the side image is just an enterprise
+      // logo surrounded by a throbber, so we use the throbber color for it.
+      return ui::kColorThrobber;
+    case State::SUCCESS:
+    case State::FAILURE:
+    case State::WARNING:
+      // In a result state, the side image is a circle colored with the result's
+      // color and an enterprise logo in front of it, so the logo should have
+      // the same color as the dialog's overall background.
+      return ui::kColorDialogBackground;
+  }
+}
+
+ui::ColorId ContentAnalysisDialogDelegate::GetSideImageBackgroundColor() const {
+  DCHECK(is_result());
+  DCHECK(contents_view_);
+
+  switch (dialog_state_) {
+    case State::PENDING:
+      NOTREACHED();
+    case State::SUCCESS:
+      return ui::kColorAccent;
+    case State::FAILURE:
+      return ui::kColorAlertHighSeverity;
+    case State::WARNING:
+      return ui::kColorAlertMediumSeverityIcon;
+  }
+}
+
+bool ContentAnalysisDialogDelegate::is_result() const {
+  return !is_pending();
 }
 
 void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(

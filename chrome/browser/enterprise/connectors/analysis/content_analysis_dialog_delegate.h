@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -18,7 +19,8 @@ namespace enterprise_connectors {
 
 // Implementation of `views::DialogDelegate` used to show a user the state of
 // content analysis triggered by one of their action.
-class ContentAnalysisDialogDelegate : public views::DialogDelegate {
+class ContentAnalysisDialogDelegate : public views::DialogDelegate,
+                                      public ContentAnalysisBaseView::Delegate {
  public:
   // Enum used to represent what the dialog is currently showing.
   enum class State {
@@ -51,6 +53,12 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate {
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   ui::mojom::ModalType GetModalType() const override;
+
+  // ContentAnalysisBaseView::Delegate:
+  int GetTopImageId() const override;
+  ui::ColorId GetSideImageLogoColor() const override;
+  ui::ColorId GetSideImageBackgroundColor() const override;
+  bool is_result() const override;
 
   // Accessors to simplify `dialog_state_` checking.
   inline bool is_success() const { return dialog_state_ == State::SUCCESS; }

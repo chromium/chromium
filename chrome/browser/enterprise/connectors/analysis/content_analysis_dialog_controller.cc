@@ -15,7 +15,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -551,49 +550,6 @@ std::unique_ptr<views::View> ContentAnalysisDialogController::CreateSideIcon() {
   return icon;
 }
 
-ui::ColorId ContentAnalysisDialogController::GetSideImageBackgroundColor()
-    const {
-  DCHECK(is_result());
-  DCHECK(contents_view_);
-
-  switch (dialog_state_) {
-    case State::PENDING:
-      NOTREACHED();
-    case State::SUCCESS:
-      return ui::kColorAccent;
-    case State::FAILURE:
-      return ui::kColorAlertHighSeverity;
-    case State::WARNING:
-      return ui::kColorAlertMediumSeverityIcon;
-  }
-}
-
-int ContentAnalysisDialogController::GetTopImageId() const {
-  if (ShouldUseDarkTopImage()) {
-    switch (dialog_state_) {
-      case State::PENDING:
-        return IDR_UPLOAD_SCANNING_DARK;
-      case State::SUCCESS:
-        return IDR_UPLOAD_SUCCESS_DARK;
-      case State::FAILURE:
-        return IDR_UPLOAD_VIOLATION_DARK;
-      case State::WARNING:
-        return IDR_UPLOAD_WARNING_DARK;
-    }
-  } else {
-    switch (dialog_state_) {
-      case State::PENDING:
-        return IDR_UPLOAD_SCANNING;
-      case State::SUCCESS:
-        return IDR_UPLOAD_SUCCESS;
-      case State::FAILURE:
-        return IDR_UPLOAD_VIOLATION;
-      case State::WARNING:
-        return IDR_UPLOAD_WARNING;
-    }
-  }
-}
-
 std::u16string ContentAnalysisDialogController::GetPendingMessage() const {
   DCHECK(is_pending());
   if (is_print_scan()) {
@@ -870,24 +826,6 @@ void ContentAnalysisDialogController::CancelDialogAndDelete() {
   }
 }
 
-ui::ColorId ContentAnalysisDialogController::GetSideImageLogoColor() const {
-  DCHECK(contents_view_);
-
-  switch (dialog_state_) {
-    case State::PENDING:
-      // In the dialog's pending state, the side image is just an enterprise
-      // logo surrounded by a throbber, so we use the throbber color for it.
-      return ui::kColorThrobber;
-    case State::SUCCESS:
-    case State::FAILURE:
-    case State::WARNING:
-      // In a result state, the side image is a circle colored with the result's
-      // color and an enterprise logo in front of it, so the logo should have
-      // the same color as the dialog's overall background.
-      return ui::kColorDialogBackground;
-  }
-}
-
 // static
 void ContentAnalysisDialogController::SetMinimumPendingDialogTimeForTesting(
     base::TimeDelta delta) {
@@ -988,10 +926,6 @@ void ContentAnalysisDialogController::CancelDialogWithoutCallback() {
   if (contents_view_) {
     CancelDialog();
   }
-}
-
-bool ContentAnalysisDialogController::is_result() const {
-  return !is_pending();
 }
 
 }  // namespace enterprise_connectors

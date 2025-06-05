@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_item.h"
@@ -46,8 +45,7 @@ class ContentAnalysisDialogController
     : public ContentAnalysisDialogDelegate,
       public content::WebContentsObserver,
       public views::TextfieldController,
-      public download::DownloadItem::Observer,
-      public ContentAnalysisBaseView::Delegate {
+      public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
   // ContentAnalysisDialogController functions are called. The test can add
@@ -116,12 +114,6 @@ class ContentAnalysisDialogController
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
-
-  // ContentAnalysisBaseView::Delegate:
-  int GetTopImageId() const override;
-  ui::ColorId GetSideImageLogoColor() const override;
-  ui::ColorId GetSideImageBackgroundColor() const override;
-  bool is_result() const override;
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
