@@ -31,16 +31,14 @@
 #include "base/trace_event/named_trigger.h"  // no-presubmit-check
 
 namespace base::android {
-BASE_FEATURE(kShouldFreezeSelf,
-             "ShouldFreezeSelf",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShouldFreezeSelf, "ShouldFreezeSelf", FEATURE_ENABLED_BY_DEFAULT);
 
 // Max amount of compaction to do in each chunk, measured in MiB.
 BASE_FEATURE_PARAM(size_t,
                    kShouldFreezeSelfMaxSize,
                    &kShouldFreezeSelf,
                    "max_chunk_size",
-                   10);
+                   100);
 
 // Delay between running pre-freeze tasks and doing self-freeze, measured in s.
 BASE_FEATURE_PARAM(size_t,
