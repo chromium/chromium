@@ -734,6 +734,7 @@ public class ToolbarManager
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new
      *     windows.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
+     * @param menuButtonVisibilityDelegate Delegate for handling the visibility of the menu button.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -781,7 +782,8 @@ public class ToolbarManager
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier) {
+            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @Nullable MenuButtonCoordinator.VisibilityDelegate menuButtonVisibilityDelegate) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -955,7 +957,8 @@ public class ToolbarManager
                         menuButtonThemeColorProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
-                        R.id.menu_button_wrapper);
+                        R.id.menu_button_wrapper,
+                        menuButtonVisibilityDelegate);
         if (canShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
 
         // TODO(b/351005760): Investigate the feasibility of replacing
@@ -972,7 +975,8 @@ public class ToolbarManager
                         overviewModeThemeColorProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
-                        R.id.none);
+                        R.id.none,
+                        menuButtonVisibilityDelegate);
 
         ToggleTabStackButton tabSwitcherButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);

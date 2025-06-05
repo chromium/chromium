@@ -45,8 +45,22 @@ public class MenuButtonCoordinator {
         void setFocus(boolean focus, int reason);
     }
 
+    /** Delegate for handling the visibility of the menu button. */
+    public interface VisibilityDelegate {
+        /**
+         * Sets the menu button visibility.
+         *
+         * @param visible Whether the menu button should be on the toolbar and visible.
+         */
+        void setMenuButtonVisible(boolean visible);
+
+        /** Whether the menu button is visible. */
+        boolean isMenuButtonVisible();
+    }
+
     private final Activity mActivity;
     private final PropertyModel mPropertyModel;
+    private final @Nullable VisibilityDelegate mVisibilityDelegate;
     private MenuButtonMediator mMediator;
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
     private @Nullable MenuButton mMenuButton;
@@ -68,6 +82,7 @@ public class MenuButtonCoordinator {
      * @param menuButtonStateSupplier Supplier of the menu button state.
      * @param onMenuButtonClicked Runnable to run on menu button click.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
+     * @param visibilityDelegate Delegate for handling the visibility of the menu button.
      */
     public MenuButtonCoordinator(
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
@@ -80,7 +95,8 @@ public class MenuButtonCoordinator {
             ThemeColorProvider themeColorProvider,
             Supplier<MenuButtonState> menuButtonStateSupplier,
             Runnable onMenuButtonClicked,
-            @IdRes int menuButtonId) {
+            @IdRes int menuButtonId,
+            @Nullable VisibilityDelegate visibilityDelegate) {
         mActivity = assertNonNull(windowAndroid.getActivity().get());
         mMenuButton = mActivity.findViewById(menuButtonId);
         mPropertyModel =
@@ -117,7 +133,8 @@ public class MenuButtonCoordinator {
                         appMenuCoordinatorSupplier,
                         windowAndroid,
                         menuButtonStateSupplier,
-                        onMenuButtonClicked);
+                        onMenuButtonClicked,
+                        visibilityDelegate);
         mMediator
                 .getMenuButtonHelperSupplier()
                 .addObserver((helper) -> mAppMenuButtonHelper = helper);
@@ -126,6 +143,7 @@ public class MenuButtonCoordinator {
                     PropertyModelChangeProcessor.create(
                             mPropertyModel, mMenuButton, new MenuButtonViewBinder());
         }
+        mVisibilityDelegate = visibilityDelegate;
     }
 
     /**
@@ -141,6 +159,9 @@ public class MenuButtonCoordinator {
 
     /** Disables the menu button, removing it from the view hierarchy and destroying it. */
     public void disableMenuButton() {
+        if (mVisibilityDelegate != null) {
+            mVisibilityDelegate.setMenuButtonVisible(false);
+        }
         if (mMenuButton != null) {
             UiUtils.removeViewFromParent(mMenuButton);
             destroy();
@@ -188,6 +209,9 @@ public class MenuButtonCoordinator {
      * @return Whether the menu button is present and visible.
      */
     public boolean isVisible() {
+        if (mVisibilityDelegate != null) {
+            return mVisibilityDelegate.isMenuButtonVisible();
+        }
         return mMenuButton != null && mMenuButton.getVisibility() == View.VISIBLE;
     }
 

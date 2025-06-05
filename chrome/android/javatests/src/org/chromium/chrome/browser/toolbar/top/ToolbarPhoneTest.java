@@ -235,7 +235,8 @@ public class ToolbarPhoneTest {
                                     mThemeColorProvider,
                                     () -> null,
                                     CallbackUtils.emptyRunnable(),
-                                    R.id.menu_button_wrapper);
+                                    R.id.menu_button_wrapper,
+                                    null);
                     mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
                     mToolbar.updateOptionalButton(
                             new ButtonDataImpl(

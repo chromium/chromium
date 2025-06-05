@@ -135,6 +135,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController;
@@ -1323,6 +1324,11 @@ public class RootUiCoordinator
         return true;
     }
 
+    /** Returns the {@link MenuButtonCoordinator.VisibilityDelegate}. */
+    protected @Nullable MenuButtonCoordinator.VisibilityDelegate getMenuButtonVisibilityDelegate() {
+        return null;
+    }
+
     // WindowFocusChangedObserver implementation
 
     @Override
@@ -1513,7 +1519,8 @@ public class RootUiCoordinator
                             mReadAloudControllerSupplier,
                             getDesktopWindowStateManager(),
                             getMultiInstanceManager(),
-                            mTabBookmarkerSupplier);
+                            mTabBookmarkerSupplier,
+                            getMenuButtonVisibilityDelegate());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

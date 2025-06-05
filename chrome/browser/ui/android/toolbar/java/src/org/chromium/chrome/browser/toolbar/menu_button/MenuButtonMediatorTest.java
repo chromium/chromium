@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
@@ -62,6 +63,7 @@ public class MenuButtonMediatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private View mUtilityView;
+    @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
 
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -93,20 +95,7 @@ public class MenuButtonMediatorTest {
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
-        mMenuButtonMediator =
-                new MenuButtonMediator(
-                        mPropertyModel,
-                        true,
-                        () -> false,
-                        mRequestRenderRunnable,
-                        mThemeColorProvider,
-                        () -> false,
-                        mControlsVisibilityDelegate,
-                        mFocusFunction,
-                        mAppMenuSupplier,
-                        mWindowAndroid,
-                        () -> mMenuUiState.buttonState,
-                        mOnMenuButtonClicked);
+        initMenuButtonMediator(null);
     }
 
     @Test
@@ -188,7 +177,8 @@ public class MenuButtonMediatorTest {
                         mAppMenuSupplier,
                         mWindowAndroid,
                         () -> mMenuUiState.buttonState,
-                        mOnMenuButtonClicked);
+                        mOnMenuButtonClicked,
+                        null);
 
         doReturn(true).when(mActivity).isDestroyed();
         newMediator.updateStateChanged();
@@ -295,5 +285,39 @@ public class MenuButtonMediatorTest {
         assertFalse(
                 "Menu button should be hidden",
                 mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testVisibilityDelegate() {
+        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        initMenuButtonMediator(mVisibilityDelegate);
+
+        mMenuButtonMediator.setVisibility(false);
+        verify(mVisibilityDelegate).setMenuButtonVisible(false);
+        assertTrue(
+                "Visibility shouldn't be handled by this component.",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.setVisibility(true);
+        verify(mVisibilityDelegate).setMenuButtonVisible(true);
+    }
+
+    private void initMenuButtonMediator(
+            MenuButtonCoordinator.VisibilityDelegate visibilityDelegate) {
+        mMenuButtonMediator =
+                new MenuButtonMediator(
+                        mPropertyModel,
+                        true,
+                        () -> false,
+                        mRequestRenderRunnable,
+                        mThemeColorProvider,
+                        () -> false,
+                        mControlsVisibilityDelegate,
+                        mFocusFunction,
+                        mAppMenuSupplier,
+                        mWindowAndroid,
+                        () -> mMenuUiState.buttonState,
+                        mOnMenuButtonClicked,
+                        visibilityDelegate);
     }
 }

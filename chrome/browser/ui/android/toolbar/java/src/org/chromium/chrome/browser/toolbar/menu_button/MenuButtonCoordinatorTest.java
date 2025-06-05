@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -17,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
@@ -55,6 +59,7 @@ public class MenuButtonCoordinatorTest {
     @Mock Resources mResources;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock private MenuButtonCoordinator.VisibilityDelegate mVisibilityDelegate;
 
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -78,21 +83,7 @@ public class MenuButtonCoordinatorTest {
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
-        // clang-format off
-        mMenuButtonCoordinator =
-                new MenuButtonCoordinator(
-                        mAppMenuSupplier,
-                        mControlsVisibilityDelegate,
-                        mWindowAndroid,
-                        mFocusFunction,
-                        mRequestRenderRunnable,
-                        true,
-                        () -> false,
-                        mThemeColorProvider,
-                        () -> null,
-                        () -> {},
-                        R.id.menu_button_wrapper);
-        // clang-format on
+        initMenuButtonCoordinator(null);
     }
 
     @Test
@@ -117,5 +108,50 @@ public class MenuButtonCoordinatorTest {
 
         mMenuButtonCoordinator.highlightMenuItemOnShow(R.id.close_all_tabs_menu_id);
         verify(mAppMenuButtonHelper).highlightMenuItemOnShow(R.id.close_all_tabs_menu_id);
+    }
+
+    @Test
+    public void testVisibilityDelegate_isVisible() {
+        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        initMenuButtonCoordinator(mVisibilityDelegate);
+
+        when(mVisibilityDelegate.isMenuButtonVisible()).thenReturn(true);
+        assertTrue(
+                "Should return visibility from VisibilityDelegate",
+                mMenuButtonCoordinator.isVisible());
+
+        when(mVisibilityDelegate.isMenuButtonVisible()).thenReturn(false);
+        assertFalse(
+                "Should return visibility from VisibilityDelegate",
+                mMenuButtonCoordinator.isVisible());
+    }
+
+    @Test
+    public void testVisibilityDelegate_disable() {
+        mVisibilityDelegate = Mockito.mock(MenuButtonCoordinator.VisibilityDelegate.class);
+        initMenuButtonCoordinator(mVisibilityDelegate);
+
+        mMenuButtonCoordinator.disableMenuButton();
+        verify(mVisibilityDelegate).setMenuButtonVisible(false);
+    }
+
+    private void initMenuButtonCoordinator(
+            MenuButtonCoordinator.VisibilityDelegate visibilityDelegate) {
+        // clang-format off
+        mMenuButtonCoordinator =
+                new MenuButtonCoordinator(
+                        mAppMenuSupplier,
+                        mControlsVisibilityDelegate,
+                        mWindowAndroid,
+                        mFocusFunction,
+                        mRequestRenderRunnable,
+                        true,
+                        () -> false,
+                        mThemeColorProvider,
+                        () -> null,
+                        () -> {},
+                        R.id.menu_button_wrapper,
+                        visibilityDelegate);
+        // clang-format on
     }
 }

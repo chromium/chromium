@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarB
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -43,7 +44,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.List;
 
-public class CustomTabToolbarButtonsCoordinator {
+public class CustomTabToolbarButtonsCoordinator
+        implements MenuButtonCoordinator.VisibilityDelegate {
     private final ListModelChangeProcessor<
                     PropertyListModel<PropertyModel, PropertyKey>, CustomTabToolbar, PropertyKey>
             mCustomActionButtonsMcp;
@@ -116,6 +118,16 @@ public class CustomTabToolbarButtonsCoordinator {
 
     public void destroy() {
         mMediator.destroy();
+    }
+
+    @Override
+    public void setMenuButtonVisible(boolean visible) {
+        mModel.set(CustomTabToolbarButtonsProperties.MENU_BUTTON_VISIBLE, visible);
+    }
+
+    @Override
+    public boolean isMenuButtonVisible() {
+        return mModel.get(CustomTabToolbarButtonsProperties.MENU_BUTTON_VISIBLE);
     }
 
     /**
