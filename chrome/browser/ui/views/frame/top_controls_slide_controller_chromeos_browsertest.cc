@@ -756,9 +756,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
       scrollable_page_contents));
 }
 
-// Fails on Linux Chromium OS Tests (https://crbug.com/1191327).
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestClosingATab) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestClosingATab) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -802,9 +800,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                                TopChromeShownState::kFullyHidden);
 }
 
-// Sheriff 2022/02/25; flaky test crbug/1300462
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestFocusEditableElements) {
+                       TestFocusEditableElements) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -913,10 +910,7 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// TODO(crbug.com/40224646): Flaky under dbg and sanitizers.
-// TODO(crbug.com/422318572): Flaky.
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_DisplayRotation) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -1050,13 +1044,7 @@ class PageStateUpdateWaiter : content::WebContentsObserver {
 // Verifies that we ignore the shown ratios sent from widgets other than that of
 // the main frame (such as widgets of the drop-down menus in web pages).
 // https://crbug.com/891471.
-// TODO(crbug.com/40848345): Flaky for dbg and ASan builds.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
-#define MAYBE_TestDropDowns DISABLED_TestDropDowns
-#else
-#define MAYBE_TestDropDowns TestDropDowns
-#endif
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
   browser_view()->frame()->Maximize();
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
@@ -1208,9 +1196,8 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   bool seen_intermediate_ratios_ = false;
 };
 
-// TODO(crbug.com/40676580): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestIntermediateSliding) {
+                       TestIntermediateSliding) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -1438,9 +1425,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                                TopChromeShownState::kFullyHidden);
 }
 
-// Flaky on ChromeOS bots. https://crbug.com/1033648
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_TestToggleChromeVox) {
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestToggleChromeVox) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -1482,9 +1467,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 }
 
 // Regression test for https://crbug.com/1163276.
-// TODO(crbug.com/40174370): Test times out flakily.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       DISABLED_NoCrashOnNewTabWhileScrolling) {
+                       NoCrashOnNewTabWhileScrolling) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
