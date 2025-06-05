@@ -5336,6 +5336,35 @@ TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestMsi, InstallViaCommandLineTwice) {
+  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+
+  for (int i = 0; i < 2; ++i) {
+    if (!i) {
+      // The updater only sends a ping for the first install.
+      ExpectInstallEvent(*test_server_, kUpdaterAppId);
+    }
+    ExpectAppsUpdateSequence(
+        UpdaterScope::kSystem, test_server_.get(),
+        /*request_attributes=*/{},
+        {
+            AppUpdateExpectation(
+                {}, kMsiAppId,
+                i ? kMsiUpdatedVersion : base::Version(kNullVersion),
+                kMsiUpdatedVersion,
+                /*is_install=*/true,
+                /*should_update=*/true, false, "", "", crx_path),
+        });
+    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+        kMsiAppId, /*is_silent_install=*/true, "usagestats=1"));
+  }
+
+  ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTestMsi, Upgrade) {
   ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install());
