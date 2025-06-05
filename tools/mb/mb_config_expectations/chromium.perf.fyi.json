@@ -96,7 +96,9 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "x64",
-      "target_os": "linux"
+      "target_os": "linux",
+      "use_reclient": false,
+      "use_remoteexec": true
     }
   },
   "win-arm64-builder-perf": {

@@ -339,7 +339,7 @@
     ],
 
     'chromium_remoteexec_linux': [
-      'minimal_symbols', 'pgo_phase_0', 'x64', 'linux', 'dcheck_off',
+      'minimal_symbols', 'pgo_phase_0', 'x64', 'linux', 'dcheck_off', 'remoteexec',
     ],
 
     'clang_tot_official': [
