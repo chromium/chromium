@@ -15524,6 +15524,28 @@
             ]
         }
     ],
+    "OmniboxAIModeZPS_Desktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2_AIM_Suggestions",
+                    "params": {
+                        "LocalHistoryNonNormalizedContents": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxMiaZPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxAnswerActions": [
         {
             "platforms": [
