@@ -23591,6 +23591,21 @@
             ]
         }
     ],
+    "SyncTrustedVaultInfobarImprovements": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncTrustedVaultInfobarImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "SysPkJPandVKMv3": [
         {
             "platforms": [
