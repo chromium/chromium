@@ -480,8 +480,16 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   EXPECT_TRUE(IsSignoutTab(tab));
 }
 
+// TODO(crbug.com/422501416): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser \
+  DISABLED_SignoutOrReauthWithPrompt_SignOutSupervisedUser
+#else
+#define MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser \
+  SignoutOrReauthWithPrompt_SignOutSupervisedUser
+#endif
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
-                       SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
+                       MAYBE_SignoutOrReauthWithPrompt_SignOutSupervisedUser) {
   // Setup a primary account for a supervised user.
   AccountInfo primary_account_info = SetPrimaryAccount();
   AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
