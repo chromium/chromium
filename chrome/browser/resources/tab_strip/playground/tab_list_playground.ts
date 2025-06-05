@@ -9,7 +9,7 @@ import '../tab_group.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from '../tab_list.html.js';
-import type {Container, OnTabDataChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, TabId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
+import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, TabId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
 import {TabCollection_CollectionType} from '../tab_strip_api.mojom-webui.js';
 
 import {TabElement} from './tab_playground.js';
@@ -89,6 +89,7 @@ export class TabListPlaygroundElement extends CustomElement {
     callbackRouter.onTabsClosed.addListener(this.onTabsClosed_.bind(this));
     callbackRouter.onTabDataChanged.addListener(
         this.onTabDataChanged_.bind(this));
+    callbackRouter.onTabMoved.addListener(this.onTabMoved_.bind(this));
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -127,10 +128,28 @@ export class TabListPlaygroundElement extends CustomElement {
     tabElement.tab = tab;
   }
 
+  private onTabMoved_(event: OnTabMovedEvent) {
+    const element = this.findTabElement_(event.id.id)!;
+    element.remove();
+    this.placeTabElement(element, event.to.index, false, null);
+  }
+
   private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
     const tabElement = new TabElement();
     tabElement.tab = tab;
     tabElement.isPinned = isPinned;
+    tabElement.dragEndHandler = (_: TabElement, x: number) => {
+      let targetIdx = 0;
+      for (const child of this.unpinnedTabsElement_.children) {
+        if (x < child.getBoundingClientRect().x) {
+          break;
+        }
+        targetIdx++;
+      }
+      targetIdx =
+          Math.min(targetIdx, this.unpinnedTabsElement_.childElementCount - 1);
+      this.tabStripApi_.moveTab(tab.id, {index: targetIdx});
+    };
     return tabElement;
   }
 

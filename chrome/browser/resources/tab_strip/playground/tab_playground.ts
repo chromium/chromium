@@ -39,6 +39,7 @@ export class TabElement extends CustomElement {
   private onTabActivating_: (tabId: TabId) => void;
   private tabStripApi_: TabStripApiProxy;
   private isValidDragOverTarget_: boolean;
+  private dragHandler_: any;
 
   // Temp public
   isActive: boolean = false;
@@ -69,6 +70,7 @@ export class TabElement extends CustomElement {
 
     this.titleTextEl_ = this.getRequiredElement('#titleText');
     this.tabStripApi_ = TabStripApiProxyImpl.getInstance();
+    this.dragHandler_ = () => 0;
 
     /**
      * Flag indicating if this TabElement can accept dragover events. This
@@ -79,6 +81,9 @@ export class TabElement extends CustomElement {
 
 
     this.tabEl_.addEventListener('click', () => this.onClick_());
+    this.addEventListener(
+        'dragend',
+        (event: MouseEvent) => this.dragHandler_(this, event.clientX));
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.onTabActivating_ = (tabId: TabId) =>
@@ -92,6 +97,10 @@ export class TabElement extends CustomElement {
   get tab(): Tab {
     assert(this.tab_);
     return this.tab_;
+  }
+
+  set dragEndHandler(handler: (element: TabElement, x: number) => void) {
+    this.dragHandler_ = handler;
   }
 
   set tab(tab: Tab) {
