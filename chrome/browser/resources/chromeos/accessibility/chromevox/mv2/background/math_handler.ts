@@ -37,9 +37,13 @@ export class MathHandler {
    * @return Boolean indicating whether any math was spoken.
    */
   speak(): boolean {
-    const mathml = this.node_.mathContent;
+    let mathml = this.node_.mathContent;
     if (!mathml) {
       return false;
+    }
+    // Ensure it has a `math` root node.
+    if (!/^<math>${mathml}<\/math>$/.test(mathml)) {
+      mathml = '<math>' + mathml + '</math>';
     }
 
     let text: string|null = null;

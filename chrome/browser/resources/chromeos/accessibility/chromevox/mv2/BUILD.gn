@@ -412,6 +412,7 @@ js2gtest("chromevox_extension_js_tests") {
     "background/input/smart_sticky_mode_test.js",
     "background/live_regions_test.js",
     "background/logging/log_store_test.js",
+    "background/math_handler_test.js",
     "background/output/output_test.js",
     "background/panel/i_search_test.js",
     "background/panel/panel_background_test.js",
