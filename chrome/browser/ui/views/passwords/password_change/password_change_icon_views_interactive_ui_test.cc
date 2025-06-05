@@ -110,28 +110,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
-                       ViewIsVisibleWhenChangingPasswordFinished) {
-  EnableSignIn();
-  SetPrivacyNoticeAcceptedPref();
-  SetupPasswordChange();
-  // Wait until the password change flow runs. The flow will fail
-  // because OptimizationGuideKeyedService is not set up for this test. But it
-  // doesn't matter here, it only checks that the icon should change
-  // back to standard password manger icon and label should be removed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    PasswordChangeDelegate* delegate =
-        static_cast<PasswordsModelDelegate*>(GetController())
-            ->GetPasswordChangeDelegate();
-    return delegate->GetCurrentState() ==
-           PasswordChangeDelegate::State::kPasswordChangeFailed;
-  }));
-  EXPECT_TRUE(GetView()->GetVisible());
-  EXPECT_EQ(vector_icons::kPasswordManagerIcon.name,
-            GetView()->GetVectorIcon().name);
-  EXPECT_EQ(u"", GetView()->GetText());
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
                        ViewIsNotVisibleWhenChangingPasswordCanceled) {
   SetupPasswordChange();
   PasswordChangeDelegate* delegate =

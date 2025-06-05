@@ -18,6 +18,22 @@
 
 namespace {
 
+// Whether a dialog should be displayed for a given `state`.
+bool ShouldDisplayDialog(PasswordChangeDelegate::State state) {
+  switch (state) {
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+      return true;
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeDelegate::State::kChangingPassword:
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kOtpDetected:
+      return false;
+  }
+}
+
 // Creates dialog for `PasswordChangeDelegate::State::kOfferingPasswordChange`.
 std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
     base::OnceClosure accept_callback) {
@@ -41,6 +57,27 @@ std::unique_ptr<ui::DialogModel> CreateOfferChangePasswordDialog(
       .Build();
 }
 
+// Creates dialog for `PasswordChangeDelegate::State::kPasswordChangeFailed`.
+std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
+    base::OnceClosure accept_callback) {
+  return ui::DialogModel::Builder()
+      .SetBannerImage(
+          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING),
+          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_WARNING_DARK))
+      .SetTitle(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_TITLE))
+      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_BODY)))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_CLOSE)))
+      .AddOkButton(
+          std::move(accept_callback),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_ACCEPT_BUTTON)))
+      .Build();
+}
+
 // Creates dialog for `state`.
 std::unique_ptr<ui::DialogModel> CreateDialog(
     PasswordChangeDelegate::State state,
@@ -48,12 +85,13 @@ std::unique_ptr<ui::DialogModel> CreateDialog(
   switch (state) {
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
       return CreateOfferChangePasswordDialog(std::move(accept_callback));
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+      return CreatePasswordChangeFailedDialog(std::move(accept_callback));
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kOtpDetected:
       NOTREACHED();
   }
@@ -78,7 +116,7 @@ void PasswordChangeUIController::UpdateState(
   state_ = state;
 
   // TODO(crbug.com/417389698): Handle other states.
-  if (state_ == PasswordChangeDelegate::State::kOfferingPasswordChange) {
+  if (ShouldDisplayDialog(state_)) {
     tabs::TabInterface* tab_interface =
         tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
     if (!tab_interface || !tab_interface->CanShowModalUI()) {
@@ -105,8 +143,22 @@ void PasswordChangeUIController::UpdateState(
 }
 
 void PasswordChangeUIController::OnDialogAccepted() {
-  if (state_ == PasswordChangeDelegate::State::kOfferingPasswordChange) {
-    CHECK(password_change_delegate_);
-    password_change_delegate_->StartPasswordChangeFlow();
+  CHECK(password_change_delegate_);
+
+  switch (state_) {
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+      password_change_delegate_->StartPasswordChangeFlow();
+      return;
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+      password_change_delegate_->OpenPasswordChangeTab();
+      password_change_delegate_->Stop();
+      return;
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeDelegate::State::kChangingPassword:
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kOtpDetected:
+      NOTREACHED();
   }
 }
