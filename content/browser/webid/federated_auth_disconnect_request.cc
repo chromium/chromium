@@ -29,13 +29,13 @@ FederatedAuthDisconnectRequest::Create(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
-    FedCmMetrics* metrics,
+    std::unique_ptr<FedCmMetrics> fedcm_metrics,
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options) {
   std::unique_ptr<FederatedAuthDisconnectRequest> request =
       base::WrapUnique<FederatedAuthDisconnectRequest>(
           new FederatedAuthDisconnectRequest(
               std::move(network_manager), permission_delegate,
-              render_frame_host, metrics, std::move(options)));
+              render_frame_host, std::move(fedcm_metrics), std::move(options)));
   return request;
 }
 
@@ -47,12 +47,12 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
-    FedCmMetrics* metrics,
+    std::unique_ptr<FedCmMetrics> fedcm_metrics,
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options)
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
-      metrics_(metrics),
       render_frame_host_(render_frame_host),
+      fedcm_metrics_(std::move(fedcm_metrics)),
       options_(std::move(options)),
       origin_(render_frame_host->GetLastCommittedOrigin()),
       start_time_(base::TimeTicks::Now()) {
@@ -249,11 +249,12 @@ void FederatedAuthDisconnectRequest::Complete(
       disconnect_request_sent_
           ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
           : std::nullopt;
-  metrics_->RecordDisconnectMetrics(
+  fedcm_metrics_->RecordDisconnectMetrics(
       disconnect_status_for_metrics, duration,
       webid::ComputeRequesterFrameType(*render_frame_host_, origin_,
                                        embedding_origin_),
       options_->config->config_url);
+  fedcm_metrics_.reset();
 
   std::move(callback_).Run(status);
 }

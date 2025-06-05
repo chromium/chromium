@@ -30,7 +30,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      FedCmMetrics* metrics,
+      std::unique_ptr<FedCmMetrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   FederatedAuthDisconnectRequest(const FederatedAuthDisconnectRequest&) =
@@ -48,12 +48,13 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
 
  private:
   friend class FederatedAuthDisconnectRequestTest;
+  friend class FederatedAuthRequestImplTest;
 
   FederatedAuthDisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
-      FedCmMetrics* metrics,
+      std::unique_ptr<FedCmMetrics> fedcm_metrics,
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   void OnAllConfigAndWellKnownFetched(
@@ -74,9 +75,9 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
   // Owned by |FederatedAuthRequestImpl|
-  raw_ptr<FedCmMetrics> metrics_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
+  std::unique_ptr<FedCmMetrics> fedcm_metrics_;
   std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
   blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
 

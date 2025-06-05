@@ -1382,15 +1382,21 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   void CompleteDisconnectRequest() {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
+    std::unique_ptr<FedCmMetrics> fedcm_metrics =
+        std::make_unique<FedCmMetrics>(main_test_rfh()->GetPageUkmSourceId());
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
         blink::mojom::IdentityCredentialDisconnectOptions::New();
+    options->config = blink::mojom::IdentityProviderConfig::New();
+    options->config->config_url = GURL(kProviderUrlFull);
     federated_auth_request_impl_->disconnect_request_ =
         FederatedAuthDisconnectRequest::Create(
             std::move(network_request_manager), test_permission_delegate_.get(),
-            main_test_rfh(), federated_auth_request_impl_->fedcm_metrics_.get(),
-            std::move(options));
-    federated_auth_request_impl_->CompleteDisconnectRequest(
-        base::DoNothing(), blink::mojom::DisconnectStatus::kSuccess);
+            main_test_rfh(), std::move(fedcm_metrics), std::move(options));
+    federated_auth_request_impl_->disconnect_request_->callback_ =
+        base::DoNothing();
+    federated_auth_request_impl_->disconnect_request_->Complete(
+        blink::mojom::DisconnectStatus::kSuccess,
+        FedCmDisconnectStatus::kSuccess);
   }
 
   base::span<const IdentityRequestAccountPtr> all_accounts_for_display() const {
@@ -1750,6 +1756,17 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   MaybeAddRegisteredProviders(
       std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers) {
     return federated_auth_request_impl_->MaybeAddRegisteredProviders(providers);
+  }
+
+  void ExpectTwoUniqueSessionIDs() {
+    auto CheckSessionIDs([&](const char* entry_name) {
+      std::vector<int64_t> session_ids =
+          ukm_recorder()->GetMetricsEntryValues(entry_name, "FedCmSessionID");
+      ASSERT_EQ(2, session_ids.size());
+      ASSERT_NE(session_ids[0], session_ids[1]);
+    });
+    CheckSessionIDs(FedCmEntry::kEntryName);
+    CheckSessionIDs(FedCmIdpEntry::kEntryName);
   }
 
   blink::mojom::IdentityProviderRequestOptionsPtr
@@ -5154,6 +5171,10 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+
+  // Metrics for each request should be recorded separately with different
+  // session IDs.
+  ExpectTwoUniqueSessionIDs();
 }
 
 TEST_F(FederatedAuthRequestImplTest, TooManyRequestsDifferentIdP) {
@@ -5361,6 +5382,10 @@ TEST_F(FederatedAuthRequestImplTest, PassiveReplacedByActiveFlow) {
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
+
+  // Metrics for each request should be recorded separately with different
+  // session IDs.
+  ExpectTwoUniqueSessionIDs();
 }
 
 // TestIdpNetworkRequestManager subclass which records requests to metrics
@@ -8207,6 +8232,10 @@ TEST_F(FederatedAuthRequestImplTest, DisconnectWithPendingRequest) {
   // Complete the auth request.
   WaitForCurrentAuthRequest();
   CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
+
+  // Auth request and disconnect request metrics should be recorded separately
+  // with different session IDs.
+  ExpectTwoUniqueSessionIDs();
 }
 
 class FakeLocalFrameWithDelayedCallback : public FakeLocalFrame {
