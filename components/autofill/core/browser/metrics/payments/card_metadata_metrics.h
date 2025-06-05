@@ -156,13 +156,17 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 
 // Log the given `event` for card benefits on a benefit source level.
-void LogBenefitFormEventToBenefitSourceHistogram(
+// TODO(crbug.com/417228483): Remove this function after adding benefit form
+// event enums to a new histogram with a new enum class.
+void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
     const std::string& benefit_source,
     FormEvent event);
 
 // Log the given `event` for every card benefit source with benefits available
 // shown.
-void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+// TODO(crbug.com/417228483): Remove this function after adding benefit form
+// event enums to a new histogram with a new enum class.
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
     const base::flat_map<int64_t, std::string>&
         instrument_ids_to_available_benefit_sources,
     FormEvent event);

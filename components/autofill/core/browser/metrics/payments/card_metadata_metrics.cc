@@ -254,38 +254,38 @@ void LogCardWithBenefitFormEventMetric(
     const CardMetadataLoggingContext& context) {
   switch (event) {
     case CardMetadataLoggingEvent::kShown: {
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     }
     case CardMetadataLoggingEvent::kSelected:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToBenefitSourceHistogram(
+        LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE);
       }
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kFilled:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToBenefitSourceHistogram(
+        LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE);
       }
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kSubmitted:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToBenefitSourceHistogram(
+        LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE);
       }
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
           context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
@@ -326,7 +326,7 @@ void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled) {
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", enabled);
 }
 
-void LogBenefitFormEventToBenefitSourceHistogram(
+void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
     const std::string& benefit_source,
     FormEvent event) {
   base::UmaHistogramEnumeration(
@@ -336,7 +336,7 @@ void LogBenefitFormEventToBenefitSourceHistogram(
       event, NUM_FORM_EVENTS);
 }
 
-void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
     const base::flat_map<int64_t, std::string>&
         instrument_ids_to_available_benefit_sources,
     FormEvent event) {
@@ -347,7 +347,8 @@ void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
   for (const auto& [instrument_id, benefit_source] :
        instrument_ids_to_available_benefit_sources) {
     if (!benefit_sources_shown.contains(benefit_source)) {
-      LogBenefitFormEventToBenefitSourceHistogram(benefit_source, event);
+      LogBenefitFormEventToBenefitSourceHistogramDeprecated(benefit_source,
+                                                            event);
       benefit_sources_shown.insert(benefit_source);
     }
   }
