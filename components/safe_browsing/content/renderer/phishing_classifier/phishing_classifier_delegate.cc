@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

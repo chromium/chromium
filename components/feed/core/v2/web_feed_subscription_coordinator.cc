@@ -9,7 +9,6 @@
 #include <optional>
 #include <ostream>
 
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"

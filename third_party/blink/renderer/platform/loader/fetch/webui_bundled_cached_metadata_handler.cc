@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 
-#include "base/debug/stack_trace.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"

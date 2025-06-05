@@ -33,7 +33,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/web_blob_info.h"

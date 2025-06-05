@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"

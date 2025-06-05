@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base::android {
 

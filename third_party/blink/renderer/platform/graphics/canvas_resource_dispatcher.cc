@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/quads/compositor_frame.h"

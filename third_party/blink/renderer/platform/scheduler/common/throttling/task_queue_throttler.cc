@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"

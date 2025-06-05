@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 
-#include "base/debug/stack_trace.h"
 #include "base/memory/raw_ref.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

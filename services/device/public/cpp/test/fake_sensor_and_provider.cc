@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

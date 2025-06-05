@@ -18,7 +18,6 @@
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
-#include "base/debug/stack_trace.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

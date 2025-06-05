@@ -28,7 +28,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframe_model.h"

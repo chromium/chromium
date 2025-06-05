@@ -11,7 +11,6 @@
 
 #include <unordered_map>
 
-#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/sequence_checker_impl.h"
 #include "base/strings/string_util.h"

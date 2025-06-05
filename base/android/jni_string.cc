@@ -4,6 +4,7 @@
 
 #include "base/android/jni_string.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/android/jni_android.h"

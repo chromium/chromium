@@ -17,7 +17,6 @@
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"

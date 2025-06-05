@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

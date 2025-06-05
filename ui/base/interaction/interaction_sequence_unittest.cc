@@ -7,7 +7,6 @@
 #include <optional>
 #include <sstream>
 
-#include "base/debug/stack_trace.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"

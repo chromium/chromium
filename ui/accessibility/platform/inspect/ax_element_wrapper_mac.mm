@@ -15,7 +15,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"

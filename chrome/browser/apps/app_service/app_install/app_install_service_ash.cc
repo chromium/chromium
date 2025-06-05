@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "ash/constants/ash_features.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

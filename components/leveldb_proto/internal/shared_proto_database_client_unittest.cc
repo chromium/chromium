@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/debug/stack_trace.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

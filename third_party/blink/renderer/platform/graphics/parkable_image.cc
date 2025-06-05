@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"

@@ -23,7 +23,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"

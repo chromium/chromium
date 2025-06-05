@@ -7,7 +7,6 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
