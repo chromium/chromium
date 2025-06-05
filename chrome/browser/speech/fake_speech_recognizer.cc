@@ -65,7 +65,8 @@ void FakeSpeechRecognizer::SendSpeechRecognitionResult(
 }
 
 void FakeSpeechRecognizer::SendAudioToSpeechRecognitionService(
-    media::mojom::AudioDataS16Ptr buffer) {
+    media::mojom::AudioDataS16Ptr buffer,
+    std::optional<base::TimeDelta> media_start_pts) {
   has_received_audio_ = true;
 }
 

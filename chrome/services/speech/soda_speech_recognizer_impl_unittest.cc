@@ -63,7 +63,8 @@ class SodaSpeechRecognizerImplTest
 
   // media::mojom::SpeechRecognitionRecognizer implementation.
   void SendAudioToSpeechRecognitionService(
-      media::mojom::AudioDataS16Ptr buffer) override {}
+      media::mojom::AudioDataS16Ptr buffer,
+      std::optional<base::TimeDelta>) override {}
   void OnLanguageChanged(const std::string& language) override {}
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
   void MarkDone() override {}

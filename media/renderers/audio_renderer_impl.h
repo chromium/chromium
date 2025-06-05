@@ -405,6 +405,10 @@ class MEDIA_EXPORT AudioRendererImpl
   raw_ptr<SpeechRecognitionClient, DanglingUntriaged>
       speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
+
+  // Whether there was a discontinuity in the audio's presentation timestamps,
+  // and we should send a new PTS to `speech_recognition_client_`.
+  bool send_pts_for_transcription_ = true;
 #endif
 
   // Ensures we don't issue log spam when absurd delay values are encountered.

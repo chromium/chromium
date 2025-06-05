@@ -433,8 +433,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
       }));
 
   bool has_reponsed = false;
-  EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_))
-      .WillRepeatedly(testing::Invoke([&](media::mojom::AudioDataS16Ptr data) {
+  EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_, _))
+      .WillRepeatedly(testing::Invoke([&](media::mojom::AudioDataS16Ptr data,
+                                          std::optional<base::TimeDelta>
+                                              media_start_pts) {
         if (!has_reponsed) {
           has_reponsed = true;
           media::SpeechRecognitionResult result =

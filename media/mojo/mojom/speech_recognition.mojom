@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -72,7 +72,14 @@ interface SpeechRecognitionRecognizer {
   // Initialize the speech recognition instance. The speech recognition client
   // will return the recognition events containing the transcribed audio back
   // to the originating media.
-  SendAudioToSpeechRecognitionService@0(AudioDataS16 buffer);
+  // Optionally, `media_start_pts` is the media presentation timestamp of the
+  // first frame in `buffer`. If `media_start_pts` is omitted after being
+  // provided, the `SpeechRecognitionRecognizer` can assume that `buffer`s
+  // received are contiguous since the last `media_start_pts` are continuous. A
+  // new `media_start_pts` should be sent after any seeks or large gaps in the
+  // original media's timestamps.
+  SendAudioToSpeechRecognitionService@0(AudioDataS16 buffer,
+    [MinVersion=10] mojo_base.mojom.TimeDelta? media_start_pts);
 
   // Mark audio stream done. This informs the speech recognition client to stop
   // speech recognition after it finishes processing the audio it has received

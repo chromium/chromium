@@ -201,6 +201,10 @@ void AudioRendererImpl::SetMediaTime(base::TimeDelta time) {
   first_packet_timestamp_ = kNoTimestamp;
   audio_clock_ =
       std::make_unique<AudioClock>(time, audio_parameters_.sample_rate());
+
+#if !BUILDFLAG(IS_ANDROID)
+  send_pts_for_transcription_ = true;
+#endif
 }
 
 base::TimeDelta AudioRendererImpl::CurrentMediaTime() {
@@ -1537,8 +1541,16 @@ void AudioRendererImpl::TranscribeAudio(
     scoped_refptr<media::AudioBuffer> buffer) {
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (speech_recognition_client_)
-    speech_recognition_client_->AddAudio(std::move(buffer));
+  if (speech_recognition_client_) {
+    // TODO(crbug.com/413823334): Resend a `new_timestamp` when large
+    // discontinuities are detected in the media's timestamps (due to muxing).
+    auto new_timestamp = send_pts_for_transcription_
+                             ? std::optional(buffer->timestamp())
+                             : std::nullopt;
+    send_pts_for_transcription_ = false;
+    speech_recognition_client_->AddAudio(std::move(buffer),
+                                         std::move(new_timestamp));
+  }
 #endif
 }
 

@@ -297,7 +297,8 @@ void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {
 }
 
 void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
-    media::mojom::AudioDataS16Ptr buffer) {
+    media::mojom::AudioDataS16Ptr buffer,
+    std::optional<base::TimeDelta> media_start_pts) {
   int channel_count = buffer->channel_count;
   int frame_count = buffer->frame_count;
   int sample_rate = buffer->sample_rate;
@@ -390,7 +391,7 @@ void SpeechRecognitionRecognizerImpl::UpdateRecognitionContext(
 
 void SpeechRecognitionRecognizerImpl::AddAudio(
     media::mojom::AudioDataS16Ptr buffer) {
-  SendAudioToSpeechRecognitionService(std::move(buffer));
+  SendAudioToSpeechRecognitionService(std::move(buffer), std::nullopt);
 }
 
 void SpeechRecognitionRecognizerImpl::OnAudioCaptureEnd() {

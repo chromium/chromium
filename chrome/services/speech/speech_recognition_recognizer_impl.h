@@ -96,7 +96,8 @@ class SpeechRecognitionRecognizerImpl
   // Convert the audio buffer into the appropriate format and feed the raw audio
   // into the speech recognition instance.
   void SendAudioToSpeechRecognitionService(
-      media::mojom::AudioDataS16Ptr buffer) final;
+      media::mojom::AudioDataS16Ptr buffer,
+      std::optional<base::TimeDelta> media_start_pts) final;
 
   void OnSpeechRecognitionError();
 

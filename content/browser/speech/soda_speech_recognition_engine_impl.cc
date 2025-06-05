@@ -215,7 +215,7 @@ void SodaSpeechRecognitionEngineImpl::SendAudioToSpeechRecognitionService(
   DCHECK(audio_data);
   if (speech_recognition_recognizer_.is_bound()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
-        std::move(audio_data));
+        std::move(audio_data), std::nullopt);
   }
 }
 

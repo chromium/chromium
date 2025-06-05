@@ -259,7 +259,9 @@ class AudioRendererImplTest : public ::testing::Test,
   MOCK_METHOD1(TranscribeAudio, void(scoped_refptr<AudioBuffer>));
 
   // SpeechRecognitionClient implementation.
-  MOCK_METHOD1(AddAudio, void(scoped_refptr<AudioBuffer>));
+  MOCK_METHOD2(AddAudio,
+               void(scoped_refptr<AudioBuffer>,
+                    std::optional<base::TimeDelta>));
   MOCK_METHOD3(AddAudioBusOnMainSequence,
                void(std::unique_ptr<AudioBus>, int, ChannelLayout));
   MOCK_METHOD0(IsSpeechRecognitionAvailable, bool());
@@ -1940,8 +1942,7 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
-      .Times(0);
+  EXPECT_CALL(*this, AddAudio(_, _)).Times(0);
   Preroll();
 
   StartTicking();
@@ -1953,8 +1954,7 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
-      .Times(0);
+  EXPECT_CALL(*this, AddAudio(_, _)).Times(0);
   Preroll();
 
   StartTicking();
@@ -1967,8 +1967,7 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
-      .Times(3);
+  EXPECT_CALL(*this, AddAudio(_, _)).Times(3);
   next_timestamp_->SetBaseTimestamp(base::TimeDelta());
   renderer_->SetMediaTime(base::TimeDelta());
   renderer_->StartPlaying();
@@ -1991,12 +1990,47 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
-      .Times(3);
+  EXPECT_CALL(*this, AddAudio(_, _)).Times(3);
   Preroll();
 
   StartTicking();
   EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+}
+
+TEST_F(AudioRendererImplTest, TranscribeAudioCallback_SendsTimestamp) {
+  EnableSpeechRecognition();
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(true);
+  Initialize();
+
+  constexpr base::TimeDelta kStartTimestamp = base::Seconds(1);
+  {
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*this, AddAudio(_, std::optional(kStartTimestamp)));
+    EXPECT_CALL(*this, AddAudio(_, std::optional<base::TimeDelta>())).Times(2);
+  }
+
+  // Start playing from `kStartTimestamp`.
+  Preroll(kStartTimestamp, kStartTimestamp, PIPELINE_OK);
+  StartTicking();
+
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Seek the rendeer, by flushing and then setting a new start timestamp.
+  ConsumeBufferedDataUntilNotFull();
+  WaitForPendingRead();
+  StopTicking();
+  FlushDuringPendingRead();
+
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  constexpr base::TimeDelta kSeekTimestamp = base::Seconds(5);
+  {
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*this, AddAudio(_, std::optional(kSeekTimestamp)));
+    EXPECT_CALL(*this, AddAudio(_, std::optional<base::TimeDelta>())).Times(2);
+  }
+
+  Preroll(kSeekTimestamp, kSeekTimestamp, PIPELINE_OK);
 }
 #endif
 

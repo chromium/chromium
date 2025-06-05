@@ -5,6 +5,7 @@
 #include "chrome/services/speech/soda_speech_recognizer_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -175,7 +176,7 @@ void SodaSpeechRecognizerImpl::SendAudioToSpeechRecognitionService(
   DCHECK(audio_data);
   DCHECK(speech_recognition_recognizer_.is_bound());
   speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
-      std::move(audio_data));
+      std::move(audio_data), std::nullopt);
 }
 
 void SodaSpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {

@@ -37,7 +37,8 @@ class FakeSpeechRecognizer : public media::mojom::AudioSourceFetcher,
 
   // media::mojom::SpeechRecognitionRecognizer:
   void SendAudioToSpeechRecognitionService(
-      media::mojom::AudioDataS16Ptr buffer) override;
+      media::mojom::AudioDataS16Ptr buffer,
+      std::optional<base::TimeDelta> media_start_pts) override;
   void OnLanguageChanged(const std::string& language) override {}
   void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
   void MarkDone() override;

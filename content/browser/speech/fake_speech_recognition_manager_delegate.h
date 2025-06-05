@@ -58,7 +58,8 @@ class MockOnDeviceWebSpeechRecognitionService
   // media::mojom::SpeechRecognitionRecognizer:
   MOCK_METHOD(void,
               SendAudioToSpeechRecognitionService,
-              (media::mojom::AudioDataS16Ptr data),
+              (media::mojom::AudioDataS16Ptr data,
+               std::optional<base::TimeDelta> media_start_pts),
               (override));
   MOCK_METHOD(void, OnLanguageChanged, (const std::string& lang), (override));
   MOCK_METHOD(void, OnMaskOffensiveWordsChanged, (bool changed), (override));
