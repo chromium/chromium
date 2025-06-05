@@ -429,7 +429,7 @@ bool FaviconDatabase::GetFaviconBitmap(
 
 FaviconBitmapID FaviconDatabase::AddFaviconBitmap(
     favicon_base::FaviconID icon_id,
-    const scoped_refptr<base::RefCountedMemory>& icon_data,
+    scoped_refptr<base::RefCountedMemory> icon_data,
     FaviconBitmapType type,
     base::Time time,
     const gfx::Size& pixel_size) {
@@ -442,7 +442,7 @@ FaviconBitmapID FaviconDatabase::AddFaviconBitmap(
 
   statement.BindInt64(0, icon_id);
   if (icon_data.get() && icon_data->size()) {
-    statement.BindBlob(1, *icon_data);
+    statement.BindBlob(1, std::move(icon_data));
   } else {
     statement.BindNull(1);
   }
@@ -478,7 +478,7 @@ bool FaviconDatabase::SetFaviconBitmap(
                              "UPDATE favicon_bitmaps SET image_data=?, "
                              "last_updated=?, last_requested=? WHERE id=?"));
   if (bitmap_data.get() && bitmap_data->size()) {
-    statement.BindBlob(0, *bitmap_data);
+    statement.BindBlob(0, std::move(bitmap_data));
   } else {
     statement.BindNull(0);
   }
@@ -660,13 +660,15 @@ favicon_base::FaviconID FaviconDatabase::AddFavicon(
 favicon_base::FaviconID FaviconDatabase::AddFavicon(
     const GURL& icon_url,
     favicon_base::IconType icon_type,
-    const scoped_refptr<base::RefCountedMemory>& icon_data,
+    scoped_refptr<base::RefCountedMemory> icon_data,
     FaviconBitmapType type,
     base::Time time,
     const gfx::Size& pixel_size) {
   favicon_base::FaviconID icon_id = AddFavicon(icon_url, icon_type);
-  if (!icon_id || !AddFaviconBitmap(icon_id, icon_data, type, time, pixel_size))
+  if (!icon_id || !AddFaviconBitmap(icon_id, std::move(icon_data), type, time,
+                                    pixel_size)) {
     return 0;
+  }
 
   return icon_id;
 }

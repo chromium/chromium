@@ -101,7 +101,7 @@ class FaviconDatabase {
   // Returns the id of the added bitmap or 0 if unsuccessful.
   FaviconBitmapID AddFaviconBitmap(
       favicon_base::FaviconID icon_id,
-      const scoped_refptr<base::RefCountedMemory>& icon_data,
+      scoped_refptr<base::RefCountedMemory> icon_data,
       FaviconBitmapType type,
       base::Time time,
       const gfx::Size& pixel_size);
@@ -183,7 +183,7 @@ class FaviconDatabase {
   favicon_base::FaviconID AddFavicon(
       const GURL& icon_url,
       favicon_base::IconType icon_type,
-      const scoped_refptr<base::RefCountedMemory>& icon_data,
+      scoped_refptr<base::RefCountedMemory> icon_data,
       FaviconBitmapType type,
       base::Time time,
       const gfx::Size& pixel_size);
