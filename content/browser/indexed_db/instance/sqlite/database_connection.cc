@@ -365,7 +365,7 @@ DatabaseConnection::GetRecordIdentifierIfExists(
   std::string encoded_key;
   EncodeSortableIDBKey(key, &encoded_key);
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, encoded_key);
+  statement.BindBlob(1, std::move(encoded_key));
   if (statement.Step()) {
     return BackingStore::RecordIdentifier{statement.ColumnInt64(0)};
   }
@@ -384,7 +384,7 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
   std::string encoded_key;
   EncodeSortableIDBKey(key, &encoded_key);
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, encoded_key);
+  statement.BindBlob(1, std::move(encoded_key));
   if (statement.Step()) {
     IndexedDBValue value;
     TRANSIENT_CHECK(statement.ColumnBlobAsVector(0, &value.bits));
@@ -406,10 +406,8 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
   statement.BindInt64(0, object_store_id);
   std::string encoded_key;
   EncodeSortableIDBKey(key, &encoded_key);
-  // TODO(crbug.com/40253999): `move` these into `statement` when
-  // crbug.com/419806592 is fixed.
-  statement.BindBlob(1, encoded_key);
-  statement.BindBlob(2, value.bits);
+  statement.BindBlob(1, std::move(encoded_key));
+  statement.BindBlob(2, std::move(value.bits));
   TRANSIENT_CHECK(statement.Run());
   return BackingStore::RecordIdentifier{db_->GetLastInsertRowId()};
 }

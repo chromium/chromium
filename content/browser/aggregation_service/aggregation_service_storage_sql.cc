@@ -526,7 +526,7 @@ void AggregationServiceStorageSql::UpdateReportForSendFailure(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdateRequestSql));
 
   update_request_statement.BindTime(0, new_report_time);
-  update_request_statement.BindBlob(1, serialized_proto);
+  update_request_statement.BindBlob(1, std::move(serialized_proto));
   update_request_statement.BindInt64(2, request_id.value());
 
   if (!update_request_statement.Run()) {
@@ -581,7 +581,7 @@ void AggregationServiceStorageSql::StoreRequest(
   // While an empty vector can be a valid proto serialization, report requests
   // should always be non-empty.
   CHECK(!serialized_request.empty());
-  store_request_statement.BindBlob(3, serialized_request);
+  store_request_statement.BindBlob(3, std::move(serialized_request));
 
   if (!store_request_statement.Run()) {
     return;

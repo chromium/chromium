@@ -312,7 +312,7 @@ bool PaymentMethodManifestTable::SetBrowserBoundKey(
       "credential_id, relying_party_id, browser_bound_key_id) "
       "VALUES (?, ?, ?)"));
   int index = 0;
-  s.BindBlob(index++, credential_id);
+  s.BindBlob(index++, std::move(credential_id));
   s.BindString(index++, relying_party_id);
   s.BindBlob(index++, browser_bound_key_id);
   return s.Run();
@@ -327,7 +327,7 @@ PaymentMethodManifestTable::GetBrowserBoundKey(
       "FROM secure_payment_confirmation_browser_bound_key "
       "WHERE credential_id = ? AND relying_party_id = ?"));
   int index = 0;
-  s.BindBlob(index++, credential_id);
+  s.BindBlob(index++, std::move(credential_id));
   s.BindString(index++, relying_party_id);
   if (!s.Step()) {
     return std::nullopt;
@@ -358,12 +358,12 @@ PaymentMethodManifestTable::GetAllBrowserBoundKeys() {
 bool PaymentMethodManifestTable::DeleteBrowserBoundKeys(
     std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
         passkeys) {
-  for (auto passkey : passkeys) {
+  for (auto& passkey : passkeys) {
     sql::Statement s(db()->GetUniqueStatement(
         "DELETE FROM secure_payment_confirmation_browser_bound_key "
         "WHERE relying_party_id = ? AND credential_id = ?"));
     s.BindString(0, passkey.relying_party_id);
-    s.BindBlob(1, passkey.credential_id);
+    s.BindBlob(1, std::move(passkey.credential_id));
     if (!s.Run()) {
       return false;
     }

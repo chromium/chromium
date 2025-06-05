@@ -516,8 +516,7 @@ void BuildTestStoreWithSchemaVersion2(const base::FilePath& file) {
       meta_table.Init(&db, 2, OfflinePageMetadataStore::kCompatibleVersion));
 }
 
-bool InsertVisualsVersion3(sql::Database* db,
-                           const OfflinePageVisuals& visuals) {
+bool InsertVisualsVersion3(sql::Database* db, OfflinePageVisuals visuals) {
   static const char kInsertVisualsSql[] =
       "INSERT INTO page_thumbnails"
       " (offline_id,expiration,thumbnail) VALUES (?,?,?)";
@@ -525,7 +524,7 @@ bool InsertVisualsVersion3(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kInsertVisualsSql));
   statement.BindInt64(0, visuals.offline_id);
   statement.BindInt64(1, store_utils::ToDatabaseTime(visuals.expiration));
-  statement.BindBlob(2, visuals.thumbnail);
+  statement.BindBlob(2, std::move(visuals.thumbnail));
   return statement.Run();
 }
 

@@ -1617,8 +1617,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
               continue;
             }
             add_statement.BindCString(4, "");  // value
-            // BindBlob() immediately makes an internal copy of the data.
-            add_statement.BindBlob(5, encrypted_value);
+            add_statement.BindBlob(5, std::move(encrypted_value));
           } else {
             add_statement.BindString(4, po->cc().Value());
             add_statement.BindBlob(5,

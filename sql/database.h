@@ -26,6 +26,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -928,6 +929,27 @@ class COMPONENT_EXPORT(SQL) Database {
     // this will return nullptr.
     sqlite3_stmt* stmt() const { return stmt_; }
 
+    // Assumes ownership of `blob`.
+    //
+    // To be called BEFORE the data in `blob` will be bound to a SQLite
+    // statement SQLite. SQLite assumes the pointer will remain valid until the
+    // statement is finalized or the parameter is unbound.
+    //
+    // A span pointing to the newly owned memory is returned --- this is the
+    // pointer that should be passed to sqlite3 functions.
+    base::span<const uint8_t> TakeBlobMemory(
+        int index,
+        scoped_refptr<base::RefCountedMemory> blob);
+
+    // Releases memory passed by `TakeBlobMemory()`, if any. The caller should
+    // also tell SQLite to unbind or rebind the parameter (i.e. update the
+    // binding that was previously set with TakeBlobMemory's output).
+    void ClearBlobMemory(int index);
+
+    // Resets the statement and, if `clear_bound_variables` is true, drops
+    // parameter bindings, including dropping `bound_blobs_`.
+    void Reset(bool clear_bound_variables);
+
     // Destroys the compiled statement and sets it to nullptr. The statement
     // will no longer be active. |forced| is used to indicate if
     // orderly-shutdown checks should apply (see Database::RazeAndPoison()).
@@ -947,6 +969,13 @@ class COMPONENT_EXPORT(SQL) Database {
     friend class base::RefCounted<StatementRef>;
 
     ~StatementRef();
+
+    // Holds onto memory that is to be used by the statement. These blobs have
+    // been bound with `SQLITE_STATIC`, see
+    // https://www.sqlite.org/c3ref/bind_blob.html for docs.
+    // Note that value pointer stability is important, and that's granted by
+    // scoped_refptr.
+    base::flat_map<int, scoped_refptr<base::RefCountedMemory>> bound_blobs_;
 
     raw_ptr<Database> database_;
     raw_ptr<sqlite3_stmt> stmt_;

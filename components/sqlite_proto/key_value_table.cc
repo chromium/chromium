@@ -21,7 +21,7 @@ void BindDataToStatement(const std::string& key,
   size_t size = data.ByteSizeLong();
   std::vector<uint8_t> proto_buffer(size);
   data.SerializeToArray(proto_buffer.data(), size);
-  statement->BindBlob(1, proto_buffer);
+  statement->BindBlob(1, std::move(proto_buffer));
 }
 
 std::string GetSelectAllSql(const std::string& table_name) {

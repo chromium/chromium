@@ -185,14 +185,7 @@ void Statement::Reset(bool clear_bound_vars) {
     // Reports the execution cost for this SQL statement.
     ReportQueryExecutionMetrics();
 
-    if (clear_bound_vars)
-      sqlite3_clear_bindings(ref_->stmt());
-
-    // StepInternal() cannot track success because statements may be reset
-    // before reaching SQLITE_DONE.  Don't call CheckError() because
-    // sqlite3_reset() returns the last step error, which StepInternal() already
-    // checked.
-    sqlite3_reset(ref_->stmt());
+    ref_->Reset(clear_bound_vars);
   }
 
   // Potentially release dirty cache pages if an autocommit statement made
@@ -215,6 +208,13 @@ bool Statement::Succeeded() const {
   return is_valid() && succeeded_;
 }
 
+void Statement::WillBindParameter(int param_index) {
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  ref_->ClearBlobMemory(param_index);
+}
+
 void Statement::BindNull(int param_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -226,9 +226,8 @@ void Statement::BindNull(int param_index) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
+
   int sqlite_result_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
@@ -250,9 +249,7 @@ void Statement::BindInt(int param_index, int val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
@@ -268,9 +265,7 @@ void Statement::BindInt64(int param_index, int64_t val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
@@ -287,9 +282,7 @@ void Statement::BindDouble(int param_index, double val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code =
       sqlite3_bind_double(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
@@ -306,9 +299,7 @@ void Statement::BindTime(int param_index, base::Time val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int64_t int_value = TimeToSqlValue(val);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
@@ -327,9 +318,7 @@ void Statement::BindTimeDelta(int param_index, base::TimeDelta delta) {
     return;
   }
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int64_t int_value = delta.InMicroseconds();
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
@@ -348,9 +337,7 @@ void Statement::BindCString(int param_index, const char* val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
 
   // If the string length is more than SQLITE_MAX_LENGTH (or the per-database
   // SQLITE_LIMIT_LENGTH limit), sqlite3_bind_text() fails with SQLITE_TOOBIG.
@@ -375,9 +362,7 @@ void Statement::BindString(int param_index, std::string_view value) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
 
   // std::string_view::data() may return null for empty pieces. In particular,
   // this may happen when the std::string_view is created from the default
@@ -406,7 +391,8 @@ void Statement::BindString16(int param_index, std::u16string_view value) {
   return BindString(param_index, base::UTF16ToUTF8(value));
 }
 
-void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
+void Statement::BindBlob(int param_index,
+                         scoped_refptr<base::RefCountedMemory> blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if DCHECK_IS_ON()
@@ -414,12 +400,13 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   DCHECK(!step_called_) << __func__ << " must not be called after Step()";
 #endif  // DCHECK_IS_ON()
 
-  if (!is_valid())
+  if (!is_valid()) {
     return;
+  }
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
+  base::span<const uint8_t> value =
+      ref_->TakeBlobMemory(param_index, std::move(blob));
 
   // span::data() may return null for empty spans. In particular, this may
   // happen when the span is created out of a std::vector, because
@@ -441,9 +428,28 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_result_code = sqlite3_bind_blob(
-      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  int sqlite_result_code = sqlite3_bind_blob(ref_->stmt(), param_index + 1,
+                                             data, value.size(), SQLITE_STATIC);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
+}
+
+void Statement::BindBlob(int param_index, std::string blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedString>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, std::u16string blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedString16>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, std::vector<uint8_t> blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedBytes>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, base::span<const uint8_t> blob) {
+  BindBlob(param_index, base::MakeRefCounted<base::RefCountedBytes>(blob));
 }
 
 int Statement::ColumnCount() const {

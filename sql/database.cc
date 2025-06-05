@@ -297,6 +297,33 @@ Database::StatementRef::~StatementRef() {
   Close(false);
 }
 
+void Database::StatementRef::Reset(bool clear_bound_variables) {
+  if (clear_bound_variables) {
+    std::ignore = ToSqliteResultCode(sqlite3_clear_bindings(stmt()));
+    bound_blobs_.clear();
+  }
+
+  // ToSqliteResultCode() is called to ensure that sqlite3_reset() doesn't
+  // return a concerning code, such as SQLITE_MISUSE. The processed error code
+  // is ignored because sqlite3_reset() returns an error code if the last
+  // sqlite3_step() failed, and that error was already reported when we ran
+  // sqlite3_step(), via Statement::Run() or Statement::Step().
+  std::ignore = ToSqliteResultCode(sqlite3_reset(stmt()));
+}
+
+base::span<const uint8_t> Database::StatementRef::TakeBlobMemory(
+    int param_index,
+    scoped_refptr<base::RefCountedMemory> blob) {
+  auto inserted = bound_blobs_.emplace(param_index, std::move(blob));
+  CHECK(inserted.second) << "Parameter unexpectedly bound twice: "
+                         << param_index;
+  return *inserted.first->second;
+}
+
+void Database::StatementRef::ClearBlobMemory(int param_index) {
+  bound_blobs_.erase(param_index);
+}
+
 void Database::StatementRef::Close(bool forced) {
   if (stmt_) {
     // Call to InitScopedBlockingCall() cannot go at the beginning of the
@@ -319,6 +346,8 @@ void Database::StatementRef::Close(bool forced) {
     // error as the most recent sqlite3_step(). The result code is passed
     // through ToSqliteResultCode() to catch issues like SQLITE_MISUSE.
     std::ignore = ToSqliteResultCode(sqlite3_finalize(statement));
+
+    bound_blobs_.clear();
   }
   database_ = nullptr;  // The Database may be getting deleted.
 
@@ -1585,21 +1614,16 @@ scoped_refptr<Database::StatementRef> Database::GetCachedStatement(
     base::cstring_view sql) {
   auto it = statement_cache_.find(id);
   if (it != statement_cache_.end()) {
+    StatementRef& statement = *it->second;
     // Statement is in the cache. It should still be valid. We're the only
     // entity invalidating cached statements, and we remove them from the cache
     // when we do that.
-    DCHECK(it->second->is_valid());
-    DCHECK_EQ(std::string(sqlite3_sql(it->second->stmt())), std::string(sql))
+    DCHECK(statement.is_valid());
+    DCHECK_EQ(base::cstring_view(sqlite3_sql(statement.stmt())), sql)
         << "GetCachedStatement used with same ID but different SQL";
 
     // Reset the statement so it can be reused.
-    //
-    // ToSqliteResultCode() is called to ensure that sqlite3_reset() doesn't
-    // return a concerning code, such as SQLITE_MISUSE. The processed error code
-    // is ignored because sqlite3_reset() returns an error code if the last
-    // sqlite3_step() failed, and that error was already reported when we ran
-    // sqlite3_step(), via Statement::Run() or Statement::Step().
-    std::ignore = ToSqliteResultCode(sqlite3_reset(it->second->stmt()));
+    statement.Reset(/*clear_bound_variables=*/true);
     return it->second;
   }
 

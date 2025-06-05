@@ -131,7 +131,7 @@ bool TokenServiceTable::SetTokenForService(
         "INSERT OR REPLACE INTO token_service "
         "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
     s.BindString(0, service);
-    s.BindBlob(1, encrypted_token);
+    s.BindBlob(1, std::move(encrypted_token));
     s.BindBlob(2, wrapped_binding_key);
 
     if (!s.Run()) {

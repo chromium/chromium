@@ -141,17 +141,15 @@ class COMPONENT_EXPORT(SQL) Statement {
   // If you need to store (potentially invalid) UTF-16 strings losslessly,
   // store them as BLOBs instead. `BindBlob()` has an overload for this purpose.
   void BindString16(int param_index, std::u16string_view value);
+
+  // Binds a blob to the statement.
+  void BindBlob(int param_index, scoped_refptr<base::RefCountedMemory> blob);
+
+  // Convenience overloads for `BindBlob()`.
+  void BindBlob(int param_index, std::string blob);
+  void BindBlob(int param_index, std::u16string blob);
+  void BindBlob(int param_index, std::vector<uint8_t> blob);
   void BindBlob(int param_index, base::span<const uint8_t> value);
-
-  // Overload that makes it easy to pass in std::string values.
-  void BindBlob(int param_index, base::span<const char> value) {
-    BindBlob(param_index, base::as_byte_span(value));
-  }
-
-  // Overload that makes it easy to pass in std::u16string values.
-  void BindBlob(int param_index, base::span<const char16_t> value) {
-    BindBlob(param_index, base::as_byte_span(value));
-  }
 
   // Conforms with base::Time serialization recommendations.
   //
@@ -293,6 +291,12 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Retrieve and log the count of VM steps required to execute the query.
   void ReportQueryExecutionMetrics() const;
+
+  // Runs some basic sanity checks and frees memory previously associated with
+  // `param_index`, if any. Should be called when a parameter is about to be
+  // bound regardless of its type.
+  void WillBindParameter(int param_index)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is

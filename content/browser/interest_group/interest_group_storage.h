@@ -219,7 +219,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Update B&A keys for a coordinator. This function will overwrite any
   // existing keys for the coordinator.
   void SetBiddingAndAuctionServerKeys(const url::Origin& coordinator,
-                                      std::string_view serialized_keys,
+                                      std::string serialized_keys,
                                       base::Time expiration);
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.

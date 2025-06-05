@@ -724,7 +724,7 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlData& url_passages) {
   if (blob.empty()) {
     return false;
   }
-  statement.BindBlob(3, blob);
+  statement.BindBlob(3, std::move(blob));
   bool result = statement.Run();
 
   if (result) {

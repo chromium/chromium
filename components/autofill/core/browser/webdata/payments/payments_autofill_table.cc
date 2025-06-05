@@ -261,7 +261,7 @@ void BindEncryptedStringToColumn(sql::Statement* s,
                                  const os_crypt_async::Encryptor& encryptor) {
   std::string encrypted_data;
   std::ignore = encryptor.EncryptString(value, &encrypted_data);
-  s->BindBlob(column_index, encrypted_data);
+  s->BindBlob(column_index, std::move(encrypted_data));
 }
 
 void BindEncryptedU16StringToColumn(
@@ -271,7 +271,7 @@ void BindEncryptedU16StringToColumn(
     const os_crypt_async::Encryptor& encryptor) {
   std::string encrypted_data;
   std::ignore = encryptor.EncryptString16(value, &encrypted_data);
-  s->BindBlob(column_index, encrypted_data);
+  s->BindBlob(column_index, std::move(encrypted_data));
 }
 
 void BindCreditCardToStatement(const CreditCard& credit_card,

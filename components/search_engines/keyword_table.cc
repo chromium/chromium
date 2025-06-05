@@ -303,7 +303,7 @@ bool KeywordTable::GetKeywords(Keywords* keywords) {
   while (s.Step()) {
     const auto data = GetKeywordDataFromStatement(s);
     if (data) {
-      keywords->emplace_back(std::move(*data));
+      keywords->emplace_back(*std::move(data));
     } else {
       bad_entries.insert(s.ColumnInt64(0));
     }
@@ -549,9 +549,10 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
     }
 
     data.SetURL(maybe_url);
-    const auto url_hash = data.GenerateHash();
-    const auto encrypted_hash = encryptor()->EncryptString(
-        std::string(url_hash.begin(), url_hash.end()));
+    const std::vector<uint8_t> url_hash = data.GenerateHash();
+    const std::optional<std::vector<uint8_t>> encrypted_hash =
+        encryptor()->EncryptString(
+            std::string(url_hash.begin(), url_hash.end()));
     if (!encrypted_hash) {
       all_rows_migrated = false;
       continue;
@@ -561,7 +562,7 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
     sql::Statement update_statement(db()->GetCachedStatement(
         SQL_FROM_HERE, "UPDATE keywords SET url_hash=? WHERE id=?"));
 
-    update_statement.BindBlob(0, *encrypted_hash);
+    update_statement.BindBlob(0, *std::move(encrypted_hash));
     update_statement.BindInt64(1, data.id);
 
     if (!update_statement.Run()) {
@@ -714,11 +715,12 @@ void KeywordTable::BindURLToStatement(const TemplateURLData& data,
   s->BindBool(starting_column + 24, data.enforced_by_policy);
   s->BindBool(starting_column + 25, data.featured_by_policy);
   if (encryptor()->IsEncryptionAvailable()) {
-    const auto url_hash = data.GenerateHash();
-    const auto encrypted_hash = encryptor()->EncryptString(
-        std::string(url_hash.begin(), url_hash.end()));
+    const std::vector<uint8_t> url_hash = data.GenerateHash();
+    std::optional<std::vector<uint8_t>> encrypted_hash =
+        encryptor()->EncryptString(
+            std::string(url_hash.begin(), url_hash.end()));
     CHECK(encrypted_hash);
-    s->BindBlob(starting_column + 26, *encrypted_hash);
+    s->BindBlob(starting_column + 26, *std::move(encrypted_hash));
   } else {
     s->BindNull(starting_column + 26);
   }

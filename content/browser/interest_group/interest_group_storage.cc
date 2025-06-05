@@ -6460,7 +6460,7 @@ bool CompactClickiness(sql::Database& db, base::Time now) {
 
 bool DoSetBiddingAndAuctionServerKeys(sql::Database& db,
                                       const url::Origin& coordinator,
-                                      std::string_view serialized_keys,
+                                      std::string serialized_keys,
                                       base::Time expiration) {
   sql::Statement insert_keys_statement(db.GetCachedStatement(
       SQL_FROM_HERE,
@@ -6476,7 +6476,7 @@ bool DoSetBiddingAndAuctionServerKeys(sql::Database& db,
   insert_keys_statement.Reset(true);
   insert_keys_statement.BindString(0, Serialize(coordinator));
 
-  insert_keys_statement.BindBlob(1, serialized_keys);
+  insert_keys_statement.BindBlob(1, std::move(serialized_keys));
   insert_keys_statement.BindTime(2, expiration);
   return insert_keys_statement.Run();
 }
@@ -7460,14 +7460,14 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
 
 void InterestGroupStorage::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    std::string_view serialized_keys,
+    std::string serialized_keys,
     base::Time expiration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
-  DoSetBiddingAndAuctionServerKeys(*db_, coordinator, serialized_keys,
-                                   expiration);
+  DoSetBiddingAndAuctionServerKeys(*db_, coordinator,
+                                   std::move(serialized_keys), expiration);
 }
 
 std::pair<base::Time, std::string>
