@@ -18280,24 +18280,6 @@
             ]
         }
     ],
-    "PrivacySandboxAdsNoticeCCT": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AGSA",
-                    "params": {
-                        "app-id": "com.google.android.googlequicksearchbox"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxAdsNoticeCCT"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxAdsNoticeCCTSurvey": [
         {
             "platforms": [

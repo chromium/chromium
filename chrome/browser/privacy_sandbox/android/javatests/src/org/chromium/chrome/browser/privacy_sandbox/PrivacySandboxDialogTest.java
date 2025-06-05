@@ -651,7 +651,6 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })

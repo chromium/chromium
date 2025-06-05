@@ -11,12 +11,15 @@ namespace privacy_sandbox {
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAdsNoticeCCT,
              "PrivacySandboxAdsNoticeCCT",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
+const char kAndroidGoogleSearchAppIdName[] =
+    "com.google.android.googlequicksearchbox";
 
 const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
-    &kPrivacySandboxAdsNoticeCCT, kPrivacySandboxAdsNoticeCCTAppIdName, ""};
+    &kPrivacySandboxAdsNoticeCCT, kPrivacySandboxAdsNoticeCCTAppIdName,
+    kAndroidGoogleSearchAppIdName};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPrivacySandboxSettings4,

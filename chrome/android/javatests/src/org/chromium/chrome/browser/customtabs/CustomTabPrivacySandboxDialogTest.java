@@ -136,7 +136,6 @@ public class CustomTabPrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
@@ -144,7 +143,14 @@ public class CustomTabPrivacySandboxDialogTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        Intent intent = createMinimalCustomTabIntent();
+        var token = SessionHolder.getSessionHolderFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(
+                token, "com.google.android.googlequicksearchbox");
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isDisplayed()));
         watcher.assertExpected();
     }
@@ -192,7 +198,6 @@ public class CustomTabPrivacySandboxDialogTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({
         ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
@@ -286,7 +291,6 @@ public class CustomTabPrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
@@ -301,7 +305,6 @@ public class CustomTabPrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
