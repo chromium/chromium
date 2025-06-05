@@ -1430,7 +1430,7 @@
     "bases": ["http/tests/low-priority-async-script-execution"],
     "args": ["--enable-features=LCPScriptObserver,LowPriorityAsyncScriptExecution:low_pri_async_exec_timeout/100ms/low_pri_async_exec_exclude_lcp_influencers/true"],
     "owners": [
-      "alexnj@chromium.org",
+      "alexnj@google.com",
       "chikamune@chromium.org"
     ],
     "expires": "Mar 1, 2026"
@@ -1965,7 +1965,7 @@
     ],
     "expires": "Apr 1, 2026",
     "owners": [
-      "alexnj@chromium.org",
+      "alexnj@google.com",
       "kouhei@chromium.org",
       "yoichio@chromium.org"
     ]
@@ -1987,7 +1987,7 @@
     ],
     "expires": "Sep 10, 2026",
     "owners": [
-      "alexnj@chromium.org",
+      "alexnj@google.com",
       "chikamune@chromium.org"
     ]
   },
@@ -3040,7 +3040,7 @@
     ],
     "expires": "Jan 14, 2026",
     "owners": [
-      "alexnj@chromium.org"
+      "alexnj@google.com"
     ]
   },
   {

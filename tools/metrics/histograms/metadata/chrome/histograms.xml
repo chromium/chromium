@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
     expires_after="2023-12-31">
-  <owner>kvitekp@chromium.org</owner>
+  <owner>kvitekp@google.com</owner>
   <owner>headless-owners@chromium.org</owner>
   <summary>
     Records headless chrome action, e.g. remote debugging, screenshot, print to

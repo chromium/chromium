@@ -3205,7 +3205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.CrossOriginLcpImage" enum="Boolean"
     expires_after="2025-11-09">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3342,7 +3342,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.LCPInfluencerUrlsCount" units="count"
     expires_after="2024-11-03">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3357,7 +3357,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.LCPInfluencerUrlsMaxLength" units="bytes"
     expires_after="2024-11-03">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3372,7 +3372,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.LCPInfluencerUrlsPredictionMatchCount"
     units="count" expires_after="2024-11-03">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3387,7 +3387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.LCPInfluencerUrlsPredictionMatchPercent" units="%"
     expires_after="2024-11-03">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
@@ -3453,7 +3453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
     expires_after="2026-05-09">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3468,7 +3468,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchCount" units="count"
     expires_after="2026-05-09">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3486,7 +3486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchPercent" units="%"
     expires_after="2026-05-09">
-  <owner>alexnj@chromium.org</owner>
+  <owner>alexnj@google.com</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
