@@ -605,17 +605,16 @@ void MostVisitedSitesProvider::UpdateCachedSites(
 
 size_t MostVisitedSitesProvider::GetRequestedResultSize(
     const AutocompleteInput& input) const {
-  auto url_suggestions_on_focus_config =
-      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
   const TabMatcher& tab_matcher = client_->GetTabMatcher();
 
   // The requested results size is the maximum amount of suggestions
   // that can be shown in the omnibox in addition to the number of open tabs
   // and blocklisted sites. Add 1 to `GetOpenTabs` since it doesn't consider
   // the currently active tab.
-  return std::min(
-      url_suggestions_on_focus_config.max_suggestions +
-          (tab_matcher.GetOpenTabs(&input).size() + 1) +
-          kMostVisitedBlocklist.size(),
-      url_suggestions_on_focus_config.max_requested_urls_from_history);
+  return std::min(omnibox_feature_configs::OmniboxZpsSuggestionLimit::Get()
+                          .max_suggestions +
+                      (tab_matcher.GetOpenTabs(&input).size() + 1) +
+                      kMostVisitedBlocklist.size(),
+                  omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
+                      .max_requested_urls_from_history);
 }

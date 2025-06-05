@@ -429,17 +429,16 @@ void AutocompleteResult::SortAndCull(
   }
 
   // Used to determine how many search / url suggestions should appear in zps
-  // if kOmniboxUrlSuggestionsOnFocus is enabled.
-  auto url_suggestions_on_focus_config =
-      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
+  // if kOmniboxZpsSuggestionLimit is enabled.
+  auto zps_suggestion_limit_config =
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit::Get();
   size_t max_search_suggestions = 8u;
   size_t max_url_suggestions = 0u;
   size_t max_suggestions = 8u;
-  if (url_suggestions_on_focus_config.enabled) {
-    max_search_suggestions =
-        url_suggestions_on_focus_config.max_search_suggestions;
-    max_url_suggestions = url_suggestions_on_focus_config.max_url_suggestions;
-    max_suggestions = url_suggestions_on_focus_config.max_suggestions;
+  if (zps_suggestion_limit_config.enabled) {
+    max_search_suggestions = zps_suggestion_limit_config.max_search_suggestions;
+    max_url_suggestions = zps_suggestion_limit_config.max_url_suggestions;
+    max_suggestions = zps_suggestion_limit_config.max_suggestions;
   }
 
   // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled and the

@@ -1447,42 +1447,6 @@ const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoWeekWindow[] =
     {
         {"OnFocusMostVisitedRecencyWindow", "13"},
 };
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax8[] = {
-    {"OnFocusMaxSuggestions", "8"},
-    {"OnFocusMaxSearchSuggestions", "4"},
-    {"OnFocusMaxUrlSuggestions", "4"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
-    {"OnFocusMaxSuggestions", "4"},
-    {"OnFocusMaxSearchSuggestions", "2"},
-    {"OnFocusMaxUrlSuggestions", "2"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax2TwoZero[] = {
-    {"OnFocusMaxSuggestions", "2"},
-    {"OnFocusMaxSearchSuggestions", "2"},
-    {"OnFocusMaxUrlSuggestions", "0"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax3ThreeZero[] =
-    {
-        {"OnFocusMaxSuggestions", "3"},
-        {"OnFocusMaxSearchSuggestions", "3"},
-        {"OnFocusMaxUrlSuggestions", "0"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4FourZero[] = {
-    {"OnFocusMaxSuggestions", "4"},
-    {"OnFocusMaxSearchSuggestions", "4"},
-    {"OnFocusMaxUrlSuggestions", "0"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax5FourOne[] = {
-    {"OnFocusMaxSuggestions", "5"},
-    {"OnFocusMaxSearchSuggestions", "4"},
-    {"OnFocusMaxUrlSuggestions", "1"},
-};
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax5ThreeTwo[] = {
-    {"OnFocusMaxSuggestions", "5"},
-    {"OnFocusMaxSearchSuggestions", "3"},
-    {"OnFocusMaxUrlSuggestions", "2"},
-};
 const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
     {
         {"- Two day window", kOmniboxUrlSuggestionsOnFocusTwoDayWindow,
@@ -1493,27 +1457,63 @@ const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
          std::size(kOmniboxUrlSuggestionsOnFocusOneWeekWindow), nullptr},
         {"- Two week window", kOmniboxUrlSuggestionsOnFocusTwoWeekWindow,
          std::size(kOmniboxUrlSuggestionsOnFocusTwoWeekWindow), nullptr},
-        {"- Max 8 Suggestions (One week window)",
-         kOmniboxUrlSuggestionsOnFocusMax8,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax8), nullptr},
-        {"- Max 4 Suggestions (One week window)",
-         kOmniboxUrlSuggestionsOnFocusMax4,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
-        {"- Max 2 Suggestions (2 search, 0 url)",
-         kOmniboxUrlSuggestionsOnFocusMax2TwoZero,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax2TwoZero), nullptr},
-        {"- Max 3 Suggestions (3 search, 0 url)",
-         kOmniboxUrlSuggestionsOnFocusMax3ThreeZero,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax3ThreeZero), nullptr},
-        {"- Max 4 Suggestions (4 search, 0 url)",
-         kOmniboxUrlSuggestionsOnFocusMax4FourZero,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax4FourZero), nullptr},
-        {"- Max 5 Suggestions (4 search, 1 url)",
-         kOmniboxUrlSuggestionsOnFocusMax5FourOne,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax5FourOne), nullptr},
-        {"- Max 5 Suggestions (3 search, 2 url)",
-         kOmniboxUrlSuggestionsOnFocusMax5ThreeTwo,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax5ThreeTwo), nullptr},
+};
+
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax8[] = {
+    {"OmniboxZpsMaxSuggestions", "8"},
+    {"OmniboxZpsMaxSearchSuggestions", "4"},
+    {"OmniboxZpsMaxUrlSuggestions", "4"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax4[] = {
+    {"OmniboxZpsMaxSuggestions", "4"},
+    {"OmniboxZpsMaxSearchSuggestions", "2"},
+    {"OmniboxZpsMaxUrlSuggestions", "2"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax2TwoZero[] = {
+    {"OmniboxZpsMaxSuggestions", "2"},
+    {"OmniboxZpsMaxSearchSuggestions", "2"},
+    {"OmniboxZpsMaxUrlSuggestions", "0"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax3ThreeZero[] = {
+    {"OmniboxZpsMaxSuggestions", "3"},
+    {"OmniboxZpsMaxSearchSuggestions", "3"},
+    {"OmniboxZpsMaxUrlSuggestions", "0"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax4FourZero[] = {
+    {"OmniboxZpsMaxSuggestions", "4"},
+    {"OmniboxZpsMaxSearchSuggestions", "4"},
+    {"OmniboxZpsMaxUrlSuggestions", "0"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax5FourOne[] = {
+    {"OmniboxZpsMaxSuggestions", "5"},
+    {"OmniboxZpsMaxSearchSuggestions", "4"},
+    {"OmniboxZpsMaxUrlSuggestions", "1"},
+};
+const FeatureEntry::FeatureParam kOmniboxZpsSuggestionLimitMax5ThreeTwo[] = {
+    {"OmniboxZpsMaxSuggestions", "5"},
+    {"OmniboxZpsMaxSearchSuggestions", "3"},
+    {"OmniboxZpsMaxUrlSuggestions", "2"},
+};
+const FeatureEntry::FeatureVariation kOmniboxZpsSuggestionLimitVariations[] = {
+    {"- Max 8 Suggestions (4 search, 4 url)", kOmniboxZpsSuggestionLimitMax8,
+     std::size(kOmniboxZpsSuggestionLimitMax8), nullptr},
+    {"- Max 4 Suggestions (2 search, 2 url)", kOmniboxZpsSuggestionLimitMax4,
+     std::size(kOmniboxZpsSuggestionLimitMax4), nullptr},
+    {"- Max 2 Suggestions (2 search, 0 url)",
+     kOmniboxZpsSuggestionLimitMax2TwoZero,
+     std::size(kOmniboxZpsSuggestionLimitMax2TwoZero), nullptr},
+    {"- Max 3 Suggestions (3 search, 0 url)",
+     kOmniboxZpsSuggestionLimitMax3ThreeZero,
+     std::size(kOmniboxZpsSuggestionLimitMax3ThreeZero), nullptr},
+    {"- Max 4 Suggestions (4 search, 0 url)",
+     kOmniboxZpsSuggestionLimitMax4FourZero,
+     std::size(kOmniboxZpsSuggestionLimitMax4FourZero), nullptr},
+    {"- Max 5 Suggestions (4 search, 1 url)",
+     kOmniboxZpsSuggestionLimitMax5FourOne,
+     std::size(kOmniboxZpsSuggestionLimitMax5FourOne), nullptr},
+    {"- Max 5 Suggestions (3 search, 2 url)",
+     kOmniboxZpsSuggestionLimitMax5ThreeTwo,
+     std::size(kOmniboxZpsSuggestionLimitMax5ThreeTwo), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -6827,6 +6827,15 @@ const FeatureEntry kFeatureEntries[] = {
              kOmniboxUrlSuggestionsOnFocus,
          kOmniboxUrlSuggestionsOnFocusVariations,
          "OmniboxUrlSuggestionsOnFocus")},
+
+    {"omnibox-zps-suggestion-limit",
+     flag_descriptions::kOmniboxZpsSuggestionLimit,
+     flag_descriptions::kOmniboxZpsSuggestionLimitDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::OmniboxZpsSuggestionLimit::
+             kOmniboxZpsSuggestionLimit,
+         kOmniboxZpsSuggestionLimitVariations,
+         "OmniboxZpsSuggestionLimit")},
 
     {"omnibox-enterprise-search-aggregator",
      flag_descriptions::kOmniboxSearchAggregatorName,

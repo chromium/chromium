@@ -12253,6 +12253,7 @@ from previous Chrome versions.
   <int value="-613931316" label="PrivacyPolicyInsights:disabled"/>
   <int value="-613596048" label="new-canvas-2d-api"/>
   <int value="-613595118" label="StarterPackIPH:enabled"/>
+  <int value="-613433517" label="OmniboxZpsSuggestionLimit:disabled"/>
   <int value="-613072171" label="ElementCapture:enabled"/>
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
@@ -14523,6 +14524,7 @@ from previous Chrome versions.
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="249727337" label="EnableTranslationAPI:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
+  <int value="250890200" label="OmniboxZpsSuggestionLimit:enabled"/>
   <int value="251180818" label="ReadAloudAutoVoiceSwitching:disabled"/>
   <int value="251262596" label="CCTMinimized:disabled"/>
   <int value="251266195" label="CapturedSurfaceControl:disabled"/>

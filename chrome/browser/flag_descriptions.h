@@ -1790,6 +1790,9 @@ extern const char kOmniboxZeroSuggestInMemoryCachingDescription[];
 extern const char kOmniboxMaxZeroSuggestMatchesName[];
 extern const char kOmniboxMaxZeroSuggestMatchesDescription[];
 
+extern const char kOmniboxZpsSuggestionLimit[];
+extern const char kOmniboxZpsSuggestionLimitDescription[];
+
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
 extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 

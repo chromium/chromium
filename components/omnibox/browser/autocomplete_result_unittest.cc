@@ -2655,7 +2655,7 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
 // suggestion limits.
 TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().max_suggestions = 8U;
