@@ -5,8 +5,6 @@
 package org.chromium.components.variations.firstrun;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -90,6 +88,7 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("signature");
         when(mConnection.getHeaderField("X-Country")).thenReturn("Nowhere Land");
         when(mConnection.getHeaderField("IM")).thenReturn("gzip");
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(12345L);
         when(mConnection.getInputStream())
                 .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
         doReturn(mConnection)
@@ -103,9 +102,7 @@ public class VariationsSeedFetcherTest {
                                 .setRestrictMode(null)
                                 .build());
 
-        long startTime = new Date().getTime();
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
-        long endTime = new Date().getTime();
 
         assertThat(
                 mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""),
@@ -113,17 +110,10 @@ public class VariationsSeedFetcherTest {
         assertThat(
                 mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""),
                 equalTo("Nowhere Land"));
-        long seedDate = mPrefs.getLong(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_DATE, 0);
-        // We use *OrEqualTo comparisons here to account for when both points in time fall into the
-        // same tick of the clock.
-        assertThat(
-                "Seed date should be after the test start time",
-                seedDate,
-                greaterThanOrEqualTo(startTime));
-        assertThat(
-                "Seed date should be before the test end time",
-                seedDate,
-                lessThanOrEqualTo(endTime));
+        assertEquals(
+                "Seed date should be set to the value from the header",
+                12345L,
+                mPrefs.getLong(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_DATE, 0));
         assertTrue(
                 mPrefs.getBoolean(
                         VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, false));
@@ -306,6 +296,7 @@ public class VariationsSeedFetcherTest {
         // Pretend we are on a background thread; set the UI thread looper to something other than
         // the current thread.
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_MODIFIED);
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(34567L);
 
         SeedInfo curSeedInfo = new SeedInfo();
         curSeedInfo.signature = "";
@@ -343,7 +334,7 @@ public class VariationsSeedFetcherTest {
         assertEquals(curSeedInfo.signature, updatedSeedInfo.signature);
         assertEquals(curSeedInfo.country, updatedSeedInfo.country);
         assertEquals(curSeedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
-        assertEquals(67890L, updatedSeedInfo.date);
+        assertEquals(34567L, updatedSeedInfo.date);
         Arrays.equals(curSeedInfo.seedData, updatedSeedInfo.seedData);
 
         assertEquals("savedSerialNumber", curSeedInfo.getParsedVariationsSeed().getSerialNumber());
@@ -423,6 +414,7 @@ public class VariationsSeedFetcherTest {
     public void testDownloadContent_success() throws IOException {
         String mockSignature = "bogus seed signature";
         String mockCountry = "GB";
+        long mockDate = 1234L;
         String base64Delta =
                 "KgooMjRkM2EzN2UwMWJlYjlmMDVmMzIzOGI1MzVmNzA4NWZmZWViODc0MAAqW+4BkgEKH1VN"
                         + "QS1Vbmlmb3JtaXR5LVRyaWFsLTIwLVBlcmNlbnQYgOOFwAU4AUIHZGVmYXVsdEoRCghncm91"
@@ -452,6 +444,7 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getHeaderField("IM")).thenReturn("x-bm,gzip");
         when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn(mockSignature);
         when(mConnection.getHeaderField("X-Country")).thenReturn(mockCountry);
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(mockDate);
         when(mConnection.getInputStream())
                 .thenReturn(
                         new ByteArrayInputStream(
@@ -500,6 +493,7 @@ public class VariationsSeedFetcherTest {
         assertTrue(fetchInfo.seedInfo.isGzipCompressed);
         assertEquals(mockSignature, fetchInfo.seedInfo.signature);
         assertEquals(mockCountry, fetchInfo.seedInfo.country);
+        assertEquals(mockDate, fetchInfo.seedInfo.date);
     }
 
     /** Test method for {@link VariationsSeedFetcher#fetchSeed()} when no fetch is needed */

@@ -585,7 +585,7 @@ public class VariationsSeedFetcher {
                 SeedInfo seedInfo = new SeedInfo();
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
-                seedInfo.date = mDateTime.newDate().getTime();
+                seedInfo.date = connection.getHeaderFieldDate("Date", 0);
 
                 InstanceManipulations receivedIm =
                         VariationsCompressionUtils.getInstanceManipulations(
@@ -625,7 +625,7 @@ public class VariationsSeedFetcher {
                 // serial number included in the request is always that of the latest
                 // seed, so it's appropriate to always modify the latest seed's date.
                 fetchInfo.seedInfo = assumeNonNull(currInfo);
-                fetchInfo.seedInfo.date = mDateTime.newDate().getTime();
+                fetchInfo.seedInfo.date = connection.getHeaderFieldDate("Date", 0);
             } else {
                 String errorMsg = "Non-OK response code = " + responseCode;
                 Log.w(TAG, errorMsg);
