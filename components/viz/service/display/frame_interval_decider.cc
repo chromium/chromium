@@ -9,7 +9,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -17,6 +16,7 @@
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace viz {
 
@@ -47,7 +47,7 @@ FrameIntervalDecider::~FrameIntervalDecider() = default;
 void FrameIntervalDecider::UpdateSettings(
     Settings settings,
     std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers) {
-  std::visit(base::Overloaded(
+  std::visit(absl::Overload(
                  [](const std::monostate& monostate) {},
                  [](const FixedIntervalSettings& fixed_interval_settings) {
                    CHECK(!fixed_interval_settings.supported_intervals.empty());
@@ -105,7 +105,7 @@ void FrameIntervalDecider::Decide(
   // If nothing matched, use the default.
   if (!match_result) {
     match_result = std::visit(
-        base::Overloaded(
+        absl::Overload(
             [](const std::monostate& monostate) -> Result {
               return FrameIntervalClass::kDefault;
             },
@@ -164,7 +164,7 @@ bool FrameIntervalDecider::MayDecreaseFrameInterval(
     return true;
   }
   return std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&](FrameIntervalClass from_frame_interval_class) {
             if (!std::holds_alternative<FrameIntervalClass>(to.value())) {
               return true;

@@ -8,11 +8,11 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "media/filters/video_cadence_estimator.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace viz {
 
@@ -57,7 +57,7 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
   }
 
   base::TimeDelta interval = std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&](const std::monostate& monostate) {
             // If no intervals settings are given, then just return the content
             // interval.
@@ -193,7 +193,7 @@ void FrameIntervalMatcher::Inputs::WriteIntoTrace(
 // static
 std::string FrameIntervalMatcher::ResultToString(const Result& result) {
   return std::visit(
-      base::Overloaded(
+      absl::Overload(
           [](FrameIntervalClass frame_interval_class) -> std::string {
             switch (frame_interval_class) {
               case FrameIntervalClass::kBoost:
@@ -261,7 +261,7 @@ std::optional<FrameIntervalMatcher::Result> InputBoostMatcher::Match(
         (matcher_inputs.aggregated_frame_time - inputs.frame_time) <
             matcher_inputs.settings->ignore_frame_sink_timeout) {
       return std::visit(
-          base::Overloaded(
+          absl::Overload(
               [](const std::monostate& monostate) -> Result {
                 return FrameIntervalClass::kBoost;
               },
@@ -331,7 +331,7 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
   }
 
   base::TimeDelta interval = std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&](const std::monostate& monostate) { return min_interval.value(); },
           [&](const FixedIntervalSettings& fixed_interval_settings) {
             // Pick closest supported interval amongst discrete list.
@@ -387,7 +387,7 @@ std::optional<FrameIntervalMatcher::Result> UserInputBoostMatcher::Match(
         (matcher_inputs.aggregated_frame_time - inputs.frame_time) <
             matcher_inputs.settings->ignore_frame_sink_timeout) {
       return std::visit(
-          base::Overloaded(
+          absl::Overload(
               [](const std::monostate& monostate) -> Result {
                 return FrameIntervalClass::kBoost;
               },

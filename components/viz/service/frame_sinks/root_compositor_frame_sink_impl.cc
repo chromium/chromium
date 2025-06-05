@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +28,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -732,7 +732,7 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
   base::TimeDelta interval;
   std::pair<base::TimeDelta, gfx::SurfaceControlFrameRateCompatibility>
       interval_and_compat = std::visit(
-          base::Overloaded(
+          absl::Overload(
               [this](FrameIntervalDecider::FrameIntervalClass
                          frame_interval_class) {
                 switch (frame_interval_class) {
@@ -768,7 +768,7 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
   decided_display_frame_rate_compat_ = compat;
 #else
   base::TimeDelta interval = std::visit(
-      base::Overloaded(
+      absl::Overload(
           [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
             switch (frame_interval_class) {
               case FrameIntervalDecider::FrameIntervalClass::kBoost:
