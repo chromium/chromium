@@ -317,16 +317,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordBubble.CompromisedBubble.Type"
-    enum="PasswordBubbleFollowupType" expires_after="2025-07-06">
-  <owner>vasilii@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    The state of the bubble shown after users saves/updates a password. It
-    notifies the user about leftover compromised passwords.
-  </summary>
-</histogram>
-
 <histogram name="PasswordBubble.DisplayDisposition"
     enum="PasswordBubbleDisplayDisposition" expires_after="2025-10-12">
   <owner>vasilii@chromium.org</owner>

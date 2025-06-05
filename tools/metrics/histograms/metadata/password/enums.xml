@@ -728,12 +728,6 @@ chromium-metrics-reviews@google.com.
              credentials report"/>
 </enum>
 
-<enum name="PasswordBubbleFollowupType">
-  <int value="0" label="Safe state"/>
-  <int value="1" label="More passwords to fix"/>
-  <int value="2" label="Unsafe state"/>
-</enum>
-
 <enum name="PasswordChangeFlowState">
   <int value="0" label="Offering password change"/>
   <int value="1" label="Waiting for privacy notice acceptance"/>
