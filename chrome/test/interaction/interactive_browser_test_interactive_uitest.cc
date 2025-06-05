@@ -493,7 +493,14 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForStateChange(kWebContentsId, clear_all_downloads_click));
 }
 
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyToWebContents) {
+// TODO(crbug.com/422501415): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SendKeyToWebContents DISABLED_SendKeyToWebContents
+#else
+#define MAYBE_SendKeyToWebContents SendKeyToWebContents
+#endif
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       MAYBE_SendKeyToWebContents) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithTextField);
   const DeepQuery kTextField = {"#value"};
