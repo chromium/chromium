@@ -437,6 +437,7 @@ IpczResult Router::BeginPut(IpczBeginPutFlags flags,
   if (data) {
     *data = parcel->data_view().data();
   }
+  absl::MutexLock lock(&mutex_);
   if (!pending_puts_) {
     pending_puts_ = std::make_unique<PendingTransactionSet>();
   }
@@ -455,15 +456,18 @@ IpczResult Router::EndPut(IpczTransaction transaction,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  if (!pending_puts_) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
   std::unique_ptr<Parcel> parcel;
-  if (aborted) {
-    parcel = pending_puts_->FinalizeForPut(transaction, 0);
-  } else {
-    parcel = pending_puts_->FinalizeForPut(transaction, num_bytes_produced);
+  {
+    absl::MutexLock lock(&mutex_);
+    if (!pending_puts_) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    if (aborted) {
+      parcel = pending_puts_->FinalizeForPut(transaction, 0);
+    } else {
+      parcel = pending_puts_->FinalizeForPut(transaction, num_bytes_produced);
+    }
   }
 
   if (!parcel) {

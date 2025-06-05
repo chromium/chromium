@@ -458,8 +458,8 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // The set of pending get transactions in progress on this router.
   std::unique_ptr<PendingTransactionSet> pending_gets_ ABSL_GUARDED_BY(mutex_);
 
-  // The set of pending get transactions in progress on this router.
-  std::unique_ptr<PendingTransactionSet> pending_puts_;
+  // The set of pending put transactions in progress on this router.
+  std::unique_ptr<PendingTransactionSet> pending_puts_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz
