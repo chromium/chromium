@@ -150,9 +150,6 @@ uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
       webview::WEB_VIEW_REMOVE_DATA_MASK_LOCAL_STORAGE) {
     mask |= StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
   }
-  if (web_view_removal_mask & webview::WEB_VIEW_REMOVE_DATA_MASK_WEBSQL) {
-    mask |= StoragePartition::REMOVE_DATA_MASK_WEBSQL;
-  }
 
   return mask;
 }

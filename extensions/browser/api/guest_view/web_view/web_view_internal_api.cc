@@ -61,7 +61,6 @@ constexpr std::string_view kPersistentCookiesKey = "persistentCookies";
 constexpr std::string_view kFileSystemsKey = "fileSystems";
 constexpr std::string_view kIndexedDBKey = "indexedDB";
 constexpr std::string_view kLocalStorageKey = "localStorage";
-constexpr std::string_view kWebSQLKey = "webSQL";
 constexpr std::string_view kSinceKey = "since";
 const char kLoadFileError[] = "Failed to load file: \"*\". ";
 const char kHostIDError[] = "Failed to generate HostID.";
@@ -92,9 +91,6 @@ uint32_t MaskForKey(std::string_view key) {
   }
   if (key == kLocalStorageKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_LOCAL_STORAGE;
-  }
-  if (key == kWebSQLKey) {
-    return webview::WEB_VIEW_REMOVE_DATA_MASK_WEBSQL;
   }
   return 0;
 }

@@ -97,9 +97,8 @@ inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_COOKIES = 1 << 1;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_FILE_SYSTEMS = 1 << 2;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_INDEXEDDB = 1 << 3;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_LOCAL_STORAGE = 1 << 4;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_WEBSQL = 1 << 5;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES = 1 << 6;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_PERSISTENT_COOKIES = 1 << 7;
+inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES = 1 << 5;
+inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_PERSISTENT_COOKIES = 1 << 6;
 
 // Other.
 extern const char kWebViewContentScriptManagerKeyName[];

@@ -139,8 +139,7 @@ const storage::QuotaClientType kClientFile =
 
 const uint32_t kAllQuotaRemoveMask =
     StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
-    StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-    StoragePartition::REMOVE_DATA_MASK_WEBSQL;
+    StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
 class RemoveCookieTester {
  public:
   explicit RemoveCookieTester(StoragePartition* storage_partition)
@@ -1979,8 +1978,7 @@ TEST_F(StoragePartitionImplTest, AttributionReportingClearDataForFilter) {
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
   const uint32_t kTestClearMask =
-      content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-      content::StoragePartition::REMOVE_DATA_MASK_WEBSQL;
+      content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
   const uint32_t kTestQuotaClearMask = 0;
   const auto kTestOrigin = GURL("https://example.com");
   const auto kBeginTime = base::Time() + base::Hours(1);

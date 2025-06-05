@@ -100,7 +100,6 @@ struct UsageListInitializer {
 UsageListInitializer initializers[] = {
     {Storage::StorageTypeEnum::File_systems,
      &blink::mojom::UsageBreakdown::fileSystem},
-    {Storage::StorageTypeEnum::Websql, &blink::mojom::UsageBreakdown::webSql},
     {Storage::StorageTypeEnum::Indexeddb,
      &blink::mojom::UsageBreakdown::indexedDatabase},
     {Storage::StorageTypeEnum::Cache_storage,
@@ -578,9 +577,6 @@ uint32_t GetRemoveDataMask(const std::string& storage_types) {
   }
   if (set.count(Storage::StorageTypeEnum::Shader_cache)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
-  }
-  if (set.count(Storage::StorageTypeEnum::Websql)) {
-    remove_mask |= StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   }
   if (set.count(Storage::StorageTypeEnum::Service_workers)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;

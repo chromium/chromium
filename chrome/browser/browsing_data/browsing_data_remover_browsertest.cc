@@ -236,7 +236,7 @@ class BrowsingDataRemoverBrowserTest
     EXPECT_FALSE(HasDataForType(type));
   }
 
-  // Test that storage systems like filesystem and websql, where just an access
+  // Test that storage systems like filesystem, where just an access
   // creates an empty store, are counted and deleted correctly.
   void TestEmptySiteData(const std::string& type, TimeEnum delete_begin) {
     EXPECT_EQ(0, GetSiteDataCount());
@@ -1494,11 +1494,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 const std::vector<std::string> kStorageTypes{
     "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense",
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if BUILDFLAG(IS_ANDROID)
-    "WebSql",
-#endif
 };
 
 // Test that storage doesn't leave any traces on disk.
@@ -1571,11 +1566,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
 const std::vector<std::string> kSessionOnlyStorageTestTypes{
     "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense",
-// TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-// WebView.
-#if BUILDFLAG(IS_ANDROID)
-    "WebSql",
-#endif
 };
 
 // Test that storage gets deleted if marked as SessionOnly.

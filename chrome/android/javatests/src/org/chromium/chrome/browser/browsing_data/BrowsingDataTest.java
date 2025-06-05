@@ -134,14 +134,9 @@ public class BrowsingDataTest {
     @Test
     @SmallTest
     public void testSiteDataDeleted() throws Exception {
-        // TODO(dullweber): Investigate, why WebSql fails this test.
         List<String> siteData =
                 Arrays.asList(
-                        "LocalStorage",
-                        "ServiceWorker",
-                        "CacheStorage",
-                        "FileSystem",
-                        "IndexedDb" /*, "WebSql"*/);
+                        "LocalStorage", "ServiceWorker", "CacheStorage", "FileSystem", "IndexedDb");
         mActivityTestRule.loadUrl(mUrl);
 
         for (String type : siteData) {

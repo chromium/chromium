@@ -70,7 +70,7 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_FILE_SYSTEMS = 1 << 1;
   static constexpr DataType DATA_TYPE_INDEXED_DB = 1 << 2;
   static constexpr DataType DATA_TYPE_LOCAL_STORAGE = 1 << 3;
-  static constexpr DataType DATA_TYPE_WEB_SQL = 1 << 4;
+  static constexpr DataType DATA_TYPE_WEB_SQL_DEPRECATED = 1 << 4;
   static constexpr DataType DATA_TYPE_SERVICE_WORKERS = 1 << 5;
   static constexpr DataType DATA_TYPE_CACHE_STORAGE = 1 << 6;
   // This is also persisted, keep with storage datatypes.
@@ -84,7 +84,7 @@ class BrowsingDataRemover {
   // and ones defined by the embedder.
   static constexpr DataType DATA_TYPE_DOM_STORAGE =
       DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB | DATA_TYPE_LOCAL_STORAGE |
-      DATA_TYPE_WEB_SQL | DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
+      DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
       DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH;
 
   // Other datatypes.

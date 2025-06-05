@@ -43,6 +43,7 @@ enum OriginTypeMask {
 };
 
 // TODO(http://crbug.com/1266606): appcache is a noop and should be removed.
+// TODO(http://crbug.com/420857719): webSQL is a noop and should be removed.
 const char kRemoveEverythingArguments[] =
     R"([{"since": 1000}, {
     "appcache": true, "cache": true, "cookies": true, "downloads": true,
@@ -264,9 +265,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
         GetAsMask(data_to_remove, "passwords",
                   chrome_browsing_data_remover::DATA_TYPE_PASSWORDS) |
         GetAsMask(data_to_remove, "serviceWorkers",
-                  content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS) |
-        GetAsMask(data_to_remove, "webSQL",
-                  content::BrowsingDataRemover::DATA_TYPE_WEB_SQL);
+                  content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
 
     EXPECT_EQ(expected_removal_mask, removal_mask);
   }
@@ -341,7 +340,6 @@ TEST_F(BrowsingDataApiTest, RemovalProhibited) {
   CheckRemovalPermitted("{\"serverBoundCertificates\": true}", true);
   CheckRemovalPermitted("{\"passwords\": true}", true);
   CheckRemovalPermitted("{\"serviceWorkers\": true}", true);
-  CheckRemovalPermitted("{\"webSQL\": true}", true);
 
   // The entire removal is prohibited if any part is.
   CheckRemovalPermitted("{\"cache\": true, \"history\": true}", false);
@@ -429,8 +427,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMask) {
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "serviceWorkers",
       content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
-  RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
-      "webSQL", content::BrowsingDataRemover::DATA_TYPE_WEB_SQL);
 }
 
 // Test an arbitrary combination of data types.
@@ -508,8 +504,6 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
       chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
   RunAndCompareRemovalMask<BrowsingDataRemoveServiceWorkersFunction>(
       content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
-  RunAndCompareRemovalMask<BrowsingDataRemoveWebSQLFunction>(
-      content::BrowsingDataRemover::DATA_TYPE_WEB_SQL);
 }
 
 // Test the processing of the 'delete since' preference.

@@ -77,8 +77,6 @@ uint64_t MaskForKey(const char* key) {
     return content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS;
   if (strcmp(key, extension_browsing_data_api_constants::kCacheStorageKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE;
-  if (strcmp(key, extension_browsing_data_api_constants::kWebSQLKey) == 0)
-    return content::BrowsingDataRemover::DATA_TYPE_WEB_SQL;
 
   return 0ULL;
 }
@@ -160,9 +158,6 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
              delete_site_data);
   SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kLocalStorageKey,
-             delete_site_data);
-  SetDetails(&selected, &permitted,
-             extension_browsing_data_api_constants::kWebSQLKey,
              delete_site_data);
   SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kServiceWorkersKey,
@@ -530,6 +525,7 @@ bool BrowsingDataRemoveCacheStorageFunction::GetRemovalMask(
 }
 
 bool BrowsingDataRemoveWebSQLFunction::GetRemovalMask(uint64_t* removal_mask) {
-  *removal_mask = content::BrowsingDataRemover::DATA_TYPE_WEB_SQL;
+  // TODO(http://crbug.com/420857719): Deprecate and remove this extension api.
+  *removal_mask = 0;
   return true;
 }

@@ -35,8 +35,7 @@ uint32_t remove_data_mask =
     content::StoragePartition::REMOVE_DATA_MASK_COOKIES |
     content::StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
     content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
-    content::StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE |
-    content::StoragePartition::REMOVE_DATA_MASK_WEBSQL;
+    content::StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
 
 }  // namespace
 

@@ -43,7 +43,6 @@ inline constexpr char kPasswordsKey[] = "passwords";
 inline constexpr char kPluginDataKeyDeprecated[] = "pluginData";
 inline constexpr char kServiceWorkersKey[] = "serviceWorkers";
 inline constexpr char kCacheStorageKey[] = "cacheStorage";
-inline constexpr char kWebSQLKey[] = "webSQL";
 
 // Option keys.
 inline constexpr char kExtensionsKey[] = "extension";

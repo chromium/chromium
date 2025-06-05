@@ -442,9 +442,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
   }
-  if (remove_mask & DATA_TYPE_WEB_SQL) {
-    storage_partition_remove_mask |= StoragePartition::REMOVE_DATA_MASK_WEBSQL;
-  }
   if (remove_mask & DATA_TYPE_SERVICE_WORKERS) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;

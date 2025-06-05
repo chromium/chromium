@@ -11,15 +11,8 @@ namespace storage::test {
 const std::vector<std::string> kCookiesTypesForFrame{"Cookie", "CookieStore"};
 
 const std::vector<std::string> kStorageTypesForFrame{
-    "LocalStorage", "FileSystem", "FileSystemAccess", "SessionStorage",
-    "IndexedDb",     "CacheStorage",     "ServiceWorker",
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/333756088): WebSQL is disabled everywhere by default as of
-    // M119 (crbug/695592) except on Android WebView. This is enabled for
-    // Android only to indirectly cover WebSQL deletions on WebView.
-    "WebSql",
-#endif
-};
+    "LocalStorage", "FileSystem",   "FileSystemAccess", "SessionStorage",
+    "IndexedDb",    "CacheStorage", "ServiceWorker"};
 
 const std::vector<std::string> kStorageTypesForWorker{
     "WorkerFileSystemAccess", "WorkerCacheStorage", "WorkerIndexedDb"};
@@ -67,14 +60,7 @@ void SetStorageForFrame(content::RenderFrameHost* frame,
     actual[data_type] = content::EvalJs(frame, "set" + data_type + "()",
                                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)
                             .ExtractBool();
-    if (frame->GetLastCommittedOrigin() !=
-            frame->GetMainFrame()->GetLastCommittedOrigin() &&
-        data_type == "WebSql") {
-      // Third-party context WebSQL is disabled as of M97.
-      expected[data_type] = false;
-    } else {
-      expected[data_type] = expected_to_be_set;
-    }
+    expected[data_type] = expected_to_be_set;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected))
       << "(expected at " << location.ToString() << ")";
@@ -103,14 +89,7 @@ void ExpectStorageForFrame(content::RenderFrameHost* frame,
     actual[data_type] = content::EvalJs(frame, "has" + data_type + "();",
                                         content::EXECUTE_SCRIPT_NO_USER_GESTURE)
                             .ExtractBool();
-    if (frame->GetLastCommittedOrigin() !=
-            frame->GetMainFrame()->GetLastCommittedOrigin() &&
-        data_type == "WebSql") {
-      // Third-party context WebSQL is disabled as of M97.
-      expected_elts[data_type] = false;
-    } else {
-      expected_elts[data_type] = expected;
-    }
+    expected_elts[data_type] = expected;
   }
   EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected_elts))
       << "(expected at " << location.ToString() << ")";
