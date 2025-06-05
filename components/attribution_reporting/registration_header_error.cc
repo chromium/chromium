@@ -6,15 +6,15 @@
 
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace attribution_reporting {
 
 std::string_view RegistrationHeaderError::HeaderName() const {
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [](mojom::SourceRegistrationError) {
                           return kAttributionReportingRegisterSourceHeader;
                         },

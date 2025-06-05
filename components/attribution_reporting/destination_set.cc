@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/overloaded.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -20,6 +19,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace attribution_reporting {
 
@@ -70,7 +70,7 @@ DestinationSet::FromJSON(const base::Value* v) {
     return base::ok();
   };
 
-  RETURN_IF_ERROR(v->Visit(base::Overloaded{
+  RETURN_IF_ERROR(v->Visit(absl::Overload{
       [&](const std::string& str) {
         return append_if_valid(
             str, SourceRegistrationError::kDestinationUntrustworthy);
