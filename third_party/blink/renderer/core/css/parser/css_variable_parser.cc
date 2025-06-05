@@ -111,19 +111,9 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
-  if (stream.Peek().GetType() == kIdentToken) {
-    if (!CSSVariableParser::IsValidVariableName(
-            stream.ConsumeIncludingWhitespace())) {
-      return false;
-    }
-  } else if (RuntimeEnabledFeatures::CSSIdentFunctionEnabled() &&
-             !css_parsing_utils::ConsumeIdentFunction(stream, context)) {
-    // It's a bit wasteful to create a CSSCustomIdentValue just to discard it,
-    // but with the new "argument grammar" parsing approach described in
-    // Issue 11500 we will eventually end up accepting any <declaration-value>,
-    // so it should not be for long.
-    //
-    // https://github.com/w3c/csswg-drafts/issues/11500
+  if (stream.Peek().GetType() != kIdentToken ||
+      !CSSVariableParser::IsValidVariableName(
+          stream.ConsumeIncludingWhitespace())) {
     return false;
   }
   if (stream.AtEnd()) {
