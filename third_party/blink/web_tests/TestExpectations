@@ -4359,10 +4359,6 @@ crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-dat
 # Fails when run under --disable-site-isolation-trials.
 crbug.com/1317079 [ Linux ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Failure Pass ]
 
-# Test timing out when SharedArrayBuffer is disabled by default.
-# See https://crbug.com/40175672
-crbug.com/40175672 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Skip Timeout ]
-
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 

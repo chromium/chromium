@@ -5,41 +5,44 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as Root from 'devtools/core/root/root.js';
+import * as SourcesComponents from 'devtools/panels/sources/components/components.js';
+import * as RenderCoordinator from 'devtools/ui/components/render_coordinator/render_coordinator.js';
+
+async function dumpBreakpointSidebarPane() {
+  var pane = SourcesComponents.BreakpointsView.BreakpointsView.instance();
+  await SourcesComponents.BreakpointsView.BreakpointsSidebarController.instance().update();
+  await RenderCoordinator.done();
+  const groupHeader = pane.shadowRoot?.querySelectorAll('[role="group"]');
+  for (let i = 0; i < groupHeader?.length; ++i) {
+    const title = groupHeader[i].querySelector('.group-header-title')?.textContent;
+    const line = groupHeader[i].querySelector('.breakpoint-item .location')?.textContent;
+    const code = groupHeader[i].querySelector('.breakpoint-item .code-snippet')?.textContent;
+    TestRunner.addResult(`${title}:line ${line}: ${code}`);
+  }
+}
 
 (async function() {
-  // This test is testing the old breakpoint sidebar pane. Make sure to
-  // turn off the new breakpoint pane experiment.
-  Root.Runtime.experiments.setEnabled('breakpointView', false);
   TestRunner.addResult(`Tests setting breakpoint when main thread blocks.\n`);
   await TestRunner.showPanel('sources');
-  await TestRunner.navigatePromise('resources/blocking-main-thread.html');
+  TestRunner.navigate('resources/blocking-main-thread.php');
 
   SourcesTestRunner.runDebuggerTestSuite([
     async function testSetBreakpoint(next) {
-
-      // The debugger plugin needs to be retrieved before pausing, otherwise we
-      // cannot set a breakpoint on the main thread during pause.
-      var mainThreadSource = await SourcesTestRunner.showScriptSourcePromise(
-          'blocking-main-thread.html');
-      const plugin = SourcesTestRunner.debuggerPlugin(mainThreadSource);
-
       SourcesTestRunner.showScriptSource(
-          'blocking-main-thread.js', didShowWorkerSource);
+            'blocking-main-thread-worker.php', didShowWorkerSource);
 
       async function didShowWorkerSource(sourceFrame) {
-        await SourcesTestRunner.createNewBreakpoint(sourceFrame, 12, '', true);
-        await SourcesTestRunner.waitBreakpointSidebarPane();
-        SourcesTestRunner.dumpBreakpointSidebarPane();
+        await SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
+        await dumpBreakpointSidebarPane();
         SourcesTestRunner.waitUntilPaused(paused);
-        TestRunner.addResult('Reloading page.');
         TestRunner.reloadPage();
       }
 
       async function paused() {
-        plugin.createNewBreakpoint(10, '', true);
-        await SourcesTestRunner.waitBreakpointSidebarPane();
-        SourcesTestRunner.dumpBreakpointSidebarPane();
+        var mainThreadSource = await SourcesTestRunner.showScriptSourcePromise(
+          'blocking-main-thread.php');
+        await SourcesTestRunner.setBreakpoint(mainThreadSource, 5, '', true);
+        await dumpBreakpointSidebarPane();
         next();
       }
     }

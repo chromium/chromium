@@ -1,7 +1,7 @@
-// Copyright 2020 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+<?php
+header('Cross-Origin-Embedder-Policy: require-corp');
+header('Content-type: text/javascript');
+?>
 self.addEventListener('message', (m) => {
   const sharedArray = new Int32Array(m.data);
   var i = 0;

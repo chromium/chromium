@@ -2,13 +2,10 @@ Tests setting breakpoint when main thread blocks.
 
 
 Running: testSetBreakpoint
-Breakpoint sidebar pane 
-blocking-main-thread.js:13checked  Atomics.store(sharedArray, i, 1);
-Reloading page.
+blocking-main-thread-worker.php:line 9:   Atomics.store(sharedArray, i, 1);
 Page reloaded.
 Script execution paused.
-Breakpoint sidebar pane 
-blocking-main-thread.html:11checked  worker.postMessage(sab);
-blocking-main-thread.js:13checked breakpoint hit  Atomics.store(sharedArray, i, 1);
+blocking-main-thread-worker.php:line 9:   Atomics.store(sharedArray, i, 1);
+blocking-main-thread.php:line 6:   worker.postMessage(sab);
 Script execution resumed.
 

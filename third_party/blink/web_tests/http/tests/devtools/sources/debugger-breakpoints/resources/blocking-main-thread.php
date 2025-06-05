@@ -1,13 +1,13 @@
-<!--
-  Copyright 2020 The Chromium Authors
-  Use of this source code is governed by a BSD-style license that can be
-  found in the LICENSE file.
--->
+<?php
+header('Cross-Origin-Opener-Policy: same-origin');
+header('Cross-Origin-Embedder-Policy: require-corp');
+header('Content-Type: text/html');
+?>
 <html>
 <script>
   const sab = new SharedArrayBuffer(1024);
-  const sharedArray = new Int32Array(sab);
-  const worker = new Worker('blocking-main-thread.js');
+  const sharedArray = new Int32Array(sab.buffer);
+  const worker = new Worker('blocking-main-thread-worker.php');
   worker.postMessage(sab);
 
   function checkWorkerReady() {
