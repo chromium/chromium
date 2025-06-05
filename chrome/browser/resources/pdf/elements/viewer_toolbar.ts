@@ -40,7 +40,9 @@ import {getHtml} from './viewer_toolbar.html.js';
 
 declare global {
   interface HTMLElementEventMap {
+    // <if expr="enable_pdf_ink2 or enable_ink">
     'annotation-mode-updated': CustomEvent<AnnotationMode>;
+    // </if>
     'display-annotations-changed': CustomEvent<boolean>;
     'fit-to-changed': CustomEvent<FittingType>;
   }

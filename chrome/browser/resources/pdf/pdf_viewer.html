@@ -1,13 +1,20 @@
 <!-- #html_wrapper_imports_start
+<if expr="enable_pdf_ink2 or enable_ink">
 import {AnnotationMode} from './constants.js';
+</if>
 #html_wrapper_imports_end -->
 
-<viewer-toolbar id="toolbar" .annotationMode="${this.annotationMode_}"
+<viewer-toolbar id="toolbar"
     .docTitle="${this.title_}" .docLength="${this.docLength_}"
     .embeddedViewer="${this.embedded_}" .pageNo="${this.pageNo_}"
     .loadProgress="${this.loadProgress_}" .hasEdits="${this.hasEdits_}"
     .strings="${this.strings}"
+<if expr="enable_ink or enable_pdf_ink2">
+    .annotationMode="${this.annotationMode_}"
+</if>
+<if expr="enable_ink">
     .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode_}"
+</if>
 <if expr="enable_pdf_ink2">
     .enableUndoRedo="${!this.isTextboxActive_()}"
     .hasInk2Edits="${this.hasInk2AnnotationEdits_()}"

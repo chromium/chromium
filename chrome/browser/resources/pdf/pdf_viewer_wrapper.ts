@@ -69,7 +69,10 @@ export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigato
 export {OpenPdfParamsParser, ViewMode} from './open_pdf_params_parser.js';
 export {getFilenameFromURL, PdfViewerElement} from './pdf_viewer.js';
 export {PdfViewerBaseElement} from './pdf_viewer_base.js';
-export {hexToColor, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+// <if expr="enable_pdf_ink2">
+export {hexToColor} from './pdf_viewer_utils.js';
+// </if>
+export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 export {DocumentDimensions, LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ZoomManager} from './zoom_manager.js';
