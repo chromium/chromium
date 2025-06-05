@@ -134,6 +134,10 @@ public class NewTabPage
     // Key for the scroll position data that may be stored in a navigation entry.
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
 
+    // This is to count simultaneous NTP for the "NewTabPage.Count" UMA metric. This is
+    // incremented/decremented on the UI thread.
+    private static int sTotalCount;
+
     protected final Tab mTab;
     private final Supplier<Tab> mActivityTabProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -659,6 +663,9 @@ public class NewTabPage
 
         initializeHomeModules();
 
+        sTotalCount++;
+        NewTabPageUma.recordSimultaneousNtpCount(sTotalCount);
+
         TraceEvent.end(TAG);
     }
 
@@ -1074,6 +1081,7 @@ public class NewTabPage
         if (mHomeModulesCoordinator != null) {
             mHomeModulesCoordinator.destroy();
         }
+        sTotalCount--;
         mIsDestroyed = true;
     }
 

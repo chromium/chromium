@@ -218,4 +218,10 @@ public class NewTabPageUma {
                 status,
                 ContentSuggestionsDisplayStatus.NUM_ENTRIES);
     }
+
+    public static void recordSimultaneousNtpCount(int count) {
+        // We don't expect more than 100 NTP at the same time. Count100Histogram is enough to track
+        // the metric.
+        RecordHistogram.recordCount100Histogram("NewTabPage.Count", count);
+    }
 }

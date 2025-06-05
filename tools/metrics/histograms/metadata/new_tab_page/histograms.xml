@@ -323,6 +323,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.Count" units="count" expires_after="2025-08-31">
+  <owner>kawasin@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Count the simultaneous New Tab Page. This is recorded when a new tab page is
+    created. The count contains the created page. This is supported on Android
+    only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.BottomSheet.Shown"
     enum="BottomSheetType" expires_after="2025-08-31">
   <owner>hanxi@chromium.org</owner>
