@@ -27,7 +27,19 @@ ManagementContextMixinAsh::ManagementContextMixinAsh(
           host,
           management_context.is_cloud_machine_managed
               ? ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED
-              : ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED) {}
+              : ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED) {
+  if (management_context_.is_cloud_machine_managed) {
+    management_context_.is_cloud_machine_managed = true;
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken(kDeviceDmToken));
+
+    auto device_policy_update = RequestDevicePolicyUpdate();
+    device_policy_update->policy_data()->add_device_affiliation_ids(
+        kFakeCustomerId);
+    device_policy_update->policy_data()->set_obfuscated_customer_id(
+        kFakeCustomerId);
+  }
+}
 
 ManagementContextMixinAsh::~ManagementContextMixinAsh() = default;
 
@@ -51,18 +63,6 @@ void ManagementContextMixinAsh::SetUpOnMainThread() {
   if (management_context_.is_cloud_user_managed) {
     ManageCloudUser();
   }
-}
-
-void ManagementContextMixinAsh::ManageCloudMachine() {
-  ManagementContextMixin::ManageCloudMachine();
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidToken(kDeviceDmToken));
-
-  auto device_policy_update = RequestDevicePolicyUpdate();
-  device_policy_update->policy_data()->add_device_affiliation_ids(
-      kFakeCustomerId);
-  device_policy_update->policy_data()->set_obfuscated_customer_id(
-      kFakeCustomerId);
 }
 
 }  // namespace enterprise::test

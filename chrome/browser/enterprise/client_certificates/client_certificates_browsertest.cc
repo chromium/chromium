@@ -144,8 +144,6 @@ class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
                                              "CN", GetIssuerCommonName()))),
         &policy_value_json));
 
-    LOG(ERROR) << "Policy value: " << policy_value_json.c_str();
-
     base::flat_map<std::string, std::optional<base::Value>> policy_values;
     policy_values.insert(
         {policy::key::kAutoSelectCertificateForUrls,

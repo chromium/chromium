@@ -42,7 +42,6 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
 #endif
 
   // ManagementContextMixin:
-  void ManageCloudMachine() override;
   void SetCloudMachinePolicies(
       base::flat_map<std::string, std::optional<base::Value>> policy_entries)
       override;

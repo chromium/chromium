@@ -34,9 +34,6 @@ class ManagementContextMixinAsh : public ManagementContextMixin {
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
-  // ManagementContextMixin:
-  void ManageCloudMachine() override;
-
  private:
   ash::DeviceStateMixin device_state_mixin_;
 };

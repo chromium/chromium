@@ -80,11 +80,6 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
                          InProcessBrowserTest* test_base,
                          ManagementContext management_context);
 
-  // InProcessBrowserTestMixin:
-  void SetUpInProcessBrowserTestFixture() override;
-
-  virtual void ManageCloudMachine();
-
   // Returns a PolicyData object with some base value which can be used by
   // platform-specific mixin definitions to manage the current user.
   std::unique_ptr<enterprise_management::PolicyData> GetBaseUserPolicyData()

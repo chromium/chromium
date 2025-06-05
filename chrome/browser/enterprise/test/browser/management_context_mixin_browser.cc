@@ -27,6 +27,12 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     : ManagementContextMixin(host, test_base, std::move(management_context)) {
   // Fake the OS' device ID.
   browser_dm_token_storage_.SetClientId(kBrowserClientId);
+
+  if (management_context_.is_cloud_machine_managed) {
+    management_context_.is_cloud_machine_managed = true;
+    browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
+    browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
+  }
 }
 
 ManagementContextMixinBrowser::~ManagementContextMixinBrowser() = default;
@@ -81,12 +87,6 @@ void ManagementContextMixinBrowser::SetUpDefaultCommandLine(
   command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
 }
 #endif
-
-void ManagementContextMixinBrowser::ManageCloudMachine() {
-  ManagementContextMixin::ManageCloudMachine();
-  browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
-  browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
-}
 
 void ManagementContextMixinBrowser::SetCloudMachinePolicies(
     base::flat_map<std::string, std::optional<base::Value>> policy_entries) {
