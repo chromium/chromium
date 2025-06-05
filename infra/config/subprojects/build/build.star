@@ -351,6 +351,7 @@ ci_build_perf_builder(
         category = "windows",
         short_name = "sisoci",
     ),
+    reclient_enabled = False,
     siso_configs = ["builder"],
     # TODO(333491525): enable no-fallback once OOM fallback mitigated.
     siso_experiments = [],
@@ -789,6 +790,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
+    reclient_enabled = False,
     siso_fail_if_reapi_used = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
