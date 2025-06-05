@@ -23,6 +23,7 @@ import android.webkit.WebChromeClient;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.permission.AwPermissionRequest;

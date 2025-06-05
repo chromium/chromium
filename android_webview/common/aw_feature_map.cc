@@ -16,7 +16,7 @@
 #include "content/public/common/content_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
+#include "android_webview/common_jni/AwFeatureMap_jni.h"
 
 namespace android_webview {
 
@@ -26,40 +26,41 @@ namespace {
 // android_webview/common/aw_features.cc or in other locations in the code base
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    // Ordered alphabetically on feature name.
+    &metrics::kAndroidMetricsAsyncMetricLogging,
+    &base::features::kCollectAndroidFrameTimelineMetrics,
+    &safe_browsing::kHashPrefixRealTimeLookups,
+    &base::features::kPostGetMyMemoryStateToBackground,
+    &::features::kPrefetchBrowserInitiatedTriggers,
+    &sensitive_content::features::kSensitiveContent,
     &features::kWebViewBackForwardCache,
+    &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    &features::kWebViewDisableCHIPS,
+    &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewDrainPrefetchQueueDuringInit,
+    &features::kWebViewEnableCrash,
     &features::kWebViewFileSystemAccess,
+    &features::kWebViewHyperlinkContextMenu,
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewLazyFetchHandWritingIcon,
+    &features::kWebViewMediaIntegrityApiBlinkExtension,
     &features::kWebViewMixedContentAutoupgrades,
+    &features::kWebViewMuteAudio,
+    &features::kWebViewPrefetchNativeLibrary,
+    &features::kWebViewPreloadClasses,
+    &features::kWebViewQuicConnectionTimeout,
+    &features::kWebViewRecordAppCacheHistograms,
+    &features::kWebViewReduceUAAndroidVersionDeviceModel,
+    &features::kWebViewSafeAreaIncludesSystemBars,
+    &features::kWebViewSeparateResourceContext,
+    &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewTestFeature,
+    &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
-    &features::kWebViewXRequestedWithHeaderControl,
-    &metrics::kAndroidMetricsAsyncMetricLogging,
-    &safe_browsing::kHashPrefixRealTimeLookups,
-    &base::features::kCollectAndroidFrameTimelineMetrics,
-    &features::kWebViewMediaIntegrityApiBlinkExtension,
-    &features::kWebViewSeparateResourceContext,
-    &features::kWebViewMuteAudio,
-    &features::kWebViewUseInitialNetworkStateAtStartup,
-    &features::kWebViewReduceUAAndroidVersionDeviceModel,
-    &features::kWebViewEnableCrash,
-    &features::kWebViewPreloadClasses,
-    &features::kWebViewPrefetchNativeLibrary,
-    &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
-    &features::kWebViewHyperlinkContextMenu,
-    &features::kWebViewDisableCHIPS,
-    &features::kWebViewSafeAreaIncludesSystemBars,
-    &base::features::kPostGetMyMemoryStateToBackground,
-    &sensitive_content::features::kSensitiveContent,
-    &features::kWebViewWebauthn,
-    &::features::kPrefetchBrowserInitiatedTriggers,
-    &features::kWebViewShortCircuitShouldInterceptRequest,
     &features::kWebViewUseStartupTasksLogic,
-    &features::kWebViewRecordAppCacheHistograms,
-    &features::kWebViewQuicConnectionTimeout,
-    &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    &features::kWebViewWebauthn,
+    &features::kWebViewXRequestedWithHeaderControl,
 };
 
 // static

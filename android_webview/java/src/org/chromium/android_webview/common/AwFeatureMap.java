@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview;
+package org.chromium.android_webview.common;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -19,7 +19,9 @@ public final class AwFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private AwFeatureMap() {}
 
-    /** @return the singleton UiAndroidFeatureMap. */
+    /**
+     * @return the singleton UiAndroidFeatureMap.
+     */
     public static AwFeatureMap getInstance() {
         return sInstance;
     }

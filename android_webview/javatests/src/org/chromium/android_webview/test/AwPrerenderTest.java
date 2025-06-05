@@ -26,12 +26,12 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchParameters;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.ScriptHandler;
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
 import org.chromium.base.Callback;

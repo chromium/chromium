@@ -9,6 +9,7 @@ import android.view.Window;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.jank_tracker.FrameMetricsListener;

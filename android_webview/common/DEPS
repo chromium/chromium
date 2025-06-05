@@ -4,8 +4,17 @@ include_rules = [
   "+android_webview/common_jni",
   "+components/cdm/common",
   "+components/embedder_support/origin_trials",
-  "+components/gwp_asan/common/crash_key_name.h"
+  "+components/gwp_asan/common/crash_key_name.h",
   "+components/printing/common",
   "+media/base/android",
   "+third_party/widevine/cdm/buildflags.h",
 ]
+specific_include_rules = {
+  # Feature map can depend on features files throughout the codebase.
+  "aw_feature_map.cc": [
+    "+components/embedder_support/android/metrics/features.h",
+    "+components/safe_browsing/core/common/features.h",
+    "+components/sensitive_content/features.h",
+    "+components/viz/common/features.h",
+  ]
+}

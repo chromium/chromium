@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.webkit.WebChromeClient;
 
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.blink.mojom.FileChooserParams;
 import org.chromium.build.annotations.NullMarked;

@@ -19,6 +19,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwPrefetchCallback.StatusCode;
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;

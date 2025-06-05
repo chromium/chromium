@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
