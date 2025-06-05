@@ -298,11 +298,17 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
 
   tabs::TabInterface* active_tab =
       browser_window_interface_->GetActiveTabInterface();
-  // Possible during browser window initialization or teardown.
-  if (!active_tab) {
+  // Possible during browser window initialization or teardown, or tab
+  // detachment.
+  // TODO(crbug.com/422807364): `UpdatePageActionState` shouldn't be called
+  // during tab destruction in the first place, but there are multiple
+  // TabFeatures that update UI (and therefore focus) during destruction of the
+  // tab. Once these TabFeatures are updated to only modify UI during
+  // `TabWillDetach` instead of the destructor, it should be safe to assume
+  // that TabFeatures exists for the active tab.
+  if (!active_tab || !active_tab->GetTabFeatures()) {
     return;
   }
-  CHECK(active_tab->GetTabFeatures());
 
   page_actions::PageActionController* page_action_controller =
       active_tab->GetTabFeatures()->page_action_controller();
