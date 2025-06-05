@@ -35,6 +35,9 @@ class ActorTask {
   State GetState() const;
   void SetState(State state);
 
+  // Sets State to kFinished and cancels any pending actions.
+  void Stop();
+
   bool IsPaused() const;
 
   ActorCoordinator* GetActorCoordinator() const;

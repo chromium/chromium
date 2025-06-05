@@ -57,7 +57,6 @@ class ExperimentalActorStopTaskFunction : public ExperimentalActorApiFunction {
  protected:
   ~ExperimentalActorStopTaskFunction() override;
   ResponseAction Run() override;
-  void OnTaskStopped(bool success);
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.stopTask",
                              EXPERIMENTALACTOR_STOPTASK)

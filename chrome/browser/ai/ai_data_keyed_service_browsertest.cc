@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,6 +95,10 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
   AiDataKeyedService& ai_data_service() {
     return *AiDataKeyedServiceFactory::GetAiDataKeyedService(
         browser()->profile());
+  }
+
+  actor::ActorKeyedService& actor_service() {
+    return *actor::ActorKeyedService::Get(browser()->profile());
   }
 
   content::WebContents* web_contents() {
@@ -540,17 +545,10 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
         EXPECT_EQ(task.tab_id(), tab_id);
         run_loop->Quit();
       };
-  ai_data_service().StartTask(std::move(task_request),
-                              base::BindLambdaForTesting(start_task_callback));
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback));
   run_loop->Run();
-  run_loop = std::make_unique<base::RunLoop>();
-  auto stop_task_callback = [&run_loop](bool success) {
-    EXPECT_TRUE(success);
-    run_loop->Quit();
-  };
-  ai_data_service().StopTask(
-      id, base::BindLambdaForTesting(std::move(stop_task_callback)));
-  run_loop->Run();
+  actor_service().StopTask(actor::TaskId(id));
 
   id++;
   run_loop = std::make_unique<base::RunLoop>();
@@ -562,9 +560,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest, StartStopTask) {
         run_loop->Quit();
       };
   task_request.set_tab_id(tab_id);
-  ai_data_service().StartTask(
-      std::move(task_request),
-      base::BindLambdaForTesting(start_task_callback_2));
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback_2));
   run_loop->Run();
 }
 
@@ -582,8 +579,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
         EXPECT_EQ(task.tab_id(), tab_id);
         run_loop->Quit();
       };
-  ai_data_service().StartTask(std::move(task_request),
-                              base::BindLambdaForTesting(start_task_callback));
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback));
   run_loop->Run();
 
   run_loop = std::make_unique<base::RunLoop>();
@@ -606,14 +603,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   run_loop->Run();
   EXPECT_EQ(web_contents()->GetURL(), GURL("https://www.google.com"));
 
-  run_loop = std::make_unique<base::RunLoop>();
-  auto stop_task_callback = [&run_loop](bool success) {
-    EXPECT_TRUE(success);
-    run_loop->Quit();
-  };
-  ai_data_service().StopTask(
-      id, base::BindLambdaForTesting(std::move(stop_task_callback)));
-  run_loop->Run();
+  actor_service().StopTask(actor::TaskId(id));
 
   id++;
   run_loop = std::make_unique<base::RunLoop>();
@@ -625,9 +615,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
         run_loop->Quit();
       };
   task_request.set_tab_id(tab_id);
-  ai_data_service().StartTask(
-      std::move(task_request),
-      base::BindLambdaForTesting(start_task_callback_2));
+  actor_service().StartTask(std::move(task_request),
+                            base::BindLambdaForTesting(start_task_callback_2));
   run_loop->Run();
 }
 
@@ -640,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   int tab_id = browser()->GetActiveTabInterface()->GetHandle().raw_value();
   optimization_guide::proto::BrowserStartTask task_request;
   task_request.set_tab_id(tab_id);
-  ai_data_service().StartTask(std::move(task_request),
-                              start_task_result.GetCallback());
+  actor_service().StartTask(std::move(task_request),
+                            start_task_result.GetCallback());
   auto& task = start_task_result.Get();
   EXPECT_EQ(task.task_id(), id);
   EXPECT_EQ(task.tab_id(), tab_id);
@@ -685,7 +674,6 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   EXPECT_EQ(click_response.tab_id(), id);
   frame_nav_observer.Wait();
 }
-
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace

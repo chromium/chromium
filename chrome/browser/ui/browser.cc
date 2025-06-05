@@ -34,6 +34,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
@@ -461,6 +463,7 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
 
 bool IsActorCoordinatorActingOnTab(Profile* profile,
                                    const content::WebContents* tab) {
+  // TODO(crbug.com/411462297): Delete this code.
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     if (const auto* glic_service = glic::GlicKeyedService::Get(profile);
@@ -468,14 +471,15 @@ bool IsActorCoordinatorActingOnTab(Profile* profile,
       return true;
     }
   }
-  // TODO(https://crbug.com/411462297): Deduplicate ownership of
-  // ActorCoordinators.
-  if (const auto* ai_data_service =
-          AiDataKeyedServiceFactory::GetAiDataKeyedService(profile);
-      ai_data_service && ai_data_service->IsActorCoordinatorActingOnTab(tab)) {
-    return true;
-  }
 #endif
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  if (actor_service) {
+    for (auto& [task_id, task] : actor_service->GetTasks()) {
+      if (task->GetActorCoordinator()->HasTaskForTab(tab)) {
+        return true;
+      }
+    }
+  }
   return false;
 }
 

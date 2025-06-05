@@ -82,6 +82,8 @@ ActorCoordinator::ActorCoordinator(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()) {
   CHECK(profile_);
+  // Idempotent. Enables the action blocklist if it isn't already enabled.
+  InitActionBlocklist(profile_.get());
 }
 
 ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
@@ -90,6 +92,8 @@ ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
       tab_scoped_actions_deprecated_(true),
       tab_(tab->GetWeakPtr()) {
   CHECK(profile_);
+  // Idempotent. Enables the action blocklist if it isn't already enabled.
+  InitActionBlocklist(profile_.get());
 }
 
 ActorCoordinator::~ActorCoordinator() {

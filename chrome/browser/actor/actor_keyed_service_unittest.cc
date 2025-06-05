@@ -42,12 +42,12 @@ class ActorKeyedServiceTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
 };
 
-// Adds a task to ActorKeyedService, and then checks that fetching the
-// ActorKeyedService from a profile shows that task.
+// Adds a task to ActorKeyedService
 TEST_F(ActorKeyedServiceTest, AddTask) {
-  ActorKeyedService::Get(profile())->AddTask(std::make_unique<ActorTask>());
-  ASSERT_EQ(ActorKeyedService::Get(profile())->GetTasks().size(), 1u);
-  EXPECT_EQ(ActorKeyedService::Get(profile())->GetTasks()[0]->GetState(),
+  auto* actor_service = ActorKeyedService::Get(profile());
+  actor_service->AddTask(std::make_unique<ActorTask>());
+  ASSERT_EQ(actor_service->GetTasks().size(), 1u);
+  EXPECT_EQ(actor_service->GetTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
 }
 

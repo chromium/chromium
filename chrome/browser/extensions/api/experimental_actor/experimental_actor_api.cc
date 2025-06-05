@@ -11,6 +11,9 @@
 #include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -78,9 +81,8 @@ bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
     return false;
   }
 
-  auto* ai_data_service =
-      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-  if (!ai_data_service) {
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  if (!actor_service) {
     *error = "Incognito profile not supported.";
     return false;
   }
@@ -110,10 +112,9 @@ ExtensionFunction::ResponseAction ExperimentalActorStartTaskFunction::Run() {
       ConvertSessionTabIdToTabHandle(task.tab_id(), browser_context());
   task.set_tab_id(tab_handle);
 
-  auto* ai_data_service =
-      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
 
-  ai_data_service->StartTask(
+  actor_service->StartTask(
       std::move(task),
       base::BindOnce(&ExperimentalActorStartTaskFunction::OnTaskStarted, this));
 
@@ -138,22 +139,11 @@ ExtensionFunction::ResponseAction ExperimentalActorStopTaskFunction::Run() {
   auto params = api::experimental_actor::StopTask::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto* ai_data_service =
-      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
 
-  ai_data_service->StopTask(
-      params->task_id,
-      base::BindOnce(&ExperimentalActorStopTaskFunction::OnTaskStopped, this));
-
-  return RespondLater();
-}
-
-void ExperimentalActorStopTaskFunction::OnTaskStopped(bool success) {
-  if (!success) {
-    Respond(Error("Task not found."));
-    return;
-  }
-  Respond(ArgumentList(api::experimental_actor::StopTask::Results::Create()));
+  actor_service->StopTask(actor::TaskId(params->task_id));
+  return RespondNow(
+      ArgumentList(api::experimental_actor::StopTask::Results::Create()));
 }
 
 ExperimentalActorExecuteActionFunction::
@@ -164,6 +154,10 @@ ExperimentalActorExecuteActionFunction::
 
 ExtensionFunction::ResponseAction
 ExperimentalActorExecuteActionFunction::Run() {
+#if !BUILDFLAG(ENABLE_GLIC)
+  return RespondNow(
+      Error("Execute action not supported for this build configuration."));
+#else
   auto params = api::experimental_actor::ExecuteAction::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   optimization_guide::proto::BrowserAction action;
@@ -179,13 +173,13 @@ ExperimentalActorExecuteActionFunction::Run() {
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-
   ai_data_service->ExecuteAction(
       std::move(action),
       base::BindOnce(
           &ExperimentalActorExecuteActionFunction::OnResponseReceived, this));
 
   return RespondLater();
+#endif
 }
 
 void ExperimentalActorExecuteActionFunction::OnResponseReceived(

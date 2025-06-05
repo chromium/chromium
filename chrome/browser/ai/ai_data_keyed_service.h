@@ -72,25 +72,13 @@ class AiDataKeyedService : public KeyedService {
                               AiDataSpecifier specifier,
                               AiDataCallback callback);
 
-  // Starts an actor task.
-  void StartTask(
-      optimization_guide::proto::BrowserStartTask task,
-      base::OnceCallback<
-          void(optimization_guide::proto::BrowserStartTaskResult)> callback);
-
-  // Stops an actor task.
-  void StopTask(int64_t task_id, base::OnceCallback<void(bool)> callback);
-
   // Executes an actor action. The first action in a task must be navigate.
+#if BUILDFLAG(ENABLE_GLIC)
   void ExecuteAction(
       optimization_guide::proto::BrowserAction action,
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
-
-  // Returns true if the associated ActorCoordinator is active on the given
-  // `tab`. This can be used by callers to customize certain behaviour that
-  // might interfere with the ActorCoordinator.
-  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
+#endif
 
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
   static const base::Feature&
@@ -98,18 +86,11 @@ class AiDataKeyedService : public KeyedService {
 
  private:
 #if BUILDFLAG(ENABLE_GLIC)
-  // Called when the actor coordinator has created a new tab for the task.
-  void TaskCreated(
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback,
-      optimization_guide::proto::BrowserAction action,
-      int task_id,
-      base::WeakPtr<tabs::TabInterface>);
-  // Converts the result of a page context fetch to a BrowserActionResult.
   void ConvertToBrowserActionResult(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
       int task_id,
+      int32_t tab_id,
       actor::mojom::ActionResultPtr action_result,
       glic::mojom::GetContextResultPtr result);
   // Called when the actor coordinator has finished an action which required
@@ -119,18 +100,6 @@ class AiDataKeyedService : public KeyedService {
           callback,
       int task_id,
       actor::mojom::ActionResultPtr action_result);
-  // The actor coordinator which manages task and action routing.
-  std::unique_ptr<actor::ActorCoordinator> actor_coordinator_;
-
-  // Whether the task still needs a navigate action to be executed as the
-  // first action in the task.
-  bool task_needs_navigate_ = false;
-
-  // The tab that the task is running on.
-  base::WeakPtr<tabs::TabInterface> tab_;
-
-  // The task id of the current task.
-  int task_id_ = 1;
 #endif
 
   // A `KeyedService` should never outlive the `BrowserContext`.

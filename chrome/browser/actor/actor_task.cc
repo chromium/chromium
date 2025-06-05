@@ -46,6 +46,13 @@ void ActorTask::SetState(State state) {
   state_ = state;
 }
 
+void ActorTask::Stop() {
+  if (actor_coordinator_) {
+    actor_coordinator_->StopTask();
+  }
+  SetState(State::kFinished);
+}
+
 bool ActorTask::IsPaused() const {
   return GetState() == State::kPausedByClient;
 }
