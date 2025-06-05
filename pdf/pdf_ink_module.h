@@ -529,8 +529,6 @@ class PdfInkModule {
   // `thumbnail` to the WebUI.
   void OnGotThumbnail(int page_index, Thumbnail thumbnail);
 
-  void SendContentFocusedMessage();
-
   const raw_ref<PdfInkModuleClient> client_;
 
   InkAnnotationMode mode_ = InkAnnotationMode::kOff;

@@ -1038,11 +1038,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             data as unknown as {metadataData: DocumentMetadata};
         this.setDocumentMetadata_(metadataData.metadataData);
         return;
-      // <if expr="enable_pdf_ink2">
-      case 'contentFocused':
-        this.handleContentFocused_();
-        return;
-      // </if>
       case 'navigate':
         const navigateData = data as unknown as NavigateMessageData;
         this.handleNavigate_(navigateData.url, navigateData.disposition);
@@ -1186,12 +1181,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
         PluginControllerEventType.FINISH_INK_STROKE, {detail: modified}));
-  }
-
-  /** Handles a 'contentFocused' event in the PDF content. */
-  private handleContentFocused_() {
-    this.pluginController_.getEventTarget().dispatchEvent(
-        new CustomEvent(PluginControllerEventType.CONTENT_FOCUSED));
   }
   // </if>
 

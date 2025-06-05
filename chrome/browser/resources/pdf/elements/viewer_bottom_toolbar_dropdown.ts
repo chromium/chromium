@@ -7,8 +7,6 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PluginController, PluginControllerEventType} from '../controller.js';
-
 import {getCss} from './viewer_bottom_toolbar_dropdown.css.js';
 import {getHtml} from './viewer_bottom_toolbar_dropdown.html.js';
 
@@ -35,16 +33,7 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
   accessor buttonTitle: string = '';
   protected accessor showDropdown_: boolean = false;
 
-  private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.tracker_.add(
-        this.pluginController_.getEventTarget(),
-        PluginControllerEventType.CONTENT_FOCUSED,
-        this.handleContentFocused_.bind(this));
-  }
 
   override disconnectedCallback() {
     this.tracker_.removeAll();
@@ -91,12 +80,6 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     }
 
     this.toggleDropdown_();
-  }
-
-  private handleContentFocused_() {
-    if (this.showDropdown_) {
-      this.toggleDropdown_();
-    }
   }
 }
 

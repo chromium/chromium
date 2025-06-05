@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
@@ -65,25 +64,6 @@ chrome.test.runTests([
     // Focus on a different element. The dropdown should not be visible.
     dropdown.dispatchEvent(
         new FocusEvent('focusout', {relatedTarget: document.body}));
-    await microtasksFinished();
-
-    chrome.test.assertTrue(!getMenu(dropdown));
-    chrome.test.succeed();
-  },
-
-  async function testContentFocusedClosesDropdown() {
-    const dropdown = createDropdown();
-
-    // Open the dropdown.
-    getRequiredElement(dropdown, 'cr-button').click();
-    await microtasksFinished();
-
-    chrome.test.assertTrue(!!getMenu(dropdown));
-
-    // Mock a 'contentFocused' event from the PDF content. The dropdown should
-    // not be visible.
-    PluginController.getInstance().getEventTarget().dispatchEvent(
-        new CustomEvent(PluginControllerEventType.CONTENT_FOCUSED));
     await microtasksFinished();
 
     chrome.test.assertTrue(!getMenu(dropdown));

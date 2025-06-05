@@ -879,41 +879,6 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
   ink_module().OnGeometryChanged();
 }
 
-TEST_P(PdfInkModuleTest, ContentFocusedWithMouseWillPostMessage) {
-  EnableDrawAnnotationMode();
-
-  blink::WebMouseEvent mouse_down_event =
-      MouseEventBuilder().CreateLeftClickAtPosition(gfx::PointF()).Build();
-
-  EXPECT_CALL(client(), PostMessage)
-      .WillOnce([](const base::Value::Dict& dict) {
-        auto expected = base::test::ParseJsonDict(R"({
-            "type": "contentFocused",
-        })");
-        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
-      });
-
-  ink_module().HandleInputEvent(mouse_down_event);
-}
-
-TEST_P(PdfInkModuleTest, ContentFocusedWithTouchWillPostMessage) {
-  EnableDrawAnnotationMode();
-
-  blink::WebTouchEvent touch_start_event =
-      CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
-                       base::span_from_ref(gfx::PointF()));
-
-  EXPECT_CALL(client(), PostMessage)
-      .WillOnce([](const base::Value::Dict& dict) {
-        auto expected = base::test::ParseJsonDict(R"({
-            "type": "contentFocused",
-        })");
-        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
-      });
-
-  ink_module().HandleInputEvent(touch_start_event);
-}
-
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
