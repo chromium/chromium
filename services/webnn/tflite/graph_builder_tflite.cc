@@ -1269,25 +1269,54 @@ bool GraphBuilderTflite::RequiresFloat32Precision(const mojom::Operation& op) {
     }
     case mojom::Operation::Tag::kQuantizeLinear:
       return false;
-    // These operations just move data around and don't do arithmetic, so they
-    // don't care about precision.
     case mojom::Operation::Tag::kConcat:
+      input_operand_id = op.get_concat()->input_operand_ids[0];
+      break;
     case mojom::Operation::Tag::kExpand:
+      input_operand_id = op.get_expand()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kGather:
+      input_operand_id = op.get_gather()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kGatherElements:
+      input_operand_id = op.get_gather_elements()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kGatherNd:
+      input_operand_id = op.get_gather_nd()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kPad:
+      input_operand_id = op.get_pad()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kReshape:
+      input_operand_id = op.get_reshape()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kReverse:
+      input_operand_id = op.get_reverse()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kScatterElements:
+      input_operand_id = op.get_scatter_elements()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kScatterNd:
+      input_operand_id = op.get_scatter_nd()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kSlice:
+      input_operand_id = op.get_slice()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kSplit:
+      input_operand_id = op.get_split()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kTile:
+      input_operand_id = op.get_tile()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kTranspose:
+      input_operand_id = op.get_transpose()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kTriangular:
+      input_operand_id = op.get_triangular()->input_operand_id;
+      break;
     case mojom::Operation::Tag::kWhere:
-      return false;
+      input_operand_id = op.get_where()->true_value_operand_id;
+      break;
     case mojom::Operation::Tag::kArgMinMax:
       input_operand_id = op.get_arg_min_max()->input_operand_id;
       break;
