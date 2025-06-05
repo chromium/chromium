@@ -49,7 +49,7 @@
   padding-top: 2px;
   padding-left: var(--sp-card-block-padding);
   padding-right: var(--sp-card-block-padding);
-  padding-bottom: 0px;
+  padding-bottom: var(--sp-card-block-padding);
 }
 
 /* Provides vertical and horizontal scrolling */
