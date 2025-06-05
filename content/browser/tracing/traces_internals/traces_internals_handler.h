@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
-#define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
+#ifndef CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_HANDLER_H_
+#define CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_HANDLER_H_
 
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
@@ -11,8 +11,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/trace_report/trace_report.mojom.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_upload_list.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,18 +22,18 @@
 
 namespace content {
 // Handles communication between the browser and chrome://traces.
-class CONTENT_EXPORT TraceReportHandler
-    : public trace_report::mojom::PageHandler {
+class CONTENT_EXPORT TracesInternalsHandler
+    : public traces_internals::mojom::PageHandler {
  public:
-  TraceReportHandler(
-      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-      mojo::PendingRemote<trace_report::mojom::Page> page);
+  TracesInternalsHandler(
+      mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
+      mojo::PendingRemote<traces_internals::mojom::Page> page);
 
-  TraceReportHandler(const TraceReportHandler&) = delete;
-  TraceReportHandler& operator=(const TraceReportHandler&) = delete;
-  ~TraceReportHandler() override;
+  TracesInternalsHandler(const TracesInternalsHandler&) = delete;
+  TracesInternalsHandler& operator=(const TracesInternalsHandler&) = delete;
+  ~TracesInternalsHandler() override;
 
-  // trace_report::mojom::TraceReportHandler:
+  // trace_report::mojom::TracesInternalsHandler:
   // Get all the trace report currently stored locally
   void StartTraceSession(mojo_base::BigBuffer config_pb,
                          StartTraceSessionCallback callback) override;
@@ -71,9 +71,9 @@ class CONTENT_EXPORT TraceReportHandler
 #endif  // BUILDFLAG(IS_WIN)
 
  protected:
-  TraceReportHandler(
-      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-      mojo::PendingRemote<trace_report::mojom::Page> page,
+  TracesInternalsHandler(
+      mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
+      mojo::PendingRemote<traces_internals::mojom::Page> page,
       TraceUploadList& trace_upload_list,
       BackgroundTracingManagerImpl& background_tracing_manager,
       TracingDelegate* tracing_delegate);
@@ -94,8 +94,8 @@ class CONTENT_EXPORT TraceReportHandler
   void OnBufferUsage(bool success, float percent_full, bool data_loss);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::Receiver<trace_report::mojom::PageHandler> receiver_;
-  mojo::Remote<trace_report::mojom::Page> page_;
+  mojo::Receiver<traces_internals::mojom::PageHandler> receiver_;
+  mojo::Remote<traces_internals::mojom::Page> page_;
 
   // Used to perform actions with on a single trace_report_database instance.
   const raw_ref<TraceUploadList> trace_upload_list_;
@@ -108,9 +108,9 @@ class CONTENT_EXPORT TraceReportHandler
   StopTraceSessionCallback stop_callback_;
   GetBufferUsageCallback on_buffer_usage_callback_;
 
-  base::WeakPtrFactory<TraceReportHandler> weak_factory_{this};
+  base::WeakPtrFactory<TracesInternalsHandler> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
+#endif  // CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_HANDLER_H_

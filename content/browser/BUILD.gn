@@ -176,7 +176,7 @@ source_set("browser") {
     "//content/browser/process_internals:mojo_bindings",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
-    "//content/browser/tracing/trace_report:mojo_bindings",
+    "//content/browser/tracing/traces_internals:mojo_bindings",
     "//content/browser/webrtc/resources",
     "//content/common",
     "//content/common:buildflags",
@@ -2302,11 +2302,11 @@ source_set("browser") {
     "tracing/memory_instrumentation_util.h",
     "tracing/startup_tracing_controller.cc",
     "tracing/startup_tracing_controller.h",
-    "tracing/trace_report/trace_report_database.cc",
-    "tracing/trace_report/trace_report_database.h",
-    "tracing/trace_report/trace_report_handler.cc",
-    "tracing/trace_report/trace_report_handler.h",
-    "tracing/trace_report/trace_upload_list.h",
+    "tracing/trace_report_database.cc",
+    "tracing/trace_report_database.h",
+    "tracing/trace_upload_list.h",
+    "tracing/traces_internals/traces_internals_handler.cc",
+    "tracing/traces_internals/traces_internals_handler.h",
     "tracing/tracing_controller_impl.cc",
     "tracing/tracing_controller_impl.h",
     "tracing/tracing_controller_impl_data_endpoint.cc",
@@ -3583,8 +3583,8 @@ source_set("browser") {
   if (!is_android && !is_ios && !is_fuchsia) {
     sources += [
       # Trace report internal UI is not adapted for mobile use.
-      "tracing/trace_report/trace_report_internals_ui.cc",
-      "tracing/trace_report/trace_report_internals_ui.h",
+      "tracing/traces_internals/traces_internals_ui.cc",
+      "tracing/traces_internals/traces_internals_ui.h",
     ]
   }
 

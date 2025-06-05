@@ -6,8 +6,8 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {Scenario} from './trace_report.mojom-webui.js';
-import {TracingScenarioState} from './trace_report.mojom-webui.js';
+import type {Scenario} from './traces_internals.mojom-webui.js';
+import {TracingScenarioState} from './traces_internals.mojom-webui.js';
 import {getCss} from './tracing_scenario.css.js';
 import {getHtml} from './tracing_scenario.html.js';
 

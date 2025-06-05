@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module trace_report.mojom;
+module traces_internals.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 
 // Keep in sync with ReportUploadState from
-// content/browser/tracing/trace_report/trace_report_database.h
+// content/browser/tracing/trace_report_database.h
 enum ReportUploadState {
   kNotUploaded = 0,
   kPending = 1,
@@ -20,7 +20,7 @@ enum ReportUploadState {
 };
 
 // Keep in sync with SkipUploadReason from
-// content/browser/tracing/trace_report/trace_report_database.h
+// content/browser/tracing/trace_report_database.h
 enum SkipUploadReason {
   kNoSkip = 0,
   kSizeLimitExceeded = 1,
@@ -88,7 +88,7 @@ struct Scenario {
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
-interface TraceReportHandlerFactory {
+interface TracesInternalsHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreatePageHandler(pending_remote<Page> page,
                     pending_receiver<PageHandler> handler);

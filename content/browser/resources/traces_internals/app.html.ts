@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TraceReportAppElement} from './app.js';
+import type {TracesAppElement} from './app.js';
 
-export function getHtml(this: TraceReportAppElement) {
+export function getHtml(this: TracesAppElement) {
   // clang-format off
   return html`
   <cr-tabs .tabNames="${this.tabNames_}" .selected="${this.selected_}"

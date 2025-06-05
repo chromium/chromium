@@ -4,8 +4,8 @@
 
 import {html, nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import type {TraceReportListElement} from './trace_report_list.js';
+import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
 
 function getReportHtml(this: TraceReportListElement) {
   // clang-format off

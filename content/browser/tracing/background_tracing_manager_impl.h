@@ -21,9 +21,9 @@
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
-#include "content/browser/tracing/trace_report/trace_report.mojom.h"
-#include "content/browser/tracing/trace_report/trace_report_database.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_upload_list.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/browser/tracing/tracing_scenario.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -146,8 +146,8 @@ class BackgroundTracingManagerImpl
 
   // Returns the list of scenario hashes and names that were saved,
   // whether or not enabled.
-  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr> GetAllScenarios()
-      const;
+  CONTENT_EXPORT std::vector<traces_internals::mojom::ScenarioPtr>
+  GetAllScenarios() const;
 
   std::vector<std::string> OverwritePresetScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,

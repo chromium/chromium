@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report/trace_report_handler.h"
+#include "content/browser/tracing/traces_internals/traces_internals_handler.h"
 
 #include "base/base_paths.h"
 #include "base/path_service.h"
@@ -11,8 +11,8 @@
 #include "base/test/test_proto_loader.h"
 #include "base/token.h"
 #include "content/browser/tracing/test_tracing_session.h"
-#include "content/browser/tracing/trace_report/trace_report.mojom.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_upload_list.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -61,12 +61,12 @@ class FakeTraceUploadList : public TraceUploadList {
               (override));
 };
 
-class MockTracePage : public trace_report::mojom::Page {
+class MockTracePage : public traces_internals::mojom::Page {
  public:
   MockTracePage() = default;
   ~MockTracePage() override = default;
 
-  mojo::PendingRemote<trace_report::mojom::Page> BindAndGetRemote() {
+  mojo::PendingRemote<traces_internals::mojom::Page> BindAndGetRemote() {
     CHECK(!receiver_.is_bound());
     return receiver_.BindNewPipeAndPassRemote();
   }
@@ -76,7 +76,7 @@ class MockTracePage : public trace_report::mojom::Page {
               (std::optional<mojo_base::BigBuffer>),
               (override));
 
-  mojo::Receiver<trace_report::mojom::Page> receiver_{this};
+  mojo::Receiver<traces_internals::mojom::Page> receiver_{this};
 };
 
 class MockTracingDelegate : public TracingDelegate {
@@ -99,19 +99,19 @@ class MockTracingDelegate : public TracingDelegate {
 #endif
 };
 
-class TraceReportHandlerForTesting : public TraceReportHandler {
+class TracesInternalsHandlerForTesting : public TracesInternalsHandler {
  public:
-  TraceReportHandlerForTesting(
-      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-      mojo::PendingRemote<trace_report::mojom::Page> page,
+  TracesInternalsHandlerForTesting(
+      mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
+      mojo::PendingRemote<traces_internals::mojom::Page> page,
       TraceUploadList& trace_upload_list,
       BackgroundTracingManagerImpl& background_tracing_manager,
       TracingDelegate* tracing_delegate)
-      : TraceReportHandler(std::move(receiver),
-                           std::move(page),
-                           trace_upload_list,
-                           background_tracing_manager,
-                           tracing_delegate) {}
+      : TracesInternalsHandler(std::move(receiver),
+                               std::move(page),
+                               trace_upload_list,
+                               background_tracing_manager,
+                               tracing_delegate) {}
 
  protected:
   std::unique_ptr<perfetto::TracingSession> CreateTracingSession() override {
@@ -119,19 +119,19 @@ class TraceReportHandlerForTesting : public TraceReportHandler {
   }
 };
 
-// A fixture to test TraceReportHandler.
-class TraceReportHandlerTest : public testing::Test {
+// A fixture to test TracesInternalsHandler.
+class TracesInternalsHandlerTest : public testing::Test {
  public:
-  TraceReportHandlerTest() = default;
-  ~TraceReportHandlerTest() override = default;
+  TracesInternalsHandlerTest() = default;
+  ~TracesInternalsHandlerTest() override = default;
 
   void SetUp() override {
     background_tracing_manager_ =
         std::make_unique<BackgroundTracingManagerImpl>();
     // Expect the Database to be opened before executing each test.
     EXPECT_CALL(fake_trace_upload_list_, OpenDatabaseIfExists());
-    handler_ = std::make_unique<TraceReportHandlerForTesting>(
-        mojo::PendingReceiver<trace_report::mojom::PageHandler>(),
+    handler_ = std::make_unique<TracesInternalsHandlerForTesting>(
+        mojo::PendingReceiver<traces_internals::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), fake_trace_upload_list_,
         *background_tracing_manager_, &mock_tracing_delegate_);
   }
@@ -142,16 +142,16 @@ class TraceReportHandlerTest : public testing::Test {
   testing::StrictMock<FakeTraceUploadList> fake_trace_upload_list_;
   testing::NiceMock<MockTracePage> mock_page_;
   testing::NiceMock<MockTracingDelegate> mock_tracing_delegate_;
-  std::unique_ptr<TraceReportHandler> handler_;
+  std::unique_ptr<TracesInternalsHandler> handler_;
 };
 
-TEST_F(TraceReportHandlerTest, TracingStartStop) {
+TEST_F(TracesInternalsHandlerTest, TracingStartStop) {
   auto trace_config =
       ParseTraceConfigFromText(R"pb(
         data_sources: { config: { name: "org.chromium.trace_metadata" } }
       )pb")
           .SerializeAsString();
-  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
   handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
                                   base::span<const char>(trace_config))),
@@ -164,7 +164,7 @@ TEST_F(TraceReportHandlerTest, TracingStartStop) {
     run_loop_start.Run();
   }
 
-  base::MockCallback<TraceReportHandler::StopTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::StopTraceSessionCallback>
       stop_callback;
   handler_->StopTraceSession(stop_callback.Get());
   {
@@ -183,7 +183,7 @@ TEST_F(TraceReportHandlerTest, TracingStartStop) {
   }
 }
 
-TEST_F(TraceReportHandlerTest, TracingTimer) {
+TEST_F(TracesInternalsHandlerTest, TracingTimer) {
   auto trace_config = ParseTraceConfigFromText(R"pb(
                         data_sources: { config: { name: "Stop" } }
                       )pb")
@@ -205,12 +205,12 @@ TEST_F(TraceReportHandlerTest, TracingTimer) {
   run_loop.Run();
 }
 
-TEST_F(TraceReportHandlerTest, TracingStartFail) {
+TEST_F(TracesInternalsHandlerTest, TracingStartFail) {
   auto trace_config = ParseTraceConfigFromText(R"pb(
                         data_sources: { config: { name: "Invalid" } }
                       )pb")
                           .SerializeAsString();
-  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
   handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
                                   base::span<const char>(trace_config))),
@@ -224,13 +224,13 @@ TEST_F(TraceReportHandlerTest, TracingStartFail) {
   }
 }
 
-TEST_F(TraceReportHandlerTest, TracingClone) {
+TEST_F(TracesInternalsHandlerTest, TracingClone) {
   auto trace_config =
       ParseTraceConfigFromText(R"pb(
         data_sources: { config: { name: "org.chromium.trace_metadata" } }
       )pb")
           .SerializeAsString();
-  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
   handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
                                   base::span<const char>(trace_config))),
@@ -243,7 +243,7 @@ TEST_F(TraceReportHandlerTest, TracingClone) {
     run_loop_start.Run();
   }
 
-  base::MockCallback<TraceReportHandler::CloneTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::CloneTraceSessionCallback>
       clone_callback;
   handler_->CloneTraceSession(clone_callback.Get());
   {
@@ -261,13 +261,13 @@ TEST_F(TraceReportHandlerTest, TracingClone) {
   }
 }
 
-TEST_F(TraceReportHandlerTest, TracingBufferUsage) {
+TEST_F(TracesInternalsHandlerTest, TracingBufferUsage) {
   auto trace_config =
       ParseTraceConfigFromText(R"pb(
         data_sources: { config: { name: "org.chromium.trace_metadata" } }
       )pb")
           .SerializeAsString();
-  base::MockCallback<TraceReportHandler::StartTraceSessionCallback>
+  base::MockCallback<TracesInternalsHandler::StartTraceSessionCallback>
       start_callback;
   handler_->StartTraceSession(mojo_base::BigBuffer(base::as_bytes(
                                   base::span<const char>(trace_config))),
@@ -280,7 +280,7 @@ TEST_F(TraceReportHandlerTest, TracingBufferUsage) {
     run_loop_start.Run();
   }
 
-  base::MockCallback<TraceReportHandler::GetBufferUsageCallback>
+  base::MockCallback<TracesInternalsHandler::GetBufferUsageCallback>
       buffer_callback;
   handler_->GetBufferUsage(buffer_callback.Get());
   {
@@ -293,8 +293,9 @@ TEST_F(TraceReportHandlerTest, TracingBufferUsage) {
   }
 }
 
-TEST_F(TraceReportHandlerTest, GetAllTraceReports) {
-  base::MockCallback<TraceReportHandler::GetAllTraceReportsCallback> callback;
+TEST_F(TracesInternalsHandlerTest, GetAllTraceReports) {
+  base::MockCallback<TracesInternalsHandler::GetAllTraceReportsCallback>
+      callback;
 
   EXPECT_CALL(fake_trace_upload_list_, GetAllTraceReports)
       .WillOnce([](FakeTraceUploadList::GetReportsCallback callback) {
@@ -317,13 +318,13 @@ TEST_F(TraceReportHandlerTest, GetAllTraceReports) {
       });
 
   EXPECT_CALL(callback, Run)
-      .WillOnce([](std::vector<trace_report::mojom::ClientTraceReportPtr>
+      .WillOnce([](std::vector<traces_internals::mojom::ClientTraceReportPtr>
                        all_reports) { EXPECT_EQ(all_reports.size(), 2u); });
   handler_->GetAllTraceReports(callback.Get());
 }
 
-TEST_F(TraceReportHandlerTest, DeleteAllTraces) {
-  base::MockCallback<TraceReportHandler::DeleteAllTracesCallback> callback;
+TEST_F(TracesInternalsHandlerTest, DeleteAllTraces) {
+  base::MockCallback<TracesInternalsHandler::DeleteAllTracesCallback> callback;
 
   EXPECT_CALL(fake_trace_upload_list_, DeleteAllTraces)
       .WillOnce([](FakeTraceUploadList::FinishedProcessingCallback callback) {
@@ -333,9 +334,10 @@ TEST_F(TraceReportHandlerTest, DeleteAllTraces) {
   handler_->DeleteAllTraces(callback.Get());
 }
 
-TEST_F(TraceReportHandlerTest, DeleteSingleTrace) {
+TEST_F(TracesInternalsHandlerTest, DeleteSingleTrace) {
   auto uuid = base::Token::CreateRandom();
-  base::MockCallback<TraceReportHandler::DeleteSingleTraceCallback> callback;
+  base::MockCallback<TracesInternalsHandler::DeleteSingleTraceCallback>
+      callback;
 
   EXPECT_CALL(fake_trace_upload_list_, DeleteSingleTrace)
       .WillOnce(
@@ -348,9 +350,9 @@ TEST_F(TraceReportHandlerTest, DeleteSingleTrace) {
   handler_->DeleteSingleTrace(uuid, callback.Get());
 }
 
-TEST_F(TraceReportHandlerTest, UserUploadSingleTrace) {
+TEST_F(TracesInternalsHandlerTest, UserUploadSingleTrace) {
   auto uuid = base::Token::CreateRandom();
-  base::MockCallback<TraceReportHandler::UserUploadSingleTraceCallback>
+  base::MockCallback<TracesInternalsHandler::UserUploadSingleTraceCallback>
       callback;
 
   EXPECT_CALL(fake_trace_upload_list_, UserUploadSingleTrace)
@@ -364,9 +366,9 @@ TEST_F(TraceReportHandlerTest, UserUploadSingleTrace) {
   handler_->UserUploadSingleTrace(uuid, callback.Get());
 }
 
-TEST_F(TraceReportHandlerTest, DownloadTrace) {
+TEST_F(TracesInternalsHandlerTest, DownloadTrace) {
   auto uuid = base::Token::CreateRandom();
-  base::MockCallback<TraceReportHandler::DownloadTraceCallback> callback;
+  base::MockCallback<TracesInternalsHandler::DownloadTraceCallback> callback;
 
   const auto result = std::optional<base::span<const char>>("PROTO RESULT");
 
@@ -378,34 +380,33 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
             std::move(callback).Run(result);
           });
   EXPECT_CALL(callback, Run)
-      .WillOnce(
-          [&result](std::optional<mojo_base::BigBuffer> converted_value) {
-            EXPECT_EQ(std::string_view(
-                          reinterpret_cast<char*>(converted_value->data()),
-                          converted_value->size()),
-                      std::string_view(result->data(), result->size()));
-          });
+      .WillOnce([&result](std::optional<mojo_base::BigBuffer> converted_value) {
+        EXPECT_EQ(
+            std::string_view(reinterpret_cast<char*>(converted_value->data()),
+                             converted_value->size()),
+            std::string_view(result->data(), result->size()));
+      });
   handler_->DownloadTrace(uuid, callback.Get());
 }
 
 #if BUILDFLAG(IS_WIN)
-// Tests that TraceReportHandler delegates GetSystemTracingState to the
+// Tests that TracesInternalsHandler delegates GetSystemTracingState to the
 // TracingDelegate.
-TEST_F(TraceReportHandlerTest, GetSystemTracingState) {
+TEST_F(TracesInternalsHandlerTest, GetSystemTracingState) {
   EXPECT_CALL(mock_tracing_delegate_, GetSystemTracingState(testing::_));
   handler_->GetSystemTracingState({});
 }
 
-// Tests that TraceReportHandler delegates EnableSystemTracing to the
+// Tests that TracesInternalsHandler delegates EnableSystemTracing to the
 // TracingDelegate.
-TEST_F(TraceReportHandlerTest, EnableSystemTracing) {
+TEST_F(TracesInternalsHandlerTest, EnableSystemTracing) {
   EXPECT_CALL(mock_tracing_delegate_, EnableSystemTracing(testing::_));
   handler_->EnableSystemTracing({});
 }
 
-// Tests that TraceReportHandler delegates DisableSystemTracing to the
+// Tests that TracesInternalsHandler delegates DisableSystemTracing to the
 // TracingDelegate.
-TEST_F(TraceReportHandlerTest, DisableSystemTracing) {
+TEST_F(TracesInternalsHandlerTest, DisableSystemTracing) {
   EXPECT_CALL(mock_tracing_delegate_, DisableSystemTracing(testing::_));
   handler_->DisableSystemTracing({});
 }

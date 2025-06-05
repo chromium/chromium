@@ -31,8 +31,8 @@
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
-#include "content/browser/tracing/trace_report/trace_report_database.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/browser/tracing/triggers_data_source.h"
 #include "content/common/child_process.mojom.h"
@@ -621,11 +621,11 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenariosImpl(
   return added_scenarios;
 }
 
-std::vector<trace_report::mojom::ScenarioPtr>
+std::vector<traces_internals::mojom::ScenarioPtr>
 BackgroundTracingManagerImpl::GetAllScenarios() const {
-  std::vector<trace_report::mojom::ScenarioPtr> result;
+  std::vector<traces_internals::mojom::ScenarioPtr> result;
   auto toMojoScenario = [this](TracingScenario* scenario) {
-    auto new_scenario = trace_report::mojom::Scenario::New();
+    auto new_scenario = traces_internals::mojom::Scenario::New();
     new_scenario->scenario_name = scenario->scenario_name();
     new_scenario->description = scenario->description();
     new_scenario->is_local_scenario = scenario->is_local_scenario();

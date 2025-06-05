@@ -5,7 +5,7 @@
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TraceReportElement} from './trace_report.js';
-import {ReportUploadState} from './trace_report.mojom-webui.js';
+import {ReportUploadState} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportElement) {
   // clang-format off

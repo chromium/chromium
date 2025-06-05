@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report/trace_report_mojom_traits.h"
+#include "content/browser/tracing/traces_internals/traces_internals_mojom_traits.h"
 
 namespace mojo {
 

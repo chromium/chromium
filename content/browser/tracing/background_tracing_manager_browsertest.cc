@@ -296,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   {
     auto all_scenarios =
         BackgroundTracingManagerImpl::GetInstance().GetAllScenarios();
-    std::vector<trace_report::mojom::ScenarioPtr> expected;
-    auto scenario = trace_report::mojom::Scenario::New();
+    std::vector<traces_internals::mojom::ScenarioPtr> expected;
+    auto scenario = traces_internals::mojom::Scenario::New();
     scenario->scenario_name = "test_scenario";
     scenario->is_local_scenario = true;
     scenario->is_enabled = false;

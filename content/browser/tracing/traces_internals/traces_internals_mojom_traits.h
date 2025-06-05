@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_MOJOM_TRAITS_H_
-#define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_MOJOM_TRAITS_H_
+#ifndef CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_MOJOM_TRAITS_H_
+#define CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_MOJOM_TRAITS_H_
 
-#include "content/browser/tracing/trace_report/trace_report.mojom.h"
-#include "content/browser/tracing/trace_report/trace_report_database.h"
+#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
 #include "content/browser/tracing/tracing_scenario.h"
 
 namespace mojo {
 
-namespace {
-
-using ReportUploadState = trace_report::mojom::ReportUploadState;
-using SkipUploadReason = trace_report::mojom::SkipUploadReason;
-using TracingScenarioState = trace_report::mojom::TracingScenarioState;
-
-}  // namespace
+using ReportUploadState = traces_internals::mojom::ReportUploadState;
+using SkipUploadReason = traces_internals::mojom::SkipUploadReason;
+using TracingScenarioState = traces_internals::mojom::TracingScenarioState;
 
 template <>
 struct EnumTraits<ReportUploadState, content::ReportUploadState> {
@@ -42,4 +38,4 @@ struct EnumTraits<TracingScenarioState, content::TracingScenario::State> {
 
 }  // namespace mojo
 
-#endif  // CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_MOJOM_TRAITS_H_
+#endif  // CONTENT_BROWSER_TRACING_TRACES_INTERNALS_TRACES_INTERNALS_MOJOM_TRAITS_H_

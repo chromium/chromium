@@ -172,7 +172,7 @@ browser_exposed_mojom_targets = [
   "//content/browser/indexed_db:internals_mojo_bindings",
   "//content/browser/private_aggregation:mojo_bindings",
   "//content/browser/process_internals:mojo_bindings",
-  "//content/browser/tracing/trace_report:mojo_bindings",
+  "//content/browser/tracing/traces_internals:mojo_bindings",
   "//content/browser/xr/webxr_internals/mojom:mojo_bindings",
   "//content/common:mojo_bindings",
   "//content/public/common:interfaces",

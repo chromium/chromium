@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report/trace_report_internals_ui.h"
+#include "content/browser/tracing/traces_internals/traces_internals_ui.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/tracing/trace_report/trace_report.mojom.h"
-#include "content/browser/tracing/trace_report/trace_report_handler.h"
+#include "content/browser/tracing/traces_internals/traces_internals.mojom.h"
+#include "content/browser/tracing/traces_internals/traces_internals_handler.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/grit/traces_internals_resources.h"
 #include "content/grit/traces_internals_resources_map.h"
@@ -19,13 +19,13 @@
 
 namespace content {
 
-TraceReportInternalsUI::TraceReportInternalsUI(WebUI* web_ui, const GURL& url)
+TracesInternalsUI::TracesInternalsUI(WebUI* web_ui, const GURL& url)
     : WebUIController(web_ui) {
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), url.host());
 
   source->AddResourcePaths(kTracesInternalsResources);
-  source->AddResourcePath("", IDR_TRACES_INTERNALS_TRACE_REPORT_INTERNALS_HTML);
+  source->AddResourcePath("", IDR_TRACES_INTERNALS_TRACES_INTERNALS_HTML);
 
   // Add TrustedTypes policies necessary for using Polymer.
   source->OverrideContentSecurityPolicy(
@@ -36,30 +36,30 @@ TraceReportInternalsUI::TraceReportInternalsUI(WebUI* web_ui, const GURL& url)
       "lit-html-desktop;");
 }
 
-TraceReportInternalsUI::~TraceReportInternalsUI() = default;
+TracesInternalsUI::~TracesInternalsUI() = default;
 
-void TraceReportInternalsUI::WebUIRenderFrameCreated(
+void TracesInternalsUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.
   render_frame_host->EnableMojoJsBindings(nullptr);
 }
 
-void TraceReportInternalsUI::BindInterface(
-    mojo::PendingReceiver<trace_report::mojom::TraceReportHandlerFactory>
-        receiver) {
+void TracesInternalsUI::BindInterface(
+    mojo::PendingReceiver<
+        traces_internals::mojom::TracesInternalsHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void TraceReportInternalsUI::CreatePageHandler(
-    mojo::PendingRemote<trace_report::mojom::Page> page,
-    mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver) {
+void TracesInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<traces_internals::mojom::Page> page,
+    mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver) {
   DCHECK(page);
-  ui_handler_ = std::make_unique<TraceReportHandler>(std::move(receiver),
-                                                     std::move(page));
+  ui_handler_ = std::make_unique<TracesInternalsHandler>(std::move(receiver),
+                                                         std::move(page));
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(TraceReportInternalsUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(TracesInternalsUI)
 
 }  // namespace content

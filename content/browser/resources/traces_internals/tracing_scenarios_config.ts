@@ -14,8 +14,8 @@ import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import type {Scenario} from './trace_report.mojom-webui.js';
-import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
+import {TracesBrowserProxy} from './traces_browser_proxy.js';
+import type {Scenario} from './traces_internals.mojom-webui.js';
 import {getCss} from './tracing_scenarios_config.css.js';
 import {getHtml} from './tracing_scenarios_config.html.js';
 
@@ -53,8 +53,8 @@ export class TracingScenariosConfigElement extends CrLitElement {
     };
   }
 
-  private traceReportProxy_: TraceReportBrowserProxy =
-      TraceReportBrowserProxy.getInstance();
+  private traceReportProxy_: TracesBrowserProxy =
+      TracesBrowserProxy.getInstance();
 
   private refreshIntervalId_: number = 0;
 

@@ -19,9 +19,9 @@ interface Tab {
   path: string;
 }
 
-export class TraceReportAppElement extends CrLitElement {
+export class TracesAppElement extends CrLitElement {
   static get is() {
-    return 'trace-report-app';
+    return 'traces-app';
   }
 
   override render() {
@@ -98,8 +98,8 @@ export class TraceReportAppElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'trace-report-app': TraceReportAppElement;
+    'traces-app': TracesAppElement;
   }
 }
 
-customElements.define(TraceReportAppElement.is, TraceReportAppElement);
+customElements.define(TracesAppElement.is, TracesAppElement);

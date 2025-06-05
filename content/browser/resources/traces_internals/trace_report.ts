@@ -13,10 +13,10 @@ import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webu
 
 import {getCss} from './trace_report.css.js';
 import {getHtml} from './trace_report.html.js';
-import type {ClientTraceReport} from './trace_report.mojom-webui.js';
-import {ReportUploadState, SkipUploadReason} from './trace_report.mojom-webui.js';
-import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {Notification, NotificationType} from './trace_report_list.js';
+import {TracesBrowserProxy} from './traces_browser_proxy.js';
+import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
+import {ReportUploadState, SkipUploadReason} from './traces_internals.mojom-webui.js';
 
 // Create the temporary element here to hold the data to download the trace
 // since it is only obtained after downloadData_ is called. This way we can
@@ -50,8 +50,8 @@ export class TraceReportElement extends CrLitElement {
     };
   }
 
-  private traceReportProxy_: TraceReportBrowserProxy =
-      TraceReportBrowserProxy.getInstance();
+  private traceReportProxy_: TracesBrowserProxy =
+      TracesBrowserProxy.getInstance();
 
   protected accessor trace: ClientTraceReport = {
     // Dummy ClientTraceReport

@@ -13,7 +13,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
-import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
+import {TracesBrowserProxy} from './traces_browser_proxy.js';
 
 enum TracingState {
   IDLE = 'Idle',
@@ -49,8 +49,7 @@ export class TraceRecorderElement extends CrLitElement {
     };
   }
 
-  private browserProxy_: TraceReportBrowserProxy =
-      TraceReportBrowserProxy.getInstance();
+  private browserProxy_: TracesBrowserProxy = TracesBrowserProxy.getInstance();
   // Bound method for router events
   private boundLoadConfigFromUrl_ = this.loadConfigFromUrl_.bind(this);
   // Bound method for onTraceComplete listener

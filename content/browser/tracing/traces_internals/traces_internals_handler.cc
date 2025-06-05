@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report/trace_report_handler.h"
+#include "content/browser/tracing/traces_internals/traces_internals_handler.h"
 
 #include <optional>
 #include <utility>
@@ -13,8 +13,8 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/trace_report/trace_report_database.h"
-#include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_upload_list.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -101,9 +101,9 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
 
 }  // namespace
 
-TraceReportHandler::TraceReportHandler(
-    mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-    mojo::PendingRemote<trace_report::mojom::Page> page)
+TracesInternalsHandler::TracesInternalsHandler(
+    mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
+    mojo::PendingRemote<traces_internals::mojom::Page> page)
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)),
@@ -115,9 +115,9 @@ TraceReportHandler::TraceReportHandler(
   MaybeSetupPresetTracingFromFieldTrial();
 }
 
-TraceReportHandler::TraceReportHandler(
-    mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-    mojo::PendingRemote<trace_report::mojom::Page> page,
+TracesInternalsHandler::TracesInternalsHandler(
+    mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver,
+    mojo::PendingRemote<traces_internals::mojom::Page> page,
     TraceUploadList& trace_upload_list,
     BackgroundTracingManagerImpl& background_tracing_manager,
     TracingDelegate* tracing_delegate)
@@ -131,25 +131,26 @@ TraceReportHandler::TraceReportHandler(
   MaybeSetupPresetTracingFromFieldTrial();
 }
 
-TraceReportHandler::~TraceReportHandler() = default;
+TracesInternalsHandler::~TracesInternalsHandler() = default;
 
-void TraceReportHandler::DeleteSingleTrace(const base::Token& uuid,
-                                           DeleteSingleTraceCallback callback) {
+void TracesInternalsHandler::DeleteSingleTrace(
+    const base::Token& uuid,
+    DeleteSingleTraceCallback callback) {
   trace_upload_list_->DeleteSingleTrace(uuid, std::move(callback));
 }
 
-void TraceReportHandler::DeleteAllTraces(DeleteAllTracesCallback callback) {
+void TracesInternalsHandler::DeleteAllTraces(DeleteAllTracesCallback callback) {
   trace_upload_list_->DeleteAllTraces(std::move(callback));
 }
 
-void TraceReportHandler::UserUploadSingleTrace(
+void TracesInternalsHandler::UserUploadSingleTrace(
     const base::Token& uuid,
     UserUploadSingleTraceCallback callback) {
   trace_upload_list_->UserUploadSingleTrace(uuid, std::move(callback));
 }
 
-void TraceReportHandler::DownloadTrace(const base::Token& uuid,
-                                       DownloadTraceCallback callback) {
+void TracesInternalsHandler::DownloadTrace(const base::Token& uuid,
+                                           DownloadTraceCallback callback) {
   trace_upload_list_->DownloadTrace(
       uuid, base::BindOnce(
                 [](DownloadTraceCallback callback,
@@ -164,8 +165,9 @@ void TraceReportHandler::DownloadTrace(const base::Token& uuid,
                 std::move(callback)));
 }
 
-void TraceReportHandler::StartTraceSession(mojo_base::BigBuffer config_pb,
-                                           StartTraceSessionCallback callback) {
+void TracesInternalsHandler::StartTraceSession(
+    mojo_base::BigBuffer config_pb,
+    StartTraceSessionCallback callback) {
   if (tracing_session_) {
     std::move(callback).Run(false);
     return;
@@ -187,25 +189,26 @@ void TraceReportHandler::StartTraceSession(mojo_base::BigBuffer config_pb,
       [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()]() {
         task_runner->PostTask(
             FROM_HERE,
-            base::BindOnce(&TraceReportHandler::OnTracingStart, weak_ptr));
+            base::BindOnce(&TracesInternalsHandler::OnTracingStart, weak_ptr));
       });
   tracing_session_->SetOnErrorCallback(
       [task_runner = task_runner_,
        weak_ptr = weak_factory_.GetWeakPtr()](perfetto::TracingError error) {
         task_runner->PostTask(
-            FROM_HERE, base::BindOnce(&TraceReportHandler::OnTracingError,
+            FROM_HERE, base::BindOnce(&TracesInternalsHandler::OnTracingError,
                                       weak_ptr, error));
       });
   tracing_session_->SetOnStopCallback(
       [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()]() {
         task_runner->PostTask(
             FROM_HERE,
-            base::BindOnce(&TraceReportHandler::OnTracingStop, weak_ptr));
+            base::BindOnce(&TracesInternalsHandler::OnTracingStop, weak_ptr));
       });
   tracing_session_->Start();
 }
 
-void TraceReportHandler::CloneTraceSession(CloneTraceSessionCallback callback) {
+void TracesInternalsHandler::CloneTraceSession(
+    CloneTraceSessionCallback callback) {
   if (!tracing_session_) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -226,7 +229,8 @@ void TraceReportHandler::CloneTraceSession(CloneTraceSessionCallback callback) {
       });
 }
 
-void TraceReportHandler::StopTraceSession(StopTraceSessionCallback callback) {
+void TracesInternalsHandler::StopTraceSession(
+    StopTraceSessionCallback callback) {
   if (!tracing_session_) {
     std::move(callback).Run(false);
     return;
@@ -235,7 +239,7 @@ void TraceReportHandler::StopTraceSession(StopTraceSessionCallback callback) {
   tracing_session_->Stop();
 }
 
-void TraceReportHandler::GetBufferUsage(GetBufferUsageCallback callback) {
+void TracesInternalsHandler::GetBufferUsage(GetBufferUsageCallback callback) {
   if (!tracing_session_ || on_buffer_usage_callback_) {
     std::move(callback).Run(false, 0, false);
     return;
@@ -246,20 +250,21 @@ void TraceReportHandler::GetBufferUsage(GetBufferUsageCallback callback) {
       [task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr()](
           perfetto::TracingSession::GetTraceStatsCallbackArgs args) {
         tracing::ReadTraceStats(
-            args, base::BindOnce(&TraceReportHandler::OnBufferUsage, weak_ptr),
+            args,
+            base::BindOnce(&TracesInternalsHandler::OnBufferUsage, weak_ptr),
             task_runner);
       });
 }
 
-void TraceReportHandler::OnBufferUsage(bool success,
-                                       float percent_full,
-                                       bool data_loss) {
+void TracesInternalsHandler::OnBufferUsage(bool success,
+                                           float percent_full,
+                                           bool data_loss) {
   if (on_buffer_usage_callback_) {
     std::move(on_buffer_usage_callback_).Run(success, percent_full, data_loss);
   }
 }
 
-void TraceReportHandler::OnTracingError(perfetto::TracingError error) {
+void TracesInternalsHandler::OnTracingError(perfetto::TracingError error) {
   if (start_callback_) {
     std::move(start_callback_).Run(false);
   }
@@ -269,42 +274,42 @@ void TraceReportHandler::OnTracingError(perfetto::TracingError error) {
   page_->OnTraceComplete(std::nullopt);
 }
 
-void TraceReportHandler::OnTracingStop() {
+void TracesInternalsHandler::OnTracingStop() {
   if (stop_callback_) {
     std::move(stop_callback_).Run(true);
   }
   auto trace_reader = base::MakeRefCounted<TraceReader>(
       std::move(tracing_session_),
-      base::BindOnce(&TraceReportHandler::OnTraceComplete,
+      base::BindOnce(&TracesInternalsHandler::OnTraceComplete,
                      weak_factory_.GetWeakPtr()),
       task_runner_);
   TraceReader::ReadTrace(std::move(trace_reader));
 }
 
-void TraceReportHandler::OnTracingStart() {
+void TracesInternalsHandler::OnTracingStart() {
   if (start_callback_) {
     std::move(start_callback_).Run(true);
   }
 }
 
-void TraceReportHandler::OnTraceComplete(
+void TracesInternalsHandler::OnTraceComplete(
     std::optional<mojo_base::BigBuffer> serialized_trace) {
   page_->OnTraceComplete(std::move(serialized_trace));
 }
 
-void TraceReportHandler::GetAllTraceReports(
+void TracesInternalsHandler::GetAllTraceReports(
     GetAllTraceReportsCallback callback) {
   trace_upload_list_->GetAllTraceReports(
-      base::BindOnce(&TraceReportHandler::OnGetAllReportsTaskComplete,
+      base::BindOnce(&TracesInternalsHandler::OnGetAllReportsTaskComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void TraceReportHandler::OnGetAllReportsTaskComplete(
+void TracesInternalsHandler::OnGetAllReportsTaskComplete(
     GetAllTraceReportsCallback callback,
     std::vector<ClientTraceReport> results) {
-  std::vector<trace_report::mojom::ClientTraceReportPtr> reports;
+  std::vector<traces_internals::mojom::ClientTraceReportPtr> reports;
   for (const auto& report : results) {
-    reports.push_back(trace_report::mojom::ClientTraceReport::New(
+    reports.push_back(traces_internals::mojom::ClientTraceReport::New(
         report.uuid, report.creation_time, report.scenario_name,
         report.upload_rule_name, report.upload_rule_value, report.total_size,
         report.upload_state, report.upload_time, report.skip_reason,
@@ -313,11 +318,11 @@ void TraceReportHandler::OnGetAllReportsTaskComplete(
   std::move(callback).Run(std::move(reports));
 }
 
-void TraceReportHandler::GetAllScenarios(GetAllScenariosCallback callback) {
+void TracesInternalsHandler::GetAllScenarios(GetAllScenariosCallback callback) {
   std::move(callback).Run(background_tracing_manager_->GetAllScenarios());
 }
 
-void TraceReportHandler::SetEnabledScenarios(
+void TracesInternalsHandler::SetEnabledScenarios(
     const std::vector<std::string>& new_config,
     SetEnabledScenariosCallback callback) {
   auto response = background_tracing_manager_->SetEnabledScenarios(new_config);
@@ -328,18 +333,18 @@ void TraceReportHandler::SetEnabledScenarios(
   std::move(callback).Run(std::move(response));
 }
 
-void TraceReportHandler::GetPrivacyFilterEnabled(
+void TracesInternalsHandler::GetPrivacyFilterEnabled(
     GetPrivacyFilterEnabledCallback callback) {
   std::move(callback).Run(tracing::BackgroundTracingStateManager::GetInstance()
                               .privacy_filter_enabled());
 }
 
-void TraceReportHandler::SetPrivacyFilterEnabled(bool enable) {
+void TracesInternalsHandler::SetPrivacyFilterEnabled(bool enable) {
   tracing::BackgroundTracingStateManager::GetInstance().UpdatePrivacyFilter(
       enable);
 }
 
-void TraceReportHandler::SetScenariosConfigFromString(
+void TracesInternalsHandler::SetScenariosConfigFromString(
     const std::string& config_string,
     SetScenariosConfigFromStringCallback callback) {
   auto field_tracing_config =
@@ -351,7 +356,7 @@ void TraceReportHandler::SetScenariosConfigFromString(
   std::move(callback).Run(SetScenariosConfig(std::move(*field_tracing_config)));
 }
 
-void TraceReportHandler::SetScenariosConfigFromBuffer(
+void TracesInternalsHandler::SetScenariosConfigFromBuffer(
     mojo_base::BigBuffer config_pb,
     SetScenariosConfigFromBufferCallback callback) {
   auto field_tracing_config =
@@ -363,7 +368,7 @@ void TraceReportHandler::SetScenariosConfigFromBuffer(
   std::move(callback).Run(SetScenariosConfig(std::move(*field_tracing_config)));
 }
 
-bool TraceReportHandler::SetScenariosConfig(
+bool TracesInternalsHandler::SetScenariosConfig(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config) {
   content::BackgroundTracingManager::DataFiltering data_filtering =
       tracing::BackgroundTracingStateManager::GetInstance()
@@ -380,7 +385,7 @@ bool TraceReportHandler::SetScenariosConfig(
   return true;
 }
 
-void TraceReportHandler::MaybeSetupPresetTracingFromFieldTrial() {
+void TracesInternalsHandler::MaybeSetupPresetTracingFromFieldTrial() {
   if (tracing::IsBackgroundTracingEnabledFromCommandLine()) {
     return;
   }
@@ -398,7 +403,7 @@ void TraceReportHandler::MaybeSetupPresetTracingFromFieldTrial() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void TraceReportHandler::GetSystemTracingState(
+void TracesInternalsHandler::GetSystemTracingState(
     GetSystemTracingStateCallback callback) {
   if (!tracing_delegate_) {
     std::move(callback).Run(/*service_supported=*/false,
@@ -408,7 +413,7 @@ void TraceReportHandler::GetSystemTracingState(
   tracing_delegate_->GetSystemTracingState(std::move(callback));
 }
 
-void TraceReportHandler::GetSecurityShieldIconUrl(
+void TracesInternalsHandler::GetSecurityShieldIconUrl(
     GetSecurityShieldIconUrlCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&gfx::win::GetElevationIcon),
@@ -424,7 +429,7 @@ void TraceReportHandler::GetSecurityShieldIconUrl(
           std::move(callback)));
 }
 
-void TraceReportHandler::EnableSystemTracing(
+void TracesInternalsHandler::EnableSystemTracing(
     EnableSystemTracingCallback callback) {
   if (!tracing_delegate_) {
     std::move(callback).Run(/*success=*/false);
@@ -433,7 +438,7 @@ void TraceReportHandler::EnableSystemTracing(
   tracing_delegate_->EnableSystemTracing(std::move(callback));
 }
 
-void TraceReportHandler::DisableSystemTracing(
+void TracesInternalsHandler::DisableSystemTracing(
     DisableSystemTracingCallback callback) {
   if (!tracing_delegate_) {
     std::move(callback).Run(/*success=*/false);
@@ -444,7 +449,7 @@ void TraceReportHandler::DisableSystemTracing(
 #endif  // BUILDFLAG(IS_WIN)
 
 std::unique_ptr<perfetto::TracingSession>
-TraceReportHandler::CreateTracingSession() {
+TracesInternalsHandler::CreateTracingSession() {
   return perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
 }
 

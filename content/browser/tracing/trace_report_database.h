@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_DATABASE_H_
-#define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_DATABASE_H_
+#ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_
+#define CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_
 
 #include <optional>
 #include <string>
@@ -186,4 +186,4 @@ class CONTENT_EXPORT TraceReportDatabase {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_DATABASE_H_
+#endif  // CONTENT_BROWSER_TRACING_TRACE_REPORT_DATABASE_H_

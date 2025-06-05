@@ -52,8 +52,8 @@ build_webui("build") {
   grd_prefix = "traces_internals"
 
   static_files = [
-    "trace_report_internals.css",
-    "trace_report_internals.html",
+    "traces_internals.css",
+    "traces_internals.html",
   ]
 
   ts_files = [
@@ -61,7 +61,7 @@ build_webui("build") {
     "app.ts",
     "trace_report.html.ts",
     "trace_report.ts",
-    "trace_report_browser_proxy.ts",
+    "traces_browser_proxy.ts",
     "trace_report_list.html.ts",
     "trace_report_list.ts",
     "tracing_scenarios_config.html.ts",
@@ -94,10 +94,10 @@ build_webui("build") {
 
   mojo_files_deps = [
     ":config_proto_gen",
-    "//content/browser/tracing/trace_report:mojo_bindings_ts__generator",
+    "//content/browser/tracing/traces_internals:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/content/browser/tracing/trace_report/trace_report.mojom-webui.ts",
+    "$root_gen_dir/content/browser/tracing/traces_internals/traces_internals.mojom-webui.ts",
     "$proto_ts_root/third_party/perfetto/protos/perfetto/config/perfetto_config.ts",
   ]
 
