@@ -37,6 +37,7 @@ source_set("graphics") {
   ]
   deps = [
     ":GL_starboard",
+    "//base",
     "//chromecast/public",
     "//chromecast/starboard:starboard_buildflags",
     "//chromecast/starboard/chromecast/starboard_adapter",

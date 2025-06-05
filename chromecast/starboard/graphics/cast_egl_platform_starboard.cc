@@ -5,9 +5,8 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
-#include <cassert>
-#include <iostream>
-
+#include "base/check.h"
+#include "base/logging.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "chromecast/public/cast_egl_platform_shlib.h"
 #include "chromecast/public/graphics_types.h"
@@ -44,7 +43,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     graphics_lib_ =
         dlopen(kGraphicsLibraryName, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
     if (!graphics_lib_) {
-      std::cerr << "Failed to dlopen " << kGraphicsLibraryName << std::endl;
+      LOG(ERROR) << "Failed to dlopen " << kGraphicsLibraryName;
       return false;
     }
 
@@ -52,8 +51,8 @@ class CastEglPlatformStarboard : public CastEglPlatform {
         dlsym(graphics_lib_, "Sb_eglGetProcAddress"));
 
     if (!get_proc_address_) {
-      std::cerr << "Failed to dlsym Sb_eglGetProcAddress from "
-                << kGraphicsLibraryName << std::endl;
+      LOG(ERROR) << "Failed to dlsym Sb_eglGetProcAddress from "
+                 << kGraphicsLibraryName;
       return false;
     }
     return true;
@@ -78,6 +77,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
     // and CreateWindow, so there is no downside to creating |window_| early.
     if (!SbWindowIsValid(window_)) {
       auto* sb_adapter = CastStarboardApiAdapter::GetInstance();
+      LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
       sb_adapter->Subscribe(this, nullptr);
       SbWindowOptions options{};
       options.name = "cast";
@@ -86,6 +86,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
       window_ = sb_adapter->GetWindow(&options);
       ndt_ = reinterpret_cast<NativeDisplayType>(
           sb_adapter->GetEglNativeDisplayType());
+      LOG(INFO) << "Unsubscribing from CastStarboardApiAdapter. this=" << this;
       sb_adapter->Unsubscribe(this);
     }
 
@@ -98,7 +99,7 @@ class CastEglPlatformStarboard : public CastEglPlatform {
 #if BUILDFLAG(REMOVE_STARBOARD_HEADERS)
     return nullptr;
 #else
-    assert(SbWindowIsValid(window_));
+    CHECK(SbWindowIsValid(window_));
     auto* result =
         static_cast<NativeWindowType>(SbWindowGetPlatformHandle(window_));
 

@@ -232,6 +232,7 @@ StarboardApiWrapperBase::StarboardApiWrapperBase() = default;
 StarboardApiWrapperBase::~StarboardApiWrapperBase() {
   if (initialized_) {
     initialized_ = false;
+    LOG(INFO) << "Unsubscribing from CastStarboardApiAdapter. this=" << this;
     chromecast::CastStarboardApiAdapter::GetInstance()->Unsubscribe(this);
   }
 }
@@ -242,6 +243,7 @@ bool StarboardApiWrapperBase::EnsureInitialized() {
   // check MIME type compatibility in another process.
   if (!initialized_) {
     initialized_ = true;
+    LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
     chromecast::CastStarboardApiAdapter::GetInstance()->Subscribe(this,
                                                                   nullptr);
   }

@@ -158,11 +158,13 @@ void StarboardEventSource::DispatchUiEvent(std::unique_ptr<ui::Event> event) {
 StarboardEventSource::StarboardEventSource(ui::PlatformWindowDelegate* delegate)
     : task_runner_(GetCurrentSequencedTaskRunner()), delegate_(delegate) {
   DCHECK(delegate_);
+  LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
   CastStarboardApiAdapter::GetInstance()->Subscribe(
       this, &StarboardEventSource::SbEventHandle);
 }
 
 StarboardEventSource::~StarboardEventSource() {
+  LOG(INFO) << "Unsubscribing from CastStarboardApiAdapter. this=" << this;
   CastStarboardApiAdapter::GetInstance()->Unsubscribe(this);
 }
 

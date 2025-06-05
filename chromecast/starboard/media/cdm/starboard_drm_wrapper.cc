@@ -401,6 +401,7 @@ StarboardDrmWrapper::StarboardDrmWrapper()
   // Use of base::Unretained is safe because this object should never be
   // destructed in production code (it's a private destructor, and the only code
   // that destroys it is the test-only function SetSingletonForTesting).
+  LOG(INFO) << "Subscribing to CastStarboardApiAdapter. this=" << this;
   chromecast::CastStarboardApiAdapter::GetInstance()->Subscribe(this, nullptr);
   base::AtExitManager::RegisterTask(base::BindOnce(
       &StarboardDrmWrapper::DestroySbDrmSystem, base::Unretained(this)));
@@ -440,6 +441,7 @@ void StarboardDrmWrapper::DestroySbDrmSystem() {
 
   LOG(INFO) << "Destroying SbDrmSystem because core_runtime is shutting down.";
   starboard_->DrmDestroySystem(drm_system_);
+  LOG(INFO) << "Unsubscribing from CastStarboardApiAdapter. this=" << this;
   chromecast::CastStarboardApiAdapter::GetInstance()->Unsubscribe(this);
 
   // We need to destroy owned_starboard_ here, so that it unsubscribes from
