@@ -7,10 +7,10 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 namespace mojo {
@@ -39,7 +39,7 @@ js_injection::mojom::JsWebMessageDataView::Tag UnionTraits<
     js_injection::mojom::JsWebMessageDataView,
     blink::WebMessagePayload>::GetTag(const blink::WebMessagePayload& payload) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const std::u16string&) {
             return js_injection::mojom::JsWebMessageDataView::Tag::kStringValue;
           },
