@@ -2317,6 +2317,7 @@ TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
     remote_service->BindPartition(
         temp_dir.GetPath(), persistent_partition.BindNewPipeAndPassReceiver());
     persistent_partition->BindLocalStorageControl(
+        storage::mojom::LocalStorageLifecycle::kInitializing,
         storage_control.BindNewPipeAndPassReceiver());
     storage_control.FlushForTesting();
   }

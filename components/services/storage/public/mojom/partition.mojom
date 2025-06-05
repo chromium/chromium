@@ -7,10 +7,9 @@ module storage.mojom;
 import "components/services/storage/public/mojom/local_storage_control.mojom";
 import "components/services/storage/public/mojom/session_storage_control.mojom";
 
-// Mac only enum used as a crash key to help investigate Storage process
-// crashes.
+// Enum used as a crash key to help investigate Storage process crashes on
+// various platforms.
 // TODO(crbug.com/396030877): Fix the bug and remove this enum.
-[EnableIf=is_mac]
 enum LocalStorageLifecycle {
   kInitializing,
   kInitializingWithUnboundStorageService,
@@ -26,14 +25,9 @@ interface Partition {
       pending_receiver<SessionStorageControl> receiver);
 
   // Binds the main control interface for Local Storage in this partition.
-  BindLocalStorageControl(pending_receiver<LocalStorageControl> receiver);
-
-  // Similar to the above method but with a `lifecycle` param. This is included
-  // as a crash key to help root cause a Storage process crash in LocalStorage
-  // code on macOS.
-  // TODO(crbug.com/396030877): Fix the bug and remove this param.
-  [EnableIf=is_mac]
-  BindLocalStorageControlAndReportLifecycle(
-      LocalStorageLifecycle lifecycle,
-      pending_receiver<LocalStorageControl> receiver);
+  // Includes a `lifecycle` param which is used as a crash key to help root
+  // cause a Storage process crash in LocalStorage code.
+  // TODO(crbug.com/396030877): Fix the bug and remove the `lifecycle` param.
+  BindLocalStorageControl(LocalStorageLifecycle lifecycle,
+                          pending_receiver<LocalStorageControl> receiver);
 };
