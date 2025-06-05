@@ -146,7 +146,7 @@ public class NewTabPageLayout extends LinearLayout
     private View mFakeSearchBoxLayout;
     private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
-    private final boolean mIsComposeplateEnabled;
+    private boolean mIsComposeplateEnabled;
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
@@ -165,7 +165,6 @@ public class NewTabPageLayout extends LinearLayout
                 getResources()
                         .getDimensionPixelOffset(
                                 org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
-        mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled();
     }
 
     @Override
@@ -230,6 +229,7 @@ public class NewTabPageLayout extends LinearLayout
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled() && !mIsTablet;
 
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
