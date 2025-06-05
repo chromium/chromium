@@ -196,20 +196,6 @@ void AttributeInstance::SetRawInfo(FieldType field_type,
              info_);
 }
 
-FieldTypeSet AttributeInstance::GetDatabaseStoredTypes(
-    base::PassKey<EntityTable> pass_key) const {
-  return std::visit(
-      absl::Overload{
-          [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const NameInfo&) { return NameInfo::kDatabaseStoredTypes; },
-          [&](const StateInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const std::u16string&) {
-            return FieldTypeSet{type_.field_type()};
-          }},
-      info_);
-}
-
 FieldType AttributeInstance::GetNormalizedFieldType(
     FieldType field_type) const {
   if (type_.field_subtypes().contains(field_type)) {

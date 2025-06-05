@@ -235,7 +235,8 @@ bool EntityTable::MigrateToVersion(int version,
 
 bool EntityTable::AddAttribute(const EntityInstance& entity,
                                const AttributeInstance& attribute) {
-  for (FieldType type : attribute.GetDatabaseStoredTypes(/*pass_key=*/{})) {
+  for (FieldType type :
+       attribute.type().storable_field_types(/*pass_key=*/{})) {
     sql::Statement s;
     InsertBuilder(db(), s, attributes::kTableName,
                   {attributes::kEntityGuid, attributes::kAttributeType,

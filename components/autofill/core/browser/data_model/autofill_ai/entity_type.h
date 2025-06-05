@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -29,6 +30,7 @@ namespace autofill {
 // entity_schema.json.
 class EntityType;
 class AttributeType;
+class EntityTable;
 
 // An attribute type is the blueprint for an attribute instance, which in turn
 // represents a string value with additional metadata.
@@ -75,15 +77,17 @@ class AttributeType final {
 
   constexpr DataType data_type() const;
 
-  // There are three kinds of associated FieldTypes of this AttributeTypes:
-  // - The main field type is the one that best describes the full attribute.
-  //   Except for name fields, FromFieldType(field_type()) == field_type().
-  // - The subtypes include the main type plus more fine-granular ones, such as
-  //   NAME_FIRST.
-  // - The stored types is are the ones that may be physically stored in the
-  //   database. Those are in EntityInstance::GetDatabaseStoredTypes().
+  // There are three kinds of AttributeType / FieldType associations:
+  // - `field_type()` is the one that best describes the full attribute.
+  //   Except for name types, `FromFieldType(field_type()) == field_type()`.
+  // - `field_subtypes()` additionally include more fine-granular ones.
+  //   Except for name types, `field_subtypes() == {field_type}`.
+  //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.
+  // - `storable_field_types()` are the ones that may be physically stored in
+  //   the database.
   constexpr FieldType field_type() const;
   constexpr FieldTypeSet field_subtypes() const;
+  FieldTypeSet storable_field_types(base::PassKey<EntityTable> pass_key) const;
 
   // Returns whether the attribute should be obfuscated in preview and
   // suggestion labels.

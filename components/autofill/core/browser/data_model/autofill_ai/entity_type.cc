@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,6 +35,14 @@ std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
     return arr;
   }();
   return 0 <= type && type < kTable.size() ? kTable[type] : std::nullopt;
+}
+
+FieldTypeSet AttributeType::storable_field_types(
+    base::PassKey<EntityTable> pass_key) const {
+  if (data_type() == DataType::kName) {
+    return NameInfo::kDatabaseStoredTypes;
+  }
+  return {field_type()};
 }
 
 std::u16string AttributeType::GetNameForI18n() const {
