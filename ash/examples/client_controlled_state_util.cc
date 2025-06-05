@@ -211,6 +211,10 @@ void ClientControlledStateUtil::ApplyBoundsRequest(
   target_bounds.Offset(target_display.bounds().origin().x(),
                        target_display.bounds().origin().y());
 
+  if (client_controlled_state->EnterNextState(window_state, requested_state)) {
+    client_controlled_state->set_next_bounds_change_animation_type(
+        WindowState::BoundsChangeAnimationType::kCrossFadeFloat);
+  }
   client_controlled_state->set_bounds_locally(true);
   window_state->window()->SetBoundsInScreen(target_bounds, target_display);
   client_controlled_state->set_bounds_locally(false);
