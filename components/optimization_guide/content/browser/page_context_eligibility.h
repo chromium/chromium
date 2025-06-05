@@ -16,6 +16,8 @@
 
 namespace optimization_guide {
 
+// TODO(crbug.com/421932889): Forward declare PageContextEligibility so that
+// callers cannot invoke api() directly.
 class PageContextEligibility {
  public:
   explicit PageContextEligibility(const PageContextEligibilityAPI* api);
@@ -38,6 +40,15 @@ class PageContextEligibility {
 
   raw_ptr<const PageContextEligibilityAPI> api_;
 };
+
+// Checks if the page is context eligible using the api provided in
+// `api_holder`. This function must be called instead of the function in the API
+// directly in order to have properly disabled CFI.
+bool IsPageContextEligible(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata,
+    const PageContextEligibility* api_holder);
 
 }  // namespace optimization_guide
 
