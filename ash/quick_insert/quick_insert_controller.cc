@@ -54,7 +54,6 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,6 +62,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -148,7 +148,7 @@ InsertionContent GetInsertionContentForResult(
     const QuickInsertSearchResult& result) {
   using ReturnType = InsertionContent;
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const QuickInsertTextResult& data) -> ReturnType {
             return QuickInsertTextMedia(data.primary_text);
           },
@@ -400,7 +400,7 @@ void QuickInsertController::CloseWidgetThenInsertResultOnNextFocus(
 
 void QuickInsertController::OpenResult(const QuickInsertSearchResult& result) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const QuickInsertTextResult& data) { NOTREACHED(); },
           [](const QuickInsertEmojiResult& data) { NOTREACHED(); },
           [](const QuickInsertGifResult& data) { NOTREACHED(); },
@@ -502,62 +502,62 @@ QuickInsertActionType QuickInsertController::GetActionForResult(
   CHECK(session_);
   const QuickInsertModeType mode = session_->model.GetMode();
   return std::visit(
-      base::Overloaded{[mode](const QuickInsertTextResult& data) {
-                         CHECK(mode == QuickInsertModeType::kNoSelection ||
-                               mode == QuickInsertModeType::kHasSelection);
-                         return QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertEmojiResult& data) {
-                         CHECK(mode == QuickInsertModeType::kNoSelection ||
-                               mode == QuickInsertModeType::kHasSelection);
-                         return QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertGifResult& data) {
-                         CHECK(mode == QuickInsertModeType::kNoSelection ||
-                               mode == QuickInsertModeType::kHasSelection);
-                         return QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertClipboardResult& data) {
-                         CHECK(mode == QuickInsertModeType::kNoSelection ||
-                               mode == QuickInsertModeType::kHasSelection);
-                         return QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertBrowsingHistoryResult& data) {
-                         return mode == QuickInsertModeType::kUnfocused
-                                    ? QuickInsertActionType::kOpen
-                                    : QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertLocalFileResult& data) {
-                         return mode == QuickInsertModeType::kUnfocused
-                                    ? QuickInsertActionType::kOpen
-                                    : QuickInsertActionType::kInsert;
-                       },
-                       [mode](const QuickInsertDriveFileResult& data) {
-                         return mode == QuickInsertModeType::kUnfocused
-                                    ? QuickInsertActionType::kOpen
-                                    : QuickInsertActionType::kInsert;
-                       },
-                       [](const QuickInsertCategoryResult& data) {
-                         return QuickInsertActionType::kDo;
-                       },
-                       [](const QuickInsertSearchRequestResult& data) {
-                         return QuickInsertActionType::kDo;
-                       },
-                       [](const QuickInsertEditorResult& data) {
-                         return QuickInsertActionType::kCreate;
-                       },
-                       [](const QuickInsertLobsterResult& data) {
-                         return QuickInsertActionType::kCreate;
-                       },
-                       [](const QuickInsertNewWindowResult& data) {
-                         return QuickInsertActionType::kDo;
-                       },
-                       [](const QuickInsertCapsLockResult& data) {
-                         return QuickInsertActionType::kDo;
-                       },
-                       [&](const QuickInsertCaseTransformResult& data) {
-                         return QuickInsertActionType::kDo;
-                       }},
+      absl::Overload{[mode](const QuickInsertTextResult& data) {
+                       CHECK(mode == QuickInsertModeType::kNoSelection ||
+                             mode == QuickInsertModeType::kHasSelection);
+                       return QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertEmojiResult& data) {
+                       CHECK(mode == QuickInsertModeType::kNoSelection ||
+                             mode == QuickInsertModeType::kHasSelection);
+                       return QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertGifResult& data) {
+                       CHECK(mode == QuickInsertModeType::kNoSelection ||
+                             mode == QuickInsertModeType::kHasSelection);
+                       return QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertClipboardResult& data) {
+                       CHECK(mode == QuickInsertModeType::kNoSelection ||
+                             mode == QuickInsertModeType::kHasSelection);
+                       return QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertBrowsingHistoryResult& data) {
+                       return mode == QuickInsertModeType::kUnfocused
+                                  ? QuickInsertActionType::kOpen
+                                  : QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertLocalFileResult& data) {
+                       return mode == QuickInsertModeType::kUnfocused
+                                  ? QuickInsertActionType::kOpen
+                                  : QuickInsertActionType::kInsert;
+                     },
+                     [mode](const QuickInsertDriveFileResult& data) {
+                       return mode == QuickInsertModeType::kUnfocused
+                                  ? QuickInsertActionType::kOpen
+                                  : QuickInsertActionType::kInsert;
+                     },
+                     [](const QuickInsertCategoryResult& data) {
+                       return QuickInsertActionType::kDo;
+                     },
+                     [](const QuickInsertSearchRequestResult& data) {
+                       return QuickInsertActionType::kDo;
+                     },
+                     [](const QuickInsertEditorResult& data) {
+                       return QuickInsertActionType::kCreate;
+                     },
+                     [](const QuickInsertLobsterResult& data) {
+                       return QuickInsertActionType::kCreate;
+                     },
+                     [](const QuickInsertNewWindowResult& data) {
+                       return QuickInsertActionType::kDo;
+                     },
+                     [](const QuickInsertCapsLockResult& data) {
+                       return QuickInsertActionType::kDo;
+                     },
+                     [&](const QuickInsertCaseTransformResult& data) {
+                       return QuickInsertActionType::kDo;
+                     }},
       result);
 }
 
@@ -700,7 +700,7 @@ void QuickInsertController::InsertResultOnNextFocus(
   }
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](QuickInsertRichMedia media) {
             ui::InputMethod* input_method = widget_->GetInputMethod();
             if (input_method == nullptr) {

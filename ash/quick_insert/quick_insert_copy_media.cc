@@ -17,7 +17,6 @@
 #include "ash/quick_insert/quick_insert_rich_media.h"
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/strong_alias.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/file_info.h"
@@ -95,7 +95,7 @@ std::unique_ptr<ui::ClipboardData> ClipboardDataFromMedia(
     const QuickInsertClipboardDataOptions& options) {
   auto data = std::make_unique<ui::ClipboardData>();
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&data](const QuickInsertTextMedia& media) {
             data->set_text(base::UTF16ToUTF8(media.text));
           },

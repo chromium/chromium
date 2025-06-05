@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/quick_insert/quick_insert_category.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -15,6 +14,7 @@
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/ime/text_input_client.h"
 
 namespace ash {
@@ -139,7 +139,7 @@ cros_events::PickerResultSource GetResultSource(
   }
   using ReturnType = cros_events::PickerResultSource;
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const QuickInsertTextResult& data) {
             switch (data.source) {
               case QuickInsertTextResult::Source::kUnknown:
@@ -204,7 +204,7 @@ cros_events::PickerResultType GetResultType(
   }
   using ReturnType = cros_events::PickerResultType;
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const QuickInsertTextResult& data) {
             return cros_events::PickerResultType::TEXT;
           },

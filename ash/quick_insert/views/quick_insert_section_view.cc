@@ -29,7 +29,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -38,6 +37,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -219,7 +219,7 @@ QuickInsertSectionView::CreateItemFromResult(
     SelectResultCallback select_result_callback) {
   using ReturnType = std::unique_ptr<QuickInsertItemView>;
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const QuickInsertTextResult& data) -> ReturnType {
             auto item_view = std::make_unique<QuickInsertListItemView>(
                 std::move(select_result_callback));

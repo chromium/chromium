@@ -17,13 +17,13 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "net/base/mime_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -102,7 +102,7 @@ void InsertMediaToInputFieldNoClipboard(
     ui::TextInputClient& client,
     OnInsertMediaCompleteCallback callback) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&client, &callback](QuickInsertTextMedia media) mutable {
             client.InsertText(media.text,
                               ui::TextInputClient::InsertTextCursorBehavior::
@@ -161,7 +161,7 @@ void InsertMediaToInputFieldNoClipboard(
 
 bool InputFieldSupportsInsertingMedia(const QuickInsertRichMedia& media,
                                       ui::TextInputClient& client) {
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [](const QuickInsertTextMedia& media) { return true; },
                         [&client](const QuickInsertImageMedia& media) {
                           return client.CanInsertImage();

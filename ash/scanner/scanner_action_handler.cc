@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
@@ -43,6 +42,7 @@
 #include "google_apis/people/people_api_requests.h"
 #include "google_apis/people/people_api_response_types.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "url/gurl.h"
 
@@ -376,7 +376,7 @@ void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
   }
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](OpenUrlCommand& command) {
             OpenInBrowserTab(std::move(delegate), command.url,
                              std::move(callback));

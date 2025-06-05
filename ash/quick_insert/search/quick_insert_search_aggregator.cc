@@ -20,7 +20,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -28,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/url_matcher/url_matcher.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash {
 
@@ -61,7 +61,7 @@ QuickInsertSectionType SectionTypeFromSearchSource(
 
 bool ShouldPromote(const QuickInsertSearchResult& result) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const QuickInsertClipboardResult& data) { return data.is_recent; },
           [](const QuickInsertBrowsingHistoryResult& data) {
             return data.best_match;
