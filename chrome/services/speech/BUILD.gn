@@ -18,6 +18,8 @@ source_set("lib") {
     "speech_recognition_recognizer_impl.h",
     "speech_recognition_service_impl.cc",
     "speech_recognition_service_impl.h",
+    "speech_timestamp_estimator.cc",
+    "speech_timestamp_estimator.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -61,6 +63,7 @@ source_set("unit_tests") {
   sources = [
     "soda_speech_recognizer_impl_unittest.cc",
     "speech_recognition_recognizer_impl_unittest.cc",
+    "speech_timestamp_estimator_unittest.cc",
   ]
   deps = [
     ":lib",
