@@ -388,3 +388,14 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ExitSplit) {
           [this]() { return browser()->tab_strip_model()->active_index(); },
           0));
 }
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ButtonUpdatesOnSplit) {
+  RunTestSequence(AddInstrumentedTab(kWebContents2Id, GetTestUrl()),
+                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  Screenshot(kToolbarSplitTabsToolbarButtonElementId,
+                             "SplitTabButton", "6618989"));
+}
