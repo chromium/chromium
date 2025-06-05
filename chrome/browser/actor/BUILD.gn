@@ -17,8 +17,23 @@ source_set("actor") {
     "actor_keyed_service_factory.h",
     "actor_task.h",
     "aggregated_journal.h",
+    "tools/observation_delay_controller.h",
+    "tools/observation_delay_type.h",
+    "tools/tool_controller.h",
   ]
+  public_deps = [
+    ":types",
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
 
+source_set("impl") {
   sources = [
     "actor_coordinator.cc",
     "actor_features.cc",
@@ -36,8 +51,6 @@ source_set("actor") {
     "tools/navigate_tool.cc",
     "tools/navigate_tool.h",
     "tools/observation_delay_controller.cc",
-    "tools/observation_delay_controller.h",
-    "tools/observation_delay_type.h",
     "tools/page_tool.cc",
     "tools/page_tool.h",
     "tools/tool.cc",
@@ -45,18 +58,14 @@ source_set("actor") {
     "tools/tool_callbacks.cc",
     "tools/tool_callbacks.h",
     "tools/tool_controller.cc",
-    "tools/tool_controller.h",
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
   ]
-  public_deps = [
-    ":types",
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-    "//components/optimization_guide/content/browser",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
+    ":actor",
     "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/profiles:profile",
@@ -104,6 +113,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":actor",
+    ":impl",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/optimization_guide:test_support",
@@ -122,6 +132,7 @@ source_set("browser_tests") {
   sources = [ "site_policy_browsertest.cc" ]
   deps = [
     ":actor",
+    ":impl",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/optimization_guide:test_support",

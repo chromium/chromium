@@ -4339,6 +4339,7 @@ static_library("browser") {
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/actor",
+      "//chrome/browser/actor:impl",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/contextual_cueing",
