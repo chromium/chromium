@@ -10,10 +10,10 @@
 
 #include "components/download/content/public/all_download_item_notifier.h"
 
-// This class handles the task of observing a single DownloadManager for
-// notifying the UI when a new download should be displayed in the UI.
-// It invokes the OnNewDownloadReady() method of hte Delegate when the
-// target path is available for a new download.
+// This class handles the task of observing a single DownloadManager to
+// notify the UI when a new download should be displayed. It invokes the
+// OnNewDownloadReady() method of the Delegate when the target path is available
+// for a new download.
 class DownloadUIController
     : public download::AllDownloadItemNotifier::Observer {
  public:
