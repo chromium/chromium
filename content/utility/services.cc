@@ -291,8 +291,7 @@ auto RunAccessibilityService(
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
-std::unique_ptr<media::MediaFoundationServiceBroker>
-RunMediaFoundationServiceBroker(
+auto RunMediaFoundationServiceBroker(
     mojo::PendingReceiver<media::mojom::MediaFoundationServiceBroker>
         receiver) {
   return std::make_unique<media::MediaFoundationServiceBroker>(
