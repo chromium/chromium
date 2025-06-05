@@ -66,6 +66,10 @@ public abstract class ICronetEngineBuilder {
         return this;
     }
 
+    public ICronetEngineBuilder setProxyOptions(ProxyOptions proxyOptions) {
+        return this;
+    }
+
     public abstract ICronetEngineBuilder setExperimentalOptions(String options);
 
     public abstract ICronetEngineBuilder setLibraryLoader(

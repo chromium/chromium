@@ -10,6 +10,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONObject;
@@ -29,6 +30,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -504,6 +506,36 @@ public abstract class CronetEngine {
         public Builder setConnectionMigrationOptions(
                 ConnectionMigrationOptions.Builder connectionMigrationOptionsBuilder) {
             return setConnectionMigrationOptions(connectionMigrationOptionsBuilder.build());
+        }
+
+        /**
+         * Configures proxying behavior for connection establishment. This affects all connections
+         * established by a {@link CronetEngine} as a consequence of {@link UrlRequest} being
+         * started. For more details, see the documentation of {@link ProxyOptions}.
+         *
+         * <p>This is currently a no-op, setting this will have no effects on Cronet.
+         *
+         * <p>Warning: DO NOT USE without reaching out to Cronet maintainers first. This is
+         * experimental and subject to change.
+         *
+         * <p>Note: The Android OS can already define a "system" proxy configurations. This config
+         * might have been obtained by the user, from some enterprise profile configuration, or
+         * (most likely) from some network autoconfiguration (e.g., Web Proxy Auto-Discovery
+         * Protocol). Proxy configurations configured via this API and system ones are mutually
+         * exclusive. When specifying {@link ProxyOptions} you are overriding the system
+         * configuration, this can cause connectivity problems (e.g., the internet might no longer
+         * be reachable). To increase the chances of success, in case a fail-open configuration is
+         * provided, Cronet will use the system proxy configuration as a fallback, instead of trying
+         * to establish a non-proxied connection.
+         *
+         * @param proxyOptions ProxyOptions to be used for connections established by the {@link
+         *     CronetEngine} created by this builder.
+         * @return the builder to facilitate chaining.
+         */
+        @ProxyOptions.Experimental
+        public Builder setProxyOptions(@NonNull ProxyOptions proxyOptions) {
+            mBuilderDelegate.setProxyOptions(Objects.requireNonNull(proxyOptions));
+            return this;
         }
 
         protected ExperimentalCronetEngine buildExperimental() {
