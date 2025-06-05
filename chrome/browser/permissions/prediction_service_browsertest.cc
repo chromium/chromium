@@ -686,9 +686,6 @@ class Aiv3ModelPredictionServiceBrowserTest
                                              {permissions::features::
                                                   kPermissionsAIv3,
                                               {}},
-                                             {permissions::features::
-                                                  kPermissionsAIv3Geolocation,
-                                              {}},
                                          },
                                          /*disabled_features=*/{}) {}
 

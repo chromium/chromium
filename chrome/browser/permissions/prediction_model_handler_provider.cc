@@ -37,15 +37,14 @@ PredictionModelHandlerProvider::PredictionModelHandlerProvider(
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS);
 
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsAIv3Geolocation)) {
     notification_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE,
         RequestType::kNotifications);
-  }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionsAIv3Geolocation)) {
     geolocation_aiv3_handler_ = std::make_unique<PermissionsAiv3Handler>(
         optimization_guide,
         optimization_guide::proto::OptimizationTarget::

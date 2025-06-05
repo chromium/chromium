@@ -122,8 +122,7 @@ void LogPermissionsAiv3HandlerForAiv3(bool exists) {
 }
 
 void LogAiv3RelevanceHasValue(bool has_value) {
-  base::UmaHistogramBoolean("Permissions.AIv3.RelevanceHasValue",
-    has_value);
+  base::UmaHistogramBoolean("Permissions.AIv3.RelevanceHasValue", has_value);
 }
 
 }  // namespace
@@ -296,7 +295,7 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
     last_permission_request_relevance_ = relevance.value();
     features.permission_relevance = relevance.value();
     base::UmaHistogramEnumeration("Permissions.AIv3.PermissionRequestRelevance",
-          features.permission_relevance);
+                                  features.permission_relevance);
   } else {
     last_permission_request_relevance_ =
         PermissionRequestRelevance::kUnspecified;
@@ -670,11 +669,7 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   if (use_server_side) {
     // Aiv3 takes priority over Aiv1 if both are enabled.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    if (request_type == permissions::RequestType::kNotifications &&
-        base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
-      return PredictionSource::kOnDeviceAiv3AndServerSideModel;
-    }
-    if (request_type == permissions::RequestType::kGeolocation &&
+    if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
         base::FeatureList::IsEnabled(
             permissions::features::kPermissionsAIv3Geolocation)) {
       return PredictionSource::kOnDeviceAiv3AndServerSideModel;
