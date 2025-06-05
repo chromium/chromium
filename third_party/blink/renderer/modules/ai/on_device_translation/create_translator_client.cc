@@ -124,8 +124,21 @@ CreateTranslatorClient::CreateTranslatorClient(
   if (options->hasMonitor()) {
     monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
                                                    task_runner_);
-    std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+
+    // If an exception is thrown, don't initiate language detection model
+    // download. `AICreateMonitorCallback`'s `Invoke` will automatically
+    // reject the promise with the thrown exception.
+    if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
+      return;
+    }
   }
+
+  AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
+      ->TranslationAvailable(
+          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+          mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
+          WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,
+                        WrapPersistent(this)));
 }
 CreateTranslatorClient::~CreateTranslatorClient() = default;
 
