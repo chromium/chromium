@@ -12,6 +12,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -420,6 +421,7 @@ void BrowserFrame::ShowContextMenuForViewImpl(
     menu_runner_->RunMenuAt(source->GetWidget(), nullptr,
                             gfx::Rect(p, gfx::Size(0, 0)),
                             views::MenuAnchorPosition::kTopLeft, source_type);
+    base::RecordAction(base::UserMetricsAction("SystemContextMenu_Opened"));
   }
 }
 

@@ -43818,6 +43818,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SystemContextMenu_Opened">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>The user opened the system menu context.</description>
+</action>
+
 <action name="Tab.PinnedTabToastClosedAfterConfirmation">
   <owner>dljames@google.com</owner>
   <owner>chrome-desktop-ui@google.com</owner>
