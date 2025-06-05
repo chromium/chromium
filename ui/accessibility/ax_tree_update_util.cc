@@ -14,14 +14,30 @@ namespace ui {
 // doesn't have a new root id - in other words the second tree
 // update consists of only changes to nodes.
 bool AXTreeUpdatesCanBeMerged(const AXTreeUpdate& u1, const AXTreeUpdate& u2) {
-  if (u2.node_id_to_clear)
+  if (u1.node_id_to_clear != kInvalidAXNodeID ||
+      u2.node_id_to_clear != kInvalidAXNodeID) {
     return false;
+  }
 
-  if (u2.has_tree_data && u2.tree_data != u1.tree_data)
+  if (u2.has_tree_data && u2.tree_data != u1.tree_data) {
     return false;
+  }
 
-  if (u2.root_id != u1.root_id)
+  if (u2.root_id != u1.root_id) {
     return false;
+  }
+
+  if (u1.event_from != u2.event_from) {
+    return false;
+  }
+
+  if (u1.event_from_action != u2.event_from_action) {
+    return false;
+  }
+
+  if (u1.event_intents != u2.event_intents) {
+    return false;
+  }
 
   return true;
 }

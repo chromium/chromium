@@ -18,10 +18,10 @@ TEST(AXTreeUpdateUtilTest, AXTreeUpdatesCanBeMerged_NodeIDToClear) {
   u2.node_id_to_clear = kInvalidAXNodeID;
   EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
 
-  // Update 1 has a node ID to clear.
+  // Update 1 has a node ID to clear. This can interfere with u2's update.
   u1.node_id_to_clear = 1;
   u2.node_id_to_clear = kInvalidAXNodeID;
-  EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
+  EXPECT_FALSE(AXTreeUpdatesCanBeMerged(u1, u2));
 
   // Update 2 has a node ID to clear.
   u1.node_id_to_clear = kInvalidAXNodeID;
@@ -113,6 +113,51 @@ TEST(AXTreeUpdateUtilTest, AXTreeUpdatesCanBeMerged_RootID) {
   u1.root_id = kInvalidAXNodeID;
   u2.root_id = kInvalidAXNodeID;
   EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
+}
+
+TEST(AXTreeUpdateUtilTest, AXTreeUpdatesCanBeMerged_EventFrom) {
+  AXTreeUpdate u1;
+  AXTreeUpdate u2;
+
+  // Same event from.
+  u1.event_from = ax::mojom::EventFrom::kAction;
+  u2.event_from = ax::mojom::EventFrom::kAction;
+  EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
+
+  // Different event from.
+  u1.event_from = ax::mojom::EventFrom::kAction;
+  u2.event_from = ax::mojom::EventFrom::kPage;
+  EXPECT_FALSE(AXTreeUpdatesCanBeMerged(u1, u2));
+}
+
+TEST(AXTreeUpdateUtilTest, AXTreeUpdatesCanBeMerged_EventFromAction) {
+  AXTreeUpdate u1;
+  AXTreeUpdate u2;
+
+  // Same event from action.
+  u1.event_from_action = ax::mojom::Action::kFocus;
+  u2.event_from_action = ax::mojom::Action::kFocus;
+  EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
+
+  // Different event_ from action.
+  u1.event_from_action = ax::mojom::Action::kFocus;
+  u2.event_from_action = ax::mojom::Action::kDecrement;
+  EXPECT_FALSE(AXTreeUpdatesCanBeMerged(u1, u2));
+}
+
+TEST(AXTreeUpdateUtilTest, AXTreeUpdatesCanBeMerged_EventIntents) {
+  AXTreeUpdate u1;
+  AXTreeUpdate u2;
+
+  // Same event intents.
+  u1.event_intents = {AXEventIntent(ax::mojom::Command::kClearSelection)};
+  u2.event_intents = {AXEventIntent(ax::mojom::Command::kClearSelection)};
+  EXPECT_TRUE(AXTreeUpdatesCanBeMerged(u1, u2));
+
+  // Different event intents.
+  u1.event_intents = {AXEventIntent(ax::mojom::Command::kClearSelection)};
+  u2.event_intents = {AXEventIntent(ax::mojom::Command::kDelete)};
+  EXPECT_FALSE(AXTreeUpdatesCanBeMerged(u1, u2));
 }
 
 TEST(AXTreeUpdateUtilTest, MergeAXTreeUpdates) {
