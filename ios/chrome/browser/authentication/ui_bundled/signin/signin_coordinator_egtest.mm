@@ -417,6 +417,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Sign-in opened from: tab switcher.
 // Interrupted at: user consent.
 - (void)testDismissSigninFromTabSwitcher {
+  // TODO(crbug.com/422731851): Test is failing on iPad. Re-enable when fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad.");
+  }
+
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
   // supported with Tab Group Sync enabled.
@@ -432,6 +437,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Sign-in opened from: tab switcher.
 // Interrupted at: identity picker.
 - (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
+  // TODO(crbug.com/422731851): Test is failing on iPad. Re-enable when fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad.");
+  }
+
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
   // supported with Tab Group Sync enabled.
