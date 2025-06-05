@@ -53,6 +53,7 @@ class SavedTabGroupTab {
   const std::optional<gfx::Image>& favicon() const { return favicon_; }
   const base::Time& creation_time() const { return creation_time_; }
   const base::Time& update_time() const { return update_time_; }
+  const base::Time& navigation_time() const { return navigation_time_; }
   const std::optional<base::Time>& last_seen_time() const {
     return last_seen_time_;
   }
@@ -107,6 +108,10 @@ class SavedTabGroupTab {
   }
   SavedTabGroupTab& SetUpdateTime(base::Time update_time) {
     update_time_ = update_time;
+    return *this;
+  }
+  SavedTabGroupTab& SetNavigationTime(base::Time navigation_time) {
+    navigation_time_ = navigation_time;
     return *this;
   }
   SavedTabGroupTab& SetLastSeenTime(base::Time last_seen_time) {
@@ -183,6 +188,13 @@ class SavedTabGroupTab {
 
   // Timestamp for when the tab was last updated.
   base::Time update_time_;
+
+  // Timestamp for when the tab was last navigated. Currently set to the mtime
+  // from the metadata from remote updates. TODO(crbug.com/420739337): After
+  // per-field mtime support is added, it will be correctly set to the server
+  // timestamp of when URL field is modified. Updated locally for local
+  // navigations.
+  base::Time navigation_time_;
 
   // Timestamp of the last time a user saw the contents of this tab.
   // This value may be null if the user has never focused a tab added
