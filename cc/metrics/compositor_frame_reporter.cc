@@ -994,11 +994,13 @@ void CompositorFrameReporter::TerminateReporter() {
   if (TestReportType(FrameReportType::kDroppedFrame)) {
     global_trackers_.dropped_frame_counter->AddDroppedFrame();
   } else {
-    if (has_partial_update_)
+    if (has_partial_update_) {
       global_trackers_.dropped_frame_counter->AddPartialFrame();
-    else
+    } else {
       global_trackers_.dropped_frame_counter->AddGoodFrame();
+    }
   }
+  global_trackers_.frame_sorter->AddFrameInfoToBuffer(frame_info);
   if (global_trackers_.dropped_frame_counter
           ->first_contentful_paint_received()) {
     // Delegates call to DFC->OnEndFrame.

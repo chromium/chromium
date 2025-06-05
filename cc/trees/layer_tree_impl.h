@@ -133,6 +133,7 @@ class CC_EXPORT LayerTreeImpl {
   ImageDecodeCache* image_decode_cache() const;
   ImageAnimationController* image_animation_controller() const;
   DroppedFrameCounter* dropped_frame_counter() const;
+  FrameSorter* frame_sorter() const;
   MemoryHistory* memory_history() const;
   DebugRectHistory* debug_rect_history() const;
   const GlobalStateThatImpactsTilePriority& global_tile_state() const {

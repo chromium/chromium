@@ -29,7 +29,6 @@ class ClientResourceProvider;
 }
 
 namespace cc {
-class DroppedFrameCounter;
 class LayerTreeFrameSink;
 class PaintCanvas;
 class PaintFlags;
@@ -119,11 +118,9 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                          PaintFlags* flags,
                          const SkRect& bounds) const;
 
-  SkRect DrawFrameThroughputDisplay(
-      PaintCanvas* canvas,
-      const DroppedFrameCounter* dropped_frame_counter,
-      int right,
-      int top) const;
+  SkRect DrawFrameThroughputDisplay(PaintCanvas* canvas,
+                                    int right,
+                                    int top) const;
   SkRect DrawMemoryDisplay(PaintCanvas* canvas,
                            int top,
                            int right,

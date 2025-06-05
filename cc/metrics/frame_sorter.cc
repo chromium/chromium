@@ -77,6 +77,19 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   }
 }
 
+void FrameSorter::AddFrameInfoToBuffer(const FrameInfo& frame_info) {
+  ring_buffer_.SaveToBuffer(frame_info.final_state);
+  ++total_frames_;
+  if (frame_info.final_state == FrameInfo::FrameFinalState::kDropped) {
+    ++total_dropped_;
+  } else if (frame_info.final_state ==
+                 FrameInfo::FrameFinalState::kPresentedPartialNewMain ||
+             frame_info.final_state ==
+                 FrameInfo::FrameFinalState::kPresentedPartialOldMain) {
+    ++total_partial_;
+  }
+}
+
 void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
                                  const FrameInfo& frame_info) {
   if (pending_frames_.empty() || current_source_id_ > args.frame_id.source_id) {
@@ -136,6 +149,9 @@ bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
 }
 
 void FrameSorter::Reset() {
+  total_frames_ = 0;
+  total_partial_ = 0;
+  total_dropped_ = 0;
   for (const auto& pending_frame : pending_frames_) {
     const auto& frame_id = pending_frame.frame_id;
     auto& frame_state = frame_states_[frame_id];
@@ -150,6 +166,7 @@ void FrameSorter::Reset() {
     frame_state.OnReset();
   }
   pending_frames_.clear();
+  ring_buffer_.Clear();
 }
 
 void FrameSorter::FlushFrames() {
@@ -170,6 +187,18 @@ void FrameSorter::FlushFrames() {
     pending_frames_.pop_front();
   }
   DCHECK_GT(flushed_count, 0u);
+}
+
+uint32_t FrameSorter::GetAverageThroughput() const {
+  size_t good_frames = 0;
+  for (auto it = End(); it; --it) {
+    if (**it == FrameInfo::FrameFinalState::kPresentedAll ||
+        **it == FrameInfo::FrameFinalState::kPresentedPartialOldMain) {
+      ++good_frames;
+    }
+  }
+  double throughput = 100. * good_frames / ring_buffer_.BufferSize();
+  return static_cast<uint32_t>(throughput);
 }
 
 }  // namespace cc

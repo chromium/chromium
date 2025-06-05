@@ -46,6 +46,7 @@
 #include "cc/layers/video_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/animation_test_common.h"
@@ -14408,15 +14409,16 @@ TEST_P(LayerTreeHostImplTest,
   // there is less than 20 frames in its pending frames list.
 }
 
-// Test that DroppedFrameCounter and TotalFrameCounter reset themselves under
-// certain conditions
+// Test that TotalFrameCounter resets itself under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  dropped_frame_counter->AddGoodFrame();
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  FrameInfo frame_info;
+  frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
 
   auto interval = base::Milliseconds(16);
   base::TimeTicks now = base::TimeTicks::Now();
@@ -14443,18 +14445,16 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
-  dropped_frame_counter->AddGoodFrame();
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
   host_impl_->SetActiveURL(GURL(), 1u);
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_dropped(), 0u);
 }
 
-// Test that DroppedFrameCounter and TotalFrameCounter do not reset themselves
-// under certain conditions
+// Test that TotalFrameCounter does not reset itself under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
-  DroppedFrameCounter* dropped_frame_counter =
-      host_impl_->dropped_frame_counter_for_testing();
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+  FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
 
   auto interval = base::Milliseconds(16);
   base::TimeTicks now = base::TimeTicks::Now();
@@ -14466,9 +14466,11 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   begin_frame_metrics.should_measure_smoothness = true;
   host_impl_->ReadyToCommit(arg1, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  dropped_frame_counter->AddGoodFrame();
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  FrameInfo frame_info;
+  frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
 
   now = deadline;
   deadline = now + interval;
@@ -14479,7 +14481,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   // flag should not reset the counter.
   host_impl_->ReadyToCommit(arg2, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
 }
 
 // Tests that the scheduled autoscroll task aborts if a 2nd mousedown occurs in

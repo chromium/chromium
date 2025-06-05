@@ -695,6 +695,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   DroppedFrameCounter* dropped_frame_counter() {
     return &dropped_frame_counter_;
   }
+  FrameSorter* frame_sorter() { return &frame_sorter_; }
   MemoryHistory* memory_history() { return memory_history_.get(); }
   DebugRectHistory* debug_rect_history() { return debug_rect_history_.get(); }
   viz::ClientResourceProvider* resource_provider() {

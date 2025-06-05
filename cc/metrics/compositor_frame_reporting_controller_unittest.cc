@@ -1191,8 +1191,8 @@ TEST_F(CompositorFrameReportingControllerTest, LongCompositorAnimation) {
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.OnFinishImplFrame(current_id_);
 
-  EXPECT_EQ(3u, dropped_counter_.total_frames());
-  EXPECT_EQ(1u, dropped_counter_.total_dropped());
+  EXPECT_EQ(3u, frame_sorter_.total_frames());
+  EXPECT_EQ(1u, frame_sorter_.total_dropped());
 }
 
 // Testing CompositorLatency.Type metrics
@@ -1671,8 +1671,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // In total, two frames have been completed: R1C, and R1M.
   // R2C has been presented, but it is blocked on R2M to know whether R2C
   // contains partial update, or complete updates. So it is kept alive.
-  EXPECT_EQ(2u, dropped_counter_.total_frames());
-  EXPECT_EQ(1u, dropped_counter_.total_partial());
+  EXPECT_EQ(2u, frame_sorter_.total_frames());
+  EXPECT_EQ(1u, frame_sorter_.total_partial());
   EXPECT_EQ(1u, reporting_controller_.GetBlockingReportersCount());
   EXPECT_EQ(1u, reporting_controller_.GetBlockedReportersCount());
 
@@ -1710,8 +1710,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(1u, reporting_controller_.GetAdoptedReportersCount());
 
   // At this point no frame has been completed, yet.
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Start yet another frame that has impl-thread update and submit it, but with
   // failed presentation. The reporter for this frame should become dependent of
@@ -1735,8 +1735,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(1u, reporting_controller_.GetAdoptedReportersCount());
 
   // At this point 1 frame has been completed and it's a dropped frame.
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(1u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(1u, frame_sorter_.total_dropped());
 
   reporting_controller_.ResetReporters();
   reporting_controller_.ClearFrameSequenceTrackerCollection();
@@ -1748,34 +1748,35 @@ TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorAreDropped) {
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(2u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(2u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Now skip over a few frames, and submit + present another frame.
   const uint32_t kSkipFrames = 5;
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(3u + kSkipFrames, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(kSkipFrames, dropped_counter_.total_dropped());
+  EXPECT_EQ(3u + kSkipFrames, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(kSkipFrames, frame_sorter_.total_dropped());
 
   // Stop requesting frames, skip over a few frames, and submit + present
   // another frame. There should no new dropped frames.
   dropped_counter_.Reset();
+  frame_sorter_.Reset();
   reporting_controller_.OnStoppedRequestingBeginFrames();
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   reporting_controller_.ResetReporters();
   reporting_controller_.ClearFrameSequenceTrackerCollection();
@@ -1787,14 +1788,14 @@ TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorAreDroppedUpToLimit) {
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(2u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(2u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Now skip over a 101 frames (It should be ignored as it more than 100)
   // and submit + present another frame.
@@ -1803,9 +1804,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(3u + kSkipFramesActual, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(kSkipFramesActual, dropped_counter_.total_dropped());
+  EXPECT_EQ(3u + kSkipFramesActual, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(kSkipFramesActual, frame_sorter_.total_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1825,7 +1826,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.OnFinishImplFrame(current_id_1);
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kWaitingOnMain);
 
@@ -1843,23 +1844,23 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(3u, reporting_controller_.GetBlockedReportersCount());
 
   // All frames are waiting for the main frame
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   reporting_controller_.BeginMainFrameAborted(
       args_1.frame_id, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kNoDamage);
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // New reporters replace older reporters
   reporting_controller_.WillBeginImplFrame(args_4);
   reporting_controller_.WillBeginMainFrame(args_4);
 
-  EXPECT_EQ(4u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(4u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1872,23 +1873,23 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(2u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(2u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Now skip over a few frames, and submit + present another frame.
   const uint32_t kSkipFrames_1 = 5;
   for (uint32_t i = 0; i < kSkipFrames_1; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(3u + kSkipFrames_1, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_dropped());
+  EXPECT_EQ(3u + kSkipFrames_1, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(kSkipFrames_1, frame_sorter_.total_dropped());
   EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames which are not affecting smoothness.
@@ -1900,10 +1901,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   for (uint32_t i = 0; i < kSkipFrames_2; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();  // Present another frame.
-  EXPECT_EQ(4u + kSkipFrames_1 + kSkipFrames_2,
-            dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2, dropped_counter_.total_dropped());
+  EXPECT_EQ(4u + kSkipFrames_1 + kSkipFrames_2, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2, frame_sorter_.total_dropped());
   EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames more frames which are affecting smoothness.
@@ -1915,10 +1915,10 @@ TEST_F(CompositorFrameReportingControllerTest,
     IncrementCurrentId();
   SimulatePresentCompositorFrame();  // Present another frame.
   EXPECT_EQ(5u + kSkipFrames_1 + kSkipFrames_2 + kSkipFrames_3,
-            dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
+            frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
   EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2 + kSkipFrames_3,
-            dropped_counter_.total_dropped());
+            frame_sorter_.total_dropped());
   EXPECT_EQ(kSkipFrames_1 + kSkipFrames_3,
             dropped_counter_.total_smoothness_dropped());
 }
@@ -1927,14 +1927,14 @@ TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromClientRequestedThrottlingAreDropped) {
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(1u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(1u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(2u, dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(2u, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Now skip over a few frames, and submit + present another frame.
   const uint32_t kTotalFrames = 5;
@@ -1943,10 +1943,9 @@ TEST_F(CompositorFrameReportingControllerTest,
     IncrementCurrentId();
   args_.frames_throttled_since_last = kThrottledFrames;
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(3u + kTotalFrames - kThrottledFrames,
-            dropped_counter_.total_frames());
-  EXPECT_EQ(0u, dropped_counter_.total_partial());
-  EXPECT_EQ(kTotalFrames - kThrottledFrames, dropped_counter_.total_dropped());
+  EXPECT_EQ(3u + kTotalFrames - kThrottledFrames, frame_sorter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_partial());
+  EXPECT_EQ(kTotalFrames - kThrottledFrames, frame_sorter_.total_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1959,7 +1958,7 @@ TEST_F(CompositorFrameReportingControllerTest,
     reporting_controller_.BeginMainFrameAborted(
         current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
   }
-  EXPECT_EQ(0u, dropped_counter_.total_dropped());
+  EXPECT_EQ(0u, frame_sorter_.total_dropped());
 
   // Start a few begin-main-frames, but abort the main-frames due to no damage.
   for (int i = 0; i < 5; ++i) {
@@ -1971,7 +1970,7 @@ TEST_F(CompositorFrameReportingControllerTest,
     SimulateSubmitCompositorFrame({});
   }
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(5u, dropped_counter_.total_dropped());
+  EXPECT_EQ(5u, frame_sorter_.total_dropped());
 }
 
 // Verifies that presentation feedbacks that arrive out of order are handled
@@ -1994,16 +1993,16 @@ TEST_F(CompositorFrameReportingControllerTest,
   details_2.presentation_feedback = {AdvanceNowByMs(10), base::TimeDelta(),
                                      gfx::PresentationFeedback::kFailure};
   reporting_controller_.DidPresentCompositorFrame(frame_token_2, details_2);
-  DCHECK_EQ(1u, dropped_counter_.total_frames());
-  DCHECK_EQ(1u, dropped_counter_.total_dropped());
+  DCHECK_EQ(1u, frame_sorter_.total_frames());
+  DCHECK_EQ(1u, frame_sorter_.total_dropped());
 
   // Send a successful presentation feedback for frame 3. This should drop frame
   // 1.
   viz::FrameTimingDetails details_3;
   details_3.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(frame_token_3, details_3);
-  DCHECK_EQ(3u, dropped_counter_.total_frames());
-  DCHECK_EQ(2u, dropped_counter_.total_dropped());
+  DCHECK_EQ(3u, frame_sorter_.total_frames());
+  DCHECK_EQ(2u, frame_sorter_.total_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -2049,7 +2048,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulatePresentCompositorFrame();
 
   // There are two frames with partial updates
-  EXPECT_EQ(2u, dropped_counter_.total_partial());
+  EXPECT_EQ(2u, frame_sorter_.total_partial());
   // Which one is accompanied with new main thread update so only one affects
   // smoothness
   EXPECT_EQ(1u, dropped_counter_.total_smoothness_dropped());
@@ -2065,28 +2064,27 @@ TEST_F(CompositorFrameReportingControllerTest,
   // thread (i.e. 'begin main frame').
   SimulateBeginMainFrame();
   EXPECT_EQ(1, reporting_controller_.ActiveReporters());
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   // Terminate the frame without submitting a frame.
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidNotProduceFrame(current_id_,
                                            FrameSkippedReason::kWaitingOnMain);
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   // Main thread responds.
   SimulateActivate();
   EXPECT_EQ(1, reporting_controller_.ActiveReporters());
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   // Start and submit a second frame.
   SimulateBeginImplFrame();
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
-  EXPECT_EQ(0u, dropped_counter_.total_frames());
+  EXPECT_EQ(0u, frame_sorter_.total_frames());
 
   reporting_controller_.OnFinishImplFrame(current_id_);
   SimulatePresentCompositorFrame();
-  EXPECT_EQ(0u, dropped_counter_.total_smoothness_dropped());
-  EXPECT_EQ(3u, dropped_counter_.total_frames());
+  EXPECT_EQ(3u, frame_sorter_.total_frames());
 }
 
 TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {

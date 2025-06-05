@@ -157,7 +157,8 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     if (presented_frames_ < config_.animation_frames)
       return;
 
-    auto* dropped_frame_counter = host_impl->dropped_frame_counter();
+    auto* dropped_frame_counter =
+        host_impl->dropped_frame_counter_for_testing();
     DCHECK(dropped_frame_counter);
 
     total_frames_ = dropped_frame_counter->total_frames();
