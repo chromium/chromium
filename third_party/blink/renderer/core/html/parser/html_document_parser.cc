@@ -925,14 +925,16 @@ void HTMLDocumentParser::ScheduleEndIfDelayed() {
 
 void HTMLDocumentParser::ConstructTreeFromToken(AtomicHTMLToken& atomic_token) {
   DCHECK(!GetDocument()->IsPrefetchOnly());
+
+  // Check whether we've exited the header.
+  if (!task_runner_state_->HaveExitedHeader()) {
+    if (GetDocument()->body()) {
+      task_runner_state_->SetExitedHeader();
+    }
+  }
+
   tree_builder_->ConstructTree(&atomic_token);
   CheckIfBlockingStylesheetAdded();
-}
-
-void HTMLDocumentParser::FirstBodyElementAdded() {
-  if (!task_runner_state_->HaveExitedHeader()) {
-    task_runner_state_->SetExitedHeader();
-  }
 }
 
 bool HTMLDocumentParser::HasInsertionPoint() {

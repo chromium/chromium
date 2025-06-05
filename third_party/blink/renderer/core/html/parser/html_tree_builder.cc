@@ -1310,7 +1310,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           frameset_ok_ = false;
           tree_.InsertHTMLBodyElement(token);
           SetInsertionMode(kInBodyMode);
-          parser_->FirstBodyElementAdded();
           return;
         case HTMLTag::kFrameset:
           tree_.InsertHTMLElement(token);

@@ -136,8 +136,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void NotifyParserPauseByUserTiming() override;
   void NotifyParserResumeByUserTiming() override;
 
-  void FirstBodyElementAdded();
-
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
