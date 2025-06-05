@@ -56,12 +56,16 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 namespace {
+
+const char kContextWebGPUInteropUnsupportedError[] =
+    "The context does not support WebGPU interop.";
 
 MLDataTypeLimits* SupportedDataTypesToDataTypeLimits(
     const webnn::SupportedDataTypes& supported_data_types) {
@@ -123,6 +127,24 @@ MLContext::MLContext(
       WTF::BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
 }
 
+MLContext::MLContext(
+    ExecutionContext* execution_context,
+    GPUDevice* gpu_device,
+    webnn::mojom::blink::CreateContextSuccessPtr create_context_success)
+    : device_type_(V8MLDeviceType::Enum::kGpu),
+      power_preference_(V8MLPowerPreference::Enum::kDefault),
+      lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
+      context_remote_(execution_context),
+      properties_(std::move(create_context_success->context_properties)),
+      webnn_handle_(std::move(create_context_success->context_handle)),
+      gpu_device_(gpu_device) {
+  context_remote_.Bind(
+      std::move(create_context_success->context_remote),
+      execution_context->GetTaskRunner(TaskType::kMachineLearning));
+  context_remote_.set_disconnect_with_reason_handler(
+      WTF::BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
+}
+
 MLContext::~MLContext() = default;
 
 V8MLDeviceType MLContext::GetDeviceType() const {
@@ -140,6 +162,7 @@ void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(graphs_);
   visitor->Trace(graph_builders_);
   visitor->Trace(tensors_);
+  visitor->Trace(gpu_device_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -1005,6 +1028,11 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     return EmptyPromise();
   }
 
+  if (descriptor->exportableToGPU() && !gpu_device_) {
+    exception_state.ThrowTypeError(kContextWebGPUInteropUnsupportedError);
+    return EmptyPromise();
+  }
+
   ASSIGN_OR_RETURN(
       webnn::OperandDescriptor validated_descriptor,
       webnn::OperandDescriptor::Create(
@@ -1275,7 +1303,6 @@ void MLContext::DidCreateWebNNTensor(
 
 ScriptPromise<GPUBuffer> MLContext::exportToGPU(
     ScriptState* script_state,
-    GPUDevice* device,
     MLTensor* tensor,
     ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::exportToGPU");
@@ -1297,6 +1324,10 @@ ScriptPromise<GPUBuffer> MLContext::exportToGPU(
   if (!tensor->exportableToGPU()) {
     exception_state.ThrowTypeError(
         "The source tensor cannot be exported to WebGPU.");
+    return EmptyPromise();
+  }
+  if (!gpu_device_) {
+    exception_state.ThrowTypeError(kContextWebGPUInteropUnsupportedError);
     return EmptyPromise();
   }
   // TODO(crbug.com/345352987): Implement MLTensor's exportToGPU.

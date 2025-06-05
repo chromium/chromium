@@ -635,6 +635,15 @@ void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
+  // TODO(crbug.com/345352987): implement WebGPU interop tensors for DirectML
+  // backend.
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "WebGPU Interop is not supported.")));
+    return;
+  }
+
   if (g_backend_for_testing) {
     g_backend_for_testing->CreateTensorImpl(
         this, std::move(receiver), std::move(tensor_info), std::move(callback));

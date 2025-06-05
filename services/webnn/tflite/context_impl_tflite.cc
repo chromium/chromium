@@ -57,6 +57,14 @@ void ContextImplTflite::CreateTensorImpl(
                           "Creation of constant tensors is not supported.")));
     return;
   }
+  // TODO(crbug.com/345352987): implement WebGPU interop tensors for TFLite
+  // backend.
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "WebGPU Interop is not supported.")));
+    return;
+  }
   std::move(callback).Run(TensorImplTflite::Create(std::move(receiver), this,
                                                    std::move(tensor_info)));
 }
