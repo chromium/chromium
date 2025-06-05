@@ -410,7 +410,8 @@ bool Connection::HasNextEvent() {
     }
     events_.pop_front();
   }
-  return false;
+  // Move an event from XCB's internal queue to our queue, if available.
+  return ReadResponse(/*queued=*/false);
 }
 
 int Connection::GetFd() {
