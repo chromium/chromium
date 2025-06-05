@@ -2191,6 +2191,8 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios19-sdk-simulator",
+    schedule = "0 1,5,9,13,17,21 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2303,6 +2305,8 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios19-beta-simulator",
+    schedule = "0 3,7,11,15,19,23 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
