@@ -13,7 +13,7 @@ function getPresetConfigHtml(this: TracingScenariosConfigElement) {
   }
 
   return html`
-    <h2>Local Scenarios</h2>
+  <h2>Local Scenarios</h2>
   <div class="scenario-list-container">
   ${this.localConfig_.map((item) => html`
     <tracing-scenario
@@ -21,8 +21,8 @@ function getPresetConfigHtml(this: TracingScenariosConfigElement) {
         .enabled="${this.isScenarioEnabled_(item)}"
         @value-changed="${this.valueDidChange_}"
         data-key="${item.scenarioName}">
-      </tracing-scenario>`)}
-    </div>`;
+    </tracing-scenario>`)}
+  </div>`;
   // clang-format on
 }
 
@@ -33,15 +33,16 @@ function getFieldConfigHtml(this: TracingScenariosConfigElement) {
   }
 
   return html`
-    <div class="scenario-list-container">
-    ${this.fieldConfig_.map((item, index) => html`
-      <tracing-scenario
-          .scenario="${item}"
-          .enabled="${item.isEnabled}"
-          data-index="${index}">
-      </tracing-scenario>
-    `)}
-    </div>`;
+  <h2>Field Scenarios</h2>
+  <div class="scenario-list-container">
+  ${this.fieldConfig_.map((item, index) => html`
+    <tracing-scenario
+        .scenario="${item}"
+        .enabled="${item.isEnabled}"
+        data-index="${index}">
+    </tracing-scenario>
+  `)}
+  </div>`;
   // clang-format on
 }
 
@@ -116,8 +117,8 @@ export function getHtml(this: TracingScenariosConfigElement) {
       @change="${this.onAddConfig_}">
   </input>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
-  ${getPresetConfigHtml.bind(this)()}
   ${getFieldConfigHtml.bind(this)()}
+  ${getPresetConfigHtml.bind(this)()}
   <div class="action-panel">
     <cr-button class="action-button"
         @click="${this.resetAllClick_}">
