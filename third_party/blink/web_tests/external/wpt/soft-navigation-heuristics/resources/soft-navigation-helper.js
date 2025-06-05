@@ -113,28 +113,6 @@ const testNavigationApi = (testName, navigateEventHandler, link) => {
   }, testName);
 };
 
-const testSoftNavigationNotDetected = options => {
-  promise_test(async t => {
-    const preClickLcp = await getLcpEntries();
-    options.eventTarget.addEventListener(
-        options.eventName, options.eventHandler);
-    interact(options.link);
-    await new Promise((resolve, reject) => {
-      new PerformanceObserver(() => {
-        reject('Soft navigation should not be triggered');
-      }).observe({type: 'soft-navigation', buffered: true});
-      t.step_timeout(resolve, 1000);
-    });
-    if (document.softNavigations) {
-      assert_equals(
-          document.softNavigations, 0, 'Soft Navigation not detected');
-    }
-    const postClickLcp = await getLcpEntries();
-    assert_equals(
-        preClickLcp.length, postClickLcp.length, 'No LCP entries accumulated');
-  }, options.testName);
-};
-
 const runEntryValidations = async (
     preClickLcp, first_navigation_id, entries_expected_number = 2,
     validate = null) => {
