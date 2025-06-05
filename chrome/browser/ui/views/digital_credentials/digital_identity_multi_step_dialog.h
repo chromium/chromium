@@ -59,14 +59,24 @@ class DigitalIdentityMultiStepDialog {
             views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
         insets.right() - insets.left();
     const gfx::Size header_size(available_width, kHeaderHeight);
-
-    illustration->SetPreferredSize(header_size);
+    // `illustration` will horizontally center if the width is
+    // larger than the size from the Lottie file, but the height is just used to
+    // truncate the image, so that is disabled with a very large value.
+    illustration->SetPreferredSize(gfx::Size(available_width, 9999));
     illustration->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginBottom, 0)));
     illustration->SetSize(header_size);
     illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
-    auto container_view =
+    auto illustration_container_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetInsideBorderInsets(gfx::Insets())
+            .SetPreferredSize(header_size)
+            .Build();
+    illustration_container_view->AddChildView(std::move(illustration));
+
+    auto header_view =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetInsideBorderInsets(gfx::Insets())
@@ -74,7 +84,7 @@ class DigitalIdentityMultiStepDialog {
                 views::LayoutProvider::Get()->GetDistanceMetric(
                     views::DISTANCE_RELATED_CONTROL_VERTICAL))
             .Build();
-    container_view->AddChildView(std::move(illustration));
+    header_view->AddChildView(std::move(illustration_container_view));
 
     // Add title if not empty
     if (!title.empty()) {
@@ -83,7 +93,7 @@ class DigitalIdentityMultiStepDialog {
                              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
                              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                              .Build();
-      container_view->AddChildView(std::move(title_label));
+      header_view->AddChildView(std::move(title_label));
     }
 
     // Add body text if not empty
@@ -94,9 +104,9 @@ class DigitalIdentityMultiStepDialog {
                             .SetMultiLine(true)
                             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                             .Build();
-      container_view->AddChildView(std::move(body_label));
+      header_view->AddChildView(std::move(body_label));
     }
-    return container_view;
+    return header_view;
   }
 
   class TestApi {
