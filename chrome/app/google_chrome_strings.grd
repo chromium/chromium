@@ -1394,16 +1394,6 @@ Google Chrome is unable to recover your settings.
         You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.
       </message>
 
-      <if expr="not is_android">
-        <!-- Desktop User Education IPH Strings -->
-        <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the Chrome menu.">
-          You can open bookmarks, reading mode, and more from the Chrome menu
-        </message>
-        <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to find side panel entry points in the Chrome menu. The phrase 'top right' should read as 'top left' in rtl languages.">
-          You can open bookmarks, reading mode, and more from the Chrome menu at the top right
-        </message>
-      </if>
-
       <!-- Settings API bubble -->
       <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was just the start pages. The triple single quotes are needed to preserve the space before and after the sentence which is needed when the language (Chrome is being translated to) uses space as word separator. Please preserve them, unless the language being translated to does not use space as word separator.">
         ''' It also controls what page is shown when you start Chrome. '''
