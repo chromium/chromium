@@ -212,7 +212,7 @@ public class IncognitoDownloadLeakageTest {
     @LargeTest
     @UseMethodParameter(IncognitoDataTestUtils.TestParams.IncognitoToRegular.class)
     @DisabledTest(message = "crbug.com/422225234")
-    public void testIncognitoDowloadEntriesNotVisibleInRegular(
+    public void testIncognitoDownloadEntriesNotVisibleInRegular(
             String incognitoActivityType, String regularActivityType) throws Exception {
         IncognitoDataTestUtils.ActivityType incognitoActivity =
                 IncognitoDataTestUtils.ActivityType.valueOf(incognitoActivityType);
@@ -258,7 +258,7 @@ public class IncognitoDownloadLeakageTest {
     @LargeTest
     @UseMethodParameter(IncognitoDataTestUtils.TestParams.IncognitoToIncognito.class)
     @DisabledTest(message = "crbug.com/391749002, crbug.com/40935094")
-    public void testIncognitoDowloadEntriesNotVisibleInAnotherIncognito(
+    public void testIncognitoDownloadEntriesNotVisibleInAnotherIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         IncognitoDataTestUtils.ActivityType incognitoActivity1 =
                 IncognitoDataTestUtils.ActivityType.valueOf(incognitoActivityType1);
