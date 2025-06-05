@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
@@ -123,6 +125,10 @@ NSString* HostnameFromGURL(GURL URL) {
       "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
+  // Relaunching the app undoes the mock setup for shopping_service in setUp
+  // For the relaunch cases, explicitly disabling ShopCard so the tests can
+  // continue without waiting for the async callback.
+  config.features_disabled.push_back(commerce::kShopCard);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -135,6 +141,7 @@ NSString* HostnameFromGURL(GURL URL) {
   SignInAndEnableHistorySync();
   [NewTabPageAppInterface disableSetUpList];
   [[self class] closeAllTabs];
+  [TabResumptionAppInterface setUpMockShoppingService];
   [ChromeEarlGrey openNewTab];
 }
 

@@ -6,6 +6,8 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import <algorithm>
+
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/containers/flat_set.h"
@@ -807,25 +809,54 @@ class TabResumptionMediatorProxy {
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    GURL url = resumptionURL;
     __weak __typeof(self) weakSelf = self;
-    TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
-        _optimizationGuideService, resumptionURL,
-        optimization_guide::proto::PRICE_TRACKING,
-        optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
-        base::BindRepeating(
-            ^(const GURL& url,
-              const base::flat_map<
-                  optimization_guide::proto::OptimizationType,
-                  optimization_guide::OptimizationGuideDecisionWithMetadata>&
-                  decisions) {
-              ConfigureTabResumptionItemForShopCard(decisions, item, url);
-              // Fetch the favicon.
-              [weakSelf fetchImageForItem:item];
-            }));
+    _shoppingService->GetAllPriceTrackedBookmarks(base::BindOnce(
+        ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+          TabResumptionMediator* strongSelf = weakSelf;
+          if (!strongSelf || !strongSelf.delegate) {
+            return;
+          }
+          [strongSelf onPriceTrackedBookmarksReceived:subscriptions
+                                                  url:url
+                                                 item:item];
+        }));
   } else {
     // Fetch the favicon.
     [self fetchImageForItem:item];
   }
+}
+
+- (void)onPriceTrackedBookmarksReceived:
+            (std::vector<const bookmarks::BookmarkNode*>)subscriptions
+                                    url:(const GURL&)resumptionUrl
+                                   item:(TabResumptionItem*)item {
+  if (!resumptionUrl.is_valid()) {
+    return;
+  }
+  // Remove module if already tracking the product.
+  if (std::ranges::any_of(subscriptions, [&](const auto& bookmark) {
+        return bookmark->url() == resumptionUrl;
+      })) {
+    [self.delegate removeTabResumptionModule];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
+      _optimizationGuideService, resumptionUrl,
+      optimization_guide::proto::PRICE_TRACKING,
+      optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
+      base::BindRepeating(
+          ^(const GURL& url,
+            const base::flat_map<
+                optimization_guide::proto::OptimizationType,
+                optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                decisions) {
+            ConfigureTabResumptionItemForShopCard(decisions, item, url);
+            // Fetch the favicon.
+            [weakSelf fetchImageForItem:item];
+          }));
 }
 
 // Fetches a relevant image for the `item` to display.
