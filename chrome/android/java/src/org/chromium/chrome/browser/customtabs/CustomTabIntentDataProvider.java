@@ -342,6 +342,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private PendingIntent.OnFinished mOnFinishedForTesting;
     private @DisplayMode.EnumType int mResolvedDisplayMode = DisplayMode.UNDEFINED;
     private final @OpenInBrowserState int mOpenInBrowserState;
+    private final int mShareState;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -581,6 +582,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         intent,
                         EXTRA_OPEN_IN_BROWSER_STATE,
                         OpenInBrowserButtonState.OPEN_IN_BROWSER_STATE_DEFAULT);
+        if (mUiType == CustomTabsUiType.POPUP) {
+            mShareState = CustomTabsIntent.SHARE_STATE_OFF;
+        } else {
+            boolean usingInteractiveOmnibox =
+                    CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
+            int defState =
+                    usingInteractiveOmnibox
+                            ? CustomTabsIntent.SHARE_STATE_OFF
+                            : CustomTabsIntent.SHARE_STATE_DEFAULT;
+            mShareState =
+                    IntentUtils.safeGetIntExtra(
+                            intent, CustomTabsIntent.EXTRA_SHARE_STATE, defState);
+        }
 
         List<Bundle> menuItems =
                 IntentUtils.getParcelableArrayListExtra(intent, CustomTabsIntent.EXTRA_MENU_ITEMS);
@@ -914,19 +928,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * </ul>
      */
     private void addShareOption(Intent intent, Context context) {
-        boolean usingInteractiveOmnibox =
-                CustomTabsConnection.getInstance().shouldEnableOmniboxForIntent(this);
-        int shareState =
-                IntentUtils.safeGetIntExtra(
-                        intent,
-                        CustomTabsIntent.EXTRA_SHARE_STATE,
-                        usingInteractiveOmnibox
-                                ? CustomTabsIntent.SHARE_STATE_OFF
-                                : CustomTabsIntent.SHARE_STATE_DEFAULT);
-        if (mUiType == CustomTabsUiType.POPUP) {
-            shareState = CustomTabsIntent.SHARE_STATE_OFF;
-        }
-        if (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
+        if (mShareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
@@ -934,7 +936,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
             }
-        } else if (shareState == CustomTabsIntent.SHARE_STATE_ON) {
+        } else if (mShareState == CustomTabsIntent.SHARE_STATE_ON) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
@@ -1712,6 +1714,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public @OpenInBrowserState int getOpenInBrowserButtonState() {
         return mOpenInBrowserState;
+    }
+
+    @Override
+    public int getShareButtonState() {
+        return mShareState;
     }
 
     private @DisplayMode.EnumType int resolveDisplayMode() {

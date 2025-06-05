@@ -9,6 +9,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_P
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
+import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -766,6 +767,13 @@ public abstract class BrowserServicesIntentDataProvider {
     @ExperimentalOpenInBrowser
     public @OpenInBrowserState int getOpenInBrowserButtonState() {
         return OPEN_IN_BROWSER_STATE_OFF;
+    }
+
+    /**
+     * @return the developer option specified for Share action button in the custom tab toolbar.
+     */
+    public int getShareButtonState() {
+        return SHARE_STATE_OFF;
     }
 
     /**

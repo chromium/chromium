@@ -214,7 +214,10 @@ public class CustomTabToolbarCoordinator {
         for (CustomButtonParams params : mIntentDataProvider.getCustomButtonsOnToolbar()) {
             View.OnClickListener onClickListener = v -> onCustomButtonClick(params);
             mToolbarManager.addCustomActionButton(
-                    params.getIcon(mActivity), params.getDescription(), onClickListener);
+                    params.getIcon(mActivity),
+                    params.getDescription(),
+                    onClickListener,
+                    params.getType());
         }
     }
 

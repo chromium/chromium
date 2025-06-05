@@ -53,7 +53,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -69,7 +71,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
@@ -409,9 +413,35 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param intentDataProvider {@link BrowserServicesIntentDataProvider} for accessing CCT intent
      *     data.
      */
+    @ExperimentalOpenInBrowser
     public void calculateToolbarWidthBeforeMeasure(
             Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
-        if (mIntentDataProvider == null) mIntentDataProvider = intentDataProvider;
+        if (mIntentDataProvider == null) {
+            mIntentDataProvider = intentDataProvider;
+            @CustomTabsButtonState
+            int shareState =
+                    switch (intentDataProvider.getShareButtonState()) {
+                        case CustomTabsIntent.SHARE_STATE_OFF -> CustomTabsButtonState
+                                .BUTTON_STATE_OFF;
+                        case CustomTabsIntent.SHARE_STATE_DEFAULT -> CustomTabsButtonState
+                                .BUTTON_STATE_DEFAULT;
+                        case CustomTabsIntent.SHARE_STATE_ON -> CustomTabsButtonState
+                                .BUTTON_STATE_ON;
+                        default -> CustomTabsButtonState.BUTTON_STATE_DEFAULT;
+                    };
+            @CustomTabsButtonState
+            int oibState =
+                    switch (intentDataProvider.getOpenInBrowserButtonState()) {
+                        case CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF -> CustomTabsButtonState
+                                .BUTTON_STATE_OFF;
+                        case CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT -> CustomTabsButtonState
+                                .BUTTON_STATE_DEFAULT;
+                        case CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON -> CustomTabsButtonState
+                                .BUTTON_STATE_ON;
+                        default -> CustomTabsButtonState.BUTTON_STATE_DEFAULT;
+                    };
+            mButtonVisibilityRule.setCustomButtonState(shareState, oibState);
+        }
         mButtonVisibilityRule.setToolbarWidth(
                 CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider));
     }
@@ -450,7 +480,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void addCustomActionButton(
-            Drawable drawable, String description, OnClickListener listener) {
+            Drawable drawable, String description, OnClickListener listener, @ButtonType int type) {
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
 
         ImageButton button =
@@ -477,12 +507,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // 16:act1:8 - 8:menu:16
             paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_16);
             paddingEnd = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_8);
-            mButtonVisibilityRule.addButton(ButtonId.CUSTOM_1, button, true);
+            mButtonVisibilityRule.addButtonForCustomAction(ButtonId.CUSTOM_1, button, true, type);
         } else {
             // 24:act2:0 - 16:act1:8 - 8:menu:16
             paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
             paddingEnd = 0;
-            mButtonVisibilityRule.addButton(ButtonId.CUSTOM_2, button, true);
+            mButtonVisibilityRule.addButtonForCustomAction(ButtonId.CUSTOM_2, button, true, type);
 
             // The 2nd custom button disables optional button.
             mButtonVisibilityRule.addButton(ButtonId.MTB, /* view= */ null, /* visible= */ false);

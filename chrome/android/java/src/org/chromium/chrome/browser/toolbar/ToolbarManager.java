@@ -2297,11 +2297,12 @@ public class ToolbarManager
      * @param drawable The {@link Drawable} to use as the background for the button.
      * @param description The content description for the custom action button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
+     * @param type The {@link ButtonType} of the action button.
      * @see #updateCustomActionButton
      */
     public void addCustomActionButton(
-            Drawable drawable, String description, OnClickListener listener) {
-        mToolbar.addCustomActionButton(drawable, description, listener);
+            Drawable drawable, String description, OnClickListener listener, int type) {
+        mToolbar.addCustomActionButton(drawable, description, listener, type);
     }
 
     /**

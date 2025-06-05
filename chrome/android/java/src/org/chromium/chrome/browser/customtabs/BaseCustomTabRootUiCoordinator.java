@@ -389,6 +389,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return false;
     }
 
+    @ExperimentalOpenInBrowser
     @Override
     protected void initializeToolbar() {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();

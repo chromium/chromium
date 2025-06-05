@@ -545,9 +545,10 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
+     * @param {@link ButtonType} of the button.
      */
     protected void addCustomActionButton(
-            Drawable drawable, String description, OnClickListener listener) {
+            Drawable drawable, String description, OnClickListener listener, int type) {
         // This method should only be called for subclasses that override it.
         assert false;
     }

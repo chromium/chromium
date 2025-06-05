@@ -576,10 +576,11 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link View.OnClickListener} to use for clicks to the button.
+     * @param {@link ButtonType} of the button.
      */
     public void addCustomActionButton(
-            Drawable drawable, String description, View.OnClickListener listener) {
-        mToolbarLayout.addCustomActionButton(drawable, description, listener);
+            Drawable drawable, String description, View.OnClickListener listener, int type) {
+        mToolbarLayout.addCustomActionButton(drawable, description, listener, type);
     }
 
     /**

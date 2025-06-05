@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -18,11 +20,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.ButtonVisibilityRule.ButtonId;
 
 /** Tests for button visibility rule in CustomTab Toolbar. */
@@ -114,6 +119,64 @@ public class ButtonVisibilityRuleUnitTest {
         verify(mCustom1Button, never()).setVisibility(anyInt());
         verify(mMinimizeButton).setVisibility(eq(View.VISIBLE));
         verify(mOptionalButton).setVisibility(eq(View.VISIBLE));
+    }
+
+    @Test
+    public void minimizeButtonGetsHigherPriorityThanDefaultDevButton_minimizeOverCustom1() {
+        // Close, menu, minimize.
+        // custom1 = share/default deprioritized over minimize.
+        int toolbarWidth = 48 * 3 + 68;
+        ButtonVisibilityRule buttonVisibilityRule =
+                new ButtonVisibilityRule(68, /* activated= */ true);
+        buttonVisibilityRule.setToolbarWidth(toolbarWidth);
+        buttonVisibilityRule.setCustomButtonState(
+                CustomTabsButtonState.BUTTON_STATE_DEFAULT,
+                CustomTabsButtonState.BUTTON_STATE_DEFAULT);
+        buttonVisibilityRule.addButton(ButtonId.CLOSE, mCloseButton, true);
+        buttonVisibilityRule.addButton(ButtonId.MENU, mMenuButton, true);
+        buttonVisibilityRule.addButtonForCustomAction(
+                ButtonId.CUSTOM_1, mCustom1Button, true, ButtonType.CCT_SHARE_BUTTON);
+        buttonVisibilityRule.addButton(ButtonId.MINIMIZE, mMinimizeButton, true);
+        buttonVisibilityRule.addButton(ButtonId.MTB, mOptionalButton, true);
+
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        verify(mCustom1Button, atLeastOnce()).setVisibility(captor.capture());
+        assertEquals(View.GONE, (long) captor.getValue());
+
+        // Verify the last visibility set to the minimize button is VISIBLE.
+        captor = ArgumentCaptor.forClass(Integer.class);
+        verify(mMinimizeButton, atLeastOnce()).setVisibility(captor.capture());
+        assertEquals(View.VISIBLE, (long) captor.getValue());
+    }
+
+    @Test
+    public void minimizeButtonGetsHigherPriorityThanDefaultDevButton_minimizeAndCustom2() {
+        // Close, menu, minimize, custom2
+        // custom1 = open-in-browser/default deprioritized over minimize and custom2(share).
+        int toolbarWidth = 48 * 4 + 68;
+        ButtonVisibilityRule buttonVisibilityRule =
+                new ButtonVisibilityRule(68, /* activated= */ true);
+        buttonVisibilityRule.setToolbarWidth(toolbarWidth);
+        buttonVisibilityRule.setCustomButtonState(
+                CustomTabsButtonState.BUTTON_STATE_DEFAULT,
+                CustomTabsButtonState.BUTTON_STATE_DEFAULT);
+        buttonVisibilityRule.addButton(ButtonId.CLOSE, mCloseButton, true);
+        buttonVisibilityRule.addButton(ButtonId.MENU, mMenuButton, true);
+        buttonVisibilityRule.addButtonForCustomAction(
+                ButtonId.CUSTOM_1, mCustom1Button, true, ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
+        buttonVisibilityRule.addButtonForCustomAction(
+                ButtonId.CUSTOM_2, mCustom2Button, true, ButtonType.CCT_SHARE_BUTTON);
+        buttonVisibilityRule.addButton(ButtonId.MINIMIZE, mMinimizeButton, true);
+        buttonVisibilityRule.addButton(ButtonId.MTB, mOptionalButton, true);
+
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        verify(mCustom1Button, atLeastOnce()).setVisibility(captor.capture());
+        assertEquals(View.GONE, (long) captor.getValue());
+
+        // Verify the last visibility set to the minimize button is VISIBLE.
+        captor = ArgumentCaptor.forClass(Integer.class);
+        verify(mMinimizeButton, atLeastOnce()).setVisibility(captor.capture());
+        assertEquals(View.VISIBLE, (long) captor.getValue());
     }
 
     @Test
