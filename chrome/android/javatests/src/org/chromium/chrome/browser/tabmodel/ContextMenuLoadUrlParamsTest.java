@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,9 +42,10 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,13 +58,9 @@ import java.util.regex.Pattern;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ContextMenuLoadUrlParamsTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private static final String HTML_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -72,6 +68,7 @@ public class ContextMenuLoadUrlParamsTest {
 
     // Load parameters of the last call to openNewTab().
     private static LoadUrlParams sOpenNewTabLoadUrlParams;
+    private WebPageStation mInitialPage;
 
     // Records parameters of calls to TabModelSelector methods and otherwise behaves like
     // TabModelSelectorImpl.
@@ -144,6 +141,7 @@ public class ContextMenuLoadUrlParamsTest {
                 () -> {
                     FirstRunStatus.setFirstRunFlowComplete(true);
                 });
+        mInitialPage = mActivityTestRule.startOnBlankPage();
     }
 
     @After
@@ -163,13 +161,13 @@ public class ContextMenuLoadUrlParamsTest {
     @Feature({"Browser"})
     public void testOpenInNewTabReferrer() throws TimeoutException {
         triggerContextMenuLoad(
-                sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 "testLink",
                 R.id.contextmenu_open_in_new_tab);
 
         assertNotNull(sOpenNewTabLoadUrlParams);
         assertEquals(
-                sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
         assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
@@ -187,7 +185,7 @@ public class ContextMenuLoadUrlParamsTest {
     @Feature({"Browser"})
     public void testOpenInIncognitoTabNoReferrer() throws TimeoutException {
         triggerContextMenuLoad(
-                sActivityTestRule.getTestServer().getURL(HTML_PATH),
+                mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 "testLink",
                 R.id.contextmenu_open_in_incognito_tab);
 
@@ -201,7 +199,7 @@ public class ContextMenuLoadUrlParamsTest {
     @MediumTest
     @Feature({"Browser"})
     public void testOpenInNewTabSanitizeReferrer() throws TimeoutException {
-        String testUrl = sActivityTestRule.getTestServer().getURL(HTML_PATH);
+        String testUrl = mActivityTestRule.getTestServer().getURL(HTML_PATH);
         String[] schemeAndUrl = SCHEME_SEPARATOR_RE.split(testUrl, 2);
         assertEquals(2, schemeAndUrl.length);
         String testUrlUserPass = schemeAndUrl[0] + "://user:pass@" + schemeAndUrl[1];
@@ -212,12 +210,12 @@ public class ContextMenuLoadUrlParamsTest {
 
     private void triggerContextMenuLoad(String url, String openerDomId, int menuItemId)
             throws TimeoutException {
-        sActivityTestRule.loadUrl(url);
-        sActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 tab,
                 openerDomId,
                 menuItemId);

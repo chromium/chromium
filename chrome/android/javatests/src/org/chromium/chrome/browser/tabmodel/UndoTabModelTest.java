@@ -17,7 +17,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +39,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -57,18 +57,18 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class UndoTabModelTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
+        mPage = mActivityTestRule.startOnBlankPage();
+
         // Disable snackbars from the {@link UndoBarController} which can break this test.
-        sActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
+        mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
     }
 
     private static final Tab[] EMPTY = new Tab[] {};
@@ -209,7 +209,7 @@ public class UndoTabModelTest {
         TabModelOrchestrator orchestrator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                sActivityTestRule
+                                mActivityTestRule
                                         .getActivity()
                                         .getTabModelOrchestratorSupplier()
                                         .get());
@@ -217,7 +217,7 @@ public class UndoTabModelTest {
         TabModel model = selector.getModel(false);
         ChromeTabCreator tabCreator =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sActivityTestRule.getActivity().getTabCreator(false));
+                        () -> mActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 
         Tab tab0 = model.getTabAt(0);
@@ -244,7 +244,7 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     public void testOpenRecentlyClosedTabNative() throws TimeoutException {
-        final TabModelSelector selector = sActivityTestRule.getActivity().getTabModelSelector();
+        final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
         final TabModel model = selector.getModel(false);
 
         // Create new tab and wait until it's loaded.
@@ -252,7 +252,7 @@ public class UndoTabModelTest {
         // it has navigation history.
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 TEST_URL_0,
                 false);
 
@@ -289,14 +289,14 @@ public class UndoTabModelTest {
     public void testOpenRecentlyClosedTabMultiWindow() throws TimeoutException {
         final ChromeTabbedActivity2 secondActivity =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(
-                        sActivityTestRule.getActivity());
+                        mActivityTestRule.getActivity());
 
         // Wait for the second window to be fully initialized.
         CriteriaHelper.pollUiThread(
                 () -> secondActivity.getTabModelSelector().isTabStateInitialized());
         // First window context.
         final TabModelSelector firstSelector =
-                sActivityTestRule.getActivity().getTabModelSelector();
+                mActivityTestRule.getActivity().getTabModelSelector();
         final TabModel firstModel = firstSelector.getModel(false);
 
         // Second window context.
@@ -306,7 +306,7 @@ public class UndoTabModelTest {
         // Create tabs.
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 TEST_URL_0,
                 false);
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -372,14 +372,14 @@ public class UndoTabModelTest {
     public void testOpenRecentlyClosedTabMultiWindowFallback() throws TimeoutException {
         final ChromeTabbedActivity2 secondActivity =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(
-                        sActivityTestRule.getActivity());
+                        mActivityTestRule.getActivity());
         // Wait for the second window to be fully initialized.
         CriteriaHelper.pollUiThread(
                 () -> secondActivity.getTabModelSelector().isTabStateInitialized());
 
         // First window context.
         final TabModelSelector firstSelector =
-                sActivityTestRule.getActivity().getTabModelSelector();
+                mActivityTestRule.getActivity().getTabModelSelector();
         final TabModel firstModel = firstSelector.getModel(false);
 
         // Second window context.

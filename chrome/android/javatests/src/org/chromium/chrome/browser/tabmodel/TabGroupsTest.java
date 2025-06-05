@@ -17,7 +17,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,8 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -60,28 +60,25 @@ public class TabGroupsTest {
     private static final int OTHER_ROOT_ID_1 = 11;
     private static final int OTHER_ROOT_ID_2 = 22;
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock private TabModelObserver mTabGroupModelFilterObserver;
 
     private TabModel mTabModel;
     private TabGroupModelFilterImpl mTabGroupModelFilter;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        mTabModel = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabModel = mPage.getActivity().getTabModelSelector().getModel(false);
         mTabGroupModelFilter =
                 (TabGroupModelFilterImpl)
-                        sActivityTestRule
-                                .getActivity()
+                        mPage.getActivity()
                                 .getTabModelSelector()
                                 .getTabGroupModelFilterProvider()
                                 .getTabGroupModelFilter(false);
@@ -106,7 +103,7 @@ public class TabGroupsTest {
                 Tab tab =
                         ChromeTabUtils.fullyLoadUrlInNewTab(
                                 InstrumentationRegistry.getInstrumentation(),
-                                sActivityTestRule.getActivity(),
+                                mActivityTestRule.getActivity(),
                                 "about:blank",
                                 /* incognito= */ false);
                 tabs.add(tab);
@@ -379,7 +376,7 @@ public class TabGroupsTest {
         assertTrue(noTabs.isEmpty());
 
         // Wait to enter the tab switcher.
-        ChromeTabbedActivity cta = (ChromeTabbedActivity) sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         InOrder calledInOrder = inOrder(mTabGroupModelFilterObserver);
@@ -471,7 +468,7 @@ public class TabGroupsTest {
                                             ? TabLaunchType.FROM_TAB_GROUP_UI
                                             : TabLaunchType.FROM_CHROME_UI;
                             TabCreator tabCreator =
-                                    sActivityTestRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getTabCreator(/* incognito= */ false);
                             return tabCreator.createNewTab(
