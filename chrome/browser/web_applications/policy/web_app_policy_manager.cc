@@ -13,8 +13,12 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -45,6 +49,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -65,8 +70,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
@@ -83,7 +90,6 @@ bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
   }
   return false;
 }
-
 
 // Policy installed apps are only allowed on:
 // 1. ChromeOS guest sessions (current only on Ash).
@@ -104,7 +110,26 @@ bool IsForceUnregistrationPolicyEnabled() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr std::string_view kDisabled = "disabled";
-#endif
+
+// Note that this mapping lists only selected Preinstalled Web Apps
+// actively used in policies and is not meant to be exhaustive.
+// These app Id constants need to be kept in sync with java/com/
+// google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
+// LINT.IfChange
+constexpr auto kPreinstalledWebAppsMapping =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{"cursive", ash::kCursiveAppId}, {"canvas", ash::kCanvasAppId}});
+// LINT.ThenChange(//depot/google3/java/com/google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+std::optional<base::flat_map<std::string_view, std::string_view>>&
+GetPreinstalledWebAppsMappingForTesting() {
+  static base::NoDestructor<
+      std::optional<base::flat_map<std::string_view, std::string_view>>>
+      preinstalled_web_apps_mapping_for_testing;
+  return *preinstalled_web_apps_mapping_for_testing;
+}
+
 }  // namespace
 
 namespace web_app {
@@ -205,6 +230,125 @@ void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
   registry->RegisterListPref(prefs::kWebAppSettings);
+}
+
+// static
+bool WebAppPolicyManager::IsChromeAppPolicyId(std::string_view policy_id) {
+  return crx_file::id_util::IdIsValid(policy_id);
+}
+
+// static
+bool WebAppPolicyManager::IsWebAppPolicyId(std::string_view policy_id) {
+  return GURL{policy_id}.is_valid();
+}
+
+// static
+std::optional<std::string_view>
+WebAppPolicyManager::GetPolicyIdForPreinstalledWebApp(std::string_view app_id) {
+  if (const auto& test_mapping = GetPreinstalledWebAppsMappingForTesting()) {
+    for (const auto& [policy_id, mapped_app_id] : *test_mapping) {
+      if (mapped_app_id == app_id) {
+        return policy_id;
+      }
+    }
+    return {};
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  for (const auto& [policy_id, mapped_app_id] : kPreinstalledWebAppsMapping) {
+    if (mapped_app_id == app_id) {
+      return policy_id;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return {};
+}
+
+// static
+void WebAppPolicyManager::SetPreinstalledWebAppsMappingForTesting(  // IN-TEST
+    std::optional<base::flat_map<std::string_view, std::string_view>>
+        preinstalled_web_apps_mapping_for_testing) {
+  GetPreinstalledWebAppsMappingForTesting() =                // IN-TEST
+      std::move(preinstalled_web_apps_mapping_for_testing);  // IN-TEST
+}
+
+// static
+bool WebAppPolicyManager::IsPreinstalledWebAppPolicyId(
+    std::string_view policy_id) {
+  if (auto& mapping = GetPreinstalledWebAppsMappingForTesting()) {  // IN-TEST
+    return base::Contains(*mapping, policy_id);
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::Contains(kPreinstalledWebAppsMapping, policy_id);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+// static
+bool WebAppPolicyManager::IsIsolatedWebAppPolicyId(std::string_view policy_id) {
+  return web_package::SignedWebBundleId::Create(policy_id).has_value();
+}
+
+// static
+std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
+    Profile* profile,
+    const WebApp& web_app) {
+  const auto& app_id = web_app.app_id();
+  WebAppRegistrar& web_app_registrar =
+      WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
+
+  if (web_app_registrar.IsIsolated(app_id) &&
+      web_app_registrar.IsInstalledByPolicy(app_id)) {
+    // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
+    return {web_app.start_url().host()};
+  }
+
+  std::vector<std::string> policy_ids;
+
+  if (std::optional<std::string_view> preinstalled_web_app_policy_id =
+          GetPolicyIdForPreinstalledWebApp(app_id)) {
+    policy_ids.emplace_back(*preinstalled_web_app_policy_id);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  const auto& swa_data = web_app.client_data().system_web_app_data;
+  if (swa_data) {
+    const ash::SystemWebAppType swa_type = swa_data->system_app_type;
+    const std::optional<std::string_view> swa_policy_id =
+        GetPolicyIdForSystemWebAppType(swa_type);
+    if (swa_policy_id) {
+      policy_ids.emplace_back(*swa_policy_id);
+    }
+
+    // File Manager SWA uses File Manager Extension's ID for policy.
+    if (swa_type == ash::SystemWebAppType::FILE_MANAGER) {
+      policy_ids.push_back(file_manager::kFileManagerAppId);
+    }
+  }
+#endif  // BUIDLFLAG(IS_CHROMEOS)
+
+  for (const auto& [source, external_config] :
+       web_app.management_to_external_config_map()) {
+    if (!external_config.additional_policy_ids.empty()) {
+      base::Extend(policy_ids, external_config.additional_policy_ids);
+    }
+  }
+
+  if (!web_app_registrar.HasExternalAppWithInstallSource(
+          app_id, ExternalInstallSource::kExternalPolicy)) {
+    return policy_ids;
+  }
+
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> installed_apps =
+      web_app_registrar.GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
+  if (auto* install_urls = base::FindOrNull(installed_apps, app_id)) {
+    DCHECK(!install_urls->empty());
+    base::Extend(policy_ids, base::ToVector(*install_urls, &GURL::spec));
+  }
+
+  return policy_ids;
 }
 
 void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {

@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -82,8 +84,36 @@ class WebAppPolicyManager {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Used for handling SystemFeaturesDisableList policy. Checks if the app is
-  // disabled and notifies sync_bridge_ about the current app state.
+  // Checks whether |policy_id| specifies a Chrome App.
+  static bool IsChromeAppPolicyId(std::string_view policy_id);
+
+  // Checks whether |policy_id| specifies a Web App.
+  static bool IsWebAppPolicyId(std::string_view policy_id);
+
+  // Returns the policy ID for a given preinstalled web app ID. Note that not
+  // all
+  // preinstalled web apps are supposed to have a policy ID (currently we only
+  // support EDU apps) - in all other cases this will return std::nullopt.
+  static std::optional<std::string_view> GetPolicyIdForPreinstalledWebApp(
+      std::string_view preinstalled_web_app_id);
+
+  static void SetPreinstalledWebAppsMappingForTesting(
+      std::optional<base::flat_map<std::string_view, std::string_view>>
+          preinstalled_web_apps_mapping_for_testing);
+
+  // Checks whether |policy_id| specifies a Preinstalled Web App.
+  static bool IsPreinstalledWebAppPolicyId(std::string_view policy_id);
+
+  // Checks whether |policy_id| specifies an Isolated Web App.
+  static bool IsIsolatedWebAppPolicyId(std::string_view policy_id);
+
+  // Get the list of identifiers for the app that will be used in policy
+  // controls, such as force-installation and pinning. May be empty.
+  static std::vector<std::string> GetPolicyIds(Profile* profile,
+                                               const WebApp& web_app);
+
+  // Used for handling SystemFeaturesDisableList policy. Checks if the app
+  // is disabled and notifies sync_bridge_ about the current app state.
   void OnDisableListPolicyChanged();
 
 #if BUILDFLAG(IS_CHROMEOS)

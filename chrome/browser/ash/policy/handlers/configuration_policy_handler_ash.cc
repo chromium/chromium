@@ -29,6 +29,8 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -154,12 +156,13 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
 }
 
 bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
-  return web_app::IsChromeAppPolicyId(policy_id) ||
+  return web_app::WebAppPolicyManager::IsChromeAppPolicyId(policy_id) ||
          web_app::IsArcAppPolicyId(policy_id) ||
          web_app::IsSystemWebAppPolicyId(policy_id) ||
-         web_app::IsWebAppPolicyId(policy_id) ||
-         web_app::IsPreinstalledWebAppPolicyId(policy_id) ||
-         web_app::IsIsolatedWebAppPolicyId(policy_id);
+         web_app::WebAppPolicyManager::IsWebAppPolicyId(policy_id) ||
+         web_app::WebAppPolicyManager::IsPreinstalledWebAppPolicyId(
+             policy_id) ||
+         web_app::WebAppPolicyManager::IsIsolatedWebAppPolicyId(policy_id);
 }
 
 }  // namespace

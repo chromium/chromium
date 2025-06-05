@@ -1659,7 +1659,7 @@ bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
   }
 
   std::optional<std::vector<std::string>> app_policy_ids =
-      web_app::GetPolicyIds(profile(), *web_app);
+      WebAppPolicyManager::GetPolicyIds(profile(), *web_app);
 
   if (!app_policy_ids->empty()) {
     return base::Contains(app_policy_ids.value(), *file_extension_policy_id);
@@ -1680,7 +1680,7 @@ bool WebAppRegistrar::IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
   }
 
   std::optional<std::vector<std::string>> app_policy_ids =
-      web_app::GetPolicyIds(profile(), *web_app);
+      WebAppPolicyManager::GetPolicyIds(profile(), *web_app);
 
   if (!app_policy_ids->empty()) {
     return std::ranges::any_of(default_handlers, [&](const auto& handler) {

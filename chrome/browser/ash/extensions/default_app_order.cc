@@ -25,7 +25,7 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"

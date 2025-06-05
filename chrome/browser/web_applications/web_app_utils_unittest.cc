@@ -4,32 +4,20 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
-#include <map>
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +32,6 @@ namespace web_app {
 
 using WebAppUtilsTest = WebAppTest;
 using ::testing::ElementsAre;
-class FakeWebAppProvider;
 
 // Sanity check that iteration order of SortedSizesPx is ascending. The
 // correctness of most usage of SortedSizesPx depends on this.
@@ -249,72 +236,5 @@ TEST_F(WebAppUtilsTest, GeminiAppWillBeSystemWebApp) {
   }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-
-class WebAppUtilsPolicyIdsTest : public WebAppTest {
- public:
-  using InstallResults = std::map<GURL /*install_url*/,
-                                  ExternallyManagedAppManager::InstallResult>;
-  using UninstallResults =
-      std::map<GURL /*install_url*/, webapps::UninstallResultCode>;
-  using SynchronizeFuture =
-      base::test::TestFuture<InstallResults, UninstallResults>;
-
-  void SetUp() override {
-    WebAppTest::SetUp();
-    provider_ = FakeWebAppProvider::Get(profile());
-    provider_->UseRealOsIntegrationManager();
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
- private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-};
-
-TEST_F(WebAppUtilsPolicyIdsTest, GetWebAppPolicyIdsForWebApp) {
-  const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
-  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
-  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
-
-  webapps::AppId app_id =
-      static_cast<FakeWebContentsManager&>(
-          fake_provider().web_contents_manager())
-          .CreateBasicInstallPageState(kInstallUrl, kManifestUrl, kWebAppUrl);
-
-  ExternalInstallOptions template_options(
-      kInstallUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kExternalPolicy);
-
-  SynchronizeFuture result;
-  std::vector<ExternalInstallOptions> install_options_list;
-  install_options_list.emplace_back(kInstallUrl,
-                                    /*user_display_mode=*/std::nullopt,
-                                    ExternalInstallSource::kExternalPolicy);
-
-  fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(
-      std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
-      result.GetCallback());
-  ASSERT_TRUE(result.Wait());
-  const WebApp* app = fake_provider().registrar_unsafe().GetAppById(app_id);
-
-  EXPECT_EQ(
-      GetPolicyIds(profile(), *app),
-      std::vector<std::string>({"https://www.example.com/install_url.html"}));
-}
-
-TEST_F(WebAppUtilsPolicyIdsTest, GetWebAppPolicyIdsForIsolatedWebApp) {
-  auto bundle = IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
-                    .BuildBundle();
-  IsolatedWebAppUrlInfo info =
-      bundle
-          ->InstallWithSource(profile(),
-                              &IsolatedWebAppInstallSource::FromExternalPolicy)
-          .value();
-  const WebApp* app =
-      fake_provider().registrar_unsafe().GetAppById(info.app_id());
-
-  EXPECT_EQ(GetPolicyIds(profile(), *app),
-            std::vector<std::string>({info.web_bundle_id().id()}));
-}
 
 }  // namespace web_app

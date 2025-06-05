@@ -404,6 +404,8 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_cache_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
+      "policy/app_service_web_app_policy.cc",
+      "policy/app_service_web_app_policy.h",
       "web_app_run_on_os_login_manager.cc",
       "web_app_run_on_os_login_manager.h",
       "web_app_system_web_app_delegate_map_utils.cc",

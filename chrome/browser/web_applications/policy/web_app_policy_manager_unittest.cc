@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -57,6 +58,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -271,15 +273,16 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
     auto web_app = test::CreateWebApp(
         url, ConvertExternalInstallSourceToSource(install_source));
     RegisterApp(std::move(web_app));
-    test::AddInstallUrlData(profile()->GetPrefs(), &sync_bridge(),
-                            GenerateAppId(/*manifest_id=*/std::nullopt, url),
-                            url, install_source);
+    test::AddInstallUrlData(
+        profile()->GetPrefs(), &sync_bridge(),
+        GenerateAppId(/*manifest_id_path=*/std::nullopt, url), url,
+        install_source);
   }
 
   void MakeInstalledAppPlaceholder(const GURL& url) {
     test::AddInstallUrlAndPlaceholderData(
         profile()->GetPrefs(), &sync_bridge(),
-        GenerateAppId(/*manifest_id=*/std::nullopt, url), url,
+        GenerateAppId(/*manifest_id_path=*/std::nullopt, url), url,
         ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/true);
   }
 
@@ -301,8 +304,6 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
   WebAppPolicyManager& policy_manager() { return provider()->policy_manager(); }
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
-
-  ScopedTestingLocalState testing_local_state_;
 
   void ValidateEmptyWebAppSettingsPolicy() {
     EXPECT_TRUE(policy_manager().settings_by_url_.empty());
@@ -358,6 +359,9 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
         provider_->web_contents_manager());
   }
 
+  ScopedTestingLocalState testing_local_state_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
+
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   raw_ptr<WebAppPolicyManager, DanglingUntriaged> web_app_policy_manager_ =
@@ -377,11 +381,62 @@ class WebAppPolicyManagerTestBase : public ChromeRenderViewHostTestHarness {
 class WebAppPolicyManagerTest : public WebAppPolicyManagerTestBase,
                                 public testing::WithParamInterface<bool> {
  public:
+  using InstallResults = std::map<GURL /*install_url*/,
+                                  ExternallyManagedAppManager::InstallResult>;
+  using UninstallResults =
+      std::map<GURL /*install_url*/, webapps::UninstallResultCode>;
+  using SynchronizeFuture =
+      base::test::TestFuture<InstallResults, UninstallResults>;
+
   WebAppPolicyManagerTest() = default;
   WebAppPolicyManagerTest(const WebAppPolicyManagerTest&) = delete;
   WebAppPolicyManagerTest& operator=(const WebAppPolicyManagerTest&) = delete;
   ~WebAppPolicyManagerTest() override = default;
 };
+
+TEST_F(WebAppPolicyManagerTest, GetPolicyIdsForWebApp) {
+  const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  webapps::AppId app_id =
+      static_cast<FakeWebContentsManager&>(provider()->web_contents_manager())
+          .CreateBasicInstallPageState(kInstallUrl, kManifestUrl, kWebAppUrl);
+
+  ExternalInstallOptions template_options(
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+
+  SynchronizeFuture result;
+  std::vector<ExternalInstallOptions> install_options_list;
+  install_options_list.emplace_back(kInstallUrl,
+                                    /*user_display_mode=*/std::nullopt,
+                                    ExternalInstallSource::kExternalPolicy);
+
+  provider()->externally_managed_app_manager().SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
+      result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+  const WebApp* app = provider()->registrar_unsafe().GetAppById(app_id);
+
+  EXPECT_EQ(
+      WebAppPolicyManager::GetPolicyIds(profile(), *app),
+      std::vector<std::string>({"https://www.example.com/install_url.html"}));
+}
+
+TEST_F(WebAppPolicyManagerTest, GetPolicyIdsForIsolatedWebApp) {
+  auto bundle = IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+                    .BuildBundle();
+  IsolatedWebAppUrlInfo info =
+      bundle
+          ->InstallWithSource(profile(),
+                              &IsolatedWebAppInstallSource::FromExternalPolicy)
+          .value();
+  const WebApp* app = provider()->registrar_unsafe().GetAppById(info.app_id());
+
+  EXPECT_EQ(WebAppPolicyManager::GetPolicyIds(profile(), *app),
+            std::vector<std::string>({info.web_bundle_id().id()}));
+}
 
 TEST_F(WebAppPolicyManagerTest, NoPrefValues) {
   ValidateEmptyWebAppSettingsPolicy();

@@ -121,6 +121,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -718,7 +719,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
             app->install_reason == apps::InstallReason::kSystem)
       << base::ToString(app->install_reason);
 
-  app->policy_ids = GetPolicyIds(*web_app);
+  app->policy_ids = WebAppPolicyManager::GetPolicyIds(profile(), *web_app);
 
   app->permissions = CreatePermissions(web_app);
 
@@ -1684,65 +1685,6 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
             }
           },
           std::move(callback)));
-}
-
-std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
-    const WebApp& web_app) const {
-  const auto& app_id = web_app.app_id();
-
-  if (web_app.isolation_data() && registrar().IsInstalledByPolicy(app_id)) {
-    // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
-    return {web_app.start_url().host()};
-  }
-
-  std::vector<std::string> policy_ids;
-
-  if (std::optional<std::string_view> preinstalled_web_app_policy_id =
-          GetPolicyIdForPreinstalledWebApp(app_id)) {
-    policy_ids.emplace_back(*preinstalled_web_app_policy_id);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  auto* swa_manager = ash::SystemWebAppManager::Get(profile());
-  if (swa_manager && swa_manager->IsSystemWebApp(app_id)) {
-    const auto& swa_data = web_app.client_data().system_web_app_data;
-    DCHECK(swa_data);
-    const ash::SystemWebAppType swa_type = swa_data->system_app_type;
-    const std::optional<std::string_view> swa_policy_id =
-        GetPolicyIdForSystemWebAppType(swa_type);
-    if (swa_policy_id) {
-      policy_ids.emplace_back(*swa_policy_id);
-    }
-
-    // File Manager SWA uses File Manager Extension's ID for policy.
-    if (swa_type == ash::SystemWebAppType::FILE_MANAGER) {
-      policy_ids.push_back(file_manager::kFileManagerAppId);
-    }
-  }
-#endif  // BUIDLFLAG(IS_CHROMEOS)
-
-  for (const auto& [source, external_config] :
-       web_app.management_to_external_config_map()) {
-    if (!external_config.additional_policy_ids.empty()) {
-      std::ranges::copy(external_config.additional_policy_ids,
-                        std::back_inserter(policy_ids));
-    }
-  }
-
-  if (!registrar().HasExternalAppWithInstallSource(
-          app_id, ExternalInstallSource::kExternalPolicy)) {
-    return policy_ids;
-  }
-
-  base::flat_map<webapps::AppId, base::flat_set<GURL>> installed_apps =
-      registrar().GetExternallyInstalledApps(
-          ExternalInstallSource::kExternalPolicy);
-  if (auto* install_urls = base::FindOrNull(installed_apps, app_id)) {
-    DCHECK(!install_urls->empty());
-    base::Extend(policy_ids, base::ToVector(*install_urls, &GURL::spec));
-  }
-
-  return policy_ids;
 }
 
 apps::PackageId WebAppPublisherHelper::GetPackageId(

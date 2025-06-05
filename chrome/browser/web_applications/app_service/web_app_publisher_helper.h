@@ -371,10 +371,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       int64_t display_id,
       base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
 
-  // Get the list of identifiers for the app that will be used in policy
-  // controls, such as force-installation and pinning. May be empty.
-  std::vector<std::string> GetPolicyIds(const WebApp& web_app) const;
-
   apps::PackageId GetPackageId(const WebApp& web_app) const;
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -133,6 +133,8 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -3487,7 +3489,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   base::flat_map<std::string_view, std::string_view>
       preinstalled_web_apps_mapping;
   preinstalled_web_apps_mapping.emplace(kGmailPolicyId, ash::kGmailAppId);
-  web_app::SetPreinstalledWebAppsMappingForTesting(
+  web_app::WebAppPolicyManager::SetPreinstalledWebAppsMappingForTesting(
       preinstalled_web_apps_mapping);
 
   // Force-install Gmail.
