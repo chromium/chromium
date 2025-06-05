@@ -13,7 +13,7 @@ per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 per-file chromeos_strings.grd=*
 per-file recorder_strings.grdp=file://ash/webui/recorder_app_ui/OWNERS
 # Tast test control
-per-file tast_control.gni=*
+per-file tast_control*=*
 
 per-file BUILD_OWNERS=file://chromeos/BUILD_OWNERS
 
