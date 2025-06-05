@@ -4,11 +4,11 @@
 
 #include "ui/gl/gl_switches.h"
 
+#include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_display_manager.h"
-#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -326,7 +326,7 @@ bool IsDefaultANGLEVulkan() {
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
   angle::SystemInfo system_info;
   {
-    GPU_STARTUP_TRACE_EVENT("angle::GetSystemInfoVulkan");
+    TRACE_EVENT("gpu,startup", "angle::GetSystemInfoVulkan");
     if (!angle::GetSystemInfoVulkan(&system_info)) {
       return false;
     }

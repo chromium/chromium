@@ -18,7 +18,6 @@
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
-#include "ui/gl/startup_trace.h"
 
 namespace gl {
 
@@ -26,7 +25,7 @@ DriverEGL g_driver_egl = {};
 
 void DriverEGL::InitializeStaticBindings(
     GLGetProcAddressProc get_proc_address) {
-  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeStaticBindings");
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeStaticBindings");
   fn.eglAcquireExternalContextANGLEFn =
       reinterpret_cast<eglAcquireExternalContextANGLEProc>(
           get_proc_address("eglAcquireExternalContextANGLE"));
@@ -266,7 +265,7 @@ void DriverEGL::InitializeStaticBindings(
 }
 
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
-  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeClientExtensionSettings");
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -307,7 +306,7 @@ void ClientExtensionsEGL::InitializeClientExtensionSettings() {
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
-  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeExtensionSettings");
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));

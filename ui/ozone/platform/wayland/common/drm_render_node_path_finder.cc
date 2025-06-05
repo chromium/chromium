@@ -19,8 +19,8 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
-#include "ui/gl/startup_trace.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
@@ -84,7 +84,7 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
     // In case the first node /dev/dri/renderD128 can be opened but fails to
     // create gbm device on certain driver (E.g. PowerVR). Skip such paths.
     {
-      GPU_STARTUP_TRACE_EVENT("scoped attempt of gbm_create_device");
+      TRACE_EVENT("gpu,startup", "scoped attempt of gbm_create_device");
       ScopedGbmDevice gbm_device(gbm_create_device(drm_fd.get()));
       if (!gbm_device) {
         continue;

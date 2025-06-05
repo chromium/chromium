@@ -6,12 +6,12 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(USE_OPENGL_APITRACE)
 #include <stdlib.h>
@@ -51,7 +51,7 @@ bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
   base::NativeLibraryLoadError error;
   base::NativeLibrary gles_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    TRACE_EVENT("gpu,startup", "Load gles_library");
     gles_library = base::LoadNativeLibrary(gles_library_path, &error);
   }
   if (!gles_library) {
@@ -62,7 +62,7 @@ bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
 
   base::NativeLibrary egl_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    TRACE_EVENT("gpu,startup", "Load egl_library");
     egl_library =
         base::LoadNativeLibrary(base::FilePath(egl_library_path), &error);
   }

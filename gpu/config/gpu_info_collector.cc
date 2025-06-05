@@ -41,7 +41,6 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
-#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -90,7 +89,7 @@ scoped_refptr<gl::GLSurface> InitializeGLSurface(gl::GLDisplay* display) {
 }
 
 scoped_refptr<gl::GLContext> InitializeGLContext(gl::GLSurface* surface) {
-  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::InitializeGLContext");
+  TRACE_EVENT("gpu,startup", "gpu_info_collector::InitializeGLContext");
   gl::GLContextAttribs attribs;
   attribs.client_major_es_version = 2;
   scoped_refptr<gl::GLContext> context(
@@ -536,7 +535,7 @@ bool CollectGraphicsDeviceInfoFromCommandLine(
 
 bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
                               GPUInfo* gpu_info) {
-  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectBasicGraphicsInfo");
+  TRACE_EVENT("gpu,startup", "gpu_info_collector::CollectBasicGraphicsInfo");
   // In the info-collection GPU process on Windows, we get the device info from
   // the browser.
   if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info)) {
@@ -585,7 +584,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 }
 
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
-  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectGraphicsInfoGL");
+  TRACE_EVENT("gpu,startup", "gpu_info_collector::CollectGraphicsInfoGL");
   DCHECK_NE(gl::GetGLImplementationParts(), gl::kGLImplementationNone);
   gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
 
@@ -806,7 +805,7 @@ void CollectGraphicsInfoForTesting(GPUInfo* gpu_info) {
 
 bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
                          const GpuPreferences& prefs) {
-  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectGpuExtraInfo");
+  TRACE_EVENT("gpu,startup", "gpu_info_collector::CollectGpuExtraInfo");
   // Populate the list of ANGLE features by querying the functions exposed by
   // EGL_ANGLE_feature_control if it's available.
   if (gl::g_driver_egl.client_ext.b_EGL_ANGLE_feature_control) {
@@ -839,7 +838,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
-  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectDawnInfo");
+  TRACE_EVENT("gpu,startup", "gpu_info_collector::CollectDawnInfo");
 #if BUILDFLAG(USE_DAWN)
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);

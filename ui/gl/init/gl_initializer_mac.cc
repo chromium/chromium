@@ -12,6 +12,7 @@
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
@@ -22,7 +23,6 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_display_initializer.h"
-#include "ui/gl/startup_trace.h"
 
 namespace gl {
 namespace init {
@@ -50,7 +50,7 @@ bool InitializeStaticEGLInternalFromLibrary() {
   base::FilePath glesv2_path = base_dir.Append(kGLESv2ANGLELibraryName);
   base::NativeLibrary gles_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    TRACE_EVENT("gpu,startup", "Load gles_library");
     gles_library = LoadLibraryAndPrintError(glesv2_path);
   }
   if (!gles_library) {
@@ -60,7 +60,7 @@ bool InitializeStaticEGLInternalFromLibrary() {
   base::FilePath egl_path = base_dir.Append(kEGLANGLELibraryName);
   base::NativeLibrary egl_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    TRACE_EVENT("gpu,startup", "Load egl_library");
     egl_library = LoadLibraryAndPrintError(egl_path);
   }
   if (!egl_library) {

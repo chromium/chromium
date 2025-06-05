@@ -10,6 +10,7 @@
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -17,7 +18,6 @@
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/startup_trace.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/public/overlay_plane.h"
@@ -333,7 +333,7 @@ GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
     return nullptr;
   }
 
-  GPU_STARTUP_TRACE_EVENT("ui::CreateGbmDevice");
+  TRACE_EVENT("gpu,startup", "ui::CreateGbmDevice");
   gbm_device_ = CreateGbmDevice(drm_render_node_fd_.get());
   if (!gbm_device_) {
     supports_dmabuf_ = false;

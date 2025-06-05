@@ -48,7 +48,6 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
-#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <GLES2/gl2.h>
@@ -102,7 +101,7 @@ namespace gpu {
 namespace {
 bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
-  GPU_STARTUP_TRACE_EVENT("Collect Graphics Info");
+  TRACE_EVENT("gpu,startup", "Collect Graphics Info");
   bool success = CollectContextGraphicsInfo(gpu_info);
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
@@ -111,7 +110,7 @@ bool CollectGraphicsInfo(GPUInfo* gpu_info) {
 
 void InitializeDawnProcs() {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  GPU_STARTUP_TRACE_EVENT("gpu_init::InitializeDawnProcs");
+  TRACE_EVENT("gpu,startup", "gpu_init::InitializeDawnProcs");
   // Setup the global procs table for GPU process.
   dawnProcSetProcs(&dawn::native::GetProcs());
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
@@ -256,7 +255,7 @@ uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
 // Returns the default GPU's system_device_id.
 void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
                               const GpuFeatureInfo& gpu_feature_info) {
-  GPU_STARTUP_TRACE_EVENT("gpu_init::SetupGLDisplayManagerEGL");
+  TRACE_EVENT("gpu,startup", "gpu_init::SetupGLDisplayManagerEGL");
   const GPUInfo::GPUDevice* gpu_high_perf =
       gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
   const GPUInfo::GPUDevice* gpu_low_power =
@@ -330,7 +329,7 @@ GpuInit::~GpuInit() {
 
 bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                                         const GpuPreferences& gpu_preferences) {
-  GPU_STARTUP_TRACE_EVENT("gpu::GpuInit::InitializeAndStartSandbox");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeAndStartSandbox");
 #if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
@@ -424,7 +423,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
   if (enable_watchdog && !delayed_watchdog_enable) {
-    GPU_STARTUP_TRACE_EVENT("Create GpuWatchdog");
+    TRACE_EVENT("gpu,startup", "Create GpuWatchdog");
     watchdog_thread_ =
         GpuWatchdogThread::Create(gpu_preferences_.watchdog_starts_backgrounded,
                                   gl_use_swiftshader_, "GpuWatchdog");
@@ -656,7 +655,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     base::FilePath module_path;
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
       {
-        GPU_STARTUP_TRACE_EVENT("Load vk_swiftshader.dll");
+        TRACE_EVENT("gpu,startup", "Load vk_swiftshader.dll");
         base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
                                 nullptr);
       }
@@ -665,11 +664,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       // TODO(crbug.com/40075751): Preload dxil.dll to avoid loader lock issues
       // since dxcompiler.dll loads dxil.dll from DllMain.
       {
-        GPU_STARTUP_TRACE_EVENT("Load dxil.dll");
+        TRACE_EVENT("gpu,startup", "Load dxil.dll");
         base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
       }
       {
-        GPU_STARTUP_TRACE_EVENT("Load dxcompiler.dll");
+        TRACE_EVENT("gpu,startup", "Load dxcompiler.dll");
         base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
       }
 #endif  // defined(DAWN_USE_BUILT_DXC)
@@ -680,7 +679,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       // DirectML.dll within system folder will be loaded at a later point if
       // the redistributable one fails to be loaded.
       if (command_line->HasSwitch(switches::kUseRedistributableDirectML)) {
-        GPU_STARTUP_TRACE_EVENT("Load directml.dll");
+        TRACE_EVENT("gpu,startup", "Load directml.dll");
         base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
       }
     }
@@ -742,7 +741,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // issue which breaks the camera preview. (b/166850715)
   std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
   {
-    GPU_STARTUP_TRACE_EVENT("ui::ozone::GetSupportedFormatsForTexturing");
+    TRACE_EVENT("gpu,startup", "ui::ozone::GetSupportedFormatsForTexturing");
     supported_buffer_formats_for_texturing =
         ui::OzonePlatform::GetInstance()
             ->GetSurfaceFactoryOzone()
@@ -1221,7 +1220,7 @@ void GpuInit::SetSkiaBackendType() {
 
 bool GpuInit::InitializeDawn() {
 #if BUILDFLAG(SKIA_USE_DAWN)
-  GPU_STARTUP_TRACE_EVENT("gpu::GpuInit::InitializeDawn");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeDawn");
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           kGpuFeatureStatusEnabled &&
       !gpu::DawnContextProvider::DefaultForceFallbackAdapter()) {
@@ -1281,7 +1280,7 @@ bool GpuInit::InitializeDawn() {
 
 bool GpuInit::InitializeVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
-  GPU_STARTUP_TRACE_EVENT("gpu::GpuInit::InitializeVulkan");
+  TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeVulkan");
   DCHECK_EQ(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN],
             kGpuFeatureStatusEnabled);
   DCHECK_NE(gpu_preferences_.use_vulkan, VulkanImplementationName::kNone);

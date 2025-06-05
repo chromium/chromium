@@ -23,7 +23,6 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
-#include "ui/gl/startup_trace.h"
 #include "ui/gl/vsync_provider_win.h"
 
 namespace gl {
@@ -35,7 +34,7 @@ const wchar_t kD3DCompiler[] = L"D3DCompiler_47.dll";
 
 bool LoadD3DXLibrary(const base::FilePath& module_path,
                      const base::FilePath::StringType& name) {
-  GPU_STARTUP_TRACE_EVENT(__func__);
+  TRACE_EVENT("gpu,startup", __func__);
   base::NativeLibrary library =
       base::LoadNativeLibrary(module_path.Append(name), nullptr);
   if (!library) {
@@ -71,7 +70,7 @@ bool InitializeStaticEGLInternalFromLibrary() {
   // search path, it will get loaded instead.
   base::NativeLibrary gles_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load gles_library");
+    TRACE_EVENT("gpu,startup", "Load gles_library");
     gles_library =
         base::LoadNativeLibrary(gles_path.Append(L"libglesv2.dll"), nullptr);
   }
@@ -84,7 +83,7 @@ bool InitializeStaticEGLInternalFromLibrary() {
   // GetProcAddress on both the EGL and GLES2 DLLs.
   base::NativeLibrary egl_library;
   {
-    GPU_STARTUP_TRACE_EVENT("Load egl_library");
+    TRACE_EVENT("gpu,startup", "Load egl_library");
     egl_library =
         base::LoadNativeLibrary(gles_path.Append(L"libegl.dll"), nullptr);
   }

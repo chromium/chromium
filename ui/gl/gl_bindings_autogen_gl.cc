@@ -18,12 +18,11 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
-#include "ui/gl/startup_trace.h"
 
 namespace gl {
 
 void DriverGL::InitializeStaticBindings(GLGetProcAddressProc get_proc_address) {
-  GPU_STARTUP_TRACE_EVENT("DriverGL::InitializeStaticBindings");
+  TRACE_EVENT("gpu,startup", "DriverGL::InitializeStaticBindings");
   fn.glActiveTextureFn = reinterpret_cast<glActiveTextureProc>(
       get_proc_address("glActiveTexture"));
   fn.glAttachShaderFn =

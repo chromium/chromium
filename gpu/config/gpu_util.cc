@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "ui/gl/gpu_preference.h"
-#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -37,6 +36,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_crash_keys.h"
@@ -497,7 +497,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      const GpuPreferences& gpu_preferences,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
-  GPU_STARTUP_TRACE_EVENT("gpu_util::ComputeGpuFeatureInfo");
+  TRACE_EVENT("gpu,startup", "gpu_util::ComputeGpuFeatureInfo");
   bool use_software_gl = false;
   bool blocklist_needs_more_info = false;
 
