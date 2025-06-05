@@ -993,6 +993,7 @@ source_set("unit_tests") {
     "cdm_key_information_mojom_traits_unittest.cc",
     "picture_in_picture_events_info_mojom_traits_unittest.cc",
     "speech_recognition_recognition_context_mojom_traits_unittest.cc",
+    "supported_video_decoder_config_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
     "video_frame_metadata_mojom_traits_unittest.cc",
