@@ -306,15 +306,22 @@ COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::u16string_view url);
 // everything after the scheme is considered as the path. This is used for
 // things like "about:" and "javascript:"
 //
-// Historically, this is used to parse non-special URLs, but this should be
-// removed after StandardCompliantNonSpecialSchemeURLParsing is enabled by
-// default.
+// TODO: Replace ParsePathURL() with ParseNonSpecialURL(), ensuring it works
+// with the android:// escape hatch introduced in crrev.com/c/5515685.
 COMPONENT_EXPORT(URL)
 Parsed ParsePathURL(std::string_view url, bool trim_path_end);
 COMPONENT_EXPORT(URL)
 Parsed ParsePathURL(std::u16string_view url, bool trim_path_end);
-// TODO(crbug.com/325408566): Remove once all third-party libraries use the
-// overloads above.
+// TODO(crbug.com/325408566): Remove once openscreen starts using
+// ParseNonSpecialURL(), now that kStandardCompliantNonSpecialSchemeURLParsing
+// has been launched. This is non-trivial because it involves:
+//
+// 1. Adding ParseNonSpecialURL() into
+// https://quiche.googlesource.com/googleurl/+/refs/heads/master/url/third_party/mozilla/url_parse.h.
+// 2. Rolling quiche into openscreen, and making the change in openscreen to use
+// ParseNonSpecialURL() instead of ParsePathURL().
+// 3. Removing all traces of ParsePathURL() from
+// url/third_party/mozilla/url_parse here in chromium.
 COMPONENT_EXPORT(URL)
 void ParsePathURL(const char* url,
                   int url_len,
