@@ -7,6 +7,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -223,6 +224,23 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
   const DeepQuery kErrorPanel = {"#errorPanel"};
   const DeepQuery kContentsPanel = {"#guestPanel"};
 };
+
+class GlicUiInteractiveTest : public GlicUiInteractiveUiTestBase {
+ public:
+  GlicUiInteractiveTest()
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {}
+  ~GlicUiInteractiveTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicUiInteractiveTest, OpenGlicWindow) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, &host()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly));
+  // The browser is active when opening the Glic window.
+  histogram_tester.ExpectUniqueSample("Glic.Session.Open.BrowserActiveState",
+                                      0 /*kBrowserActive*/, 1);
+}
 
 // Tests the network being connected at startup (as normal).
 class GlicUiConnectedUiTest : public GlicUiInteractiveUiTestBase,

@@ -186,6 +186,11 @@ TEST_F(GlicMetricsTest, Basic) {
   metrics_->OnSessionTerminated();
 
   histogram_tester_.ExpectTotalCount("Glic.Response.StopTime", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Session.InputSubmit.BrowserActiveState", 5 /*kBrowserHidden*/, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Session.ResponseStart.BrowserActiveState", 5 /*kBrowserHidden*/, 1);
+
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseInputSubmit"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStart"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);
@@ -206,6 +211,9 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   metrics_->OnGlicWindowClose(std::nullopt, gfx::Point());
 
   histogram_tester_.ExpectTotalCount("Glic.Response.StopTime", 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Session.Open.BrowserActiveState",
+                                       5 /*kBrowserHidden*/, 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicSessionBegin"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseInputSubmit"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStart"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);

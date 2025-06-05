@@ -161,6 +161,10 @@ class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicWindowController;
 
+namespace internal {
+class BrowserActivityObserver;
+}
+
 // Responsible for all glic web-client metrics, and all stateful glic metrics.
 // Some stateless glic metrics are logged inline in the relevant code for
 // convenience.
@@ -319,6 +323,7 @@ class GlicMetrics {
   // `input_mode_`.
   base::TimeTicks scroll_input_submitted_time_;
   mojom::WebClientMode scroll_input_mode_;
+  std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
 
 }  // namespace glic

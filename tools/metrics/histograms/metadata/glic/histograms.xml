@@ -697,6 +697,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Session.InputSubmit.BrowserActiveState"
+    enum="GlicBrowserActiveState" expires_after="2026-03-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the browser active state when user input is submitted in a Glic
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Session.Open.Attached" enum="Boolean"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -704,6 +714,15 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <summary>
     Recorded when a session starts. Records whether the window is attached.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Open.BrowserActiveState"
+    enum="GlicBrowserActiveState" expires_after="2026-03-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the browser active state when a Glic session starts.
   </summary>
 </histogram>
 
@@ -724,6 +743,15 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <summary>
     Recorded when a session ends. The number of responses during that session.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.ResponseStart.BrowserActiveState"
+    enum="GlicBrowserActiveState" expires_after="2026-03-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the browser active state when a Glic response starts rendering.
   </summary>
 </histogram>
 
