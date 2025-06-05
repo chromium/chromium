@@ -327,9 +327,7 @@ void PopulateRandomizedFieldMetadata(
                  base::NumberToString(field.max_length()),
                  metadata->mutable_max_length());
   }
-  if (field.IsSelectElement() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillIncludeSelectOptionsInCrowdsourcing)) {
+  if (field.IsSelectElement()) {
     auto add_option = [&](const SelectOption& option) {
       auto* proto_option = metadata->add_select_option();
       if (!option.text.empty()) {

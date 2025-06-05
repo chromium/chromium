@@ -1433,9 +1433,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
        {SelectOption{.value = u"we are the same",
                      .text = u"we are the same"}}}};
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillIncludeSelectOptionsInCrowdsourcing}, {});
   FormData form;
   form.set_id_attribute(u"form-id");
   form.set_url(GURL("http://www.foo.com/"));
@@ -1639,44 +1636,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
       }
     }
   }
-}
-
-// Tests that select options are not encoded if
-// `features::kAutofillIncludeSelectOptionsInCrowdsourcing` is disabled.
-TEST_F(AutofillCrowdsourcingEncoding, SelectOptionsAreNotSentIfFeatureIsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillIncludeSelectOptionsInCrowdsourcing);
-  FormData form;
-  form.set_id_attribute(u"form-id");
-  {
-    FormFieldData field;
-    field.set_id_attribute(u"field-id");
-    field.set_options({SelectOption{.value = u"value", .text = u"some text"}});
-    field.set_form_control_type(FormControlType::kSelectOne);
-    test_api(form).Append(field);
-  }
-
-  FormStructure form_structure(form);
-  for (auto& field : form_structure) {
-    field->set_host_form_signature(form_structure.form_signature());
-  }
-
-  EncodeUploadRequestOptions options;
-  options.encoder = RandomizedEncoder(
-      "seed for testing", AutofillRandomizedValue_EncodingType_ALL_BITS,
-      /*anonymous_url_collection_is_enabled=*/true);
-  options.available_field_types = {NO_SERVER_DATA};
-  options.observed_submission = true;
-
-  std::vector<AutofillUploadContents> uploads =
-      EncodeUploadRequest(form_structure, options);
-  ASSERT_EQ(uploads.size(), 1u);
-  AutofillUploadContents& upload = uploads.front();
-  ASSERT_EQ(upload.field_data_size(), 1);
-  ASSERT_TRUE(upload.field_data(0).has_randomized_field_metadata());
-  EXPECT_EQ(
-      upload.field_data(0).randomized_field_metadata().select_option_size(), 0);
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
