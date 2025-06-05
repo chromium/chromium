@@ -93,6 +93,7 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = resultdb_bigquery_exports,
+        reclient_enabled = False,
         siso_project = siso.project.DEFAULT_TRUSTED,
         siso_remote_jobs = siso.remote_jobs.DEFAULT,
         siso_enabled = True,
