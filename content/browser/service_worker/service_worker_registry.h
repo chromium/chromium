@@ -98,13 +98,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   enum class Purpose { kNotForNavigation, kNavigation };
 
-  ServiceWorkerRegistry(ServiceWorkerContextCore* context,
+  ServiceWorkerRegistry(ServiceWorkerContextCore& context,
                         storage::QuotaManagerProxy* quota_manager_proxy,
                         storage::SpecialStoragePolicy* special_storage_policy);
 
   // For re-creating the registry from the old one. This is called when
   // something went wrong during storage access.
-  ServiceWorkerRegistry(ServiceWorkerContextCore* context,
+  ServiceWorkerRegistry(ServiceWorkerContextCore& context,
                         ServiceWorkerRegistry* old_registry);
 
   ~ServiceWorkerRegistry();
@@ -508,7 +508,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       Args&&... args);
 
   // The ServiceWorkerContextCore object must outlive this.
-  const raw_ptr<ServiceWorkerContextCore> context_;
+  const raw_ref<ServiceWorkerContextCore> context_;
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;

@@ -211,7 +211,7 @@ class InflightCallWithInvoker final
 };
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
-    ServiceWorkerContextCore* context,
+    ServiceWorkerContextCore& context,
     storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy)
     : context_(context),
@@ -220,12 +220,11 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
       registration_scope_cache_(kServiceWorkerScopeCacheLimitSize),
       registration_id_cache_(kServiceWorkerRegistrationCacheSize) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(context_);
   Start();
 }
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
-    ServiceWorkerContextCore* context,
+    ServiceWorkerContextCore& context,
     ServiceWorkerRegistry* old_registry)
     : ServiceWorkerRegistry(context,
                             old_registry->quota_manager_proxy_.get(),
@@ -1917,9 +1916,6 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   remote_storage_control_.reset();
-
-  if (!context_)
-    return;
 
   if (is_storage_disabled_) {
     // When the storage is disabled a storage error recovery process is ongoing
