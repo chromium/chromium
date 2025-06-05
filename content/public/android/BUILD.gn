@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
@@ -433,6 +434,11 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
   ]
 
+  if (enable_screen_capture) {
+    sources += [ "java/src/org/chromium/content_public/browser/media/capture/ScreenCapture.java" ]
+    deps += [ "//third_party/androidx:androidx_activity_activity_java" ]
+  }
+
   public_deps = [ "//ui/base/mojom:ui_base_types_java" ]
 }
 
@@ -538,6 +544,10 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content_public/browser/NavigationHandle.java",
     "java/src/org/chromium/content_public/browser/Page.java",
   ]
+
+  if (enable_screen_capture) {
+    sources += [ "java/src/org/chromium/content_public/browser/media/capture/ScreenCapture.java" ]
+  }
 }
 
 group("browser_jni") {

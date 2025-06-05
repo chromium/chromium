@@ -2945,10 +2945,14 @@ source_set("browser") {
       "media/capture/web_contents_video_capture_device.cc",
       "media/capture/web_contents_video_capture_device.h",
     ]
-    if (!is_android && !is_ios) {
+    if (!is_ios) {
       sources += [
         "media/capture/desktop_capture_device.cc",
         "media/capture/desktop_capture_device.h",
+      ]
+    }
+    if (!is_android && !is_ios) {
+      sources += [
         "media/capture/mouse_cursor_overlay_controller.cc",
         "media/capture/mouse_cursor_overlay_controller.h",
         "media/captured_surface_control_permission_manager.cc",
@@ -2966,7 +2970,6 @@ source_set("browser") {
         "media/capture/mouse_cursor_overlay_controller_aura.cc",
       ]
     }
-
     if (is_mac) {
       sources += [
         "media/capture/desktop_capture_device_mac.cc",
@@ -2998,6 +3001,12 @@ source_set("browser") {
         "media/capture/desktop_capturer_ash.h",
         "media/capture/desktop_frame_skia.cc",
         "media/capture/desktop_frame_skia.h",
+      ]
+    }
+    if (is_android) {
+      sources += [
+        "media/capture/desktop_capturer_android.cc",
+        "media/capture/desktop_capturer_android.h",
       ]
     }
   }
