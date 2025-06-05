@@ -121,7 +121,7 @@ class BookmarkBarMediator
         mActivityLifecycleDispatcher.register(mConfigurationChangeObserver);
 
         // NOTE: Height will be updated when binding the `HEIGHT_CHANGE_CALLBACK` property.
-        mHeightSupplier = new ObservableSupplierImpl<Integer>(0);
+        mHeightSupplier = new ObservableSupplierImpl<>(0);
         mHeightChangeCallback = heightChangeCallback;
         mHeightSupplier.addObserver(mHeightChangeCallback);
 

@@ -51,7 +51,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
     private boolean mIsTablet;
 
     private final Callback<BookmarkModel> mBookmarkModelSupplierObserver =
-            new Callback<BookmarkModel>() {
+            new Callback<>() {
                 @Override
                 public void onResult(BookmarkModel result) {
                     if (mObservedBookmarkModel != null) {

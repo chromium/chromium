@@ -1225,10 +1225,8 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         assertNotNull(mSubscriptionsObserver.getValue());
 
-        doReturn(new ArrayList<BookmarkItem>())
-                .when(mBookmarkModel)
-                .searchBookmarks(anyString(), anyInt());
-        doReturn(new ArrayList<BookmarkId>()).when(mBookmarkModel).getChildIds(mFolderId1);
+        doReturn(new ArrayList<>()).when(mBookmarkModel).searchBookmarks(anyString(), anyInt());
+        doReturn(new ArrayList<>()).when(mBookmarkModel).getChildIds(mFolderId1);
 
         mMediator.openFolder(mFolderId1);
 

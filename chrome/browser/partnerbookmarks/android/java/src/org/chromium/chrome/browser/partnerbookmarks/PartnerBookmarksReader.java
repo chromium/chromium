@@ -290,7 +290,7 @@ public class PartnerBookmarksReader {
 
             // Get a snapshot of the bookmarks.
             LinkedHashMap<Long, PartnerBookmark> idMap = new LinkedHashMap<Long, PartnerBookmark>();
-            HashSet<String> urlSet = new HashSet<String>();
+            HashSet<String> urlSet = new HashSet<>();
 
             PartnerBookmark rootBookmarksFolder = createRootBookmarksFolderBookmark();
             idMap.put(ROOT_FOLDER_ID, rootBookmarksFolder);
@@ -332,7 +332,7 @@ public class PartnerBookmarksReader {
                 return null;
             }
 
-            readBookmarkHierarchy(rootBookmarksFolder, new HashSet<PartnerBookmark>());
+            readBookmarkHierarchy(rootBookmarksFolder, new HashSet<>());
 
             return null;
         }
