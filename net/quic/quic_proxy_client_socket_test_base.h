@@ -53,7 +53,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 

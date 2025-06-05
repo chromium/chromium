@@ -31,7 +31,6 @@
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
-#include "url/gurl.h"
 
 namespace net {
 

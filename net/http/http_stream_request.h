@@ -24,7 +24,6 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_info.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "url/gurl.h"
 
 namespace net {
 

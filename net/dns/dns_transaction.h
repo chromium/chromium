@@ -19,7 +19,6 @@
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/record_rdata.h"
-#include "url/gurl.h"
 
 namespace net {
 

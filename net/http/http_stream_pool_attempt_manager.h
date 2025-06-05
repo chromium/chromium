@@ -44,7 +44,6 @@
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "url/gurl.h"
 
 namespace net {
 

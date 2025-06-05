@@ -19,7 +19,6 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
-#include "url/gurl.h"
 
 namespace net {
 
