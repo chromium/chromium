@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -18,10 +19,21 @@
 #include "components/download/public/background_service/download_params.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace download {
 class BackgroundDownloadService;
 }  // namespace download
+
+namespace unzip::mojom {
+class Unzipper;
+}  // namespace unzip::mojom
+
+namespace unzip {
+// TODO: crbug.com/421262905 - Avoid duplicating this alias.
+using UnzipperFactory =
+    base::RepeatingCallback<mojo::PendingRemote<mojom::Unzipper>()>;
+}  // namespace unzip
 
 namespace optimization_guide {
 
@@ -59,6 +71,7 @@ class PredictionModelDownloadManager {
       download::BackgroundDownloadService* download_service,
       GetBaseModelDirForDownloadCallback
           get_base_model_dir_for_download_callback,
+      unzip::UnzipperFactory unzipper_factory,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -184,6 +197,9 @@ class PredictionModelDownloadManager {
 
   // Callback to get the directory to download models.
   GetBaseModelDirForDownloadCallback get_base_model_dir_for_download_callback_;
+
+  // How to get an unzipper remote.
+  unzip::UnzipperFactory unzipper_factory_;
 
   // Background thread where download file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

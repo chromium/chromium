@@ -28,15 +28,10 @@
 #include "components/optimization_guide/core/prediction_model_download_observer.h"
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/services/unzip/public/cpp/unzip.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "crypto/hash.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-
-#if BUILDFLAG(IS_IOS)
-#include "components/services/unzip/in_process_unzipper.h"  // nogncheck
-#else
-#include "components/services/unzip/content/unzip_service.h"  // nogncheck
-#endif
 
 namespace optimization_guide {
 
@@ -102,12 +97,14 @@ const char kPredictionModelOptimizationTargetCustomDataKey[] =
 PredictionModelDownloadManager::PredictionModelDownloadManager(
     download::BackgroundDownloadService* download_service,
     GetBaseModelDirForDownloadCallback get_base_model_dir_for_download_callback,
+    unzip::UnzipperFactory unzipper_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(download_service),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
       get_base_model_dir_for_download_callback_(
           get_base_model_dir_for_download_callback),
+      unzipper_factory_(std::move(unzipper_factory)),
       background_task_runner_(background_task_runner) {}
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
@@ -324,13 +321,8 @@ void PredictionModelDownloadManager::StartUnzipping(
     return;
   }
 
-#if BUILDFLAG(IS_IOS)
-  auto unzipper = unzip::LaunchInProcessUnzipper();
-#else
-  auto unzipper = unzip::LaunchUnzipper();
-#endif
   unzip::Unzip(
-      std::move(unzipper), download_file_path, base_model_dir,
+      unzipper_factory_.Run(), download_file_path, base_model_dir,
       unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
       base::DoNothing(),
       base::BindOnce(&PredictionModelDownloadManager::OnDownloadUnzipped,

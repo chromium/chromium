@@ -15,10 +15,21 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace unzip::mojom {
+class Unzipper;
+}  // namespace unzip::mojom
+
+namespace unzip {
+// TODO: crbug.com/421262905 - Avoid duplicating this alias.
+using UnzipperFactory =
+    base::RepeatingCallback<mojo::PendingRemote<mojom::Unzipper>()>;
+}  // namespace unzip
 
 namespace optimization_guide {
 
@@ -42,6 +53,7 @@ class PredictionModelOverrides {
     // Returns the result (or nullptr if there was an error) via `callback`.
     // In the event of an error, check LOG(ERROR).
     void BuildModel(const base::FilePath& base_model_dir,
+                    unzip::UnzipperFactory unzipper_factory,
                     BuiltCallback callback) const;
 
     proto::OptimizationTarget target() const { return target_; }

@@ -73,6 +73,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
@@ -359,7 +360,8 @@ void OptimizationGuideKeyedService::Initialize() {
           &OptimizationGuideKeyedService::ComponentUpdatesEnabledProvider,
           // It's safe to use |base::Unretained(this)| here because
           // |this| owns |prediction_manager_|.
-          base::Unretained(this)));
+          base::Unretained(this)),
+      base::BindRepeating(&unzip::LaunchUnzipper));
 
   InitializeModelExecution(profile);
 

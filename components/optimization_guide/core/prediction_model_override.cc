@@ -21,12 +21,7 @@
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/services/unzip/public/cpp/unzip.h"
-
-#if BUILDFLAG(IS_IOS)
-#include "components/services/unzip/in_process_unzipper.h"  // nogncheck
-#else
-#include "components/services/unzip/content/unzip_service.h"  // nogncheck
-#endif
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
 
 namespace optimization_guide {
 
@@ -113,6 +108,7 @@ void OnModelOverrideUnzipped(proto::OptimizationTarget optimization_target,
 void OnModelOverrideVerified(proto::OptimizationTarget optimization_target,
                              const base::FilePath& passed_crx_file_path,
                              const base::FilePath& base_model_dir,
+                             unzip::UnzipperFactory unzipper_factory,
                              BuiltCallback callback,
                              bool is_verify_success) {
   if (!is_verify_success) {
@@ -121,12 +117,7 @@ void OnModelOverrideVerified(proto::OptimizationTarget optimization_target,
     return;
   }
 
-#if BUILDFLAG(IS_IOS)
-  auto unzipper = unzip::LaunchInProcessUnzipper();
-#else
-  auto unzipper = unzip::LaunchUnzipper();
-#endif
-  unzip::Unzip(std::move(unzipper), passed_crx_file_path, base_model_dir,
+  unzip::Unzip(unzipper_factory.Run(), passed_crx_file_path, base_model_dir,
                unzip::mojom::UnzipOptions::New(), unzip::AllContents(),
                base::DoNothing(),
                base::BindOnce(&OnModelOverrideUnzipped, optimization_target,
@@ -192,6 +183,7 @@ PredictionModelOverrides::Entry::Entry(Entry&&) = default;
 
 void PredictionModelOverrides::Entry::BuildModel(
     const base::FilePath& base_model_dir,
+    unzip::UnzipperFactory unzipper_factory,
     PredictionModelOverrides::Entry::BuiltCallback callback) const {
   if (path_.MatchesFinalExtension(FILE_PATH_LITERAL(".crx3"))) {
     DVLOG(0) << "Attempting to parse the model override at " << path_.value()
@@ -208,7 +200,7 @@ void PredictionModelOverrides::Entry::BuildModel(
                        base_model_dir,
                        /*delete_file_on_error=*/false),
         base::BindOnce(&OnModelOverrideVerified, target_, path_, base_model_dir,
-                       std::move(callback)));
+                       std::move(unzipper_factory), std::move(callback)));
     return;
   }
 

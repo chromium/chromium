@@ -6,6 +6,7 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -26,6 +27,7 @@
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "components/prefs/pref_service.h"
+#import "components/services/unzip/in_process_unzipper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
@@ -170,7 +172,8 @@ OptimizationGuideService::OptimizationGuideService(
             base::BindRepeating([]() {
               return GetApplicationContext()->GetLocalState()->GetBoolean(
                   ::prefs::kComponentUpdatesEnabled);
-            }));
+            }),
+            base::BindRepeating(&unzip::LaunchInProcessUnzipper));
   }
 
   if (!off_the_record_) {

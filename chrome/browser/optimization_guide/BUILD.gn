@@ -30,6 +30,7 @@ source_set("optimization_guide") {
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/optimization_guide/public/mojom",
+    "//components/services/unzip/content:content",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

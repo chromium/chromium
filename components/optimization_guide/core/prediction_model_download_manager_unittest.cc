@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,10 +29,6 @@
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
-
-#if !BUILDFLAG(IS_IOS)
-#include "components/services/unzip/content/unzip_service.h"  // nogncheck
-#endif
 
 namespace optimization_guide {
 
@@ -92,12 +89,8 @@ class PredictionModelDownloadManagerTest : public testing::Test {
                   base::Uuid::GenerateRandomV4().AsLowercaseString());
             },
             temp_models_dir_.GetPath()),
+        base::BindRepeating(&unzip::LaunchInProcessUnzipper),
         task_environment_.GetMainThreadTaskRunner());
-
-#if !BUILDFLAG(IS_IOS)
-    unzip::SetUnzipperLaunchOverrideForTesting(
-        base::BindRepeating(&unzip::LaunchInProcessUnzipper));
-#endif
   }
 
   void TearDown() override {

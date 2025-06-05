@@ -32,6 +32,7 @@ source_set("model") {
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//components/services/unzip:in_process",
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//ios/chrome/browser/download/model/background_service",

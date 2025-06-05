@@ -44,6 +44,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/unzip/public/cpp/unzip.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -185,12 +186,14 @@ PredictionManager::PredictionManager(
     const base::FilePath& models_dir_path,
     OptimizationGuideLogger* optimization_guide_logger,
     BackgroundDownloadServiceProvider background_download_service_provider,
-    ComponentUpdatesEnabledProvider component_updates_enabled_provider)
+    ComponentUpdatesEnabledProvider component_updates_enabled_provider,
+    unzip::UnzipperFactory unzipper_factory)
     : prediction_model_download_manager_(nullptr),
       prediction_model_store_(prediction_model_store),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
       component_updates_enabled_provider_(component_updates_enabled_provider),
+      unzipper_factory_(std::move(unzipper_factory)),
       prediction_model_fetch_timer_(
           pref_service,
           base::BindRepeating(
@@ -783,6 +786,7 @@ void PredictionManager::MaybeInitializeModelDownloads(
                 // base::Unretained is safe here because the
                 // PredictionModelDownloadManager is owned by `this`
                 base::Unretained(this)),
+            unzipper_factory_,
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
@@ -823,7 +827,7 @@ void PredictionManager::LoadPredictionModels(
       base::FilePath base_model_dir =
           GetBaseModelDirForDownload(optimization_target);
       entry->BuildModel(
-          base_model_dir,
+          base_model_dir, unzipper_factory_,
           base::BindOnce(&PredictionManager::OnPredictionModelOverrideLoaded,
                          ui_weak_ptr_factory_.GetWeakPtr(),
                          optimization_target));

@@ -37,6 +37,16 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace unzip::mojom {
+class Unzipper;
+}  // namespace unzip::mojom
+
+namespace unzip {
+// TODO: crbug.com/421262905 - Avoid duplicating this alias.
+using UnzipperFactory =
+    base::RepeatingCallback<mojo::PendingRemote<mojom::Unzipper>()>;
+}  // namespace unzip
+
 class OptimizationGuideLogger;
 class PrefService;
 
@@ -71,7 +81,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
       const base::FilePath& models_dir_path,
       OptimizationGuideLogger* optimization_guide_logger,
       BackgroundDownloadServiceProvider background_download_service_provider,
-      ComponentUpdatesEnabledProvider component_updates_enabled_provider);
+      ComponentUpdatesEnabledProvider component_updates_enabled_provider,
+      unzip::UnzipperFactory unzipper_factory);
 
   PredictionManager(const PredictionManager&) = delete;
   PredictionManager& operator=(const PredictionManager&) = delete;
@@ -339,6 +350,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // The repeating callback that will be used to determine if component updates
   // are enabled.
   ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
+
+  // Callback to build Unzipper remotes.
+  unzip::UnzipperFactory unzipper_factory_;
 
   // Time the prediction manager got initialized.
   // TODO(crbug.com/40861855): Remove this old model store once the new model

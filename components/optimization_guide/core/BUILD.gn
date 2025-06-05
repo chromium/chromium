@@ -526,11 +526,6 @@ static_library("prediction") {
     "//services/network/public/cpp",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  if (is_ios) {
-    deps += [ "//components/services/unzip:in_process" ]
-  } else {
-    deps += [ "//components/services/unzip/content" ]
-  }
 }
 
 source_set("filters_test_support") {
@@ -828,9 +823,6 @@ source_set("unit_tests") {
     "//ui/base",
     "//url:url",
   ]
-  if (!is_ios) {
-    deps += [ "//components/services/unzip/content" ]
-  }
 
   if (build_with_model_execution) {
     deps += [ "//components/component_updater" ]

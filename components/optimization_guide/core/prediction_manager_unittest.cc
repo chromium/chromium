@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,6 +40,7 @@
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/services/unzip/in_process_unzipper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -146,6 +148,7 @@ class FakePredictionModelDownloadManager
       : PredictionModelDownloadManager(
             /*download_service=*/nullptr,
             get_base_model_dir_for_download_callback,
+            base::BindRepeating(&unzip::LaunchInProcessUnzipper),
             task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
@@ -325,7 +328,6 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
   base::flat_map<proto::OptimizationTarget, int64_t> expected_version_;
 };
 
-
 class TestPredictionManager : public PredictionManager {
  public:
   TestPredictionManager(
@@ -346,7 +348,8 @@ class TestPredictionManager : public PredictionManager {
             &optimization_guide_logger_,
             /*background_download_service_provider=*/
             base::OnceCallback<download::BackgroundDownloadService*()>(),
-            component_updates_enabled_provider) {}
+            component_updates_enabled_provider,
+            base::BindRepeating(&unzip::LaunchInProcessUnzipper)) {}
 
   ~TestPredictionManager() override = default;
 
