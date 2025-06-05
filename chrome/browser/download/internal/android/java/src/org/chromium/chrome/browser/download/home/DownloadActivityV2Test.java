@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -153,6 +154,8 @@ public class DownloadActivityV2Test {
 
     @Before
     public void setUp() throws Exception {
+        ModalDialogView.disableButtonTapProtectionForTesting();
+
         UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                         any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
@@ -426,9 +429,8 @@ public class DownloadActivityV2Test {
                 .check(matches(isDisplayed()))
                 .perform(ViewActions.click());
 
-        // TODO(crbug.com/397407934): Menu options should reflect the actions available for a
-        // dangerous download ("Delete from history" and "Download").
-        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Delete from history")).check(matches(isDisplayed()));
+        onView(withText("Download")).check(matches(isDisplayed()));
         onView(withText("Rename")).check(doesNotExist());
         onView(withText("Share")).check(doesNotExist());
 
@@ -480,6 +482,61 @@ public class DownloadActivityV2Test {
         onView(withText("dangerous")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
         onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testBypassDangerousWarning() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/*showDangerousItems*/ true);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Add a dangerous item.
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        // Open bypass dialog by clicking on the item.
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Click the bypass button.
+        onView(allOf(withId(R.id.negative_button), withText("Download anyway")))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Wait for the download to be validated.
+        mStubbedOfflineContentProvider.getValidateDangerousDownloadHelper().waitForOnly();
+
+        // The UI has updated that the download is no longer dangerous, and now counts towards the
+        // storage total.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText(containsString("Dangerous download blocked")))
+                            .check(doesNotExist());
+                });
+        onView(withText(containsString("Using 2.10 KB of"))).check(matches(isDisplayed()));
     }
 
     @Test

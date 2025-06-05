@@ -51,10 +51,12 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     private @Nullable Runnable mShareCallback;
     private @Nullable Runnable mDeleteCallback;
     private @Nullable Runnable mRenameCallback;
+    private @Nullable Runnable mShowWarningBypassDialogCallback;
 
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
     private boolean mCanShare;
+    private boolean mCanShowWarningBypassDialog;
 
     /** Creates a new instance of a {@link OfflineItemViewHolder}. */
     public OfflineItemViewHolder(View view) {
@@ -73,6 +75,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;
         mCanRename = offlineItem.canRename;
         mCanShare = UiUtils.canShare(offlineItem);
+        mCanShowWarningBypassDialog = canShowWarningBypassDialog(offlineItem);
 
         // Push 'interaction' state
         bindOnClick(properties, item, offlineItem);
@@ -120,6 +123,10 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                 v -> {
                     if (mSelectionView != null && mSelectionView.isInSelectionMode()) {
                         properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);
+                    } else if (canShowWarningBypassDialog(offlineItem)) {
+                        properties
+                                .get(ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG)
+                                .onResult(offlineItem);
                     } else {
                         properties.get(ListProperties.CALLBACK_OPEN).onResult(offlineItem);
                     }
@@ -143,6 +150,14 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         if (mCanRename) {
             mRenameCallback =
                     () -> properties.get(ListProperties.CALLBACK_RENAME).onResult(offlineItem);
+        }
+
+        if (canShowWarningBypassDialog(offlineItem)) {
+            mShowWarningBypassDialogCallback =
+                    () ->
+                            properties
+                                    .get(ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG)
+                                    .onResult(offlineItem);
         }
 
         mDeleteCallback =
@@ -170,17 +185,28 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
 
         if (mCanShare) listItems.add(buildMenuListItem(R.string.share, 0, 0));
         if (mCanRename) listItems.add(buildMenuListItem(R.string.rename, 0, 0));
-
-        listItems.add(buildMenuListItem(R.string.delete, 0, 0));
+        if (mCanShowWarningBypassDialog) {
+            listItems.add(
+                    buildMenuListItem(R.string.download_warning_heed_menu_action_delete, 0, 0));
+            listItems.add(
+                    buildMenuListItem(R.string.download_warning_bypass_menu_action_download, 0, 0));
+        } else {
+            listItems.add(buildMenuListItem(R.string.delete, 0, 0));
+        }
         ListMenu.Delegate delegate =
                 (model) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.share) {
                         if (mShareCallback != null) mShareCallback.run();
-                    } else if (textId == R.string.delete) {
+                    } else if (textId == R.string.delete
+                            || textId == R.string.download_warning_heed_menu_action_delete) {
                         if (mDeleteCallback != null) mDeleteCallback.run();
                     } else if (textId == R.string.rename) {
                         if (mRenameCallback != null) mRenameCallback.run();
+                    } else if (textId == R.string.download_warning_bypass_menu_action_download) {
+                        if (mShowWarningBypassDialogCallback != null) {
+                            mShowWarningBypassDialogCallback.run();
+                        }
                     }
                 };
         return BrowserUiListMenuUtils.getBasicListMenu(mMore.getContext(), listItems, delegate);
@@ -206,6 +232,10 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         return mSelectionView.isSelected() != item.selected
                 || mSelectionView.isInSelectionMode()
                         != properties.get(ListProperties.SELECTION_MODE_ACTIVE);
+    }
+
+    private boolean canShowWarningBypassDialog(OfflineItem item) {
+        return UiUtils.shouldDisplayAsDangerous(item);
     }
 
     /**

@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidDownloadWarningBypassDialogEvent">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="User validated download"/>
+  <int value="2" label="User tapped Learn More"/>
+  <int value="3" label="Dialog dismissed"/>
+</enum>
+
 <enum name="BooleanOpenFromDuplicates">
   <int value="0" label="Created New file"/>
   <int value="1" label="Opened existing duplicate"/>

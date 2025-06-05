@@ -21,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.dialogs.DownloadWarningBypassDialog;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.StableIds;
@@ -92,6 +93,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     private final EmptyCoordinator mEmptyCoordinator;
     private final DateOrderedListMediator mMediator;
     private final DateOrderedListView mListView;
+    private final ModalDialogManager mModalDialogManager;
     private final RenameDialogManager mRenameDialogManager;
     private ViewGroup mMainView;
     private View mEmptyView;
@@ -140,6 +142,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                         decoratedModel,
                         dateOrderedListObserver,
                         this::onConfigurationChangedCallback);
+        mModalDialogManager = modalDialogManager;
         mRenameDialogManager = new RenameDialogManager(context, modalDialogManager);
         mMediator =
                 new DateOrderedListMediator(
@@ -148,6 +151,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                         this::startShareIntent,
                         deleteController,
                         this::startRename,
+                        this::startShowWarningBypassDialog,
                         selectionDelegate,
                         config,
                         dateOrderedListObserver,
@@ -335,5 +339,9 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     private void startRename(String name, DateOrderedListMediator.RenameCallback callback) {
         mRenameDialogManager.startRename(name, callback::tryToRename);
+    }
+
+    private void startShowWarningBypassDialog(String fileName, Callback<Boolean> callback) {
+        new DownloadWarningBypassDialog().show(mContext, mModalDialogManager, fileName, callback);
     }
 }

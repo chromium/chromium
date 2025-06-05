@@ -37,6 +37,7 @@ class ListPropertyViewBinder implements ViewBinder<PropertyModel, RecyclerView, 
                 || propertyKey == ListProperties.CALLBACK_CANCEL
                 || propertyKey == ListProperties.CALLBACK_SHARE
                 || propertyKey == ListProperties.CALLBACK_REMOVE
+                || propertyKey == ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG
                 || propertyKey == ListProperties.PROVIDER_VISUALS
                 || propertyKey == ListProperties.CALLBACK_SELECTION
                 || propertyKey == ListProperties.CALLBACK_RENAME

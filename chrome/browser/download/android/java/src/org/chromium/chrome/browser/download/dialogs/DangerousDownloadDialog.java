@@ -22,7 +22,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Dialog for confirming that user want to download a dangerous file, using the default model dialog
- * from ModalDialogManager.
+ * from ModalDialogManager. This dialog applies only to dangerous file types, i.e. dangerType is
+ * DownloadDangerType.DANGEROUS_FILE. Downloads with Safe Browsing warnings may trigger a different
+ * dialog (see {@link DownloadWarningBypassDialog}).
  */
 @NullMarked
 public class DangerousDownloadDialog {

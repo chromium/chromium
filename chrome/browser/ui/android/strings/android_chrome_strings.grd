@@ -2349,6 +2349,25 @@ Your Google account may have other forms of browsing history like searches and a
         Downloaded PDFs automatically open with <ph name="APP_NAME">%1$s<ex>Drive PDF Viewer</ex></ph>
       </message>
 
+      <!-- Download warning bypass dialog -->
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TEXT" desc="Text of the dialog for asking user to confirm that they want to bypass a download warning.">
+        This file contains malware or comes from a suspicious site
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_ACTION_DOWNLOAD" desc="Label for the button to confirm that the user wants to bypass a download warning.">
+        Download anyway
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_ACTION_LEARN_MORE" desc="Label for the button to open a help page about download warnings.">
+        Learn more
+      </message>
+
+      <!-- Download Home dangerous warning -->
+      <message name="IDS_DOWNLOAD_WARNING_HEED_MENU_ACTION_DELETE" desc="Label for the menu item to heed a download warning shown in the downloads list by removing the file from download history.">
+        Delete from history
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_MENU_ACTION_DOWNLOAD" desc="Label for the menu item to bypass a download warning shown in the downloads list and download the dangerous file anyway.">
+        Download
+      </message>
+
       <!-- About Chrome preferences -->
       <message name="IDS_PREFS_ABOUT_CHROME" desc="Title for the About Chrome page. [CHAR_LIMIT=32]">
         About Chrome

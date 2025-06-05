@@ -48,6 +48,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogProperties.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadWarningBypassDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/InsecureDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadCustomView.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialog.java",

@@ -133,6 +133,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Android.WarningBypassDialog.Events"
+    enum="AndroidDownloadWarningBypassDialogEvent" expires_after="2025-11-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records events and user interactions with the download warning bypass dialog
+    on Android. Records when the dialog is shown, or when the user takes an
+    action or dismisses the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Download.AndroidDownload.FileExtension"
     enum="SBClientDownloadExtensions" expires_after="2025-10-17">
   <owner>chlily@chromium.org</owner>

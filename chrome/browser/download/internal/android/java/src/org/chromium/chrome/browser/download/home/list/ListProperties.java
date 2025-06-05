@@ -81,6 +81,13 @@ public interface ListProperties {
     WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_RENAME =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The callback for when a UI action should display a {@link DownloadWarningBypassDialog} for a
+     * {@link OfflineItem} that is displayed as dangerous (has a warning from Safe Browsing).
+     */
+    WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_SHOW_WARNING_BYPASS_DIALOG =
+            new WritableObjectPropertyKey<>();
+
     /** The provider to retrieve expensive assets for a {@link OfflineItem}. */
     WritableObjectPropertyKey<VisualsProvider> PROVIDER_VISUALS = new WritableObjectPropertyKey<>();
 
@@ -117,6 +124,7 @@ public interface ListProperties {
                 CALLBACK_SELECTION,
                 SELECTION_MODE_ACTIVE,
                 CALLBACK_PAGINATION_CLICK,
-                CALLBACK_GROUP_PAGINATION_CLICK
+                CALLBACK_GROUP_PAGINATION_CLICK,
+                CALLBACK_SHOW_WARNING_BYPASS_DIALOG
             };
 }
