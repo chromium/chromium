@@ -653,7 +653,7 @@ class BASE_EXPORT TraceArguments {
 
   // Allow move operations.
   TraceArguments(TraceArguments&& other) noexcept {
-    ::memcpy(this, &other, sizeof(*this));
+    ::memcpy(static_cast<void*>(this), &other, sizeof(*this));
     // All owning pointers were copied to |this|. Setting |other.size_| will
     // mask the pointer values still in |other|.
     other.size_ = 0;
