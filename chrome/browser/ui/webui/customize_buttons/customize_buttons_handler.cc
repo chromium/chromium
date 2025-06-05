@@ -39,6 +39,22 @@ CustomizeButtonsHandler::CustomizeButtonsHandler(
         base::BindRepeating(&CustomizeButtonsHandler::OnTabWillDetach,
                             weak_ptr_factory_.GetWeakPtr())));
   }
+
+  SetCustomizeChromeEntryChangedCallback(GetActiveTab());
+}
+
+void CustomizeButtonsHandler::SetCustomizeChromeEntryChangedCallback(
+    tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+
+  tab->GetTabFeatures()
+      ->customize_chrome_side_panel_controller()
+      ->SetEntryChangedCallback(base::BindRepeating(
+          &CustomizeButtonsHandler::
+              NotifyCustomizeChromeSidePanelVisibilityChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 CustomizeButtonsHandler::~CustomizeButtonsHandler() = default;
@@ -49,6 +65,8 @@ CustomizeButtonsHandler::GetSidePanelControllerForActiveTab() {
   if (!active_tab) {
     return nullptr;
   }
+
+  SetCustomizeChromeEntryChangedCallback(active_tab);
 
   return active_tab->GetTabFeatures()->customize_chrome_side_panel_controller();
 }
@@ -94,6 +112,9 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
 
   bool is_side_panel_showing =
       customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing();
+
+  // Send mojo signal to indicate whether the side panel is showing.
+  NotifyCustomizeChromeSidePanelVisibilityChanged(!is_side_panel_showing);
 
   if (is_side_panel_showing) {
     customize_chrome_side_panel_controller->CloseSidePanel();
