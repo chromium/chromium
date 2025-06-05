@@ -12,12 +12,22 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace memory_pressure::mac {
+
+namespace {
+// When enabled, the moderate memory pressure signals on macOS are ignored and
+// treated as 'none'. This is to experiment with the idea that the 'warn'
+// level signal from the OS is not always an accurate or useful signal.
+BASE_FEATURE(kSkipModerateMemoryPressureLevelMac,
+             "SkipModerateMemoryPressureLevelMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
@@ -26,6 +36,9 @@ SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
     case DISPATCH_MEMORYPRESSURE_NORMAL:
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
     case DISPATCH_MEMORYPRESSURE_WARN:
+      if (base::FeatureList::IsEnabled(kSkipModerateMemoryPressureLevelMac)) {
+        return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+      }
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
     case DISPATCH_MEMORYPRESSURE_CRITICAL:
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
