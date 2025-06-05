@@ -251,6 +251,9 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
                          ->GetController()
                          ->GetAs<IntroUI>();
     CHECK(intro_ui);
+    if (can_pin_) {
+      intro_ui->SetCanPinToTaskbar(can_pin_);
+    }
     intro_ui->SetDefaultBrowserCallback(DefaultBrowserCallback(
         base::BindOnce(&DefaultBrowserStepController::OnStepCompleted,
                        // WeakPtr: The callback is given to the WebUIController,
@@ -261,16 +264,6 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
   void OnCanPinToTaskbarResult(bool can_pin) {
     can_pin_ = can_pin;
-    if (can_pin) {
-      // Change subtitle if Chrome can be pinned to the taskbar.
-      auto* intro_ui = host()
-                           ->GetPickerContents()
-                           ->GetWebUI()
-                           ->GetController()
-                           ->GetAs<IntroUI>();
-      CHECK(intro_ui);
-      intro_ui->SetCanPinToTaskbar(can_pin);
-    }
     std::move(show_default_browser_screen_callback_).Run();
   }
 
@@ -320,7 +313,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
             ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
             base::BindOnce(
                 &DefaultBrowserStepController::OnCanPinToTaskbarResult,
-                base::Unretained(this)));
+                weak_ptr_factory_.GetWeakPtr()));
         return;
       }
 #endif  // BUILDFLAG(IS_WIN)
