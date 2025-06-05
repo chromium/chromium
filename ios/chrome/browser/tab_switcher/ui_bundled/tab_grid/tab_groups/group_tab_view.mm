@@ -195,28 +195,27 @@ const CGFloat kFaviconCornerRadius = 8;
 - (void)configureWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
   [self hideAllAttributes];
   _snapshotView.image = snapshot;
+  _snapshotView.hidden = NO;
   if (favicon && !CGSizeEqualToSize(favicon.size, CGSizeZero)) {
     _snapshotFaviconImageView.image = favicon;
     _snapshotFaviconView.hidden = NO;
   }
-  _snapshotView.hidden = NO;
 }
 
-- (void)configureWithFavicons:(NSArray<UIImage*>*)favicons {
-  [self hideAllAttributes];
-  CHECK_LE([favicons count], [_viewList count]);
-
-  for (NSUInteger i = 0; i < [favicons count]; ++i) {
-    _viewList[i].hidden = NO;
-    _imageViewList[i].hidden = NO;
-    _imageViewList[i].image = favicons[i];
-  }
+- (void)configureWithFavicon:(UIImage*)favicon
+                faviconIndex:(NSInteger)faviconIndex {
+  _viewList[faviconIndex].hidden = NO;
+  _imageViewList[faviconIndex].hidden = NO;
+  _imageViewList[faviconIndex].image = favicon;
 }
 
-- (void)configureWithFavicons:(NSArray<UIImage*>*)favicons
-          remainingTabsNumber:(NSInteger)remainingTabsNumber {
-  [self configureWithFavicons:favicons];
-  _viewList[3].hidden = NO;
+- (void)configureWithFavicon:(UIImage*)favicon
+                faviconIndex:(NSInteger)faviconIndex
+         remainingTabsNumber:(NSInteger)remainingTabsNumber {
+  CHECK_LT(faviconIndex, 3)
+      << "The last favicon slot is reserved for the '+N' indicator.";
+  [self configureWithFavicon:favicon faviconIndex:faviconIndex];
+  _viewList.lastObject.hidden = NO;
   _bottomTrailingLabel.hidden = NO;
   _bottomTrailingLabel.attributedText = TextForTabGroupCount(
       static_cast<int>(remainingTabsNumber), kTabGridButtonFontSize);

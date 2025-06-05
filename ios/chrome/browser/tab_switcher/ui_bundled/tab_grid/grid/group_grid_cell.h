@@ -34,15 +34,13 @@
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
-
 // The face pile, to be set externally.
 @property(nonatomic, strong) UIView* facePile;
 
-// Configures every tab of the group with a given snapshot/favicon pairs and
-// passes the total tabs count to the bottomTrailingView.
-- (void)configureWithSnapshotsAndFavicons:
-            (NSArray<TabSnapshotAndFavicon*>*)snapshotsAndFavicons
-                           totalTabsCount:(NSInteger)totalTabsCount;
+// Assigns a `TabSnapshotAndFavicon` object to a specific `tabIndex`
+- (void)configureTabSnapshotAndFavicon:
+            (TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                              tabIndex:(NSInteger)tabIndex;
 
 // Returns all tab views that compose this tab group view in the order they're
 // presented.

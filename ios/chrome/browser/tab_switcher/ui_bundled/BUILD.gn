@@ -18,6 +18,10 @@ source_set("items") {
   sources = [
     "tab_group_item.h",
     "tab_group_item.mm",
+    "tab_group_item_fetch_info.h",
+    "tab_group_item_fetch_info.mm",
+    "tab_group_item_utils.h",
+    "tab_group_item_utils.mm",
     "tab_snapshot_and_favicon.h",
     "tab_snapshot_and_favicon.mm",
     "tab_snapshot_and_favicon_configurator.h",

@@ -15,12 +15,16 @@
 
 // Sets the default group color. Should be called before viewDidLoad.
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color;
-// Sets snapshots, favicons and the total number of selected items.
-- (void)setTabSnapshotsAndFavicons:
-            (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
-             numberOfSelectedItems:(NSInteger)numberOfSelectedItems;
+
 // Sets the default group color. Should be called before viewDidLoad.
 - (void)setGroupTitle:(NSString*)title;
+
+// Sets the `tabSnapshotAndFavicon` at `tabIndex`.
+- (void)setSnapshotAndFavicon:(TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                     tabIndex:(NSInteger)tabIndex;
+
+// Sets the number of tabs in the group.
+- (void)setTabsCount:(NSInteger)tabsCount;
 
 @end
 

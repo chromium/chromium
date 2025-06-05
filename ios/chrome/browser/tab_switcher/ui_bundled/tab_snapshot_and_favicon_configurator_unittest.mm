@@ -29,18 +29,6 @@ std::unique_ptr<KeyedService> BuildTestFaviconLoader(
   return std::make_unique<TestFaviconLoader>();
 }
 
-// Checks that the `TabSnapshotAndFavicon` in `tab_snapshots_and_favicons` are
-// correctly populated.
-void CheckTabSnapshotsAndFavicons(
-    NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons,
-    int expected_count) {
-  ASSERT_EQ((int)tab_snapshots_and_favicons.count, expected_count);
-  for (TabSnapshotAndFavicon* tab in tab_snapshots_and_favicons) {
-    ASSERT_TRUE(tab.favicon);
-    ASSERT_TRUE(tab.snapshot);
-  }
-}
-
 }  // namespace
 
 // Test fixture for TabSnapshotAndFaviconConfigurator.
@@ -103,19 +91,41 @@ class TabSnapshotAndFaviconConfiguratorTest : public PlatformTest {
 // Tests the default use case of `FetchSnapshotAndFaviconForTabGroupItem:`.
 TEST_F(TabSnapshotAndFaviconConfiguratorTest,
        FetchSnapshotAndFaviconForTabGroupItem) {
-  __block BOOL completion_block_called = NO;
-  auto completion_block =
-      ^(TabGroupItem* item,
-        NSArray<TabSnapshotAndFavicon*>* tab_snapshots_and_favicons) {
-        ASSERT_EQ(item, tab_group_item_);
-        CheckTabSnapshotsAndFavicons(tab_snapshots_and_favicons, 2);
-        completion_block_called = YES;
-      };
+  __block int completion_block_called = 0;
+
+  auto completion_block = ^(TabGroupItem* item, NSInteger tabIndex,
+                            TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
+    completion_block_called++;
+  };
   _configurator->FetchSnapshotAndFaviconForTabGroupItem(
       tab_group_item_, web_state_list_, completion_block);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       TestTimeouts::action_timeout(), ^bool() {
-        return completion_block_called;
+        return completion_block_called == 4;
+      }));
+}
+
+// Tests the use case of `FetchSnapshotAndFaviconForTabGroupItem:` for a large
+// group.
+TEST_F(TabSnapshotAndFaviconConfiguratorTest,
+       FetchSnapshotAndFaviconForTabGroupItemlargeGroup) {
+  for (int index = 0; index < 8; index++) {
+    AppendNewWebState();
+  }
+  web_state_list_->MoveToGroup({2, 3, 4, 5, 6, 7, 8, 9},
+                               tab_group_item_.tabGroup);
+  ASSERT_EQ(tab_group_item_.tabGroup->range().count(), 10);
+
+  __block int completion_block_called = 0;
+  auto completion_block = ^(TabGroupItem* item, NSInteger tabIndex,
+                            TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
+    completion_block_called++;
+  };
+  _configurator->FetchSnapshotAndFaviconForTabGroupItem(
+      tab_group_item_, web_state_list_, completion_block);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 9;
       }));
 }
 
@@ -124,7 +134,6 @@ TEST_F(TabSnapshotAndFaviconConfiguratorTest,
        FetchSingleSnapshotAndFaviconFromWebState) {
   __block BOOL completion_block_called = NO;
   auto completion_block = ^(TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
-    CheckTabSnapshotsAndFavicons(@[ tab_snapshot_and_favicon ], 1);
     completion_block_called = YES;
   };
   _configurator->FetchSingleSnapshotAndFaviconFromWebState(

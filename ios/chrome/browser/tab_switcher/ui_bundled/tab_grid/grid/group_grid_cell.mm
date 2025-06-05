@@ -29,7 +29,7 @@
 namespace {
 
 // The size of symbol icons.
-NSInteger kIconSymbolPointSize = 13;
+const CGFloat kIconSymbolPointSize = 13;
 
 // Offsets the top and bottom snapshot views.
 const CGFloat kSnapshotViewLeadingOffset = 4;
@@ -89,10 +89,8 @@ const CGFloat kTopBarLargeInset = 20;
     contentView.layer.masksToBounds = YES;
     [self setupTopBar];
     _groupSnapshotsView = [[TabGroupSnapshotsView alloc]
-        initWithTabSnapshotsAndFavicons:nil
-                                   size:0
-                                  light:self.theme == GridThemeLight
-                                   cell:YES];
+        initWithLightInterface:self.theme == GridThemeLight
+                          cell:YES];
     _groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _closeTapTargetButton =
@@ -233,6 +231,20 @@ const CGFloat kTopBarLargeInset = 20;
 
 #pragma mark - Public
 
+- (void)configureTabSnapshotAndFavicon:
+            (TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                              tabIndex:(NSInteger)tabIndex {
+  CHECK_LE(tabIndex, _tabsCount);
+  [_groupSnapshotsView configureTabSnapshotAndFavicon:tabSnapshotAndFavicon
+                                             tabIndex:tabIndex];
+}
+
+- (NSArray<UIView*>*)allGroupTabViews {
+  return [_groupSnapshotsView allGroupTabViews];
+}
+
+#pragma mark - Setters
+
 // Updates the theme to either dark or light. Updating is only done if the
 // current theme is not the desired theme.
 - (void)setTheme:(GridTheme)theme {
@@ -267,24 +279,6 @@ const CGFloat kTopBarLargeInset = 20;
   _groupColor = groupColor;
 }
 
-- (void)configureWithSnapshotsAndFavicons:
-            (NSArray<TabSnapshotAndFavicon*>*)snapshotsAndFavicons
-                           totalTabsCount:(NSInteger)totalTabsCount {
-  CHECK_LE((int)snapshotsAndFavicons.count, totalTabsCount);
-  [_groupSnapshotsView
-      configureTabGroupSnapshotsViewWithTabSnapshotsAndFavicons:
-          snapshotsAndFavicons
-                                                           size:totalTabsCount];
-}
-
-- (NSArray<UIView*>*)allGroupTabViews {
-  return [_groupSnapshotsView allGroupTabViews];
-}
-
-- (void)setTabsCount:(NSInteger)tabsCount {
-  _tabsCount = tabsCount;
-}
-
 - (void)setTitle:(NSString*)title {
   _titleLabel.text = title;
   self.accessibilityLabel = l10n_util::GetNSStringF(
@@ -317,6 +311,11 @@ const CGFloat kTopBarLargeInset = 20;
   _dotContainer.facePile = facePile;
   _facePile = facePile;
   [self updateTopBarConstraints];
+}
+
+- (void)setTabsCount:(NSInteger)tabsCount {
+  _tabsCount = tabsCount;
+  _groupSnapshotsView.tabsCount = tabsCount;
 }
 
 #pragma mark - Private

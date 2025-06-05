@@ -2008,9 +2008,11 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   return nil;
 }
 
-- (void)fetchTabGroupItemInfo:(TabGroupItem*)tabGroupItem
-                   completion:
-                       (GroupTabSnapshotAndFaviconCompletionBlock)completion {
+- (void)
+    fetchTabGroupItemSnapshotsAndFavicons:(TabGroupItem*)tabGroupItem
+                               completion:
+                                   (GroupTabSnapshotAndFaviconCompletionBlock)
+                                       completion {
   WebStateList* webStateList = self.webStateList;
   // If this is called during a search result, it may contain items from other
   // windows or from the inactive browser.

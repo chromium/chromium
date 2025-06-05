@@ -45,8 +45,6 @@
   raw_ptr<WebStateList> _webStateList;
   // Tab group to edit.
   raw_ptr<const TabGroup> _tabGroup;
-  // Array of all snapshots and favicons of the group.
-  NSMutableArray<TabSnapshotAndFavicon*>* _tabSnapshotsAndFavicons;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
   // Helper class to configure tab item images.
@@ -79,14 +77,13 @@
     _consumer = consumer;
     [_consumer setDefaultGroupColor:TabGroup::DefaultColorForNewTabGroup(
                                         _webStateList)];
+    [_consumer setTabsCount:_identifiers.size()];
     _tabImagesConfigurator =
         std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
     ProfileIOS* profile = browser->GetProfile();
     BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
-    _tabSnapshotsAndFavicons = [[NSMutableArray alloc] init];
-
-    NSUInteger numberOfRequestedImages = 0;
+    NSInteger numberOfRequestedImages = 0;
     for (web::WebStateID identifier : identifiers) {
       if (numberOfRequestedImages >= 7) {
         break;
@@ -111,12 +108,13 @@
                              WebStateSearchCriteria{.identifier = identifier});
       }
 
+      NSInteger tabIndexRequested = numberOfRequestedImages;
       __weak CreateTabGroupMediator* weakSelf = self;
       _tabImagesConfigurator->FetchSingleSnapshotAndFaviconFromWebState(
           currentWebStateList->GetWebStateAt(index),
           ^(TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
-            [weakSelf addTabSnapshotAndFavicon:tabSnapshotAndFavicon];
-            [weakSelf updateConsumer];
+            [weakSelf configureTabSnapshotAndFavicon:tabSnapshotAndFavicon
+                                            tabIndex:tabIndexRequested];
           });
       numberOfRequestedImages++;
     }
@@ -149,13 +147,6 @@
         std::make_unique<TabSnapshotAndFaviconConfigurator>(faviconLoader);
 
     __weak CreateTabGroupMediator* weakSelf = self;
-    _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
-        _groupItem, _webStateList,
-        ^(TabGroupItem* item,
-          NSArray<TabSnapshotAndFavicon*>* tabSnapshotsAndFavicons) {
-          [weakSelf setTabSnapshotsAndFavicons:tabSnapshotsAndFavicons];
-          [weakSelf updateConsumer];
-        });
 
     // Do not use the helper to get the following values as the title helper do
     // not return nil but the number of tabs. In this case, we want nil so it do
@@ -163,6 +154,15 @@
     tab_groups::TabGroupVisualData visualData = _tabGroup->visual_data();
     [_consumer setDefaultGroupColor:visualData.color()];
     [_consumer setGroupTitle:base::SysUTF16ToNSString(visualData.title())];
+    [_consumer setTabsCount:_tabGroup->range().count()];
+
+    _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
+        _groupItem, _webStateList,
+        ^(TabGroupItem* item, NSInteger tabIndex,
+          TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
+          [weakSelf configureTabSnapshotAndFavicon:tabSnapshotAndFavicon
+                                          tabIndex:tabIndex];
+        });
   }
   return self;
 }
@@ -253,27 +253,13 @@
   }
 }
 
-#pragma mark - Private helpers
+#pragma mark - Private
 
-// Adds the given `tabSnapshotAndFavicon` to the GroupTabInfo array.
-- (void)addTabSnapshotAndFavicon:(TabSnapshotAndFavicon*)tabSnapshotAndFavicon {
-  [_tabSnapshotsAndFavicons addObject:tabSnapshotAndFavicon];
-}
-
-// Sets the _tabSnapshotsAndFavicons array with `tabSnapshotsAndFavicons`.
-- (void)setTabSnapshotsAndFavicons:
-    (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons {
-  _tabSnapshotsAndFavicons =
-      [[NSMutableArray alloc] initWithArray:tabSnapshotsAndFavicons];
-}
-
-// Sends to the consumer the needed pictures and the number of items to display
-// it properly.
-- (void)updateConsumer {
-  NSInteger numberOfItem =
-      _tabGroup ? _tabGroup->range().count() : _identifiers.size();
-  [_consumer setTabSnapshotsAndFavicons:_tabSnapshotsAndFavicons
-                  numberOfSelectedItems:numberOfItem];
+// Configures the `tabSnapshotAndFavicon` for the tab at `tabIndex`.
+- (void)configureTabSnapshotAndFavicon:
+            (TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                              tabIndex:(NSInteger)tabIndex {
+  [_consumer setSnapshotAndFavicon:tabSnapshotAndFavicon tabIndex:tabIndex];
 }
 
 @end

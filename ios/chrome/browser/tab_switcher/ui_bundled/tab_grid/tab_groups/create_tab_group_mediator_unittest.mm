@@ -20,12 +20,14 @@
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color {
 }
 
-- (void)setTabSnapshotsAndFavicons:
-            (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
-             numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
+- (void)setGroupTitle:(NSString*)title {
 }
 
-- (void)setGroupTitle:(NSString*)title {
+- (void)setSnapshotAndFavicon:(TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                     tabIndex:(NSInteger)tabIndex {
+}
+
+- (void)setTabsCount:(NSInteger)tabsCount {
 }
 
 @end

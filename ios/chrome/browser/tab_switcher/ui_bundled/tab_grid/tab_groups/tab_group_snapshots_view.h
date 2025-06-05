@@ -10,20 +10,24 @@
 @class GroupTabView;
 @class TabSnapshotAndFavicon;
 
-// View controller that manages the tab group sample view with multiples
-// snapshots.
+// View that manages the tab group sample view with multiples snapshots.
 @interface TabGroupSnapshotsView : UIView
 
-- (instancetype)initWithTabSnapshotsAndFavicons:
-                    (NSArray<TabSnapshotAndFavicon*>*)tabSnapshotsAndFavicons
-                                           size:(NSUInteger)size
-                                          light:(BOOL)isLight
-                                           cell:(BOOL)isCell;
+// Number of tabs displayed in the snapshot
+@property(nonatomic, assign) NSInteger tabsCount;
 
-- (void)configureTabGroupSnapshotsViewWithTabSnapshotsAndFavicons:
-            (NSArray<TabSnapshotAndFavicon*>*)tabGroupInfos
-                                                             size:(NSUInteger)
-                                                                      size;
+// Initializes the view.
+// - `isLight`: `YES` for light UI interface.
+// - `isCell`: `YES` if the view is used as a cell.
+- (instancetype)initWithLightInterface:(BOOL)isLight
+                                  cell:(BOOL)isCell NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+- (void)configureTabSnapshotAndFavicon:
+            (TabSnapshotAndFavicon*)tabSnapshotAndFavicon
+                              tabIndex:(NSInteger)tabIndex;
 
 // Returns all tab views that compose this tab group view in the order they're
 // presented.
