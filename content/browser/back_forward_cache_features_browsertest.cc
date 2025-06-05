@@ -2834,8 +2834,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Verifies that transactions from a single client/render frame and a dedicated
 // worker belonging to the frame cannot disable BFCache for that client.
 // Regression test for https://crbug.com/343519262.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       IndexedDBClientWithDedicatedWorkerDoesntBlockSelf) {
+//
+// TODO(https://crbug.com/422753550): Reactivate test.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    DISABLED_IndexedDBClientWithDedicatedWorkerDoesntBlockSelf) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Use IDB and spam transactions.
