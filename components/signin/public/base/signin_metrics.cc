@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -38,6 +40,23 @@ std::string_view GetPromoActionHistogramSuffix(PromoAction promo_action) {
       NOTREACHED() << "No signin promo should not record metrics.";
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+std::string_view ReauthFlowEventToHistogramSuffix(ReauthFlowEvent event) {
+  switch (event) {
+    case ReauthFlowEvent::kStarted:
+      return ".Started";
+    case ReauthFlowEvent::kCompleted:
+      return ".Completed";
+    case ReauthFlowEvent::kError:
+      return ".Error";
+    case ReauthFlowEvent::kCancelled:
+      return ".Cancelled";
+    case ReauthFlowEvent::kInterrupted:
+      return ".Interrupted";
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -318,6 +337,14 @@ void RecordSignoutConfirmationFromDataLossAlert(
       break;
   }
   base::UmaHistogramBoolean(histogram, signout_confirmed);
+}
+
+void RecordReauthFlowEventInSigninFlow(signin_metrics::AccessPoint access_point,
+                                       ReauthFlowEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Signin.Reauth.InSigninFlow",
+                    ReauthFlowEventToHistogramSuffix(event)}),
+      access_point);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
