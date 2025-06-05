@@ -11452,6 +11452,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/omnibox/omnibox_view_views_browsertest.cc",
         "../browser/ui/views/page_action/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
         "../browser/ui/views/passwords/manage_passwords_icon_view_interactive_uitest.cc",
+        "../browser/ui/views/passwords/manage_passwords_page_action_controller_interactive_uitest.cc",
         "../browser/ui/views/passwords/password_bubble_interactive_uitest.cc",
         "../browser/ui/views/passwords/password_change/password_change_icon_views_interactive_ui_test.cc",
         "../browser/ui/views/performance_controls/memory_saver_interactive_ui_test.cc",

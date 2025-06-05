@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
@@ -198,6 +199,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       commerce_price_insights_page_action_view_controller_ =
           std::make_unique<commerce::PriceInsightsPageActionViewController>(
               tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
+      manage_passwords_page_action_controller_ =
+          std::make_unique<ManagePasswordsPageActionController>(
+              *page_action_controller_);
     }
   }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -141,56 +142,8 @@ const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
 
 std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     const {
-  std::u16string result;
-  switch (state_) {
-    case password_manager::ui::INACTIVE_STATE:
-    case password_manager::ui::SAVE_CONFIRMATION_STATE:
-    case password_manager::ui::UPDATE_CONFIRMATION_STATE:
-    case password_manager::ui::CREDENTIAL_REQUEST_STATE:
-    case password_manager::ui::AUTO_SIGNIN_STATE:
-    case password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE:
-    case password_manager::ui::MANAGE_STATE:
-    case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:
-    case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:
-    // TODO(crbug.com/375564659): Add tooltip reflecting password change flow
-    // state.
-    case password_manager::ui::PASSWORD_CHANGE_STATE:
-    // TODO(b/345242100): Add correct tooltip for passkey saved.
-    case password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE:
-    case password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE:
-    case password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE:
-    case password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE:
-    case password_manager::ui::PASSKEY_UPGRADE_STATE:
-      result = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
-      break;
-    case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
-    case password_manager::ui::PENDING_PASSWORD_STATE:
-    case password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE:
-      result = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
-      break;
-    case password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE:
-    case password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE:
-      result = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
-      break;
-    case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
-    case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:
-      result = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
-      break;
-    case password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS:
-      result = l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_TOOLTIP_SHARED_NOTIFICATION);
-      break;
-    case password_manager::ui::KEYCHAIN_ERROR_STATE:
-      result = l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_TOOLTIP_KEYCHAIN_ERROR);
-      break;
-  }
-  if (is_blocklisted_ &&
-      base::FeatureList::IsEnabled(features::kSavePasswordsContextualUi)) {
-    result += u" - " +
-              l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_BLOCKED);
-  }
-  return result;
+  return ManagePasswordsPageActionController::GetManagePasswordsTooltipText(
+      state_, is_blocklisted_);
 }
 
 void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(
