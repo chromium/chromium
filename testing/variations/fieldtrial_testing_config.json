@@ -14863,21 +14863,6 @@
             ]
         }
     ],
-    "MsaaSettingsMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "DetectHiDpiForMsaa",
-                    "enable_features": [
-                        "DetectHiDpiForMsaa"
-                    ]
-                }
-            ]
-        }
-    ],
     "MultiBufferNeverDefer": [
         {
             "platforms": [

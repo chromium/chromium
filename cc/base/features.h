@@ -41,9 +41,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 // Enabled 03/2024, kept to run a holdback experiment.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
 
-// Use 4x MSAA (vs 8) on High DPI screens.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDetectHiDpiForMsaa);
-
 // When no frames are produced in a certain time interval, reclaim prepaint
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);
