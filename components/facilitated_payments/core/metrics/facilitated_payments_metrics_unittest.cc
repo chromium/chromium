@@ -321,7 +321,8 @@ INSTANTIATE_TEST_SUITE_P(
                     PixFlowExitedReason::kActionTokenNotAvailable,
                     PixFlowExitedReason::kUserLoggedOut,
                     PixFlowExitedReason::kFopSelectorClosedNotByUser,
-                    PixFlowExitedReason::kFopSelectorClosedByUser));
+                    PixFlowExitedReason::kFopSelectorClosedByUser,
+                    PixFlowExitedReason::kAutofillPaymentMethodsDisabled));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

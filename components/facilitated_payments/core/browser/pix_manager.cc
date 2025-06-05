@@ -132,6 +132,12 @@ void PixManager::OnPixCodeValidated(
     return;
   }
 
+  if (!payments_data_manager->IsAutofillPaymentMethodsEnabled()) {
+    LogPixFlowExitedReason(
+        PixFlowExitedReason::kAutofillPaymentMethodsDisabled);
+    return;
+  }
+
   // If the user has no linked Pix accounts, initialize the Pix account linking
   // flow.
   if (!payments_data_manager->HasMaskedBankAccounts()) {

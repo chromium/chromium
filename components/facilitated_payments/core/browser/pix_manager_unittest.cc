@@ -497,6 +497,25 @@ TEST_F(PixManagerTest, PayflowExitedReason_InvalidCode) {
       /*expected_bucket_count=*/1);
 }
 
+// If the user has turned off autofilling payment methods, the
+// PayflowExitedReason histogram should be logged.
+TEST_F(PixManagerTest, PayflowExitedReason_PaymentsAutofillTurnedOff) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  // Disable payment methods pref.
+  autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service_.get(), false);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kAutofillPaymentMethodsDisabled,
+      /*expected_bucket_count=*/1);
+}
+
 // If the user has opted out of the Pix flow, the PayflowExitedReason
 // histogram should be logged.
 TEST_F(PixManagerTest, PayflowExitedReason_UserOptedOut) {

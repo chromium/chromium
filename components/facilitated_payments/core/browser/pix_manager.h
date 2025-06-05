@@ -130,6 +130,8 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTest,
       NoLinkedAccount_AccountLinkingFlagEnabled_AccountLinkingFlowTriggered);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
+                           PayflowExitedReason_PaymentsAutofillTurnedOff);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_UserOptedOut);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,

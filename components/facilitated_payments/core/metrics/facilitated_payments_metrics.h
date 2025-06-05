@@ -116,7 +116,9 @@ enum class PixFlowExitedReason {
   kFopSelectorClosedByUser = 12,
   // Chrome attempted, but was unable to invoke purchase action.
   kPurchaseActionCouldNotBeInvoked = 13,
-  kMaxValue = kPurchaseActionCouldNotBeInvoked
+  // Autofilling payment FOPs disabled.
+  kAutofillPaymentMethodsDisabled = 14,
+  kMaxValue = kAutofillPaymentMethodsDisabled
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 

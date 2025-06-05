@@ -95,6 +95,7 @@ reviewer.
              result of a user action"/>
   <int value="12" label="The FOP selector was closed by the user"/>
   <int value="13" label="The purchase action could not be invoked"/>
+  <int value="14" label="Autofilling payment methods disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->
