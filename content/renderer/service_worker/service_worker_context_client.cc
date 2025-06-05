@@ -381,9 +381,6 @@ void ServiceWorkerContextClient::WillDestroyWorkerContext(
   interface_provider_receiver_.reset();
   registry_.clear();
 
-  // At this point WillStopCurrentWorkerThread is already called, so
-  // worker_task_runner_->RunsTasksInCurrentSequence() returns false
-  // (while we're still on the worker thread).
   proxy_ = nullptr;
 
   // We have to clear callbacks now, as they need to be freed on the
