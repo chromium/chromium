@@ -12,7 +12,7 @@ started.
 * **Ignorance is ok.** UI is a specialized field, and if you haven't worked with
 it before, there's no reason you should know everything. Even if you have done
 UI development on other products or on the web, the Views toolkit has some
-differences that might leave yourself scratching your head. Don't spend too long
+differences that might leave you scratching your head. Don't spend too long
 trying to figure things out yourself;
 [ask questions](https://chromium.googlesource.com/chromium/src/+/main/docs/ui/ask/index.md)
 early and often, before you discover in code review that that lovely solution
@@ -36,7 +36,7 @@ different needs and abilities, so ensure your design takes
 
 * **Build for the long term.** Chrome has a rapid release schedule in part so we
 don't feel pressure to ship changes before they're ready. It's easy for
-engineers to ship UI and leave it unmaintained, adding to the deifficulty of
+engineers to ship UI and leave it unmaintained, adding to the difficulty of
 future refactors and stylistic changes. So expect reviewers to set a high bar.
 Ask how to structure your classes in keeping with MVC (Model-View-Controller)
 principles. Write automated tests for your feature, including both functional
