@@ -7574,10 +7574,6 @@ crbug.com/1476826 [ Win ] http/tests/xmlhttprequest/small-chunks-response-text.h
 # Gardener 2023-10-13
 crbug.com/1492371 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/event-breakpoints.js [ Pass Timeout ]
 
-
-crbug.com/40276793 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
-crbug.com/40276793 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
-
 # Expected to fail 2023-11-13
 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-preload-first-frame-presented.html [ Failure Timeout ]
 
