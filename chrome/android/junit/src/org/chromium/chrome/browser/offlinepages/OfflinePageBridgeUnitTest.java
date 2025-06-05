@@ -159,7 +159,6 @@ public class OfflinePageBridgeUnitTest {
 
         answerGetPagesByClientIds(itemCount);
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
-        ClientId secondClientId = new ClientId(TEST_NAMESPACE, "id number two");
         List<ClientId> list = new ArrayList<>();
         mBridge.getPagesByClientIds(list, callback);
 
@@ -195,7 +194,6 @@ public class OfflinePageBridgeUnitTest {
 
         answerDeletePagesByClientIds(itemCount);
         Callback<Integer> callback = createDeletePageCallback();
-        ClientId secondClientId = new ClientId(TEST_NAMESPACE, "id number two");
         List<ClientId> list = new ArrayList<>();
         mBridge.deletePagesByClientId(list, callback);
 

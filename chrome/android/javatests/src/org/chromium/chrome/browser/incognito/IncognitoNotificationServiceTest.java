@@ -96,7 +96,6 @@ public class IncognitoNotificationServiceTest {
                             Matchers.greaterThanOrEqualTo(1));
                 });
 
-        boolean isIncognitoNotificationDisplayed = false;
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     List<? extends StatusBarNotificationProxy> activeNotifications =

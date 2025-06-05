@@ -342,7 +342,6 @@ public class OmahaBaseTest {
     @Test
     @Feature({"Omaha"})
     public void testPipelineFreshInstallUpdatedAvailable_crbug_1095755() {
-        final long now = mDelegate.getScheduler().getCurrentTime();
         final String updateVersion = "10.0.0.0";
 
         // Trigger Omaha.
