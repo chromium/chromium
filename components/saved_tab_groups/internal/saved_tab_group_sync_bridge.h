@@ -76,6 +76,8 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   void SavedTabGroupAddedLocally(const base::Uuid& guid);
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
@@ -155,6 +157,18 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
   void DeleteDataFromLocalStorage(
       const base::Uuid& guid,
       syncer::DataTypeStore::WriteBatch* write_batch);
+
+  // Converts a `group` to a `SavedTabGroupSpecifics` proto. The returned
+  // specifics also contains unsupported fields that are stored in sync
+  // metadata.
+  proto::SavedTabGroupData SavedTabGroupToData(
+      const SavedTabGroup& group) const;
+
+  // Converts a `tab` to a `SavedTabGroupSpecifics` proto. The returned
+  // specifics also contains unsupported fields that are stored in sync
+  // metadata.
+  proto::SavedTabGroupData SavedTabGroupTabToData(
+      const SavedTabGroupTab& tab) const;
 
   // Attempts to add the tabs found in `tabs_missing_groups_` to local storage.
   void ResolveTabsMissingGroups(syncer::DataTypeStore::WriteBatch* write_batch);

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -34,6 +35,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/utils.h"
+#include "components/saved_tab_groups/test_support/extended_saved_tab_group_specifics.pb.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_queue.h"
@@ -58,13 +60,35 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::test::EqualsProto;
 using syncer::ConflictResolution;
 using syncer::EntityData;
 using testing::_;
+using testing::ElementsAre;
 using testing::Invoke;
+using testing::Not;
+using testing::Pointee;
+using testing::ReturnRef;
 
 namespace tab_groups {
 namespace {
+
+// Returns the extra (unsupported) field from `specifics` which don't have a
+// corresponding field in proto.
+std::string GetGroupExtraFieldFromSpecifics(
+    const sync_pb::SavedTabGroupSpecifics& specifics) {
+  sync_pb::test_utils::SavedTabGroupSpecifics extended_specifics;
+  bool success =
+      extended_specifics.ParseFromString(specifics.SerializeAsString());
+  CHECK(success);
+  return extended_specifics.group().extra_field_for_testing();
+}
+
+MATCHER_P(EntityDataHasGroupUnsupportedFields, extra_field, "") {
+  const sync_pb::SavedTabGroupSpecifics& arg_specifics =
+      arg.specifics.saved_tab_group();
+  return GetGroupExtraFieldFromSpecifics(arg_specifics) == extra_field;
+}
 
 // Discard orphaned tabs after 30 days if the associated group cannot be found.
 constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
@@ -236,6 +260,24 @@ syncer::EntityChangeList CreateEntityChangeListFromGroup(
   return entity_change_list;
 }
 
+sync_pb::SavedTabGroupSpecifics MakeTabGroupSpecificsWithUnknownFields(
+    const base::Uuid& group_guid,
+    const std::string& title,
+    const std::string& extra_field) {
+  sync_pb::SavedTabGroupSpecifics specifics;
+  specifics.set_guid(group_guid.AsLowercaseString());
+
+  sync_pb::test_utils::SavedTabGroupSpecifics extended_specifics;
+  extended_specifics.mutable_group()->set_title(title);
+  extended_specifics.mutable_group()->set_extra_field_for_testing(extra_field);
+  sync_pb::SavedTabGroupSpecifics specifics_with_unknown_fields;
+  bool success = specifics_with_unknown_fields.ParseFromString(
+      extended_specifics.SerializeAsString());
+  CHECK(success);
+  specifics.MergeFrom(specifics_with_unknown_fields);
+  return specifics;
+}
+
 }  // anonymous namespace
 
 // // Verifies the sync bridge correctly passes/merges data in to the model.
@@ -255,6 +297,8 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics(_))
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
         &sync_bridge_model_wrapper_,
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
@@ -299,6 +343,18 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
     return data;
   }
 
+  SavedTabGroupModel* model() { return &saved_tab_group_model_; }
+  SavedTabGroupSyncBridge* bridge() { return bridge_.get(); }
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
+    return processor_;
+  }
+  const testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() const {
+    return processor_;
+  }
+
+ protected:
   base::test::TaskEnvironment task_environment_;
   SavedTabGroupModel saved_tab_group_model_;
   SyncBridgeTabGroupModelWrapper sync_bridge_model_wrapper_;
@@ -1624,6 +1680,177 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   std::optional<proto::SavedTabGroupData> stored_saved_tab_group_data =
       ReadSavedTabGroupDataFromStore(pending_ntp_guid);
   ASSERT_TRUE(stored_saved_tab_group_data.has_value());
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest,
+       ShouldTrimAllSupportedFieldsFromRemoteTabSpecifics) {
+  sync_pb::EntitySpecifics remote_tab_specifics;
+  sync_pb::SavedTabGroupSpecifics* tab_specifics =
+      remote_tab_specifics.mutable_saved_tab_group();
+  tab_specifics->set_guid("guid");
+  tab_specifics->set_update_time_windows_epoch_micros(1234567890);
+  tab_specifics->mutable_tab()->set_url("http://google.com/1");
+  tab_specifics->mutable_tab()->set_title("title");
+  tab_specifics->mutable_tab()->set_group_guid("group_guid");
+  tab_specifics->mutable_tab()->set_position(20);
+
+  tab_specifics->mutable_attribution_metadata()
+      ->mutable_created()
+      ->mutable_device_info()
+      ->set_cache_guid("cache_guid");
+  tab_specifics->mutable_attribution_metadata()
+      ->mutable_updated()
+      ->mutable_device_info()
+      ->set_cache_guid("cache_guid");
+
+  EXPECT_THAT(
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(remote_tab_specifics),
+      EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest,
+       ShouldTrimAllSupportedFieldsFromRemoteGroupSpecifics) {
+  sync_pb::EntitySpecifics remote_group_specifics;
+  sync_pb::SavedTabGroupSpecifics* group_specifics =
+      remote_group_specifics.mutable_saved_tab_group();
+  group_specifics->set_guid("guid");
+  group_specifics->set_creation_time_windows_epoch_micros(2345678901);
+  group_specifics->set_update_time_windows_epoch_micros(1234567890);
+  group_specifics->mutable_group()->set_position(2);
+  group_specifics->mutable_group()->set_title("title");
+  group_specifics->mutable_group()->set_color(
+      sync_pb::SavedTabGroup_SavedTabGroupColor_SAVED_TAB_GROUP_COLOR_CYAN);
+  group_specifics->mutable_group()->set_pinned_position(3);
+
+  group_specifics->mutable_attribution_metadata()
+      ->mutable_created()
+      ->mutable_device_info()
+      ->set_cache_guid("cache_guid");
+  group_specifics->mutable_attribution_metadata()
+      ->mutable_updated()
+      ->mutable_device_info()
+      ->set_cache_guid("cache_guid");
+
+  EXPECT_THAT(bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                  remote_group_specifics),
+              EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest,
+       ShouldKeepUnknownFieldsFromRemoteTabSpecifics) {
+  sync_pb::test_utils::SavedTabGroupSpecifics extended_tab_specifics;
+  extended_tab_specifics.set_guid("guid");
+  extended_tab_specifics.set_update_time_windows_epoch_micros(1234567890);
+  extended_tab_specifics.mutable_tab()->set_url("http://google.com/1");
+  extended_tab_specifics.mutable_tab()->set_title("title");
+  extended_tab_specifics.mutable_tab()->set_group_guid("group_guid");
+  extended_tab_specifics.mutable_tab()->set_position(20);
+  extended_tab_specifics.mutable_tab()->set_extra_field_for_testing(
+      "extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_specifics;
+  ASSERT_TRUE(remote_specifics.mutable_saved_tab_group()->ParseFromString(
+      extended_tab_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(remote_specifics);
+
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SavedTabGroupSpecifics deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.saved_tab_group().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.tab().extra_field_for_testing(),
+            "extra_field_for_testing");
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest,
+       ShouldKeepUnknownFieldsFromRemoteGroupSpecifics) {
+  sync_pb::test_utils::SavedTabGroupSpecifics extended_group_specifics;
+
+  extended_group_specifics.set_guid("guid");
+  extended_group_specifics.set_creation_time_windows_epoch_micros(2345678901);
+  extended_group_specifics.set_update_time_windows_epoch_micros(1234567890);
+  extended_group_specifics.mutable_group()->set_position(2);
+  extended_group_specifics.mutable_group()->set_title("title");
+  extended_group_specifics.mutable_group()->set_color(
+      sync_pb::test_utils::
+          SavedTabGroup_SavedTabGroupColor_SAVED_TAB_GROUP_COLOR_CYAN);
+  extended_group_specifics.mutable_group()->set_pinned_position(3);
+  extended_group_specifics.mutable_group()->set_extra_field_for_testing(
+      "extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_specifics;
+  ASSERT_TRUE(remote_specifics.mutable_saved_tab_group()->ParseFromString(
+      extended_group_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(remote_specifics);
+
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SavedTabGroupSpecifics deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.saved_tab_group().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.group().extra_field_for_testing(),
+            "extra_field_for_testing");
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest, ShouldPopulateUnknownFieldsOnLocalChanges) {
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  sync_pb::EntitySpecifics remote_tab_group_specifics;
+  *remote_tab_group_specifics.mutable_saved_tab_group() =
+      MakeTabGroupSpecificsWithUnknownFields(group_guid, "title",
+                                             "extra_field");
+  remote_tab_group_specifics.mutable_saved_tab_group()
+      ->mutable_group()
+      ->set_color(
+          sync_pb::SavedTabGroup_SavedTabGroupColor_SAVED_TAB_GROUP_COLOR_CYAN);
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_tab_group_specifics);
+  ON_CALL(mock_processor(), GetPossiblyTrimmedRemoteSpecifics(_))
+      .WillByDefault(ReturnRef(trimmed_specifics));
+
+  ASSERT_EQ(0u, model()->saved_tab_groups().size());
+
+  // Mimic remote addition of 1 group with 1 tab.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateEntityChange(remote_tab_group_specifics.saved_tab_group(),
+                         syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  SavedTabGroupTab tab(GURL("https://youtube.com"), u"Youtube", group_guid,
+                       /*position=*/5);
+  change_list.push_back(CreateEntityChange(
+      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(tab),
+      syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                       std::move(change_list));
+  ASSERT_EQ(1u, model()->saved_tab_groups().size());
+  ASSERT_THAT(model()->saved_tab_groups(),
+              ElementsAre(test::HasSavedGroupMetadata(
+                  "title", tab_groups::TabGroupColorId::kCyan)));
+
+  // Simulate opening the group in the tab strip to make local changes.
+  ASSERT_EQ(group_guid, model()->saved_tab_groups().front().saved_guid());
+  const tab_groups::LocalTabGroupID local_tab_group_id =
+      test::GenerateRandomTabGroupID();
+  model()->OnGroupOpenedInTabStrip(group_guid, local_tab_group_id);
+
+  // Make local changes to the group. The bridge should make a local change
+  // with the unknown fields populated.
+  EXPECT_CALL(
+      mock_processor(),
+      Put(_, Pointee(EntityDataHasGroupUnsupportedFields("extra_field")), _));
+  tab_groups::TabGroupVisualData visual_data(
+      u"new title", tab_groups::TabGroupColorId::kYellow);
+  model()->UpdateVisualDataLocally(local_tab_group_id, &visual_data);
 }
 
 }  // namespace tab_groups
