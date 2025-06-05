@@ -178,7 +178,7 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
-      for (FieldType field_type : attribute.GetSupportedTypes()) {
+      for (FieldType field_type : attribute.type().field_subtypes()) {
         bool is_empty = comparator.HasOnlySkippableCharacters(attribute.GetInfo(
             field_type, comparator.app_locale(), std::nullopt));
         if (!is_empty) {
@@ -213,7 +213,7 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
-      for (FieldType field_type : attribute.GetSupportedTypes()) {
+      for (FieldType field_type : attribute.type().field_subtypes()) {
         bool matches = comparator.Compare(
             value,
             attribute.GetInfo(field_type, comparator.app_locale(),
@@ -245,7 +245,7 @@ void FindAndSetPossibleDateFieldTypes(
 
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
-      for (const FieldType field_type : attribute.GetSupportedTypes()) {
+      for (const FieldType field_type : attribute.type().field_subtypes()) {
         if (!IsDateFieldType(field_type)) {
           continue;
         }

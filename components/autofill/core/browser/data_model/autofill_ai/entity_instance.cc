@@ -52,112 +52,128 @@ AttributeInstance& AttributeInstance::operator=(AttributeInstance&&) = default;
 AttributeInstance::~AttributeInstance() = default;
 
 std::u16string AttributeInstance::GetInfo(
-    FieldType type,
+    FieldType field_type,
     const std::string& app_locale,
     base::optional_ref<const std::u16string> format_string) const {
-  type = GetNormalizedType(type);
-  if (type == UNKNOWN_TYPE) {
+  field_type = GetNormalizedFieldType(field_type);
+  if (field_type == UNKNOWN_TYPE) {
     return u"";
   }
-  CHECK(GetSupportedTypes().contains(type));
+  CHECK(type_.field_subtypes().contains(field_type));
   return std::visit(
-      absl::Overload{
-          [&](const CountryInfo& country) {
-            return country.GetCountryName(app_locale);
-          },
-          [&](const DateInfo& date) {
-            // TODO(crbug.com/396325496): Consider falling back
-            // to a locale-specific format by relying on
-            // `app_locale`.
-            return date.GetDate(format_string ? *format_string : u"YYYY-MM-DD");
-          },
-          [&](const NameInfo&) { return GetRawInfo(/*pass_key=*/{}, type); },
-          [&](const StateInfo&) { return GetRawInfo(/*pass_key=*/{}, type); },
-          [&](const std::u16string&) {
-            return GetRawInfo(/*pass_key=*/{}, type);
-          }},
+      absl::Overload{[&](const CountryInfo& country) {
+                       return country.GetCountryName(app_locale);
+                     },
+                     [&](const DateInfo& date) {
+                       // TODO(crbug.com/396325496): Consider falling back
+                       // to a locale-specific format by relying on
+                       // `app_locale`.
+                       return date.GetDate(format_string ? *format_string
+                                                         : u"YYYY-MM-DD");
+                     },
+                     [&](const NameInfo&) {
+                       return GetRawInfo(/*pass_key=*/{}, field_type);
+                     },
+                     [&](const StateInfo&) {
+                       return GetRawInfo(/*pass_key=*/{}, field_type);
+                     },
+                     [&](const std::u16string&) {
+                       return GetRawInfo(/*pass_key=*/{}, field_type);
+                     }},
       info_);
 }
 
 std::u16string AttributeInstance::GetRawInfo(GetRawInfoPassKey,
-                                             FieldType type) const {
-  type = GetNormalizedType(type);
-  if (type == UNKNOWN_TYPE) {
+                                             FieldType field_type) const {
+  field_type = GetNormalizedFieldType(field_type);
+  if (field_type == UNKNOWN_TYPE) {
     return u"";
   }
-  CHECK(GetSupportedTypes().contains(type));
+  CHECK(type_.field_subtypes().contains(field_type));
   return std::visit(
       absl::Overload{
           [&](const CountryInfo& country) {
             return base::UTF8ToUTF16(country.GetCountryCode());
           },
           [&](const DateInfo& date) { return date.GetDate(u"YYYY-MM-DD"); },
-          [&](const NameInfo& name) { return name.GetRawInfo(type); },
+          [&](const NameInfo& name) {
+            if (!name.GetSupportedTypes().contains(field_type)) {
+              return std::u16string();
+            }
+            return name.GetRawInfo(field_type);
+          },
           [&](const StateInfo& state) { return state.value(); },
           [&](const std::u16string& value) { return value; }},
       info_);
 }
 
 VerificationStatus AttributeInstance::GetVerificationStatus(
-    FieldType type) const {
-  type = GetNormalizedType(type);
-  if (type == UNKNOWN_TYPE) {
+    FieldType field_type) const {
+  field_type = GetNormalizedFieldType(field_type);
+  if (field_type == UNKNOWN_TYPE) {
     return VerificationStatus::kNoStatus;
   }
-  CHECK(GetSupportedTypes().contains(type));
+  CHECK(type_.field_subtypes().contains(field_type));
   return std::visit(
       absl::Overload{
           [&](const CountryInfo&) { return VerificationStatus::kNoStatus; },
           [&](const DateInfo&) { return VerificationStatus::kNoStatus; },
           [&](const NameInfo& name) {
-            return name.GetVerificationStatus(type);
+            if (!name.GetSupportedTypes().contains(field_type)) {
+              return VerificationStatus::kNoStatus;
+            }
+            return name.GetVerificationStatus(field_type);
           },
           [&](const StateInfo&) { return VerificationStatus::kNoStatus; },
           [&](const std::u16string&) { return VerificationStatus::kNoStatus; }},
       info_);
 }
 
-void AttributeInstance::SetInfo(FieldType type,
+void AttributeInstance::SetInfo(FieldType field_type,
                                 const std::u16string& value,
                                 const std::string& app_locale,
                                 std::u16string_view format_string,
                                 VerificationStatus status) {
-  type = GetNormalizedType(type);
-  if (type == UNKNOWN_TYPE) {
+  field_type = GetNormalizedFieldType(field_type);
+  if (field_type == UNKNOWN_TYPE) {
     return;
   }
-  CHECK(GetSupportedTypes().contains(type));
-  std::visit(absl::Overload{
-                 [&](CountryInfo& country) {
-                   // We assume that the given `value` is either a valid
-                   // country code or a valid country name localized to the
-                   // provided `app_locale`.
-                   if (!country.SetCountryFromCountryCode(value) &&
-                       !country.SetCountryFromCountryName(value, app_locale)) {
-                     // In case `value` turns out to be neither of the two
-                     // options mentioned above, we reset the country value to
-                     // indicate failure.
-                     country = CountryInfo();
-                   }
-                 },
-                 [&](DateInfo& date) { date.SetDate(value, format_string); },
-                 [&](NameInfo& name) {
-                   name.SetInfoWithVerificationStatus(type, value, app_locale,
-                                                      status);
-                 },
-                 [&](const StateInfo&) { SetRawInfo(type, value, status); },
-                 [&](std::u16string&) { SetRawInfo(type, value, status); }},
-             info_);
+  CHECK(type_.field_subtypes().contains(field_type));
+  std::visit(
+      absl::Overload{
+          [&](CountryInfo& country) {
+            // We assume that the given `value` is either a valid
+            // country code or a valid country name localized to the
+            // provided `app_locale`.
+            if (!country.SetCountryFromCountryCode(value) &&
+                !country.SetCountryFromCountryName(value, app_locale)) {
+              // In case `value` turns out to be neither of the two
+              // options mentioned above, we reset the country value to
+              // indicate failure.
+              country = CountryInfo();
+            }
+          },
+          [&](DateInfo& date) { date.SetDate(value, format_string); },
+          [&](NameInfo& name) {
+            if (!name.GetSupportedTypes().contains(field_type)) {
+              return;
+            }
+            name.SetInfoWithVerificationStatus(field_type, value, app_locale,
+                                               status);
+          },
+          [&](const StateInfo&) { SetRawInfo(field_type, value, status); },
+          [&](std::u16string&) { SetRawInfo(field_type, value, status); }},
+      info_);
 }
 
-void AttributeInstance::SetRawInfo(FieldType type,
+void AttributeInstance::SetRawInfo(FieldType field_type,
                                    const std::u16string& value,
                                    VerificationStatus status) {
-  type = GetNormalizedType(type);
-  if (type == UNKNOWN_TYPE) {
+  field_type = GetNormalizedFieldType(field_type);
+  if (field_type == UNKNOWN_TYPE) {
     return;
   }
-  CHECK(GetSupportedTypes().contains(type));
+  CHECK(type_.field_subtypes().contains(field_type));
   std::visit(absl::Overload{
                  [&](CountryInfo& country) {
                    if (!country.SetCountryFromCountryCode(value)) {
@@ -169,24 +185,15 @@ void AttributeInstance::SetRawInfo(FieldType type,
                  },
                  [&](DateInfo& date) { date.SetDate(value, u"YYYY-MM-DD"); },
                  [&](NameInfo& name) {
-                   name.SetRawInfoWithVerificationStatus(type, value, status);
+                   if (!name.GetSupportedTypes().contains(field_type)) {
+                     return;
+                   }
+                   name.SetRawInfoWithVerificationStatus(field_type, value,
+                                                         status);
                  },
                  [&](StateInfo& state) { state = StateInfo(value); },
                  [&](std::u16string& old_value) { old_value = value; }},
              info_);
-}
-
-FieldTypeSet AttributeInstance::GetSupportedTypes() const {
-  return std::visit(
-      absl::Overload{
-          [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const NameInfo& name) { return name.GetSupportedTypes(); },
-          [&](const StateInfo&) { return FieldTypeSet{type_.field_type()}; },
-          [&](const std::u16string&) {
-            return FieldTypeSet{type_.field_type()};
-          }},
-      info_);
 }
 
 FieldTypeSet AttributeInstance::GetDatabaseStoredTypes(
@@ -203,11 +210,12 @@ FieldTypeSet AttributeInstance::GetDatabaseStoredTypes(
       info_);
 }
 
-FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
-  if (GetSupportedTypes().contains(info_type)) {
-    return info_type;
+FieldType AttributeInstance::GetNormalizedFieldType(
+    FieldType field_type) const {
+  if (type_.field_subtypes().contains(field_type)) {
+    return field_type;
   }
-  if (info_type == type_.field_type()) {
+  if (field_type == type_.field_type()) {
     // In some cases, a field might have `AutofillField::Type()` being the one
     // corresponding to a structured attribute (e.g., PASSPORT_NAME_TAG). This
     // should not usually happen but for now can, only in case a field couldn't
@@ -215,11 +223,11 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     // that case, we assume the type is the top-level type of the attribute.
     return std::visit(
         absl::Overload{
-            [&](const CountryInfo&) { return type().field_type(); },
-            [&](const DateInfo&) { return type().field_type(); },
+            [&](const CountryInfo&) { return type_.field_type(); },
+            [&](const DateInfo&) { return type_.field_type(); },
             [&](const NameInfo&) { return NAME_FULL; },
-            [&](const StateInfo&) { return type().field_type(); },
-            [&](const std::u16string&) { return type().field_type(); }},
+            [&](const StateInfo&) { return type_.field_type(); },
+            [&](const std::u16string&) { return type_.field_type(); }},
         info_);
   }
   // In case the field classification is totally unrelated to the
@@ -228,7 +236,7 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
   // attribute with the given type. If the type is not structured we just return
   // the corresponding field type of the attribute, just like we would do
   // regardless of the type passed.
-  return IsTagType(type().field_type()) ? UNKNOWN_TYPE : type().field_type();
+  return IsTagType(type_.field_type()) ? UNKNOWN_TYPE : type_.field_type();
 }
 
 void AttributeInstance::FinalizeInfo() {

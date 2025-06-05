@@ -148,7 +148,7 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
       return kNewEntityAttributeAdded;
     }
 
-    return std::ranges::all_of(new_entity_attribute.GetSupportedTypes(),
+    return std::ranges::all_of(new_entity_attribute.type().field_subtypes(),
                                [&](autofill::FieldType type) {
                                  return old_entity_attribute->GetInfo(
                                             type, app_locale_,

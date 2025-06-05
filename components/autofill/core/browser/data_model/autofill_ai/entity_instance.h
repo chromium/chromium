@@ -106,7 +106,7 @@ class AttributeInstance final {
   //
   // For more control over over which, see GetInfo().
   std::u16string GetCompleteInfo(const std::string& app_locale) const {
-    return GetInfo(type().field_type(), app_locale, std::nullopt);
+    return GetInfo(type_.field_type(), app_locale, std::nullopt);
   }
 
   // Returns the value stored in this attribute instance for a specific `type`,
@@ -116,7 +116,7 @@ class AttributeInstance final {
   // defaults to u"YYYY-MM-DD". See AutofillField::format_string() for the
   // grammar of format strings.
   std::u16string GetInfo(
-      FieldType type,
+      FieldType field_type,
       const std::string& app_locale,
       base::optional_ref<const std::u16string> format_string) const;
 
@@ -129,11 +129,12 @@ class AttributeInstance final {
 
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
-  std::u16string GetRawInfo(GetRawInfoPassKey pass_key, FieldType type) const;
+  std::u16string GetRawInfo(GetRawInfoPassKey pass_key,
+                            FieldType field_type) const;
 
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
-  VerificationStatus GetVerificationStatus(FieldType type) const;
+  VerificationStatus GetVerificationStatus(FieldType field_type) const;
 
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.
@@ -144,7 +145,7 @@ class AttributeInstance final {
   // the `format_string`, the function is a no-op, e.g.,
   // SetInfo(..., u"16/12/2022", ..., u"DD", ...) is a no-op.
   // See AutofillField::format_string() for the grammar of format strings.
-  void SetInfo(FieldType type,
+  void SetInfo(FieldType field_type,
                const std::u16string& value,
                const std::string& app_locale,
                std::u16string_view format_string,
@@ -155,13 +156,9 @@ class AttributeInstance final {
   // function might perform additional steps (e.g., name formatting). This
   // function should only be used by database logic and settings page logic.
   // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
-  void SetRawInfo(FieldType type,
+  void SetRawInfo(FieldType field_type,
                   const std::u16string& value,
                   VerificationStatus status);
-
-  // Returns the set of `FieldType`s for which the setter/getter functions above
-  // may be called.
-  FieldTypeSet GetSupportedTypes() const;
 
   // Returns the types which are stored in the database for this attribute
   // to be able to correctly reconstruct it at database loading time.
@@ -182,7 +179,7 @@ class AttributeInstance final {
   // This function checks that `info_type` is supported by the attribute and
   // otherwise tries to convert it into one that is. Returns the supported type
   // if found and UNKNOWN_TYPE otherwise.
-  FieldType GetNormalizedType(FieldType info_type) const;
+  FieldType GetNormalizedFieldType(FieldType field_type) const;
 
   AttributeType type_;
   InfoStructure info_;
@@ -259,7 +256,7 @@ class EntityInstance final {
   // Returns the instance of `a` if it is present.
   base::optional_ref<const AttributeInstance> attribute(AttributeType a) const
       LIFETIME_BOUND {
-    CHECK_EQ(a.entity_type(), type());
+    CHECK_EQ(a.entity_type(), type_);
     auto it = attributes_.find(a);
     return it != attributes_.end() ? &*it : nullptr;
   }
