@@ -130,9 +130,25 @@ class PixManagerTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
+// Since the Pix account linking flow is triggered from with the Pix payflow,
+// creating a new class with account linking flag enabled to verify the payflow
+// isn't affected. When account linking is fully launched, this class can be
+// deprecated.
+class PixManagerTestWithAccountLinkingEnabled : public PixManagerTest {
+ public:
+  void SetUp() override {
+    PixManagerTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kEnablePixAccountLinking);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // If the facilitated payment API is not available, then the manager does not
 // show the Pix payment prompt.
-TEST_F(PixManagerTest, NoPixPaymentPromptWhenApiClientNotAvailable) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       NoPixPaymentPromptWhenApiClientNotAvailable) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   payments_data_manager_->AddMaskedBankAccountForTest(
@@ -146,7 +162,8 @@ TEST_F(PixManagerTest, NoPixPaymentPromptWhenApiClientNotAvailable) {
 
 // If the facilitated payment API is available, then the manager shows the PIX
 // payment prompt.
-TEST_F(PixManagerTest, ShowsPixPaymentPromptWhenApiClientAvailable) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       ShowsPixPaymentPromptWhenApiClientAvailable) {
   autofill::BankAccount pix_account1 =
       CreatePixBankAccount(/*instrument_id=*/1);
   autofill::BankAccount pix_account2 =
@@ -166,7 +183,7 @@ TEST_F(PixManagerTest, ShowsPixPaymentPromptWhenApiClientAvailable) {
 // 1. Request for risk data is made.
 // 2. Progress screen is shown.
 // 3. Histogram is logged.
-TEST_F(PixManagerTest, OnPixAccountSelected) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, OnPixAccountSelected) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, ShowProgressScreen());
@@ -192,7 +209,8 @@ TEST_F(PixManagerTest, OnPixAccountSelected) {
 }
 
 // Verify risk data metrics are logged when risk data is fetched successfully.
-TEST_F(PixManagerTest, RiskDataNotEmpty_HistogramsLogged) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       RiskDataNotEmpty_HistogramsLogged) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
@@ -205,7 +223,8 @@ TEST_F(PixManagerTest, RiskDataNotEmpty_HistogramsLogged) {
 }
 
 // Verify risk data metrics are logged when risk data is empty.
-TEST_F(PixManagerTest, RiskDataEmpty_HistogramsLogged) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       RiskDataEmpty_HistogramsLogged) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2), "");
@@ -218,7 +237,8 @@ TEST_F(PixManagerTest, RiskDataEmpty_HistogramsLogged) {
 
 // If the risk data is empty, then the PayflowExitedReason histogram should
 // be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_RiskDataEmpty) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_RiskDataEmpty) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnRiskDataLoaded(base::TimeTicks::Now(), "");
@@ -231,7 +251,8 @@ TEST_F(PixManagerTest, PayflowExitedReason_RiskDataEmpty) {
 
 // If the risk data is empty, then the manager does not retrieve a client token
 // from the facilitated payments API client.
-TEST_F(PixManagerTest, RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
   EXPECT_CALL(*client_, ShowErrorScreen());
 
@@ -241,7 +262,8 @@ TEST_F(PixManagerTest, RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
 
 // If the risk data is not empty, then the manager retrieves a client token from
 // the facilitated payments API client.
-TEST_F(PixManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       RiskDataNotEmpty_GetClientTokenCalled) {
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
   pix_manager_->OnRiskDataLoaded(/*start_time=*/base::TimeTicks::Now(),
@@ -250,7 +272,8 @@ TEST_F(PixManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
 
 // Verify that the result and latency of the GetClientToken call is logged
 // correctly.
-TEST_F(PixManagerTest, LogGetClientTokenResultAndLatency) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       LogGetClientTokenResultAndLatency) {
   for (bool get_client_token_result : {true, false}) {
     base::HistogramTester histogram_tester;
 
@@ -270,7 +293,8 @@ TEST_F(PixManagerTest, LogGetClientTokenResultAndLatency) {
 
 // If the client token is not available, then the PayflowExitedReason histogram
 // should be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_ClientTokenNotAvailable) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_ClientTokenNotAvailable) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnGetClientToken(/*start_time=*/base::TimeTicks::Now(),
@@ -282,14 +306,15 @@ TEST_F(PixManagerTest, PayflowExitedReason_ClientTokenNotAvailable) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(PixManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
   EXPECT_CALL(*client_, ShowErrorScreen());
 
   pix_manager_->OnGetClientToken(/*start_time=*/base::TimeTicks::Now(),
                                  std::vector<uint8_t>{});
 }
 
-TEST_F(PixManagerTest, ResettingPreventsPayment) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, ResettingPreventsPayment) {
   pix_manager_->initiate_payment_request_details_->risk_data_ =
       "seems pretty risky";
   pix_manager_->initiate_payment_request_details_->client_token_ =
@@ -310,7 +335,8 @@ TEST_F(PixManagerTest, ResettingPreventsPayment) {
       pix_manager_->initiate_payment_request_details_->IsReadyForPixPayment());
 }
 
-TEST_F(PixManagerTest, CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -342,7 +368,8 @@ TEST_F(PixManagerTest, CopyTrigger_UrlInAllowlist_LogPixCodeCopied) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
 }
 
-TEST_F(PixManagerTest, CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
@@ -370,7 +397,7 @@ TEST_F(PixManagerTest, CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(PixManagerTest,
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
        CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -400,7 +427,7 @@ TEST_F(PixManagerTest,
 }
 
 TEST_F(
-    PixManagerTest,
+    PixManagerTestWithAccountLinkingEnabled,
     CopyTrigger_UrlNotInAllowlist_AllowlistCheckDisabled_PixValidationTriggered) {
   base::test::ScopedFeatureList feature_list(
       kDisableFacilitatedPaymentsMerchantAllowlist);
@@ -429,7 +456,8 @@ TEST_F(
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(PixManagerTest, TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   GURL url("https://example.com/");
@@ -457,25 +485,64 @@ TEST_F(PixManagerTest, TestPayFlowCanBeTriggeredOnlyOncePerPageLoad) {
   task_environment_.RunUntilIdle();
 }
 
-// The manager checks for API availability after validating the Pix code.
-TEST_F(PixManagerTest, ApiClientTriggeredAfterPixCodeValidation) {
+// The manager checks for API availability after validating the Pix code if all
+// checks pass. The account linking flow shouldn't be triggered.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       ApiClientTriggeredAfterPixCodeValidation) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),
                                    /*is_pix_code_valid=*/true);
 }
 
-// If the Pix code validation in the utility process has returned `false`, then
-// the manager does not check the API for availability.
-TEST_F(PixManagerTest, PixCodeValidationFailed_NoApiClientTriggered) {
+// If the validation utility process has disconnected (e.g., due to a crash in
+// the validation code), then neither payflow nor the account linking flow is
+// initiated.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       CodeValidatorFailed_PixFlowsAbandoned) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*is_pix_code_valid=*/
+      base::unexpected("Data Decoder terminated unexpectedly"));
+}
+
+// If the validation utility process has disconnected (e.g., due to a crash in
+// the validation code), then the PayflowExitedReason histogram should be
+// logged.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_CodeValidatorFailed) {
+  base::HistogramTester histogram_tester;
+
+  pix_manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(), base::TimeTicks::Now(),
+      /*is_pix_code_valid=*/
+      base::unexpected("Data Decoder terminated unexpectedly"));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PixFlowExitedReason::kCodeValidatorFailed,
+      /*expected_bucket_count=*/1);
+}
+
+// If the Pix code validation in the utility process has returned `false`, then
+// neither payflow nor the account linking flow is initiated.
+TEST_F(PixManagerTestWithAccountLinkingEnabled, InvalidCode_PixFlowsAbandoned) {
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),
@@ -484,7 +551,8 @@ TEST_F(PixManagerTest, PixCodeValidationFailed_NoApiClientTriggered) {
 
 // If the Pix code validation in the utility process has returned `false`, then
 // the PayflowExitedReason histogram should be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_InvalidCode) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_InvalidCode) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
@@ -497,9 +565,44 @@ TEST_F(PixManagerTest, PayflowExitedReason_InvalidCode) {
       /*expected_bucket_count=*/1);
 }
 
+// If payments data manager is unavailable, neither the payflow nor the account
+// linking flow is initiated.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       NoPaymentsDataManager_PixFlowsAbandoned) {
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  ON_CALL(*client_, GetPaymentsDataManager)
+      .WillByDefault(testing::Return(nullptr));
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
+// If the payments autofill pref is disabled, neither the payflow nor the
+// account linking flow is initiated.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PaymentsAutofillTurnedOff_PixFlowsAbandoned) {
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  // Disable payment methods pref.
+  autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service_.get(), false);
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
 // If the user has turned off autofilling payment methods, the
 // PayflowExitedReason histogram should be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_PaymentsAutofillTurnedOff) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_PaymentsAutofillTurnedOff) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -516,9 +619,26 @@ TEST_F(PixManagerTest, PayflowExitedReason_PaymentsAutofillTurnedOff) {
       /*expected_bucket_count=*/1);
 }
 
+// If the user has opted out of Pix, the payflow should not be initialized. The
+// account linking flow is initialized before checking the user pref, so it has
+// no effect on account linking flow.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       UserOptedOut_PixPayflowAbandoned) {
+  payments_data_manager_->AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
 // If the user has opted out of the Pix flow, the PayflowExitedReason
 // histogram should be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_UserOptedOut) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_UserOptedOut) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
@@ -534,9 +654,24 @@ TEST_F(PixManagerTest, PayflowExitedReason_UserOptedOut) {
       /*expected_bucket_count=*/1);
 }
 
+// If the user doesn't have any linked Pix account, the account linking flow
+// should be initialized.
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       NoLinkedAccount_AccountLinkingFlowTriggered) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
 // If the user doesn't have any linked Pix account, the PayflowExitedReason
 // histogram should be logged.
-TEST_F(PixManagerTest, PayflowExitedReason_NoLinkedAccount) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_NoLinkedAccount) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
@@ -549,8 +684,10 @@ TEST_F(PixManagerTest, PayflowExitedReason_NoLinkedAccount) {
       /*expected_bucket_count=*/1);
 }
 
+// If the account linking flag is disabled, the account linking flow shouldn't
+// be initialized.
 TEST_F(
-    PixManagerTest,
+    PixManagerTestWithAccountLinkingEnabled,
     NoLinkedAccount_AccountLinkingFlagDisabled_AccountLinkingFlowNotTriggered) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnablePixAccountLinking);
@@ -562,93 +699,9 @@ TEST_F(
                                    /*is_pix_code_valid=*/true);
 }
 
-TEST_F(PixManagerTest,
-       NoLinkedAccount_AccountLinkingFlagEnabled_AccountLinkingFlowTriggered) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnablePixAccountLinking);
-
-  EXPECT_CALL(*client_, InitPixAccountLinkingFlow);
-
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
-}
-
-// If the validation utility process has disconnected (e.g., due to a crash in
-// the validation code), then the manager does not check the API for
-// availability.
-TEST_F(PixManagerTest,
-       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  pix_manager_->OnPixCodeValidated(
-      /*pix_code=*/std::string(), base::TimeTicks::Now(),
-      /*is_pix_code_valid=*/
-      base::unexpected("Data Decoder terminated unexpectedly"));
-}
-
-// If the validation utility process has disconnected (e.g., due to a crash in
-// the validation code), then the PayflowExitedReason histogram should be
-// logged.
-TEST_F(PixManagerTest, PayflowExitedReason_CodeValidatorFailed) {
-  base::HistogramTester histogram_tester;
-
-  pix_manager_->OnPixCodeValidated(
-      /*pix_code=*/std::string(), base::TimeTicks::Now(),
-      /*is_pix_code_valid=*/
-      base::unexpected("Data Decoder terminated unexpectedly"));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PixFlowExitedReason::kCodeValidatorFailed,
-      /*expected_bucket_count=*/1);
-}
-
-// If the Pix payment user pref is turned off, the manager does not check
-// whether the facilitated payment API is available.
-TEST_F(PixManagerTest, PixPrefTurnedOff_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-  // Turn off Pix pref.
-  autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
-}
-
-// If the user doesn't have any linked Pix accounts, the manager does not check
-// whether the facilitated payment API is available.
-TEST_F(PixManagerTest, NoPixAccounts_NoApiClientTriggered) {
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
-}
-
-// If payments data manager is unavailable, the manager does not check
-// whether the facilitated payment API is available.
-TEST_F(PixManagerTest, NoPaymentsDataManager_NoApiClientTriggered) {
-  payments_data_manager_->AddMaskedBankAccountForTest(
-      CreatePixBankAccount(/*instrument_id=*/1));
-  ON_CALL(*client_, GetPaymentsDataManager)
-      .WillByDefault(testing::Return(nullptr));
-
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-
-  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
-                                   base::TimeTicks::Now(),
-                                   /*is_pix_code_valid=*/true);
-}
-
 // Verify that the API check result and latency are logged.
-TEST_F(PixManagerTest, LogApiAvailabilityCheckResultAndLatency) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       LogApiAvailabilityCheckResultAndLatency) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnApiAvailabilityReceived(
@@ -664,7 +717,8 @@ TEST_F(PixManagerTest, LogApiAvailabilityCheckResultAndLatency) {
 // The `IsAvailable` async call is made after a valid Pix code has been
 // detected. This test verifies that if the api available result is false, the
 // PayflowExitedReason histogram is logged.
-TEST_F(PixManagerTest, PayflowExitedReason_ApiClientNotAvailable) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PayflowExitedReason_ApiClientNotAvailable) {
   base::HistogramTester histogram_tester;
 
   pix_manager_->OnApiAvailabilityReceived(/*start_time=*/base::TimeTicks::Now(),
@@ -678,7 +732,8 @@ TEST_F(PixManagerTest, PayflowExitedReason_ApiClientNotAvailable) {
 
 // Test that when Chrome fails to invoke purchase action, the error screen is
 // shown.
-TEST_F(PixManagerTest, OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client_, ShowErrorScreen);
@@ -694,7 +749,8 @@ TEST_F(PixManagerTest, OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown) {
 
 // Test that when Chrome is successful in invoking the purchase action, the UI
 // screen is dismissed.
-TEST_F(PixManagerTest, OnPurchaseActionResult_ResultOk_UiScreenDismissed) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       OnPurchaseActionResult_ResultOk_UiScreenDismissed) {
   // `DismissPrompt` is called once when the purchase action result is
   // received, and again when the test fixture destroys the `pix_manager_`.
   EXPECT_CALL(*client_, DismissPrompt).Times(2);
@@ -705,7 +761,7 @@ TEST_F(PixManagerTest, OnPurchaseActionResult_ResultOk_UiScreenDismissed) {
 
 // Test that when Chrome is successful in invoking the purchase action, the UI
 // screen is dismissed.
-TEST_F(PixManagerTest,
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
        OnPurchaseActionResult_ResultCanceled_UiScreenDismissed) {
   // `DismissPrompt` is called once when the purchase action result is
   // received, and again when the test fixture destroys the `pix_manager_`.
@@ -717,7 +773,8 @@ TEST_F(PixManagerTest,
 
 // Test that when an InitiatePurchaseAction request is sent, the attempt is
 // logged.
-TEST_F(PixManagerTest, LogInitiatePurchaseActionAttempt) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       LogInitiatePurchaseActionAttempt) {
   base::HistogramTester histogram_tester;
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
@@ -738,7 +795,8 @@ TEST_F(PixManagerTest, LogInitiatePurchaseActionAttempt) {
 
 // Test that when an InitiatePurchaseAction response is received, the result and
 // latency of the invoke purchase action is logged.
-TEST_F(PixManagerTest, LogInitiatePurchaseActionResultAndLatency) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       LogInitiatePurchaseActionResultAndLatency) {
   size_t index = 0;
   for (PurchaseActionResult result :
        {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
@@ -786,7 +844,8 @@ TEST_F(PixManagerTest, LogInitiatePurchaseActionResultAndLatency) {
   }
 }
 
-TEST_F(PixManagerTest, LogTransactionResultAndLatency) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       LogTransactionResultAndLatency) {
   base::HistogramTester histogram_tester;
 
   // Simulate Pix code being copied. The transaction latency is computed from
@@ -826,7 +885,7 @@ TEST_F(PixManagerTest, LogTransactionResultAndLatency) {
 
 // Verify that the API client is initialized lazily, so it does not take up
 // space in memory unless it's being used.
-TEST_F(PixManagerTest, ApiClientInitializedLazily) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, ApiClientInitializedLazily) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
 
@@ -840,7 +899,8 @@ TEST_F(PixManagerTest, ApiClientInitializedLazily) {
 }
 
 // Verify that a failure to lazily initialize the API client is not fatal.
-TEST_F(PixManagerTest, HandlesFailureToLazilyInitializeApiClient) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       HandlesFailureToLazilyInitializeApiClient) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   pix_manager_->api_client_creator_.Reset();
@@ -909,7 +969,7 @@ TEST_P(PixManagerTestInLandscapeMode,
       /*expected_bucket_count=*/IsPaymentEnabledInLandscapeMode() ? 0 : 1);
 }
 
-TEST_F(PixManagerTest, ShowPixPaymentPrompt) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, ShowPixPaymentPrompt) {
   // Verify the default UI state.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
 
@@ -926,7 +986,7 @@ TEST_F(PixManagerTest, ShowPixPaymentPrompt) {
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kFopSelector);
 }
 
-TEST_F(PixManagerTest, ShowProgressScreen) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, ShowProgressScreen) {
   // Verify the default UI state.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
 
@@ -940,7 +1000,7 @@ TEST_F(PixManagerTest, ShowProgressScreen) {
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kProgressScreen);
 }
 
-TEST_F(PixManagerTest, ShowErrorScreen) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, ShowErrorScreen) {
   // Verify the default UI state.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
 
@@ -954,7 +1014,7 @@ TEST_F(PixManagerTest, ShowErrorScreen) {
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kErrorScreen);
 }
 
-TEST_F(PixManagerTest, DismissPrompt) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled, DismissPrompt) {
   // Verify that when the feature wants to dismiss the UI screen, it asks the
   // client. The second call is from test teardown.
   EXPECT_CALL(*client_, DismissPrompt).Times(2);
@@ -966,7 +1026,8 @@ TEST_F(PixManagerTest, DismissPrompt) {
 }
 
 // Test that when the Pix FOP selector is shown, related Pix metrics are logged.
-TEST_F(PixManagerTest, PixFopSelectorShown_HistogramsLogged) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       PixFopSelectorShown_HistogramsLogged) {
   base::HistogramTester histogram_tester;
 
   // Simulate Pix code being copied. The latency is computed from this point.
@@ -995,7 +1056,8 @@ TEST_F(PixManagerTest, PixFopSelectorShown_HistogramsLogged) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
-TEST_F(PixManagerTest, ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
   // When purchase action is invoked, the progress screen would be showing.
   pix_manager_->ShowProgressScreen();
   ON_CALL(*client_, GetCoreAccountInfo)
@@ -1021,7 +1083,8 @@ TEST_F(PixManagerTest, ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
 }
 
-TEST_F(PixManagerTest, ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
+TEST_F(PixManagerTestWithAccountLinkingEnabled,
+       ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
   // When purchase action is invoked, the progress screen would be showing.
   pix_manager_->ShowProgressScreen();
   ON_CALL(*client_, GetCoreAccountInfo)
@@ -1078,7 +1141,7 @@ class PixManagerTestForUiScreens : public PixManagerTest,
   UiState ui_state() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(PixManagerTest,
+INSTANTIATE_TEST_SUITE_P(PixManagerTestWithAccountLinkingEnabled,
                          PixManagerTestForUiScreens,
                          testing::Values(UiState::kFopSelector,
                                          UiState::kProgressScreen,
