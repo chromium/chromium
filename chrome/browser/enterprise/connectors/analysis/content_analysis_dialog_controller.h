@@ -127,15 +127,6 @@ class ContentAnalysisDialogController
   // nothing should be shown.
   void ShowResult(FinalContentAnalysisResult result);
 
-  // Accessors to simplify `dialog_state_` checking.
-  inline bool is_success() const { return dialog_state_ == State::SUCCESS; }
-
-  inline bool is_failure() const { return dialog_state_ == State::FAILURE; }
-
-  inline bool is_warning() const { return dialog_state_ == State::WARNING; }
-
-  inline bool is_pending() const { return dialog_state_ == State::PENDING; }
-
   inline bool is_cloud() const { return is_cloud_; }
 
   bool has_custom_message() const {
@@ -177,34 +168,10 @@ class ContentAnalysisDialogController
   // Friend to allow use of TaskRunner::DeleteSoon().
   friend class base::DeleteHelper<ContentAnalysisDialogController>;
 
-  // Enum used to represent what the dialog is currently showing.
-  enum class State {
-    // The dialog is shown with an explanation that the scan is being performed
-    // and that the result is pending.
-    PENDING,
-
-    // The dialog is shown with a short message indicating that the scan was a
-    // success and that the user may proceed with their upload, drag-and-drop or
-    // paste.
-    SUCCESS,
-
-    // The dialog is shown with a message indicating that the scan was a failure
-    // and that the user may not proceed with their upload, drag-and-drop or
-    // paste.
-    FAILURE,
-
-    // The dialog is shown with a message indicating that the scan was a
-    // failure, but that the user may proceed with their upload, drag-and-drop
-    // or paste if they want to.
-    WARNING,
-  };
-
   ~ContentAnalysisDialogController() override;
 
   // Callback function of delayed timer to make the dialog visible.
   void ShowDialogNow();
-
-  void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
 
   // Updates the views in the dialog to put them in the correct state for
   // `dialog_state_`. This doesn't trigger the same events/resizes as
@@ -224,20 +191,11 @@ class ContentAnalysisDialogController
   // Resizes the already shown dialog to accommodate changes in its content.
   void Resize(int height_to_add);
 
-  // Setup the appropriate buttons depending on `dialog_state_`.
-  void SetupButtons();
-
   // Returns a newly created side icon.
   std::unique_ptr<views::View> CreateSideIcon();
 
   // Returns the appropriate dialog message depending on `dialog_state_`.
   std::u16string GetDialogMessage() const;
-
-  // Returns the text for the Cancel button depending on `dialog_state_`.
-  std::u16string GetCancelButtonText() const;
-
-  // Returns the text for the Ok button for the warning case.
-  std::u16string GetBypassWarningButtonText() const;
 
   // Returns the appropriate pending message depending on `files_count_`.
   std::u16string GetPendingMessage() const;
@@ -308,12 +266,6 @@ class ContentAnalysisDialogController
   raw_ptr<views::TableLayoutView> contents_layout_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
-
-  // Used to show the appropriate dialog depending on the scan's status.
-  State dialog_state_ = State::PENDING;
-
-  // Used to show the appropriate message.
-  FinalContentAnalysisResult final_result_;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;

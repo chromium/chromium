@@ -95,18 +95,28 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
     int files_count,
     FinalContentAnalysisResult final_result,
     download::DownloadItem* download_item)
-    : content::WebContentsObserver(contents),
+    : ContentAnalysisDialogDelegate(delegate.get()),
+      content::WebContentsObserver(contents),
       delegate_base_(std::move(delegate)),
-      final_result_(final_result),
       access_point_(std::move(access_point)),
       files_count_(files_count),
       download_item_(download_item),
       is_cloud_(is_cloud) {
   DVLOG(1) << __func__;
   DCHECK(delegate_base_);
+
+  // TODO(crbug.com/422111748): Move this to the code that initializes the
+  // DialogDelegate once this class no longer inherits from it.
+  final_result_ = final_result;
   SetOwnedByWidget(OwnedByWidgetPassKey());
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  DialogDelegate::SetAcceptCallback(
+      base::BindOnce(&ContentAnalysisDialogController::AcceptButtonCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  DialogDelegate::SetCancelCallback(
+      base::BindOnce(&ContentAnalysisDialogController::CancelButtonCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   if (observer_for_testing) {
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
@@ -354,6 +364,10 @@ void ContentAnalysisDialogController::ShowResult(
 ContentAnalysisDialogController::~ContentAnalysisDialogController() {
   DVLOG(1) << __func__;
 
+  // TODO(crbug.com/422111748): Update this cleanup code when this class stops
+  // inheriting from ContentAnalysisDialogDelegate.
+  ContentAnalysisDialogDelegate::delegate_base_ = nullptr;
+
   if (bypass_justification_) {
     bypass_justification_->SetController(nullptr);
   }
@@ -367,25 +381,6 @@ ContentAnalysisDialogController::~ContentAnalysisDialogController() {
   }
   if (observer_for_testing) {
     observer_for_testing->DestructorCalled(this);
-  }
-}
-
-void ContentAnalysisDialogController::UpdateStateFromFinalResult(
-    FinalContentAnalysisResult final_result) {
-  final_result_ = final_result;
-  switch (final_result_) {
-    case FinalContentAnalysisResult::ENCRYPTED_FILES:
-    case FinalContentAnalysisResult::LARGE_FILES:
-    case FinalContentAnalysisResult::FAIL_CLOSED:
-    case FinalContentAnalysisResult::FAILURE:
-      dialog_state_ = State::FAILURE;
-      break;
-    case FinalContentAnalysisResult::SUCCESS:
-      dialog_state_ = State::SUCCESS;
-      break;
-    case FinalContentAnalysisResult::WARNING:
-      dialog_state_ = State::WARNING;
-      break;
   }
 }
 
@@ -525,52 +520,6 @@ void ContentAnalysisDialogController::Resize(int height_to_add) {
   widget->SetSize(new_size);
 }
 
-void ContentAnalysisDialogController::SetupButtons() {
-  if (is_warning()) {
-    // Include the Ok and Cancel buttons if there is a bypassable warning.
-    DialogDelegate::SetButtons(
-        static_cast<int>(ui::mojom::DialogButton::kCancel) |
-        static_cast<int>(ui::mojom::DialogButton::kOk));
-    DialogDelegate::SetDefaultButton(
-        static_cast<int>(ui::mojom::DialogButton::kCancel));
-
-    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                                   GetCancelButtonText());
-    DialogDelegate::SetCancelCallback(
-        base::BindOnce(&ContentAnalysisDialogController::CancelButtonCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
-                                   GetBypassWarningButtonText());
-    DialogDelegate::SetAcceptCallback(
-        base::BindOnce(&ContentAnalysisDialogController::AcceptButtonCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-
-    if (delegate_base_->BypassRequiresJustification()) {
-      DialogDelegate::SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
-    }
-  } else if (is_failure() || is_pending()) {
-    // Include the Cancel button when the scan is pending or failing.
-    DialogDelegate::SetButtons(
-        static_cast<int>(ui::mojom::DialogButton::kCancel));
-    DialogDelegate::SetDefaultButton(
-        static_cast<int>(ui::mojom::DialogButton::kNone));
-
-    DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                                   GetCancelButtonText());
-    DialogDelegate::SetCancelCallback(
-        base::BindOnce(&ContentAnalysisDialogController::CancelButtonCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // Include no buttons otherwise.
-    DialogDelegate::SetButtons(
-        static_cast<int>(ui::mojom::DialogButton::kNone));
-    DialogDelegate::SetCancelCallback(
-        base::BindOnce(&ContentAnalysisDialogController::SuccessCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
 std::u16string ContentAnalysisDialogController::GetDialogMessage() const {
   switch (dialog_state_) {
     case State::PENDING:
@@ -582,35 +531,6 @@ std::u16string ContentAnalysisDialogController::GetDialogMessage() const {
     case State::WARNING:
       return GetWarningMessage();
   }
-}
-
-std::u16string ContentAnalysisDialogController::GetCancelButtonText() const {
-  int text_id;
-  auto overriden_text = delegate_base_->OverrideCancelButtonText();
-  if (overriden_text) {
-    return overriden_text.value();
-  }
-
-  switch (dialog_state_) {
-    case State::SUCCESS:
-      NOTREACHED();
-    case State::PENDING:
-      text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_UPLOAD_BUTTON;
-      break;
-    case State::FAILURE:
-      text_id = IDS_CLOSE;
-      break;
-    case State::WARNING:
-      text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_WARNING_BUTTON;
-      break;
-  }
-  return l10n_util::GetStringUTF16(text_id);
-}
-
-std::u16string ContentAnalysisDialogController::GetBypassWarningButtonText()
-    const {
-  DCHECK(is_warning());
-  return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_PROCEED_BUTTON);
 }
 
 std::unique_ptr<views::View> ContentAnalysisDialogController::CreateSideIcon() {
@@ -1056,6 +976,10 @@ void ContentAnalysisDialogController::OnDownloadDestroyed(
 }
 
 void ContentAnalysisDialogController::CancelDialogWithoutCallback() {
+  // TODO(crbug.com/422111748): Update this cleanup code when this class stops
+  // inheriting from ContentAnalysisDialogDelegate.
+  ContentAnalysisDialogDelegate::delegate_base_ = nullptr;
+
   // Reset `delegate` so no logic runs when the dialog is cancelled.
   delegate_base_.reset(nullptr);
 
