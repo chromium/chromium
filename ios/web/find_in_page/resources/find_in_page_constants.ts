@@ -40,3 +40,8 @@ export const MAX_VISIBLE_ELEMENTS: number = 100;
  * Result passed back to app to indicate pumpSearch has reached timeout.
  */
 export const TIMEOUT: number = -1;
+
+/**
+ * Regex to escape regex special characters in a string.
+ */
+export const REGEX_ESCAPER: RegExp = /([.?*+^$[\]\\(){}|-])/g;

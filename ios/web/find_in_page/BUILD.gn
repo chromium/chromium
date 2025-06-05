@@ -41,7 +41,6 @@ compile_ts("compile_ts") {
   sources = [
     "resources/find_in_page.ts",
     "resources/find_in_page_constants.ts",
-    "resources/find_in_page_utils.ts",
   ]
 }
 
