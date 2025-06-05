@@ -9,9 +9,9 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.HorizontalScrollView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
@@ -48,16 +48,6 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
             tileView.setOnCreateContextMenuListener(null);
         }
         removeAllViews();
-    }
-
-    @Nullable
-    public SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
-        int tileCount = getTileCount();
-        for (int i = 0; i < tileCount; i++) {
-            SuggestionsTileView tileView = (SuggestionsTileView) getTileAt(i);
-            if (suggestion.equals(tileView.getData())) return tileView;
-        }
-        return null;
     }
 
     public SiteSuggestion getTileViewData(TileView tileView) {

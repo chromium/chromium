@@ -11,14 +11,13 @@ import static org.hamcrest.Matchers.containsString;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.test.R;
 
 /**
@@ -29,8 +28,8 @@ import org.chromium.chrome.test.R;
 public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<HostStationT> {
     public static final String NO_BUTTON = "__NO_BUTTON__";
 
-    public ViewElement<View> messageElement;
-    public ViewElement<View> buttonElement;
+    public @Nullable ViewElement<View> messageElement;
+    public @Nullable ViewElement<View> buttonElement;
 
     public SnackbarFacility(
             @Nullable String expectedMessageSubstring, @Nullable String expectedButtonText) {

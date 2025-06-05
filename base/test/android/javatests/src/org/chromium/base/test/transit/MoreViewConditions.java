@@ -23,10 +23,11 @@ public class MoreViewConditions {
     /** Condition that the supplied View has exactly the expected number of children. */
     public static class ViewHasChildrenCountCondition extends UiThreadCondition {
 
-        private final Supplier<View> mViewSupplier;
+        private final Supplier<? extends View> mViewSupplier;
         private final int mExpectedCount;
 
-        public ViewHasChildrenCountCondition(Supplier<View> viewSupplier, int expectedCount) {
+        public ViewHasChildrenCountCondition(
+                Supplier<? extends View> viewSupplier, int expectedCount) {
             mViewSupplier = dependOnSupplier(viewSupplier, "View");
             mExpectedCount = expectedCount;
         }

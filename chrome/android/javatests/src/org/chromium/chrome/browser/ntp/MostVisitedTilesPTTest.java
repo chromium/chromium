@@ -100,7 +100,7 @@ public class MostVisitedTilesPTTest {
         try (var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "NewTabPage.Module.Click", ModuleTypeOnStartAndNtp.MOST_VISITED_TILES)) {
-            mostVisitedPage = mvts.tileItems.get(index).scrollToAndSelect();
+            mostVisitedPage = mvts.ensureTileIsDisplayedAndGet(index).clickToNavigateToWebPage();
         }
 
         // Reset back to the NTP for batching

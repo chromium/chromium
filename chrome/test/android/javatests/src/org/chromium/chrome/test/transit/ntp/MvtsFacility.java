@@ -11,80 +11,98 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
-import android.view.View;
-
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /** Represents the Most Visited Tiles section in the New Tab Page. */
 public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     private final List<SiteSuggestion> mSiteSuggestions;
+    private List<@Nullable SiteSuggestion> mSiteSuggestionsByTileIndex;
     private final Set<Integer> mNonTileIndices;
-    public List<Item<WebPageStation>> tileItems;
-    public ViewElement<View> tilesLayoutElement;
+    private final @Nullable Integer mAddNewButtonIndex;
+    public ViewElement<MostVisitedTilesLayout> tilesLayoutElement;
+    public List<Item<Void>> tileItems;
+    public @Nullable Item<Void> addNewButtonItem;
 
     /**
      * @param siteSuggestions List of expects the tiles to show.
-     * @param nonTileIndices Set of tile container indices that are not tiles, e.g., dividers, or
-     *     other UI that exist alongside tiles.
+     * @param separatorIndices Set of tile container dividers.
      */
-    public MvtsFacility(List<SiteSuggestion> siteSuggestions, Set<Integer> nonTileIndices) {
+    public MvtsFacility(List<SiteSuggestion> siteSuggestions, Set<Integer> separatorIndices) {
         mSiteSuggestions = siteSuggestions;
-        mNonTileIndices = nonTileIndices;
-    }
 
-    @Override
-    public void declareExtraElements() {
+        mNonTileIndices = new HashSet<>(separatorIndices);
+        int childCount = siteSuggestions.size() + separatorIndices.size();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            // Populate with the "Add new" button at the end.
+            mAddNewButtonIndex = childCount;
+            mNonTileIndices.add(mAddNewButtonIndex);
+            childCount++;
+        } else {
+            mAddNewButtonIndex = null;
+        }
+
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
         // tablets.
         tilesLayoutElement =
-                declareView(withId(R.id.mv_tiles_layout), ViewElement.displayingAtLeastOption(1));
-        declareEnterCondition(
-                new ViewHasChildrenCountCondition(
-                        tilesLayoutElement, mSiteSuggestions.size() + mNonTileIndices.size()));
+                declareView(
+                        MostVisitedTilesLayout.class,
+                        withId(R.id.mv_tiles_layout),
+                        ViewElement.displayingAtLeastOption(1));
+        declareEnterCondition(new ViewHasChildrenCountCondition(tilesLayoutElement, childCount));
+    }
 
-        // Will call declareItems()
-        super.declareExtraElements();
+    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
+        this(siteSuggestions, Collections.emptySet());
     }
 
     @Override
     protected void declareItems(ScrollableFacility<RegularNewTabPageStation>.ItemsBuilder items) {
+        mSiteSuggestionsByTileIndex = new ArrayList<>();
         int parentIndex = 0;
-        ArrayList<Item<WebPageStation>> newTileItems = new ArrayList<>();
+        ArrayList<Item<Void>> newTileItems = new ArrayList<>();
         for (int i = 0; i < mSiteSuggestions.size(); i++) {
             while (mNonTileIndices.contains(parentIndex)) {
                 ++parentIndex;
             }
-            ViewSpec<View> tileSpec =
-                    viewSpec(instanceOf(SuggestionsTileView.class), withParentIndex(parentIndex));
-            SiteSuggestion siteSuggestion = mSiteSuggestions.get(i);
-            Item<WebPageStation> item =
-                    items.declareItemToStation(
-                            tileSpec,
-                            /* offScreenDataMatcher= */ null,
-                            () ->
-                                    WebPageStation.newBuilder()
-                                            .withIncognito(false)
-                                            .withIsOpeningTabs(0)
-                                            .withTabAlreadySelected(
-                                                    mHostStation.loadedTabElement.get())
-                                            .withExpectedUrlSubstring(siteSuggestion.url.getPath())
-                                            .build());
+
+            mSiteSuggestionsByTileIndex.add(mSiteSuggestions.get(i));
+            Item item =
+                    items.declareStubItem(
+                            createTileSpec(parentIndex), /* offScreenDataMatcher= */ null);
             newTileItems.add(item);
             ++parentIndex;
         }
+
+        if (mAddNewButtonIndex != null) {
+            mSiteSuggestionsByTileIndex.add(null);
+            addNewButtonItem =
+                    items.declareStubItem(
+                            createTileSpec(mAddNewButtonIndex), /* offScreenDataMatcher= */ null);
+            newTileItems.add(addNewButtonItem);
+        }
         tileItems = Collections.unmodifiableList(newTileItems);
+    }
+
+    static ViewSpec<SuggestionsTileView> createTileSpec(int parentIndex) {
+        return viewSpec(
+                SuggestionsTileView.class,
+                instanceOf(SuggestionsTileView.class),
+                withParentIndex(parentIndex));
     }
 
     @Override
@@ -92,5 +110,20 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         // Number of tiles varies depending on screen size and variations, but should always
         // see at least 3 tiles.
         return 3;
+    }
+
+    List<SiteSuggestion> getSiteSuggestions() {
+        return mSiteSuggestions;
+    }
+
+    /** Ensure tile with index |i| is visible, maybe scrolling to it. */
+    public MvtsTileFacility ensureTileIsDisplayedAndGet(int i) {
+        assert 0 <= i && i < tileItems.size()
+                : String.format("%d is out of bounds [0, %d]", i, tileItems.size());
+
+        tileItems.get(i).scrollTo();
+
+        SiteSuggestion siteSuggestion = mSiteSuggestionsByTileIndex.get(i);
+        return mHostStation.enterFacilitySync(new MvtsTileFacility(this, i, siteSuggestion), null);
     }
 }

@@ -103,7 +103,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new item stub which throws UnsupportedOperationException if selected. */
         public Item<Void> declareStubItem(
-                ViewSpec<View> onScreenViewSpec, @Nullable Matcher<?> offScreenDataMatcher) {
+                ViewSpec<? extends View> onScreenViewSpec,
+                @Nullable Matcher<?> offScreenDataMatcher) {
             Item<Void> item =
                     new Item<>(
                             onScreenViewSpec,
@@ -116,7 +117,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new item which runs |selectHandler| when selected. */
         public <SelectReturnT> Item<SelectReturnT> declareItem(
-                ViewSpec<View> onScreenViewSpec,
+                ViewSpec<? extends View> onScreenViewSpec,
                 @Nullable Matcher<?> offScreenDataMatcher,
                 Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
             Item<SelectReturnT> item =
@@ -132,7 +133,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Create a new item which transitions to a |DestinationStationT| when selected. */
         public <DestinationStationT extends Station<?>>
                 Item<DestinationStationT> declareItemToStation(
-                        ViewSpec<View> onScreenViewSpec,
+                        ViewSpec<? extends View> onScreenViewSpec,
                         @Nullable Matcher<?> offScreenDataMatcher,
                         Callable<DestinationStationT> destinationStationFactory) {
             return declareItem(
@@ -145,7 +146,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Create a new item which enters a |EnteredFacilityT| when selected. */
         public <EnteredFacilityT extends Facility<HostStationT>>
                 Item<EnteredFacilityT> declareItemToFacility(
-                        ViewSpec<View> onScreenViewSpec,
+                        ViewSpec<? extends View> onScreenViewSpec,
                         @Nullable Matcher<?> offScreenDataMatcher,
                         Callable<EnteredFacilityT> destinationFacilityFactory) {
             return declareItem(
@@ -157,7 +158,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new disabled item. */
         public Item<Void> declareDisabledItem(
-                ViewSpec<View> onScreenViewSpec, @Nullable Matcher<?> offScreenDataMatcher) {
+                ViewSpec<? extends View> onScreenViewSpec,
+                @Nullable Matcher<?> offScreenDataMatcher) {
             Item<Void> item =
                     new Item<>(
                             onScreenViewSpec,
@@ -170,7 +172,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new item expected to be absent. */
         public Item<Void> declareAbsentItem(
-                ViewSpec<View> onScreenViewSpec, @Nullable Matcher<?> offScreenDataMatcher) {
+                ViewSpec<? extends View> onScreenViewSpec,
+                @Nullable Matcher<?> offScreenDataMatcher) {
             Item<Void> item =
                     new Item<>(onScreenViewSpec, offScreenDataMatcher, Presence.ABSENT, null);
             mItems.add(item);
@@ -179,7 +182,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         /** Create a new item which may or may not be present. */
         public <SelectReturnT> Item<SelectReturnT> declarePossibleItem(
-                ViewSpec<View> onScreenViewSpec,
+                ViewSpec<? extends View> onScreenViewSpec,
                 @Nullable Matcher<?> offScreenDataMatcher,
                 Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
             Item<SelectReturnT> item =
@@ -252,7 +255,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         protected final @Nullable Matcher<?> mOffScreenDataMatcher;
         protected final @Presence int mPresence;
-        protected final @Nullable ViewSpec<View> mViewSpec;
+        protected final @Nullable ViewSpec<? extends View> mViewSpec;
         protected final ViewElement.@Nullable Options mViewElementOptions;
         protected @Nullable Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT>
                 mSelectHandler;
@@ -272,7 +275,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
          * </ul>
          */
         protected Item(
-                @Nullable ViewSpec<View> onScreenViewSpec,
+                @Nullable ViewSpec<? extends View> onScreenViewSpec,
                 @Nullable Matcher<?> offScreenDataMatcher,
                 @Presence int presence,
                 @Nullable Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT>
@@ -351,7 +354,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         public ViewSpec<View> getViewSpec() {
             assert mViewSpec != null : "Trying to get a ViewSpec for an item not present.";
-            return mViewSpec;
+            return (ViewSpec<View>) mViewSpec;
         }
 
         public ViewElement.Options getViewElementOptions() {
