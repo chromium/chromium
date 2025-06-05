@@ -1646,6 +1646,8 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
       return kContainsSize;
     case CSSValueID::kInlineSize:
       return kContainsInlineSize;
+    case CSSValueID::kViewTransition:
+      return kContainsViewTransition;
     default:
       break;
   }

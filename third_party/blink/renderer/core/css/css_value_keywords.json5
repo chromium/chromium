@@ -1639,6 +1639,7 @@
     "size",
     "block-size",
     "inline-size",
+    "view-transition",
 
     // @container
     // size

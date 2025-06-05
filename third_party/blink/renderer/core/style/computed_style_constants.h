@@ -293,7 +293,7 @@ enum GridAutoFlow {
                          int(kInternalAutoFlowDirectionColumn)
 };
 
-static const size_t kContainmentBits = 5;
+static const size_t kContainmentBits = 6;
 enum Containment {
   kContainsNone = 0x0,
   kContainsLayout = 0x1,
@@ -301,6 +301,7 @@ enum Containment {
   kContainsPaint = 0x4,
   kContainsBlockSize = 0x8,
   kContainsInlineSize = 0x10,
+  kContainsViewTransition = 0x20,
   kContainsSize = kContainsBlockSize | kContainsInlineSize,
   kContainsStrict =
       kContainsStyle | kContainsLayout | kContainsPaint | kContainsSize,

@@ -704,8 +704,6 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
     paint_layer = document_->GetLayoutView()->PaintingLayer();
   }
 
-  // PaintLayer* paint_layer = document_->GetLayoutView()->PaintingLayer();
-
   AddTransitionElementsFromCSSRecursive(
       paint_layer, document_.Get(), containing_group_stack,
       /*nearest_group_with_contain=*/g_null_atom);
@@ -766,6 +764,17 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
 
+  if ((root_style.Contain() & kContainsViewTransition) && element_ &&
+      (root_object.GetNode() != *element_)) {
+    // Having "contain: view-transition" on a descendant of the scoped element
+    // halts propagation of tag discovery into the descendant's subtree.
+    // If the scoped element itself has "contain: view-transition", the tag
+    // discovery process proceeds normally.
+    // TODO(crbug.com/422522044): Should "contain: strict" include
+    // view-transition
+    return;
+  }
+
   const auto& view_transition_name = root_style.ViewTransitionName();
   AtomicString current_name;
   if (view_transition_name && !root_object.IsFragmented()) {
@@ -800,8 +809,9 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     }
   }
 
-  if (root_object.ChildPaintBlockedByDisplayLock())
+  if (root_object.ChildPaintBlockedByDisplayLock()) {
     return;
+  }
 
   if (current_name) {
     containing_group_stack.push_back(current_name);

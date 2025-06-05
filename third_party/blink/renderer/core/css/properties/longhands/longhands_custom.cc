@@ -2693,10 +2693,10 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenStream& stream,
   CSSIdentifierValue* layout = nullptr;
   CSSIdentifierValue* style = nullptr;
   CSSIdentifierValue* paint = nullptr;
+  CSSIdentifierValue* view_transition = nullptr;
   while (true) {
     id = stream.Peek().Id();
     if ((id == CSSValueID::kSize ||
-
          id == CSSValueID::kInlineSize) &&
         !size) {
       size = css_parsing_utils::ConsumeIdent(stream);
@@ -2706,6 +2706,9 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenStream& stream,
       style = css_parsing_utils::ConsumeIdent(stream);
     } else if (id == CSSValueID::kPaint && !paint) {
       paint = css_parsing_utils::ConsumeIdent(stream);
+    } else if (id == CSSValueID::kViewTransition && !view_transition &&
+               RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+      view_transition = css_parsing_utils::ConsumeIdent(stream);
     } else {
       break;
     }
@@ -2722,6 +2725,9 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenStream& stream,
   }
   if (paint) {
     list->Append(*paint);
+  }
+  if (view_transition) {
+    list->Append(*view_transition);
   }
   if (!list->length()) {
     return nullptr;
@@ -2761,6 +2767,9 @@ const CSSValue* Contain::CSSValueFromComputedStyleInternal(
   }
   if (style.Contain() & kContainsPaint) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kPaint));
+  }
+  if (style.Contain() & kContainsViewTransition) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kViewTransition));
   }
   DCHECK(list->length());
   return list;
