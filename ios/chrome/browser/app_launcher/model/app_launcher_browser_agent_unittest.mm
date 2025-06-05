@@ -32,6 +32,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 using app_launcher_overlays::AllowAppLaunchResponse;
@@ -85,6 +86,9 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     [application_ stopMocking];
     CloseAllWebStates(*browser_->GetWebStateList(),
                       WebStateList::CLOSE_NO_FLAGS);
+    EXPECT_OCMOCK_VERIFY(
+        app_launcher_tab_helper_browser_presentation_provider_);
+    EXPECT_OCMOCK_VERIFY(application_);
   }
 
   // Returns the AppLauncherBrowserAgent.

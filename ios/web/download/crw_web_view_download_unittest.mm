@@ -13,36 +13,45 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 // Test fixture for testing CRWWebViewDownloadTest class.
 class CRWWebViewDownloadTest : public PlatformTest {
+  void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)web_view_);
+    EXPECT_OCMOCK_VERIFY((id)wk_download_);
+    EXPECT_OCMOCK_VERIFY((id)delegate_);
+    PlatformTest::TearDown();
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
+  WKWebView* web_view_ = OCMStrictClassMock([WKWebView class]);
+  WKDownload* wk_download_ = OCMStrictClassMock([WKDownload class]);
+  id<CRWWebViewDownloadDelegate> delegate_ =
+      OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
 };
 
 TEST_F(CRWWebViewDownloadTest, TestDownloadHTTPFile) {
   NSURLRequest* request = [[NSURLRequest alloc]
       initWithURL:[NSURL URLWithString:@"https://example.test"]];
-  id web_view = OCMStrictClassMock([WKWebView class]);
-  id wk_download = OCMStrictClassMock([WKDownload class]);
-  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
   CRWWebViewDownload* download =
       [[CRWWebViewDownload alloc] initWithPath:@"/path/foo/bar"
                                        request:request
-                                       webview:web_view
-                                      delegate:delegate];
+                                       webview:web_view_
+                                      delegate:delegate_];
 
   __block bool start_called = false;
-  [[web_view expect]
+  OCMExpect([web_view_
       startDownloadUsingRequest:request
               completionHandler:[OCMArg checkWithBlock:^(void (^completion)(
                                     WKDownload* download)) {
-                completion(wk_download);
+                completion(wk_download_);
                 start_called = true;
                 return YES;
-              }]];
-  [[wk_download expect] setDelegate:[OCMArg any]];
+              }]]);
+  OCMExpect([wk_download_ setDelegate:[OCMArg any]]);
   [download startDownload];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
@@ -51,9 +60,6 @@ TEST_F(CRWWebViewDownloadTest, TestDownloadHTTPFile) {
 }
 
 TEST_F(CRWWebViewDownloadTest, TestDownloadLocalFile) {
-  id web_view = OCMStrictClassMock([WKWebView class]);
-  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
-
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
@@ -74,12 +80,12 @@ TEST_F(CRWWebViewDownloadTest, TestDownloadLocalFile) {
   CRWWebViewDownload* download = [[CRWWebViewDownload alloc]
       initWithPath:base::SysUTF8ToNSString(dest.value())
            request:request
-           webview:web_view
-          delegate:delegate];
+           webview:web_view_
+          delegate:delegate_];
   __block bool finish_called = false;
-  [[[delegate expect] andDo:^(NSInvocation* invocation) {
+  OCMExpect([delegate_ downloadDidFinish]).andDo(^(NSInvocation* invocation) {
     finish_called = true;
-  }] downloadDidFinish];
+  });
   [download startDownload];
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
