@@ -868,6 +868,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
                 "Use WebView's own Context for Resources rather than the embedding app's"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_SKIP_INTERCEPTS_FOR_PREFETCH,
+                "Skip shouldInterceptRequest and other checks for prefetch requests."),
+        Flag.baseFeature(
                 BlinkFeatures.STANDARDIZED_BROWSER_ZOOM,
                 "Enable conformance to the new HTML specification for CSS zoom."),
         Flag.baseFeature("UseContextSnapshot"),

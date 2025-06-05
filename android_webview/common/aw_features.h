@@ -48,6 +48,7 @@ BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);
 extern const base::FeatureParam<bool> kWebViewPrefetchFromRenderer;
 BASE_DECLARE_FEATURE(kWebViewSafeAreaIncludesSystemBars);
 BASE_DECLARE_FEATURE(kWebViewSeparateResourceContext);
+BASE_DECLARE_FEATURE(kWebViewSkipInterceptsForPrefetch);
 BASE_DECLARE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU);
 BASE_DECLARE_FEATURE(kWebViewHyperlinkContextMenu);
 BASE_DECLARE_FEATURE(kCreateSpareRendererOnBrowserContextCreation);

@@ -613,11 +613,14 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
 
 // logic for when not to invoke shouldInterceptRequest callback
 bool InterceptedRequest::ShouldNotInterceptRequest() {
+  bool should_skip_intercept_for_prefetch_enabled =
+      base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
   // Do not call shouldInterceptRequest callback for prefetch requests that are
   // not also prerenders. This is because prerenders are treated as typical
   // navigations in WebView and therefore should be intercepted as usual.
   if (request_was_redirected_ ||
-      (AwPrefetchManager::IsPrefetchRequest(request_) &&
+      (should_skip_intercept_for_prefetch_enabled &&
+       AwPrefetchManager::IsPrefetchRequest(request_) &&
        !AwPrefetchManager::IsPrerenderRequest(request_))) {
     return true;
   }
@@ -1045,7 +1048,10 @@ void InterceptedRequest::SendNoIntercept(std::optional<bool> xrw_enabled) {
       intercept_response_received_args =
           std::make_unique<InterceptResponseReceivedArgs>();
 
-  if (AwPrefetchManager::IsPrefetchRequest(request_)) {
+  bool should_skip_intercept_for_prefetch_enabled =
+      base::FeatureList::IsEnabled(features::kWebViewSkipInterceptsForPrefetch);
+  if (should_skip_intercept_for_prefetch_enabled &&
+      AwPrefetchManager::IsPrefetchRequest(request_)) {
     // Skip the XRW check if this is a prefetch request.
     InterceptResponseReceived(std::move(intercept_response_received_args));
     return;
