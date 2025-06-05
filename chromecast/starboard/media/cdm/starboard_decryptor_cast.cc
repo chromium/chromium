@@ -4,14 +4,12 @@
 
 #include "chromecast/starboard/media/cdm/starboard_decryptor_cast.h"
 
-#include <cast_starboard_api_adapter.h>
-
 #include <cstdint>
 #include <cstring>
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -20,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
+#include "chromecast/starboard/chromecast/starboard_adapter/public/cast_starboard_api_adapter.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "google_apis/google_api_keys.h"
@@ -489,7 +488,8 @@ void StarboardDecryptorCast::OnProvisionResponse(int ticket,
 
   LOG(INFO) << "Provisioning succeeded. Updating session in starboard.";
   std::vector<uint8_t> response_vec(response.size());
-  UNSAFE_TODO(memcpy(response_vec.data(), response.c_str(), response.size()));
+  base::span<uint8_t>(response_vec)
+      .copy_from_nonoverlapping(base::as_byte_span(response));
 
   // This will be called if we successfully update the session.
   auto success_cb =

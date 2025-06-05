@@ -365,7 +365,6 @@ TEST_F(StarboardDrmWrapperTest, ForwardsKeyStatusUpdates) {
       error_message, session_id,
       std::vector<uint8_t>(content.begin(), content.end()), url);
   StarboardDrmKeyId key_id = {};
-  // Double-check that a memcpy is safe.
   base::span<uint8_t>(key_id.identifier)
       .take_first<key.size()>()
       .copy_from(base::as_byte_span(key));
