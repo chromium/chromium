@@ -77,7 +77,7 @@ cast_source_set("starboard_api_wrapper") {
       "starboard_api_wrapper_base.cc",
       "starboard_api_wrapper_base.h",
     ]
-    if (sb_api_version == 15) {
+    if (sb_api_version == 15 || sb_api_version == 16) {
       sources += [ "starboard_api_wrapper_15.cc" ]
     } else {
       assert(sb_api_version == 13 || sb_api_version == 14,
