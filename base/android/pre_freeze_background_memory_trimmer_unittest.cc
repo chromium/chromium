@@ -133,9 +133,7 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
 
 class PreFreezeSelfCompactionTest : public testing::Test {
  public:
-  void SetUp() override {
-    PreFreezeBackgroundMemoryTrimmer::ResetCompactionForTesting();
-  }
+  void SetUp() override { SelfCompactionManager::ResetCompactionForTesting(); }
 
   bool ShouldContinueCompaction(base::TimeTicks compaction_started_at) {
     return PreFreezeBackgroundMemoryTrimmer::Instance()
@@ -926,8 +924,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, Cancel) {
 
   {
     base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
-    PreFreezeBackgroundMemoryTrimmer::Instance().compaction_last_triggered_ =
-        triggered_at;
+    SelfCompactionManager::Instance().compaction_last_triggered_ = triggered_at;
   }
   SelfCompactionManager::Instance().StartCompaction(std::move(state));
 
@@ -997,8 +994,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, TimeoutCancel) {
 
   {
     base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
-    PreFreezeBackgroundMemoryTrimmer::Instance().compaction_last_triggered_ =
-        triggered_at;
+    SelfCompactionManager::Instance().compaction_last_triggered_ = triggered_at;
   }
   SelfCompactionManager::Instance().StartCompaction(std::move(state));
 
