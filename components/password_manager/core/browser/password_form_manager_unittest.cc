@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -47,6 +48,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
@@ -65,6 +67,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
@@ -2065,6 +2068,44 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordExistingCredential) {
   EXPECT_TRUE(saved_form.username_value.empty());
   EXPECT_EQ(form_with_generated_password.password_value,
             saved_form.password_value);
+}
+
+// Here the form manager uses real implementation of |FormSaver| instead of a
+// mock. FormSave is cloned within PresaveGeneratedPasswordAsBackup and
+// destroyed immediately, so there is no way verify the mocked call.
+TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
+  auto mock_store = base::MakeRefCounted<MockPasswordStoreInterface>();
+  auto password_save_manager = std::make_unique<PasswordSaveManagerImpl>(
+      /*profile_form_saver=*/std::make_unique<FormSaverImpl>(mock_store.get()),
+      /*account_form_saver=*/nullptr);
+  PasswordFormManager form_manager(&client_, driver_.AsWeakPtr(),
+                                   observed_form_, fetcher_.get(),
+                                   std::move(password_save_manager), nullptr);
+  fetcher_->NotifyFetchCompleted();
+  const std::string signon_realm = "https://example.com/";
+  const GURL url = GURL(signon_realm);
+  const std::u16string username = u"user";
+  const std::u16string primary_password = u"primary";
+  const std::u16string backup_password = u"backup";
+  PasswordForm input_form;
+  input_form.url = url;
+  input_form.signon_realm = signon_realm;
+  input_form.username_value = username;
+  input_form.password_value = primary_password;
+  PasswordForm expected_form(input_form);
+  expected_form.SetPasswordBackupNote(backup_password);
+  PasswordForm saved_form;
+
+  EXPECT_CALL(*mock_store.get(), AddLogin).WillOnce(SaveArg<0>(&saved_form));
+  PasswordFormManager::PresaveGeneratedPasswordAsBackup(
+      form_manager, input_form, backup_password);
+
+  EXPECT_EQ(expected_form.username_value, saved_form.username_value);
+  EXPECT_EQ(expected_form.password_value, saved_form.password_value);
+  EXPECT_EQ(expected_form.GetPasswordBackupNote(),
+            saved_form.GetPasswordBackupNote());
+  EXPECT_EQ(expected_form.url, saved_form.url);
+  EXPECT_EQ(expected_form.signon_realm, saved_form.signon_realm);
 }
 
 TEST_P(PasswordFormManagerTest, RecordsExactMatch) {

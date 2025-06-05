@@ -99,6 +99,7 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.blocked_by_user, actual.blocked_by_user);
   EXPECT_EQ(expected.all_alternative_usernames,
             actual.all_alternative_usernames);
+  EXPECT_EQ(expected.notes, actual.notes);
   EXPECT_TRUE(
       autofill::FormData::DeepEqual(expected.form_data, actual.form_data));
 }
@@ -286,6 +287,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
         submitted_form_.fields()[kUsernameFieldIndex].value();
     parsed_submitted_form_.password_value =
         submitted_form_.fields()[kPasswordFieldIndex].value();
+    parsed_submitted_form_.SetPasswordBackupNote(u"backup_password");
 
     fetcher_ = std::make_unique<FakeFormFetcher>();
     fetcher_->Fetch();
@@ -1684,6 +1686,13 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
       password_save_manager_impl()->GetPendingCredentials().date_last_used;
   expected_profile_update_form.in_store =
       password_save_manager_impl()->GetPendingCredentials().in_store;
+  expected_profile_update_form.SetPasswordBackupNote(
+      parsed_submitted_form_.GetPasswordBackupNote());
+  expected_profile_update_form.notes[0].date_created =
+      password_save_manager_impl()
+          ->GetPendingCredentials()
+          .notes[0]
+          .date_created;
 
   PasswordForm expected_account_update_form(saved_match_in_account_store);
   expected_account_update_form.times_used_in_html_form++;
@@ -1691,6 +1700,13 @@ TEST_F(MultiStorePasswordSaveManagerTest, AutomaticSaveInBothStores) {
       password_save_manager_impl()->GetPendingCredentials().date_last_used;
   expected_account_update_form.in_store =
       password_save_manager_impl()->GetPendingCredentials().in_store;
+  expected_account_update_form.SetPasswordBackupNote(
+      parsed_submitted_form_.GetPasswordBackupNote());
+  expected_account_update_form.notes[0].date_created =
+      password_save_manager_impl()
+          ->GetPendingCredentials()
+          .notes[0]
+          .date_created;
 
   EXPECT_CALL(*mock_profile_form_saver(),
               Update(expected_profile_update_form, _, _));
@@ -2057,6 +2073,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInProfileStore) {
   profile_saved_match.username_value = parsed_submitted_form_.username_value;
   profile_saved_match.password_value = parsed_submitted_form_.password_value;
   profile_saved_match.in_store = PasswordForm::Store::kProfileStore;
+  profile_saved_match.notes.push_back(parsed_submitted_form_.notes[0]);
   profile_saved_match.moving_blocked_for_list = {user1_id_hash};
 
   SetNonFederatedAndNotifyFetchCompleted({profile_saved_match});
@@ -2087,6 +2104,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, BlockMovingWhenExistsInBothStores) {
   account_saved_match.username_value = parsed_submitted_form_.username_value;
   account_saved_match.password_value = parsed_submitted_form_.password_value;
   account_saved_match.in_store = PasswordForm::Store::kAccountStore;
+  account_saved_match.notes.push_back(parsed_submitted_form_.notes[0]);
 
   PasswordForm profile_saved_match(account_saved_match);
   profile_saved_match.in_store = PasswordForm::Store::kProfileStore;

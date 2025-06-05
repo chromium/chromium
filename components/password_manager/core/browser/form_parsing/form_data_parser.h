@@ -175,7 +175,7 @@ class FormDataParser {
 
   void reset_server_predictions() { server_predictions_.reset(); }
 
-  const std::optional<FormPredictions>& server_predictions() {
+  const std::optional<FormPredictions>& server_predictions() const {
     return server_predictions_;
   }
 

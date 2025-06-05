@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -35,6 +36,7 @@
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
+#include "url/gurl.h"
 
 namespace base {
 class ElapsedTimer;
@@ -199,6 +201,14 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   bool IsNewLogin() const;
   FormFetcher* GetFormFetcher();
+  // Writes to the password store the credential defined by
+  // |form.username_value|, |form.password_value|, |form.url| with the
+  // |generated_password| as a backup password. Uses |form_manager| for writing
+  // but doesn't change its state.
+  static void PresaveGeneratedPasswordAsBackup(
+      const PasswordFormManager& form_manager,
+      PasswordForm form,
+      const std::u16string& generated_password);
   void PresaveGeneratedPassword(const autofill::FormData& form_data,
                                 const std::u16string& generated_password);
   void PasswordNoLongerGenerated();
@@ -246,7 +256,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // the result is not identical to the original.
   // TODO(crbug.com/41328828): Replace with translating one appropriate class
   // into another one.
-  std::unique_ptr<PasswordFormManager> Clone();
+  std::unique_ptr<PasswordFormManager> Clone() const;
 
   // Because of the android integration tests, it can't be guarded by if
   // defined(UNIT_TEST).

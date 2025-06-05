@@ -32,6 +32,7 @@ void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
   CHECK(form_manager->GetParsedObservedForm());
   CHECK(form_manager->GetDriver());
 
+  // TODO(crbug.com/422125487): Fix metrics duplication.
   form_manager_ = form_manager->Clone();
   // PostTask is required because if the form is filled immediately the fields
   // might be cleared by PasswordAutofillAgent if there were no credentials to
