@@ -98,11 +98,11 @@ suite('Main', function() {
   });
 
   test('ManageSecurityKeysSubpageVisible', function() {
-    assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
+    assertTrue(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
 
   test('ManageSecurityKeysPhonesSubpageHidden', function() {
-    assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
+    assertFalse(isChildVisible(page, '#securityKeysPhonesSubpageTrigger'));
   });
 
   // Tests that changing the HTTPS-First Mode setting sets the associated pref,
@@ -174,8 +174,7 @@ suite('Main', function() {
 
   // Test that clicking the V8 security row navigates to the setting page.
   test('NavigateToV8Setting', function() {
-    const link =
-        page.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
+    const link = page.shadowRoot!.querySelector<HTMLElement>('#v8SettingLink');
     assertTrue(!!link);
     link.click();
     assertEquals(
@@ -366,7 +365,7 @@ suite('FlagsDisabled', function() {
   });
 
   test('ManageSecurityKeysSubpageHidden', function() {
-    assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
+    assertFalse(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
 
   // On modern versions of Windows the security keys subpage will be disabled
@@ -382,7 +381,7 @@ suite('FlagsDisabled', function() {
         await createPage();
         resetRouterForTesting();
 
-        const triggerId = '#security-keys-phones-subpage-trigger';
+        const triggerId = '#securityKeysPhonesSubpageTrigger';
         assertTrue(isChildVisible(page, triggerId));
         page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
         flush();
@@ -398,7 +397,7 @@ suite('FlagsDisabled', function() {
         await createPage();
         resetRouterForTesting();
 
-        const triggerId = '#security-keys-phones-subpage-trigger';
+        const triggerId = '#securityKeysPhonesSubpageTrigger';
         assertFalse(isChildVisible(page, triggerId));
       });
   // </if>

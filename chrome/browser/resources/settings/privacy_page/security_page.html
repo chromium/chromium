@@ -268,13 +268,13 @@
         </cr-link-row>
     </template>
 </if>
-    <cr-link-row id="v8-setting-link" class="hr" on-click="onV8SettingsClick_"
+    <cr-link-row id="v8SettingLink" class="hr" on-click="onV8SettingsClick_"
         label="$i18n{securityV8LinkTitle}"
         sub-label="$i18n{securityV8LinkDescription}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
-        <cr-link-row id="security-keys-subpage-trigger" class="hr"
+        <cr-link-row id="securityKeysSubpageTrigger" class="hr"
             label="$i18n{securityKeysTitle}"
             sub-label="$i18n{securityKeysDesc}"
             on-click="onSecurityKeysClick_"
@@ -284,7 +284,7 @@
 
 <if expr="is_win">
     <template is="dom-if" if="[[enableSecurityKeysPhonesSubpage_]]">
-        <cr-link-row id="security-keys-phones-subpage-trigger"
+        <cr-link-row id="securityKeysPhonesSubpageTrigger"
             label="$i18n{securityKeysPhonesManage}"
             sub-label="$i18n{securityKeysPhonesManageDesc}"
             on-click="onManagePhonesClick_">
@@ -299,7 +299,7 @@
         on-click="onManageCertificatesClick_" external>
     </cr-link-row>
 
-    <cr-link-row id="advanced-protection-program-link" class="hr"
+    <cr-link-row id="advancedProtectionProgramLink" class="hr"
         label="$i18n{advancedProtectionProgramTitle}"
         sub-label="$i18n{advancedProtectionProgramDesc}"
         on-click="onAdvancedProtectionProgramLinkClick_"

@@ -253,7 +253,7 @@ export class SettingsSecurityPageElement extends
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
         const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#security-keys-subpage-trigger');
+            '#securityKeysSubpageTrigger');
         assert(toFocus);
         focusWithoutInk(toFocus);
       });
@@ -263,7 +263,7 @@ export class SettingsSecurityPageElement extends
       this.focusConfig.set(
           routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER.path, () => {
             const toFocus =
-                this.shadowRoot!.querySelector<HTMLElement>('#v8-setting-link');
+                this.shadowRoot!.querySelector<HTMLElement>('#v8SettingLink');
             assert(toFocus);
             focusWithoutInk(toFocus);
           });
