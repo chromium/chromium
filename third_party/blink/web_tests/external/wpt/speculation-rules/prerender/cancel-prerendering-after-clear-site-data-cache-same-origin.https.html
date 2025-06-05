@@ -1,12 +1,6 @@
 <!DOCTYPE html>
-<!--
-This file is marked as "tentative" until:
-* The feature flag ClearSiteDataPrefetchPrerenderCache is enabled and
-  https://github.com/WICG/nav-speculation/issues/357 is added to the specification.
--->
 <title>clear-site-data-cache cancels prerenders</title>
 <meta name="timeout" content="long">
-<body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -18,7 +12,6 @@ This file is marked as "tentative" until:
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
-// Test that Clear-Site-Data header value "prerenderCache" clears prerender cache
 promise_test(async t => {
 
   const rcHelper = new PrerenderingRemoteContextHelper();
@@ -51,7 +44,6 @@ promise_test(async t => {
   await referrerRC.navigateExpectingNoPrerenderingActivation(prerenderedRC);
 }, "clear-site-data prerenderCache headers should prevent it from being activated");
 
-// Test that Clear-Site-Data header value "cache" clears prerender cache
 promise_test(async t => {
 
   const rcHelper = new PrerenderingRemoteContextHelper();
@@ -85,5 +77,3 @@ promise_test(async t => {
   await referrerRC.navigateExpectingNoPrerenderingActivation(prerenderedRC);
 }, "clear-site-data cache headers should prevent it from being activated");
 </script>
-</body>
-</html>

@@ -986,8 +986,8 @@ virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html
 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html
-virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-background-sync.tentative.https.html?target_hint=_blank
-virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-background-sync.tentative.https.html?target_hint=_self
+virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_blank
+virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-background-sync.https.html?target_hint=_self
 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-notification.https.html
 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-push.https.html
 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/restriction-screen-capture.https.html?target_hint=_blank
