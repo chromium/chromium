@@ -55,6 +55,7 @@
 #include "sandbox/policy/switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -245,6 +246,8 @@ void DeriveCommandLine(const GURL& start_url,
 // current session.
 void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
+      &::features::kAccessibilityManifestV3EspeakNGTts,
+      &::features::kAccessibilityManifestV3GoogleTts,
       &features::kAutoNightLight,
       &ash::features::kSeamlessRefreshRateSwitching,
       &::features::kPluginVm,

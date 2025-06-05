@@ -2623,6 +2623,26 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-accessibility-manifest-v3-espeakng",
+    "owners": [
+      "mwoj@google.com",
+      "xiyuan@google.com",
+      "akihiroota@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "enable-accessibility-manifest-v3-google-tts",
+    "owners": [
+      "xiyuan@google.com",
+      "mwoj@google.com",
+      "akihiroota@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-accessibility-manifest-v3-select-to-speak",
     "owners": [ "spectranaut@igalia.com", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
@@ -4697,15 +4717,6 @@
     "name": "esim-empty-activation-code-support",
     "owners": ["nikhilcn@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "espeakng-manifest-v3",
-    "owners": [
-      "mwoj@google.com",
-      "xiyuan@google.com",
-      "akihiroota@google.com"
-    ],
-    "expiry_milestone": 145
   },
   {
     "name": "event-based-log-upload",

@@ -347,6 +347,14 @@ bool IsAccessibilityManifestV3EnabledForEspeakNGTts() {
       ::features::kAccessibilityManifestV3EspeakNGTts);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3GoogleTts,
+             "AccessibilityManifestV3GoogleTts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForGoogleTts() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3GoogleTts);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
              "AccessibilityManifestV3AccessibilityCommon",
              base::FEATURE_DISABLED_BY_DEFAULT);

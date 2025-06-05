@@ -9116,6 +9116,7 @@ from previous Chrome versions.
   <int value="-1797183993" label="LacrosMergeIcuDataFile:enabled"/>
   <int value="-1796537928"
       label="CustomizeChromeWallpaperSearchButton:enabled"/>
+  <int value="-1795137192" label="AccessibilityManifestV3GoogleTts:disabled"/>
   <int value="-1794801189" label="VcStudioLook:disabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
   <int value="-1793587118"
@@ -9836,6 +9837,7 @@ from previous Chrome versions.
       label="HoldingSpaceWallpaperNudgeForceEligibility:disabled"/>
   <int value="-1520645293" label="InterestFeedNoticeCardAutoDismiss:disabled"/>
   <int value="-1520630395" label="DefaultPassthroughCommandDecoder:disabled"/>
+  <int value="-1520542714" label="AccessibilityManifestV3GoogleTts:enabled"/>
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
   <int value="-1517518406" label="force-update-menu-type"/>
   <int value="-1516955483" label="AutoDisableAccessibility:enabled"/>

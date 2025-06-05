@@ -281,6 +281,8 @@ inline constexpr char kFirstRunDialogId[] = "jdgcneonijmofocbhmijhacgchbihela";
 // Path to preinstalled Google speech synthesis extension.
 inline constexpr char kGoogleSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/patts";
+inline constexpr char kGoogleSpeechSynthesisManifestV3ExtensionPath[] =
+    "/usr/share/chromeos-assets/speech_synthesis/patts/mv3";
 // The extension id of the Google speech synthesis extension.
 inline constexpr char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";

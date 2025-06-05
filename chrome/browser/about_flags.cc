@@ -8428,6 +8428,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsChromeVox)},
 
+    {"enable-accessibility-manifest-v3-accessibility-common",
+     flag_descriptions::kAccessibilityManifestV3AccessibilityCommonName,
+     flag_descriptions::kAccessibilityManifestV3AccessibilityCommonDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3AccessibilityCommon)},
+
     {"enable-accessibility-manifest-v3-braille-ime",
      flag_descriptions::kAccessibilityManifestV3BrailleImeName,
      flag_descriptions::kAccessibilityManifestV3BrailleImeDescription, kOsCrOS,
@@ -8444,11 +8450,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3EnhancedNetworkTts)},
 
-    {"enable-accessibility-manifest-v3-accessibility-common",
-     flag_descriptions::kAccessibilityManifestV3AccessibilityCommonName,
-     flag_descriptions::kAccessibilityManifestV3AccessibilityCommonDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3AccessibilityCommon)},
+    {"enable-accessibility-manifest-v3-espeakng",
+     flag_descriptions::kAccessibilityManifestV3EspeakNGName,
+     flag_descriptions::kAccessibilityManifestV3EspeakNGDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(::features::kAccessibilityManifestV3EspeakNGTts)},
+
+    {"enable-accessibility-manifest-v3-google-tts",
+     flag_descriptions::kAccessibilityManifestV3GoogleTtsName,
+     flag_descriptions::kAccessibilityManifestV3GoogleTtsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(::features::kAccessibilityManifestV3GoogleTts)},
 
     {"enable-accessibility-manifest-v3-select-to-speak",
      flag_descriptions::kAccessibilityManifestV3SelectToSpeakName,
@@ -12633,13 +12643,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)},
-
-#if BUILDFLAG(IS_CHROMEOS)
-    {"espeakng-manifest-v3",
-     flag_descriptions::kAccessibilityManifestV3EspeakNGName,
-     flag_descriptions::kAccessibilityManifestV3EspeakNGDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(::features::kAccessibilityManifestV3EspeakNGTts)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"mvc-update-view-when-model-changed",

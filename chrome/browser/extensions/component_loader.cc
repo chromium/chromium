@@ -714,7 +714,11 @@ void ComponentLoader::AddWithNameAndDescriptionFromDir(
 void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
   if (!Exists(extension_misc::kGoogleSpeechSynthesisExtensionId)) {
     AddComponentFromDir(
-        base::FilePath(extension_misc::kGoogleSpeechSynthesisExtensionPath),
+        ::features::IsAccessibilityManifestV3EnabledForGoogleTts()
+            ? base::FilePath(
+                  extension_misc::kGoogleSpeechSynthesisManifestV3ExtensionPath)
+            : base::FilePath(
+                  extension_misc::kGoogleSpeechSynthesisExtensionPath),
         extension_misc::kGoogleSpeechSynthesisExtensionId,
         base::BindRepeating(
             &ComponentLoader::FinishLoadSpeechSynthesisExtension,

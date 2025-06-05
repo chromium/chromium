@@ -7140,6 +7140,11 @@ const char kAccessibilityManifestV3EspeakNGName[] =
 const char kAccessibilityManifestV3EspeakNGDescription[] =
     "Experimental migration of EspeakNG TTS from extension manifest v2 to v3.";
 
+const char kAccessibilityManifestV3GoogleTtsName[] =
+    "Changes accessibility extension Google TTS manifest v2 to v3.";
+const char kAccessibilityManifestV3GoogleTtsDescription[] =
+    "Experimental migration of Google TTS from extension manifest v2 to v3.";
+
 const char kAccessibilityManifestV3SelectToSpeakName[] =
     "Changes accessibility extension Select to Speak manifest v2 to v3.";
 const char kAccessibilityManifestV3SelectToSpeakDescription[] =
