@@ -12,4 +12,9 @@ bool IsSecPurposeForPrefetch(std::optional<std::string> sec_purpose_header) {
   return sec_purpose_header && sec_purpose_header->starts_with("prefetch");
 }
 
+bool IsSecPurposeForPrerender(std::optional<std::string> sec_purpose_header) {
+  return sec_purpose_header &&
+         sec_purpose_header->starts_with("prefetch;prerender");
+}
+
 }  // namespace blink

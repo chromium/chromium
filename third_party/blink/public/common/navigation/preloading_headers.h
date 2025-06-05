@@ -29,6 +29,14 @@ inline constexpr char kSecPurposeHeaderName[] = "Sec-Purpose";
 BLINK_COMMON_EXPORT bool IsSecPurposeForPrefetch(
     std::optional<std::string> sec_purpose_header_value);
 
+// Returns true if the given `Sec-Purpose` request header value is for
+// prerender. Note: this assumes the header value is set by Chromium
+// implementation using the header value
+// `kSecPurposePrefetchPrerenderHeaderValue` below, as this method doesn't
+// perform full structured header value parsing.
+BLINK_COMMON_EXPORT bool IsSecPurposeForPrerender(
+    std::optional<std::string> sec_purpose_header_value);
+
 // This value indicates that the request is a prefetch request made directly to
 // the server.
 inline constexpr char kSecPurposePrefetchHeaderValue[] = "prefetch";

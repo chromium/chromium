@@ -64,6 +64,10 @@ public class AwPrefetchManager {
         return new AwPrefetchManager(nativePrefetchManager);
     }
 
+    public static boolean isSecPurposeForPrefetch(String secPurposeHeaderValue) {
+        return AwPrefetchManagerJni.get().isSecPurposeForPrefetch(secPurposeHeaderValue);
+    }
+
     @Nullable
     private static Exception getStartPrefetchErrorOrNull(
             String url, AwPrefetchParameters prefetchParameters) {
@@ -266,6 +270,8 @@ public class AwPrefetchManager {
     interface Natives {
 
         int getNoPrefetchKey();
+
+        boolean isSecPurposeForPrefetch(@JniType("std::string") String secPurposeHeaderValue);
 
         // Returns the prefetch key used to cancel the request.
         int startPrefetchRequest(
