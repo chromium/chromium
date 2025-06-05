@@ -33,6 +33,19 @@
 
 namespace blink {
 
+namespace {
+
+float ResolveViewportDimension(const Length& dimension,
+                               const SVGViewportResolver& viewport_resolver,
+                               const ComputedStyle& style,
+                               SVGLengthMode mode) {
+  const Length kOneHundredPercent(100, Length::Type::kPercent);
+  const Length& length = dimension.IsAuto() ? kOneHundredPercent : dimension;
+  return ValueForLength(length, viewport_resolver, style, mode);
+}
+
+}  // namespace
+
 LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
     : LayoutSVGContainer(node) {}
 
@@ -48,10 +61,30 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
     const auto* svg = To<SVGSVGElement>(GetElement());
     SVGLengthContext length_context(svg);
     gfx::RectF old_viewport = viewport_;
-    viewport_.SetRect(svg->x()->CurrentValue()->Value(length_context),
-                      svg->y()->CurrentValue()->Value(length_context),
-                      svg->width()->CurrentValue()->Value(length_context),
-                      svg->height()->CurrentValue()->Value(length_context));
+
+    float resolved_x = svg->x()->CurrentValue()->Value(length_context);
+    float resolved_y = svg->y()->CurrentValue()->Value(length_context);
+    float resolved_width;
+    float resolved_height;
+
+    if (RuntimeEnabledFeatures::
+            WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+      const SVGViewportResolver viewport_resolver(*this);
+      const ComputedStyle& style = StyleRef();
+
+      resolved_width = ResolveViewportDimension(
+          style.Width(), viewport_resolver, style, SVGLengthMode::kWidth);
+
+      resolved_height = ResolveViewportDimension(
+          style.Height(), viewport_resolver, style, SVGLengthMode::kHeight);
+
+    } else {
+      resolved_width = svg->width()->CurrentValue()->Value(length_context);
+      resolved_height = svg->height()->CurrentValue()->Value(length_context);
+    }
+
+    viewport_.SetRect(resolved_x, resolved_y, resolved_width, resolved_height);
+
     if (old_viewport != viewport_) {
       // The transform depends on viewport values.
       SetNeedsTransformUpdate();

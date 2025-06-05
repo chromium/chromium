@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -2207,6 +2208,9 @@ CSSValue* ComputedStyleUtils::ValueForMasonryTrackList(
 static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
   DCHECK(layout_object.IsSVGChild());
   return layout_object.IsSVGImage() || layout_object.IsSVGForeignObject() ||
+         (layout_object.IsSVGViewportContainer() &&
+          RuntimeEnabledFeatures::
+              WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) ||
          (layout_object.IsSVGShape() &&
           IsA<SVGRectElement>(layout_object.GetNode()));
 }
@@ -2214,7 +2218,14 @@ static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
 gfx::SizeF ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
   if (layout_object.IsSVGChild() &&
       IsSVGObjectWithWidthAndHeight(layout_object)) {
-    gfx::SizeF size = layout_object.ObjectBoundingBox().size();
+    auto* viewport_container =
+        DynamicTo<LayoutSVGViewportContainer>(layout_object);
+    gfx::SizeF size =
+        viewport_container &&
+                RuntimeEnabledFeatures::
+                    WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()
+            ? viewport_container->Viewport().size()
+            : layout_object.ObjectBoundingBox().size();
     // The object bounding box does not have zoom applied. Multiply with zoom
     // here since we'll divide by it when we produce the CSS value.
     size.Scale(layout_object.StyleRef().EffectiveZoom());

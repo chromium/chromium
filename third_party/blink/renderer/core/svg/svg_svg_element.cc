@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_tear_off.h"
@@ -160,6 +161,52 @@ bool SVGSVGElement::ZoomAndPanEnabled() const {
   return zoom_and_pan == kSVGZoomAndPanMagnify;
 }
 
+// There are few cases when the width and height attributes on an inner `svg`
+// may need to be collected explicitly as styles.
+//
+// Case 1: The width and height attributes on the `use` element override the
+// values for the corresponding attributes on a referenced `svg` or `symbol`
+// element when determining the used value for that property on the instance
+// root element. [1]
+//
+// Case 2:If no width or height attributes are specified on the `use` element,
+// corresponding reference element's width or height is used. For `svg` element
+// since width and height are presentation attributes now, they are collected
+// as styles but for `symbol` since width and height currently are not collected
+// as styles so for `symbol` element we need to collect these styles
+// explicitly. (crbug.com/41413321)
+//
+//[1] (https://svgwg.org/svg2-draft/struct.html#UseElement)
+CSSPropertyValueSet*
+SVGSVGElement::CreateWidthAndHeightPresentationAttributeStyleIfNeeded(
+    const Element& original_element) {
+  if (IsOutermostSVGSVGElement()) {
+    return nullptr;
+  }
+
+  if (InUseShadowTree()) {
+    auto* use_element = DynamicTo<SVGUseElement>(ParentOrShadowHostElement());
+
+    if (use_element && (use_element->width()->IsSpecified() ||
+                        use_element->height()->IsSpecified() ||
+                        IsA<SVGSymbolElement>(original_element))) {
+      HeapVector<CSSPropertyValue, 8> values;
+      SVGAnimatedPropertyBase* properties[]{width_.Get(), height_.Get()};
+
+      for (SVGAnimatedPropertyBase* property : properties) {
+        if (const CSSValue* css_value = property->CssValue()) {
+          AddPropertyToPresentationAttributeStyle(
+              values, property->CssPropertyId(), *css_value);
+        }
+      }
+
+      return ImmutableCSSPropertyValueSet::Create(values, kSVGAttributeMode);
+    }
+  }
+
+  return nullptr;
+}
+
 void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
@@ -204,9 +251,13 @@ void SVGSVGElement::ParseAttribute(const AttributeModificationParams& params) {
 }
 
 bool SVGSVGElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
-      !IsOutermostSVGSVGElement())
-    return false;
+  if (!RuntimeEnabledFeatures::
+          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+    if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
+        !IsOutermostSVGSVGElement()) {
+      return false;
+    }
+  }
   return SVGGraphicsElement::IsPresentationAttribute(name);
 }
 
@@ -214,13 +265,17 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
-  // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
-  // bail here in that case to avoid having the generic logic in SVGElement
-  // picking it up.
-  if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
-      !IsOutermostSVGSVGElement()) {
-    return;
+  if (!RuntimeEnabledFeatures::
+          WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+    // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
+    // bail here in that case to avoid having the generic logic in SVGElement
+    // picking it up.
+    if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
+        !IsOutermostSVGSVGElement()) {
+      return;
+    }
   }
+
   SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 
@@ -246,6 +301,10 @@ void SVGSVGElement::SvgAttributeChanged(
         UpdatePresentationAttributeStyle(params.property);
         if (layout_object)
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
+      } else if (
+          RuntimeEnabledFeatures::
+              WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled()) {
+        UpdatePresentationAttributeStyle(params.property);
       }
     } else {
       UpdatePresentationAttributeStyle(params.property);

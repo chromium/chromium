@@ -126,6 +126,7 @@
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1227,6 +1228,21 @@ void StyleResolver::MatchPresentationalHints(StyleResolverState& state,
     collector.AddElementStyleProperties(
         element.PresentationAttributeStyle(),
         CascadeOrigin::kAuthorPresentationalHint);
+
+    if (RuntimeEnabledFeatures::
+            WidthAndHeightAsPresentationAttributesOnNestedSvgEnabled() &&
+        state.GetStyledElement() != &element) {
+      auto* svg_svg_element =
+          DynamicTo<SVGSVGElement>(state.GetStyledElement());
+
+      if (svg_svg_element) {
+        collector.AddElementStyleProperties(
+            svg_svg_element
+                ->CreateWidthAndHeightPresentationAttributeStyleIfNeeded(
+                    element),
+            CascadeOrigin::kAuthorPresentationalHint);
+      }
+    }
 
     // Now we check additional mapped declarations.
     // Tables and table cells share an additional mapped rule that must be
