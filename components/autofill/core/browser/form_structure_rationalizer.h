@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "url/origin.h"

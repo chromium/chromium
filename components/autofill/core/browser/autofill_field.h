@@ -18,7 +18,6 @@
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -30,6 +29,8 @@
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
+
+class FormStructure;
 
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
