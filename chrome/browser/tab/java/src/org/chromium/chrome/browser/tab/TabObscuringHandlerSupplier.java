@@ -12,17 +12,17 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
- * {@link TabObscuringHandler}.
+ * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
+ * TabObscuringHandler}.
  */
 @NullMarked
 public class TabObscuringHandlerSupplier extends UnownedUserDataSupplier<TabObscuringHandler> {
     private static final UnownedUserDataKey<TabObscuringHandlerSupplier> KEY =
-            new UnownedUserDataKey<TabObscuringHandlerSupplier>(TabObscuringHandlerSupplier.class);
+            new UnownedUserDataKey<>(TabObscuringHandlerSupplier.class);
 
     /**
-     * Retrieves an {@link ObservableSupplier} from the given host. Real implementations should
-     * use {@link WindowAndroid}.
+     * Retrieves an {@link ObservableSupplier} from the given host. Real implementations should use
+     * {@link WindowAndroid}.
      */
     public static @Nullable TabObscuringHandler getValueOrNullFrom(
             @Nullable WindowAndroid windowAndroid) {

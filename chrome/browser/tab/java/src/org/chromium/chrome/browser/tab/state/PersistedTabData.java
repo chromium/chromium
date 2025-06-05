@@ -407,7 +407,7 @@ public abstract class PersistedTabData implements UserData {
     @VisibleForTesting
     protected Serializer<ByteBuffer> getOomAndMetricsWrapper() {
         final Serializer<ByteBuffer> serializer = getSerializerWithOomSoftFallback();
-        return new Serializer<ByteBuffer>() {
+        return new Serializer<>() {
             @Override
             public @Nullable ByteBuffer get() {
                 if (serializer == null) return null;

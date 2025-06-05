@@ -25,7 +25,7 @@ public class PresetHubLayoutAnimatorProvider implements HubLayoutAnimatorProvide
      * @param animator The {@link HubLayoutAnimator} to use.
      */
     public PresetHubLayoutAnimatorProvider(@NonNull HubLayoutAnimator animator) {
-        mPresetAnimatorSupplier = new SyncOneshotSupplierImpl<HubLayoutAnimator>();
+        mPresetAnimatorSupplier = new SyncOneshotSupplierImpl<>();
         mPresetAnimatorSupplier.set(animator);
     }
 

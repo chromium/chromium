@@ -56,7 +56,7 @@ public class ForeignSessionHelper {
         public final String tag;
         public final String name;
         public final long modifiedTime;
-        public final List<ForeignSessionWindow> windows = new ArrayList<ForeignSessionWindow>();
+        public final List<ForeignSessionWindow> windows = new ArrayList<>();
         public final @FormFactor int formFactor;
 
         private ForeignSession(
@@ -86,7 +86,7 @@ public class ForeignSessionHelper {
     public static class ForeignSessionWindow {
         public final long timestamp;
         public final int sessionId;
-        public final List<ForeignSessionTab> tabs = new ArrayList<ForeignSessionTab>();
+        public final List<ForeignSessionTab> tabs = new ArrayList<>();
 
         private ForeignSessionWindow(long timestamp, int sessionId) {
             this(timestamp, sessionId, new ArrayList<>());
@@ -198,7 +198,7 @@ public class ForeignSessionHelper {
         if (!isTabSyncEnabled()) {
             return Collections.emptyList();
         }
-        List<ForeignSession> result = new ArrayList<ForeignSession>();
+        List<ForeignSession> result = new ArrayList<>();
         boolean received =
                 ForeignSessionHelperJni.get()
                         .getForeignSessions(mNativeForeignSessionHelper, result);
@@ -217,7 +217,7 @@ public class ForeignSessionHelper {
         if (!isTabSyncEnabled()) {
             return Collections.emptyList();
         }
-        List<ForeignSession> result = new ArrayList<ForeignSession>();
+        List<ForeignSession> result = new ArrayList<>();
         boolean received =
                 ForeignSessionHelperJni.get()
                         .getMobileAndTabletForeignSessions(mNativeForeignSessionHelper, result);

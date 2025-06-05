@@ -95,7 +95,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                 mGTSTabListModelSizeSupplier,
                 mScrollGTSToRestoredTabsCallback);
         verify(mForeignSessionHelperJniMock)
-                .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
+                .getMobileAndTabletForeignSessions(1L, new ArrayList<>());
         verify(mForeignSessionHelperJniMock).destroy(1L);
     }
 
@@ -135,7 +135,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)
-                .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
+                .getMobileAndTabletForeignSessions(1L, new ArrayList<>());
         mHelper.maybeShowPromo(
                 mActivity,
                 mProfile,
@@ -169,7 +169,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)
-                .getMobileAndTabletForeignSessions(eq(1L), eq(new ArrayList<ForeignSession>()));
+                .getMobileAndTabletForeignSessions(eq(1L), eq(new ArrayList<>()));
 
         mHelper.maybeShowPromo(
                 mActivity,
@@ -206,7 +206,7 @@ public class RestoreTabsFeatureHelperUnitTest {
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)
-                .getMobileAndTabletForeignSessions(eq(1L), eq(new ArrayList<ForeignSession>()));
+                .getMobileAndTabletForeignSessions(eq(1L), eq(new ArrayList<>()));
 
         mHelper.maybeShowPromo(
                 mActivity,

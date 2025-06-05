@@ -195,7 +195,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     @EnsuresNonNull("mListeners")
     private void ensureListenersList() {
         if (mListeners == null) {
-            mListeners = new LinkedList<HubLayoutAnimationListener>();
+            mListeners = new LinkedList<>();
         }
     }
 }
