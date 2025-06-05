@@ -1368,10 +1368,10 @@ void UpdateServiceImplImpl::RunInstallerImpl(
             if (result.result.category == update_client::ErrorCategory::kNone &&
                 installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
-              config->GetPrefService()->CommitPendingWrite();
             } else if (new_install) {
               persisted_data->RemoveApp(app_id);
             }
+            config->GetPrefService()->CommitPendingWrite();
 
             state.error_category = ToErrorCategory(result.result.category);
             state.error_code = result.result.code;
