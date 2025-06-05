@@ -141,7 +141,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 
     id mock_event = [OCMockObject partialMockForObject:event];
     [[[mock_event stub] andReturnBool:NO] isDirectionInvertedFromDevice];
-    NSTimeInterval timestamp = 0;
+    // An arbitrary non-zero timestamp (as a zero value will trigger DCHECKs).
+    NSTimeInterval timestamp = 1;
     [(NSEvent*)[[mock_event stub] andReturnValue:OCMOCK_VALUE(timestamp)]
         timestamp];
     [(NSEvent*)[[mock_event stub] andReturnValue:OCMOCK_VALUE(type)] type];
@@ -173,7 +174,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     NSUInteger modifierFlags = 0;
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(modifierFlags)]
         modifierFlags];
-    NSTimeInterval timestamp = 0;
+    // An arbitrary non-zero timestamp (as a zero value will trigger DCHECKs).
+    NSTimeInterval timestamp = 1;
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(timestamp)] timestamp];
 
     NSView* view = GetWebContents()
@@ -226,7 +228,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     [[[event stub] andReturn:touches] touchesMatchingPhase:NSTouchPhaseAny
                                                     inView:[OCMArg any]];
     [[[event stub] andReturnBool:NO] isDirectionInvertedFromDevice];
-    NSTimeInterval timestamp = 0;
+    // An arbitrary non-zero timestamp (as a zero value will trigger DCHECKs).
+    NSTimeInterval timestamp = 1;
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(timestamp)] timestamp];
 
     QueueEvent(event, deployment, after_replay_message_loop);
@@ -353,12 +356,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 
 // The ordering, timing, and parameters of the events was determined by
 // recording a real swipe.
-//
-// Flaky specifically because of a DCHECK failure in cc/ code.
-// TODO(https://crbug.com/422115609): Fix this cc/ DCHECK failure and re-enable
-// this test.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       DISABLED_TestBackwardsHistoryNavigationRealData) {
+                       TestBackwardsHistoryNavigationRealData) {
   QueueTouch(0.510681, 0.444672, Deployment::kTouchesBegan, NSEventTypeGesture,
              NSEventSubtypeMouseEvent, AfterReplayMessageLoop::kDoNotRun);
   QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, AfterReplayMessageLoop::kRun);
@@ -492,9 +491,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // vertical motion. This should not trigger history navigation.
 //
 // TODO(https://crbug.com/41121608): Disabled due to the expected offset not
-// matching; fix once the DCHECK failure in cc/ code
-// (https://crbug.com/422115609) is fixed, as that causes failures consistently
-// across this suite of browertests.
+// matching; fix.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllDiagonalSwipes) {
   QueueBeginningEvents(1, -1);
@@ -511,9 +508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // not trigger history navigation.
 //
 // TODO(https://crbug.com/41121608): Disabled due to the expected offset not
-// matching; fix once the DCHECK failure in cc/ code
-// (https://crbug.com/422115609) is fixed, as that causes failures consistently
-// across this suite of browertests.
+// matching; fix.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestStaggeredDiagonalSwipe) {
   QueueBeginningEvents(1, 0);
@@ -555,12 +550,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 
 // The movement events are mostly in the horizontal direction, which should
 // trigger a history swipe. This should trigger history navigation.
-//
-// Flaky specifically because of a DCHECK failure in cc/ code.
-// TODO(https://crbug.com/422115609): Fix this cc/ DCHECK failure and re-enable
-// this test.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       DISABLED_TestMostlyHorizontal) {
+                       TestMostlyHorizontal) {
   QueueBeginningEvents(1, 1);
   for (int i = 0; i < 150; ++i) {
     if (i % 10 == 0) {
@@ -580,9 +571,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // Each movement event is horizontal, except the first two. This should trigger
 // history navigation. This test is DISABLED because it has never worked. Once
 // the flaw in the history swiper logic has been corrected, this test should be
-// enabled. TODO(https://crbug.com/41108750): Do so once the DCHECK failure in
-// cc/ code (https://crbug.com/422115609) is fixed, as that causes failures
-// consistently across this suite of browertests.
+// enabled. TODO(https://crbug.com/41108750): Do so.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllHorizontalButFirst) {
   QueueBeginningEvents(0, -1);
@@ -598,12 +587,8 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 
 // Initial movements are vertical, and scroll the iframe. Subsequent movements
 // are horizontal, and should not trigger history swiping.
-//
-// Flaky specifically because of a DCHECK failure in cc/ code.
-// TODO(https://crbug.com/422115609): Fix this cc/ DCHECK failure and re-enable
-// this test.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       DISABLED_TestIframeHistorySwiping) {
+                       TestIframeHistorySwiping) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
