@@ -619,16 +619,16 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       /*expected_bucket_count=*/1);
 }
 
-// If the user has opted out of Pix, the payflow should not be initialized. The
-// account linking flow is initialized before checking the user pref, so it has
-// no effect on account linking flow.
+// If the user has opted out of Pix, neither the payflow nor the
+// account linking flow is initiated.
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
-       UserOptedOut_PixPayflowAbandoned) {
+       UserOptedOut_PixFlowsAbandoned) {
   payments_data_manager_->AddMaskedBankAccountForTest(
       CreatePixBankAccount(/*instrument_id=*/1));
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),

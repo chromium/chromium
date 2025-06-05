@@ -112,6 +112,8 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            PayflowExitedReason_PaymentsAutofillTurnedOff);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
+                           UserOptedOut_PixFlowsAbandoned);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            NoPixAccounts_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            NoPixPaymentPromptWhenApiClientNotAvailable);
@@ -144,8 +146,6 @@ class PixManager {
                            NoLinkedAccount_AccountLinkingFlowTriggered);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            PayflowExitedReason_RiskDataEmpty);
-  FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
-                           PayflowExitedReason_PaymentsAutofillTurnedOff);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
                            PayflowExitedReason_UserOptedOut);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestWithAccountLinkingEnabled,
