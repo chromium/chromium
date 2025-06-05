@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Temporary"/>
   <int value="2" label="Persistent License"/>
-  <int value="3" label="Persistent Usage Record"/>
+  <int value="3" label="(Obsolete) Persistent Usage Record"/>
 </enum>
 
 <enum name="EnumerateDevicesResult">

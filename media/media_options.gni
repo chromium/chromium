@@ -111,7 +111,7 @@ declare_args() {
   enable_dav1d_decoder = use_blink
 
   # Enable browser managed persistent metadata storage for EME persistent
-  # session and persistent usage record session.
+  # session.
   enable_media_drm_storage = is_android || is_castos
 
   # Enable HLS manifest parser and demuxer.
