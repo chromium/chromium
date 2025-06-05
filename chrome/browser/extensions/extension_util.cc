@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -357,6 +358,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 bool AreExtensionsDisabled(const base::CommandLine& command_line,
                            content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
+// Disable extensions in managed profiles on desktop android, because corp
+// extensions might not work as expected, allowing users to install dangerous
+// extensions.
+// TODO(crbug.com/422307625): Remove it after making sure corp extensions work.
+#if BUILDFLAG(IS_ANDROID)
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return ExtensionsDisabledViaCommandLine(command_line) ||
          profile->GetPrefs()->GetBoolean(prefs::kDisableExtensions);
 }
