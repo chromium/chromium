@@ -258,10 +258,11 @@ void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
   auto* pce = optimization_guide::PageContextEligibility::Get();
   bool is_eligible =
       content &&
-      (!pce || pce->api().IsPageContextEligible(
-                   url.host(), url.path(),
-                   optimization_guide::GetFrameMetadataFromPageContent(
-                       content.value())));
+      (!pce ||
+       optimization_guide::IsPageContextEligible(
+           url.host(), url.path(),
+           optimization_guide::GetFrameMetadataFromPageContent(content.value()),
+           pce));
 
   if (is_eligible) {
     annotated_page_content_ = std::move(content);
