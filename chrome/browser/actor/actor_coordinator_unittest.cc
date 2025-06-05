@@ -98,6 +98,10 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
 
     ChromeRenderViewHostTestHarness::SetUp();
 
+    // TODO(crbug.com/409564704): Mock the delay so that tests can run at
+    // reasonable speed. Remove once there is a more permanent approach.
+    OverrideActionObservationDelay(base::TimeDelta());
+
     AssociateTabInterface();
   }
 
