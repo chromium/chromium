@@ -5,12 +5,22 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
+#include "base/files/scoped_temp_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 
 namespace user_data_importer {
 
+class SafariDataImportManager;
+
+// Main model-layer object for extracting and importing user data from a bundle
+// of data exported by Safari. The bundle is a ZIP file containing various data
+// types in individual files, the format of which is documented here:
+// https://developer.apple.com/documentation/safariservices/importing-data-exported-from-safari?language=objc
+// Users of this class must also provide an object implementing the
+// `SafariDataImportManager` interface, which abstracts out certain logic which
+// can't live in the components layer (because of platform dependencies).
 class SafariDataImporter {
  public:
   // A callback used to obtain the number of successfully imported bookmarks,
@@ -21,7 +31,8 @@ class SafariDataImporter {
       password_manager::PasswordImporter::ImportResultsCallback;
   using PasswordImportResults = password_manager::ImportResults;
 
-  SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter);
+  SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
+                     std::unique_ptr<SafariDataImportManager> manager);
   ~SafariDataImporter();
 
   // Attempts to import various data types (passwords, payment cards, bookmarks
@@ -60,7 +71,7 @@ class SafariDataImporter {
 
   // Attempts to import bookmarks by parsing the provided HTML data.
   // Calls "bookmarks_callback" when done.
-  void ImportBookmarks(std::string html_data,
+  void ImportBookmarks(base::ScopedTempFile&& bookmarks_html,
                        ImportCallback bookmarks_callback);
 
   // Calls "history_callback" with an approximation of the number of URLs
@@ -107,6 +118,10 @@ class SafariDataImporter {
   // which we have to do for "password_importer_" tasks and for all callbacks,
   // for example.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Encapsulates model-layer logic that has to be injected (e.g.,
+  // platform-specific logic).
+  std::unique_ptr<SafariDataImportManager> manager_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.

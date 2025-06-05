@@ -5,9 +5,11 @@
 #include "components/user_data_importer/utility/safari_data_importer.h"
 
 #include "base/containers/span_rust.h"
+#include "base/files/file_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/user_data_importer/utility/safari_data_import_manager.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
 namespace user_data_importer {
@@ -37,11 +39,13 @@ size_t UncompressedFileSize(const std::string& zip_filename,
 }
 
 SafariDataImporter::SafariDataImporter(
-    password_manager::SavedPasswordsPresenter* presenter)
+    password_manager::SavedPasswordsPresenter* presenter,
+    std::unique_ptr<SafariDataImportManager> manager)
     : password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
-      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      manager_(std::move(manager)) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
 
@@ -95,13 +99,18 @@ void SafariDataImporter::LaunchImportBookmarksTask(
     const std::string& zip_filename,
     ImportCallback bookmarks_callback) {
   std::string html_data = UnzipFile(zip_filename, FileType::Bookmarks);
-  if (html_data.empty()) {
+  base::ScopedTempFile bookmarks_html;
+  if (!html_data.empty() && bookmarks_html.Create()) {
+    base::WriteFile(bookmarks_html.path(), html_data);
+  }
+
+  if (!bookmarks_html) {
     PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
   } else {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SafariDataImporter::ImportBookmarks, AsWeakPtr(),
-                       std::move(html_data), std::move(bookmarks_callback)));
+        FROM_HERE, base::BindOnce(&SafariDataImporter::ImportBookmarks,
+                                  AsWeakPtr(), std::move(bookmarks_html),
+                                  std::move(bookmarks_callback)));
   }
 }
 
@@ -168,12 +177,9 @@ void SafariDataImporter::ImportPaymentCards(
   PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
 }
 
-void SafariDataImporter::ImportBookmarks(std::string html_data,
+void SafariDataImporter::ImportBookmarks(base::ScopedTempFile&& bookmarks_html,
                                          ImportCallback bookmarks_callback) {
-  if (html_data.empty()) {
-    PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
-    return;
-  }
+  CHECK(bookmarks_html);
 
   // TODO(crbug.com/407587751): Import bookmarks.
   PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);

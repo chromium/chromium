@@ -6,6 +6,8 @@ import("//build/rust/rust_static_library.gni")
 
 source_set("safari_data_importer") {
   sources = [
+    "safari_data_import_manager.cc",
+    "safari_data_import_manager.h",
     "safari_data_importer.cc",
     "safari_data_importer.h",
   ]
@@ -15,6 +17,7 @@ source_set("safari_data_importer") {
     "//base",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/ui",
+    "//components/user_data_importer/common",
   ]
 }
 

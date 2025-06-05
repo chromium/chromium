@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/services/csv_password/fake_password_parser_service.h"
+#include "components/user_data_importer/utility/safari_data_import_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,9 +32,22 @@
 
 namespace user_data_importer {
 
+class TestSafariDataImportManager : public SafariDataImportManager {
+ public:
+  TestSafariDataImportManager() = default;
+  ~TestSafariDataImportManager() override = default;
+
+  void ParseBookmarks(
+      const base::FilePath& bookmarks_html,
+      base::OnceCallback<void(BookmarkParsingResult)> callback) override {}
+};
+
 class SafariDataImporterTest : public testing::Test {
  public:
-  SafariDataImporterTest() : receiver_{&service_}, importer_(&presenter_) {
+  SafariDataImporterTest()
+      : receiver_{&service_},
+        importer_(&presenter_,
+                  std::make_unique<TestSafariDataImportManager>()) {
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
     importer_.password_importer_->SetServiceForTesting(
@@ -103,8 +117,11 @@ class SafariDataImporterTest : public testing::Test {
 
   void ImportBookmarks(std::string html_data) {
     bookmarks_callback_called_ = false;
+    base::ScopedTempFile file;
+    ASSERT_TRUE(file.Create());
+    base::WriteFile(file.path(), html_data);
     importer_.ImportBookmarks(
-        std::move(html_data),
+        std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
