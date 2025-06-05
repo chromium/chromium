@@ -35,11 +35,6 @@ constexpr char kAIRewriterAPIOTToken[] =
     "PMg4SLjABtNGJZf3Iel4zqG/"
     "iqZQ8AAABUeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6MzIxMjMiLCAiZmVhdHVyZSI6ICJB"
     "SVJld3JpdGVyQVBJIiwgImV4cGlyeSI6IDIwMDY5NzA3NDF9";
-constexpr char kAISummarizationAPIOTToken[] =
-    "A2UgHK404yD+"
-    "lJUncd3At3e5DePfDRTjhM96os1JFzJuBhMJyV8bVZNp9MSpCr4efZ2mdrMqOkDMmBkNyrJ75g"
-    "sAAABZeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6MzIxMjMiLCAiZmVhdHVyZSI6ICJBSVN1"
-    "bW1hcml6YXRpb25BUEkiLCAiZXhwaXJ5IjogMjAwNjk3MDcwMX0=";
 constexpr char kAIWriterAPIOTToken[] =
     "A0jJGgLmqGgNaHNH7my4hKMTvp7oBOvGoLvZhH3tzAGKY3SNkmSQCSTxFtgXNGxloQ7rFqxaut"
     "85MKQRKEug+"
@@ -93,8 +88,8 @@ bool IsOTTokenSupplied(Variant v) {
 
 // Describes the test variants in a meaningful way in the parameterized tests.
 std::string DescribeTestVariant(const testing::TestParamInfo<Variant> info) {
-  std::string api_flag =
-      IsAPIFlagEnabled(info.param) ? "WithAPIFlag" : "NoAPIFlag";
+  std::string api_flag = IsAPIFlagEnabled(info.param) ? "FlagEnabledByUser"
+                                                      : "FlagNotEnabledByUser";
   std::string worker_flag =
       IsAPIWorkerFlagEnabled(info.param) ? "WithWorkerFlag" : "NoWorkerFlag";
   std::string kill_switch = IsAPIKillSwitchTriggered(info.param)
@@ -110,9 +105,14 @@ std::vector<std::string> GetAPINames() {
   return {"LanguageModel", "Rewriter", "Summarizer", "Writer"};
 }
 
+// Returns whether the API is enabled by default.
+bool IsAPIEnabledByDefault(std::string_view name) {
+  return name == "Summarizer";
+}
+
 // Returns whether the API name matches those currently in origin trial.
 bool IsAPIInOT(std::string_view name) {
-  return name == "Summarizer" || name == "Rewriter" || name == "Writer";
+  return name == "Rewriter" || name == "Writer";
 }
 
 // Injects an Origin Trial `token` into the page.
@@ -178,14 +178,14 @@ class MAYBE_AIOnDeviceBrowserTest
 
     if (IsOTTokenSupplied(GetParam())) {
       InjectOTToken(tab, kAIRewriterAPIOTToken);
-      InjectOTToken(tab, kAISummarizationAPIOTToken);
       InjectOTToken(tab, kAIWriterAPIOTToken);
     }
   }
 
   bool ExpectExposedToWindow(std::string_view name) const {
     return IsAPIFlagEnabled(GetParam()) ||
-           (IsAPIInOT(name) && IsOTTokenSupplied(GetParam()) &&
+           ((IsAPIEnabledByDefault(name) ||
+             (IsAPIInOT(name) && IsOTTokenSupplied(GetParam()))) &&
             !IsAPIKillSwitchTriggered(GetParam()));
   }
 
