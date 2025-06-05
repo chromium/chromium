@@ -55,14 +55,18 @@ class CustomizeButtonsHandler
   // NotifyCustomizeChromeSidePanelVisibilityChanged() as part of deprecating
   // the Wallpaper Search button.
   void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
 
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<tabs::TabInterface> tab_interface_;
+  raw_ptr<tabs::TabInterface> tab_interface_;
   std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
 
-  // These members are intentionally placed at the end to ensure the WebUI page
-  // is disconnected before other dependencies are destroyed.
+  // These are located at the end of the list of member variables to ensure the
+  // WebUI page is disconnected before other members are destroyed.
   mojo::Remote<customize_buttons::mojom::CustomizeButtonsDocument> page_;
   mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandler> receiver_;
 
