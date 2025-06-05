@@ -203,15 +203,15 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
           content::PreloadingType::kPrerender, std::move(same_url_matcher),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  if (IsSearchUrl(*web_contents(), prerendering_url)) {
-    base::UmaHistogramBoolean(
-        internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl, true);
+  bool is_search_url = IsSearchUrl(*web_contents(), prerendering_url);
+  base::UmaHistogramBoolean(
+      internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl,
+      is_search_url);
+  if (is_search_url) {
     preloading_attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::KDisallowSearchUrl));
     return nullptr;
   }
-  base::UmaHistogramBoolean(
-      internal::kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl, false);
 
   // BookmarkBar only allows https protocol.
   // TODO(crbug.com/40259793): Add an enum metric to report the protocol scheme
@@ -278,15 +278,14 @@ PrerenderManager::StartPrerenderNewTabPage(
           std::move(same_url_matcher),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  if (IsSearchUrl(*web_contents(), prerendering_url)) {
-    base::UmaHistogramBoolean(
-        internal::kHistogramPrerenderNTPIsPrerenderingSrpUrl, true);
+  bool is_search_url = IsSearchUrl(*web_contents(), prerendering_url);
+  base::UmaHistogramBoolean(
+      internal::kHistogramPrerenderNTPIsPrerenderingSrpUrl, is_search_url);
+  if (is_search_url) {
     preloading_attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::KDisallowSearchUrl));
     return nullptr;
   }
-  base::UmaHistogramBoolean(
-      internal::kHistogramPrerenderNTPIsPrerenderingSrpUrl, false);
 
   // New Tab Page only allow https protocol.
   if (!prerendering_url.SchemeIs("https")) {
