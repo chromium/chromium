@@ -119,8 +119,8 @@
     </settings-clear-browsing-data-account-indicator>
 </if>
     <div id="spinner" class="spinner" hidden="[[!isDeletionInProgress_]]"></div>
-    <cr-button id="cancelButton" class="cancel-button" autofocus
-        on-click="onCancelClick_" disabled="[[isDeletionInProgress_]]">
+    <cr-button id="cancelButton" class="cancel-button" on-click="onCancelClick_"
+        disabled="[[isDeletionInProgress_]]" autofocus>
       $i18n{cancel}
     </cr-button>
     <cr-button id="deleteButton" class="action-button"

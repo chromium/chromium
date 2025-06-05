@@ -23,6 +23,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
@@ -204,6 +205,8 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     super.connectedCallback();
 
     this.clearBrowsingDataBrowserProxy_.initialize();
+
+    this.setFocusOutlineToVisible_();
   }
 
   private setUpDataTypeOptionLists_() {
@@ -339,9 +342,26 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.showOtherGoogleDataDialog_ = true;
   }
 
+  private setFocusOutlineToVisible_() {
+    // AutoFocus is not visible in mouse navigation by default. But in this
+    // dialog the default focus is on cancel which is not a default button. To
+    // make this clear to the user we make it visible to the user and remove
+    // the focus after the next mouse event.
+    const focusOutlineManager = FocusOutlineManager.forDocument(document);
+    focusOutlineManager.visible = true;
+
+    document.addEventListener('mousedown', () => {
+      focusOutlineManager.visible = false;
+    }, {once: true});
+  }
+
   private onOtherGoogleDataDialogClose_(e: Event) {
     e.stopPropagation();
     this.showOtherGoogleDataDialog_ = false;
+    afterNextRender(this, () => {
+      this.$.cancelButton.focus();
+      this.setFocusOutlineToVisible_();
+    });
   }
 }
 
