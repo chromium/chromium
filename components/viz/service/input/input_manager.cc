@@ -598,7 +598,12 @@ void InputManager::ResetGestureDetection(
 
   RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
   CHECK(support_base);
-  CHECK(!support_base->IsRenderInputRouterSupportChildFrame());
+  if (support_base->IsRenderInputRouterSupportChildFrame()) {
+    // In case, ResetGestureDetection comes in before Viz side had a chance to
+    // reconstruct RenderInputRouterSupport of correct type, just return without
+    // doing anything, since there's no ongoing gesture anyways to reset.
+    return;
+  }
 
   auto* support_android =
       static_cast<RenderInputRouterSupportAndroid*>(support_base);
