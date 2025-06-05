@@ -8,6 +8,7 @@
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -289,4 +290,14 @@ std::optional<TipsNotificationType> ForcedTipsNotificationType() {
 int TipsNotificationTriggerExperimentalSetting() {
   return [[NSUserDefaults standardUserDefaults]
       integerForKey:kTipsNotificationTrigger];
+}
+
+TipsNotificationUserType GetTipsNotificationUserType(PrefService* local_state) {
+  return static_cast<TipsNotificationUserType>(
+      local_state->GetInteger(kTipsNotificationsUserType));
+}
+
+void SetTipsNotificationUserType(PrefService* local_state,
+                                 TipsNotificationUserType user_type) {
+  local_state->SetInteger(kTipsNotificationsUserType, int(user_type));
 }

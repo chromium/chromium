@@ -16,6 +16,7 @@ class TimeDelta;
 }
 
 enum class NotificationType;
+class PrefService;
 
 // Identifier for the tips notification.
 extern NSString* const kTipsNotificationId;
@@ -124,5 +125,12 @@ std::optional<TipsNotificationType> ForcedTipsNotificationType();
 // Returns the trigger time (in seconds) that was set in Experimental Settings.
 // Returns 0 if it was not set.
 int TipsNotificationTriggerExperimentalSetting();
+
+// Returns the type indicating how the user was classified.
+TipsNotificationUserType GetTipsNotificationUserType(PrefService* local_state);
+
+// Sets the user's classification in local state prefs.
+void SetTipsNotificationUserType(PrefService* local_state,
+                                 TipsNotificationUserType user_type);
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

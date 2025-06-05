@@ -82,40 +82,6 @@ class TipsNotificationClient : public PushNotificationClient {
                            base::OnceClosure completion);
   void OnNotificationRequested(TipsNotificationType type, NSError* error);
 
-  // Returns true if a notification of the given `type` should be sent.
-  bool ShouldSendNotification(TipsNotificationType type, ProfileIOS* profile);
-
-  // Returns true if a Default Browser notification should be sent.
-  bool ShouldSendDefaultBrowser();
-
-  // Returns true if a Signin notification should be sent.
-  bool ShouldSendSignin(ProfileIOS* profile);
-
-  // Returns true if a WhatsNew notification should be sent.
-  bool ShouldSendWhatsNew(ProfileIOS* profile);
-
-  // Returns true if a SetUpList continuation notification should be sent.
-  bool ShouldSendSetUpListContinuation(ProfileIOS* profile);
-
-  // Returns true if a Docking promo notification should be sent.
-  bool ShouldSendDocking(ProfileIOS* profile);
-
-  // Returns true if an Omnibox Position promo notification should be sent.
-  bool ShouldSendOmniboxPosition();
-
-  // Returns true if a Lens promo notification should be sent.
-  bool ShouldSendLens(ProfileIOS* profile);
-
-  // Returns true if an Enhanced Safe Browsing promo notification should be
-  // sent.
-  bool ShouldSendEnhancedSafeBrowsing(ProfileIOS* profile);
-
-  // Returns true if the CPE notification should be sent.
-  bool ShouldSendCPE();
-
-  // Returns true if the Lens Overlay notification should be sent.
-  bool ShouldSendLensOverlay();
-
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
