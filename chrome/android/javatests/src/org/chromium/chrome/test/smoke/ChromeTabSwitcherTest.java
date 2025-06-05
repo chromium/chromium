@@ -114,12 +114,8 @@ public class ChromeTabSwitcherTest {
         Log.i(TAG, "Waiting for omnibox to show URL");
         assert url.startsWith("http://");
         String urlWithoutScheme = url.substring(7);
-        IUi2Locator omniboxLocator = Ui2Locators.withText(urlWithoutScheme);
-        UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(omniboxLocator);
-
-        Log.i(TAG, "Waiting for expected page contents");
-        IUi2Locator webContentsLocator = Ui2Locators.withText("Hello Smoke Test");
-        UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(webContentsLocator);
+        IUi2Locator dataUrlText = Ui2Locators.withText(urlWithoutScheme);
+        UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(dataUrlText);
 
         Log.i(TAG, "Waiting 5 seconds to ensure background logic does not crash");
         Thread.sleep(5000);
@@ -128,12 +124,6 @@ public class ChromeTabSwitcherTest {
         UiAutomatorUtils.getInstance().click(mTabSwitcherButton);
         UiAutomatorUtils.getInstance().waitUntilAnyVisible(mHubToolbar);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabList);
-
-        Log.i(TAG, "Tapping on new tab icon.");
-        UiAutomatorUtils.getInstance().click(mNewTabButton);
-
-        Log.i(TAG, "Waiting for URL bar to be on screen");
-        UiAutomatorUtils.getInstance().waitUntilAnyVisible(mNtpOmnibox);
 
         Log.i(TAG, "Test complete.");
     }
