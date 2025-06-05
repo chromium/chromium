@@ -231,7 +231,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kHomeAndWorkAddressEntry:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kSaveAndFillCreditCardEntry:
@@ -550,7 +549,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 #endif
       break;
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kHomeAndWorkAddressEntry:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddressEntry:
       FillAutofillFormData(
@@ -699,7 +697,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kDevtoolsTestAddressEntry:
-    case SuggestionType::kHomeAndWorkAddressEntry:
       DidAcceptAddressSuggestion(suggestion, metadata);
       break;
     case SuggestionType::kCreditCardEntry:
@@ -935,7 +932,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     // These SuggestionTypes are various types which can appear in the first
     // level suggestion to fill an address or credit card field.
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kHomeAndWorkAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling: {
       const std::string guid =
           std::get<Suggestion::AutofillProfilePayload>(suggestion.payload)

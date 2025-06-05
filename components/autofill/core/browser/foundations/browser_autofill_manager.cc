@@ -308,7 +308,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kPendingStateSignin:
-    case SuggestionType::kHomeAndWorkAddressEntry:
       NOTREACHED();
   }
   NOTREACHED();

@@ -460,7 +460,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kLoyaltyCardEntry:
-    case SuggestionType::kHomeAndWorkAddressEntry:
     case SuggestionType::kPasswordEntry:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:

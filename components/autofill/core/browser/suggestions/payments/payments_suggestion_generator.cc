@@ -1637,7 +1637,6 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kBnplEntry:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoyaltyCardEntry:
-    case SuggestionType::kHomeAndWorkAddressEntry:
       return false;
   }
 }
