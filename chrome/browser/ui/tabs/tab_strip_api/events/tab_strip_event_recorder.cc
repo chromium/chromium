@@ -58,6 +58,8 @@ void TabStripEventRecorder::OnTabStripModelChanged(
       Handle(ToEvent(*change.GetRemove()));
       break;
     case TabStripModelChange::Type::kMoved:
+      Handle(ToEvent(*change.GetMove()));
+      break;
     case TabStripModelChange::Type::kReplaced:
       NOTREACHED() << "not implemented";
   }

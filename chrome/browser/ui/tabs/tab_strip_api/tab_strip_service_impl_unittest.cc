@@ -226,5 +226,62 @@ TEST_F(TabStripServiceImplTest, ActivateTab_NotFound) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
+TEST_F(TabStripServiceImplTest, MoveTab) {
+  // Move the first tab to the last spot.
+  tab_strip_->AddTab(testing::ToyTab{
+      tabs::TabHandle(1),
+      GURL("1"),
+  });
+  tab_strip_->AddTab(testing::ToyTab{
+      tabs::TabHandle(2),
+      GURL("2"),
+  });
+  tab_strip_->AddTab(testing::ToyTab{
+      tabs::TabHandle(3),
+      GURL("3"),
+  });
+
+  tabs_api::TabId tab_id(TabId::Type::kContent, "1");
+
+  auto position = mojom::Position::New();
+  position->index = 2;
+
+  auto target_handle = tabs::TabHandle(1);
+  // Check that the target is at the beginning before the move.
+  ASSERT_EQ(0, tab_strip_->GetIndexForHandle(target_handle).value());
+
+  mojom::TabStripService::MoveTabResult result;
+  bool success = client_->MoveTab(tab_id, std::move(position), &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_TRUE(result.has_value());
+
+  // Check that the target is now at the end.
+  ASSERT_EQ(2, tab_strip_->GetIndexForHandle(target_handle).value());
+}
+
+// TODO(crbug.com/422263248): figure out a better way to test for common
+// validations. No point covering each of them in the test (or maybe just
+// a common framework to ensure that it is being checked?).
+
+TEST_F(TabStripServiceImplTest, MoveTab_OutOfRange) {
+  tab_strip_->AddTab(testing::ToyTab{
+      tabs::TabHandle(1),
+      GURL("1"),
+  });
+
+  tabs_api::TabId tab_id(TabId::Type::kContent, "1");
+
+  auto position = mojom::Position::New();
+  position->index = 9001;
+
+  mojom::TabStripService::MoveTabResult result;
+  bool success = client_->MoveTab(tab_id, std::move(position), &result);
+
+  ASSERT_TRUE(success);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
 }  // namespace
 }  // namespace tabs_api

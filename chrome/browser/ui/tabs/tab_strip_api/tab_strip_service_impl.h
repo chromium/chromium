@@ -50,6 +50,9 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                  CloseTabsCallback callback) override;
   void ActivateTab(const tabs_api::TabId& id,
                    ActivateTabCallback callback) override;
+  void MoveTab(const tabs_api::TabId& id,
+               tabs_api::mojom::PositionPtr position,
+               MoveTabCallback callback) override;
 
  private:
   void BroadcastEvent(const tabs_api::events::Event& event) const;

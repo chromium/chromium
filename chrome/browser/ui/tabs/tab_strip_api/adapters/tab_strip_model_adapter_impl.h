@@ -28,6 +28,7 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void CloseTab(size_t tab_index) override;
   std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) override;
   void ActivateTab(size_t index) override;
+  void MoveTab(tabs::TabHandle handle, Position target) override;
   mojom::TabCollectionContainerPtr GetTabStripTopology() override;
 
  private:

@@ -12,8 +12,14 @@
 
 namespace tabs_api {
 
+// POD representation of a position within a collection. May be passed by
+// reference or by value.
+struct Position {
+  const size_t index;
+};
+
 // Tab strip has a large API service that is difficult to implement under test.
-// We only need a subset of the AP, so an adapter is used to proxy those
+// We only need a subset of the API, so an adapter is used to proxy those
 // methods. This makes it easier to swap in a fake for test.
 class TabStripModelAdapter {
  public:
@@ -26,6 +32,7 @@ class TabStripModelAdapter {
   virtual void CloseTab(size_t tab_index) = 0;
   virtual std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) = 0;
   virtual void ActivateTab(size_t index) = 0;
+  virtual void MoveTab(tabs::TabHandle handle, Position position) = 0;
   virtual mojom::TabCollectionContainerPtr GetTabStripTopology() = 0;
 };
 

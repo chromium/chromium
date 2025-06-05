@@ -25,6 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+// TODO(ffred): refactor this stuff. Maybe it makes more sense to have an
+// accumulator here instead of a test impl.
 class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
   void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) override {
@@ -49,6 +51,10 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
+  void OnTabMoved(tabs_api::mojom::OnTabMovedEventPtr event) override {
+    move_events.push_back(std::move(event));
+  }
+
   void OnTabDataChanged(
       tabs_api::mojom::OnTabDataChangedEventPtr event) override {
     auto& id = event->tab->id;
@@ -63,6 +69,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
+  std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
   // Tabs is a vector containing a tab id and a url in the form of a string.
   std::vector<std::pair<tabs_api::TabId, std::string>> tabs;
 };
@@ -88,6 +95,30 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 
  protected:
   TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
+
+  struct Observation {
+    mojo::Remote<TabStripService> remote;
+    TestTabStripClient client;
+    mojo::AssociatedReceiver<tabs_api::mojom::TabsObserver> receiver{&client};
+  };
+
+  std::unique_ptr<Observation> SetUpObservation() {
+    auto observation = std::make_unique<Observation>();
+    tab_strip_service_impl_->Accept(
+        observation->remote.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    observation->remote->GetTabs(
+        base::BindLambdaForTesting([&](TabStripService::GetTabsResult result) {
+          ASSERT_TRUE(result.has_value());
+          // This is where the client sets up the binding!
+          observation->receiver.Bind(std::move(result.value()->stream));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    return observation;
+  }
 
   tabs_api::mojom::PositionPtr CreatePosition(int index) {
     auto position = tabs_api::mojom::Position::New();
@@ -263,4 +294,53 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {
 
   // Old tab should now be re-activated.
   ASSERT_EQ(GetTabStripModel()->GetActiveTab()->GetHandle(), old_tab_handle);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTab) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  auto observation = SetUpObservation();
+
+  // Append a new tab to the end, so we have two tabs to work with.
+  base::RunLoop create_loop;
+  remote->CreateTabAt(nullptr,
+                      std::make_optional(GURL("http://somwewhere.nowhere")),
+                      base::BindLambdaForTesting(
+                          [&](TabStripService::CreateTabAtResult result) {
+                            ASSERT_TRUE(result.has_value());
+                            create_loop.Quit();
+                          }));
+  create_loop.Run();
+
+  auto handle_to_move = GetTabStripModel()->GetTabAtIndex(0)->GetHandle();
+  auto to_move_id =
+      tabs_api::TabId(tabs_api::TabId::Type::kContent,
+                      base::NumberToString(handle_to_move.raw_value()));
+
+  size_t target_idx = 1;
+
+  auto position = tabs_api::mojom::Position::New();
+  position->index = target_idx;
+
+  base::RunLoop move_loop;
+  remote->MoveTab(
+      to_move_id, std::move(position),
+      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+        ASSERT_TRUE(result.has_value());
+        move_loop.Quit();
+      }));
+  move_loop.Run();
+  observation->receiver.FlushForTesting();
+
+  // Tab should now have been moved to target idx.
+  ASSERT_EQ(GetTabStripModel()->GetTabAtIndex(target_idx)->GetHandle(),
+            handle_to_move);
+
+  ASSERT_EQ(1ul, observation->client.move_events.size());
+
+  auto event = observation->client.move_events.at(0).Clone();
+  ASSERT_EQ(to_move_id, event->id);
+  ASSERT_EQ(0u, event->from->index);
+  ASSERT_EQ(1u, event->to->index);
 }

@@ -239,6 +239,41 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
 
+void TabStripServiceImpl::MoveTab(const tabs_api::TabId& id,
+                                  tabs_api::mojom::PositionPtr position,
+                                  MoveTabCallback callback) {
+  MutationSession recorder_session(recorder_.get());
+
+  // TODO(crbug.com/409086859): this implementation is not complete, because
+  // it will only move the tabs within the unpinned section. We need additional
+  // API support for the tab strip model, which is currently in discussion.
+  if (id.Type() != tabs_api::TabId::Type::kContent) {
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kUnimplemented,
+                                     "only tab moves have been implemetned")));
+    return;
+  }
+
+  int32_t handle_id;
+  if (!base::StringToInt(id.Id(), &handle_id)) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "id is malformed")));
+    return;
+  }
+
+  auto tab_handle = tabs::TabHandle(handle_id);
+  if (position->index >= tab_strip_model_adapter_->GetTabs().size()) {
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "position cannot exceed tab strip")));
+    return;
+  }
+
+  tab_strip_model_adapter_->MoveTab(tab_handle, {position->index});
+
+  std::move(callback).Run(mojo_base::mojom::Empty::New());
+}
+
 void TabStripServiceImpl::Accept(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) {
   clients_.Add(this, std::move(client));

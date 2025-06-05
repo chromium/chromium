@@ -70,6 +70,14 @@ tabs::TabHandle ToyTabStrip::FindActiveTab() {
                   "did you forget to activate a tab beforehand?";
 }
 
+void ToyTabStrip::MoveTab(tabs::TabHandle handle, size_t to) {
+  auto idx = GetIndexForHandle(handle).value();
+  auto tab = root_.tabs.at(idx);
+
+  root_.tabs.erase(root_.tabs.begin() + idx);
+  root_.tabs.insert(root_.tabs.begin() + to, tab);
+}
+
 int ToyTabStrip::GetNextId() {
   static int id = 0;
   return id++;

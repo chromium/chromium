@@ -13,6 +13,7 @@ namespace tabs_api::events {
 
 using Event = std::variant<mojom::OnTabsCreatedEventPtr,
                            mojom::OnTabsClosedEventPtr,
+                           mojom::OnTabMovedEventPtr,
                            mojom::OnTabDataChangedEventPtr>;
 }
 

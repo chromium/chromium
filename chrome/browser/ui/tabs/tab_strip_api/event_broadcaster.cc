@@ -22,6 +22,10 @@ class EventVisitor {
     (*target_)->OnTabsClosed(event.Clone());
   }
 
+  void operator()(const mojom::OnTabMovedEventPtr& event) {
+    (*target_)->OnTabMoved(event.Clone());
+  }
+
   void operator()(const mojom::OnTabDataChangedEventPtr& event) {
     (*target_)->OnTabDataChanged(event.Clone());
   }

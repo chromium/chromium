@@ -44,6 +44,14 @@ void TabStripModelAdapterImpl::ActivateTab(size_t index) {
   tab_strip_model_->ActivateTabAt(index);
 }
 
+void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab, Position position) {
+  auto maybe_index = GetIndexForHandle(tab);
+  CHECK(maybe_index.has_value());
+  auto index = maybe_index.value();
+  tab_strip_model_->MoveWebContentsAt(index, position.index,
+                                      /*select_after_move=*/false);
+}
+
 tabs_api::mojom::TabCollectionContainerPtr
 TabStripModelAdapterImpl::GetTabStripTopology() {
   return MojoTreeBuilder(tab_strip_model_).Build();

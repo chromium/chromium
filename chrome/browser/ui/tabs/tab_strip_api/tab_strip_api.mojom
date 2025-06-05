@@ -50,6 +50,7 @@ struct Tab {
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
 struct Position {
+  // TODO(crbug.com/409086859): add the reference for the relative position.
   uint32 index;
 };
 
@@ -143,6 +144,11 @@ interface TabStripService {
   [Sync]
   ActivateTab(TabId id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Moves a tab identified by id to a specified position.
+  [Sync]
+  MoveTab(TabId id, Position position)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
 // When a Tab is created, it also needs to know the position.
@@ -169,6 +175,15 @@ struct OnTabDataChangedEvent {
   Tab tab;
 };
 
+struct OnTabMovedEvent {
+  // The id of the tab that moved.
+  TabId id;
+  // The original position.
+  Position from;
+  // The new position.
+  Position to;
+};
+
 // TODO (crbug.com/412955607)
 // TabsObserver is not a CheckedObserver. There is a potential UaF if the
 // observer list attempts to call a destroyed TabsObserver that hasn't removed
@@ -179,6 +194,9 @@ interface TabsObserver {
 
   // When tabs have been closed on the tab strip.
   OnTabsClosed(OnTabsClosedEvent event);
+
+  // When a tab has been moved.
+  OnTabMoved(OnTabMovedEvent event);
 
   // When tab data has been updated.
   OnTabDataChanged(OnTabDataChangedEvent tab);

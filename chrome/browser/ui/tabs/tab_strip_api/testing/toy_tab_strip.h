@@ -37,6 +37,7 @@ class ToyTabStrip {
   tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index);
   void ActivateTab(tabs::TabHandle handle);
   tabs::TabHandle FindActiveTab();
+  void MoveTab(tabs::TabHandle handle, size_t to);
   ToyTabGroup GetRoot();
 
  protected:

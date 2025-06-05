@@ -34,6 +34,11 @@ void ToyTabStripModelAdapter::ActivateTab(size_t idx) {
   tab_strip_->ActivateTab(tab);
 }
 
+void ToyTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
+                                      Position position) {
+  tab_strip_->MoveTab(handle, position.index);
+}
+
 mojom::TabCollectionContainerPtr
 ToyTabStripModelAdapter::GetTabStripTopology() {
   auto tab_collection = tabs_api::mojom::TabCollection::New();

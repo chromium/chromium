@@ -42,6 +42,24 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
   return event;
 }
 
+mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move) {
+  TabId id(TabId::Type::kContent,
+           base::NumberToString(move.tab->GetHandle().raw_value()));
+
+  auto from = mojom::Position::New();
+  from->index = move.from_index;
+
+  auto to = mojom::Position::New();
+  to->index = move.to_index;
+
+  auto event = mojom::OnTabMovedEvent::New();
+  event->id = id;
+  event->from = std::move(from);
+  event->to = std::move(to);
+
+  return event;
+}
+
 mojom::OnTabDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter* adapter,
     size_t index,
