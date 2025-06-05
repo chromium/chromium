@@ -2235,6 +2235,7 @@ chromium-metrics-reviews@google.com.
   <int value="1364" label="LocalNetworkAccessRestrictionsEnabled"/>
   <int value="1365" label="PrefetchWithServiceWorkerEnabled"/>
   <int value="1366" label="AIModeSearchSuggestSettings"/>
+  <int value="1367" label="AIModeSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

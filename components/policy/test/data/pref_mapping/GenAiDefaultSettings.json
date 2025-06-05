@@ -17,6 +17,9 @@
           "omnibox.ai_mode_search_suggest_settings": {
             "value": 0
           },
+          "omnibox.ai_mode_settings": {
+            "value": 0
+          },
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
             "value": 0
           },
@@ -46,6 +49,9 @@
             "value": 1
           },
           "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          },
+          "omnibox.ai_mode_settings": {
             "value": 0
           },
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
@@ -79,6 +85,9 @@
           "omnibox.ai_mode_search_suggest_settings": {
             "value": 1
           },
+          "omnibox.ai_mode_settings": {
+            "value": 1
+          },
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
             "value": 2
           },
@@ -106,6 +115,9 @@
             "default_value": 0
           },
           "omnibox.ai_mode_search_suggest_settings": {
+            "default_value": 0
+          },
+          "omnibox.ai_mode_settings": {
             "default_value": 0
           },
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
@@ -137,7 +149,8 @@
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
-          "GeminiSettings": 1
+          "GeminiSettings": 1,
+          "AIModeSettings": 1
         },
         "prefs": {
           "devtools.gen_ai_settings": {
@@ -159,6 +172,9 @@
             "value": 2
           },
           "browser.gemini_settings": {
+            "value": 1
+          },
+          "omnibox.ai_mode_settings": {
             "value": 1
           }
         }
@@ -196,6 +212,9 @@
           "omnibox.ai_mode_search_suggest_settings": {
             "value": 0
           },
+          "omnibox.ai_mode_settings": {
+            "value": 0
+          },
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
             "value": 0
           },
@@ -271,6 +290,9 @@
             "value": 1
           },
           "browser.gemini_settings": {
+            "value": 0
+          },
+          "omnibox.ai_mode_settings": {
             "value": 0
           }
         }
@@ -291,7 +313,8 @@
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
-          "GeminiSettings": 1
+          "GeminiSettings": 1,
+          "AIModeSettings": 1
         },
         "prefs": {
           "ash.gen_ai_photo_editing_settings": {
@@ -338,6 +361,9 @@
           },
           "browser.gemini_settings": {
             "value": 1
+          },
+          "omnibox.ai_mode_settings": {
+            "value": 1
           }
         }
       }
@@ -355,6 +381,9 @@
         "prefs": {
           "omnibox.ai_mode_search_suggest_settings": {
             "value": 0
+          },
+          "omnibox.ai_mode_settings": {
+            "value": 0
           }
         }
       },
@@ -364,6 +393,9 @@
         },
         "prefs": {
           "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          },
+          "omnibox.ai_mode_settings": {
             "value": 0
           }
         }
@@ -375,6 +407,9 @@
         "prefs": {
           "omnibox.ai_mode_search_suggest_settings": {
             "value": 1
+          },
+          "omnibox.ai_mode_settings": {
+            "value": 1
           }
         }
       },
@@ -383,6 +418,31 @@
         "prefs": {
           "omnibox.ai_mode_search_suggest_settings": {
             "default_value": 0
+          },
+          "omnibox.ai_mode_settings": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1,
+          "AIModeSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "AIModeSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_settings": {
+            "value": 1
           }
         }
       }
