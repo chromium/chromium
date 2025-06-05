@@ -14,6 +14,12 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/autofill/android/main_autofill_jni_headers/AutofillProfilePayload_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 
 namespace {
@@ -239,6 +245,14 @@ Suggestion::AutofillProfilePayload::operator=(AutofillProfilePayload&&) =
     default;
 
 Suggestion::AutofillProfilePayload::~AutofillProfilePayload() = default;
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+Suggestion::AutofillProfilePayload::CreateJavaObject() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_AutofillProfilePayload_Constructor(env, guid.value());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 Suggestion::IdentityCredentialPayload::IdentityCredentialPayload() = default;
 Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(

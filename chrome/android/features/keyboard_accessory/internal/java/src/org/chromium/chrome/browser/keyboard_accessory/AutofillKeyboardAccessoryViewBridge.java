@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -171,7 +172,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::string") String featureForIph,
             @JniType("std::u16string") String iphDescriptionText,
             GURL customIconUrl,
-            boolean applyDeactivatedStyle) {
+            boolean applyDeactivatedStyle,
+            @Nullable Payload payload) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
@@ -183,6 +185,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setIphDescriptionText(iphDescriptionText)
                 .setCustomIconUrl(customIconUrl)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .setPayload(payload)
                 .build();
     }
 

@@ -33,6 +33,9 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable String mGuid;
     private final boolean mIsLocalPaymentsMethod;
+    private final @Nullable Payload mPayload;
+
+    public static sealed interface Payload permits AutofillProfilePayload {}
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -52,6 +55,9 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param guid The payment method identifier associated with the suggestion.
      * @param isLocalPaymentsMethod Whether the payments method associated with the suggestion is
      *     local.
+     * @param payload Additional data passed with the suggestion. Currently only
+     *     AutofillProfilePayload may passed. New payloads can be added by implementing the {@link
+     *     AutofillSuggestion.Payload} interface.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -69,7 +75,8 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
             @Nullable String guid,
-            boolean isLocalPaymentsMethod) {
+            boolean isLocalPaymentsMethod,
+            @Nullable Payload payload) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -85,6 +92,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mCustomIconUrl = customIconUrl;
         mGuid = guid;
         mIsLocalPaymentsMethod = isLocalPaymentsMethod;
+        mPayload = payload;
     }
 
     @Override
@@ -166,6 +174,10 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mIphDescriptionText;
     }
 
+    public @Nullable Payload getPayload() {
+        return mPayload;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -189,7 +201,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && Objects.equals(this.mGuid, other.mGuid)
-                && this.mIsLocalPaymentsMethod == other.mIsLocalPaymentsMethod;
+                && this.mIsLocalPaymentsMethod == other.mIsLocalPaymentsMethod
+                && Objects.equals(this.mPayload, other.mPayload);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
@@ -209,6 +222,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private int mSuggestionType;
         private @Nullable String mGuid;
         private boolean mIsLocalPaymentsMethod;
+        private @Nullable Payload mPayload;
 
         public Builder setIconId(int iconId) {
             this.mIconId = iconId;
@@ -285,6 +299,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setPayload(Payload payload) {
+            this.mPayload = payload;
+            return this;
+        }
+
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR || !TextUtils.isEmpty(mLabel)
                     : "Only separators may have an empty label.";
@@ -305,7 +324,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mIphDescriptionText,
                     mCustomIconUrl,
                     mGuid,
-                    mIsLocalPaymentsMethod);
+                    mIsLocalPaymentsMethod,
+                    mPayload);
         }
     }
 }

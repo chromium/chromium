@@ -117,6 +117,13 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
       }
     }
 
+    base::android::ScopedJavaLocalRef<jobject> payload;
+    if (const Suggestion::AutofillProfilePayload* profile_payload =
+            std::get_if<Suggestion::AutofillProfilePayload>(
+                &suggestion.payload)) {
+      payload = profile_payload->CreateJavaObject();
+    }
+
     auto* custom_icon_url =
         std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
     java_suggestions.push_back(
@@ -131,7 +138,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            suggestion.HasDeactivatedStyle()));
+            suggestion.HasDeactivatedStyle(), payload));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
                                                 std::move(java_suggestions));

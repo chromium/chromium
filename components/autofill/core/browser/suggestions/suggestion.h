@@ -28,6 +28,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 
 struct Suggestion {
@@ -142,6 +146,10 @@ struct Suggestion {
     AutofillProfilePayload& operator=(const AutofillProfilePayload&);
     AutofillProfilePayload& operator=(AutofillProfilePayload&&);
     ~AutofillProfilePayload();
+
+#if BUILDFLAG(IS_ANDROID)
+    base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
+#endif  // BUILDFLAG(IS_ANDROID)
 
     friend bool operator==(const AutofillProfilePayload&,
                            const AutofillProfilePayload&) = default;
