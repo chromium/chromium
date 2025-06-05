@@ -26,7 +26,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     isLts: false,
   };
   private canChangeChannel_ = true;
-  private canChangeFirmware_ = true;
   private regulatoryInfo_: RegulatoryInfo|null = null;
   private tpmFirmwareUpdateStatus_: TpmFirmwareUpdateStatusChangedEvent = {
     updateAvailable: false,
@@ -53,7 +52,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
       'openHelpPage',
       'openFeedbackDialog',
       'canChangeChannel',
-      'canChangeFirmware',
       'getChannelInfo',
       'getVersionInfo',
       'getRegulatoryInfo',
@@ -134,10 +132,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     this.canChangeChannel_ = canChangeChannel;
   }
 
-  setCanChangeFirmware(canChangeFirmware: boolean): void {
-    this.canChangeFirmware_ = canChangeFirmware;
-  }
-
   setChannels(current: BrowserChannel, target: BrowserChannel): void {
     this.channelInfo_.currentChannel = current;
     this.channelInfo_.targetChannel = target;
@@ -179,11 +173,6 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   canChangeChannel(): Promise<boolean> {
     this.methodCalled('canChangeChannel');
     return Promise.resolve(this.canChangeChannel_);
-  }
-
-  canChangeFirmware(): Promise<boolean> {
-    this.methodCalled('canChangeFirmware');
-    return Promise.resolve(this.canChangeFirmware_);
   }
 
   checkInternetConnection(): Promise<boolean> {

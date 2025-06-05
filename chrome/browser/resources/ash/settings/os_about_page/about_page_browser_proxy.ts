@@ -200,8 +200,6 @@ export interface AboutPageBrowserProxy {
    */
   getChannelInfo(): Promise<ChannelInfo>;
 
-  canChangeFirmware(): Promise<boolean>;
-
   canChangeChannel(): Promise<boolean>;
 
   getVersionInfo(): Promise<VersionInfo>;
@@ -324,10 +322,6 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   getChannelInfo(): Promise<ChannelInfo> {
     return sendWithPromise('getChannelInfo');
-  }
-
-  canChangeFirmware(): Promise<boolean> {
-    return sendWithPromise('canChangeFirmware');
   }
 
   canChangeChannel(): Promise<boolean> {

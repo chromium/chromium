@@ -109,9 +109,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // Retrieves channel info.
   void HandleGetChannelInfo(const base::Value::List& args);
 
-  // Checks whether we can update the firmware.
-  void HandleCanChangeFirmware(const base::Value::List& args);
-
   // Checks whether we can change the current channel.
   void HandleCanChangeChannel(const base::Value::List& args);
 
