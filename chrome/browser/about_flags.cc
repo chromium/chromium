@@ -11207,19 +11207,22 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"prompt-api-for-gemini-nano",
      flag_descriptions::kPromptAPIForGeminiNanoName,
-     flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsAll,
+     flag_descriptions::kPromptAPIForGeminiNanoDescription,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kAIPromptAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"prompt-api-for-gemini-nano-multimodal-input",
      flag_descriptions::kPromptAPIForGeminiNanoMultimodalInputName,
      flag_descriptions::kPromptAPIForGeminiNanoMultimodalInputDescription,
-     kOsAll, FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIMultimodalInput),
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIMultimodalInput),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
-     flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsAll,
+     flag_descriptions::kSummarizationAPIForGeminiNanoDescription,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAISummarizationAPI,
                                     kAISummarizationAPIWithAdaptationVaration,
                                     "AISummarizationAPIWithAdaptation"),
@@ -11227,13 +11230,15 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"writer-api-for-gemini-nano",
      flag_descriptions::kWriterAPIForGeminiNanoName,
-     flag_descriptions::kWriterAPIForGeminiNanoDescription, kOsAll,
+     flag_descriptions::kWriterAPIForGeminiNanoDescription,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kAIWriterAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"rewriter-api-for-gemini-nano",
      flag_descriptions::kRewriterAPIForGeminiNanoName,
-     flag_descriptions::kRewriterAPIForGeminiNanoDescription, kOsAll,
+     flag_descriptions::kRewriterAPIForGeminiNanoDescription,
+     kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kAIRewriterAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
