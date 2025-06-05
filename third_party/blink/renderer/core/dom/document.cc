@@ -7163,6 +7163,16 @@ bool Document::IsValidAttributeLocalNameNewSpec(const StringView& local_name) {
   });
 }
 
+// static
+bool Document::IsValidElementLocalNameNewSpec(const StringView& local_name) {
+  if (local_name.empty()) {
+    return false;
+  }
+  return WTF::VisitCharacters(local_name, [](auto chars) {
+    return !ParseElementLocalNameNewSpec(chars);
+  });
+}
+
 enum QualifiedNameStatus {
   kQNValid,
   kQNMultipleColons,

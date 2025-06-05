@@ -1340,6 +1340,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // https://github.com/whatwg/dom/pull/1079
   static bool IsValidAttributeLocalNameNewSpec(const StringView&);
+  static bool IsValidElementLocalNameNewSpec(const StringView&);
 
   // The following breaks a qualified name into a prefix and a local name.
   // It also does a validity check, and returns false if the qualified name
