@@ -46,7 +46,7 @@ void MigrateCertsOnBackgroundThread(
 
     std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
     cert_infos.push_back(std::move(cert_info));
-    bool ok = server_cert_database->InsertOrUpdateCerts(cert_infos);
+    bool ok = server_cert_database->InsertOrUpdateCerts(std::move(cert_infos));
     if (!ok) {
       result.error_count++;
       LOG(ERROR) << "error importing cert " << cert_info.sha256hash_hex;

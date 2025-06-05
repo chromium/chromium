@@ -103,7 +103,7 @@ sql::InitStatus ServerCertificateDatabase::InitInternal(
 }
 
 bool ServerCertificateDatabase::InsertOrUpdateCerts(
-    const std::vector<CertInformation>& cert_infos) {
+    std::vector<CertInformation> cert_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't crash browser if DB isn't initialized.
   if (!db_initialized_) {
@@ -114,7 +114,7 @@ bool ServerCertificateDatabase::InsertOrUpdateCerts(
 
   // Quick check to ensure we can serialize all of the bytes before starting
   // the transaction.
-  for (const auto& cert_info : cert_infos) {
+  for (const CertInformation& cert_info : cert_infos) {
     std::string proto_bytes;
     // If we can't serialize the proto to an array for some reason, bail.
     if (!cert_info.cert_metadata.SerializeToString(&proto_bytes)) {
@@ -128,15 +128,15 @@ bool ServerCertificateDatabase::InsertOrUpdateCerts(
     return false;
   }
 
-  for (const auto&& [cert_info, proto_bytes] :
+  for (auto&& [cert_info, proto_bytes] :
        base::zip(cert_infos, proto_bytes_vec)) {
     sql::Statement insert_statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         "INSERT OR REPLACE INTO certificates(sha256hash_hex, der_cert, "
         "trust_settings) VALUES(?,?,?)"));
     insert_statement.BindString(0, cert_info.sha256hash_hex);
-    insert_statement.BindBlob(1, cert_info.der_cert);
-    insert_statement.BindBlob(2, base::as_byte_span(proto_bytes));
+    insert_statement.BindBlob(1, std::move(cert_info.der_cert));
+    insert_statement.BindBlob(2, std::move(proto_bytes));
     if (!insert_statement.Run()) {
       return false;
     }

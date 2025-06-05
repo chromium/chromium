@@ -54,7 +54,7 @@ class ServerCertificateDatabase {
   // Insert new certificates into the database, or if some of the certificates
   // are already present (as indicated by cert_info.sha256hash_hex), update the
   // entry in the database.
-  bool InsertOrUpdateCerts(const std::vector<CertInformation>& cert_infos);
+  bool InsertOrUpdateCerts(std::vector<CertInformation> cert_infos);
 
   // Retrieve all of the certificates from the database.
   std::vector<CertInformation> RetrieveAllCertificates();
