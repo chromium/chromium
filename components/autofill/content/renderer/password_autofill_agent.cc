@@ -1030,8 +1030,11 @@ void PasswordAutofillAgent::FillChangePasswordForm(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::optional<FormData> form_data = GetFormDataFromWebForm(
-      last_element.GetOwningFormForAutofill(), /*form_cache=*/{});
+
+  const WebFormElement& form = last_element.GetOwningFormForAutofill();
+  std::optional<FormData> form_data =
+      form ? GetFormDataFromWebForm(form, /*form_cache=*/{})
+           : GetFormDataFromUnownedInputElements(/*form_cache=*/{});
   if (!form_data) {
     std::move(callback).Run(std::nullopt);
     return;

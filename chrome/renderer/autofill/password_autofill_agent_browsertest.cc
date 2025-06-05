@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -5154,34 +5155,40 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
 
 // Tests that `FillChangePasswordForm` fills change password form.
 TEST_F(PasswordAutofillAgentTest, FillChangePasswordForm) {
-  LoadHTML(kPasswordChangeFormHTML);
-  UpdateUrlForHTML(kPasswordChangeFormHTML);
+  std::vector<std::string> htms_to_test = {kPasswordChangeFormHTML,
+                                           kPasswordChangeWithoutFormHTML};
+  for (const std::string& html : htms_to_test) {
+    SCOPED_TRACE(testing::Message() << "Running for the page: " << html);
+    LoadHTML(html);
+    UpdateUrlForHTML(html);
 
-  WebInputElement password = GetInputElementByID("password"),
-                  new_password = GetInputElementByID("newpassword"),
-                  confirmation_password =
-                      GetInputElementByID("confirmpassword");
-  auto password_id = autofill::form_util::GetFieldRendererId(password),
-       new_password_id = autofill::form_util::GetFieldRendererId(new_password),
-       password_confirmation =
-           autofill::form_util::GetFieldRendererId(confirmation_password);
+    WebInputElement password = GetInputElementByID("password"),
+                    new_password = GetInputElementByID("newpassword"),
+                    confirmation_password =
+                        GetInputElementByID("confirmpassword");
+    auto password_id = autofill::form_util::GetFieldRendererId(password),
+         new_password_id =
+             autofill::form_util::GetFieldRendererId(new_password),
+         password_confirmation =
+             autofill::form_util::GetFieldRendererId(confirmation_password);
 
-  const std::vector<autofill::FormData>& parsed_form_data =
-      fake_driver_.form_data_parsed().value();
-  EXPECT_EQ(1u, parsed_form_data.size());
+    const std::vector<autofill::FormData>& parsed_form_data =
+        fake_driver_.form_data_parsed().value();
+    EXPECT_EQ(1u, parsed_form_data.size());
 
-  base::MockCallback<
-      base::OnceCallback<void(const std::optional<autofill::FormData>&)>>
-      mock_reply;
-  EXPECT_CALL(mock_reply, Run(testing::Optional(parsed_form_data[0])));
+    base::MockCallback<
+        base::OnceCallback<void(const std::optional<autofill::FormData>&)>>
+        mock_reply;
+    EXPECT_CALL(mock_reply, Run(testing::Optional(parsed_form_data[0])));
 
-  password_autofill_agent_->FillChangePasswordForm(
-      password_id, new_password_id, password_confirmation, u"qwerty",
-      u"Pa$sw0rD", mock_reply.Get());
+    password_autofill_agent_->FillChangePasswordForm(
+        password_id, new_password_id, password_confirmation, u"qwerty",
+        u"Pa$sw0rD", mock_reply.Get());
 
-  EXPECT_EQ(u"qwerty", password.Value().Utf16());
-  EXPECT_EQ(u"Pa$sw0rD", new_password.Value().Utf16());
-  EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
+    EXPECT_EQ(u"qwerty", password.Value().Utf16());
+    EXPECT_EQ(u"Pa$sw0rD", new_password.Value().Utf16());
+    EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
+  }
 }
 
 // Tests that `FillChangePasswordForm` invokes callback with std::nullopt when
