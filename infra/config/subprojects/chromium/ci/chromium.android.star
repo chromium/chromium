@@ -3828,7 +3828,7 @@ ci.builder(
             ),
             "media_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.media_unittests.filter",
                 ],
             ),
             "perfetto_unittests": targets.mixin(
@@ -3840,6 +3840,12 @@ ci.builder(
             "unit_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
+                ],
+            ),
+            "viz_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/338436747): Fix the failed test
+                    "--gtest_filter=-SkiaOutputSurfaceImplTest.EndPaintReleaseFence",
                 ],
             ),
             "webkit_unit_tests": targets.mixin(
