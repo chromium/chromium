@@ -57,9 +57,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   static MIN_ALERT_DELAY_MS = 50;
 
   /**
-   * URL for NTP (New tap page).
+   * URLs employing NTP (New tap page) searchbox.
    */
-  static NTP_URL = 'chrome://new-tab-page/';
+  static NTP_SEARCHBOX_URLS = new Set<string>(
+      ['chrome://new-tab-page/', 'chrome-untrusted://lens-overlay/']);
 
   /** The object that speaks changes to an editable text field. */
   private textEditHandler_: TextEditHandler|null = null;
@@ -565,7 +566,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       // crbug.com/346835896 lands in the stable.
       // TODO(crbug.com/314203187): Not null asserted, check that this is
       // correct.
-      if (evt.target.root!.url === DesktopAutomationHandler.NTP_URL &&
+      const urlString = evt.target.root?.url ?? '';
+      if (DesktopAutomationHandler.NTP_SEARCHBOX_URLS.has(urlString) &&
           evt.target.htmlTag === 'input' && !evt.intents?.length) {
         new Output()
             .withString(evt.target.value!)
