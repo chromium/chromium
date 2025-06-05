@@ -72,10 +72,7 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
     unstripped_url = rfh.GetLastCommittedOrigin().GetURL();
   }
   form.set_url(StripAuthAndParams(unstripped_url));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillIncludeUrlInCrowdsourcing)) {
-    form.set_full_url(StripAuth(unstripped_url));
-  }
+  form.set_full_url(StripAuth(unstripped_url));
 
   // The form signature must be calculated after setting FormData::url.
   FormSignature signature = CalculateFormSignature(form);

@@ -208,8 +208,7 @@ class FormData {
   void set_url(GURL url) { url_ = std::move(url); }
 
   // The full URL, including query parameters and fragment.
-  // If `kAutofillIncludeUrlInCrowdsourcing` is disabled, this value should only
-  // be set for password forms. This value should not be sent via mojo.
+  // This value should not be sent via mojo.
   const GURL& full_url() const { return full_url_; }
   void set_full_url(GURL full_url) { full_url_ = std::move(full_url); }
 
