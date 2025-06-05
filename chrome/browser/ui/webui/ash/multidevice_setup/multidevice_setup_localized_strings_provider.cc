@@ -87,7 +87,10 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"dialogAccessibilityTitle",
      IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE},
     {"startSetupPageFeatureListHeader",
-     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER}};
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER},
+    {"pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
+    {"playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
+};
 
 struct LocalizedStringWithName {
   LocalizedStringWithName(const char* name,
