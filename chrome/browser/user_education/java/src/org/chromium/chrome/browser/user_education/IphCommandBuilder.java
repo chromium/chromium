@@ -44,7 +44,7 @@ public class IphCommandBuilder {
     private @Nullable Rect mAnchorRect;
     private boolean mRemoveArrow;
     private boolean mShowTextBubble = true;
-    private @Nullable String mInsideTouchEvent;
+    private boolean mEnableSnoozeMode;
 
     @AnchoredPopupWindow.VerticalOrientation
     private int mPreferredVerticalOrientation =
@@ -252,11 +252,13 @@ public class IphCommandBuilder {
     }
 
     /**
-     * @param insideTouchEvent Event name used to notify the tracker when a touch event is triggered
-     *     inside the IPH window.
+     * @param enableSnoozeMode Whether snooze mode is on. In snooze mode, the IPH will be fully
+     *     dismissed by an inside touch, but will be snoozed by any other dismiss. The snooze
+     *     interval and the max limit are defined in the feature definition. See
+     *     components/feature_engagement/README.md#SnoozeParams.
      */
-    public IphCommandBuilder setInsideTouchEvent(String insideTouchEvent) {
-        mInsideTouchEvent = insideTouchEvent;
+    public IphCommandBuilder setEnableSnoozeMode(boolean enableSnoozeMode) {
+        mEnableSnoozeMode = enableSnoozeMode;
         return this;
     }
 
@@ -299,7 +301,7 @@ public class IphCommandBuilder {
                     mShowTextBubble,
                     mPreferredVerticalOrientation,
                     mInsetRect,
-                    mInsideTouchEvent);
+                    mEnableSnoozeMode);
         }
     }
 }

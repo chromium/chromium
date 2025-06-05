@@ -1866,9 +1866,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
   if (kIPHTabSwitcherXR.name == feature->name) {
-    // A config that allows the card info retrieval suggestion IPH to be shown
-    // at most 3 times. IPH will not be shown once user has selected the
-    // suggestion.
+    // A config that allows the XR tab switcher IPH to be shown at most 3 times.
+    // IPH will not be shown is user has clicked on it, otherwise it will be
+    // snoozed for one day.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
@@ -1879,10 +1879,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used = EventConfig("tab_switcher_xr_iph_used", Comparator(ANY, 0),
                               feature_engagement::kMaxStoragePeriod,
                               feature_engagement::kMaxStoragePeriod);
-    config.event_configs.insert(
-        EventConfig("tab_switcher_xr_iph_touched_inside", Comparator(EQUAL, 0),
+    config.snooze_params.snooze_interval = 1;
+    config.snooze_params.max_limit = 3;
+
+    return config;
+  }
+  if (kIPHTabTearingXR.name == feature->name) {
+    // A config that allows XR tab tearing IPH to be shown
+    // at most 3 times. IPH will not be shown is user has clicked on it,
+    // otherwise it will be snoozed for one day.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.trigger =
+        EventConfig("tab_tearing_xr_iph_trigger", Comparator(LESS_THAN, 3),
                     feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod));
+                    feature_engagement::kMaxStoragePeriod);
+    config.used = EventConfig("tab_tearing_xr_iph_used", Comparator(ANY, 0),
+                              feature_engagement::kMaxStoragePeriod,
+                              feature_engagement::kMaxStoragePeriod);
+    config.snooze_params.snooze_interval = 1;
+    config.snooze_params.max_limit = 3;
 
     return config;
   }

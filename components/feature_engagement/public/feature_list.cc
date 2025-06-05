@@ -121,6 +121,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRestoreTabsOnFREFeature,
     &kIPHRtlGestureNavigationFeature,
     &kIPHTabSwitcherXR,
+    &kIPHTabTearingXR,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

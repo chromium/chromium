@@ -1294,7 +1294,10 @@ public class StripLayoutHelper
                     0,
                     () ->
                             attemptToShowTabStripIph(
-                                    groupTitle, /* tab= */ null, IphType.TAB_GROUP_SYNC));
+                                    groupTitle,
+                                    /* tab= */ null,
+                                    IphType.TAB_GROUP_SYNC,
+                                    /* enableSnoozeMode= */ false));
             mLastSyncedGroupRootIdForIph = Tab.INVALID_TAB_ID;
         }
 
@@ -1320,17 +1323,21 @@ public class StripLayoutHelper
      * @param tab The tab to show the IPH on. Pass in {@code null} if the IPH is not tied to a
      *     particular tab.
      * @param iphType The type of the IPH to be shown.
+     * @param enableSnoozeMode Whether to enable snooze mode on the IPH.
      * @return true if {@code showIphOnTabStrip} should be executed immediately; false to retry at a
      *     later time.
      */
     // TODO:(crbug.com/375271955) Ensure sync IPH doesn't show when joining a collaboration group.
     private boolean attemptToShowTabStripIph(
-            StripLayoutGroupTitle groupTitle, @Nullable StripLayoutTab tab, @IphType int iphType) {
+            @Nullable StripLayoutGroupTitle groupTitle,
+            @Nullable StripLayoutTab tab,
+            @IphType int iphType,
+            boolean enableSnoozeMode) {
         // Remove the showTabStrip callback from the queue, as showing IPH is not applicable in
         // these cases.
         if (mModel.isIncognito()
                 || mModel.getProfile() == null
-                || groupTitle == null
+                || (tab == null && groupTitle == null)
                 || !mTabStripIphController.wouldTriggerIph(iphType)) {
             return true;
         }
@@ -1346,7 +1353,7 @@ public class StripLayoutHelper
         }
 
         mTabStripIphController.showIphOnTabStrip(
-                groupTitle, tab, mToolbarContainerView, iphType, mHeight);
+                groupTitle, tab, mToolbarContainerView, iphType, mHeight, enableSnoozeMode);
         return true;
     }
 
@@ -1582,6 +1589,21 @@ public class StripLayoutHelper
             } else {
                 bringSelectedTabToVisibleArea(time, animate);
             }
+        }
+
+        // 5. Trigger IPH for tab tearing on XR if applicable.
+        if (XrUtils.isXrDevice()
+                && mStripTabs.length > 1
+                && !onStartup
+                && !closureCancelled
+                && stripTab != null) {
+            mQueuedIphList.add(
+                    () ->
+                            attemptToShowTabStripIph(
+                                    /* groupTitle */ null,
+                                    stripTab,
+                                    IphType.TAB_TEARING_XR,
+                                    /* enableSnoozeMode= */ true));
         }
 
         mUpdateHost.requestUpdate();
@@ -4394,7 +4416,8 @@ public class StripLayoutHelper
                                     attemptToShowTabStripIph(
                                             groupTitle,
                                             /* tab= */ null,
-                                            IphType.GROUP_TITLE_NOTIFICATION_BUBBLE));
+                                            IphType.GROUP_TITLE_NOTIFICATION_BUBBLE,
+                                            /* enableSnoozeMode= */ false));
                 }
                 updateForCollapsedGroup = true;
             } else if (groupTitle != null && !groupTitle.isCollapsed()) {
@@ -4402,7 +4425,10 @@ public class StripLayoutHelper
                     mQueuedIphList.add(
                             () ->
                                     attemptToShowTabStripIph(
-                                            groupTitle, stripTab, IphType.TAB_NOTIFICATION_BUBBLE));
+                                            groupTitle,
+                                            stripTab,
+                                            IphType.TAB_NOTIFICATION_BUBBLE,
+                                            /* enableSnoozeMode= */ false));
                 }
             }
             // Update tab bubble and the related accessibility description.

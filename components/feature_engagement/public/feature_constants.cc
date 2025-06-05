@@ -579,6 +579,9 @@ BASE_FEATURE(kIPHRestoreTabsOnFREFeature,
 BASE_FEATURE(kIPHTabSwitcherXR,
              "IPH_TabSwitcherXR",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabTearingXR,
+             "IPH_TabTearingXR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

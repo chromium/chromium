@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
@@ -5798,7 +5799,12 @@ public class StripLayoutHelperTest {
         // Verify tab group sync iph is first displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle2), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle2),
+                        eq(null),
+                        any(),
+                        eq(IphType.TAB_GROUP_SYNC),
+                        anyFloat(),
+                        eq(false));
 
         // Trigger show iph the second time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -5809,7 +5815,8 @@ public class StripLayoutHelperTest {
                         eq(null),
                         any(),
                         eq(IphType.GROUP_TITLE_NOTIFICATION_BUBBLE),
-                        anyFloat());
+                        anyFloat(),
+                        eq(false));
     }
 
     @Test
@@ -5844,7 +5851,12 @@ public class StripLayoutHelperTest {
         // Verify tab group sync iph is first displayed.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle2), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle2),
+                        eq(null),
+                        any(),
+                        eq(IphType.TAB_GROUP_SYNC),
+                        anyFloat(),
+                        eq(false));
 
         // Trigger show iph the second time.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -5855,7 +5867,8 @@ public class StripLayoutHelperTest {
                         eq(tab),
                         any(),
                         eq(IphType.TAB_NOTIFICATION_BUBBLE),
-                        anyFloat());
+                        anyFloat(),
+                        eq(false));
     }
 
     @Test
@@ -5877,7 +5890,12 @@ public class StripLayoutHelperTest {
         // Verify tab group sync iph is not shown due to collaboration.
         verify(mController, never())
                 .showIphOnTabStrip(
-                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle),
+                        eq(null),
+                        any(),
+                        eq(IphType.TAB_GROUP_SYNC),
+                        anyFloat(),
+                        eq(false));
     }
 
     @Test
@@ -5896,7 +5914,12 @@ public class StripLayoutHelperTest {
         // Verify iph is displayed at the correct horizontal position.
         verify(mController)
                 .showIphOnTabStrip(
-                        eq(groupTitle), eq(null), any(), eq(IphType.TAB_GROUP_SYNC), anyFloat());
+                        eq(groupTitle),
+                        eq(null),
+                        any(),
+                        eq(IphType.TAB_GROUP_SYNC),
+                        anyFloat(),
+                        eq(false));
 
         // Change orientation.
         mStripLayoutHelper.onSizeChanged(
@@ -5904,6 +5927,32 @@ public class StripLayoutHelperTest {
 
         // Verify iph text bubble is dismissed on screen size change.
         verify(mController, times(2)).dismissTextBubble();
+    }
+
+    @Test
+    public void testTabTearingXrIph() {
+        XrUtils.setXrDeviceForTesting(true);
+        initializeTest(false, false, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // Create a new tab.
+        mModel.addTab("new tab");
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 1, 0, true, false, false);
+
+        // Trigger show iph.
+        mStripLayoutHelper.finishAnimations();
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify iph is displayed at the correct horizontal position.
+        verify(mController)
+                .showIphOnTabStrip(
+                        eq(null),
+                        notNull(),
+                        any(),
+                        eq(IphType.TAB_TEARING_XR),
+                        anyFloat(),
+                        eq(true));
     }
 
     @Test

@@ -107,6 +107,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
     FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
     FeatureConstants.IPH_TAB_SWITCHER_XR,
+    FeatureConstants.IPH_TAB_TEARING_XR,
     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
     FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
@@ -409,4 +410,7 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the tab switcher feature on an XR device. */
     String IPH_TAB_SWITCHER_XR = "IPH_TabSwitcherXR";
+
+    /** An IPH feature to inform users about the tab tearing gesture on an XR device. */
+    String IPH_TAB_TEARING_XR = "IPH_TabTearingXR";
 }

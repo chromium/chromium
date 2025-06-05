@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.TraceEvent;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.feature_engagement.SnoozeAction;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.ui.widget.RectProvider;
@@ -180,12 +180,17 @@ public class UserEducationHelper {
                         mHandler.postDelayed(
                                 () -> {
                                     if (featureName != null) {
-                                        tracker.dismissed(featureName);
-                                    }
-                                    if (!TextUtils.isEmpty(iphCommand.insideTouchEvent)
-                                            && mTextBubble != null
-                                            && mTextBubble.wasDismissedByInsideTouch()) {
-                                        tracker.notifyEvent(iphCommand.insideTouchEvent);
+                                        if (iphCommand.enableSnoozeMode) {
+                                            final int snoozeAction =
+                                                    mTextBubble != null
+                                                                    && mTextBubble
+                                                                            .wasDismissedByInsideTouch()
+                                                            ? SnoozeAction.DISMISSED
+                                                            : SnoozeAction.SNOOZED;
+                                            tracker.dismissedWithSnooze(featureName, snoozeAction);
+                                        } else {
+                                            tracker.dismissed(featureName);
+                                        }
                                     }
                                     iphCommand.onDismissCallback.run();
                                     if (highlightParams != null) {

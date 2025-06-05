@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.feature_engagement.SnoozeAction;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
@@ -126,32 +127,46 @@ public class UserEducationHelperUnitTest {
     }
 
     @Test
-    public void testDismissByInsideTouch() {
+    public void testEnableSnoozeMode() {
         TrackerFactory.setTrackerForTests(mTracker);
         TextBubble.setSkipShowCheckForTesting(true);
         UserEducationHelper educationHelper =
                 new UserEducationHelper(mActivity, mProfile, new Handler());
         doReturn(true).when(mTracker).shouldTriggerHelpUi("TEST");
-        final String insideTouchEvent = "test_inside_touch";
+        final String featureName = "TEST";
 
         IphCommand testIphCommand =
                 new IphCommandBuilder(
                                 ContextUtils.getApplicationContext().getResources(),
-                                "TEST",
+                                featureName,
                                 "test",
                                 "test")
                         .setShowTextBubble(true)
                         .setAnchorView(new FrameLayout(mActivity))
-                        .setInsideTouchEvent(insideTouchEvent)
+                        .setEnableSnoozeMode(true)
                         .build();
+
+        // 1. Test dismiss by outside touch.
         educationHelper.requestShowIph(testIphCommand);
         Mockito.verify(mTracker).addOnInitializedCallback(mInitCallbackCaptor.capture());
 
         mInitCallbackCaptor.getValue().onResult(true);
         TextBubble textBubble = educationHelper.getTextBubbleForTesting();
+        textBubble.onDismissForTesting(/* byInsideTouch= */ false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Mockito.verify(mTracker).dismissedWithSnooze(featureName, SnoozeAction.SNOOZED);
+
+        // 2. Test dismiss by inside touch.
+        educationHelper.requestShowIph(testIphCommand);
+        Mockito.verify(mTracker, Mockito.times(2))
+                .addOnInitializedCallback(mInitCallbackCaptor.capture());
+
+        mInitCallbackCaptor.getValue().onResult(true);
+        textBubble = educationHelper.getTextBubbleForTesting();
         textBubble.onDismissForTesting(/* byInsideTouch= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        Mockito.verify(mTracker).notifyEvent(insideTouchEvent);
+        Mockito.verify(mTracker).dismissedWithSnooze(featureName, SnoozeAction.DISMISSED);
     }
 }
