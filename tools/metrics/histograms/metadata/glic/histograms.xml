@@ -626,6 +626,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ScrollTo.SessionCount" units="count"
+    expires_after="2026-01-15">
+  <owner>liuwilliam@google.com</owner>
+  <owner>adithyas@google.com</owner>
+  <summary>
+    Records the number of scrollTo() attempts in a single session. Currently
+    configured to have a max recorded value of 100.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ScrollTo.UserPromptToScrollTime.{InputMode}" units="ms"
+    expires_after="2026-01-15">
+  <owner>liuwilliam@google.com</owner>
+  <owner>adithyas@google.com</owner>
+  <summary>
+    Records the time between when the user submitting input and a scroll
+    (triggered by scrollTo()) starting.
+  </summary>
+  <token key="InputMode">
+    <variant name="Audio"/>
+    <variant name="Text"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Session.AttachStateChanges" units="count"
     expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>
