@@ -931,9 +931,17 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                   WrapPersistent(document)),
               base::Milliseconds(timeout));
         } else if (mark_name == mark_parser_restart) {
-          // If the parser is pausing, resume it.
-          document->NotifyParserResumeByUserTiming();
-          base::UmaHistogramBoolean(kParserResumeByUserTiming, true);
+          // If the parser is pausing, resume it. This has to be called as a new
+          // task to ensure that the script is not running to resume the parser.
+          document->GetTaskRunner(TaskType::kInternalLoading)
+              ->PostTask(FROM_HERE,
+                         WTF::BindOnce(
+                             [](Document* document) {
+                               document->NotifyParserResumeByUserTiming();
+                               base::UmaHistogramBoolean(
+                                   kParserResumeByUserTiming, true);
+                             },
+                             WrapPersistent(document)));
           parser_yield_task_handle_.Cancel();
         }
       }

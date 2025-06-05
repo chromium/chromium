@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -435,11 +436,16 @@ class HTMLDocumentParserYieldByUserTimingTest : public SimTest {
   }
 
  protected:
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(HTMLDocumentParserYieldByUserTimingTest,
@@ -468,6 +474,32 @@ TEST_F(HTMLDocumentParserYieldByUserTimingTest,
   image_resource.Complete(TestImage());
   platform_->RunUntilIdle();
   EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+  histogram_tester().ExpectUniqueSample("Blink.HTMLParsing.ResumedByUserTiming",
+                                        true, 1);
+}
+
+TEST_F(HTMLDocumentParserYieldByUserTimingTest,
+       ParserIsPausedAndResumedByUserTiming_ResumedWhileExecutingScript) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  // The parser is paused and resumed by the user timing script in the same
+  // block. This resumes the parser while executing the script. This should not
+  // DCHECK.
+  main_resource.Complete(R"HTML(
+    <div id="before"></div>
+    <script>
+      performance.mark('pause');
+      performance.mark('resume');
+    </script>
+    <div id="after"></div>
+  )HTML");
+
+  platform_->RunUntilIdle();
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+  histogram_tester().ExpectUniqueSample("Blink.HTMLParsing.ResumedByUserTiming",
+                                        true, 1);
 }
 
 TEST_F(HTMLDocumentParserYieldByUserTimingTest,
@@ -493,5 +525,7 @@ TEST_F(HTMLDocumentParserYieldByUserTimingTest,
   // event.
   platform_->test_task_runner()->FastForwardBy(base::Milliseconds(30));
   EXPECT_TRUE(GetDocument().getElementById(AtomicString("after")));
+  histogram_tester().ExpectUniqueSample("Blink.HTMLParsing.ResumedByUserTiming",
+                                        false, 1);
 }
 }  // namespace blink
