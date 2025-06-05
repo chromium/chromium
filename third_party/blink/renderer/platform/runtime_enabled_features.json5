@@ -4658,8 +4658,7 @@
       name: "SpeculationRulesTargetHint",
       origin_trial_feature_name: "SpeculationRulesTargetHint",
       base_feature: "Prerender2InNewTab",
-      status: "experimental",
-      base_feature_status: "enabled",
+      status: "stable",
       copied_from_base_feature_if: "overridden",
     },
     {
