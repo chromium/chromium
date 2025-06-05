@@ -58,6 +58,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   }
   views::RadioButton* GetSiteAccessButtonForTesting(
       extensions::PermissionsManager::UserSiteAccess site_access);
+  views::Label* GetExtensionNameForTesting();
 
  private:
   const raw_ptr<Browser> browser_;

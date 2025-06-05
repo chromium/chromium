@@ -287,7 +287,10 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                   kColorExtensionsMenuSecondaryText)
                               .SetProperty(views::kMarginsKey,
                                            gfx::Insets::TLBR(
-                                               0, horizontal_spacing, 0, 0))),
+                                               0, horizontal_spacing, 0, 0))
+                              .SetElideBehavior(gfx::ELIDE_TAIL)
+                              .SetProperty(views::kFlexBehaviorKey,
+                                stretch_specification)),
                   // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
@@ -441,6 +444,11 @@ ExtensionsMenuSitePermissionsPageView::GetSiteAccessButtonForTesting(
   std::vector<views::RadioButton*> site_access_buttons =
       GetSiteAccessButtons(this);
   return site_access_buttons[GetSiteAccessButtonIndex(site_access)];
+}
+
+views::Label*
+ExtensionsMenuSitePermissionsPageView::GetExtensionNameForTesting() {
+  return extension_name_;
 }
 
 BEGIN_METADATA(ExtensionsMenuSitePermissionsPageView)
