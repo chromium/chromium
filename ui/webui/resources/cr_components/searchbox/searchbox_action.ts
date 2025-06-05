@@ -126,10 +126,10 @@ class SearchboxActionElement extends PolymerElement {
   private computeActionIconStyle_(): string {
     // If this is a custom icon, shouldn't follow the standard theming given to
     // all other action icons.
-    if (this.action.iconUrl.startsWith('data:image/')) {
-      return `background-image: url(${this.action.iconUrl})`;
+    if (this.action.iconPath.startsWith('data:image/')) {
+      return `background-image: url(${this.action.iconPath})`;
     } else {
-      return `-webkit-mask-image: url(${this.action.iconUrl})`;
+      return `-webkit-mask-image: url(${this.action.iconPath})`;
     }
   }
 

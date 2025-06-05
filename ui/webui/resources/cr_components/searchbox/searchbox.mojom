@@ -23,8 +23,8 @@ struct Action {
   mojo_base.mojom.String16 suggestion_contents;
   // The url for the action icon. This is a relative url pointing to a
   // bundled resource and is used directly in CSS to show the icon.
-  // |icon_url| is a relative url or a data URI.
-  string icon_url;
+  // |icon_path| is a relative url or a data URI.
+  string icon_path;
 };
 
 // See components/omnibox/browser/suggestion_answer.h
@@ -46,8 +46,12 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16 inline_autocompletion;
   mojo_base.mojom.String16 fill_into_edit;
   bool? is_weather_answer_suggestion;
-  // The url for the suggestion icon. This is a relative url pointing to a
+  // The path for the suggestion icon. This is a relative url pointing to a
   // bundled resource and is used directly in CSS to show the icon.
+  string icon_path;
+  // The url for the suggestion icon. |icon_url| is an external url or
+  // a data URI.
+  //TODO(crbug.com/422559532): Use url.mojom.Url instead.
   string icon_url;
   // Used to paint a placeholder while fetching |image_url|. These two fields
   // are valid for entity suggestions only. Entity suggestions have a |type| of
@@ -56,10 +60,13 @@ struct AutocompleteMatch {
   // The image url for entity suggestions. |image_url| is an external url or
   // a data URI.
   string image_url;
-  // Used to determine if the match has an image, calculator answer or
-  // suggestion answer.
+  // Used to determine if the match has an image, calculator answer,
+  // suggestion answer, or enterprise search aggregator people suggestion.
   bool is_rich_suggestion;
   bool is_search_type;  // Result of AutocompleteMatch::IsSearchType().
+  // Used to determine if the match is an enterprise search aggregator people
+  // suggestion.
+  bool is_enterprise_search_aggregator_people_type;
   string type;  // Result of AutocompleteMatchType::ToString().
   mojo_base.mojom.String16 remove_button_a11y_label;
   bool swap_contents_and_description;

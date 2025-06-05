@@ -30,7 +30,7 @@
   }
 
   /* Calculator answer and suggestion answer icons feature a blue background. */
-  :host-context(cr-searchbox-match[is-rich-suggestion]:not([has-image])):host(:not([has-icon-container-background])) #container {
+  :host-context(cr-searchbox-match[is-rich-suggestion]:not([has-image])):host(:not([has-icon-container-background]):not([is-enterprise-search-aggregator-people-type])) #container {
     background-color: var(--google-blue-600);
     border-radius: 50%;
     height: 24px;
@@ -104,11 +104,7 @@
     }
   }
 
-  :host-context(cr-searchbox-match[has-image]) #icon {
-    display: none;
-  }
-
-  :host-context(cr-searchbox-match[is-rich-suggestion]) #icon {
+  :host-context(cr-searchbox-match[is-rich-suggestion]):host(:not([is-enterprise-search-aggregator-people-type])) #icon {
     background-color: white;
   }
 
@@ -125,6 +121,21 @@
     background-color: var(--color-searchbox-answer-icon-foreground);
   }
 
+  #iconImg {
+    height: var(--cr-searchbox-results-search-icon-size,16px);
+    width: var(--cr-searchbox-results-search-icon-size,16px);
+  }
+
+  :host([in-searchbox]) #iconImg {
+    height: var(--cr-searchbox-icon-size-in-searchbox);
+    width: var(--cr-searchbox-icon-size-in-searchbox);
+  }
+
+  :host-context(cr-searchbox-match[has-image]) #icon,
+  :host-context(cr-searchbox-match[has-image]) #iconImg {
+    display: none;
+  }
+
   :host(:not([in-searchbox])[is-lens-searchbox_]) #container {
     background-color: var(--color-searchbox-results-icon-container-background);
     border-radius: 4000px;
@@ -137,5 +148,6 @@
   <div id="imageOverlay"></div>
   <!--Note: Do not remove the '$' in '$=' below, otherwise the 'style' attribute
       is erroneously removed by the HTML minifier. -->
-  <div id="icon" style$="[[iconStyle_]]"></div>
+  <div id="icon" style$="[[iconStyle_]]" hidden="[[showIconImg_]]"></div>
+  <img id="iconImg" src="[[iconSrc_]]" hidden="[[!showIconImg_]]" on-load="onIconLoad_"></img>
 </div>
