@@ -330,7 +330,7 @@ public class AccountSelectionCoordinator
 
     @Override
     public void setPopupComponent(AccountSelectionComponent component) {
-        mPopupComponent = new WeakReference<AccountSelectionComponent>(component);
+        mPopupComponent = new WeakReference<>(component);
     }
 
     // ActivityStateObserver

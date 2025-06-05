@@ -967,8 +967,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_enoughSpace() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -989,8 +989,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_notEnoughSpaceForOneItem() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1012,8 +1012,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_notEnoughSpaceForTwoItem() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1037,8 +1037,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_notEnoughSpaceForThreeItem() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1063,8 +1063,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_notEnoughSpaceForDivider() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1089,8 +1089,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_showPartialDivider() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1116,8 +1116,8 @@ public class AppMenuTest {
             throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1144,8 +1144,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_minimalHight() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1168,8 +1168,8 @@ public class AppMenuTest {
             throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         createMenuItem(menuItemIds, heightList, /* id= */ 0, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 1, /* height= */ 10);
         createMenuItem(menuItemIds, heightList, /* id= */ 2, /* height= */ 10);
@@ -1191,8 +1191,8 @@ public class AppMenuTest {
     public void testCalculateHeightForItems_nagativeSpaceForZeroItems() throws Exception {
         showMenuAndAssert();
 
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
 
         int height =
                 mAppMenuHandler

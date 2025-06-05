@@ -895,8 +895,7 @@ class AccountSelectionMediator {
         boolean isSingleAccountChooser = accounts.size() == 1 && !accounts.get(0).isFilteredOut();
 
         // Check everything we need to render to determine if multiple IDPs are involved or not.
-        Set<IdentityProviderData> distinctIdps =
-                new HashSet<IdentityProviderData>(identityProviders);
+        Set<IdentityProviderData> distinctIdps = new HashSet<>(identityProviders);
         for (Account account : accounts) {
             distinctIdps.add(account.getIdentityProviderData());
         }

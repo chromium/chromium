@@ -142,7 +142,7 @@ class LocationBarMediator
     }
 
     private final FloatProperty<LocationBarMediator> mUrlFocusChangeFractionProperty =
-            new FloatProperty<LocationBarMediator>("") {
+            new FloatProperty<>("") {
                 @Override
                 public Float get(LocationBarMediator object) {
                     return mUrlFocusChangeFraction;
@@ -155,7 +155,7 @@ class LocationBarMediator
             };
 
     private final FloatProperty<LocationBarMediator> mWidthChangeFractionPropertyTablet =
-            new FloatProperty<LocationBarMediator>("") {
+            new FloatProperty<>("") {
                 @Override
                 public Float get(LocationBarMediator object) {
                     return ((LocationBarTablet) mLocationBarLayout).getWidthChangeFraction();

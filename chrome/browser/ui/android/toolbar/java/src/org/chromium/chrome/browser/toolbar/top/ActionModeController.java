@@ -36,7 +36,7 @@ public class ActionModeController {
 
     /** Property for animating the top margin of ActionBarDelegate. */
     public static final IntProperty<ActionBarDelegate> TOP_MARGIN_ANIM_PROPERTY =
-            new IntProperty<ActionBarDelegate>("controlTopMargin") {
+            new IntProperty<>("controlTopMargin") {
                 @Override
                 public Integer get(ActionBarDelegate delegate) {
                     return delegate.getControlTopMargin();

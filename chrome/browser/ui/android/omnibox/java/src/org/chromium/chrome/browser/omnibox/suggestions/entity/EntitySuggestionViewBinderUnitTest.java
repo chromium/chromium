@@ -30,7 +30,7 @@ public class EntitySuggestionViewBinderUnitTest {
     @Before
     public void setUp() {
         mView =
-                new BaseSuggestionView<View>(
+                new BaseSuggestionView<>(
                         ContextUtils.getApplicationContext(), R.layout.omnibox_basic_suggestion);
         mModel = new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mView, EntitySuggestionViewBinder::bind);

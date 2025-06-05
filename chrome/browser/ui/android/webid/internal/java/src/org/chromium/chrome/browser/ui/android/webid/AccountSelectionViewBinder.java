@@ -384,7 +384,7 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Context context = view.getContext();
-            ArrayList<String> fieldStrings = new ArrayList<String>();
+            ArrayList<String> fieldStrings = new ArrayList<>();
             for (@IdentityRequestDialogDisclosureField int field : properties.mDisclosureFields) {
                 switch (field) {
                     case IdentityRequestDialogDisclosureField.NAME:

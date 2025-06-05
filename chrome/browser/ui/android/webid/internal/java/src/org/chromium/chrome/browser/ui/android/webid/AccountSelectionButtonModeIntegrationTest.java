@@ -94,7 +94,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 .check(matches(withText("Use a different account")));
 
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 mAccountSelection.showAccounts(
@@ -145,7 +145,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 .check(matches(withText("Use a different account")));
 
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 mAccountSelection.showAccounts(
@@ -225,7 +225,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 .check(matches(withText("Use a different account")));
 
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 mAccountSelection.showAccounts(

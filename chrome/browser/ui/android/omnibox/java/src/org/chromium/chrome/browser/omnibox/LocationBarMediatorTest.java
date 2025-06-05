@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -239,7 +238,7 @@ public class LocationBarMediatorTest {
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
         doReturn(mRootView).when(mLocationBarTablet).getRootView();
-        doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
+        doReturn(new WeakReference<>(null)).when(mWindowAndroid).getActivity();
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         OmniboxPrerenderJni.setInstanceForTesting(mPrerenderJni);
         PreloadPagesSettingsBridgeJni.setInstanceForTesting(mPreloadPagesSettingsJni);

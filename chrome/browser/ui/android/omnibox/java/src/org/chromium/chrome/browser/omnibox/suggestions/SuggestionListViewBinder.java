@@ -71,7 +71,7 @@ class SuggestionListViewBinder {
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
             listItems.addObserver(
-                    new ListObservable.ListObserver<Void>() {
+                    new ListObservable.ListObserver<>() {
                         @Override
                         public void onItemRangeChanged(
                                 ListObservable<Void> source,

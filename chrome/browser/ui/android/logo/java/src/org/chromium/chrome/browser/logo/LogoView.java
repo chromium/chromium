@@ -75,7 +75,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private int mDoodleSize;
 
     private final FloatProperty<LogoView> mTransitionProperty =
-            new FloatProperty<LogoView>("") {
+            new FloatProperty<>("") {
                 @Override
                 public Float get(LogoView logoView) {
                     return logoView.mTransitionAmount;

@@ -48,8 +48,7 @@ public class RecognitionTestHelper {
     public static Bundle createPlaceholderBundle(String[] texts, float[] confidences) {
         Bundle b = new Bundle();
 
-        b.putStringArrayList(
-                RecognizerIntent.EXTRA_RESULTS, new ArrayList<String>(Arrays.asList(texts)));
+        b.putStringArrayList(RecognizerIntent.EXTRA_RESULTS, new ArrayList<>(Arrays.asList(texts)));
         b.putFloatArray(RecognizerIntent.EXTRA_CONFIDENCE_SCORES, confidences);
         return b;
     }

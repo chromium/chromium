@@ -58,7 +58,7 @@ public class EphemeralTabMediator {
         mBottomSheetController = bottomSheetController;
         mFaviconLoader = faviconLoader;
         mTopControlsHeightDp = topControlsHeightDp;
-        mObservers = new ObserverList<EphemeralTabObserver>();
+        mObservers = new ObserverList<>();
     }
 
     /** Initializes various objects for a new tab. */

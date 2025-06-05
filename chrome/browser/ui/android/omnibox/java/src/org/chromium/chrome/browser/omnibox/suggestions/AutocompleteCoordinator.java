@@ -204,7 +204,7 @@ public class AutocompleteCoordinator
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
             boolean forcePhoneStyleOmnibox) {
-        return new ViewProvider<SuggestionListViewHolder>() {
+        return new ViewProvider<>() {
             private AsyncViewProvider<ViewGroup> mAsyncProvider;
             private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
             private @Nullable SuggestionListViewHolder mHolder;

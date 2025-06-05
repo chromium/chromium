@@ -257,8 +257,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mIsByPermanentButton = isByPermanentButton;
 
         // Find the height for each menu item.
-        List<Integer> menuItemIds = new ArrayList<Integer>();
-        List<Integer> heightList = new ArrayList<Integer>();
+        List<Integer> menuItemIds = new ArrayList<>();
+        List<Integer> heightList = new ArrayList<>();
         for (int i = 0; i < mModelList.size(); i++) {
             int itemId = mModelList.get(i).model.get(AppMenuItemProperties.MENU_ITEM_ID);
             menuItemIds.add(itemId);

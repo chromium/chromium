@@ -351,7 +351,7 @@ public class LocationBarLayout extends FrameLayout {
      *     overlapping text and buttons.
      */
     protected List<View> getUrlContainerViewsForMargin() {
-        List<View> outList = new ArrayList<View>();
+        List<View> outList = new ArrayList<>();
         if (mUrlActionContainer == null) return outList;
 
         for (int i = 0; i < mUrlActionContainer.getChildCount(); i++) {

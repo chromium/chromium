@@ -376,7 +376,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
         // Close the use other account CCT when it is opened.
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 mAccountSelection

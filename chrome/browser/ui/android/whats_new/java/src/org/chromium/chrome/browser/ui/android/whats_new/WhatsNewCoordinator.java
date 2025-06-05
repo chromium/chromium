@@ -44,7 +44,7 @@ public class WhatsNewCoordinator {
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         adapter.registerType(
                 WhatsNewListItemProperties.DEFAULT_ITEM_TYPE,
-                new LayoutViewBuilder<WhatsNewListItemView>(R.layout.whats_new_list_item),
+                new LayoutViewBuilder<>(R.layout.whats_new_list_item),
                 WhatsNewListItemViewBinder::bind);
 
         ListView listView = mView.findViewById(R.id.whats_new_items_list);

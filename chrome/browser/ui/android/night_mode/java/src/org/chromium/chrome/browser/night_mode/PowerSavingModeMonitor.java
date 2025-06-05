@@ -96,7 +96,7 @@ public class PowerSavingModeMonitor {
         if (mRegisterTaskPosted) return;
 
         mRegisterReceiverTask =
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<>() {
                     @Override
                     protected Void doInBackground() {
                         if (isCancelled()) return null;
@@ -118,7 +118,7 @@ public class PowerSavingModeMonitor {
         if (!mRegisterTaskPosted) return;
 
         mUnregisterReceiverTask =
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<>() {
                     @Override
                     protected Void doInBackground() {
                         ContextUtils.getApplicationContext().unregisterReceiver(mPowerModeReceiver);

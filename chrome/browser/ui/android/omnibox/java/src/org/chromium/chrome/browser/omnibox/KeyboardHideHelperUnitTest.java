@@ -72,7 +72,7 @@ public class KeyboardHideHelperUnitTest {
         mKeyboardHideHelper.setWindowDelegate(mWindowDelegate);
         final AtomicInteger height = new AtomicInteger(300);
         Answer<Void> windowVisibleDisplayFrameAnswer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         ((Rect) invocation.getArgument(0)).set(0, 0, 100, height.get());

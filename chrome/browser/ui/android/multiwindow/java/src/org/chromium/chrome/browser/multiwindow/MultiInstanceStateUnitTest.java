@@ -135,7 +135,7 @@ public class MultiInstanceStateUnitTest {
     }
 
     private List<AppTask> getChromeTasks() {
-        return new ArrayList<AppTask>(sTasks.keySet());
+        return new ArrayList<>(sTasks.keySet());
     }
 
     private boolean matchesBaseActivity(String name) {
