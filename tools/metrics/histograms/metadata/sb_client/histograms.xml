@@ -239,7 +239,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.PPAPIDownloadRequest.NetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-06-13">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
