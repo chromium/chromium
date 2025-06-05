@@ -173,6 +173,8 @@ GtkIconTheme* GetDefaultIconTheme();
 
 void GtkWindowDestroy(GtkWidget* widget);
 
+GtkWidget* GetDummyWindow();
+
 gfx::Size GetSeparatorSize(bool horizontal);
 
 float GetDeviceScaleFactor();

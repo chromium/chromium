@@ -154,6 +154,8 @@ component("gtk") {
 
   if (ozone_platform_x11) {
     sources += [
+      "x/gtk_event_loop_x11.cc",
+      "x/gtk_event_loop_x11.h",
       "x/gtk_ui_platform_x11.cc",
       "x/gtk_ui_platform_x11.h",
     ]
