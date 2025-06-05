@@ -132,8 +132,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
     sql::Statement blob_statement(
         db.GetCachedStatement(SQL_FROM_HERE, kCreatePowerBlobSql));
     blob_statement.BindString(0, power->guid_string());
-    std::string data = "badprotofortesting";
-    blob_statement.BindBlob(1, data);
+    blob_statement.BindBlob(1, std::string{"badprotofortesting"});
     EXPECT_TRUE(blob_statement.Run());
   }
 

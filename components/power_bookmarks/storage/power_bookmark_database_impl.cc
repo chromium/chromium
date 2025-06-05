@@ -839,7 +839,7 @@ bool PowerBookmarkDatabaseImpl::UpdatePowerInternal(const Power& power) {
   power.ToPowerBookmarkSpecifics(&specifics);
   bool success = specifics.SerializeToString(&data);
   DCHECK(success);
-  blob_statement.BindBlob(0, data);
+  blob_statement.BindBlob(0, std::move(data));
   blob_statement.BindString(1, power.guid_string());
   if (!blob_statement.Run()) {
     return false;
