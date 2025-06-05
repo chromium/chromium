@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/overloaded.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -19,6 +18,7 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash::cert_provisioning {
 
@@ -111,13 +111,13 @@ bool CertProvisioningInvalidationHandler::Register() {
   }
 
   return std::visit(
-      base::Overloaded{[this](invalidation::InvalidationService* service) {
-                         return RegisterWithInvalidationService(service);
-                       },
-                       [this](invalidation::InvalidationListener* listener) {
-                         invalidation_listener_observation_.Observe(listener);
-                         return true;
-                       }},
+      absl::Overload{[this](invalidation::InvalidationService* service) {
+                       return RegisterWithInvalidationService(service);
+                     },
+                     [this](invalidation::InvalidationListener* listener) {
+                       invalidation_listener_observation_.Observe(listener);
+                       return true;
+                     }},
       invalidation_service_or_listener_);
 }
 
@@ -212,7 +212,7 @@ std::string CertProvisioningInvalidationHandler::GetType() const {
 
 bool CertProvisioningInvalidationHandler::IsRegistered() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](invalidation::InvalidationService* service) {
             return invalidation_service_observation_.IsObservingSource(service);
           },
@@ -229,14 +229,14 @@ bool CertProvisioningInvalidationHandler::AreInvalidationsEnabled() const {
   }
 
   return std::visit(
-      base::Overloaded{[](invalidation::InvalidationService* service) {
-                         return service->GetInvalidatorState() ==
-                                invalidation::InvalidatorState::kEnabled;
-                       },
-                       [this](invalidation::InvalidationListener* listener) {
-                         return are_invalidations_expected_ ==
-                                invalidation::InvalidationsExpected::kYes;
-                       }},
+      absl::Overload{[](invalidation::InvalidationService* service) {
+                       return service->GetInvalidatorState() ==
+                              invalidation::InvalidatorState::kEnabled;
+                     },
+                     [this](invalidation::InvalidationListener* listener) {
+                       return are_invalidations_expected_ ==
+                              invalidation::InvalidationsExpected::kYes;
+                     }},
       invalidation_service_or_listener_);
 }
 
@@ -359,7 +359,7 @@ CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
   // Note that it is OK to call this even if this instance has not called
   // RegisterConsumer yet.
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](
               policy::AffiliatedInvalidationServiceProvider* service_provider) {
             service_provider->UnregisterConsumer(this);
@@ -379,7 +379,7 @@ void CertProvisioningDeviceInvalidator::Register(
   CHECK(!topic_.empty());
   on_invalidation_event_callback_ = std::move(on_invalidation_event_callback);
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](
               policy::AffiliatedInvalidationServiceProvider* service_provider) {
             service_provider->RegisterConsumer(this);
@@ -395,7 +395,7 @@ void CertProvisioningDeviceInvalidator::Register(
 
 void CertProvisioningDeviceInvalidator::Unregister() {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](
               policy::AffiliatedInvalidationServiceProvider* service_provider) {
             service_provider->UnregisterConsumer(this);

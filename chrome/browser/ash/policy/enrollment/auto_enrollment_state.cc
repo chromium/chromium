@@ -6,9 +6,9 @@
 
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace policy {
 
@@ -29,7 +29,7 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
 
 std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return std::string("Safeguard timeout");
           },

@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -35,6 +34,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -56,7 +56,7 @@ void AppendSwitchesToDisplayLoginScreen(base::CommandLine* command_line) {
 
 std::string_view GetAccountId(const KioskMixin::Option& option) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const KioskMixin::DefaultServerWebAppOption& option) {
             return std::string_view(option.account_id);
           },
@@ -80,7 +80,7 @@ std::string_view GetAccountId(const KioskMixin::Option& option) {
 // not a Web app option.
 GURL GetWebAppUrl(const KioskMixin::Option& option) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const KioskMixin::DefaultServerWebAppOption& option) {
             return GURL(kDefaultWebAppOrigin).Resolve(option.url_path);
           },
@@ -98,7 +98,7 @@ GURL GetWebAppUrl(const KioskMixin::Option& option) {
 // not a Chrome app option.
 std::string_view GetChromeAppId(const KioskMixin::Option& option) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const KioskMixin::DefaultServerWebAppOption& option) {
             return std::string_view();
           },
@@ -298,7 +298,7 @@ void KioskMixin::Configure(ScopedDevicePolicyUpdate& device_policy_update,
     auto account_id = GetAccountId(option);
     auto user_policy_update = user_policy_update_callback.Run(account_id);
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [this, &device_policy_update,
              &user_policy_update](const DefaultServerWebAppOption& option) {
               ConfigureWebApp(device_policy_update,

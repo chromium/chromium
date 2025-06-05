@@ -6,7 +6,6 @@
 #include <string_view>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
@@ -17,6 +16,7 @@
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash {
 
@@ -30,7 +30,7 @@ namespace {
 
 std::string_view GetAccountId(const KioskMixin::Option& option) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const KioskMixin::DefaultServerWebAppOption& option) {
             return std::string_view(option.account_id);
           },
@@ -53,7 +53,7 @@ std::string_view GetAccountId(const KioskMixin::Option& option) {
 policy::DeviceLocalAccountType GetAccountType(
     const KioskMixin::Option& option) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const KioskMixin::DefaultServerWebAppOption& option) {
             return policy::DeviceLocalAccountType::kWebKioskApp;
           },

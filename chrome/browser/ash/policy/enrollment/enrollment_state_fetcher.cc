@@ -14,7 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -41,6 +40,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 using private_membership::rlwe::RlwePlaintextId;
@@ -79,7 +79,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   }
 
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return kUMASuffixConnectionError;
           },
