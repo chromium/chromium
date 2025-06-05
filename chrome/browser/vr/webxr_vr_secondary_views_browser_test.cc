@@ -18,16 +18,10 @@ const float kIpd = 0.7f;
 
 class MyXRMock : public MockXRDeviceHookBase {
  public:
-  void OnFrameSubmitted(
-      std::vector<device_test::mojom::ViewDataPtr> views,
-      device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final {
-    frame_count_++;
-    std::move(callback).Run();
-  }
-
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
       final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
     device_test::mojom::DeviceConfigPtr config =
         device_test::mojom::DeviceConfig::New();
     config->interpupillary_distance = kIpd;
@@ -44,21 +38,19 @@ class MyXRMock : public MockXRDeviceHookBase {
   void WaitGetPresentingPose(
       device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
       final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
     device_test::mojom::PoseFrameDataPtr pose =
         device_test::mojom::PoseFrameData::New();
 
     pose->device_to_origin = gfx::Transform();
+    uint32_t frame_count = GetFrameCount();
     // Add a translation with the value of the current frame count.
-    pose->device_to_origin->Translate3d(frame_count_, frame_count_,
-                                        frame_count_);
-    // Rotate about the Y-axis simiarly.
-    pose->device_to_origin->RotateAboutYAxis(frame_count_);
+    pose->device_to_origin->Translate3d(frame_count, frame_count, frame_count);
+    // Rotate about the Y-axis similarly.
+    pose->device_to_origin->RotateAboutYAxis(frame_count);
 
     std::move(callback).Run(std::move(pose));
   }
-
- private:
-  uint32_t frame_count_ = 0;
 };
 
 }  // namespace

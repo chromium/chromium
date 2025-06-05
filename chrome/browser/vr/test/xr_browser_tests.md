@@ -21,13 +21,31 @@ so the instrumentation test's documentation on writing tests using the framework
 is applicable here, too. As such, this documentation only covers any notable
 differences between the two implementations.
 
+## Mock XR Device
+
+Any runtime attempting to start an Immersive session needs to add a Mock Device,
+as otherwise Android tests will fail due to trying to spawn a new activity,
+which currently isn't supported.
+
+## Threading
+
+It is important to be mindful of the threading model within these tests. The
+main test thread is the same as the browser's UI thread. On Android, the
+device thread is also the browser thread. This configuration makes
+it very easy to cause a deadlock in the browser process. To avoid this, any
+`MockXRDevice` should run its mojo methods, which are synchronously queried by
+the device on the device thread, on a separate thread. Furthermore, using
+`base::WaitableEvent` will completely block the thread it is called on. Since
+this would block the browser process, `base::WaitableEvent` should not be
+used, but rather `base::RunLoop` should be used instead.
+
 ## Restrictions
 
 Both the instrumentation tests and browser tests have hardware/software
 restrictions - in the case of browser tests, XR is only supported on Windows 8
 and later (or Windows 7 with a non-standard patch applied) with a GPU that
-supports DirectX 11.1, although several tests exist that don't actually use XR
-functionality, and thus don't have these requirements.
+supports DirectX 11.1 or on Android, although, several tests exist that don't
+actually use XR functionality, and thus don't have these requirements.
 
 Runtime restrictions in browser tests are handled via the macros in
 `conditional_skipping.h`. To add a runtime requirement to a test class, simply
@@ -61,6 +79,8 @@ flags that are set in its `SetUp` function.
 
 ## Compiling And Running
 
+### Windows
+
 The tests are compiled in the `xr_browser_tests` target. This is a combination
 of the `xr_browser_tests_binary` target, which is the actual test, and the
 `xr_browser_tests_runner` target, which is a wrapper script that ensures special
@@ -77,6 +97,14 @@ Additional options such as test filtering can be found by running
 Because the "test" is actually a Python wrapper script, you may need to prepend
 `python` to the front of the command on Windows if Python file association is
 not set up on your machine.
+
+### Android
+
+On Android, the tests are built and run via the `android_browsertests` target.
+Note that due to the deployment of a mock OpenXR runtime and writing a JSON file
+to: `'/product/etc/openxr/1/active_runtime.json'`, tests must be run on a rooted
+device. Because this is a large target, it is recommended to append
+`--gtest_filter=*WebXr*` when running the tests.
 
 ## Adding New Files
 

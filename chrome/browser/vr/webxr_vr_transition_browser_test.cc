@@ -33,8 +33,6 @@ IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrOpenXrBrowserTestWebXrDisabled,
 
 // Tests that window.requestAnimationFrame continues to fire when we have a
 // non-immersive WebXR session.
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
     TestWindowRafFiresDuringNonImmersiveSession) {
   t->LoadFileAndAwaitInitialization(
@@ -42,7 +40,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
   t->WaitOnJavaScriptStep();
   t->EndTest();
 }
-#endif  // if !BUILDFLAG(IS_ANDROID)
 
 // Tests that a successful requestPresent or requestSession call enters
 // an immersive session.
@@ -59,12 +56,11 @@ WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F(
   TestPresentationEntryImpl(t, "generic_webxr_page");
 }
 
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that window.requestAnimationFrame continues to fire while in
 // WebXR presentation since the tab is still visible.
 void TestWindowRafFiresWhilePresentingImpl(WebXrVrBrowserTestBase* t,
                                            std::string filename) {
+  MockXRDeviceHookBase mock;
   t->LoadFileAndAwaitInitialization(filename);
   t->ExecuteStepAndWait("stepVerifyBeforePresent()");
   t->EnterSessionWithUserGestureOrFail();
@@ -82,6 +78,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWindowRafFiresWhilePresenting) {
 // Tests that non-immersive sessions stop receiving rAFs during an immersive
 // session, but resume once the immersive session ends.
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNonImmersiveStopsDuringImmersive) {
+  MockXRDeviceHookBase mock;
   t->LoadFileAndAwaitInitialization(
       "test_non_immersive_stops_during_immersive");
   t->ExecuteStepAndWait("stepBeforeImmersive()");
@@ -91,7 +88,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNonImmersiveStopsDuringImmersive) {
   t->ExecuteStepAndWait("stepAfterImmersive()");
   t->EndTest();
 }
-#endif  // if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_OPENXR)
 // Tests that WebXR session ends when certain events are received.
@@ -124,8 +120,6 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestInsanceLost) {
       this, device_test::mojom::EventType::kInstanceLost);
 }
 
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionExited) {
   // Set the device up to reject the session request. This should translate to
   // immediately translating the device to the "Exited" state.
@@ -168,7 +162,6 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {
   this->RunJavaScriptOrFail("done()");
   this->EndTest();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
 }  // namespace vr

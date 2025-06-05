@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
@@ -16,8 +17,6 @@
 
 // Browser tests for indicators shown at various phases of an immersive session.
 
-// TODO(https://crbug.com/381000093): Fix tests on Android
-#if !BUILDFLAG(IS_ANDROID)
 namespace vr {
 
 namespace {
@@ -81,6 +80,7 @@ void TestIndicatorOnAccessForContentType(
     ContentSettingsType content_setting_type,
     const std::string& script,
     UserFriendlyElementName element_name) {
+  MockXRDeviceHookBase mock_device;
   // Enter VR while the content setting is CONTENT_SETTING_ASK to suppress
   // its corresponding indicator from initially showing up.
   LoadGenericPageChangeDefaultPermissionAndEnterVr(
@@ -103,6 +103,7 @@ void TestForInitialIndicatorForContentType(
     WebXrVrBrowserTestBase* t,
     const std::vector<TestIndicatorSetting>& test_indicator_settings) {
   DCHECK(!test_indicator_settings.empty());
+  MockXRDeviceHookBase mock_device;
   // Enter VR while the content setting is CONTENT_SETTING_ASK to suppress
   // its corresponding indicator from initially showing up.
   LoadGenericPageChangeDefaultPermissionAndEnterVr(
@@ -221,4 +222,3 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
 }
 
 }  // namespace vr
-#endif  // if !BUILDFLAG(IS_ANDROID)

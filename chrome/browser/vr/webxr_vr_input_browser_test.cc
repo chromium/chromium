@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <atomic>
-
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -79,23 +76,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationLocksFocus) {
 
 class WebXrControllerInputMock : public MockXRDeviceHookBase {
  public:
-  void OnFrameSubmitted(
-      std::vector<device_test::mojom::ViewDataPtr> views,
-      device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
-
-  void WaitNumFrames(unsigned int num_frames) {
-    DCHECK(!wait_loop_);
-    target_submitted_frames_ = num_submitted_frames_ + num_frames;
-    wait_loop_ = std::make_unique<base::RunLoop>(
-        base::RunLoop::Type::kNestableTasksAllowed);
-    can_signal_wait_loop_ = true;
-
-    wait_loop_->Run();
-
-    can_signal_wait_loop_ = false;
-    wait_loop_ = nullptr;
-  }
-
   // TODO(crbug.com/41416308): Figure out why waiting for OpenVR to grab
   // the updated state instead of waiting for a number of frames causes frames
   // to be submitted at an extremely slow rate. Once fixed, switch away from
@@ -103,11 +83,13 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   void UpdateControllerAndWait(
       unsigned int index,
       const device::ControllerFrameData& controller_data) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     UpdateController(index, controller_data);
     WaitNumFrames(30);
   }
 
   void ToggleButtonTouches(unsigned int index, uint64_t button_mask) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
 
     controller_data.packet_number++;
@@ -117,6 +99,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   }
 
   void ToggleButtons(unsigned int index, uint64_t button_mask) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
 
     controller_data.packet_number++;
@@ -126,6 +109,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   }
 
   void ToggleTriggerButton(unsigned int index, device::XrButtonId button_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     uint64_t button_mask = device::XrButtonMaskFromId(button_id);
 
@@ -146,6 +130,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
                device::XrButtonId button_id,
                float x,
                float y) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     unsigned int axis_offset = device::XrAxisOffsetFromId(button_id);
     DCHECK(controller_data.axis_data[axis_offset].axis_type != 0);
@@ -157,10 +142,12 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   }
 
   void TogglePrimaryTrigger(unsigned int index) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     ToggleTriggerButton(index, device::XrButtonId::kAxisTrigger);
   }
 
   void PressReleasePrimaryTrigger(unsigned int index) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     TogglePrimaryTrigger(index);
     TogglePrimaryTrigger(index);
   }
@@ -168,6 +155,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   void SetControllerPose(unsigned int index,
                          const gfx::Transform& device_to_origin,
                          bool is_valid) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     controller_data.pose_data.is_valid = is_valid;
     device_to_origin.GetColMajorF(
@@ -177,6 +165,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 
   void AssignDefaultHandData(auto& controller_data,
                              gfx::Quaternion orientation = gfx::Quaternion()) {
+    // Stateless helper may be called on any thread.
     gfx::DecomposedTransform decomposed_transform;
     decomposed_transform.quaternion = orientation;
     auto& joint_data = controller_data.hand_data;
@@ -192,12 +181,14 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 
   void SetDefaultHandData(unsigned int index,
                           gfx::Quaternion orientation = gfx::Quaternion()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     AssignDefaultHandData(controller_data, orientation);
     UpdateControllerAndWait(index, controller_data);
   }
 
   void ClearHandData(unsigned int index) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(index);
     controller_data.has_hand_data = false;
     UpdateControllerAndWait(index, controller_data);
@@ -206,6 +197,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   unsigned int CreateAndConnectMinimalGamepad(
       device::ControllerRole role =
           device::ControllerRole::kControllerRoleRight) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     // Create a controller that only supports select via a trigger, i.e. it has
     // just enough data to be considered a gamepad.
     uint64_t supported_buttons =
@@ -222,6 +214,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
       device::ControllerRole role,
       std::map<device::XrButtonId, unsigned int> axis_types = {},
       uint64_t supported_buttons = UINT64_MAX) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller = CreateValidController(role);
     controller.supported_buttons = supported_buttons;
     for (const auto& axis_type : axis_types) {
@@ -236,6 +229,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
       unsigned int controller_index,
       const std::map<device::XrButtonId, unsigned int>& axis_types,
       uint64_t supported_buttons) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(controller_index);
 
     for (unsigned int i = 0; i < device::kMaxNumAxes; i++) {
@@ -254,6 +248,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 
   void UpdateControllerRole(unsigned int controller_index,
                             device::ControllerRole role) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     auto controller_data = GetCurrentControllerData(controller_index);
     controller_data.role = role;
     UpdateControllerAndWait(controller_index, controller_data);
@@ -261,6 +256,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 
   void UpdateInteractionProfile(
       device::mojom::OpenXrInteractionProfileType new_profile) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     device_test::mojom::EventData data = {};
     data.type = device_test::mojom::EventType::kInteractionProfileChanged;
     data.interaction_profile = new_profile;
@@ -270,6 +266,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   // A controller is necessary to simulate voice input because of how the test
   // API works.
   unsigned int CreateVoiceController() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
     return CreateAndConnectMinimalGamepad(
         device::ControllerRole::kControllerRoleVoice);
   }
@@ -278,37 +275,19 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   // kAxisTrackpad is the first entry in XrButtonId that maps to an axis and the
   // subsequent entries are also for input axes.
   device::XrButtonId GetAxisId(unsigned int offset) {
+    // Stateless helper may be called on any thread.
     return static_cast<device::XrButtonId>(device::XrButtonId::kAxisTrackpad +
                                            offset);
   }
 
   device::ControllerFrameData GetCurrentControllerData(unsigned int index) {
+    // Getter may be called on any thread.
+    base::AutoLock lock(lock_);
     auto iter = controller_data_map_.find(index);
     CHECK(iter != controller_data_map_.end());
     return iter->second;
   }
-
-  // Used to track both if `wait_loop_` is valid in a thread-safe manner or if
-  // it has already had quit signaled on it, since `AnyQuitCalled` won't update
-  // until the `Quit` task has posted to the main thread.
-  std::atomic_bool can_signal_wait_loop_ = false;
-
-  std::unique_ptr<base::RunLoop> wait_loop_ = nullptr;
-  unsigned int num_submitted_frames_ = 0;
-  unsigned int target_submitted_frames_ = 0;
 };
-
-void WebXrControllerInputMock::OnFrameSubmitted(
-    std::vector<device_test::mojom::ViewDataPtr> views,
-    device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
-  num_submitted_frames_++;
-  if (can_signal_wait_loop_ &&
-      target_submitted_frames_ == num_submitted_frames_) {
-    wait_loop_->Quit();
-    can_signal_wait_loop_ = false;
-  }
-  std::move(callback).Run();
-}
 
 // Ensure that when an input source's handedness changes, an input source change
 // event is fired and a new input source is created.
@@ -984,15 +963,24 @@ class WebXrHeadPoseMock : public MockXRDeviceHookBase {
   void WaitGetPresentingPose(
       device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
       final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
     auto pose = device_test::mojom::PoseFrameData::New();
-    pose->device_to_origin = pose_;
+    {
+      base::AutoLock lock(pose_lock);
+      pose->device_to_origin = pose_;
+    }
     std::move(callback).Run(std::move(pose));
   }
 
-  void SetHeadPose(const gfx::Transform& pose) { pose_ = pose; }
+  void SetHeadPose(const gfx::Transform& pose) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+    base::AutoLock lock(pose_lock);
+    pose_ = pose;
+  }
 
  private:
-  gfx::Transform pose_;
+  base::Lock pose_lock;
+  gfx::Transform pose_ GUARDED_BY(pose_lock);
 };
 
 // Test that head pose changes are properly reflected in the viewer pose
