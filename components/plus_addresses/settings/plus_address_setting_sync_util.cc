@@ -7,7 +7,7 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace plus_addresses {
 
@@ -16,7 +16,7 @@ sync_pb::PlusAddressSettingSpecifics CreateSettingSpecifics(
     std::variant<bool, const char*, int32_t> value) {
   sync_pb::PlusAddressSettingSpecifics specifics;
   specifics.set_name(std::string(name));
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](bool value) { specifics.set_bool_value(value); },
                  [&](const char* value) { specifics.set_string_value(value); },
                  [&](int32_t value) { specifics.set_int_value(value); }},
