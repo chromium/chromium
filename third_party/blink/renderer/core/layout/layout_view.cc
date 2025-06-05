@@ -971,11 +971,6 @@ void LayoutView::UpdateCountersAfterStyleChange(
   // outside the interleaving root. Hence, we can start the update traversal
   // from the interleaving_root.
   LayoutObject* start = interleaving_root ? interleaving_root : this;
-  // Additionally, since the interleaving_root contains style, we know list-item
-  // counters inside the interleaving_root cannot affect list-item counters
-  // outside the interleaving_root, which means we can limit the traversal to
-  // the interleaving_root subtree.
-  CHECK(!interleaving_root || interleaving_root->ShouldApplyStyleContainment());
   LayoutObject* stay_within = interleaving_root;
 
   for (LayoutObject* layout_object = start; layout_object;
