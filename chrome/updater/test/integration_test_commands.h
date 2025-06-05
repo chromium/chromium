@@ -35,7 +35,6 @@ class IntegrationTestCommands
  public:
   virtual void EnterTestMode(const GURL& update_url,
                              const GURL& crash_upload_url,
-                             const GURL& device_management_url,
                              const GURL& app_logo_url,
                              base::TimeDelta idle_timeout,
                              base::TimeDelta server_keep_alive_time,

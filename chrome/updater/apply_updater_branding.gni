@@ -37,8 +37,6 @@ template("apply_updater_branding") {
     "-e",
     "CRASH_UPLOAD_URL=\"$crash_upload_url\"",
     "-e",
-    "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
-    "-e",
     "HELP_CENTER_URL=\"$help_center_url\"",
     "-e",
     "APP_LOGO_URL=\"$app_logo_url\"",

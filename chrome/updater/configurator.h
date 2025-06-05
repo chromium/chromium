@@ -84,7 +84,6 @@ class Configurator : public update_client::Configurator {
 
   scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
   virtual GURL CrashUploadURL() const;
-  virtual GURL DeviceManagementURL() const;
 
   base::TimeDelta ServerKeepAliveTime() const;
   scoped_refptr<PolicyService> GetPolicyService() const;

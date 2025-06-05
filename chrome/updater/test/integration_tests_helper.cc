@@ -294,12 +294,10 @@ void AppTestHelper::FirstTaskRun() {
                        "idle_timeout",
                        WithSwitch(
                            "app_logo_url",
-                           WithSwitch(
-                               "device_management_url",
-                               WithSwitch(
-                                   "crash_upload_url",
-                                   WithSwitch("update_url",
-                                              Wrap(&EnterTestMode))))))))},
+                            WithSwitch(
+                                "crash_upload_url",
+                                WithSwitch("update_url",
+                                           Wrap(&EnterTestMode)))))))},
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
           {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
           {"set_platform_policies",

@@ -32,10 +32,6 @@ class DefaultExternalConstants : public ExternalConstants {
 
   GURL CrashUploadURL() const override { return GURL(CRASH_UPLOAD_URL); }
 
-  GURL DeviceManagementURL() const override {
-    return GURL(DEVICE_MANAGEMENT_SERVER_URL);
-  }
-
   GURL AppLogoURL() const override { return GURL(APP_LOGO_URL); }
 
   bool UseCUP() const override { return true; }

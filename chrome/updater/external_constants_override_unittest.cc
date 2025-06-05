@@ -34,9 +34,6 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
 
   EXPECT_EQ(overrider->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
   EXPECT_TRUE(overrider->CrashUploadURL().is_valid());
-  EXPECT_EQ(overrider->DeviceManagementURL(),
-            GURL(DEVICE_MANAGEMENT_SERVER_URL));
-  EXPECT_TRUE(overrider->DeviceManagementURL().is_valid());
   EXPECT_EQ(overrider->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_TRUE(overrider->AppLogoURL().is_valid());
 
@@ -59,7 +56,6 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides.Set(kDevOverrideKeyUrl, std::move(url_list));
   overrides.Set(kDevOverrideKeyCrashUploadUrl,
                 "https://localhost/2/crash_test");
-  overrides.Set(kDevOverrideKeyDeviceManagementUrl, "https://localhost/2/dm");
   overrides.Set(kDevOverrideKeyAppLogoUrl, "https://localhost/2/applogo/");
   overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
   overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
@@ -82,8 +78,6 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   EXPECT_EQ(overrider->CrashUploadURL(),
             GURL("https://localhost/2/crash_test"));
   EXPECT_TRUE(overrider->CrashUploadURL().is_valid());
-  EXPECT_EQ(overrider->DeviceManagementURL(), GURL("https://localhost/2/dm"));
-  EXPECT_TRUE(overrider->DeviceManagementURL().is_valid());
   EXPECT_EQ(overrider->AppLogoURL(), GURL("https://localhost/2/applogo/"));
   EXPECT_TRUE(overrider->AppLogoURL().is_valid());
 

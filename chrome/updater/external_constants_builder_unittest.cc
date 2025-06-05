@@ -69,7 +69,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://localhost/1/www"})
       .SetCrashUploadURL("https://localhost/1/crash")
-      .SetDeviceManagementURL("https://localhost/1/dm")
       .SetAppLogoURL("https://localhost/1/applogo/")
       .SetUseCUP(false)
       .SetInitialDelay(base::Seconds(123))
@@ -92,7 +91,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(urls[0], GURL("https://localhost/1/www"));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://localhost/1/crash"));
-  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://localhost/1/dm"));
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://localhost/1/applogo/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(2));
@@ -123,8 +121,6 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
   EXPECT_EQ(urls[1], GURL("https://localhost/update2"));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
-  EXPECT_EQ(verifier->DeviceManagementURL(),
-            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
@@ -137,13 +133,11 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .SetUpdateURL(std::vector<std::string>{
                       "https://localhost/1/localhost/update", "https://www"})
                   .SetCrashUploadURL("https://localhost/1/crash")
-                  .SetDeviceManagementURL("https://localhost/1/dm")
                   .SetAppLogoURL("https://localhost/1/applogo/")
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Seconds(123.4))
                   .ClearUpdateURL()
                   .ClearCrashUploadURL()
-                  .ClearDeviceManagementURL()
                   .ClearAppLogoURL()
                   .ClearUseCUP()
                   .ClearInitialDelay()
@@ -165,8 +159,6 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
-  EXPECT_EQ(verifier->DeviceManagementURL(),
-            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
@@ -183,7 +175,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
       ExternalConstantsBuilder()
           .SetUpdateURL(std::vector<std::string>{"https://localhost/update"})
           .SetCrashUploadURL("https://localhost/crash")
-          .SetDeviceManagementURL("https://localhost/dm")
           .SetAppLogoURL("https://localhost/logo/")
           .SetUseCUP(true)
           .SetInitialDelay(base::Seconds(123.4))
@@ -192,7 +183,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetDictPolicies(dict_policies)
           .SetUpdateURL(std::vector<std::string>{"https://localhost/1/www"})
           .SetCrashUploadURL("https://localhost/1/crash")
-          .SetDeviceManagementURL("https://localhost/1/dm")
           .SetAppLogoURL("https://localhost/1/applogo/")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(937.6))
@@ -212,7 +202,6 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_EQ(urls[0], GURL("https://localhost/1/www"));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://localhost/1/crash"));
-  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://localhost/1/dm"));
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://localhost/1/applogo/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(937.6));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
@@ -232,7 +221,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://localhost/update"})
           .SetCrashUploadURL("https://localhost/crash")
-          .SetDeviceManagementURL("https://localhost/dm")
           .SetAppLogoURL("https://localhost/logo/")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(123.4))
@@ -254,7 +242,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(urls[0], GURL("https://localhost/1/www"));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://localhost/crash"));
-  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://localhost/dm"));
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://localhost/logo/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
@@ -271,7 +258,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .SetServerKeepAliveTime(base::Seconds(4))
                   .ClearUpdateURL()
                   .ClearCrashUploadURL()
-                  .ClearDeviceManagementURL()
                   .ClearAppLogoURL()
                   .SetDictPolicies(dict_policies2)
                   .ClearMachineManaged()
@@ -290,8 +276,6 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(urls2[0], GURL(UPDATE_CHECK_URL));  // Cleared; should be default.
 
   EXPECT_EQ(verifier2->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
-  EXPECT_EQ(verifier2->DeviceManagementURL(),
-            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier2->AppLogoURL(), GURL(APP_LOGO_URL));
   EXPECT_EQ(verifier2->InitialDelay(),
             base::Seconds(92.3));  // Updated; update should be seen.
@@ -311,14 +295,12 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://localhost/update"})
           .SetCrashUploadURL("https://localhost/crash")
-          .SetDeviceManagementURL("https://localhost/dm")
           .SetAppLogoURL("https://localhost/logo/")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://localhost/1/www"})
           .SetCrashUploadURL("https://localhost/1/crash")
-          .SetDeviceManagementURL("https://localhost/1/dm")
           .SetAppLogoURL("https://localhost/1/applogo/")
           .SetDictPolicies(dict_policies)
           .SetMachineManaged(std::make_optional(false))
@@ -336,7 +318,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_EQ(urls[0], GURL("https://localhost/1/www"));
 
   EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://localhost/1/crash"));
-  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://localhost/1/dm"));
   EXPECT_EQ(verifier->AppLogoURL(), GURL("https://localhost/1/applogo/"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
@@ -367,7 +348,6 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://localhost/1/www"));
   EXPECT_EQ(verifier2->CrashUploadURL(), GURL("https://localhost/1/crash"));
-  EXPECT_EQ(verifier2->DeviceManagementURL(), GURL("https://localhost/1/dm"));
   EXPECT_EQ(verifier2->AppLogoURL(), GURL("https://localhost/1/applogo/"));
   EXPECT_EQ(verifier2->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(3));

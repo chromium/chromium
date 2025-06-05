@@ -143,11 +143,6 @@ GURL Configurator::CrashUploadURL() const {
   return external_constants_->CrashUploadURL();
 }
 
-GURL Configurator::DeviceManagementURL() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return external_constants_->DeviceManagementURL();
-}
-
 std::string Configurator::GetProdId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return "updater";

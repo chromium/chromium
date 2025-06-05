@@ -45,9 +45,6 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetCrashUploadURL(const std::string& url);
   ExternalConstantsBuilder& ClearCrashUploadURL();
 
-  ExternalConstantsBuilder& SetDeviceManagementURL(const std::string& url);
-  ExternalConstantsBuilder& ClearDeviceManagementURL();
-
   ExternalConstantsBuilder& SetAppLogoURL(const std::string& url);
   ExternalConstantsBuilder& ClearAppLogoURL();
 

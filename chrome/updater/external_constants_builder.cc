@@ -75,17 +75,6 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrashUploadURL() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetDeviceManagementURL(
-    const std::string& url) {
-  overrides_.Set(kDevOverrideKeyDeviceManagementUrl, url);
-  return *this;
-}
-
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDeviceManagementURL() {
-  overrides_.Remove(kDevOverrideKeyDeviceManagementUrl);
-  return *this;
-}
-
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetAppLogoURL(
     const std::string& url) {
   overrides_.Set(kDevOverrideKeyAppLogoUrl, url);
@@ -237,10 +226,6 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyCrashUploadUrl)) {
     SetCrashUploadURL(verifier->CrashUploadURL().possibly_invalid_spec());
-  }
-  if (!overrides_.contains(kDevOverrideKeyDeviceManagementUrl)) {
-    SetDeviceManagementURL(
-        verifier->DeviceManagementURL().possibly_invalid_spec());
   }
   if (!overrides_.contains(kDevOverrideKeyAppLogoUrl)) {
     SetAppLogoURL(verifier->AppLogoURL().possibly_invalid_spec());

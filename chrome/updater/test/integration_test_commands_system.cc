@@ -147,7 +147,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
-                     const GURL& device_management_url,
                      const GURL& app_logo_url,
                      base::TimeDelta idle_timeout,
                      base::TimeDelta server_keep_alive_time,
@@ -156,7 +155,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         "enter_test_mode",
         {Param("update_url", update_url.spec()),
          Param("crash_upload_url", crash_upload_url.spec()),
-         Param("device_management_url", device_management_url.spec()),
          Param("app_logo_url", app_logo_url.spec()),
          Param("idle_timeout", base::NumberToString(idle_timeout.InSeconds())),
          Param("server_keep_alive_time",
