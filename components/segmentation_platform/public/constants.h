@@ -112,6 +112,9 @@ const char kComposePromotionUmaName[] = "ComposePromotion";
 
 const char kEphemeralHomeModuleBackendKey[] = "ephemeral_home_module_backend";
 
+const char kIosDefaultBrowserPromoKey[] = "ios_default_browser_promo";
+const char kIosDefaultBrowserPromoUmaName[] = "IosDefaultBrowserPromo";
+
 // The key is used to decide whether the user would use FedCM.
 const char kFedCmUserKey[] = "fedcm_user";
 const char kFedCmUserUmaName[] = "FedCmUser";

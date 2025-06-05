@@ -103,6 +103,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="UrlVisitResumptionRanker"/>
   <int value="50" label="MetricsClustering"/>
   <int value="58" label="FedCmUser"/>
+  <int value="63" label="IOSDefaultBrowserPromo"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">

@@ -121,6 +121,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FeedUser"/>
   <variant name="FrequentFeatureUserSegment"/>
   <variant name="IntentionalUserSegment"/>
+  <variant name="IosDefaultBrowserPromo"/>
   <variant name="IosModuleRanker"/>
   <variant name="IosModuleRankerTest"/>
   <variant name="MetricsClustering"/>

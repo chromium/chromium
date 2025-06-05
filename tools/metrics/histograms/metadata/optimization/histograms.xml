@@ -165,6 +165,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationFedCmUser" summary="Segmentation: FedCM user"/>
   <variant name="SegmentationFeedUser"
       summary="Segmentation: Feed usage in Chrome"/>
+  <variant name="SegmentationIosDefaultBrowserPromo"
+      summary="Segmentation: Ios Default Browser Promo"/>
   <variant name="SegmentationIosModuleRanker"
       summary="Segmentation: Ios module ranker"/>
   <variant name="SegmentationMetricsClustering"
