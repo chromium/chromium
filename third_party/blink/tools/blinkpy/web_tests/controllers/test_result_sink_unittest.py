@@ -97,9 +97,14 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         sent_data = self.sink(True, tr)
 
         self.assertEqual(sent_data['testId'], 'test-name')
-        self.assertEqual(sent_data['expected'], True)
-        self.assertEqual(sent_data['status'], 'CRASH')
         self.assertEqual(sent_data['duration'], '123.456789012s')
+        self.assertEqual(sent_data['statusV2'], 'PASSED')
+        self.assertEqual(sent_data['frameworkExtensions'], {
+            'webTest': {
+                'isExpected': True,
+                'status': 'CRASH',
+            },
+        })
 
     def test_sink_with_expectations(self):
         class FakeTestExpectation(object):
@@ -389,17 +394,33 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         tr.device_failed = True
         sent_data = self.sink(True, tr)
 
-        # If the device failed, 'expected' and 'status' must be False and 'ABORT'
-        self.assertEqual(sent_data['expected'], False)
-        self.assertEqual(sent_data['status'], 'ABORT')
+        # Device failure is treated as timeout.
+        self.assertEqual(sent_data['statusV2'], 'FAILED')
+        self.assertEqual(sent_data['failureReason'], {
+            'kind': 'TIMEOUT',
+        })
+        self.assertEqual(sent_data['frameworkExtensions'], {
+            'webTest': {
+                'isExpected': False,
+                'status': 'TIMEOUT',
+            },
+        })
 
     def test_timeout(self):
         tr = test_results.TestResult(test_name='test-name')
         tr.type = ResultType.Timeout
-        sent_data = self.sink(True, tr)
+        sent_data = self.sink(False, tr)
 
-        # Timeout is considered as 'ABORT'
-        self.assertEqual(sent_data['status'], 'ABORT')
+        self.assertEqual(sent_data['statusV2'], 'FAILED')
+        self.assertEqual(sent_data['failureReason'], {
+            'kind': 'TIMEOUT',
+        })
+        self.assertEqual(sent_data['frameworkExtensions'], {
+            'webTest': {
+                'isExpected': False,
+                'status': 'TIMEOUT',
+            },
+        })
 
     def test_artifacts(self):
         tr = test_results.TestResult(test_name='test-name')
@@ -485,10 +506,14 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_failure_reason(self):
         tr = test_results.TestResult(test_name='test-name')
+        tr.type = ResultType.Crash
         tr.failure_reason = FailureReason('primary error message')
-        sent_data = self.sink(True, tr)
-        self.assertDictEqual(sent_data['failureReason'], {
-            'primaryErrorMessage': 'primary error message',
+        sent_data = self.sink(False, tr)
+        self.assertDictEqual(sent_data.get('failureReason'), {
+            'kind': 'CRASH',
+            'errors': [{
+                'message': 'primary error message'
+            }],
         })
 
     def test_failure_reason_truncated(self):
@@ -500,15 +525,19 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         # Test that the primary error message is truncated to 1K bytes in
         # UTF-8 encoding.
         tr = test_results.TestResult(test_name='test-name')
+        tr.type = ResultType.Failure
         tr.failure_reason = FailureReason(primary_error_message)
-        sent_data = self.sink(True, tr)
+        sent_data = self.sink(False, tr)
 
         # Ensure truncation has left only whole unicode code points.
         # In this case, the output ends up being 1023 bytes, which is one
         # byte less than the allowed size of 1024 bytes, as we do not want
         # part of a unicode code point to be included in the output.
-        self.assertDictEqual(sent_data['failureReason'], {
-            'primaryErrorMessage': (poi * 340) + '...',
+        self.assertDictEqual(sent_data.get('failureReason'), {
+            'kind': 'ORDINARY',
+            'errors': [{
+                'message': (poi * 340) + '...'
+            }],
         })
 
     def test_test_id_structures(self):
