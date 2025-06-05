@@ -75,8 +75,15 @@ class AttributeType final {
 
   constexpr DataType data_type() const;
 
-  // Maps this AttributeType to the corresponding Autofill AI `FieldType`.
+  // There are three kinds of associated FieldTypes of this AttributeTypes:
+  // - The main field type is the one that best describes the full attribute.
+  //   Except for name fields, FromFieldType(field_type()) == field_type().
+  // - The subtypes include the main type plus more fine-granular ones, such as
+  //   NAME_FIRST.
+  // - The stored types is are the ones that may be physically stored in the
+  //   database. Those are in EntityInstance::GetDatabaseStoredTypes().
   constexpr FieldType field_type() const;
+  constexpr FieldTypeSet field_subtypes() const;
 
   // Returns whether the attribute should be obfuscated in preview and
   // suggestion labels.
@@ -175,6 +182,13 @@ constexpr FieldType AttributeType::field_type() const {
       return DRIVERS_LICENSE_ISSUE_DATE;
   }
   NOTREACHED();
+}
+
+constexpr FieldTypeSet AttributeType::field_subtypes() const {
+  if (data_type() == DataType::kName) {
+    return FieldTypesOfGroup(FieldTypeGroup::kName);
+  }
+  return {field_type()};
 }
 
 template <>
