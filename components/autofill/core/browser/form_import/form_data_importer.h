@@ -133,6 +133,10 @@ class FormDataImporter : public AddressDataManager::Observer,
       std::optional<NonInteractivePaymentMethodType>
           payment_method_type_if_non_interactive_authentication_flow_completed);
 
+  void set_card_was_fetched_from_cache(bool card_was_fetched_from_cache) {
+    card_was_fetched_from_cache_ = card_was_fetched_from_cache;
+  }
+
  private:
   // Defines an extracted address profile, which is a candidate for address
   // profile import.
@@ -346,6 +350,13 @@ class FormDataImporter : public AddressDataManager::Observer,
   // decide whether the card submitted is the same card retrieved. This field is
   // optional and is set when an Autofill Downstream has happened.
   std::optional<int64_t> fetched_card_instrument_id_;
+
+  // TODO(crbug.com/403617982): Combine all last fetched card related
+  // information into a struct.
+  // Whether the last unmasked card (note: it may or may not be the extracted
+  // card) is fetched from the local cache (instead of going through a server
+  // retrieval process).
+  std::optional<bool> card_was_fetched_from_cache_;
 
   friend class FormDataImporterTestApi;
 };

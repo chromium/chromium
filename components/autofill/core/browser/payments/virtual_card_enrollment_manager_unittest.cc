@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -908,6 +909,34 @@ TEST_F(VirtualCardEnrollmentManagerTest, Metrics_LatencySinceUpstream) {
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", base::Minutes(1),
       1);
+}
+
+class DownstreamLatencyMetricsTest
+    : public VirtualCardEnrollmentManagerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool card_unmasked_from_cache() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(VirtualCardEnrollmentManagerTest,
+                         DownstreamLatencyMetricsTest,
+                         ::testing::Bool());
+
+TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
+  base::HistogramTester histogram_tester;
+  CreditCard card = test::GetMaskedServerCard();
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
+  virtual_card_enrollment_manager_->ShouldOfferVirtualCardEnrollment(
+      card, card.instrument_id(), card_unmasked_from_cache());
+  virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
+      ->virtual_card_enrollment_fields.virtual_card_enrollment_source =
+      VirtualCardEnrollmentSource::kDownstream;
+  task_environment_.FastForwardBy(base::Minutes(1));
+  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.VirtualCardEnrollBubble.LatencySinceDownstream",
+      base::Minutes(1), card_unmasked_from_cache() ? 0 : 1);
 }
 
 }  // namespace autofill

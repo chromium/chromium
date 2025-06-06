@@ -138,10 +138,12 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
     bool card_art_available,
     VirtualCardEnrollmentSource source);
 
-// Latency Since Upstream metrics. Used to determine the time that it takes for
-// the server calls that need to be made between Save Card Bubble accept and
-// when the Virtual Card Enroll Bubble is shown.
+// Latency Since Upstream / Downstream metrics. Used to determine the time that
+// it takes for the server calls that need to be made between Save Card Bubble
+// accept / card extraction from form and when the Virtual Card Enroll
+// Bubble is shown.
 void LogVirtualCardEnrollBubbleLatencySinceUpstream(base::TimeDelta latency);
+void LogVirtualCardEnrollBubbleLatencySinceDownstream(base::TimeDelta latency);
 
 // Logs the reason from strikedatabase perspective why virtual card enrollment
 // is not offered.

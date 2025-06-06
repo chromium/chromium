@@ -181,32 +181,6 @@ bool IsValidFieldTypeAndValue(
   return false;
 }
 
-// `extracted_credit_card` refers to the credit card that was most recently
-// submitted and |fetched_card_instrument_id| refers to the instrument id of the
-// most recently downstreamed (fetched from the server) credit card.
-// These need to match to offer virtual card enrollment for the
-// `extracted_credit_card`.
-bool ShouldOfferVirtualCardEnrollment(
-    const std::optional<CreditCard>& extracted_credit_card,
-    std::optional<int64_t> fetched_card_instrument_id) {
-  if (!extracted_credit_card) {
-    return false;
-  }
-
-  if (extracted_credit_card->virtual_card_enrollment_state() !=
-      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
-    return false;
-  }
-
-  if (!fetched_card_instrument_id.has_value() ||
-      extracted_credit_card->instrument_id() !=
-          fetched_card_instrument_id.value()) {
-    return false;
-  }
-
-  return true;
-}
-
 bool HasSynthesizedTypes(
     const base::flat_map<FieldType, std::u16string>& observed_field_values,
     AddressCountryCode country_code) {
@@ -309,6 +283,7 @@ void FormDataImporter::ImportAndProcessFormData(
         credit_card_upload_enabled, ukm_source_id);
   }
   fetched_card_instrument_id_.reset();
+  card_was_fetched_from_cache_.reset();
 
   bool iban_prompt_potentially_shown = false;
   if (extracted_data.extracted_iban.has_value() &&
@@ -851,6 +826,11 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     return true;
   }
 
+  // All of following processing requires the extracted credit card to exist.
+  if (!extracted_credit_card.has_value()) {
+    return false;
+  }
+
   // If a virtual card was extracted from the form, return as we do not do
   // anything with virtual cards beyond this point.
   if (credit_card_import_type_ == CreditCardImportType::kVirtualCard) {
@@ -863,21 +843,21 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     return false;
   }
 
-  if (client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager() &&
-      ShouldOfferVirtualCardEnrollment(extracted_credit_card,
-                                       fetched_card_instrument_id_)) {
-    client_->GetPaymentsAutofillClient()
-        ->GetVirtualCardEnrollmentManager()
-        ->InitVirtualCardEnroll(*extracted_credit_card,
-                                VirtualCardEnrollmentSource::kDownstream);
+  auto* virtual_card_enrollment_manager =
+      client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager();
+  if (virtual_card_enrollment_manager &&
+      virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
+          *extracted_credit_card, fetched_card_instrument_id_,
+          card_was_fetched_from_cache_)) {
+    virtual_card_enrollment_manager->InitVirtualCardEnroll(
+        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream);
     return true;
   }
 
   // Proceed with card or CVC saving if applicable.
-  return extracted_credit_card &&
-         credit_card_save_manager_->ProceedWithSavingIfApplicable(
-             submitted_form, *extracted_credit_card, credit_card_import_type_,
-             is_credit_card_upstream_enabled, ukm_source_id);
+  return credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      submitted_form, *extracted_credit_card, credit_card_import_type_,
+      is_credit_card_upstream_enabled, ukm_source_id);
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {

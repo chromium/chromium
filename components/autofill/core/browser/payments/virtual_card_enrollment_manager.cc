@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -70,6 +69,31 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
 }
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
+
+bool VirtualCardEnrollmentManager::ShouldOfferVirtualCardEnrollment(
+    const CreditCard& credit_card,
+    std::optional<int64_t> fetched_card_instrument_id,
+    std::optional<bool> card_unmasked_from_cache) {
+  if (credit_card.virtual_card_enrollment_state() !=
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
+    return false;
+  }
+
+  if (credit_card.instrument_id() != fetched_card_instrument_id.value()) {
+    return false;
+  }
+
+  // If card is eligible for virtual card enrollment and card is retrieved from
+  // the server, set the timestamp for card extraction of the eligible unmasked
+  // card. This will be used to measure the user perceived latency for virtual
+  // card downstream enrollment.
+  if (card_unmasked_from_cache.has_value() &&
+      !card_unmasked_from_cache.value()) {
+    server_retrieved_eligible_card_extraction_timestamp_ = base::Time::Now();
+  }
+
+  return true;
+}
 
 void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
@@ -340,6 +364,7 @@ void VirtualCardEnrollmentManager::Reset() {
   state_ = VirtualCardEnrollmentProcessState();
   enroll_response_details_received_ = false;
   virtual_card_enrollment_update_response_callback_.reset();
+  server_retrieved_eligible_card_extraction_timestamp_.reset();
 }
 
 VirtualCardEnrollmentStrikeDatabase*
@@ -369,8 +394,16 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
           VirtualCardEnrollmentSource::kUpstream &&
       save_card_bubble_accepted_timestamp_.has_value()) {
     LogVirtualCardEnrollBubbleLatencySinceUpstream(
-        AutofillClock::Now() - save_card_bubble_accepted_timestamp_.value());
+        base::Time::Now() - save_card_bubble_accepted_timestamp_.value());
     save_card_bubble_accepted_timestamp_.reset();
+  } else if (state_.virtual_card_enrollment_fields
+                     .virtual_card_enrollment_source ==
+                 VirtualCardEnrollmentSource::kDownstream &&
+             server_retrieved_eligible_card_extraction_timestamp_.has_value()) {
+    LogVirtualCardEnrollBubbleLatencySinceDownstream(
+        base::Time::Now() -
+        server_retrieved_eligible_card_extraction_timestamp_.value());
+    server_retrieved_eligible_card_extraction_timestamp_.reset();
   }
 
   // Check in StrikeDatabase whether enrollment has been offered for this card
@@ -447,7 +480,7 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   request_details.source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
 
-  get_details_for_enrollment_request_sent_timestamp_ = AutofillClock::Now();
+  get_details_for_enrollment_request_sent_timestamp_ = base::Time::Now();
 
   if (base::FeatureList::IsEnabled(
           features::
@@ -477,7 +510,7 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     LogGetDetailsForEnrollmentRequestLatency(
         state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
         result,
-        AutofillClock::Now() -
+        base::Time::Now() -
             get_details_for_enrollment_request_sent_timestamp_.value());
     get_details_for_enrollment_request_sent_timestamp_.reset();
   }

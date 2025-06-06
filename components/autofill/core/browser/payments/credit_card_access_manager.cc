@@ -273,6 +273,8 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
     autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
         CardInfoRetrievalEnrolledUnmaskResult::kAuthenticationUnmasked);
   }
+  autofill_client().GetFormDataImporter()->set_card_was_fetched_from_cache(
+      false);
   std::move(on_credit_card_fetched_callback_).Run(*card_);
 }
 
@@ -361,6 +363,11 @@ void CreditCardAccessManager::FetchCreditCard(
     autofill_metrics::LogServerCardUnmaskResult(
         ServerCardUnmaskResult::kLocalCacheHit, record_type,
         ServerCardUnmaskFlowType::kUnspecified);
+
+    // If the card is fetched from the in-memory cache, notify the
+    // FormDataImporter.
+    autofill_client().GetFormDataImporter()->set_card_was_fetched_from_cache(
+        true);
 
     Reset();
     return;

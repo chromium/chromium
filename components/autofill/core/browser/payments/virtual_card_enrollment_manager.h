@@ -119,6 +119,16 @@ class VirtualCardEnrollmentManager {
   using VirtualCardEnrollmentUpdateResponseCallback = base::OnceCallback<void(
       payments::PaymentsAutofillClient::PaymentsRpcResult result)>;
 
+  // `fetched_card_instrument_id` refers to the instrument id of the
+  // most recently unmasked credit card. It should match `credit_card` to offer
+  // virtual card enrollment. `card_unmasked_from_cache` indicates whether the
+  // most recently unmasked card is retrieved from in-memory cache (or from the
+  // payments server).
+  bool ShouldOfferVirtualCardEnrollment(
+      const CreditCard& credit_card,
+      std::optional<int64_t> fetched_card_instrument_id,
+      std::optional<bool> card_unmasked_from_cache);
+
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
@@ -372,6 +382,14 @@ class VirtualCardEnrollmentManager {
   // timestamp and |save_card_bubble_accepted_timestamp_| to log as the latency
   // metric. |save_card_bubble_accepted_timestamp_| will then be reset.
   std::optional<base::Time> save_card_bubble_accepted_timestamp_;
+
+  // Used to track the latency metrics between credit card extraction from form
+  // and VirtualCardEnrollBubble show. Applicable only for masked server cards
+  // retrieved from the Payments server, and not for those retrieved from the
+  // local in-memory cache. Only set if the card is eligible to be enrolled in
+  // virtual card feature.
+  std::optional<base::Time>
+      server_retrieved_eligible_card_extraction_timestamp_;
 
   // The timestamp when a GetDetailsForEnrollment request is sent.
   std::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
