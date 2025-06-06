@@ -1418,7 +1418,7 @@ TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
   // Prepare a mock `AddPage` request for the VisitedLink.
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
-      std::nullopt, frame_url,
+      std::nullopt, GURL(),
       /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false,
       true, /*is_ephemeral=*/false, std::nullopt, top_level_url, frame_url);
 
