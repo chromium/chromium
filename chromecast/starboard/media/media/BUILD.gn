@@ -102,6 +102,16 @@ cast_source_set("mime_utils") {
   ]
 }
 
+source_set("test_matchers") {
+  testonly = true
+  public = [ "test_matchers.h" ]
+  sources = [ "test_matchers.cc" ]
+  public_deps = [
+    ":starboard_api_wrapper",
+    "//testing/gmock",
+  ]
+}
+
 test("media_pipeline_backend_starboard_test") {
   sources = [ "media_pipeline_backend_starboard_test.cc" ]
   deps = [
