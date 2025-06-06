@@ -37,6 +37,9 @@ struct OmniboxTextModel {
   // Checks if a focus state is active.
   bool HasFocus();
 
+  /// Discards the focus state to None.
+  void KillFocus();
+
   // The Omnibox focus state.
   OmniboxFocusState focus_state;
   // Whether the user input is in progress.

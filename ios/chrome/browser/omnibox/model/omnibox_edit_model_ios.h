@@ -153,12 +153,6 @@ class OmniboxEditModelIOS {
   // done.
   void StartZeroSuggestRequest(bool user_clobbered_permanent_text = false);
 
-  // Sent before `OnKillFocus` and before the popup is closed.
-  void OnWillKillFocus();
-
-  // Called when the view is losing focus.  Resets some state.
-  void OnKillFocus();
-
   // Called when the user pastes in text.
   void OnPaste();
 

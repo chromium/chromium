@@ -33,3 +33,9 @@ bool OmniboxTextModel::SetInputInProgressNoNotify(bool in_progress) {
 bool OmniboxTextModel::HasFocus() {
   return focus_state != OMNIBOX_FOCUS_NONE;
 }
+
+void OmniboxTextModel::KillFocus() {
+  focus_state = OMNIBOX_FOCUS_NONE;
+  last_omnibox_focus = base::TimeTicks();
+  paste_state = OmniboxPasteState::kNone;
+}

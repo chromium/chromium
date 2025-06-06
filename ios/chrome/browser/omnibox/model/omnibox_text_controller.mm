@@ -8,6 +8,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/omnibox/browser/omnibox_client.h"
@@ -24,6 +25,13 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
+
+namespace {
+
+const char kOmniboxFocusResultedInNavigation[] =
+    "Omnibox.focus_resulted_in_navigation";
+
+}  // namespace
 
 @interface OmniboxTextController ()
 
@@ -133,8 +141,22 @@
         _suggestionsListScrolled);
   }
 
-  _omniboxEditModel->OnWillKillFocus();
-  _omniboxEditModel->OnKillFocus();
+  if ((_omniboxTextModel->user_input_in_progress ||
+       !_omniboxTextModel->in_revert) &&
+      self.client) {
+    self.client->OnInputStateChanged();
+  }
+
+  UMA_HISTOGRAM_BOOLEAN(kOmniboxFocusResultedInNavigation,
+                        _omniboxTextModel->focus_resulted_in_navigation);
+  if (_omniboxTextModel->HasFocus()) {
+    _omniboxTextModel->KillFocus();
+    if (self.client) {
+      self.client->OnFocusChanged(_omniboxTextModel->focus_state,
+                                  OMNIBOX_FOCUS_CHANGE_EXPLICIT);
+    }
+  }
+
   [self.textField exitPreEditState];
 
   // The controller looks at the current pre-edit state, so the call to

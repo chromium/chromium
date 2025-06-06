@@ -80,18 +80,6 @@
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
-// Helpers --------------------------------------------------------------------
-
-namespace {
-
-const char kOmniboxfocus_resulted_in_navigation[] =
-    "Omnibox.focus_resulted_in_navigation";
-
-}  // namespace
-
-// OmniboxEditModelIOS
-// -----------------------------------------------------------
-
 OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
                                          OmniboxViewIOS* view,
                                          OmniboxTextModel* text_model)
@@ -349,20 +337,6 @@ void OmniboxEditModelIOS::StartZeroSuggestRequest(
     text_model_->input.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
   controller_->StartAutocomplete(text_model_->input);
-}
-
-void OmniboxEditModelIOS::OnWillKillFocus() {
-  if (text_model_->user_input_in_progress || !text_model_->in_revert) {
-    controller_->client()->OnInputStateChanged();
-  }
-}
-
-void OmniboxEditModelIOS::OnKillFocus() {
-  UMA_HISTOGRAM_BOOLEAN(kOmniboxfocus_resulted_in_navigation,
-                        text_model_->focus_resulted_in_navigation);
-  SetFocusState(OMNIBOX_FOCUS_NONE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
-  text_model_->last_omnibox_focus = base::TimeTicks();
-  text_model_->paste_state = OmniboxPasteState::kNone;
 }
 
 void OmniboxEditModelIOS::OnPaste() {
