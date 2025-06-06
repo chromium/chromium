@@ -180,7 +180,10 @@ void InspectorEmulationAgent::Restore() {
       default_background_color_override_rgba_.Get());
   if (status_or_rgba.ok())
     setDefaultBackgroundColorOverride(std::move(status_or_rgba).value());
-  setFocusEmulationEnabled(emulate_focus_.Get());
+  if (emulate_focus_.Get()) {
+    setFocusEmulationEnabled(true);
+  }
+
   if (emulate_auto_dark_mode_.Get())
     setAutoDarkModeOverride(auto_dark_mode_override_.Get());
   if (!timezone_id_override_.Get().IsNull())
@@ -249,7 +252,9 @@ protocol::Response InspectorEmulationAgent::disable() {
     setEmulatedVisionDeficiency(String("none"));
   setEmulatedOSTextScale(std::nullopt);
   setCPUThrottlingRate(1);
-  setFocusEmulationEnabled(false);
+  if (emulate_focus_.Get()) {
+    setFocusEmulationEnabled(false);
+  }
   if (emulate_auto_dark_mode_.Get()) {
     setAutoDarkModeOverride(std::nullopt);
   }
@@ -490,9 +495,6 @@ protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  if (enabled == emulate_focus_.Get()) {
-    return response;
-  }
   emulate_focus_.Set(enabled);
   GetWebViewImpl()->GetPage()->GetFocusController().SetFocusEmulationEnabled(
       enabled);
