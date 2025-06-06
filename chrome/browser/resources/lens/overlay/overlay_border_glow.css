@@ -11,12 +11,6 @@
   --gradient-mask-opacity-middle-val: 0;
 }
 
-@property --gradient-mask-opacity-middle-val {
-  inherits: false;
-  initial-value: 0;
-  syntax: '<number>';
-}
-
 @keyframes rotateGradient {
   0% {
     /* Preserve the scale applied to blur the gradient. */
