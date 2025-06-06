@@ -20,6 +20,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "account_manage_chrome_refresh.icon",
     "add.icon",
     "add_chrome_refresh.icon",
+    "add_circle.icon",
     "auto_tab_groups.icon",
     "autofill/local_offer_flipped_refresh.icon",
     "autofill/webauthn_dialog_header.icon",
