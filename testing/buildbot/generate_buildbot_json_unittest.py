@@ -4396,6 +4396,28 @@ MATRIX_SKYLAB_WATERFALL_WITH_BUILD_TARGET_VARIANT = """\
 ]
 """
 
+MATRIX_COMPOUND_SKYLAB_TFC_REF = """\
+{
+  'basic_suites': {
+    'cros_skylab_basic': {
+      'chrome_all_tast_tests': {
+        'tast_expr': 'dummy expr',
+        'timeout': 3600,
+        'cros_test_tags': ['group:mainline'],
+        'cros_test_tags_exclude': ['informational'],
+        'cros_test_names_exclude_from_file': ['disabled.txt'],
+      },
+    },
+  },
+  'compound_suites': {},
+  'matrix_compound_suites': {
+    'cros_skylab_basic_x86': {
+      'cros_skylab_basic': {},
+    },
+  },
+}
+"""
+
 MATRIX_COMPOUND_SKYLAB_REF = """\
 {
   'basic_suites': {
@@ -4775,6 +4797,16 @@ class MatrixCompositionTests(TestCase):
                     LUCI_MILO_CFG,
                     exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS,
                     variants=SKYLAB_VARIANTS)
+    fbb.check_input_file_consistency(verbose=True)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_good_skylab_matrix_with_tfc(self):
+    fbb = FakeBBGen(self.args,
+                    MATRIX_SKYLAB_WATERFALL,
+                    MATRIX_COMPOUND_SKYLAB_TFC_REF,
+                    LUCI_MILO_CFG,
+                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS)
     fbb.check_input_file_consistency(verbose=True)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)

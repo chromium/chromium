@@ -255,6 +255,36 @@ def _generate_mixin_values(formatter, mixin):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
+        if skylab.cros_test_tags:
+            formatter.open_scope("'cros_test_tags': [")
+            for v in skylab.cros_test_tags:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
+        if skylab.cros_test_tags_exclude:
+            formatter.open_scope("'cros_test_tags_exclude': [")
+            for v in skylab.cros_test_tags_exclude:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
+        if skylab.cros_test_names:
+            formatter.open_scope("'cros_test_names': [")
+            for v in skylab.cros_test_names:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
+        if skylab.cros_test_names_exclude:
+            formatter.open_scope("'cros_test_names_exclude': [")
+            for v in skylab.cros_test_names_exclude:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
+        if skylab.cros_test_names_from_file:
+            formatter.open_scope("'cros_test_names_from_file': [")
+            for v in skylab.cros_test_names_from_file:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
+        if skylab.cros_test_names_exclude_from_file:
+            formatter.open_scope("'cros_test_names_exclude_from_file': [")
+            for v in skylab.cros_test_names_exclude_from_file:
+                formatter.add_line("'{}',".format(v))
+            formatter.close_scope("],")
         formatter.close_scope("},")
 
     if "resultdb" in mixin:

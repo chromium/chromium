@@ -686,10 +686,26 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if skylab.get('cros_board'):
       for k, v in skylab.items():
         test[k] = v
+
+      # Should use chromiumos.test.api.TestSuite.test_case_tag_criteria.
+      # When this is set cros_test_platform(CTP) will find tests to run based
+      # on the criteria rather than one single test.
+      # The autotest wrapper that launches tast test is considered one single
+      # test at scheduling. If we specify test_case_tag_criteria, CTP can
+      # enumerate the tast tests and launches direct run of tast tests without
+      # autotest wrapper. In this case we don't need to populate autotest_name
+      # (maps to chromiumos.test.api.TestSuite.test_case_ids) to be the wrapper.
+      has_ctp_tag_criteria = bool(
+          test.keys() & {
+              'cros_test_tags', 'cros_test_tags_exclude', 'cros_test_names',
+              'cros_test_names_exclude', 'cros_test_names_from_file',
+              'cros_test_names_exclude_from_file'
+          })
+
       # For skylab, we need to pop the correct `autotest_name`. This field
       # defines what wrapper we use in OS infra. e.g. for gtest it's
       # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
-      if 'autotest_name' not in test:
+      if 'autotest_name' not in test and not has_ctp_tag_criteria:
         if 'tast_expr' in test:
           if 'lacros' in test['name']:
             test['autotest_name'] = 'tast.lacros-from-gcs'

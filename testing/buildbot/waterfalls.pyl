@@ -1065,6 +1065,16 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+       'chromeos-betty-chrome-tfc-fyi': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_tfc_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+      },
       'chromeos-betty-finch-smoke-chrome': {
         'mixins': [
           'chromeos-betty-finch',

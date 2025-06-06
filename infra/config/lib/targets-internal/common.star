@@ -593,6 +593,12 @@ def _skylab(
         dut_pool = None,
         public_builder = None,
         public_builder_bucket = None,
+        cros_test_tags = None,
+        cros_test_tags_exclude = None,
+        cros_test_names = None,
+        cros_test_names_exclude = None,
+        cros_test_names_from_file = None,
+        cros_test_names_exclude_from_file = None,
         # TODO(gbeaty) Tast tests should have their own test function defined
         # and this should be removed from this function
         tast_expr = None,
@@ -626,6 +632,16 @@ def _skylab(
         tast_expr: The tast expression to run.
         test_level_retries: The number of times to retry tests. Only applicable
             to skylab tests.
+        cros_test_tags: Tags of tests to run with tag criteria filter.
+        cros_test_tags_exclude: Tags to exclude for tests to run with tag
+            criteria filter.
+        cros_test_names: Names of tests to run under tag criteria filter.
+        cros_test_names_exclude: Names of tests to be excluded for runs under
+            tag criteria filter.
+        cros_test_names_from_file: File names containing names of tests to run
+            under tag criteria filter.
+        cros_test_names_exclude_from_file: File names containing names of tests
+            to be excluded for runs under tag criteria filter.
         timeout_sec: The maximum time the test can take to run.
         shards: The number of shards used to run the test.
     """
@@ -633,6 +649,12 @@ def _skylab(
         cros_board = cros_board,
         cros_build_target = cros_build_target,
         cros_img = cros_img,
+        cros_test_tags = cros_test_tags,
+        cros_test_tags_exclude = cros_test_tags_exclude,
+        cros_test_names = cros_test_names,
+        cros_test_names_exclude = cros_test_names_exclude,
+        cros_test_names_from_file = cros_test_names_from_file,
+        cros_test_names_exclude_from_file = cros_test_names_exclude_from_file,
         use_lkgm = use_lkgm,
         cros_model = cros_model,
         autotest_name = autotest_name,
@@ -756,7 +778,20 @@ def _spec_finalize(builder_name, settings, spec_value, default_merge_script, def
             if value:
                 spec_value[a] = value
 
-        if "autotest_name" not in spec_value:
+        # Should use chromiumos.test.api.TestSuite.test_case_tag_criteria.
+        has_ctp_tag_criteria = False
+        ctp_tag_criteria_keys = [
+            "cros_test_tags",
+            "cros_test_tags_exclude",
+            "cros_test_names",
+            "cros_test_names_exclude",
+            "cros_test_names_from_file",
+            "cros_test_names_exclude_from_file",
+        ]
+        for key in spec_value:
+            if key in ctp_tag_criteria_keys:
+                has_ctp_tag_criteria = True
+        if "autotest_name" not in spec_value and not has_ctp_tag_criteria:
             if "tast_expr" in spec_value:
                 if "lacros" in spec_value["name"]:
                     autotest_name = "tast.lacros-from-gcs"

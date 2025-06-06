@@ -583,3 +583,14 @@ targets.legacy_matrix_compound_suite(
         ),
     },
 )
+
+targets.legacy_matrix_compound_suite(
+    name = "chromeos_tfc_tests",
+    basic_suites = {
+        "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
