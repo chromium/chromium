@@ -367,21 +367,19 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 () -> {
                     final RecyclerView tab_list_recycler_view =
                             hubContainerView.findViewById(R.id.tab_list_recycler_view);
-                    if (tab_list_recycler_view != null) {
-                        GridLayoutManager lm =
-                                (GridLayoutManager) tab_list_recycler_view.getLayoutManager();
-                        int first = lm.findFirstVisibleItemPosition();
-                        int last = lm.findLastVisibleItemPosition();
+                    if (tab_list_recycler_view == null) return;
 
-                        List<View> views = new ArrayList<>();
-                        for (int index = first; index <= last; index++) {
-                            View view = lm.findViewByPosition(index);
-                            if (view != null) views.add(view);
-                        }
-                        animationDataSupplier.set(views.isEmpty() ? null : views);
-                    } else {
-                        animationDataSupplier.set(null);
+                    GridLayoutManager lm =
+                            (GridLayoutManager) tab_list_recycler_view.getLayoutManager();
+                    int first = lm.findFirstVisibleItemPosition();
+                    int last = lm.findLastVisibleItemPosition();
+
+                    List<View> views = new ArrayList<>();
+                    for (int index = first; index <= last; index++) {
+                        View view = lm.findViewByPosition(index);
+                        if (view != null) views.add(view);
                     }
+                    if (!views.isEmpty()) animationDataSupplier.set(views);
                 });
         return animationDataSupplier;
     }

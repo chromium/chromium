@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -317,6 +318,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     public void show(long time, boolean animate) {
         if (isStartingToShow()) return;
+        if (mXrSessionManager != null
+                && animate
+                && !ChromeFeatureList.sShowTabListAnimations.isEnabled()) {
+            animate = false;
+        }
 
         try (TraceEvent e = TraceEvent.scoped("HubLayout.show")) {
             super.show(time, animate);

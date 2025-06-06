@@ -95,8 +95,6 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
     }
 
     private void supplyFallbackAnimator() {
-        resetState(true);
-
         if (mAnimationType == HubLayoutAnimationType.FADE_IN) {
             mAnimatorSupplier.set(
                     FadeHubLayoutAnimationFactory.createFadeInAnimator(
@@ -114,11 +112,7 @@ public class TabListHubLayoutAnimatorProvider implements HubLayoutAnimatorProvid
     }
 
     private void supplyAnimator() {
-        if (mAnimatorSupplier.hasValue()
-                || !mAnimationDataSupplier.hasValue()
-                || mAnimationDataSupplier.get().isEmpty()) {
-            return;
-        }
+        assert !mAnimatorSupplier.hasValue() && mAnimationDataSupplier.hasValue();
 
         List<View> views = mAnimationDataSupplier.get();
         AnimatorSet animatorSet = buildAnimatorSet(views);
