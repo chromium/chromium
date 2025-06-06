@@ -39,8 +39,6 @@ include_rules = [
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/download",
@@ -89,6 +87,8 @@ include_rules = [
 specific_include_rules = {
   ".*test.*\..*": [
     "+chrome/browser/ash/login/test",
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",
     "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/extensions/mixin_based_extension_apitest.h",

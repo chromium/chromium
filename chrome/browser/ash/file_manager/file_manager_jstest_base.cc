@@ -8,14 +8,18 @@
 #include "ash/webui/file_manager/resource_loader.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/check_deref.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -57,8 +61,13 @@ class TestWebUIProvider
     ash::file_manager::AddFilesAppResources(files_swa_source,
                                             kFileManagerGenResources);
 
-    dict_ = GetFileManagerStrings();
-    AddFileManagerFeatureStrings("en-US", Profile::FromWebUI(web_ui), &dict_);
+    const std::string& application_locale =
+        g_browser_process->GetFeatures()->application_locale_storage()->Get();
+    dict_ = GetFileManagerStrings(application_locale);
+    AddFileManagerFeatureStrings(
+        "en-US", application_locale,
+        CHECK_DEREF(g_browser_process->variations_service()),
+        Profile::FromWebUI(web_ui), &dict_);
     files_swa_source->AddLocalizedStrings(dict_);
     files_swa_source->UseStringsJs();
 

@@ -27,8 +27,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -36,6 +34,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1185,12 +1184,12 @@ Profile* GetProfile() {
   return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
-bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
+bool IsEligibleAndEnabledGoogleOneOfferFilesBanner(
+    const std::string& application_locale,
+    const variations::VariationsService& variations_service) {
   // Google One offer is for a device, not for an account. Do not show a banner
   // if a device is enrolled.
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
 
@@ -1215,14 +1214,12 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
-  if (!kGoogleOneOfferBannerSupportedLocales.contains(
-          g_browser_process->GetApplicationLocale())) {
+  if (!kGoogleOneOfferBannerSupportedLocales.contains(application_locale)) {
     return false;
   }
 
   if (!kGoogleOneOfferBannerSupportedCountries.contains(
-          g_browser_process->variations_service()
-              ->GetStoredPermanentCountry())) {
+          variations_service.GetStoredPermanentCountry())) {
     return false;
   }
 
@@ -1290,7 +1287,7 @@ void AddStringsForSkyVault(base::Value::Dict* dict) {
 
 }  // namespace
 
-base::Value::Dict GetFileManagerStrings() {
+base::Value::Dict GetFileManagerStrings(const std::string& application_locale) {
   base::Value::Dict dict;
 
   AddStringsForDrive(&dict);
@@ -1326,8 +1323,7 @@ base::Value::Dict GetFileManagerStrings() {
            base::StringPrintf(kHelpURLFormat, kNoActionForFileHelpNumber));
   dict.Set("DLP_HELP_URL", policy::dlp::kDlpLearnMoreUrl);
 
-  webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
-                                 &dict);
+  webui::SetLoadTimeDataDefaults(application_locale, &dict);
 
   return dict;
 }
@@ -1368,9 +1364,12 @@ int GetLocaleBasedWeekStart() {
   return fmod(local_day_of_week - (day_of_week - 1) + 7, 7);
 }
 
-void AddFileManagerFeatureStrings(const std::string& locale,
-                                  Profile* profile,
-                                  base::Value::Dict* dict) {
+void AddFileManagerFeatureStrings(
+    const std::string& ui_locale,
+    const std::string& application_locale,
+    const variations::VariationsService& variations_service,
+    Profile* profile,
+    base::Value::Dict* dict) {
   DCHECK(profile);
 
   dict->Set("HIDE_SPACE_INFO", ash::DemoSession::IsDeviceInDemoMode());
@@ -1424,11 +1423,12 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("VMS_FOR_SHARING", std::move(vms));
 
   // Lastly, set UI_LOCALE and locale-dependent settings.
-  dict->Set("UI_LOCALE", locale);
+  dict->Set("UI_LOCALE", ui_locale);
   dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
 
   // ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER does additional checks
   // in addition to a feature flag check.
   dict->Set("ELIGIBLE_AND_ENABLED_GOOGLE_ONE_OFFER_FILES_BANNER",
-            IsEligibleAndEnabledGoogleOneOfferFilesBanner());
+            IsEligibleAndEnabledGoogleOneOfferFilesBanner(application_locale,
+                                                          variations_service));
 }
