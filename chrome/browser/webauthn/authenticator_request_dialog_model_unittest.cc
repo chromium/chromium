@@ -3340,3 +3340,42 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       NoICloudKeychainMechanism_ModalImmediate_UnknownCredStatus) {
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.has_icloud_keychain = true;
+  transports_info.has_icloud_keychain_credential =
+      device::FidoRequestHandlerBase::RecognizedCredential::kUnknown;
+  transports_info.available_transports = {AuthenticatorTransport::kInternal};
+  transports_info.transport_list_did_include_internal = true;
+
+  // Ensure allow_icloud_keychain_ is true in the controller.
+  // This would typically be set based on transports_info.has_icloud_keychain
+  // during the full flow, but we set it explicitly here for clarity and
+  // directness.
+  controller.set_allow_icloud_keychain(true);
+
+  // Set the UI presentation to kModalImmediate.
+  controller.SetUIPresentation(UIPresentation::kModalImmediate);
+
+  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  controller.StartFlow(std::move(transports_info), {});
+
+  // Verify that no iCloud Keychain mechanism was added.
+  bool icloud_mechanism_found = false;
+  for (const auto& mech : model->mechanisms) {
+    if (std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain>(
+            mech.type)) {
+      icloud_mechanism_found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(icloud_mechanism_found);
+}
