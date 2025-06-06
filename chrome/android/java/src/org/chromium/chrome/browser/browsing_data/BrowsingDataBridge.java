@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.content_public.browser.WebContents;
@@ -282,27 +283,23 @@ public final class BrowsingDataBridge implements Destroyable {
         removeTabModelObservers();
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
-        for (int i = 0; i < tabWindowManager.getMaxSimultaneousSelectors(); i++) {
-            var selector = tabWindowManager.getTabModelSelectorById(i);
-            if (selector != null) {
-                mCurrentTabObservers.add(
-                        new CurrentTabObserver(
-                                selector.getCurrentTabSupplier(),
-                                new EmptyTabObserver() {
-                                    @Override
-                                    public void onLoadStarted(
-                                            Tab tab, boolean toDifferentDocument) {
-                                        WebContents webContents = tab.getWebContents();
-                                        if (!tab.isOffTheRecord() && webContents != null) {
-                                            BrowsingDataBridgeJni.get()
-                                                    .triggerHatsSurvey(
-                                                            mProfile, webContents, quickDelete);
-                                            removeTabModelObservers();
-                                        }
+        for (TabModelSelector selector : tabWindowManager.getAllTabModelSelectors()) {
+            mCurrentTabObservers.add(
+                    new CurrentTabObserver(
+                            selector.getCurrentTabSupplier(),
+                            new EmptyTabObserver() {
+                                @Override
+                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                                    WebContents webContents = tab.getWebContents();
+                                    if (!tab.isOffTheRecord() && webContents != null) {
+                                        BrowsingDataBridgeJni.get()
+                                                .triggerHatsSurvey(
+                                                        mProfile, webContents, quickDelete);
+                                        removeTabModelObservers();
                                     }
-                                },
-                                /* swapCallback= */ null));
-            }
+                                }
+                            },
+                            /* swapCallback= */ null));
         }
     }
 

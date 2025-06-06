@@ -236,7 +236,7 @@ public class MultiInstanceMigrationTest {
     /**
      * Tests that the metadata file migration skips unrelated files. Also tests that migration works
      * if the number of tab state subdirectories to migrate is less than {@code
-     * TabWindowManagerSingleton.getMaxSimultaneousSelectors()}
+     * TabWindowManager.MAX_SELECTORS}.
      */
     @Test
     @MediumTest
@@ -365,11 +365,7 @@ public class MultiInstanceMigrationTest {
     @Feature({"TabPersistentStore"})
     public void testNewMetataFileExists() throws Exception {
         // Set up two old metadata files.
-        int maxCount =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                TabWindowManagerSingleton.getInstance()
-                                        .getMaxSimultaneousSelectors());
+        int maxCount = TabWindowManager.MAX_SELECTORS;
         File[] stateDirs = createOldStateDirs(maxCount, true);
         File metadataFile0 =
                 new File(stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);

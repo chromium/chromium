@@ -136,11 +136,6 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public int getMaxSimultaneousSelectors() {
-        return mMaxSelectors;
-    }
-
-    @Override
     public @Nullable Pair<@WindowId Integer, TabModelSelector> requestSelector(
             Activity activity,
             ModalDialogManager modalDialogManager,
@@ -149,12 +144,12 @@ public class TabWindowManagerImpl implements TabWindowManager {
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId) {
-        if (windowId < 0 || windowId >= mMaxSelectors) return null;
+        if (windowId == INVALID_WINDOW_ID) return null;
 
         // Return the already existing selector if found.
         if (mActivityAssignments.get(activity) != null) {
             TabModelSelector assignedSelector = mActivityAssignments.get(activity);
-            for (int i = 0; i < mMaxSelectors; i++) {
+            for (Integer i : mSelectorsToWindowId.values()) {
                 if (mWindowIdToSelectors.get(i) == assignedSelector) {
                     @WindowId
                     int existingWindowId =
@@ -228,7 +223,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public @Nullable TabModelSelector requestSelectorWithoutActivity(
             @WindowId int windowId, Profile profile) {
-        if (windowId < 0 || windowId >= mMaxSelectors) return null;
+        if (windowId == INVALID_WINDOW_ID) return null;
 
         if (mWindowIdToSelectors.containsKey(windowId)) {
             return mWindowIdToSelectors.get(windowId);

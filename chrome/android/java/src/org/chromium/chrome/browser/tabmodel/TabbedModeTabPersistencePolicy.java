@@ -108,8 +108,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             mOtherMetadataFileName = null;
         }
         mMergeTabsOnStartup = mergeTabsOnStartup;
-        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
-        mMaxSelectors = tabWindowManager.getMaxSimultaneousSelectors();
+        mMaxSelectors = TabWindowManager.MAX_SELECTORS;
     }
 
     /**
@@ -264,7 +263,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             File otherStateDir =
                     new File(
                             TabStateDirectory.getOrCreateBaseStateDirectory(), Integer.toString(i));
-            if (otherStateDir == null || !otherStateDir.exists()) continue;
+            if (!otherStateDir.exists()) continue;
 
             // Rename tab state file.
             oldMetadataFile = new File(otherStateDir, LEGACY_SAVED_STATE_FILE);

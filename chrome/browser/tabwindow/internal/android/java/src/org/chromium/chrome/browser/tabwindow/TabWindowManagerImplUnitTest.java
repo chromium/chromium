@@ -115,6 +115,7 @@ public class TabWindowManagerImplUnitTest {
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
     private AsyncTabParamsManager mAsyncTabParamsManager;
     private TabWindowManager mSubject;
+    private int mMaxSelectors;
 
     @Before
     public void setUp() {
@@ -172,12 +173,12 @@ public class TabWindowManagerImplUnitTest {
                 () -> {
                     mAsyncTabParamsManager =
                             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-                    int maxInstances =
+                    mMaxSelectors =
                             (Build.VERSION.SDK_INT >= VERSION_CODES.S
                                     ? TabWindowManager.MAX_SELECTORS_S
                                     : TabWindowManager.MAX_SELECTORS_LEGACY);
                     return TabWindowManagerFactory.createInstance(
-                            tabModelSelectorFactory, mAsyncTabParamsManager, maxInstances);
+                            tabModelSelectorFactory, mAsyncTabParamsManager, mMaxSelectors);
                 });
     }
 
@@ -209,7 +210,7 @@ public class TabWindowManagerImplUnitTest {
     @Test
     @Feature({"Multiwindow"})
     public void testMultipleActivities() {
-        assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
+        assertTrue("Not enough selectors", mMaxSelectors >= 2);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -253,7 +254,7 @@ public class TabWindowManagerImplUnitTest {
     @Feature({"Multiwindow"})
     public void testTooManyActivities() {
         List<ActivityController<Activity>> activityControllerList = new ArrayList<>();
-        for (int i = 0; i < mSubject.getMaxSimultaneousSelectors(); i++) {
+        for (int i = 0; i < mMaxSelectors; i++) {
             ActivityController<Activity> c = createActivity();
             activityControllerList.add(c);
             assertNotNull(
@@ -293,7 +294,7 @@ public class TabWindowManagerImplUnitTest {
     @Test
     @Feature({"Multiwindow"})
     public void testWindowIdFallback() {
-        assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
+        assertTrue("Not enough selectors", mMaxSelectors >= 2);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -337,7 +338,7 @@ public class TabWindowManagerImplUnitTest {
     @Test
     @Feature({"Multiwindow"})
     public void testWindowIdFallback2() {
-        assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 3);
+        assertTrue("Not enough selectors", mMaxSelectors >= 3);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -456,7 +457,7 @@ public class TabWindowManagerImplUnitTest {
     @Test
     @Feature({"Multiwindow"})
     public void testActivityDeathWithMultipleActivities() {
-        assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
+        assertTrue("Not enough selectors", mMaxSelectors >= 2);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();

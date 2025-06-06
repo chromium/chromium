@@ -133,7 +133,6 @@ public class TabArchiverTest {
         mRegularTabModel = sActivityTestRule.getActivity().getCurrentTabModel();
         mRegularTabCreator = sActivityTestRule.getActivity().getTabCreator(false);
 
-        doReturn(1).when(mTabWindowManager).getMaxSimultaneousSelectors();
         doReturn(mSelector).when(mTabWindowManager).getTabModelSelectorById(anyInt());
         doReturn(mRegularTabModel).when(mSelector).getModel(anyBoolean());
         doReturn(true).when(mSelector).isTabStateInitialized();

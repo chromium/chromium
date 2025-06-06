@@ -72,11 +72,6 @@ public interface TabWindowManager {
     void removeObserver(Observer observer);
 
     /**
-     * Returns the maximum number of simultaneous TabModelSelector instances in this Application.
-     */
-    int getMaxSimultaneousSelectors();
-
-    /**
      * Called to request a {@link TabModelSelector} based on {@code index}. Note that the {@link
      * TabModelSelector} returned might not actually be the one related to {@code index} and {@link
      * #getIdForWindow(Activity)} should be called to grab the actual index if required.
