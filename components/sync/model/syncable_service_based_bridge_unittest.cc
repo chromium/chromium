@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -44,6 +45,8 @@ using testing::Return;
 const DataType kDataType = PREFERENCES;
 const std::string_view kSyncableServiceStartTimeHistogramName =
     "Sync.SyncableServiceStartTime.PREFERENCE";
+const std::string_view kMaybeClearDataHistogramName =
+    "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.PREFERENCE";
 
 sync_pb::EntitySpecifics GetTestSpecifics(const std::string& name = "name") {
   sync_pb::EntitySpecifics specifics;
@@ -78,6 +81,7 @@ class MockSyncableService : public SyncableService {
                std::unique_ptr<SyncChangeProcessor> sync_processor),
               (override));
   MOCK_METHOD(void, StopSyncing, (DataType type), (override));
+  MOCK_METHOD(void, StayStoppedAndMaybeClearData, (DataType type), (override));
   MOCK_METHOD(std::optional<ModelError>,
               ProcessSyncChanges,
               (const base::Location& from_here,
@@ -281,6 +285,126 @@ TEST_F(SyncableServiceBasedBridgeTest,
   InitializeBridge();
   StartSyncing();
   real_processor_->OnSyncStopping(KEEP_METADATA);
+}
+
+// Regression test for crbug.com/401453180.
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldMaybeClearDataIfPendingClearMetadataOnStart) {
+  // Simulate prior initial sync done.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  ShutdownBridge();
+
+  EXPECT_CALL(syncable_service_, StopSyncing).Times(0);
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData).Times(0);
+  InitializeBridge();
+
+  base::RunLoop loop;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
+      .WillByDefault(Invoke([&](base::OnceClosure done) {
+        // This should mark sync metadata as pending clear on start.
+        real_processor_->ClearMetadataIfStopped();
+        // Metadata has not been cleared yet.
+        ASSERT_THAT(GetAllData(), Not(IsEmpty()));
+        std::move(done).Run();
+        loop.Quit();
+      }));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType));
+  // The processor should clear the pre-existing metadata and lead to
+  // StayStoppedAndMaybeClearData() being called.
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  ASSERT_THAT(GetAllData(), IsEmpty());
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldMaybeClearDataIfMetadataEmpty) {
+  base::RunLoop loop;
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .WillOnce([&]() { loop.Quit(); });
+  base::HistogramTester histogram_tester;
+  // No metadata exists, thus any account data in the syncable service should be
+  // cleared.
+  InitializeBridge();
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldMaybeClearDataIfMetadataInconsistentOnNextStartup) {
+  // Simulate pre-existing metadata in the store without initial sync done.
+  {
+    std::unique_ptr<DataTypeStore::WriteBatch> batch =
+        store_->CreateWriteBatch();
+    batch->WriteData(kClientTagHash.value(),
+                     GetTestSpecifics().SerializeAsString());
+    base::RunLoop loop;
+    store_->CommitWriteBatch(
+        std::move(batch),
+        base::BindLambdaForTesting(
+            [&](const std::optional<ModelError>& error) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  // Simulate a successful initial sync.
+  InitializeBridge();
+  StartSyncing();
+  ASSERT_THAT(GetAllData(), IsEmpty());
+  ShutdownBridge();
+
+  base::RunLoop loop;
+  // On the next startup, the metadata is currently empty, which should trigger
+  // StayStoppedAndMaybeClearData().
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .WillOnce([&]() { loop.Quit(); });
+  base::HistogramTester histogram_tester;
+  // Metadata exists but initial sync is not done, thus leading to an
+  // inconsistent state, which should trigger StayStoppedAndMaybeClearData().
+  InitializeBridge();
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotMaybeClearDataIfMetadataNotEmpty) {
+  // Simulate prior initial sync done.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  ShutdownBridge();
+
+  base::RunLoop loop;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
+      .WillByDefault(Invoke([&](base::OnceClosure done) {
+        std::move(done).Run();
+        loop.Quit();
+      }));
+  EXPECT_CALL(syncable_service_, StayStoppedAndMaybeClearData(kDataType))
+      .Times(0);
+  base::HistogramTester histogram_tester;
+  InitializeBridge();
+  // Metadata exists and initial sync is done, thus leading to no need to clear
+  // data.
+  loop.Run();
+  histogram_tester.ExpectUniqueSample(kMaybeClearDataHistogramName,
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+
+  ShutdownBridge();
 }
 
 TEST_F(SyncableServiceBasedBridgeTest,

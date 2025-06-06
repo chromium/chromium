@@ -2071,6 +2071,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid{SyncDataType}"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records if the metadata was empty or invalid during startup, leading to a
+    possible clearing of data in the syncable service, triggered by the
+    SyncableServiceBasedBridge. This is recorded once per type upon profile
+    load. This is to let the data types clear the sync data if needed to avoid
+    leaking stale account data.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
 <histogram name="Sync.SyncableServiceStartTime{SyncDataType}" units="ms"
     expires_after="2025-11-23">
   <owner>ankushkush@google.com</owner>

@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -492,7 +493,17 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
           /*min=*/base::Milliseconds(1),
           /*max=*/base::Seconds(60), /*buckets=*/50);
     }
+  } else {
+    // If the metadata was empty or invalid, then the metadata should have been
+    // cleared by the processor. Consequently, the syncable service should also
+    // be informed to clear any stale data.
+    syncable_service_->StayStoppedAndMaybeClearData(type_);
   }
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.",
+           DataTypeToHistogramSuffix(type_)}),
+      !change_processor()->IsTrackingMetadata());
 }
 
 std::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
