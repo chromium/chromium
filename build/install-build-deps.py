@@ -376,7 +376,6 @@ def lib_list():
       "libsqlite3-0",
       "libuuid1",
       "libwayland-egl1",
-      "libwayland-egl1-mesa",
       "libx11-6",
       "libx11-xcb1",
       "libxau6",
