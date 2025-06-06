@@ -85,7 +85,17 @@ void KeepAliveDSEPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
 void KeepAliveDSEPolicy::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   if (dse_renderer_kept_alive_ == process_node) {
-    ReleaseDSEKeepAlive();
+    // The process we were keeping alive is being removed. We must release our
+    // reference to it and clean up our internal state.
+    //
+    // We do NOT call DecrementPendingReuseRefCount() here. The process is
+    // already being torn down, so the ref count is moot. Calling it during this
+    // notification can lead to a crash if the shutdown was initiated by
+    // RenderProcessHostImpl::DisableRefCounts(), which is what happens during
+    // profile destruction in tests.
+    template_url_service_observation_.Reset();
+    dse_renderer_kept_alive_ = nullptr;
+    current_dse_id_.reset();
   }
 }
 
@@ -106,6 +116,15 @@ void KeepAliveDSEPolicy::OnTemplateURLServiceChanged() {
   const TemplateURL* default_search_provider =
       template_url_service_observation_.GetSource()->GetDefaultSearchProvider();
 
+  // The DSE has been disabled entirely (e.g., by enterprise policy).
+  // If we are keeping a renderer alive, we must release it.
+  if (!default_search_provider) {
+    if (dse_renderer_kept_alive_) {
+      ReleaseDSEKeepAlive();
+    }
+    return;
+  }
+
   // If the default search provider hasn't changed, there's no need to update
   // the currently kept-alive renderer. However, a new DSE renderer might need
   // to be found and kept alive if one isn't already.
@@ -114,10 +133,11 @@ void KeepAliveDSEPolicy::OnTemplateURLServiceChanged() {
     return;
   }
 
-  // Release any previously kept-alive DSE renderer.
-  ReleaseDSEKeepAlive();
-
-  // Find and keep alive a new renderer.
+  // The DSE has changed to a new, valid provider.
+  // Release the old one (if any) and find a process for the new one.
+  if (dse_renderer_kept_alive_) {
+    ReleaseDSEKeepAlive();
+  }
   FindAndKeepAliveDSERenderer();
 }
 
