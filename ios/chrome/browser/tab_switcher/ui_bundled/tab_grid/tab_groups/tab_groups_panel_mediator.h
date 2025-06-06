@@ -81,12 +81,6 @@ class WebStateList;
 // Deletes a synced group for `syncID`.
 - (void)deleteSyncedTabGroup:(const base::Uuid&)syncID;
 
-// Deletes a shared group for `syncID`.
-- (void)deleteSharedTabGroup:(const base::Uuid&)syncID;
-
-// Leaves a shared group for `syncID`.
-- (void)leaveSharedTabGroup:(const base::Uuid&)syncID;
-
 // Disconnects the mediator.
 - (void)disconnect;
 

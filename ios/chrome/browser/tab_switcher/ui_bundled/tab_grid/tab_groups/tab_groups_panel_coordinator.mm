@@ -279,20 +279,6 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupConfirmationCoordinator = nil;
 }
 
-// Deletes a shared tab group and dismisses the confirmation coordinator.
-- (void)deleteSharedTabGroup:(const base::Uuid&)syncID {
-  [_mediator deleteSharedTabGroup:syncID];
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
-
-// Leaves a shared tab group and dismisses the confirmation coordinator.
-- (void)leaveSharedTabGroup:(const base::Uuid&)syncID {
-  [_mediator leaveSharedTabGroup:syncID];
-  [_tabGroupConfirmationCoordinator stop];
-  _tabGroupConfirmationCoordinator = nil;
-}
-
 // Clears `leaveOrDeleteCompletion`. If not nil, calls it with `kCancel`.
 - (void)clearLeaveOrDeleteCompletion {
   if (self.leaveOrDeleteCompletion) {
