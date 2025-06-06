@@ -36,7 +36,6 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,7 +54,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Unbatched to deflake")
-@DisabledTest(message = "crbug.com/359632845")
 public class ScrollCaptureCallbackRenderTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
