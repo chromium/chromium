@@ -140,23 +140,26 @@ void SessionServiceImpl::OnRegistrationComplete(
                                 result);
 }
 
-std::pair<SessionServiceImpl::SessionsMap::iterator,
-          SessionServiceImpl::SessionsMap::iterator>
+std::ranges::subrange<SessionServiceImpl::SessionsMap::iterator>
 SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   const auto now = base::Time::Now();
   auto [begin, end] = unpartitioned_sessions_.equal_range(site);
   for (auto it = begin; it != end;) {
-    if (now >= it->second->expiry_date()) {
+    auto curit = it;
+    ++it;
+
+    if (now >= curit->second->expiry_date()) {
       // Since this deletion is not due to a request, we do not need to
       // provide a per-request callback here.
-      it = DeleteSessionAndNotifyInternal(it, base::NullCallback());
+      DeleteSessionAndNotifyInternal(curit, base::NullCallback());
     } else {
-      it->second->RecordAccess();
-      it++;
+      curit->second->RecordAccess();
     }
   }
 
-  return unpartitioned_sessions_.equal_range(site);
+  auto sessions_for_site = unpartitioned_sessions_.equal_range(site);
+  return std::ranges::subrange<SessionsMap::iterator>(sessions_for_site.first,
+                                                      sessions_for_site.second);
 }
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
@@ -168,17 +171,15 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
   SchemefulSite site(request->url());
   const base::flat_set<SessionKey>& previous_deferrals =
       request->device_bound_session_deferrals();
-  auto range = GetSessionsForSite(site);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (previous_deferrals.find({site, it->second->id()}) !=
+  for (const auto& [_, session] : GetSessionsForSite(site)) {
+    if (previous_deferrals.find({site, session->id()}) !=
         previous_deferrals.end()) {
       continue;
     }
-    if (it->second->ShouldDeferRequest(request, first_party_set_metadata)) {
+    if (session->ShouldDeferRequest(request, first_party_set_metadata)) {
       NotifySessionAccess(request->device_bound_session_access_callback(),
-                          SessionAccess::AccessType::kUpdate, site,
-                          *it->second);
-      return DeferralParams(it->second->id());
+                          SessionAccess::AccessType::kUpdate, site, *session);
+      return DeferralParams(session->id());
     }
   }
 
@@ -301,13 +302,11 @@ void SessionServiceImpl::SetChallengeForBoundSession(
   }
 
   SchemefulSite site(request_url);
-  auto range = GetSessionsForSite(site);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->id().value() == param.session_id()) {
+  for (const auto& [_, session] : GetSessionsForSite(site)) {
+    if (session->id().value() == param.session_id()) {
       NotifySessionAccess(on_access_callback,
-                          SessionAccess::AccessType::kUpdate, site,
-                          *it->second);
-      it->second->set_cached_challenge(param.challenge());
+                          SessionAccess::AccessType::kUpdate, site, *session);
+      session->set_cached_challenge(param.challenge());
       return;
     }
   }
@@ -339,7 +338,7 @@ void SessionServiceImpl::DeleteSessionAndNotify(
   auto range = unpartitioned_sessions_.equal_range(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id() == id) {
-      std::ignore = DeleteSessionAndNotifyInternal(it, per_request_callback);
+      DeleteSessionAndNotifyInternal(it, per_request_callback);
       return;
     }
   }
@@ -376,11 +375,12 @@ void SessionServiceImpl::DeleteAllSessions(
     base::OnceClosure completion_callback) {
   for (auto it = unpartitioned_sessions_.begin();
        it != unpartitioned_sessions_.end();) {
-    if (SessionMatchesFilter(it->first, *it->second, created_after_time,
+    auto curit = it;
+    ++it;
+
+    if (SessionMatchesFilter(curit->first, *curit->second, created_after_time,
                              created_before_time, origin_and_site_matcher)) {
-      it = DeleteSessionAndNotifyInternal(it, base::NullCallback());
-    } else {
-      ++it;
+      DeleteSessionAndNotifyInternal(curit, base::NullCallback());
     }
   }
 
@@ -398,8 +398,7 @@ base::ScopedClosureRunner SessionServiceImpl::AddObserver(
   return subscription;
 }
 
-SessionServiceImpl::SessionsMap::iterator
-SessionServiceImpl::DeleteSessionAndNotifyInternal(
+void SessionServiceImpl::DeleteSessionAndNotifyInternal(
     SessionServiceImpl::SessionsMap::iterator it,
     SessionService::OnAccessCallback per_request_callback) {
   if (session_store_) {
@@ -410,7 +409,7 @@ SessionServiceImpl::DeleteSessionAndNotifyInternal(
                       SessionAccess::AccessType::kTermination, it->first,
                       *it->second);
 
-  return unpartitioned_sessions_.erase(it);
+  unpartitioned_sessions_.erase(it);
 }
 
 void SessionServiceImpl::NotifySessionAccess(

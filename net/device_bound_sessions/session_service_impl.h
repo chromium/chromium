@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -143,14 +144,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
-  std::pair<SessionsMap::iterator, SessionsMap::iterator> GetSessionsForSite(
+  std::ranges::subrange<SessionsMap::iterator> GetSessionsForSite(
       const SchemefulSite& site);
 
   // Remove a session from the session map. It also clears the session
   // from `session_store_` and notifies any observers (including
   // `per_request_callback`) about the termination.
-  // Return the iterator to the next session in the map.
-  [[nodiscard]] SessionsMap::iterator DeleteSessionAndNotifyInternal(
+  void DeleteSessionAndNotifyInternal(
       SessionsMap::iterator it,
       SessionService::OnAccessCallback per_request_callback);
 
