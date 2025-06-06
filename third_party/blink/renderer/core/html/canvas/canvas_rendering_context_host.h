@@ -166,7 +166,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   CanvasResourceProvider* CreateCanvasResourceProvider2D();
   CanvasResourceProvider* CreateCanvasResourceProviderWebGL();
   CanvasResourceProvider* CreateCanvasResourceProviderWebGPU();
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl();
 
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
