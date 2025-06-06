@@ -99,7 +99,7 @@ bool V8DOMWrapper::HasInternalFieldsSet(v8::Isolate* isolate,
   const WrapperTypeInfo* untrusted_wrapper_type_info =
       ToWrapperTypeInfo(object);
   return untrusted_wrapper_type_info &&
-         untrusted_wrapper_type_info->gin_embedder == gin::kEmbedderBlink;
+         untrusted_wrapper_type_info->type_id == gin::kEmbedderBlink;
 }
 
 }  // namespace blink

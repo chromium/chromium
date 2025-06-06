@@ -172,7 +172,7 @@ class CORE_EXPORT XMLHttpRequest final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(readystatechange, kReadystatechange)
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "XMLHttpRequest"; }
+  const char* GetHumanReadableName() const override { return "XMLHttpRequest"; }
 
   bool HasRequestHeaderForTesting(AtomicString name) const;
 

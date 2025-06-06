@@ -89,7 +89,7 @@ inline void V8DOMWrapper::SetNativeInfo(
   DCHECK(wrappable);
   DCHECK(!WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
   v8::Object::Wrap(isolate, wrapper, wrappable,
-                   wrappable->GetWrapperTypeInfo()->this_tag);
+                   ToWrapperTypeInfo(wrappable)->this_tag);
 }
 
 inline void V8DOMWrapper::ClearNativeInfo(

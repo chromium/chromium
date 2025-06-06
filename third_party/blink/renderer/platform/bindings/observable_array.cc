@@ -21,7 +21,7 @@ namespace {
 const V8PrivateProperty::SymbolKey kV8ProxyTargetToV8WrapperKey;
 
 const WrapperTypeInfo kWrapperTypeInfoBody{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     /*install_interface_template_func=*/nullptr,
     /*install_context_dependent_props_func=*/nullptr,
     "ObservableArrayExoticObject",

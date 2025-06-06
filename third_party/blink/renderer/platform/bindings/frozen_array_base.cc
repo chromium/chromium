@@ -13,7 +13,7 @@ namespace blink::bindings {
 namespace {
 
 const WrapperTypeInfo frozen_array_wrapper_type_info_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     // JS objects for IDL frozen array types are implemented as JS Arrays,
     // which don't support V8 internal fields. Neither v8::FunctionTemplate nor
     // v8::ObjectTemplate is used.

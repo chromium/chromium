@@ -42,7 +42,7 @@ v8::Local<v8::Value> ScriptWrappable::ToV8(
 }
 
 v8::Local<v8::Value> ScriptWrappable::Wrap(ScriptState* script_state) {
-  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = ToWrapperTypeInfo(this);
 
   DCHECK(!DOMDataStore::ContainsWrapper(script_state->GetIsolate(), this));
 
@@ -61,11 +61,12 @@ v8::Local<v8::Object> ScriptWrappable::AssociateWithWrapper(
 }
 
 void ScriptWrappable::Trace(Visitor* visitor) const {
+  v8::Object::Wrappable::Trace(visitor);
   visitor->Trace(wrapper_);
 }
 
-const char* ScriptWrappable::NameInHeapSnapshot() const {
-  return GetWrapperTypeInfo()->interface_name;
+const char* ScriptWrappable::GetHumanReadableName() const {
+  return ToWrapperTypeInfo(this)->interface_name;
 }
 
 }  // namespace blink

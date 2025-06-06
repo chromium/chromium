@@ -77,7 +77,7 @@ def make_wrapper_type_info(cg_context):
     wrapper_type_info_def = TextNode("""\
 // static
 const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     ${class_name}::InstallObservableArrayBackingListTemplate,
     nullptr,
     "${class_name}",

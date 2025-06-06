@@ -211,7 +211,7 @@ v8::StartupData SerializeAPIWrapperCallback(v8::Local<v8::Object> holder,
   if (!wrappable) {
     return {nullptr, 0};
   }
-  const WrapperTypeInfo* wrapper_type_info = wrappable->GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = ToWrapperTypeInfo(wrappable);
   CHECK_EQ(wrappable, ToAnyScriptWrappable(holder->GetIsolate(), holder));
   constexpr size_t kSize = 1;
   static_assert(sizeof (InternalFieldSerializedValue) == kSize);

@@ -124,7 +124,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
   // (aka the inner global).
   auto* script_wrappable = static_cast<ScriptWrappable*>(global_scope_);
   const WrapperTypeInfo* wrapper_type_info =
-      script_wrappable->GetWrapperTypeInfo();
+      ToWrapperTypeInfo(script_wrappable);
   v8::Local<v8::FunctionTemplate> global_interface_template =
       wrapper_type_info->GetV8ClassTemplate(isolate_, *world_)
           .As<v8::FunctionTemplate>();

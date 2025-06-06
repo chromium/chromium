@@ -125,7 +125,9 @@ class WebGLFramebuffer final : public WebGLObject {
   GLenum GetReadBuffer() const { return read_buffer_; }
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "WebGLFramebuffer"; }
+  const char* GetHumanReadableName() const override {
+    return "WebGLFramebuffer";
+  }
 
  protected:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;

@@ -6429,7 +6429,7 @@ def make_wrapper_type_info(cg_context, function_name,
 #endif
 
 const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
-    gin::kEmbedderBlink,
+    {{gin::kEmbedderBlink}},
     ${class_name}::{install_interface_template_func},
     {install_context_dependent_func},
     "${{class_like.identifier}}",

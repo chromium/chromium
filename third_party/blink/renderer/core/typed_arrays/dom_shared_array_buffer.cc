@@ -19,7 +19,7 @@ namespace blink {
 #endif
 
 const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     nullptr,
     nullptr,
     "SharedArrayBuffer",

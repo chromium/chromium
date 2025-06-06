@@ -74,11 +74,11 @@ void CSSRule::Trace(Visitor* visitor) const {
 }
 
 bool CSSRule::VerifyParentIsCSSRule() const {
-  return !parent_ || parent_->GetWrapperTypeInfo()->IsSubclass(
+  return !parent_ || ToWrapperTypeInfo(parent_)->IsSubclass(
                          CSSRule::GetStaticWrapperTypeInfo());
 }
 bool CSSRule::VerifyParentIsCSSStyleSheet() const {
-  return !parent_ || parent_->GetWrapperTypeInfo()->IsSubclass(
+  return !parent_ || ToWrapperTypeInfo(parent_)->IsSubclass(
                          CSSStyleSheet::GetStaticWrapperTypeInfo());
 }
 

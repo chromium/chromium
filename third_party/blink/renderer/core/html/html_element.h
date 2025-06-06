@@ -114,7 +114,7 @@ class CORE_EXPORT HTMLElement : public Element {
     return HasLocalName(name.LocalName());
   }
 
-  const char* NameInHeapSnapshot() const override;
+  const char* GetHumanReadableName() const override;
 
   String title() const final;
 

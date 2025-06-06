@@ -233,11 +233,11 @@ String HTMLElement::nodeName() const {
   return Element::nodeName();
 }
 
-const char* HTMLElement::NameInHeapSnapshot() const {
+const char* HTMLElement::GetHumanReadableName() const {
   if (!ThreadState::Current()->IsTakingHeapSnapshot()) {
     // If a heap snapshot is not in progress, we must return a string with
     // static lifetime rather than allocating something.
-    return Element::NameInHeapSnapshot();
+    return Element::GetHumanReadableName();
   }
   NameInHeapSnapshotBuilder builder;
   String start_tag = builder.GetStartTag(*this);

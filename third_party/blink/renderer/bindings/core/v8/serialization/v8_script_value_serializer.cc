@@ -917,7 +917,7 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     return v8::Just(true);
   }
   if (!exception_state.HadException()) {
-    StringView interface = wrappable->GetWrapperTypeInfo()->interface_name;
+    StringView interface = ToWrapperTypeInfo(wrappable)->interface_name;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
         interface + " object could not be cloned.");

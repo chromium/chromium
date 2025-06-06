@@ -22,7 +22,7 @@ namespace blink {
 #endif
 
 const WrapperTypeInfo DOMDataView::wrapper_type_info_body_{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     nullptr,
     nullptr,
     "DataView",
