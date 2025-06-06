@@ -220,7 +220,6 @@ TEST(AtomicOpsTest, Inc) {
 
 TEST(AtomicOpsTest, CompareAndSwap) {
   TestCompareAndSwap<base::subtle::Atomic32>();
-  TestCompareAndSwap<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, Exchange) {

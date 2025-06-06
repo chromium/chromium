@@ -118,15 +118,6 @@ typedef volatile std::atomic<Atomic64>* AtomicLocation64;
 static_assert(sizeof(*(AtomicLocation64) nullptr) == sizeof(Atomic64),
               "incompatible 64-bit atomic layout");
 
-inline Atomic64 NoBarrier_CompareAndSwap(volatile Atomic64* ptr,
-                                         Atomic64 old_value,
-                                         Atomic64 new_value) {
-  ((AtomicLocation64)ptr)
-      ->compare_exchange_strong(old_value, new_value, std::memory_order_relaxed,
-                                std::memory_order_relaxed);
-  return old_value;
-}
-
 inline Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr,
                                          Atomic64 new_value) {
   return ((AtomicLocation64)ptr)
