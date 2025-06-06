@@ -1411,6 +1411,32 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_CollapsesOnSignOut DISABLED_CollapsesOnSignOut
+#else
+#define MAYBE_CollapsesOnSignOut CollapsesOnSignOut
+#endif
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
+                       MAYBE_CollapsesOnSignOut) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string email(u"test@gmail.com");
+  const std::u16string account_name(u"Account name");
+  const AccountInfo account_info = SigninWithImage(email, account_name);
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  Signout();
+  // Once the user signs out, the button should return to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_ShowsOnBrowserRestart DISABLED_PRE_ShowsOnBrowserRestart
 #define MAYBE_ShowsOnBrowserRestart DISABLED_ShowsOnBrowserRestart
 #else
