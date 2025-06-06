@@ -389,6 +389,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripTransitionInDesktopWindow,
     &kTabSwitcherColorBlendAnimate,
     &kTabArchivalDragDropAndroid,
+    &kTabCollectionAndroid,
     &kTabSwitcherDragDropAndroid,
     &kTabSwitcherForeignFaviconSupport,
     &kTabWindowManagerReportIndicesMismatch,
@@ -826,13 +827,11 @@ BASE_FEATURE(kCCTToolbarRefactor,
 
 BASE_FEATURE(kChangeUnfocusedPriority,
              "ChangeUnfocusedPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableInstanceLimit,
              "DisableInstanceLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",
@@ -1155,8 +1154,8 @@ BASE_FEATURE(kReadAloudAudioOverviews,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudAudioOverviewsFeedback,
-              "ReadAloudAudioOverviewsFeedback",
-              base::FEATURE_DISABLED_BY_DEFAULT);
+             "ReadAloudAudioOverviewsFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudInOverflowMenuInCCT,
              "ReadAloudInOverflowMenuInCCT",
@@ -1292,6 +1291,10 @@ BASE_FEATURE(kTabSwitcherColorBlendAnimate,
 
 BASE_FEATURE(kTabArchivalDragDropAndroid,
              "TabArchivalDragDropAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabCollectionAndroid,
+             "TabCollectionAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabSwitcherDragDropAndroid,
