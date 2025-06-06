@@ -25,7 +25,6 @@
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/test/test_gpu_service_holder.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/in_process_command_buffer.h"
