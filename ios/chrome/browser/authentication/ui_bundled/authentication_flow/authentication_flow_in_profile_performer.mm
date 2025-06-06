@@ -156,17 +156,6 @@
                        userAffiliationIDs:affiliationIDs];
 }
 
-// Wraps -didFetchUserPolicyWithSuccess: method from the delegate with a
-// check that the watchdog has not expired.
-- (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  // If the watchdog timer has already fired, don't notify the delegate.
-  if (![self stopWatchdogTimer]) {
-    return;
-  }
-
-  [_delegate didFetchUserPolicyWithSuccess:success];
-}
-
 - (void)fetchAccountCapabilities:(ProfileIOS*)profile {
   // Create the capability fetcher and start fetching capabilities.
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
@@ -203,14 +192,11 @@
         base::SysNSStringToUTF8(userAffiliationID));
   }
 
-  [self startWatchdogTimerForUserPolicyFetch];
-
-  __weak __typeof(self) weakSelf = self;
   policyService->FetchPolicyForSignedInUser(
       accountID, base::SysNSStringToUTF8(dmToken),
       base::SysNSStringToUTF8(clientID), userAffiliationIDsVector,
       profile->GetSharedURLLoaderFactory(), base::BindOnce(^(bool success) {
-        [weakSelf didFetchUserPolicyWithSuccess:success];
+        DLOG_IF(ERROR, !success) << "Error fetching policy for user";
       }));
 }
 
@@ -235,21 +221,6 @@
   [_delegate didRegisterForUserPolicyWithDMToken:@""
                                         clientID:@""
                               userAffiliationIDs:@[]];
-}
-
-// Starts a Watchdog Timer that ends the user policy fetch on time out.
-- (void)startWatchdogTimerForUserPolicyFetch {
-  __weak __typeof(self) weakSelf = self;
-  [self startWatchdogTimerWithTimeoutBlock:^{
-    [weakSelf onUserPolicyFetchWatchdogTimerExpired];
-  }];
-}
-
-// Handle the expiration of the watchdog time for the method
-// -startWatchdogTimerForUserPolicyFetch.
-- (void)onUserPolicyFetchWatchdogTimerExpired {
-  [self stopWatchdogTimer];
-  [_delegate didFetchUserPolicyWithSuccess:NO];
 }
 
 @end

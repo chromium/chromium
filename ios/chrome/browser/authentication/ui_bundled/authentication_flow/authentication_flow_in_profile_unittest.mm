@@ -270,9 +270,6 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
       didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                  clientID:kFakeClientID
                        userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-  // Simulate the user policy fetch request.
-  [GetAuthenticationFlowInProfilePerformerDelegate()
-      didFetchUserPolicyWithSuccess:YES];
   EXPECT_TRUE(future.Wait());
 }
 
@@ -354,10 +351,6 @@ TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
       didRegisterForUserPolicyWithDMToken:kFakeDMToken
                                  clientID:kFakeClientID
                        userAffiliationIDs:@[ kFakeUserAffiliationID ]];
-
-  // Simulate the user policy fetch request finishing.
-  [GetAuthenticationFlowInProfilePerformerDelegate()
-      didFetchUserPolicyWithSuccess:NO];
 
   // Since the browser was destroyed, no other steps should happen (e.g. no
   // post-signin actions).

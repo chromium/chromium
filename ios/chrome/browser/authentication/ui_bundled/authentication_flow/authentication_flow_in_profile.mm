@@ -351,6 +351,7 @@ enum class AuthenticationFlowInProfileState {
                      clientID:_clientID
            userAffiliationIDs:_userAffiliationIDs
                      identity:_identityToSignIn];
+  [self continueFlow];
 }
 
 // Fetches capabilities on successful authentication for the upcoming History
@@ -463,14 +464,6 @@ enum class AuthenticationFlowInProfileState {
   _dmToken = dmToken;
   _clientID = clientID;
   _userAffiliationIDs = userAffiliationIDs;
-  [self continueFlow];
-}
-
-- (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  // The result can be ignored, the goal was to prefetch the user policy.
-  CHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded, _state,
-           base::NotFatalUntil::M138);
-  DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];
 }
 

@@ -49,6 +49,8 @@ enum class AccessPoint;
 - (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
+// Fetches user policies asynchronously without knowing when the data will be
+// available.
 - (void)fetchUserPolicy:(ProfileIOS*)profile
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID

@@ -22,10 +22,6 @@
                          userAffiliationIDs:
                              (NSArray<NSString*>*)userAffiliationIDs;
 
-// Indicates that user policies were fetched. `success` is true when the fetch
-// was successful.
-- (void)didFetchUserPolicyWithSuccess:(BOOL)success;
-
 // Indicates that account capabilities have been fetched.
 - (void)didFetchAccountCapabilities;
 

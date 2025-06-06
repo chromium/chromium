@@ -380,16 +380,12 @@ class AuthenticationFlowTest : public PlatformTest,
       OCMExpect([in_profile_performer_mock_ registerUserPolicy:final_profile
                                                    forIdentity:identity])
           .andDo(registerUserPolicyCallback);
-      auto fetchUserPolicyCallback = ^(NSInvocation*) {
-        [authentication_flow_in_profile_ didFetchUserPolicyWithSuccess:YES];
-      };
       OCMExpect([in_profile_performer_mock_
-                       fetchUserPolicy:final_profile
-                           withDmToken:kFakeDMToken
-                              clientID:kFakeClientID
-                    userAffiliationIDs:@[ kFakeUserAffiliationID ]
-                              identity:identity])
-          .andDo(fetchUserPolicyCallback);
+             fetchUserPolicy:final_profile
+                 withDmToken:kFakeDMToken
+                    clientID:kFakeClientID
+          userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                    identity:identity]);
     }
 
     // If switching (to a managed profile), there's no explicit call to sign in,
