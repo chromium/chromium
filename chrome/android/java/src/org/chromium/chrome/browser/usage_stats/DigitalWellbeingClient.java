@@ -8,7 +8,6 @@ import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,33 +48,5 @@ public class DigitalWellbeingClient {
     public Promise<@Nullable Void> notifyAllHistoryCleared() {
         // https://github.com/uber/NullAway/issues/1075#issuecomment-2698009946
         return Promise.<@Nullable Void>fulfilled(null);
-    }
-
-    /**
-     * Inform DW that Chrome will no longer report usage for the domain associated with
-     * <c>token</c>.
-     */
-    public Promise<@Nullable Void> cancelToken(String token) {
-        // https://github.com/uber/NullAway/issues/1075#issuecomment-2698009946
-        return Promise.<@Nullable Void>fulfilled(null);
-    }
-
-    /**
-     * Inform DW that Chrome will no longer report usage for any domains, thus cancelling all tokens
-     * associated with those domains.
-     */
-    public Promise<@Nullable Void> cancelAllTokens() {
-        // https://github.com/uber/NullAway/issues/1075#issuecomment-2698009946
-        return Promise.<@Nullable Void>fulfilled(null);
-    }
-
-    /** Get a list of all the tokens that DW thinks Chrome is tracking. */
-    public Promise<List<String>> getAllTrackedTokens() {
-        return Promise.fulfilled(Collections.emptyList());
-    }
-
-    /** Get a list of all the websites that DW thinks Chrome should suspend. */
-    public Promise<List<String>> getAllSuspendedWebsites() {
-        return Promise.fulfilled(Collections.emptyList());
     }
 }
