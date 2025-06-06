@@ -9155,3 +9155,7 @@ crbug.com/420393952 external/wpt/html/semantics/permission-element/quirks-mode-n
 
 # Gardener 2025-06-03
 crbug.com/422174062 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-inline-009.html [ Failure Pass ]
+
+# Gardener 2025-06-06
+crbug.com/415666471 [ Linux ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout Pass ]
+crbug.com/415666471 [ Linux ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout Pass ]
