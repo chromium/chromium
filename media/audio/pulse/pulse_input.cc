@@ -348,9 +348,26 @@ void PulseAudioInputStream::ReadData() {
     if (!data || length == 0)
       break;
 
-    const int number_of_frames =
+    // SAFETY:
+    // https://freedesktop.org/software/pulseaudio/doxygen/stream_8h.html#ac2838c449cde56e169224d7fe3d00824
+    // The pulseaudio documentation says that if there is data at the current
+    // read index, data will point to the actual data, and `length` will contain
+    // the size of the data in bytes (which can be smaller or larger than a
+    // complete fragment).
+    //
+    // If there is no data at the current read index, it means that either the
+    // buffer is empty or it contains a hole (that is, the write index is ahead
+    // of the read index but there's no data where the read index points at). If
+    // the buffer is empty, data will be NULL and nbytes will be 0. If there is
+    // a hole, data will be NULL and nbytes will contain the length of the hole.
+    //
+    // We have already checked for null pointers and size 0 above.
+    UNSAFE_BUFFERS(base::span<const uint8_t> pa_stream(
+        reinterpret_cast<const uint8_t*>(data), length));
+    const size_t number_of_frames =
         length / params_.GetBytesPerFrame(pulse::kInputSampleFormat);
-    if (number_of_frames > fifo_.GetUnfilledFrames()) {
+    if (number_of_frames >
+        base::checked_cast<size_t>(fifo_.GetUnfilledFrames())) {
       // Dynamically increase capacity to the FIFO to handle larger buffer got
       // from Pulse.
       const int increase_blocks_of_buffer =
@@ -360,12 +377,11 @@ void PulseAudioInputStream::ReadData() {
       fifo_.IncreaseCapacity(increase_blocks_of_buffer);
     }
 
-    const int bytes_per_sample =
+    const size_t bytes_per_sample =
         SampleFormatToBytesPerChannel(pulse::kInputSampleFormat);
+    peak_detector_.FindPeak(pa_stream, bytes_per_sample);
 
-    peak_detector_.FindPeak(data, number_of_frames, bytes_per_sample);
-
-    fifo_.Push(data, number_of_frames, bytes_per_sample);
+    fifo_.Push(pa_stream, number_of_frames, bytes_per_sample);
 
     // Checks if we still have data.
     pa_stream_drop(handle_);

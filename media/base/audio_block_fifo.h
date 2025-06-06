@@ -29,7 +29,7 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Pushes interleaved audio data from |source| to the FIFO.
   // The method will deinterleave the data into an audio bus.
   // Push() will crash if the allocated space is insufficient.
-  void Push(const void* source, int frames, int bytes_per_sample);
+  void Push(base::span<const uint8_t> source, int frames, int bytes_per_sample);
 
   // Pushes zeroed out frames to the FIFO.
   void PushSilence(int frames);
@@ -58,7 +58,9 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Common implementation for Push() and PushSilence.  if |source| is nullptr,
   // silence will be pushed. To push silence, set source and bytes_per_sample to
   // nullptr and 0 respectively.
-  void PushInternal(const void* source, int frames, int bytes_per_sample);
+  void PushInternal(base::span<const uint8_t> source,
+                    int frames,
+                    int bytes_per_sample);
 
   // The actual FIFO is a vector of audio buses.
   std::vector<std::unique_ptr<AudioBus>> audio_blocks_;

@@ -1081,10 +1081,17 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   GetAgcVolume(&normalized_volume);
 
   AudioBuffer& buffer = io_data->mBuffers[0];
-  uint8_t* audio_data = reinterpret_cast<uint8_t*>(buffer.mData);
+  const uint8_t* audio_data = reinterpret_cast<const uint8_t*>(buffer.mData);
   DCHECK(audio_data);
   if (!audio_data)
     return kAudioUnitErr_InvalidElement;
+
+  // SAFETY:
+  // https://developer.apple.com/documentation/coreaudiotypes/audiobuffer
+  // mData: A pointer to a buffer of audio data.
+  // mDataByteSize: The number of bytes in the buffer.
+  UNSAFE_BUFFERS(base::span<const uint8_t> audio_data_span(
+      audio_data, buffer.mDataByteSize));
 
   // Dynamically increase capacity of the FIFO to handle larger buffers from
   // CoreAudio. This can happen in combination with Apple Thunderbolt Displays
@@ -1110,10 +1117,10 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
 
   const int bytes_per_sample = format_.mBitsPerChannel / 8;
 
-  peak_detector_.FindPeak(audio_data, number_of_frames, bytes_per_sample);
+  peak_detector_.FindPeak(audio_data_span, bytes_per_sample);
 
   // Copy captured (and interleaved) data into FIFO.
-  fifo_.Push(audio_data, number_of_frames, bytes_per_sample);
+  fifo_.Push(audio_data_span, number_of_frames, bytes_per_sample);
 
   // Consume and deliver the data when the FIFO has a block of available data.
   while (fifo_.available_blocks()) {
