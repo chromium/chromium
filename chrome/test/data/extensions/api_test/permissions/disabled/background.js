@@ -19,7 +19,9 @@ chrome.test.runTests([
 
   function bookmarks() {
     try {
-      chrome.bookmarks.get("1", function(results) {
+      // Use getRecent() instead of get("1") because desktop Android doesn't
+      // create the bookmark bar (id "1") by default.
+      chrome.bookmarks.getRecent(1, function (results) {
         chrome.test.fail();
       });
     } catch (e) {
@@ -30,6 +32,12 @@ chrome.test.runTests([
   // Tabs functionality should be enabled even if the tabs permissions are not
   // present.
   function tabs() {
+    // TODO(crbug.com/371432155): Port to desktop Android when chrome.tabs API
+    // is available.
+    if (/Android/.test(navigator.userAgent)) {
+      chrome.test.succeed();
+      return;
+    }
     try {
       chrome.tabs.create({'url': '1'}, function(tab) {
         // Tabs strip sensitive data without permissions.
