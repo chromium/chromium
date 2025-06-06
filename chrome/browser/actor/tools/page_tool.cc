@@ -289,6 +289,13 @@ void PageTool::Invoke(InvokeCallback callback) {
     case ActionInformation::ActionInfoCase::kBack:
     case ActionInformation::ActionInfoCase::kForward:
     case ActionInformation::ActionInfoCase::kWait:
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
     case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }
@@ -353,6 +360,13 @@ std::string PageTool::JournalEvent() const {
     case ActionInformation::ActionInfoCase::kBack:
     case ActionInformation::ActionInfoCase::kForward:
     case ActionInformation::ActionInfoCase::kWait:
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
     case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }

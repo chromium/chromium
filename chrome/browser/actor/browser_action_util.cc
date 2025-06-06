@@ -28,6 +28,14 @@ bool IsTargetingTab(const ActionInformation& action_information) {
     case ActionInformation::ActionInfoCase::kMoveMouse:
     case ActionInformation::ActionInfoCase::kDragAndRelease:
     case ActionInformation::ActionInfoCase::kSelect:
+    // These actions target neither tabs nor frames.
+    case ActionInformation::ActionInfoCase::kCreateTab:
+    case ActionInformation::ActionInfoCase::kCloseTab:
+    case ActionInformation::ActionInfoCase::kActivateTab:
+    case ActionInformation::ActionInfoCase::kCreateWindow:
+    case ActionInformation::ActionInfoCase::kCloseWindow:
+    case ActionInformation::ActionInfoCase::kActivateWindow:
+    case ActionInformation::ActionInfoCase::kYieldToUser:
       return false;
     case ActionInformation::ActionInfoCase::kNavigate:
     case ActionInformation::ActionInfoCase::kBack:
@@ -77,6 +85,13 @@ const ActionTarget* ExtractTarget(const ActionInformation& action_information) {
     case ActionInformation::kBack:
     case ActionInformation::kForward:
     case ActionInformation::kWait:
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
     case ActionInformation::ACTION_INFO_NOT_SET:
       return nullptr;
   }

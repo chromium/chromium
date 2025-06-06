@@ -87,6 +87,13 @@ std::unique_ptr<Tool> ToolController::CreateTool(
     case ActionInformation::kWait: {
       return std::make_unique<WaitTool>();
     }
+    case ActionInformation::kCreateTab:
+    case ActionInformation::kCloseTab:
+    case ActionInformation::kActivateTab:
+    case ActionInformation::kCreateWindow:
+    case ActionInformation::kCloseWindow:
+    case ActionInformation::kActivateWindow:
+    case ActionInformation::kYieldToUser:
     case ActionInformation::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }

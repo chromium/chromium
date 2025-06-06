@@ -20,6 +20,9 @@ option optimize_for = LITE_RUNTIME;
 // http://go/chrome-mqls-onboarding (Google-internal link), and then changes will
 // be synced with Chrome automatically.
 
+// This API should eventually converge with go/unified-browser-control-api.
+// Please check with erikchen@ before making modifications.
+
 // The target of an action.
 // Next ID: 4
 message ActionTarget {
@@ -34,13 +37,15 @@ message ActionTarget {
 }
 
 // Mouse click action.
-// Next ID: 4
+// Next ID: 5
 message ClickAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
 
   ClickType click_type = 2 [features = { field_presence: EXPLICIT }];
 
   ClickCount click_count = 3 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 4 [features = { field_presence: EXPLICIT }];
 
   enum ClickType {
     // Unknown click type. This should not be used.
@@ -68,7 +73,7 @@ message ClickAction {
 }
 
 // Type text action.
-// Next ID: 5
+// Next ID: 6
 message TypeAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
 
@@ -79,6 +84,8 @@ message TypeAction {
   bool follow_by_enter = 3 [features = { field_presence: EXPLICIT }];
 
   TypeMode mode = 4 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 5 [features = { field_presence: EXPLICIT }];
 
   // How the text should be inserted into the target.
   enum TypeMode {
@@ -93,7 +100,7 @@ message TypeAction {
 }
 
 // Scroll action.
-// Next ID: 4
+// Next ID: 5
 message ScrollAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
 
@@ -101,6 +108,8 @@ message ScrollAction {
 
   // The distance to scroll in pixels.
   float distance = 3 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 4 [features = { field_presence: EXPLICIT }];
 
   enum ScrollDirection {
     // Unknown scroll direction. This should not be used.
@@ -121,32 +130,40 @@ message ScrollAction {
 }
 
 // Move mouse action.
-// Next ID: 2
+// Next ID: 3
 message MoveMouseAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Drag and release mouse action.
-// Next ID: 3
+// Next ID: 4
 message DragAndReleaseAction {
   ActionTarget from_target = 1 [features = { field_presence: EXPLICIT }];
 
   ActionTarget to_target = 2 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Select dropdown action.
-// Next ID: 3
+// Next ID: 4
 message SelectAction {
   ActionTarget target = 1 [features = { field_presence: EXPLICIT }];
 
   // The value of the option to select.
   string value = 2 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Navigate the page to a URL action.
-// Next ID: 2
+// Next ID: 3
 message NavigateAction {
   string url = 1 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Wait action waits the specified milliseconds.
@@ -156,18 +173,75 @@ message WaitAction {
 }
 
 // Navigate the page Back action.
-// Next ID: 1
+// Next ID: 2
 message HistoryBackAction {
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Navigate the page Forward action.
-// Next ID: 1
+// Next ID: 2
 message HistoryForwardAction {
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
+
+// Creates a new tab
+// Next ID: 3
+message CreateTabAction {
+  // The id of the window to create the tab in. Passing in invalid window id
+  // will cause the action to fail.
+  int32 window_id = 1 [features = { field_presence: EXPLICIT }];
+
+  // When set to true, the new tab will be visible within the window, although
+  // the window itself may not be visible.
+  bool foreground = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Closes an existing tab.
+// Next ID: 2
+message CloseTabAction {
+  // The id of the tab to close. Passing in invalid tab id will cause the action
+  // to fail.
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Activates an existing tab. This does not affect window visibility or
+// activation.
+// Next ID: 2
+message ActivateTabAction {
+  // The id of the tab to activate. Passing in invalid tab id will cause the
+  // action to fail.
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Creates a new window.
+// Next ID: 1
+message CreateWindowAction {}
+
+// Closes an existing window.
+// Next ID: 2
+message CloseWindowAction {
+  // The id of the window to close. Passing in invalid window id will cause the
+  // action to fail.
+  int32 window_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Activates an existing window. This does not move the window, but it brings it
+// to the front of the z-order, and gives it OS-activation, which means the
+// window will receive keyboard events.
+// Next ID: 2
+message ActivateWindowAction {
+  // The id of the window to activate. Passing in invalid window id will cause
+  // the action to fail.
+  int32 window_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Yields control to the user.
+// Next ID: 1
+message YieldToUserAction {}
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 11
+// Next ID: 18
 message ActionInformation {
   oneof action_info {
     ClickAction click = 1;
@@ -189,6 +263,20 @@ message ActionInformation {
     HistoryForwardAction forward = 9;
 
     WaitAction wait = 10;
+
+    CreateTabAction create_tab = 11;
+
+    CloseTabAction close_tab = 12;
+
+    ActivateTabAction activate_tab = 13;
+
+    CreateWindowAction create_window = 14;
+
+    CloseWindowAction close_window = 15;
+
+    ActivateWindowAction activate_window = 16;
+
+    YieldToUserAction yield_to_user = 17;
   }
 }
 
@@ -202,6 +290,8 @@ message BrowserAction {
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];
 
   // The id of the tab the action will be taken in.
+  // TODO(crbug.com/421441072): Remove this field once all models are using
+  // tab_id in actions.
   int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
@@ -235,6 +325,9 @@ message BrowserActionResult {
 message BrowserStartTask {
   // The id of the tab the task should be started in. If not set, the task
   // will be started in a new tab.
+  // TODO(crbug.com/421441072): Remove this field. This is only needed in the
+  // short term since bluedog needs a mechanism to start tasks in a new tab, and
+  // the model has not yet been trained to use CreateTabAction.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 

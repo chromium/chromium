@@ -351,7 +351,7 @@ message BoundingRect {
 
 // The interaction information for the content node. This indicates whether the
 // node is interactive and what type of interaction it supports.
-// Next ID: 14
+// Next ID: 15
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
@@ -408,6 +408,11 @@ message InteractionInfo {
   //
   // Note: This value is only set for nodes in the viewport.
   int32 document_scoped_z_order = 13 [features = { field_presence: EXPLICIT }];
+
+  // If this node is detected to be is_clickable, provides the reason which
+  // caused that.
+  // Note: This may not capture all the reasons.
+  repeated ClickabilityReason debug_clickability_reasons = 14;
 
   reserved 8;
 }
@@ -1747,6 +1752,32 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 
   reserved 12, 13, 14, 15, 16, 17, 18, 19;
+}
+
+// The reason why a node is clickable.
+// Next ID: 7
+enum ClickabilityReason {
+  // The node is a native form control.
+  CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
+
+  // The node has a click event handler.
+  CLICKABILITY_REASON_CLICK_HANDLER = 1;
+
+  // The node has mouse event handlers like mouseup, mousedown, mouseover and
+  // mouseenter.
+  CLICKABILITY_REASON_MOUSE_EVENTS = 2;
+
+  // The node has keyboard event handlers like keydown, keypress, keyup.
+  CLICKABILITY_REASON_KEY_EVENTS = 3;
+
+  // The node's text can be edited.
+  CLICKABILITY_REASON_EDITABLE = 4;
+
+  // The node uses cursor css to indicate the element is interactive.
+  CLICKABILITY_REASON_CURSOR_POINTER = 5;
+
+  // The node has a clickable aria role.
+  CLICKABILITY_REASON_ARIA_ROLE = 6;
 }
 
 // Next ID: 5
