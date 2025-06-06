@@ -42,7 +42,7 @@ public class EditorFieldValidator {
             mValidator = new EditorFieldValidator();
         }
 
-        public Builder withInitialErrorMessage(String initialErrorMessage) {
+        public Builder withInitialErrorMessage(@Nullable String initialErrorMessage) {
             mValidator.setInitialErrorMessage(initialErrorMessage);
             return this;
         }
@@ -63,7 +63,7 @@ public class EditorFieldValidator {
         }
     }
 
-    public void setInitialErrorMessage(String initialErrorMessage) {
+    public void setInitialErrorMessage(@Nullable String initialErrorMessage) {
         mInitialErrorMessage = initialErrorMessage;
     }
 

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.payments;
 import android.graphics.Bitmap;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,6 +14,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.WebContents;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Native bridge for interacting with service worker based payment apps. */
+@NullMarked
 public class ServiceWorkerPaymentAppBridge {
     /** The interface for checking whether there is an installed SW payment app. */
     public static interface HasServiceWorkerPaymentAppsCallback {

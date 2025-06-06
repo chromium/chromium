@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments;
 import android.content.Intent;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.payments.AndroidIntentLauncher;
 import org.chromium.components.payments.ErrorStrings;
@@ -17,6 +18,7 @@ import org.chromium.ui.base.WindowAndroid;
  * The implementation of Android intent launcher that uses WindowAndroid for sending the "PAY"
  * intent to invoke Android payment apps.
  */
+@NullMarked
 /* package */ class WindowAndroidIntentLauncher implements AndroidIntentLauncher {
     private final WebContents mWebContents;
 

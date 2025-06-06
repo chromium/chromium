@@ -9,14 +9,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.ui.InputProtector;
 
 /** A FrameLayout implementation used to ignore user input based on an InputProtector. */
+@NullMarked
 public class PaymentHandlerContentFrameLayout extends FrameLayout {
-    private InputProtector mInputProtector;
+    private @Nullable InputProtector mInputProtector;
 
     /**
      * Constructor for inflation from XML.
+     *
      * @param context The Android context.
      * @param atts The XML attributes.
      */

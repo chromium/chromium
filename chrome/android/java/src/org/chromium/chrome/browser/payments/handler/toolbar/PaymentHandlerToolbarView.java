@@ -11,11 +11,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 
 /** PaymentHandlerToolbar UI. */
+@NullMarked
 /* package */ class PaymentHandlerToolbarView {
     private final int mToolbarHeightPx;
     private final int mShadowHeightPx;

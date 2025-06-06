@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.payments;
 import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.payments.DialogController;
 import org.chromium.components.payments.ErrorStrings;
@@ -19,6 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The implementation of dialog display controller for PaymentRequest using AlertDialog. */
+@NullMarked
 /* package */ class DialogControllerImpl implements DialogController {
     private final WebContents mWebContents;
     private final AlertDialogFactory mAlertDialogFactory;
@@ -99,8 +101,7 @@ import org.chromium.ui.base.WindowAndroid;
      * @return The Activity context of the web contents where PaymentRequest was invoked, if these
      *     web contents are not being destroyed or hidden. (Otherwise null.)
      */
-    @Nullable
-    private Context getActivityContextForLiveVisibleWebContents() {
+    private @Nullable Context getActivityContextForLiveVisibleWebContents() {
         if (mWebContents.isDestroyed() || mWebContents.getVisibility() != Visibility.VISIBLE) {
             return null;
         }

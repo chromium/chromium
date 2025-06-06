@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Place to define and control payment preferences. */
+@NullMarked
 public class PaymentPreferencesUtil {
     // Avoid instantiation by accident.
     private PaymentPreferencesUtil() {}

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.handler.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 /** PaymentHandlerToolbar UI properties, which fully describe the state of the UI. */
+@NullMarked
 /* package */ class PaymentHandlerToolbarProperties {
     /* package */ static final WritableObjectPropertyKey<GURL> URL =
             new WritableObjectPropertyKey<>();

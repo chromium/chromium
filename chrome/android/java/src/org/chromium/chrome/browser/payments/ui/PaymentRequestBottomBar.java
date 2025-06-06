@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /** This class represents a bar to display at the bottom of the payment request UI. */
+@NullMarked
 public class PaymentRequestBottomBar extends ViewGroup {
     private ImageView mLogoWithName;
     private ImageView mLogo;

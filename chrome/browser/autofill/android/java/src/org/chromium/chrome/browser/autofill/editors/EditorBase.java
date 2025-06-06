@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.editors;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
@@ -50,8 +51,9 @@ public abstract class EditorBase<T extends EditableOption> {
      *     information (`toEdit` was invalid), or even with complete and valid information (`toEdit`
      *     was both complete and valid to begin with).
      */
+    @EnsuresNonNull({"mEditorDialog", "mContext"})
     protected void showEditPrompt(
-            @Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
+            @Nullable T toEdit, Callback<T> doneCallback, Callback<@Nullable T> cancelCallback) {
         assert doneCallback != null;
         assert cancelCallback != null;
         assert mEditorDialog != null;

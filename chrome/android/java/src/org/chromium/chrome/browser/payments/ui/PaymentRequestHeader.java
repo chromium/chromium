@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,6 +26,7 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.ui.util.ColorUtils;
 
 /** This class represents a bar to display at the top of the payment request UI. */
+@NullMarked
 public class PaymentRequestHeader extends FrameLayout {
     private final @ColorInt int mBackgroundColor;
     private final Context mContext;
