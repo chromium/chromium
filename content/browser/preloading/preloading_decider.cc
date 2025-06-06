@@ -99,11 +99,9 @@ class PreloadingDecider::BehaviorConfig {
             blink::features::kPreloadingModelPrerenderModerateThreshold.Get(),
             0,
             100)} {
-    static const base::FeatureParam<std::string> kPointerDownEagerness{
-        &blink::features::kSpeculationRulesPointerDownHeuristics,
-        "pointer_down_eagerness", "conservative,moderate"};
     pointer_down_eagerness_ =
-        EagernessSetFromFeatureParam(kPointerDownEagerness.Get());
+        EagernessSet{blink::mojom::SpeculationEagerness::kConservative,
+                     blink::mojom::SpeculationEagerness::kModerate};
 
     static const base::FeatureParam<std::string> kPointerHoverEagerness{
         &blink::features::kSpeculationRulesPointerHoverHeuristics,

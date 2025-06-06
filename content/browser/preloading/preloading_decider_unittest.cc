@@ -500,33 +500,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(blink::mojom::SpeculationEagerness::kModerate,
                         blink::mojom::SpeculationEagerness::kConservative)));
 
-TEST_F(PreloadingDeciderTest, CanOverridePointerDownEagerness) {
-  // PreloadingDecider defaults to allowing it for conservative candidates,
-  // but for this test we'll allow it only for moderate.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      blink::features::kSpeculationRulesPointerDownHeuristics,
-      {{"pointer_down_eagerness", "moderate"}});
-
-  MockContentBrowserClient browser_client;
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  ASSERT_TRUE(preloading_decider);
-
-  auto candidate =
-      MakeCandidate(GetSameOriginUrl("/candidate1.html"),
-                    blink::mojom::SpeculationAction::kPrefetch,
-                    blink::mojom::SpeculationEagerness::kConservative);
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(std::move(candidate));
-
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
-
-  preloading_decider->OnPointerDown(GetSameOriginUrl("/candidate1.html"));
-  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
-}
-
 TEST_F(PreloadingDeciderTest, CanOverridePointerHoverEagerness) {
   // PreloadingDecider defaults to allowing it for moderate candidates,
   // but for this test we'll allow it only for conservative candidates too.

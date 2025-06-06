@@ -4648,10 +4648,6 @@
       status: "stable",
     },
     {
-      name: "SpeculationRulesPointerDownHeuristics",
-      base_feature_status: "enabled",
-    },
-    {
       name: "SpeculationRulesPointerHoverHeuristics",
       base_feature_status: "enabled",
     },
