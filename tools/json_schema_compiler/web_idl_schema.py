@@ -179,29 +179,50 @@ class DescriptionData(NamedTuple):
 def ProcessNodeDescription(node: IDLNode) -> DescriptionData:
   """Extracts the node description and a list of any parameter descriptions.
 
-  Uses _ExtractNodeComment to first get the comments on lines directly preceding
-  the supplied node and then applies formatting to them. Newlines are removed,
-  but if the comment also includes intentional blank new lines, the different
-  "paragraphs" of the comment will be wrapped with a <p> tag.
+  Extracts comments on lines directly preceding the supplied node and applies
+  formatting to them. Newlines are removed, but if the comment includes
+  intentional blank new lines the different "paragraphs" of the comment will be
+  wrapped with a <p> tag.
 
-  Also extracts out parameter descriptions and applies the above formatting to
-  them. Parameter comments must come at the end of the comment and be of the
-  form:
+  Also extracts any parameter and promise return value descriptions from the end
+  of the comment and applies the above formatting to them. Parameter
+  descriptions are keyed by the parameter name, followed by the description.
+  Promise value descriptions are keyed using the string 'PromiseValue', then the
+  name of the object the promise will resolve to, followed by the description.
+
+  Parameter and promise value descriptions are returned as a dictionary, with
+  the parameter names as keys pointing to the formatted description strings as
+  values.
+
+  For example:
     // General function documentation, can be multiple lines.
     //
     // |arg1_name|: Description of arg1.
-    // |arg2_name|: Description of arg2...
-  Parameter descriptions are returned as a dictionary, with the parameter names
-  as keys pointing to the formatted description strings as values.
+    // |arg2_name|: Description of arg2.
+    // |PromiseValue|: nameOfPromiseValue: Description of promise value.
+
+  Will become:
+  {
+    description: 'General function documentation, can be multiple lines.',
+    parameter_descriptions: {
+      'arg1_name': 'Description of arg1.',
+      'arg2_name': 'Description of arg2.',
+      'PromiseValue': 'nameOfPromiseValue: Description of promise value.'
+    }
+  }
 
   TODO(crbug.com/340297705): Call this for properties.
+  TODO(crbug.com/340297705): The way we handle 'PromiseValue' names/descriptions
+  doesn't play well with the <p> formatting if the description for it has
+  intentional blank new lines. We should fix this.
 
   Args:
     node: The IDL node to look for a descriptive comment above.
 
   Returns:
     A DescriptionData containing the formatted string for the description of the
-    node and a dictionary of formatted strings for any parameter descriptions.
+    node and a dictionary of formatted strings for any parameter descriptions
+    and PromiseValue description.
   """
   comment = _ExtractNodeComment(node)
 
@@ -258,8 +279,11 @@ class Type():
     type_node: The IDLNode for the Type to be processed.
   """
 
-  def __init__(self, type_node: IDLNode) -> None:
+  def __init__(self,
+               type_node: IDLNode,
+               descriptions: Optional[OrderedDict[str, str]] = None) -> None:
     assert type_node.GetClass() == 'Type'
+    self.descriptions = descriptions
     self.type_node = type_node
 
   def Process(self) -> dict:
@@ -300,7 +324,7 @@ class Type():
       # represent this similar to how we represent arguments for Operations,
       # with 'parameters' list that has a single element for the type.
       properties['parameters'] = self._ExtractParametersFromPromiseType(
-          type_details)
+          type_details, self.descriptions)
     elif type_details.IsA('Sequence'):
       properties['type'] = 'array'
       # Sequences are used to represent array types, which have an associated
@@ -344,8 +368,10 @@ class Type():
     raise SchemaCompilerError(
         'Unsupported basic type found when processing type.', type_details)
 
-  def _ExtractParametersFromPromiseType(self,
-                                        type_details: IDLNode) -> List[dict]:
+  def _ExtractParametersFromPromiseType(
+      self,
+      type_details: IDLNode,
+      descriptions: Optional[OrderedDict[str, str]] = None) -> List[dict]:
     """Extracts details for the type a promise will resolve to.
 
     Returns:
@@ -355,7 +381,7 @@ class Type():
       definitions.
     """
 
-    promise_type = PromiseType(type_details).Process()
+    promise_type = PromiseType(type_details, descriptions).Process()
     if 'type' in promise_type and promise_type['type'] is UndefinedType:
       # If the promise type was 'Undefined' we represent it as an empty list.
       return []
@@ -386,7 +412,7 @@ class TypedProperty(ABC):
     self.type_node = node.GetOneOf('Type')
     assert self.type_node is not None, self.type_node.GetLogLine(
         'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
-    self.properties = Type(self.type_node).Process()
+    self.properties = Type(self.type_node, descriptions).Process()
 
   @abstractmethod
   def Process(self) -> dict:
@@ -424,6 +450,14 @@ class PromiseType(TypedProperty):
   def Process(self) -> dict:
     if self.type_node.GetProperty('NULLABLE'):
       self.properties['optional'] = True
+    # If the descriptions use the 'PromiseValue' key, we use that to extract a
+    # name and description for the typed value the promise will resolve to. The
+    # comment consists of the name to use, followed by a colon + space and then
+    # the description string.
+    if self.descriptions and 'PromiseValue' in self.descriptions:
+      name, description = self.descriptions['PromiseValue'].split(': ', 1)
+      self.properties['name'] = name
+      self.properties['description'] = description
     return self.properties
 
 
@@ -483,7 +517,8 @@ class Operation:
     properties['parameters'] = parameters
 
     # Return type processing.
-    return_type = FunctionReturn(self.node).Process()
+    return_type = FunctionReturn(
+        self.node, description_data.parameter_descriptions).Process()
     if 'type' in return_type and return_type['type'] is UndefinedType:
       # This is an Undefined return, so we don't add anything.
       pass

@@ -70,6 +70,13 @@ interface TestWebIdl {
 
   // Comment for onTestTwo.
   static attribute OnTestTwoEvent onTestTwo;
+
+  // Promise returning function, with a comment that provides the name and
+  // description of the value the promise resolves to.
+  // |arg1|: This is a normal argument comment.
+  // |PromiseValue|: returnValueName: A description for the value the promise
+  // resolves to: with an extra colon for good measure.
+  static Promise<ExampleType> namedPromiseReturn(boolean arg1);
 };
 
 // Comment for parameter descriptions on the onTestOne event. The first part of

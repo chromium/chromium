@@ -319,6 +319,7 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('This function has parameter comments.',
                      function.get('description'))
     function_parameters = getFunctionParameters(schema, 'parameterComments')
+    self.assertEqual(2, len(function_parameters))
     self.assertEqual(
         {
             'description':
@@ -337,6 +338,43 @@ class WebIdlSchemaTest(unittest.TestCase):
             'name': 'arg2',
             '$ref': 'ExampleType'
         }, function_parameters[1])
+
+    promise_function = getFunction(schema, 'namedPromiseReturn')
+    self.assertEqual(
+        ('Promise returning function, with a comment that provides the name and'
+         ' description of the value the promise resolves to.'),
+        promise_function.get('description'))
+    promise_function_parameters = getFunctionParameters(schema,
+                                                        'namedPromiseReturn')
+    self.assertEqual(1, len(promise_function_parameters))
+    self.assertEqual(
+        {
+            'description': 'This is a normal argument comment.',
+            'name': 'arg1',
+            'type': 'boolean',
+        },
+        promise_function_parameters[0],
+    )
+    promise_function_async_return = getFunctionAsyncReturn(
+        schema, 'namedPromiseReturn')
+    self.assertEqual(
+        {
+            'name':
+            'callback',
+            'type':
+            'promise',
+            'parameters': [{
+                '$ref':
+                'ExampleType',
+                'name':
+                'returnValueName',
+                'description':
+                ('A description for the value the promise resolves to: with'
+                 ' an extra colon for good measure.'),
+            }],
+        },
+        promise_function_async_return,
+    )
 
   # Tests that API events are processed as expected.
   def testEvents(self):
