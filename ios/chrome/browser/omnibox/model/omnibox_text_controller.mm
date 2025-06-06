@@ -501,8 +501,16 @@
   UITextPosition* start = textField.beginningOfDocument;
   UITextPosition* newPosition = [textField positionFromPosition:start
                                                          offset:caretPos];
-  textField.selectedTextRange = [textField textRangeFromPosition:newPosition
-                                                      toPosition:newPosition];
+  // Position and range can be nil causing crash. crbug.com/422295565
+  if (!newPosition) {
+    return;
+  }
+  UITextRange* textRange = [textField textRangeFromPosition:newPosition
+                                                 toPosition:newPosition];
+  if (!textRange) {
+    return;
+  }
+  textField.selectedTextRange = textRange;
 }
 
 /// Updates the autocomplete popup and other state after the text has been
