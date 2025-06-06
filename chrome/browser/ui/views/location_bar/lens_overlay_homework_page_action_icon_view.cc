@@ -171,6 +171,12 @@ void LensOverlayHomeworkPageActionIconView::OnExecuting(
       lens::LensOverlayInvocationSource::kHomeworkActionChip);
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       GetWebContents()->GetBrowserContext(), lens::features::kLensOverlay);
+
+  // TODO(crbug.com/422844464): Fix Update() so that it correctly handles the
+  // chip disappearing at this point, so that the following lines are no longer
+  // needed.
+  SetVisible(false);
+  ResetSlideAnimation(true);
 }
 
 views::BubbleDialogDelegate* LensOverlayHomeworkPageActionIconView::GetBubble()
