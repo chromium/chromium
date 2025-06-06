@@ -605,18 +605,15 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser(),
                                   maximum_window_size + gfx::Size(1000, 2000));
 
-  // Confirm that the size of the outer window bounds are equal to or less than
-  // the maximum size.
+  // Confirm that the size of the outer window bounds are equal to the maximum
+  // window size.
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
 
   auto* browser_view = static_cast<BrowserView*>(
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  EXPECT_LE(browser_view->GetBounds().size().width(),
-            maximum_window_size.width());
-  EXPECT_LE(browser_view->GetBounds().size().height(),
-            maximum_window_size.height());
+  ASSERT_EQ(maximum_window_size, browser_view->GetBounds().size());
 }
 
 // Context menu should not be shown when right clicking on a document picture in
