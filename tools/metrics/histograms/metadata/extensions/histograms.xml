@@ -3685,14 +3685,15 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadingFromCommandLineBlocked" enum="Boolean"
+<histogram name="Extensions.LoadingFromCommandLine" enum="LoadExtensionFlag"
     expires_after="2025-11-30">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records when loading extensions via the &quot;--load-extension&quot; command
-    line switch is blocked. Emitted once per profile start while extensions are
-    loading.
+    Recorded when extension are loaded via the &quot;--load-extension&quot; or
+    &quot;--disable-extensions-except&quot; command line switch. Emitted once
+    per profile start while extensions are loading with flags present, and the
+    extension is loaded without being blocked.
   </summary>
 </histogram>
 

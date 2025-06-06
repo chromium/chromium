@@ -350,27 +350,7 @@ void ExtensionService::Init() {
 
   LoadExtensionsFromCommandLineFlag(switches::kDisableExtensionsExcept);
   if (load_command_line_extensions) {
-    bool command_line_blocked = true;
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kDisableLoadExtensionCommandLineSwitch)) {
-      LOG(WARNING)
-          << "--load-extension is not allowed in Google Chrome, ignoring.";
-    } else if (safe_browsing::IsEnhancedProtectionEnabled(
-                   *profile_->GetPrefs())) {
-      VLOG(1) << "--load-extension is not allowed for users opted into "
-              << "Enhanced Safe Browsing, ignoring.";
-    } else if (ShouldBlockCommandLineExtension(*profile_)) {
-      // TODO(crbug.com/401529219): Deprecate this restriction once
-      // --load-extension switch is restricted on Chrome builds.
-      VLOG(1)
-          << "--load-extension is not allowed for users that have the policy "
-          << "ExtensionInstallTypeBlocklist::command_line, ignoring.";
-    } else {
-      LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
-      command_line_blocked = false;
-    }
-    base::UmaHistogramBoolean("Extensions.LoadingFromCommandLineBlocked",
-                              command_line_blocked);
+    LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
   }
   EnabledReloadableExtensions();
   delayed_install_manager_->FinishInstallationsDelayedByShutdown();
@@ -404,22 +384,58 @@ void ExtensionService::EnabledReloadableExtensions() {
 
 void ExtensionService::LoadExtensionsFromCommandLineFlag(
     const char* switch_name) {
-  if (command_line_->HasSwitch(switch_name)) {
-    base::CommandLine::StringType path_list =
-        command_line_->GetSwitchValueNative(switch_name);
-    base::StringTokenizerT<base::CommandLine::StringType,
-                           base::CommandLine::StringType::const_iterator>
-        t(path_list, FILE_PATH_LITERAL(","));
-    while (t.GetNext()) {
-      std::string extension_id;
-      UnpackedInstaller::Create(profile_)->LoadFromCommandLine(
-          base::FilePath(t.token_piece()), &extension_id,
-          false /*only-allow-apps*/);
-      if (switch_name == switches::kDisableExtensionsExcept) {
-        extension_registrar_->AddDisableFlagExemptedExtension(extension_id);
-      }
+  CHECK(switch_name == switches::kLoadExtension ||
+        switch_name == switches::kDisableExtensionsExcept);
+  if (!command_line_->HasSwitch(switch_name)) {
+    return;
+  }
+
+  // Check that --load-extension is allowed.
+  // TODO(crbug.com/419530940): Apply restrictions to
+  // --disable-extensions-except switch once the feature is approved and
+  // implemented.
+  if (switch_name == switches::kLoadExtension) {
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kDisableLoadExtensionCommandLineSwitch)) {
+      LOG(WARNING)
+          << "--load-extension is not allowed in Google Chrome, ignoring.";
+      return;
+    }
+    if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+      VLOG(1) << "--load-extension is not allowed for users opted into "
+              << "Enhanced Safe Browsing, ignoring.";
+      return;
+    }
+    if (ShouldBlockCommandLineExtension(*profile_)) {
+      // TODO(crbug.com/401529219): Deprecate this restriction once
+      // --load-extension removal on Chrome builds is fully launched.
+      VLOG(1)
+          << "--load-extension is not allowed for users that have the policy "
+          << "ExtensionInstallTypeBlocklist::command_line, ignoring.";
+      return;
     }
   }
+
+  base::CommandLine::StringType path_list =
+      command_line_->GetSwitchValueNative(switch_name);
+  base::StringTokenizerT<base::CommandLine::StringType,
+                         base::CommandLine::StringType::const_iterator>
+      t(path_list, FILE_PATH_LITERAL(","));
+  while (t.GetNext()) {
+    std::string extension_id;
+    UnpackedInstaller::Create(profile_)->LoadFromCommandLine(
+        base::FilePath(t.token_piece()), &extension_id,
+        /*only-allow-apps=*/false);
+    if (switch_name == switches::kDisableExtensionsExcept) {
+      extension_registrar_->AddDisableFlagExemptedExtension(extension_id);
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "Extensions.LoadingFromCommandLine",
+      switch_name == switches::kLoadExtension
+          ? ExtensionService::LoadExtensionFlag::kLoadExtension
+          : ExtensionService::LoadExtensionFlag::kDisableExtensionsExcept);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

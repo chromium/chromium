@@ -3356,6 +3356,15 @@ Called by update_extension_permission.py.-->
   <int value="1" label="Chrome Web Store"/>
 </enum>
 
+<!-- LINT.IfChange(LoadExtensionFlag) -->
+
+<enum name="LoadExtensionFlag">
+  <int value="0" label="LoadExtension"/>
+  <int value="1" label="DisableExtensionsExcept"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/extensions/extension_service.h:LoadExtensionFlag) -->
+
 <enum name="LoadRulesetResult">
   <int value="0" label="Load succeeded"/>
   <int value="1" label="Load failed - Invalid path"/>
