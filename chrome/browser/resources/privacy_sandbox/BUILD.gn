@@ -50,10 +50,13 @@ build_webui("build") {
     "three_ads_apis_notice.ts",
     "measurement_notice.html.ts",
     "measurement_notice.ts",
+    "base_dialog_learn_more.html.ts",
+    "base_dialog_learn_more.ts",
   ]
 
   css_files = [
     "base_dialog_app.css",
+    "base_dialog_learn_more.css",
     "base_dialog_styles.css",
     "privacy_sandbox_privacy_policy_dialog.css",
     "shared_style.css",

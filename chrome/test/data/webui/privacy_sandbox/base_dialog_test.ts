@@ -6,13 +6,16 @@ import 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
 import 'chrome://privacy-sandbox-base-dialog/topics_consent_notice.js';
 import 'chrome://privacy-sandbox-base-dialog/protected_audience_measurement_notice.js';
 import 'chrome://privacy-sandbox-base-dialog/three_ads_apis_notice.js';
+import 'chrome://privacy-sandbox-base-dialog/base_dialog_learn_more.js';
 
 import type {BaseDialogPageRemote} from 'chrome://privacy-sandbox-base-dialog/base_dialog.mojom-webui.js';
 import type {BaseDialogApp} from 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
 import {BaseDialogBrowserProxy} from 'chrome://privacy-sandbox-base-dialog/base_dialog_browser_proxy.js';
+import type {BaseDialogLearnMore} from 'chrome://privacy-sandbox-base-dialog/base_dialog_learn_more.js';
 import {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from 'chrome://privacy-sandbox-base-dialog/notice.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {TestBaseDialogPageHandler} from './test_base_dialog_browser_proxy.js';
 import {TestBaseDialogBrowserProxy} from './test_base_dialog_browser_proxy.js';
@@ -255,5 +258,33 @@ suite('EEAConsentAndNotice', function() {
     await testButtonClick(
         page, PrivacySandboxNotice.kProtectedAudienceMeasurementNotice,
         PrivacySandboxNoticeEvent.kAck, testHandler);
+  });
+});
+
+suite('BaseDialogLearnMore', function() {
+  let learnMoreElement: BaseDialogLearnMore;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    learnMoreElement = document.createElement('base-dialog-learn-more');
+    document.body.appendChild(learnMoreElement);
+  });
+
+  test('ExpandAndCollapse', async function() {
+    const expandButton =
+        learnMoreElement.shadowRoot.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    // Ensure it's initially collapsed
+    const collapse = learnMoreElement.shadowRoot.querySelector('cr-collapse');
+    assertTrue(!!collapse);
+    assertFalse(collapse.opened);
+    // Expand and ensure it's open
+    expandButton.click();
+    await microtasksFinished();
+    assertTrue(collapse.opened);
+    // // Collapse and ensure it's closed
+    expandButton.click();
+    await microtasksFinished();
+    assertFalse(collapse.opened);
   });
 });
