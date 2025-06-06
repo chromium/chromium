@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 /**
@@ -40,6 +41,7 @@ public class ExtensionToolbarManagerImpl implements ExtensionToolbarManager {
     public void initialize(
             Context context,
             ViewStub extensionToolbarStub,
+            WindowAndroid windowAndroid,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
             ThemeColorProvider themeColorProvider) {
@@ -48,7 +50,11 @@ public class ExtensionToolbarManagerImpl implements ExtensionToolbarManager {
         LinearLayout actionListContainer = container.findViewById(R.id.extension_action_list);
         mExtensionActionListCoordinator =
                 new ExtensionActionListCoordinator(
-                        context, actionListContainer, profileSupplier, currentTabSupplier);
+                        context,
+                        actionListContainer,
+                        windowAndroid,
+                        profileSupplier,
+                        currentTabSupplier);
 
         mExtensionsMenuButton = container.findViewById(R.id.extensions_menu_button);
         mExtensionsMenuButtonCoordinator =

@@ -1647,6 +1647,7 @@ public class ToolbarManager
                     ExtensionToolbarManager.maybeCreate(
                             mActivity,
                             extensionToolbarStub,
+                            windowAndroid,
                             profileSupplier,
                             tabProvider,
                             browsingModeThemeColorProvider);

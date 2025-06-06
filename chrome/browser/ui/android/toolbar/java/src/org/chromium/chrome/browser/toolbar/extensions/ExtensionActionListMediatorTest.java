@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -54,8 +56,10 @@ public class ExtensionActionListMediatorTest {
     private static final Bitmap ICON_WHITE = createSimpleIcon(Color.YELLOW);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Context mContext;
     @Mock private Profile mProfile;
     @Mock private ExtensionActionsBridge.Natives mActionsBridgeJniMock;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private ExtensionActionsBridge mActionsBridge;
     private MockTab mTab1;
@@ -106,7 +110,9 @@ public class ExtensionActionListMediatorTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
-        mMediator = new ExtensionActionListMediator(mModels, mProfileSupplier, mCurrentTabSupplier);
+        mMediator =
+                new ExtensionActionListMediator(
+                        mContext, mWindowAndroid, mModels, mProfileSupplier, mCurrentTabSupplier);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();

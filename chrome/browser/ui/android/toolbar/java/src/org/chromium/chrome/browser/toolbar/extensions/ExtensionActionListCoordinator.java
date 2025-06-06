@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ViewGroupAdapter;
@@ -34,10 +35,13 @@ public class ExtensionActionListCoordinator implements Destroyable {
     public ExtensionActionListCoordinator(
             Context context,
             LinearLayout container,
+            WindowAndroid windowAndroid,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier) {
         ModelList models = new ModelList();
-        mMediator = new ExtensionActionListMediator(models, profileSupplier, currentTabSupplier);
+        mMediator =
+                new ExtensionActionListMediator(
+                        context, windowAndroid, models, profileSupplier, currentTabSupplier);
         mAdapter =
                 new ViewGroupAdapter.Builder(container, models)
                         .registerType(

@@ -239,6 +239,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopup.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
@@ -246,6 +247,14 @@ android_library("java") {
     ]
 
     srcjar_deps += [ "//extensions/browser:extension_action_enums" ]
+
+    deps += [
+      "//base/version_info/android:version_constants_java",
+      "//components/embedder_support/android:content_view_java",
+      "//components/embedder_support/android:web_contents_delegate_java",
+      "//components/thin_webview:factory_java",
+      "//components/thin_webview:java",
+    ]
   }
 }
 
