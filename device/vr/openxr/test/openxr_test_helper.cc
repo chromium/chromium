@@ -13,6 +13,7 @@
 #include <limits>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -20,6 +21,10 @@
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "device/vr/openxr/test/xr_test_gl.h"
+#endif
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
@@ -42,6 +47,13 @@ device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
 int GetOffsetMultiplierForIndex(uint32_t index) {
   return ((index % 2 == 0) ? 1 : -1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+device::Color GetFirstColor(base::span<char> pixels) {
+  CHECK_GE(pixels.size(), 3u);
+  return device::Color(pixels[0], pixels[1], pixels[2], pixels[3]);
+}
+#endif
 
 }  // namespace
 
@@ -105,6 +117,9 @@ void OpenXrTestHelper::Reset() {
 #if BUILDFLAG(IS_WIN)
   d3d_device_ = nullptr;
   textures_arr_.clear();
+#elif BUILDFLAG(IS_ANDROID)
+  opengl_es_textures_arr_.clear();
+  xr_gl_.reset();
 #endif
   acquired_swapchain_texture_ = 0;
   next_handle_ = 0;
@@ -143,6 +158,8 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
 void OpenXrTestHelper::OnPresentedFrame() {
 #if BUILDFLAG(IS_WIN)
   DCHECK_NE(textures_arr_.size(), 0ull);
+#elif BUILDFLAG(IS_ANDROID)
+  DCHECK_NE(opengl_es_textures_arr_.size(), 0ull);
 #endif
 
   std::vector<device::ViewData> submitted_views;
@@ -176,14 +193,13 @@ void OpenXrTestHelper::OnPresentedFrame() {
 
 void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
                                                     device::ViewData& data) {
+  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
+  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 #if BUILDFLAG(IS_WIN)
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
   d3d_device_->GetImmediateContext(&context);
-
-  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
-  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 
   // We copy the submitted texture to a new texture, so we can map it, and
   // read back pixel data.
@@ -220,6 +236,33 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   memcpy(&data.raw_buffer, map_data.pData, buffer_size);
 
   context->Unmap(texture_destination.Get(), 0);
+#elif BUILDFLAG(IS_ANDROID)
+  DCHECK_NE(opengl_es_textures_arr_.size(), 0u);
+  DCHECK_NE(xr_gl_, nullptr);
+  DCHECK_LT(acquired_swapchain_texture_, opengl_es_textures_arr_.size());
+  base::span<char> out_buffer(data.raw_buffer);
+
+  // Generate a framebuffer to read from and attach the current texture to it.
+  GLuint fbo = 0;
+  xr_gl_->glGenFramebuffers_fn(1, &fbo);
+  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
+  xr_gl_->glFramebufferTexture2D_fn(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+      opengl_es_textures_arr_[acquired_swapchain_texture_], 0);
+
+  GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
+  if (status == GL_FRAMEBUFFER_COMPLETE) {
+    // Read a horizontal strip of pixels from the start of the texture; however
+    // many will fit.
+    xr_gl_->glReadPixels_fn(x_start, 0, buffer_size_pixels, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, out_buffer.data());
+    data.color = GetFirstColor(data.raw_buffer);
+  } else {
+    DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
+  }
+
+  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
+  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
 #endif
 }
 
@@ -693,6 +736,25 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
 
     textures_arr_.push_back(texture);
   }
+#elif BUILDFLAG(IS_ANDROID)
+  DCHECK_NE(xr_gl_, nullptr);
+  opengl_es_textures_arr_.clear();
+  if (kMinSwapchainBuffering == 0) {
+    return;
+  }
+
+  opengl_es_textures_arr_.resize(kMinSwapchainBuffering);
+
+  xr_gl_->glGenTextures_fn(kMinSwapchainBuffering,
+                           opengl_es_textures_arr_.data());
+  for (GLuint texture_id : opengl_es_textures_arr_) {
+    xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, texture_id);
+    // Allocate storage for the texture.
+    xr_gl_->glTexImage2D_fn(GL_TEXTURE_2D, 0, kSwapchainFormat, width, height,
+                            0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+  }
+  // Unbind the last texture.
+  xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, 0);
 #endif
 }
 
@@ -706,6 +768,16 @@ void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
   // configurations to enable are not specified until a session begins, so we
   // should use the default primary dimensions to create the textures. The width
   // is multiplied by 2 because WebXR uses a single double wide texture.
+  CreateTextures(kPrimaryViewDimension * 2, kPrimaryViewDimension);
+}
+#elif BUILDFLAG(IS_ANDROID)
+void OpenXrTestHelper::SetOpenGLESInfo(EGLDisplay display, EGLContext context) {
+  // We don't seem to need to use these, but let's verify that we're passed in
+  // a valid display/context.
+  DCHECK_NE(display, EGL_NO_DISPLAY);
+  DCHECK_NE(context, EGL_NO_CONTEXT);
+  xr_gl_ = std::make_unique<XrTestGl>();
+
   CreateTextures(kPrimaryViewDimension * 2, kPrimaryViewDimension);
 }
 #endif
@@ -909,6 +981,10 @@ const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>&
 OpenXrTestHelper::GetSwapchainTextures() const {
   return textures_arr_;
 }
+#elif BUILDFLAG(IS_ANDROID)
+const std::vector<uint32_t>& OpenXrTestHelper::GetSwapchainTextureIDs() const {
+  return opengl_es_textures_arr_;
+}
 #endif
 
 uint32_t OpenXrTestHelper::NextSwapchainImageIndex() {
@@ -917,7 +993,9 @@ uint32_t OpenXrTestHelper::NextSwapchainImageIndex() {
       (acquired_swapchain_texture_ + 1) % textures_arr_.size();
   return acquired_swapchain_texture_;
 #else
-  return 0;
+  acquired_swapchain_texture_ =
+      (acquired_swapchain_texture_ + 1) % opengl_es_textures_arr_.size();
+  return acquired_swapchain_texture_;
 #endif
 }
 

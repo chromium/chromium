@@ -13,10 +13,6 @@
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 
-// TODO(https://crbug.com/381000093): Fix tests on Android.
-// Note: This test needs frame pixels to be sent to the runtime to properly
-// be enabled.
-#if !BUILDFLAG(IS_ANDROID)
 namespace vr {
 namespace {
 
@@ -232,4 +228,3 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
 }
 
 }  // namespace vr
-#endif  // if !BUILDFLAG(IS_ANDROID)

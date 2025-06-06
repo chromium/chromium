@@ -183,9 +183,23 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
 #if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo next is not nullptr");
-#else
+#elif BUILDFLAG(IS_ANDROID)
   RETURN_IF(create_info->next == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstanceCreateInfo next is nullptr");
+  const XrInstanceCreateInfoAndroidKHR* android_create_info =
+      reinterpret_cast<const XrInstanceCreateInfoAndroidKHR*>(
+          create_info->next);
+  RETURN_IF(
+      android_create_info->type != XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR,
+      XR_ERROR_VALIDATION_FAILURE,
+      "XrInstanceCreateInfoAndroidKHR type invalid");
+  RETURN_IF(android_create_info->applicationVM == nullptr,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfoAndroidKHR applicationVM is nullptr");
+  // For testing purposes, assume applicationActivity is provided.
+  RETURN_IF(android_create_info->applicationActivity == nullptr,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrInstanceCreateInfoAndroidKHR applicationActivity is nullptr");
 #endif
 
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
@@ -271,6 +285,18 @@ XrResult xrCreateSession(XrInstance instance,
             "D3D11Device is nullptr");
 
   g_test_helper.SetD3DDevice(binding->device);
+#elif BUILDFLAG(IS_ANDROID)
+  const XrGraphicsBindingOpenGLESAndroidKHR* binding =
+      static_cast<const XrGraphicsBindingOpenGLESAndroidKHR*>(
+          create_info->next);
+  RETURN_IF(binding == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR is nullptr");
+  RETURN_IF(binding->type != XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR type invalid");
+  RETURN_IF(binding->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrGraphicsBindingOpenGLESAndroidKHR next is not nullptr");
+  g_test_helper.SetOpenGLESInfo(binding->display, binding->context);
 #endif
   RETURN_IF(session == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSession is nullptr");
@@ -298,6 +324,10 @@ XrResult xrCreateSwapchain(XrSession session,
             "XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT");
 #if BUILDFLAG(IS_WIN)
   RETURN_IF(create_info->format != DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
+            XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED,
+            "XrSwapchainCreateInfo format unsupported");
+#elif BUILDFLAG(IS_ANDROID)
+  RETURN_IF(create_info->format != OpenXrTestHelper::kSwapchainFormat,
             XR_ERROR_SWAPCHAIN_FORMAT_UNSUPPORTED,
             "XrSwapchainCreateInfo format unsupported");
 #endif
@@ -616,6 +646,9 @@ XrResult xrEnumerateSwapchainFormats(XrSession session,
 #if BUILDFLAG(IS_WIN)
   // This is what is hardcoded in `OpenXrGraphicsBindingD3D11`.
   formats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+#elif BUILDFLAG(IS_ANDROID)
+  // This is what is hardcoded in `OpenXrGraphicsBindingOpenGLES`.
+  formats[0] = OpenXrTestHelper::kSwapchainFormat;
 #endif
 
   return XR_SUCCESS;
@@ -661,6 +694,23 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
               "XrSwapchainImageD3D11KHR next is not nullptr");
 
     image.texture = textures[i].Get();
+  }
+#elif BUILDFLAG(IS_ANDROID)
+  const std::vector<uint32_t>& texture_ids =
+      g_test_helper.GetSwapchainTextureIDs();
+  DCHECK_EQ(texture_ids.size(), image_capacity_input);
+
+  for (uint32_t i = 0; i < image_capacity_input; i++) {
+    XrSwapchainImageOpenGLESKHR& image =
+        reinterpret_cast<XrSwapchainImageOpenGLESKHR*>(images)[i];
+
+    RETURN_IF(image.type != XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR,
+              XR_ERROR_VALIDATION_FAILURE,
+              "XrSwapchainImageOpenGLESKHR type invalid");
+    RETURN_IF(image.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+              "XrSwapchainImageOpenGLESKHR next is not nullptr");
+
+    image.image = texture_ids[i];
   }
 #endif
 

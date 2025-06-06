@@ -407,6 +407,16 @@ if (enable_openxr) {
         "openxr/test/openxr_test_helper.h",
       ]
 
+      deps = [
+        ":vr_test_hook",
+        "//base",
+        "//components/version_info",
+        "//device/gamepad/public/cpp:shared_with_blink",
+        "//device/vr/public/mojom:test_mojom",
+        "//device/vr/public/mojom:vr_service",
+        "//third_party/openxr:openxr_headers",
+      ]
+
       if (is_win) {
         sources += [ "openxr/test/openxr.def" ]
         libs = [
@@ -420,17 +430,15 @@ if (enable_openxr) {
                     rebase_path("//device/vr/openxr/test/openxr.lst",
                                 root_build_dir) ]
         inputs = [ "//device/vr/openxr/test/openxr.lst" ]
+        sources += [
+          "openxr/test/xr_test_gl.cc",
+          "openxr/test/xr_test_gl.h",
+        ]
+        libs = [
+          "EGL",
+          "GLESv2",
+        ]
       }
-
-      deps = [
-        ":vr_test_hook",
-        "//base",
-        "//components/version_info",
-        "//device/gamepad/public/cpp:shared_with_blink",
-        "//device/vr/public/mojom:test_mojom",
-        "//device/vr/public/mojom:vr_service",
-        "//third_party/openxr:openxr_headers",
-      ]
 
       public_deps = [ ":openxr_data" ]
 
