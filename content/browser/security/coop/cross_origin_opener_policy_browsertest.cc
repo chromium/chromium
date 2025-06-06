@@ -4139,8 +4139,34 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                     ->GetProcess()
                     ->GetProcessLock()
                     .is_locked_to_site());
-    histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.None",
-                                        false, 1);
+
+    // The metric for why we failed to reuse the process will be reported
+    // differently depending on whether default SiteInstanceGroups are enabled.
+    // For more information, see how "Navigation.ProcessReuseOnCOOP" is emitted
+    // in `RenderFrameHostManager::GetSiteInstanceForNavigation()`. Importantly,
+    // the sample (i.e., whether actual process reuse happened) should be
+    // reported as false in both cases.
+    if (ShouldUseDefaultSiteInstanceGroup()) {
+      // With default SiteInstanceGroups, if we created a new candidate
+      // SiteInstance at the start of the navigation to `url_2`, then the reason
+      // will be recorded as "DifferentSiteInstance". This is the case when a
+      // speculative RFH is created, which requires either bfcache or
+      // RenderDocument (see also `speculative_rfh` expectations above).
+      // Otherwise, the reason will be recorded as
+      // "SameSiteNavigationInSingleWebContents".
+      if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+        histogram_tester.ExpectUniqueSample(
+            "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", false, 1);
+      } else {
+        histogram_tester.ExpectUniqueSample(
+            "Navigation.ProcessReuseOnCOOP."
+            "SameSiteNavigationInSingleWebContents",
+            false, 1);
+      }
+    } else {
+      histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.None",
+                                          false, 1);
+    }
   } else {
     EXPECT_EQ(rph_id_2, rph_id_3);
 
