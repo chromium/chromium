@@ -54,6 +54,8 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
+  static constexpr char kTabNotFoundError[] = "No tab with id: *.";
+
 #if !BUILDFLAG(IS_ANDROID)
   // This file is slowly being ported to Android. For now, most of it is
   // ifdef'd out.
@@ -65,7 +67,6 @@ class ExtensionTabUtil {
       "Tabs can only be moved between windows in the same profile.";
   static constexpr char kNoCurrentWindowError[] = "No current window";
   static constexpr char kWindowNotFoundError[] = "No window with id: *.";
-  static constexpr char kTabNotFoundError[] = "No tab with id: *.";
   static constexpr char kTabStripNotEditableError[] =
       "Tabs cannot be edited right now (user may be dragging a tab).";
   static constexpr char kTabStripDoesNotSupportTabGroupsError[] =
