@@ -22,7 +22,9 @@ enum class LensOverlayNewTabSource {
   kOmnibox,
   // ... the web context menu.
   kContextMenu,
-  kMaxValue = kContextMenu
+  // ... an explore bar tab.
+  kExploreBarTab,
+  kMaxValue = kExploreBarTab
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayNewTabSource)
 
