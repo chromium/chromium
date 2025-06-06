@@ -9,7 +9,6 @@ import("//build/config/clang/clang.gni")
 import("//build/config/rts.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
-import("//extensions/buildflags/buildflags.gni")
 
 assert(
     is_android || is_robolectric,
@@ -1997,10 +1996,6 @@ if (!is_robolectric && enable_java_templates) {
       }
       if (is_desktop_android) {
         defines += [ "_IS_DESKTOP_ANDROID" ]
-      }
-
-      if (enable_desktop_android_extensions) {
-        defines += [ "_ENABLE_DESKTOP_ANDROID_EXTENSIONS" ]
       }
 
       if (defined(invoker.write_clang_profiling_data) &&
