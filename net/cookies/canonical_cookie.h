@@ -285,24 +285,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   bool IsEquivalent(const CanonicalCookie& ecc) const {
     // It seems like it would make sense to take secure, httponly, and samesite
     // into account, but the RFC doesn't specify this.
-    return IsEquivalent(RefUniqueKey(), ecc);
-  }
-
-  // This function exists to help optimize the case of when a single cookie is
-  // being compared multiple times against other cookies. E.x.:
-  //
-  // cookie1.IsEquivalent(cookie2), cookie1.IsEquivalent(cookie3),
-  // cookie1.IsEquivalent(cookie4), etc.
-  //
-  // Doing the above re-computes cookie1's UniqueKey each time.
-  //
-  // The function allows the caller to cache cookie1's UniqueKey and reuse it
-  // as `this_key`. This function is preferable to manually comparing cookie's
-  // `UniqueKey` as it helps keep the comparison logic in one place.
-  bool IsEquivalent(const RefUniqueCookieKey& this_key,
-                    const CanonicalCookie& ecc) const {
-    DCHECK(this_key == RefUniqueKey());
-    return this_key == ecc.RefUniqueKey();
+    return RefUniqueKey() == ecc.RefUniqueKey();
   }
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
