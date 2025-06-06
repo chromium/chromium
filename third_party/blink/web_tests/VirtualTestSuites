@@ -1008,7 +1008,7 @@
       "fast/parser"
     ],
     "args": ["--disable-features=DOMPartsAPI,DOMPartsAPIMinimal"],
-    "expires": "Jun 1, 2025"
+    "expires": "Jun 1, 2026"
   },
   {
     "prefix": "dom-parts-minimal",
@@ -1018,7 +1018,7 @@
       "external/wpt/dom/parts"
     ],
     "args": ["--enable-features=DOMPartsAPIMinimal"],
-    "expires": "Jun 1, 2025"
+    "expires": "Jun 1, 2026"
   },
   {
     "prefix": "backface-visibility-interop",
@@ -1262,7 +1262,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/popovers"],
     "args": ["--disable-blink-features=HTMLAnchorAttribute"],
-    "expires": "Jun 1, 2025"
+    "expires": "Jun 1, 2026"
   },
   {
     "prefix": "interest-target-no-partial-interest",
@@ -1282,7 +1282,7 @@
       "external/wpt/html/semantics/interactive-elements/the-dialog-element"
     ],
     "args": ["--disable-blink-features=DialogCloseWhenOpenRemoved"],
-    "expires": "Jun 1, 2025"
+    "expires": "Jun 1, 2026"
   },
   {
     "prefix": "parakeet",
@@ -1785,7 +1785,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/registries/"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
-    "expires": "Jun 1, 2025"
+    "expires": "Jun 1, 2026"
   },
 
   "This individual test must be run separately from others, because it makes a",
