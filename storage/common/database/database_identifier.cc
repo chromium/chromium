@@ -12,8 +12,10 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
@@ -40,11 +42,11 @@ std::string EscapeIPv6Hostname(const std::string& hostname) {
 }
 
 // If the passed string is of the form "[1__2_3]", returns "[1::2:3]".
-std::string UnescapeIPv6Hostname(const std::string& hostname) {
+std::string UnescapeIPv6Hostname(std::string_view hostname) {
   if (hostname.size() < 5 || hostname.front() != '[' || hostname.back() != ']')
-    return hostname;
+    return std::string(hostname);
 
-  std::string copy = hostname;
+  std::string copy(hostname);
   base::ReplaceChars(hostname, "_", ":", &copy);
   return copy;
 }
@@ -57,7 +59,7 @@ class DatabaseIdentifier {
  public:
   static const DatabaseIdentifier UniqueFileIdentifier();
   static DatabaseIdentifier CreateFromOrigin(const GURL& origin);
-  static DatabaseIdentifier Parse(const std::string& identifier);
+  static DatabaseIdentifier Parse(std::string_view identifier);
   ~DatabaseIdentifier();
 
   std::string ToString() const;
@@ -110,7 +112,7 @@ DatabaseIdentifier DatabaseIdentifier::CreateFromOrigin(const GURL& origin) {
 }
 
 // static
-DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
+DatabaseIdentifier DatabaseIdentifier::Parse(std::string_view identifier) {
   if (!base::IsStringASCII(identifier))
     return DatabaseIdentifier();
   if (base::Contains(identifier, "..")) {
@@ -141,18 +143,16 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   if (SchemeIsUnique(scheme))
     return DatabaseIdentifier();
 
-  auto port_str = base::MakeStringPiece(
-      identifier.begin() + last_underscore + 1, identifier.end());
+  std::string_view port_str = identifier.substr(last_underscore + 1);
   int port = 0;
   constexpr int kMaxPort = 65535;
   if (!base::StringToInt(port_str, &port) || port < 0 || port > kMaxPort)
     return DatabaseIdentifier();
 
-  std::string hostname =
-      UnescapeIPv6Hostname(std::string(identifier.data() + first_underscore + 1,
-                                       last_underscore - first_underscore - 1));
+  std::string hostname = UnescapeIPv6Hostname(identifier.substr(
+      first_underscore + 1, last_underscore - first_underscore - 1));
 
-  GURL url(scheme + "://" + hostname + "/");
+  GURL url(base::StrCat({scheme, "://", hostname, "/"}));
 
   // If a url doesn't parse cleanly or doesn't round trip, reject it.
   if (!url.is_valid() || url.scheme() != scheme || url.host() != hostname) {
