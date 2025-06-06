@@ -91,6 +91,9 @@ const CGFloat kFeedsWidth = 70.0;
 
   // The background image of the cell.
   UIImageView* _backgroundImageView;
+
+  // Tracks whether the cell has already been configured with option.
+  BOOL _isConfigured;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -194,6 +197,9 @@ const CGFloat kFeedsWidth = 70.0;
 - (void)configureWithBackgroundOption:
             (BackgroundCustomizationConfiguration*)option
                            logoVendor:(id<LogoVendor>)logoVendor {
+  if (_isConfigured) {
+    return;
+  }
   _backgroundConfiguration = option;
   UIView* logoView = logoVendor.view;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -207,6 +213,7 @@ const CGFloat kFeedsWidth = 70.0;
   ]];
 
   [self.innerContentView setCustomSpacing:kOmniboxTopMargin afterView:logoView];
+  _isConfigured = YES;
 }
 
 - (void)updateBackgroundImage:(UIImage*)image {
