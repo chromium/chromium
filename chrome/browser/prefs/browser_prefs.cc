@@ -1131,6 +1131,10 @@ inline constexpr char kPrivacySandboxFakeNoticeFirstSignInTime[] =
 inline constexpr char kPrivacySandboxFakeNoticeFirstSignOutTime[] =
     "privacy_sandbox.fake_notice.first_sign_out_time";
 
+// Deprecated 06/2025.
+inline constexpr char kStorageGarbageCollect[] =
+    "extensions.storage.garbagecollect";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1612,6 +1616,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
   registry->RegisterDictionaryPref(kSharingVapidKey);
   registry->RegisterBooleanPref(kHasSeenWelcomePage, false);
+
+  // Deprecated 06/2025
+  registry->RegisterBooleanPref(kStorageGarbageCollect, false);
 }
 
 }  // namespace
@@ -2933,6 +2940,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kSyncPollInterval);
   profile_prefs->ClearPref(kSharingVapidKey);
   profile_prefs->ClearPref(kHasSeenWelcomePage);
+
+  // Added 06/2025.
+  profile_prefs->ClearPref(kStorageGarbageCollect);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

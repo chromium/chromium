@@ -710,11 +710,6 @@ class ExtensionPrefs : public KeyedService {
   // The underlying AppSorting.
   AppSorting* app_sorting() const;
 
-  // Schedules garbage collection of an extension's on-disk data on the next
-  // start of this ExtensionService. Applies only to extensions with isolated
-  // storage.
-  bool NeedsStorageGarbageCollection() const;
-
   // Used by AppWindowGeometryCache to persist its cache. These methods
   // should not be called directly.
   const base::Value::Dict* GetGeometryCache(

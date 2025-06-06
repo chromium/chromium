@@ -54,10 +54,6 @@ void GarbageCollectStoragePartitionsCommand::ResetStorageGarbageCollectPref() {
   // resetting to false early.
   profile_->GetPrefs()->SetBoolean(
       prefs::kShouldGarbageCollectStoragePartitions, false);
-  // Waits for both prefs to be written to disk before proceeding to prevent
-  // repeating crashes.
-  lock_->extensions_manager().ResetStorageGarbageCollectPref(
-      concurrent.CreateClosure());
   profile_->GetPrefs()->CommitPendingWrite(concurrent.CreateClosure());
   std::move(concurrent)
       .Done(base::BindOnce(&GarbageCollectStoragePartitionsCommand::OnPrefReset,

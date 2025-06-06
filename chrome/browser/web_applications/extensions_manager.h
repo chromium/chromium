@@ -38,14 +38,6 @@ class ExtensionsManager {
 
   virtual std::unordered_set<base::FilePath> GetIsolatedStoragePaths();
 
-  // Returns ExtensionsPref::kStorageGarbageCollect which indicates possibly
-  // deleted Storage Partitions on disk requiring garbage collection.
-  // TODO(crbug.com/40922689): Delete ExtensionsPref::kStorageGarbageCollect.
-  virtual bool ShouldGarbageCollectStoragePartitions();
-
-  // Sets ExtensionsPref::kStorageGarbageCollect to false.
-  virtual void ResetStorageGarbageCollectPref(base::OnceClosure callback);
-
   // Creates an ExtensionInstallerGate which registers itself on
   // ExtensionService to delay Extension installs.
   virtual std::unique_ptr<ExtensionInstallGate>

@@ -116,12 +116,6 @@ inline constexpr char kManifestV2Availability[] = "extensions.manifest_v2";
 // object stored in the Preferences file. The extensions are stored by ID.
 inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 
-// Indicates on-disk data might have skeletal data that needs to be cleaned
-// on the next start of the browser.
-// TODO(crbug.com/40922689): Delete ExtensionsPref::kStorageGarbageCollect.
-inline constexpr char kStorageGarbageCollect[] =
-    "extensions.storage.garbagecollect";
-
 // Pref for policy to enable/disable loading extension from command line
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";

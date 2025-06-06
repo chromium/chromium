@@ -74,27 +74,6 @@ ExtensionsManager::GetIsolatedStoragePaths() {
   return allowlist;
 }
 
-bool ExtensionsManager::ShouldGarbageCollectStoragePartitions() {
-  // `ExtensionPrefs` can be created lazily, so we don't need to wait on
-  // extension service.
-  extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(profile_);
-  return extension_prefs && extension_prefs->NeedsStorageGarbageCollection();
-}
-
-void ExtensionsManager::ResetStorageGarbageCollectPref(
-    base::OnceClosure callback) {
-  // `ExtensionPrefs` can be created lazily, so we don't need to wait on
-  // extension service.
-  extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(profile_);
-  if (extension_prefs) {
-    extension_prefs->pref_service()->SetBoolean(
-        extensions::pref_names::kStorageGarbageCollect, false);
-    extension_prefs->pref_service()->CommitPendingWrite(std::move(callback));
-  }
-}
-
 std::unique_ptr<ExtensionInstallGate>
 ExtensionsManager::RegisterGarbageCollectionInstallGate() {
   return std::make_unique<web_app::ExtensionInstallGateImpl>(profile_);
