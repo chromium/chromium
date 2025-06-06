@@ -69,6 +69,10 @@ class CORE_EXPORT DevToolsEmulator final
   void SetAutoDarkModeOverride(bool);
   void ResetAutoDarkModeOverride();
 
+  void SetAccessibilityFontScaleFactor(double scale);
+  void SetEmulatedAccessibilityFontScaleFactor(double scale);
+  void ResetEmulatedAccessibilityFontScaleFactor();
+
   bool HasViewportOverride() const { return !!viewport_override_; }
 
   // Notify the DevToolsEmulator about a scroll or scale change of the
@@ -160,6 +164,9 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_force_dark_mode_enabled_;
   bool auto_dark_overriden_;
+
+  double embedder_accessibility_font_scale_;
+  bool accessibility_font_scale_emulation_enabled_;
 };
 
 }  // namespace blink

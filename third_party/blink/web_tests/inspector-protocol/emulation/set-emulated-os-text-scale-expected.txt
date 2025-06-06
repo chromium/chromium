@@ -1,0 +1,7 @@
+Tests that the OS text scale can be emulated.
+Initial preferred-text-scale: 1.
+After setting scale to 2, preferred-text-scale is 2.
+After setting scale to 2 twice, preferred-text-scale is 2.
+After setting scale to 0.85, preferred-text-scale is 0.85.
+After stopping emulation, preferred-text-scale is 1.
+

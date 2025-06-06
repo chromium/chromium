@@ -95,6 +95,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       emulated_media_features_(&agent_state_, /*default_value=*/WTF::String()),
       emulated_vision_deficiency_(&agent_state_,
                                   /*default_value=*/WTF::String()),
+      os_text_scale_emulation_enabled_(&agent_state_, /*default_value=*/false),
+      emulated_os_text_scale_(&agent_state_, /*default_value=*/1),
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
       hardware_concurrency_override_(&agent_state_, /*default_value=*/0),
@@ -171,6 +173,9 @@ void InspectorEmulationAgent::Restore() {
   setEmulatedMedia(emulated_media_.Get(), std::move(features));
   if (!emulated_vision_deficiency_.Get().IsNull())
     setEmulatedVisionDeficiency(emulated_vision_deficiency_.Get());
+  if (os_text_scale_emulation_enabled_.Get()) {
+    setEmulatedOSTextScale(emulated_os_text_scale_.Get());
+  }
   auto status_or_rgba = protocol::DOM::RGBA::ReadFrom(
       default_background_color_override_rgba_.Get());
   if (status_or_rgba.ok())
@@ -245,6 +250,7 @@ protocol::Response InspectorEmulationAgent::disable() {
       std::make_unique<protocol::Array<protocol::Emulation::MediaFeature>>());
   if (!emulated_vision_deficiency_.Get().IsNull())
     setEmulatedVisionDeficiency(String("none"));
+  setEmulatedOSTextScale(std::nullopt);
   setCPUThrottlingRate(1);
   if (emulate_focus_.Get()) {
     setFocusEmulationEnabled(false);
@@ -451,6 +457,27 @@ protocol::Response InspectorEmulationAgent::setEmulatedVisionDeficiency(
 
   emulated_vision_deficiency_.Set(type);
   GetWebViewImpl()->GetPage()->SetVisionDeficiency(vision_deficiency);
+  return response;
+}
+
+protocol::Response InspectorEmulationAgent::setEmulatedOSTextScale(
+    std::optional<double> scale) {
+  protocol::Response response = AssertPage();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  if (scale.has_value()) {
+    os_text_scale_emulation_enabled_.Set(true);
+    emulated_os_text_scale_.Set(scale.value());
+    GetWebViewImpl()
+        ->GetDevToolsEmulator()
+        ->SetEmulatedAccessibilityFontScaleFactor(scale.value());
+  } else {
+    os_text_scale_emulation_enabled_.Set(false);
+    GetWebViewImpl()
+        ->GetDevToolsEmulator()
+        ->ResetEmulatedAccessibilityFontScaleFactor();
+  }
   return response;
 }
 

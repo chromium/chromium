@@ -4700,6 +4700,11 @@ domain Emulation
         protanopia
         tritanopia
 
+  # Emulates the given OS text scale.
+  command setEmulatedOSTextScale
+    parameters
+      optional number scale
+
   # Overrides the Geolocation Position or Error. Omitting latitude, longitude or
   # accuracy emulates position unavailable.
   command setGeolocationOverride
