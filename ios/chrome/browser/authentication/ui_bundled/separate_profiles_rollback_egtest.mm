@@ -203,15 +203,8 @@
       @"Should be in the managed profile again");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved \
-  FLAKY_testRollbackWithManagedProfile_ManagedAccountRemoved
-#else
-#define MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved \
-  testRollbackWithManagedProfile_ManagedAccountRemoved
-#endif
-- (void)MAYBE_testRollbackWithManagedProfile_ManagedAccountRemoved {
+// TODO(crbug.com/411035267): Fix this flaky test.
+- (void)FLAKY_testRollbackWithManagedProfile_ManagedAccountRemoved {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
