@@ -4877,10 +4877,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"soft-navigation-heuristics",
      flag_descriptions::kSoftNavigationHeuristicsName,
      flag_descriptions::kSoftNavigationHeuristicsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kSoftNavigationHeuristics,
-         kSoftNavigationHeuristicsVariations,
-         "SoftNavigationHeuristics")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kSoftNavigationHeuristics,
+                                    kSoftNavigationHeuristicsVariations,
+                                    "SoftNavigationHeuristics")},
     {"enable-quic", flag_descriptions::kQuicName,
      flag_descriptions::kQuicDescription, kOsAll,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableQuic, switches::kDisableQuic)},
@@ -12718,6 +12717,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableAutofillStrikeSystemName,
      flag_descriptions::kDisableAutofillStrikeSystemDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kDisableAutofillStrikeSystem)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"allow-non-family-link-url-filter-mode",
+     flag_descriptions::kAllowNonFamilyLinkUrlFilterModeName,
+     flag_descriptions::kAllowNonFamilyLinkUrlFilterModeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(supervised_user::kAllowNonFamilyLinkUrlFilterMode)},
+
+    {"propagate-device-content-filters-to-supervised-user",
+     flag_descriptions::kPropagateDeviceContentFiltersToSupervisedUserName,
+     flag_descriptions::
+         kPropagateDeviceContentFiltersToSupervisedUserDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kPropagateDeviceContentFiltersToSupervisedUser)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

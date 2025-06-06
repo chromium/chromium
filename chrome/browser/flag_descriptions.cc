@@ -92,6 +92,12 @@ const char kAllowLegacyMV2ExtensionsDescription[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAllowNonFamilyLinkUrlFilterModeName[] =
+    "Allow non-family link URL filter mode";
+const char kAllowNonFamilyLinkUrlFilterModeDescription[] =
+    "Allows the URL classification mode without credentials, even if the "
+    "profile is not managed by the family link System.";
+
 const char kAllowTabClosingUponMinimizationName[] =
     "Allow tab to be closed during minimization";
 const char kAllowTabClosingUponMinimizationDescription[] =
@@ -104,7 +110,7 @@ const char kAndroidAdaptiveFrameRateDescription[] =
     "Enable adaptive  refresh rate features on supported devices. Feature "
     "include lowering frame rate for low speed scroll. Has no effect if device "
     "does not support adaptive refresh rate.";
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
@@ -3480,6 +3486,14 @@ const char kPrivacySandboxEqualizedPromptButtonsDescription[] =
 const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
+
+#if BUILDFLAG(IS_ANDROID)
+const char kPropagateDeviceContentFiltersToSupervisedUserName[] =
+    "Propagate device content filters to supervised user";
+const char kPropagateDeviceContentFiltersToSupervisedUserDescription[] =
+    "Propagates the device settings about content filters to supervised "
+    "user features.";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";

@@ -13945,6 +13945,8 @@ from previous Chrome versions.
   <int value="15872227"
       label="OmniboxDiscardTemporaryInputOnTabSwitch:disabled"/>
   <int value="16804822" label="SpeakOnMuteEnabled:disabled"/>
+  <int value="17152031"
+      label="PropagateDeviceContentFiltersToSupervisedUser:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
   <int value="20023271" label="AllowApnModificationPolicy:disabled"/>
   <int value="20095909" label="ImeManifestV3:enabled"/>
@@ -17463,6 +17465,7 @@ from previous Chrome versions.
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
+  <int value="1334953166" label="AllowNonFamilyLinkUrlFilterMode:enabled"/>
   <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
@@ -17651,6 +17654,8 @@ from previous Chrome versions.
   <int value="1408331660" label="enhanced-bookmarks-experiment"/>
   <int value="1409120591" label="PassiveMixedContentWarning:disabled"/>
   <int value="1409437197" label="OfflinePagesLimitlessPrefetching:enabled"/>
+  <int value="1409535553"
+      label="PropagateDeviceContentFiltersToSupervisedUser:disabled"/>
   <int value="1409625676" label="CpaSpecUpdate:disabled"/>
   <int value="1409653883"
       label="GetUserMediaDeferredDeviceSettingsSelection:disabled"/>
@@ -17914,6 +17919,7 @@ from previous Chrome versions.
   <int value="1502417134" label="BulkTabRestore:disabled"/>
   <int value="1502820263" label="IPH_SupervisedUserProfileSignin:disabled"/>
   <int value="1503291145" label="ForceSigninFlowInProfilePicker:enabled"/>
+  <int value="1503477578" label="AllowNonFamilyLinkUrlFilterMode:disabled"/>
   <int value="1504393761" label="AutofillEnableCardProductName:enabled"/>
   <int value="1505028793"
       label="NewTabPageCustomizationToolbarButton:disabled"/>
