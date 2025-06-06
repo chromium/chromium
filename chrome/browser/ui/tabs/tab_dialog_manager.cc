@@ -96,10 +96,13 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
   gfx::Point position =
       host_browser_window->GetWebContentsModalDialogHostForWindow()
           ->GetDialogPosition(size);
-  // Align the first row of pixels inside the border. This is the apparent top
-  // of the dialog.
-  position.set_y(position.y() -
-                 widget->non_client_view()->frame_view()->GetInsets().top());
+
+  if (widget->non_client_view()) {
+    // Align the first row of pixels inside the border. This is the apparent top
+    // of the dialog.
+    position.set_y(position.y() -
+                  widget->non_client_view()->frame_view()->GetInsets().top());
+  }
 
   gfx::Rect dialog_bounds(position, size);
 

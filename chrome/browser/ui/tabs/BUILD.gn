@@ -464,6 +464,7 @@ if (!is_android) {
       "recent_tabs_builder_test_helper.cc",
       "recent_tabs_builder_test_helper.h",
       "recent_tabs_sub_menu_model_browsertest.cc",
+      "tab_dialog_manager_browsertest.cc",
       "tab_menu_model_browsertest.cc",
       "tab_strip_model_browsertest.cc",
     ]
