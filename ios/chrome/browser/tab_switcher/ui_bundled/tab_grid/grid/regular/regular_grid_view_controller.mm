@@ -33,12 +33,15 @@ namespace {
 // inside the group view that correspond to the tabs to be closed.
 NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
     GroupGridCell* group_grid_cell,
-    std::set<int> indexes_in_group_to_close) {
+    std::set<int> indexes_in_group_to_close,
+    BOOL is_shared_group) {
   CHECK(!indexes_in_group_to_close.empty());
 
   // If the entire group is going to be closed, then animate the entire grid
-  // cell.
-  if ((long)indexes_in_group_to_close.size() == group_grid_cell.tabsCount) {
+  // cell. Do not animate the entire grid if the group is shared as a new tab
+  // page will be added to avoid group closure.
+  if (!is_shared_group &&
+      (long)indexes_in_group_to_close.size() == group_grid_cell.tabsCount) {
     return @[ group_grid_cell ];
   }
 
@@ -102,6 +105,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
                                    groupsWithTabsToClose
+                     sharedGroups:(std::set<tab_groups::TabGroupId>)sharedGroups
                   allInactiveTabs:(BOOL)animateAllInactiveTabs
                 completionHandler:(ProceduralBlock)completionHandler {
   base::Time startTime = base::Time::Now();
@@ -126,7 +130,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
                          GetTabGroupViewsToAnimateClosure(
                              ObjCCastStrict<GroupGridCell>(collectionViewCell),
                              groupsWithTabsToClose[item.tabGroupItem.tabGroup
-                                                       ->tab_group_id()])];
+                                                       ->tab_group_id()],
+                             sharedGroups.contains(
+                                 item.tabGroupItem.tabGroup->tab_group_id()))];
         }
         break;
       case GridItemType::kInactiveTabsButton:

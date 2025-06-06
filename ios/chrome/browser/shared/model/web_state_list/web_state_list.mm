@@ -672,7 +672,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   int insertion_index = kInvalidIndex;
   std::unique_ptr<web::WebState> web_state_to_insert;
   // Do not insert web state when shuting down the app. All tabs are closed.
-  bool is_shutting_down = params.is_closing && !params.is_user_action;
+  bool is_shutting_down = params.is_closing && !params.is_user_action &&
+                          !params.by_browsing_data_remover;
   if (!is_shutting_down && ShouldInsertWebState(group)) {
     // In case the group is empty but should be kept, add a new tab in it
     // to prevent its deletion.

@@ -64,10 +64,10 @@ class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
   // YES if the group only have 1 tab and the group is shared.
   bool ShouldDisplayLastTabCloseAlert(const TabGroup* group);
 
- private:
   // true if the group is shared.
   bool IsSharedGroup(const TabGroup* group);
 
+ private:
   // Associated profile.
   raw_ptr<ProfileIOS> profile_;
 

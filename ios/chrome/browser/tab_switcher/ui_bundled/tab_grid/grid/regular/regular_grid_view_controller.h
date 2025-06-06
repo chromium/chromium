@@ -29,6 +29,7 @@ class TabGroupId;
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
                                    groupsWithTabsToClose
+                     sharedGroups:(std::set<tab_groups::TabGroupId>)sharedGroups
                   allInactiveTabs:(BOOL)animateAllInactiveTabs
                 completionHandler:(ProceduralBlock)completionHandler;
 

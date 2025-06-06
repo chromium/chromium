@@ -1094,6 +1094,52 @@ void WaitForFakeJoinFlowView() {
                   currentURL.spec().c_str());
 }
 
+// Ensures new tab is added when moving the last tab of a shared group.
+- (void)testLastTabCloseWithClearBrowsingData {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+
+  AddSharedGroup(/*owner=*/NO);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Open clear browsing data page.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_DELETE_BROWSING_DATA_BUTTON))]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(0)];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  // Check that the 2 tab cell open at the beginning of the test are not in the
+  // group anymore.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+}
+
 // Ensures that adding a tab from another account reflects correctly in a shared
 // group.
 - (void)testAddNewTabFromAnotherAccount {

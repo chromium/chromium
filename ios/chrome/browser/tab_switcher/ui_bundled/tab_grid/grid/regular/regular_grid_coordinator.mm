@@ -206,11 +206,13 @@
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
                                    groupsWithTabsToClose
+                     sharedGroups:(std::set<tab_groups::TabGroupId>)sharedGroups
                   allInactiveTabs:(BOOL)animateAllInactiveTabs
                 completionHandler:(ProceduralBlock)completionHandler {
   [self hideTabGroup];  // Make sure that no tab group is being displayed.
   [_gridViewController animateTabsClosureForTabs:tabsToClose
                                           groups:groupsWithTabsToClose
+                                    sharedGroups:sharedGroups
                                  allInactiveTabs:animateAllInactiveTabs
                                completionHandler:completionHandler];
 }
