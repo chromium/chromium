@@ -6,12 +6,11 @@
 
 #include <string>
 
-#include "build/build_config.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace policy {
 
@@ -98,7 +98,7 @@ void RemoteCommandsInvalidator::Start() {
 
   state_ = STARTED;
 
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [](invalidation::InvalidationService* service) {
                    // Do nothing.
                  },
@@ -210,7 +210,7 @@ void RemoteCommandsInvalidator::ReloadPolicyData(
     return;
   }
 
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [this, policy](invalidation::InvalidationService* service) {
                    ReloadPolicyDataWithInvalidationService(policy);
                  },
@@ -245,7 +245,7 @@ void RemoteCommandsInvalidator::ReloadPolicyDataWithInvalidationService(
 
 bool RemoteCommandsInvalidator::IsRegistered() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](invalidation::InvalidationService* service) {
             return service &&
                    invalidation_service_observation_.IsObservingSource(service);
@@ -264,14 +264,14 @@ bool RemoteCommandsInvalidator::AreInvalidationsEnabled() const {
   }
 
   return std::visit(
-      base::Overloaded{[](invalidation::InvalidationService* service) {
-                         return service->GetInvalidatorState() ==
-                                invalidation::InvalidatorState::kEnabled;
-                       },
-                       [this](invalidation::InvalidationListener* listener) {
-                         return are_invalidations_expected_ ==
-                                invalidation::InvalidationsExpected::kYes;
-                       }},
+      absl::Overload{[](invalidation::InvalidationService* service) {
+                       return service->GetInvalidatorState() ==
+                              invalidation::InvalidatorState::kEnabled;
+                     },
+                     [this](invalidation::InvalidationListener* listener) {
+                       return are_invalidations_expected_ ==
+                              invalidation::InvalidationsExpected::kYes;
+                     }},
       invalidation_service_or_listener_);
 }
 
