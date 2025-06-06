@@ -6,6 +6,9 @@
 #define EXTENSIONS_BROWSER_API_I18N_I18N_API_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

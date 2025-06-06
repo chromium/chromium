@@ -15,6 +15,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 using ExtensionI18nTest = ExtensionApiTest;

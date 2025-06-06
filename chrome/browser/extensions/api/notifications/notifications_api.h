@@ -9,7 +9,10 @@
 
 #include "chrome/common/extensions/api/notifications.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

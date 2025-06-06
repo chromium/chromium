@@ -55,6 +55,8 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 using extensions::Extension;
