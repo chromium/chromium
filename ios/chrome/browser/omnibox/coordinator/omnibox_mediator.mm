@@ -106,6 +106,8 @@ using base::UserMetricsAction;
   _consumer = consumer;
 
   [self updateConsumerEmptyTextAndImage];
+  // Forces the layout of the leading image.
+  [self setDefaultLeftImage];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
