@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO: crbug.com/323610278 - Remove the "Cast enum version" calls in each test
+// once linux cast builds no longer use CMA.
+
 #include "chromecast/starboard/media/media/starboard_resampler.h"
 
 #include <cstdint>
@@ -49,11 +52,20 @@ TEST(StarboardResamplerTest, PCM8ToS16) {
   const std::vector<int16_t> expected_data = {static_cast<int16_t>(0x8000), 0,
                                               0x7FFF};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
                                                kSampleFormatU8, kCodecPCM, 2,
                                                buffer_data)
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatU8,
+          ::media::AudioCodec::kPCM, 2, buffer_data)
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCM8ToS32) {
@@ -61,11 +73,20 @@ TEST(StarboardResamplerTest, PCM8ToS32) {
   const std::vector<int32_t> expected_data = {static_cast<int32_t>(0x80000000),
                                               0, 0x7FFFFFFF};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
                                                kSampleFormatU8, kCodecPCM, 2,
                                                buffer_data)
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatU8,
+          ::media::AudioCodec::kPCM, 2, buffer_data)
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMU8ToFloat) {
@@ -73,10 +94,18 @@ TEST(StarboardResamplerTest, PCMU8ToFloat) {
   const std::vector<float> expected_f32_data = {-0.9921875, -0.984375,
                                                 -0.9765625, -0.96875};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
                                                kSampleFormatU8, kCodecPCM, 2,
                                                buffer_data),
               MatchesFloatSpan(expected_f32_data));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatU8,
+          ::media::AudioCodec::kPCM, 2, buffer_data),
+      MatchesFloatSpan(expected_f32_data));
 }
 
 ////// END OF U8 TO OTHER FORMATS
@@ -86,11 +115,20 @@ TEST(StarboardResamplerTest, PCMS16ToS16) {
   const std::vector<int16_t> buffer_data = {-32768, 0, 32767};
   const std::vector<int16_t> expected_data = {-32768, 0, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
                                                kSampleFormatS16, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS16ToS32) {
@@ -99,11 +137,20 @@ TEST(StarboardResamplerTest, PCMS16ToS32) {
   const std::vector<int32_t> expected_data = {static_cast<int32_t>(0x80000000),
                                               0, 0x7FFFFFFF};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
                                                kSampleFormatS16, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS16ToFloat) {
@@ -113,10 +160,18 @@ TEST(StarboardResamplerTest, PCMS16ToFloat) {
   const std::vector<float> expected_f32_data = {-1.0f, -0.5f, 0.0f,
                                                 0.499984741f, 1.0f};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
                                                kSampleFormatS16, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+      MatchesFloatSpan(expected_f32_data));
 }
 
 // End of Signed 16 Conversions
@@ -127,11 +182,20 @@ TEST(StarboardResamplerTest, PCMS24ToS16) {
                                             0,    0xFF, 0xFF, 0x7F};
   const std::vector<int16_t> expected_data = {-17493, 0, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
                                                kSampleFormatS24, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS24,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS24ToS32) {
@@ -142,11 +206,20 @@ TEST(StarboardResamplerTest, PCMS24ToS32) {
   const std::vector<int32_t> expected_data = {static_cast<int32_t>(0x80000000),
                                               0, 0x7FFFFFFF};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
                                                kSampleFormatS24, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS24,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS24ToFloat) {
@@ -154,10 +227,18 @@ TEST(StarboardResamplerTest, PCMS24ToFloat) {
                                             0, 0xFF, 0xFF, 0x7F};
   const std::vector<float> expected_f32_data = {-1.0f, 0.0f, 1.0f};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
                                                kSampleFormatS24, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS24,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+      MatchesFloatSpan(expected_f32_data));
 }
 
 // End of Signed 24 Conversions
@@ -167,22 +248,40 @@ TEST(StarboardResamplerTest, PCMS32ToS16) {
   const std::vector<int32_t> buffer_data = {-2147483648, 0, 70000, 2147483647};
   const std::vector<int16_t> expected_data = {-32768, 0, 1, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
                                                kSampleFormatS32, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS32,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS32ToS32) {
   const std::vector<int32_t> buffer_data = {-2147483647, 0, 2147483647};
   const std::vector<int32_t> expected_data = {-2147483647, 0, 2147483647};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
                                                kSampleFormatS32, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS32,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMS32ToFloat) {
@@ -190,10 +289,18 @@ TEST(StarboardResamplerTest, PCMS32ToFloat) {
                                             0x7FFFFFFF};
   const std::vector<float> expected_f32_data = {-1.0f, 0.0f, 1.0f};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
                                                kSampleFormatS32, kCodecPCM, 2,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS32,
+          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+      MatchesFloatSpan(expected_f32_data));
 }
 
 // End of Signed 32 Conversions
@@ -203,32 +310,61 @@ TEST(StarboardResamplerTest, PCMFloatToS16) {
   const std::vector<float> buffer_data = {-1.0f, 0.0f, 1.0f};
   const std::vector<int16_t> expected_data = {-32768, 0, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatF32, kCodecPCM, 2,
                   base::as_byte_span(base::allow_nonunique_obj, buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatF32,
+          ::media::AudioCodec::kPCM, 2,
+          base::as_byte_span(base::allow_nonunique_obj, buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMFloatToS32) {
   const std::vector<float> buffer_data = {-1.0f, 0.0f, 1.0f};
   const std::vector<int32_t> expected_data = {-2147483648, 0, 2147483647};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS32, kSampleFormatF32, kCodecPCM, 2,
                   base::as_byte_span(base::allow_nonunique_obj, buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatF32,
+          ::media::AudioCodec::kPCM, 2,
+          base::as_byte_span(base::allow_nonunique_obj, buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PCMFloatToFloat) {
   const std::vector<float> buffer_data = {-1, 0.0234375, 0, 1};
   const std::vector<float> expected_f32_data = {-1, 0.0234375, 0, 1};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatF32, kSampleFormatF32, kCodecPCM, 2,
                   base::as_byte_span(base::allow_nonunique_obj, buffer_data)),
               MatchesFloatSpan(expected_f32_data));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatF32,
+          ::media::AudioCodec::kPCM, 2,
+          base::as_byte_span(base::allow_nonunique_obj, buffer_data)),
+      MatchesFloatSpan(expected_f32_data));
 }
 
 // End of Float Conversions
@@ -240,9 +376,18 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM16) {
   const std::vector<int16_t> expected_data = {-32768, 16384, 32767,
                                               -32768, 16384, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatPlanarS16,
                   kCodecPCM, 3, base::as_byte_span(buffer_data))
+                  .as_span(),
+              ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarS16,
+                  ::media::AudioCodec::kPCM, 3, base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -254,9 +399,18 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM32) {
   const std::vector<int16_t> expected_data = {-32768, 15, 31, 32767,
                                               -32768, 15, 31, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatPlanarS32,
                   kCodecPCM, 4, base::as_byte_span(buffer_data))
+                  .as_span(),
+              ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarS32,
+                  ::media::AudioCodec::kPCM, 4, base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -267,12 +421,22 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCMF32) {
   const std::vector<int16_t> expected_data = {-32768, 15, 32767,
                                               -32768, 15, 32767};
 
+  // Cast enum version.
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS16, kSampleFormatPlanarF32, kCodecPCM, 3,
           base::as_byte_span(base::allow_nonunique_obj, buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarF32,
+                  ::media::AudioCodec::kPCM, 3,
+                  base::as_byte_span(base::allow_nonunique_obj, buffer_data))
+                  .as_span(),
+              ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM32Mono) {
@@ -300,9 +464,18 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM32Mono) {
                                               0x900,
                                               0x7FFF};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatPlanarS32,
                   kCodecPCM, 1, base::as_byte_span(buffer_data))
+                  .as_span(),
+              ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarS32,
+                  ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -316,9 +489,18 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM32MaxChannels) {
       0x0, 0x100, 0x200, 0x300, 0x400, 0x500, 0x600, 0x700,
       0x0, 0x100, 0x200, 0x300, 0x400, 0x500, 0x600, 0x700};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatPlanarS32,
                   kCodecPCM, 8, base::as_byte_span(buffer_data))
+                  .as_span(),
+              ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarS32,
+                  ::media::AudioCodec::kPCM, 8, base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -328,11 +510,20 @@ TEST(StarboardResamplerTest,
   const std::vector<int16_t> buffer_data = {32640, 1040, 4100, 255};
   const std::vector<int16_t> expected_data = {-32641, 4100, 1040, -256};
 
+  // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
                   kStarboardPcmSampleFormatS16, kSampleFormatS16,
                   kCodecPCM_S16BE, 2, base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
+
+  // Chromium enum version.
+  EXPECT_THAT(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kPCM_S16BE, 2, base::as_byte_span(buffer_data))
+          .as_span(),
+      ElementsAreArray(base::as_byte_span(expected_data)));
 }
 
 // End of Signed 16 Conversions

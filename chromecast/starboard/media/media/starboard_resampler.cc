@@ -133,6 +133,8 @@ int BytesPerChannel(StarboardPcmSampleFormat format) {
     case kStarboardPcmSampleFormatS32:
     case kStarboardPcmSampleFormatF32:
       return 4;
+    default:
+      LOG(FATAL) << "Unsupported StarboardPcmSampleFormat: " << format;
   }
 }
 
@@ -267,6 +269,71 @@ bool RequiresResampling(StarboardPcmSampleFormat format_to_decode_to,
        format_to_decode_from == kSampleFormatF32);
   return !same_format;
 }
+
+// Converts from chromium SampleFormat to cast SampleFormat.
+//
+// TODO(crbug.com/323610278): remove this after deprecating CMA.
+SampleFormat ToCastSampleFormat(::media::SampleFormat format) {
+  switch (format) {
+    case ::media::kSampleFormatU8:
+      return kSampleFormatU8;
+    case ::media::kSampleFormatS16:
+      return kSampleFormatS16;
+    case ::media::kSampleFormatS24:
+      return kSampleFormatS24;
+    case ::media::kSampleFormatS32:
+      return kSampleFormatS32;
+    case ::media::kSampleFormatF32:
+      return kSampleFormatF32;
+    case ::media::kSampleFormatPlanarU8:
+      return kSampleFormatPlanarU8;
+    case ::media::kSampleFormatPlanarS16:
+      return kSampleFormatPlanarS16;
+    case ::media::kSampleFormatPlanarF32:
+      return kSampleFormatPlanarF32;
+    case ::media::kSampleFormatPlanarS32:
+      return kSampleFormatPlanarS32;
+    default:
+      LOG(FATAL) << "Unsupported ::media::SampleFormat: " << format;
+  }
+}
+
+// Converts from chromium AudioCodec to cast AudioCodec.
+//
+// TODO(crbug.com/323610278): remove this after deprecating CMA.
+AudioCodec ToCastAudioCodec(::media::AudioCodec codec) {
+  switch (codec) {
+    case ::media::AudioCodec::kAAC:
+      return kCodecAAC;
+    case ::media::AudioCodec::kMP3:
+      return kCodecMP3;
+    case ::media::AudioCodec::kPCM:
+      return kCodecPCM;
+    case ::media::AudioCodec::kPCM_S16BE:
+      return kCodecPCM_S16BE;
+    case ::media::AudioCodec::kVorbis:
+      return kCodecVorbis;
+    case ::media::AudioCodec::kOpus:
+      return kCodecOpus;
+    case ::media::AudioCodec::kFLAC:
+      return kCodecFLAC;
+    case ::media::AudioCodec::kEAC3:
+      return kCodecEAC3;
+    case ::media::AudioCodec::kAC3:
+      return kCodecAC3;
+    case ::media::AudioCodec::kMpegHAudio:
+      return kCodecMpegHAudio;
+    case ::media::AudioCodec::kDTS:
+      return kCodecDTS;
+    case ::media::AudioCodec::kDTSXP2:
+      return kCodecDTSXP2;
+    case ::media::AudioCodec::kDTSE:
+      return kCodecDTSE;
+    default:
+      LOG(FATAL) << "Unsupported audio codec: " << codec;
+  }
+}
+
 }  // namespace
 
 base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
@@ -288,6 +355,17 @@ base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
 
   return ResamplePCM(in_data, audio_channels, format_to_decode_from,
                      format_to_decode_to, audio_codec);
+}
+
+base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
+    StarboardPcmSampleFormat format_to_decode_to,
+    ::media::SampleFormat format_to_decode_from,
+    ::media::AudioCodec audio_codec,
+    int audio_channels,
+    base::span<const uint8_t> in_data) {
+  return ResamplePCMAudioDataForStarboard(
+      format_to_decode_to, ToCastSampleFormat(format_to_decode_from),
+      ToCastAudioCodec(audio_codec), audio_channels, in_data);
 }
 
 }  // namespace media

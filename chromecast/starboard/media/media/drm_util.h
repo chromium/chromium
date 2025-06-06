@@ -11,6 +11,7 @@
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
+#include "media/base/decoder_buffer.h"
 
 namespace chromecast {
 namespace media {
@@ -26,10 +27,15 @@ namespace media {
 // Instances of this class should be created via DrmInfoWrapper::Create().
 class DrmInfoWrapper {
  public:
+  // TODO(antoniori): deprecate this version after moving to StarboardRenderer.
+  //
   // Extracts and returns DRM info from `buffer`. If the buffer is not
-  // encrypted, the StarboardDrmSampleInfo returned by GetDrmSampleInfo will be
-  // null.
+  // encrypted, GetDrmSampleInfo() will return null.
   static DrmInfoWrapper Create(const CastDecoderBuffer& buffer);
+
+  // Extracts and returns DRM info from `buffer`. If the buffer is not
+  // encrypted, GetDrmSampleInfo() will return null.
+  static DrmInfoWrapper Create(const ::media::DecoderBuffer& buffer);
 
   // DrmInfoWrapper is movable but not copyable.
   DrmInfoWrapper(DrmInfoWrapper&& other);
