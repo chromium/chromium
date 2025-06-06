@@ -207,7 +207,13 @@ CollaborationGroupInfoBarDelegate::GetInstantMessageIdentifier() const {
   if (attributions.empty()) {
     return std::nullopt;
   }
-  return attributions.at(0).id;
+
+  const auto& message_id = attributions.at(0).id;
+  if (!message_id.has_value() || !message_id.value().is_valid()) {
+    return std::nullopt;
+  }
+
+  return message_id;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
