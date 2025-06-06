@@ -7,8 +7,6 @@
 
 #include <variant>
 
-#include "base/memory/raw_ptr.h"
-
 class Browser;
 class Profile;
 
@@ -42,4 +40,4 @@ class PreloadContext {
 
 }  // namespace webui
 
-#endif  /// CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_

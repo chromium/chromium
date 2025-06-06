@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/memory/raw_ptr.h"
 
 // The BreakIterator class iterates through the words, word breaks, and
 // line breaks in a UTF-16 string.

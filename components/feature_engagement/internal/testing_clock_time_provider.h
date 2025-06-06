@@ -6,7 +6,6 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_TESTING_CLOCK_TIME_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/internal/time_provider.h"
 

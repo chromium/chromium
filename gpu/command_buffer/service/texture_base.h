@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
