@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -44,6 +45,13 @@ NavigationHandler::NavigationHandler(
 void NavigationHandler::HandleNewNavigation(
     content::NavigationHandle* navigation_handle,
     Profile* profile) {
+  // TODO(crbug.com/408016824): Move this Feature flag check to the orchestrator
+  // once implemented.
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxNoticeFramework)) {
+    return;
+  }
+
   auto* tab_interface =
       tabs::TabInterface::GetFromContents(navigation_handle->GetWebContents());
   if (!tab_interface) {

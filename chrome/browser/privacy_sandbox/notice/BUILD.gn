@@ -222,6 +222,7 @@ source_set("browser_tests") {
       ":desktop_view_manager",
       "//chrome/browser/sync",
       "//chrome/test:test_support_ui",
+      "//components/privacy_sandbox:features",
     ]
   }
 }

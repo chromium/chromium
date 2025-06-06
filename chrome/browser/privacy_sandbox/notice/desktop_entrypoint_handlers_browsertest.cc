@@ -16,6 +16,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -28,7 +29,12 @@ using ::testing::Mock;
 class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
  public:
   PrivacySandboxNoticeEntryPointHandlersTest()
-      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxNoticeFramework,
+                               {}}},
+        {});
+  }
 
   void RegisterTestingSyncServiceFactory(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -80,6 +86,7 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
   raw_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
   net::EmbeddedTestServer https_test_server_;
   base::CallbackListSubscription services_subscription_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that navigation to unsuitable URLS do not alert view manager.
