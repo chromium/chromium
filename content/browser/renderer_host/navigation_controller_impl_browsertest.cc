@@ -22976,12 +22976,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(origin_to_commit.value(), committed_origin);
 
   GURL site_url = contents()->GetSiteInstance()->GetSiteURL();
-  if (AreStrictSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(site_url.spec(),
               "data:" + origin_to_commit->GetNonceForTesting()->ToString());
   } else {
-    // Without site isolation and without DefaultSiteInstanceGroups, the data:
-    // URL ends up in the default SiteInstance.
+    // Without site isolation, the data: URL ends up in the default
+    // SiteInstance.
     EXPECT_EQ(site_url.spec(), "http://unisolated.invalid/");
   }
 }

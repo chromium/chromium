@@ -15,7 +15,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_host_resolver.h"
-#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -391,13 +390,13 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED));
 
-  if (content::AreStrictSiteInstancesEnabled() &&
+  if (content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
       !content::SiteIsolationPolicy::
           AreOriginKeyedProcessesEnabledByDefault()) {
-    // if a.com is isolated already (as is the case with full site isolation)
-    // or if DefaultSiteInstanceGroups are enabled, and origin isolation is not
-    // used, the navigation to sub.a.com will be made in a SiteInstance with a
-    // "a.com" site URL, which will match a.com BLOCK rule.
+    // if a.com is isolated already (as is the case with full
+    // site isolation but not the case under origin isolation), the navigation
+    // to sub.a.com will be made in a SiteInstance with a "a.com" site URL,
+    // which will match a.com BLOCK rule.
     EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   } else {
     // If nothing is isolated by default (like on Android), we'll navigate in a
