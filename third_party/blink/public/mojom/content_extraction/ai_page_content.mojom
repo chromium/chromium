@@ -116,6 +116,31 @@ struct AIPageContentFrameInteractionInfo {
   AIPageContentSelection? selection;
 };
 
+// Provides the reasons which make an element clickable.
+enum AIPageContentClickabilityReason {
+  // The node is a native form control.
+  kClickableControl,
+
+  // The node has a click event handler.
+  kClickEvents,
+
+  // The node has mouse event handlers like mouseup, mousedown, mouseover and
+  // mouseenter.
+  kMouseEvents,
+
+  // The node has keyboard event handlers like keydown, keypress, keyup.
+  kKeyEvents,
+
+  // The node's text can be edited.
+  kEditable,
+
+  // The node uses cursor css to indicate the element is interactive.
+  kCursorPointer,
+
+  // The node has a clickable aria role.
+  kAriaRole
+};
+
 struct AIPageContentNodeInteractionInfo {
   // If this node supports scrolling, provides information about its current
   // state.
@@ -155,6 +180,11 @@ struct AIPageContentNodeInteractionInfo {
   //
   // Note: This value is only set for nodes in the viewport.
   int32? document_scoped_z_order;
+
+  // If this node is detected to be is_clickable, provides the reason which
+  // caused that.
+  // Note: This may not capture all the reasons.
+  array<AIPageContentClickabilityReason> debug_clickability_reasons;
 };
 
 // The coordinate space for the dimensions here is physical coordinates (not

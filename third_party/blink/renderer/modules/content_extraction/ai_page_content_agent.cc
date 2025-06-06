@@ -213,6 +213,49 @@ bool IsVisible(const LayoutObject& object) {
   return object.Style()->Visibility() == EVisibility::kVisible;
 }
 
+void AddClickabilityReasons(Element& element,
+                            mojom::blink::AIPageContentAttributes& attributes) {
+  auto& interaction_info = *attributes.node_interaction_info;
+
+  using Reason = mojom::blink::AIPageContentClickabilityReason;
+
+  if (element.IsClickableControl()) {
+    interaction_info.debug_clickability_reasons.push_back(
+        Reason::kClickableControl);
+  }
+
+  if (element.HasJSBasedEventListeners(event_type_names::kClick)) {
+    interaction_info.debug_clickability_reasons.push_back(Reason::kClickEvents);
+  }
+
+  if (element.HasJSBasedEventListeners(event_type_names::kMouseover) ||
+      element.HasJSBasedEventListeners(event_type_names::kMouseenter) ||
+      element.HasJSBasedEventListeners(event_type_names::kMouseup) ||
+      element.HasJSBasedEventListeners(event_type_names::kMousedown)) {
+    interaction_info.debug_clickability_reasons.push_back(Reason::kMouseEvents);
+  }
+
+  if (element.HasJSBasedEventListeners(event_type_names::kKeydown) ||
+      element.HasJSBasedEventListeners(event_type_names::kKeypress) ||
+      element.HasJSBasedEventListeners(event_type_names::kKeyup)) {
+    interaction_info.debug_clickability_reasons.push_back(Reason::kKeyEvents);
+  }
+
+  if (IsEditable(element)) {
+    interaction_info.debug_clickability_reasons.push_back(Reason::kEditable);
+  }
+
+  const ComputedStyle& style = element.ComputedStyleRef();
+  if (style.Cursor() == ECursor::kPointer && !style.CursorIsInherited()) {
+    interaction_info.debug_clickability_reasons.push_back(
+        Reason::kCursorPointer);
+  }
+
+  if (ui::IsClickable(*attributes.aria_role)) {
+    interaction_info.debug_clickability_reasons.push_back(Reason::kAriaRole);
+  }
+}
+
 bool ShouldSkipSubtree(const LayoutObject& object) {
   auto* layout_embedded_content = DynamicTo<LayoutEmbeddedContent>(object);
   if (layout_embedded_content) {
@@ -1401,7 +1444,8 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     }
   }
 
-  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (element) {
     node_interaction_info->is_focusable = element->IsFocusable();
     node_interaction_info->is_clickable =
         element->IsMaybeClickable() || ui::IsClickable(*attributes.aria_role);
@@ -1430,6 +1474,9 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   }
 
   attributes.node_interaction_info = std::move(node_interaction_info);
+  if (attributes.node_interaction_info->is_clickable) {
+    AddClickabilityReasons(*element, attributes);
+  }
 }
 
 AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(

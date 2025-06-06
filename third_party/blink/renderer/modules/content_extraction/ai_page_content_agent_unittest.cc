@@ -3724,5 +3724,184 @@ TEST_F(AIPageContentAgentTest, SelectLabelNotActionable) {
   EXPECT_TRUE(select.content_attributes->node_interaction_info->is_clickable);
 }
 
+TEST_F(AIPageContentAgentTest, ClickabilityReasonClickableControl) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><button id='testButton'>Click Me</button></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& button_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(button_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      button_node.content_attributes->node_interaction_info
+          ->debug_clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kClickableControl));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonClickEvents) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div id='testDiv'>Clickable</div>"
+      "<script>document.getElementById('testDiv').onclick = "
+      "function(){};</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(div_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kClickEvents));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseEvents) {
+  // An element with various mouse event listeners.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div id='testDiv'>Mouse Events</div>"
+      "<script>"
+      "  const div = document.getElementById('testDiv');"
+      "  div.onmouseover = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(div_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kMouseEvents));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonKeyEvents) {
+  // An element with keyboard event listeners.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><input type='text' id='testInput'>"
+      "<script>"
+      "  const input = document.getElementById('testInput');"
+      "  input.onkeydown = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& input_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(input_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(input_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kKeyEvents));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonEditable) {
+  // A div with contenteditable attribute.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div contenteditable='true'>Editable Content</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_TRUE(div_node.content_attributes->node_interaction_info->is_editable);
+  EXPECT_THAT(div_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kEditable));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonCursorPointer) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div style='cursor: pointer;'>Pointer Cursor</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info
+          ->debug_clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kCursorPointer));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonAriaRole) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body><div role='link'>ARIA Link</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_EQ(div_node.content_attributes->aria_role,
+            ax::mojom::blink::Role::kLink);
+  EXPECT_THAT(div_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons,
+              testing::Contains(
+                  mojom::blink::AIPageContentClickabilityReason::kAriaRole));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "<button id='multiReasonBtn' contenteditable='true' style='cursor: "
+      "pointer;' role='menuitem'>"
+      "Multi-Reason Button"
+      "</button>"
+      "<script>"
+      "  const btn = document.getElementById('multiReasonBtn');"
+      "  btn.onclick = function(){};"
+      "  btn.onmouseover = function(){};"
+      "  btn.onkeydown = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& button_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(button_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      button_node.content_attributes->node_interaction_info
+          ->debug_clickability_reasons,
+      testing::UnorderedElementsAre(
+          mojom::blink::AIPageContentClickabilityReason::kClickableControl,
+          mojom::blink::AIPageContentClickabilityReason::kClickEvents,
+          mojom::blink::AIPageContentClickabilityReason::kMouseEvents,
+          mojom::blink::AIPageContentClickabilityReason::kKeyEvents,
+          mojom::blink::AIPageContentClickabilityReason::kEditable,
+          mojom::blink::AIPageContentClickabilityReason::kCursorPointer,
+          mojom::blink::AIPageContentClickabilityReason::kAriaRole));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonNoReasons) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body><div>Plain Div</div></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_TRUE(div_node.content_attributes->node_interaction_info
+                  ->debug_clickability_reasons.empty());
+}
+
 }  // namespace
 }  // namespace blink
