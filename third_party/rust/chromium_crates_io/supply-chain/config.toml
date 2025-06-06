@@ -74,7 +74,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."calendrical_calculations:0.2.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cc:1.2.24"]
+[policy."cc:1.2.26"]
 criteria = []
 
 [policy."cfg-if:1.0.0"]
