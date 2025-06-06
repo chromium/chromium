@@ -1010,18 +1010,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"
-    enum="Boolean" expires_after="2025-10-26">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records whether a new process is used for navigation when there are other
-    same site process(es). Recorded for the outer-most main frame navigation
-    when navigation is committed (cross-origin redirects are not recorded).
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
     expires_after="2026-02-10">
   <owner>alexmos@chromium.org</owner>

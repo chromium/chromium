@@ -23408,22 +23408,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="SiteInstance">
-  <owner>bashi@chromium.org</owner>
-  <owner>chrome-site-isolation@google.com</owner>
-  <summary>
-    Records how likely a tab can share processes with other tabs.
-  </summary>
-  <metric name="NewProcessUsedForNavigationWhenSameSiteProcessExists"
-      enum="Boolean">
-    <summary>
-      Records whether a new process is used for navigation when there are other
-      same site process(es). Recorded for the outer-most main frame navigation
-      when navigation is committed (cross-origin redirects are not recorded).
-    </summary>
-  </metric>
-</event>
-
 <event name="SmartCharging">
   <owner>thanhdng@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
