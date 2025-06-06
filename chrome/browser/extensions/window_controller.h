@@ -155,10 +155,12 @@ class WindowController {
   virtual base::Value::List CreateTabList(const Extension* extension,
                                           mojom::ContextType context) const = 0;
 
-  // Open the extension's options page. Returns true if an options page was
-  // successfully opened (though it may not necessarily *load*, e.g. if the
-  // URL does not exist).
-  virtual bool OpenOptionsPage(const Extension* extension) = 0;
+  // Open the extension's options page as instructed. Returns true if an options
+  // page was successfully opened (though it may not necessarily *load*, e.g. if
+  // the URL does not exist).
+  virtual bool OpenOptionsPage(const Extension* extension,
+                               const GURL& url,
+                               bool open_in_tab) = 0;
 
   // Returns true if the Browser can report tabs to extensions. Example of
   // Browsers which don't support tabs include apps and devtools.

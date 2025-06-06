@@ -219,10 +219,10 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
 }
 
 bool BrowserExtensionWindowController::OpenOptionsPage(
-    const Extension* extension) {
-  if (!OptionsPageInfo::HasOptionsPage(extension)) {
-    return false;
-  }
+    const Extension* extension,
+    const GURL& url,
+    bool open_in_tab) {
+  DCHECK(OptionsPageInfo::HasOptionsPage(extension));
 
   // Force the options page to open in non-OTR window if the extension is not
   // running in split mode, because it won't be able to save settings from OTR.
@@ -235,27 +235,12 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
     browser_to_use = displayer->browser();
   }
 
-  GURL url_to_navigate;
-  const bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
-  if (open_in_tab) {
-    // Options page tab is simply e.g. chrome-extension://.../options.html.
-    url_to_navigate = OptionsPageInfo::GetOptionsPage(extension);
-  } else {
-    // Options page tab is Extension settings pointed at that Extension's ID,
-    // e.g. chrome://extensions?options=...
-    GURL::Replacements replacements;
-    const std::string query = base::StringPrintf("options=%s", extension->id());
-    replacements.SetQueryStr(query);
-    url_to_navigate =
-        GURL(chrome::kChromeUIExtensionsURL).ReplaceComponents(replacements);
-  }
-
   // We need to respect path differences because we don't want opening the
   // options page to close a page that might be open to extension content.
   // However, if the options page opens inside the chrome://extensions page, we
   // can override an existing page.
   // Note: ref behavior is to ignore.
-  ShowSingletonTabOverwritingNTP(browser_to_use, url_to_navigate,
+  ShowSingletonTabOverwritingNTP(browser_to_use, url,
                                  open_in_tab
                                      ? NavigateParams::RESPECT
                                      : NavigateParams::IGNORE_AND_NAVIGATE);

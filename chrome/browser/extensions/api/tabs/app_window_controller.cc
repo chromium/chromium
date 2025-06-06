@@ -98,7 +98,9 @@ base::Value::List AppWindowController::CreateTabList(
   return base::Value::List();
 }
 
-bool AppWindowController::OpenOptionsPage(const Extension* extension) {
+bool AppWindowController::OpenOptionsPage(const Extension* extension,
+                                          const GURL& url,
+                                          bool open_in_tab) {
   return false;
 }
 

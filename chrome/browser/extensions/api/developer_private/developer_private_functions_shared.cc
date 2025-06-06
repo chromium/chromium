@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -829,6 +831,31 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
   error_console->RemoveErrors(
       ErrorMap::Filter(properties.extension_id, type, error_ids, false));
 
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateShowOptionsFunction::~DeveloperPrivateShowOptionsFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
+  std::optional<developer::ShowOptions::Params> params =
+      developer::ShowOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const Extension* extension = GetEnabledExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  if (OptionsPageInfo::GetOptionsPage(extension).is_empty()) {
+    return RespondNow(Error(kNoOptionsPageForExtensionError));
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  ExtensionTabUtil::OpenOptionsPageFromWebContents(extension, web_contents);
   return RespondNow(NoArguments());
 }
 

@@ -17,9 +17,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowOptionsFunction,
-                   "developerPrivate.showOptions",
-                   DEVELOPERPRIVATE_SHOWOPTIONS);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowPathFunction,
                    "developerPrivate.showPath",
                    DEVELOPERPRIVATE_SHOWPATH);

@@ -186,16 +186,6 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
   std::string error_;
 };
 
-class DeveloperPrivateShowOptionsFunction : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.showOptions",
-                             DEVELOPERPRIVATE_SHOWOPTIONS)
-
- protected:
-  ~DeveloperPrivateShowOptionsFunction() override;
-  ResponseAction Run() override;
-};
-
 class DeveloperPrivateShowPathFunction : public DeveloperPrivateAPIFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.showPath",

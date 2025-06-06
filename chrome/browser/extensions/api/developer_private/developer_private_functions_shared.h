@@ -324,6 +324,16 @@ class DeveloperPrivateDeleteExtensionErrorsFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateShowOptionsFunction : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.showOptions",
+                             DEVELOPERPRIVATE_SHOWOPTIONS)
+
+ protected:
+  ~DeveloperPrivateShowOptionsFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateSetShortcutHandlingSuspendedFunction
     : public DeveloperPrivateAPIFunction {
  public:
