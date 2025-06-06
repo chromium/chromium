@@ -186,8 +186,6 @@ std::string_view GetCanCreateTranslatorResultString(
     case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
       return "downloadable";
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-    case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
@@ -362,6 +360,36 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     EXPECT_FALSE(console_observer.messages().empty());
   }
 
+  void ClearSiteContentSettings() {
+    content::BrowsingDataRemover* remover =
+        browser()->profile()->GetBrowsingDataRemover();
+    content::BrowsingDataRemoverCompletionObserver observer(remover);
+    remover->RemoveAndReply(
+        base::Time(), base::Time::Max(),
+        chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
+        chrome_browsing_data_remover::ALL_ORIGIN_TYPES, &observer);
+    observer.BlockUntilCompletion();
+  }
+
+  content::RenderFrameHost* CreateIframe(Browser* target_browser = nullptr) {
+    EXPECT_EQ(EvalJsCatchingError(R"(
+      window._iframe = document.createElement('iframe');
+      document.body.appendChild(window._iframe);
+      return "OK";
+  )",
+                                  target_browser),
+              "OK");
+
+    return ChildFrameAt((target_browser ? target_browser : browser())
+                            ->tab_strip_model()
+                            ->GetActiveWebContents(),
+                        0);
+  }
+
+  bool RemoveIframe(Browser* target_browser = nullptr) {
+    return ExecJs("document.body.removeChild(window._iframe);");
+  }
+
  private:
   base::ScopedTempDir tmp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -474,10 +502,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
             "en to ja: hello");
 }
 
+// TODO(crbug.com/421947718): Disabled because there's a race between triggering
+// user activation and consuming it when calling `create` multiple times.
+//
 // Tests the behavior of multiple create() calls with different
 // source/target languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CreateTranslatorInstallMultipleLanguagePacks) {
+                       DISABLED_CreateTranslatorInstallMultipleLanguagePacks) {
   MockComponentManager mock_component_manager(GetTempDir());
   NavigateToEmptyPage();
 
@@ -502,41 +533,45 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_en_es_language_pack.Quit();
       }));
 
+  // Helper function to get the state of a promise at the moment the helper
+  // function is called.
+  EXPECT_TRUE(ExecJs(R"(
+    self.getPromiseState = async promise => {
+        const symbol = Symbol();
+        try {
+          const result = await Promise.race([promise, Promise.resolve(symbol)]);
+          return result == symbol ? "pending" : "fulfilled";
+        } catch (e) {
+          return "rejected";
+        }
+    }
+  )"));
+
   // Create create() multiple times.
   //   1. En => Ja.
   //   2. En => Es.
   //   3. En => Ja.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testEnJaPromise1 = Translator.create({
+  EXPECT_TRUE(ExecJs(R"(
+      self.enJaPromise1 = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
-      window._testEnJaPromise1Resolved = false;
-      window._testEnJaPromise1.then(() => {
-        window._testEnJaPromise1Resolved = true;
-      });
-
-      window._testEnEsPromise = Translator.create({
+  )",
+                     browser(), content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  EXPECT_TRUE(ExecJs(R"(
+      self.enEsPromise = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'es',
         });
-      window._testEnEsPromiseResolved = false;
-      window._testEnEsPromise.then(() => {
-        window._testEnEsPromiseResolved = true;
-      });
-
-      window._testEnJaPromise2 = Translator.create({
+  )",
+                     browser(), content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  EXPECT_TRUE(ExecJs(R"(
+      self.enJaPromise2 = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
-      window._testEnJaPromise2Resolved = false;
-      window._testEnJaPromise2.then(() => {
-        window._testEnJaPromise2Resolved = true;
-      });
-
-      return 'OK';
-  )"),
-            "OK");
+  )",
+                     browser(), content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait until RegisterTranslateKitComponentImpl() is called.
   run_loop_for_register_translate_kit.Run();
@@ -549,40 +584,40 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
 
   // All promises should not be resolved yet.
-  EXPECT_FALSE(EvalJs("window._testEnJaPromise1Resolved").ExtractBool());
-  EXPECT_FALSE(EvalJs("window._testEnJaPromise2Resolved").ExtractBool());
-  EXPECT_FALSE(EvalJs("window._testEnEsPromiseResolved").ExtractBool());
+  EXPECT_EQ(EvalJs("getPromiseState(enJaPromise1)").ExtractString(), "pending");
+  EXPECT_EQ(EvalJs("getPromiseState(enEsPromise)").ExtractString(), "pending");
+  EXPECT_EQ(EvalJs("getPromiseState(enJaPromise2)").ExtractString(), "pending");
 
   // Install the mock `en_ja` language pack.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
   // Translate to Japanese. Both `en_ja` promises should be resolved now.
+  EXPECT_EQ(EvalJsCatchingError(
+                "return await (await enJaPromise1).translate('hello');"),
+            "en to ja: hello");
   EXPECT_EQ(
-      EvalJsCatchingError(
-          "return await (await window._testEnJaPromise1).translate('hello');"),
-      "en to ja: hello");
-  EXPECT_EQ(
-      EvalJsCatchingError(
-          "return await (await window._testEnJaPromise2).translate('hi');"),
+      EvalJsCatchingError("return await (await enJaPromise2).translate('hi');"),
       "en to ja: hi");
 
   // The promise of `en_es` should not be resolved yet.
-  EXPECT_FALSE(EvalJs("window._testEnEsPromiseResolved").ExtractBool());
+  EXPECT_EQ(EvalJs("getPromiseState(enEsPromise)").ExtractString(), "pending");
 
   // Install the mock `en_es` language pack.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Es);
 
   // Translate to Spanish. The `en_es` promise should be resolved now.
-  EXPECT_EQ(
-      EvalJsCatchingError(
-          "return await (await window._testEnEsPromise).translate('hello');"),
-      "en to es: hello");
+  EXPECT_EQ(EvalJsCatchingError(
+                "return await (await self.enEsPromise).translate('hello');"),
+            "en to es: hello");
 }
 
+// TODO(crbug.com/421947718): Disabled because there's a race between triggering
+// user activation and consuming it when calling `create` multiple times.
+//
 // Tests the behavior of create() when the number of pending tasks
 // exceeds the limit.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       ExceedMaxPendingTaskCount) {
+                       DISABLED_ExceedMaxPendingTaskCount) {
   MockComponentManager mock_component_manager(GetTempDir());
   NavigateToEmptyPage();
 
@@ -601,6 +636,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         run_loop_for_register_language_pack.Quit();
       }));
 
+  // TODO(crbug.com/421947718): Each `Translator.create` call should be in it's
+  // own `EvalJs` call like
+  // `CreateTranslator_Delay_ForTranslatorCreatedDuringInitialTranslatorCreationWithDelay`,
+  // but since we're blocked on the race issue from crbug.com/421947718, this
+  // hasn't been updated yet.
+  //
   // Call create() kMaxPendingTaskCount times.
   EXPECT_EQ(EvalJsCatchingError(base::StringPrintf(R"(
       window._testPromises = [];
@@ -668,49 +709,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       return 'OK';
   )"),
             "OK");
-}
-
-// Tests the behavior of TranslationAPILimitLanguagePackCount
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       ExceedLanguagePackCount) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
-  const base::span<const LanguagePackKey> language_packs =
-      base::span(kLanguagePackKeys);
-  NavigateToEmptyPage();
-
-  // Get the amount of packages we can install and assert that we have enough
-  // language packs for this test.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(0);
-  ASSERT_GE(language_packs.size(), installable_package_count + 1);
-
-  // Add all the languages we're going to test to the selected languages so we
-  // don't fail PassAcceptLanguagesCheck.
-  SetSelectedLanguages(language_packs.first(installable_package_count + 1));
-
-  // Test that we can install all the language packs up to the language pack
-  // limitation.
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      language_packs.first(installable_package_count));
-  for (const auto& language_pack_key :
-       language_packs.first(installable_package_count)) {
-    TestSimpleTranslationWorks(browser(), language_pack_key);
-  }
-
-  // The language pack count is equal to the limitation. So no more language
-  // pack can be downloaded.
-  auto console_observer = CreateConsoleObserver(
-      "The Translator API language pack count exceeded the limitation. See "
-      "https://developer.chrome.com/docs/ai/"
-      "translator-api?#supported-languages for more details.");
-
-  TestCreateTranslator(browser(), language_packs.at(installable_package_count),
-                       "NotSupportedError: Unable to create translator for the "
-                       "given source and target language.");
-
-  // The console message should be logged.
-  WaitForConsoleObserver(*console_observer);
 }
 
 // Tests the behavior of the failure of translation.
@@ -1091,71 +1089,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationProgressMonitorBrowserTest,
   ExpectUpdatesAre(expected_updates);
 }
 
-// Tests V1 behavior.
-class OnDeviceTranslationV1BrowserTest : public OnDeviceTranslationBrowserTest {
- public:
-  OnDeviceTranslationV1BrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kTranslationAPIV1);
-  }
-  ~OnDeviceTranslationV1BrowserTest() override = default;
-
- protected:
-  void ClearSiteContentSettings() {
-    content::BrowsingDataRemover* remover =
-        browser()->profile()->GetBrowsingDataRemover();
-    content::BrowsingDataRemoverCompletionObserver observer(remover);
-    remover->RemoveAndReply(
-        base::Time(), base::Time::Max(),
-        chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
-        chrome_browsing_data_remover::ALL_ORIGIN_TYPES, &observer);
-    observer.BlockUntilCompletion();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// The language model limit is not triggered when the V1 flag is enabled.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
-                       NoLanguageModelLimitation) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
-  const base::span<const LanguagePackKey> language_packs =
-      base::span(kLanguagePackKeys);
-  NavigateToEmptyPage();
-
-  // Expect that the number of available language packs is less than the
-  // installable language pack size, given there is no limitation in place.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(0);
-  ASSERT_LE(language_packs.size() + 1, installable_package_count);
-
-  // Add all the languages we're going to test to the selected languages so we
-  // don't fail `PassAcceptLanguagesCheck`.
-  SetSelectedLanguages(language_packs);
-
-  // Test that we can install all of the possible language packs for
-  // translation.
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      language_packs);
-  for (const auto& language_pack_key : language_packs) {
-    TestSimpleTranslationWorks(browser(), language_pack_key);
-  }
-
-  // Get the last language pack key.
-  LanguagePackKey last_language_pack = *(language_packs.end() - 1);
-
-  // Confirm that the last language pack install succeeded.
-  TestTranslationAvailable(browser(), GetSourceLanguageCode(last_language_pack),
-                           GetTargetLanguageCode(last_language_pack),
-                           "available");
-}
-
 // Confirms that `Translator.availability()` is not masked for a translation
 // containing only English or the user's preferred languages.
 IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationV1BrowserTest,
+    OnDeviceTranslationBrowserTest,
     TranslatorAvailabilityNotMasked_EnglishAndPreferredLanguages) {
   SetSelectedLanguages("fr");
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1173,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that `Translator.availability()` for a translation
 // containing a language outside of English + the user's preferred languages.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        TranslatorAvailabilityMasked_ForNonPreferredLanguages) {
   SetSelectedLanguages("fr");
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1209,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
 // A delay is triggered for a "downloadable" translation containing a language
 // outside of English + preferred languages.
 IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationV1BrowserTest,
+    OnDeviceTranslationBrowserTest,
     CreateTranslator_Delay_ForMaskedDownloadableTranslation) {
   // Setup Translate Kit Component and select Spanish as the preferred language.
   SetSelectedLanguages("en,es");
@@ -1234,12 +1171,15 @@ IN_PROC_BROWSER_TEST_F(
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
+// TODO(crbug.com/421947718): Disabled because there's a race between triggering
+// user activation and consuming it when calling `create` multiple times.
+//
 // A delay is triggered when a second translator for a given translation is
 // created during the delay time window of an initial translator's creation
 // (which is also expected to trigger a delay).
 IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationV1BrowserTest,
-    CreateTranslator_Delay_ForTranslatorCreatedDuringInitialTranslatorCreationWithDelay) {
+    OnDeviceTranslationBrowserTest,
+    DISABLED_CreateTranslator_Delay_ForTranslatorCreatedDuringInitialTranslatorCreationWithDelay) {
   SetSelectedLanguages("es");
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.InstallMockTranslateKitComponent();
@@ -1278,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(
 // `Translator.create` should still require user activation if the language pair
 // is readily available but the site hasn't created a Translator for the
 // language pair yet.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateRequiresUserActivationWhenDownloadedButMasked) {
   SetSelectedLanguages("es");
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1301,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
 
 // No delay is triggered for a "downloadable" translation between English +
 // preferred languages.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslator_NoDelay_DownloadableTranslation) {
   SetSelectedLanguages("en,es");
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1322,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
 
 // No delay is triggered in attempt to create a translator for an unsupported
 // language.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslator_NoDelay_UnsupportedLanguage) {
   SetSelectedLanguages("en,xx");
   MockComponentManager mock_component_manager(GetTempDir());
@@ -1481,16 +1421,17 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   NavigateToEmptyPage();
 
+  content::RenderFrameHost* iframe = CreateIframe();
+
   // Create a translator in an iframe.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testIframe = document.createElement('iframe');
-      document.body.appendChild(window._testIframe);
-      window._testIframe.contentWindow.Translator.create({
+  EXPECT_EQ(content::EvalJs(iframe, R"(
+      Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
-      return 'OK';
-    )"),
+      'OK';
+    )")
+                .ExtractString(),
             "OK");
   // Wait until RegisterTranslateKitComponentImpl() is called.
   run_loop_for_register_translate_kit.Run();
@@ -1498,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   run_loop_for_register_language_pack.Run();
 
   // Deletes the iframe after the browser process receives the request.
-  EXPECT_TRUE(ExecJs("document.body.removeChild(window._testIframe);"));
+  EXPECT_TRUE(RemoveIframe());
 
   // Install the mock TranslateKit component.
   mock_component_manager.InstallMockTranslateKitComponent();
@@ -1581,16 +1522,18 @@ IN_PROC_BROWSER_TEST_F(
   // Set the idle timeout to be 100 microseconds.
   service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
 
+  content::RenderFrameHost* iframe = CreateIframe();
+
   // Test that Translator API on an iframe works.
-  EXPECT_EQ(EvalJsCatchingError(R"(
-      window._iframe = document.createElement('iframe');
-      document.body.appendChild(window._iframe);
-      const translator =
-          await window._iframe.contentWindow.Translator.create({
-            sourceLanguage: 'en',
-            targetLanguage: 'ja',
-          });
-      return await translator.translate('hello');
+  EXPECT_EQ(content::EvalJs(iframe, R"(
+     (async () => {
+        const translator =
+            await Translator.create({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+        return await translator.translate('hello');
+      })();
     )"),
             "en to ja: hello");
   // Check that the service is still running.
@@ -1624,7 +1567,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
       .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
+
+  // Despite being ready, the availability will be masked since the site hasn't
+  // created a translator for this language pair yet.
+  // `kAfterDownloadTranslatorCreationRequired` is only ever returned in that
+  // situation, so receiving that value confirms that the package is readily
+  // available.
+  TestCanTranslateResult(
+      "en", "ja",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
 }
 
 // Test the behavior of availability() when the language pack is not ready.
@@ -1679,118 +1630,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                          CanCreateTranslatorResult::kNoNotSupportedLanguage);
 }
 
-// Test the behavior of availability() when the language pack is not ready, and
-// the language pack count will exceed the limitation.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CanTranslateNoExceedsLanguagePackCountLimitation) {
-  // This test case uses English as the source language and French as the target
-  // language. To avoid the failure of PassAcceptLanguagesCheck(), we set the
-  // SelectedLanguages to be English and French.
-  SetSelectedLanguages("en,fr");
-  MockComponentManager mock_component_manager(GetTempDir());
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(0);
-  mock_component_manager.InstallMockTranslateKitComponent();
-
-  // No language packs are installed yet.
-  size_t installed_package_count = 0;
-
-  // Get the amount of packages we can install.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(
-          installed_package_count);
-  ASSERT_NE(installable_package_count, std::numeric_limits<size_t>::max());
-
-  for (const auto& language_pack_key : kLanguagePackKeys) {
-    mock_component_manager.InstallMockLanguagePack(language_pack_key);
-    installed_package_count++;
-
-    if (installed_package_count < installable_package_count) {
-      // The language pack count is less than the limitation.
-      TestCanTranslateResult(
-          "en", "fr",
-          CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady);
-    } else {
-      // The language pack count is equal to the limitation. So no more language
-      // pack can be downloaded.
-      TestCanTranslateResult(
-          "en", "fr",
-          CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
-      break;
-    }
-  }
-
-  ASSERT_EQ(installed_package_count, installable_package_count);
-}
-
-// Test the behavior of availability() when the language pack is not ready, and
-// the language pack count exceed the limitation after downloading two language
-// packs.
-IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationBrowserTest,
-    CanTranslateNoExceedsLanguagePackCountLimitationTwoPackagesRequired) {
-  // This test case use Hindi and French as the source and target languages.
-  // To translate from Hindi to French, two language packs are required one for
-  // hi->en and one for en->fr.
-  SetSelectedLanguages("hi,fr");
-  MockComponentManager mock_component_manager(GetTempDir());
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(0);
-  mock_component_manager.InstallMockTranslateKitComponent();
-
-  // No language packs are installed yet.
-  size_t installed_package_count = 0;
-
-  // Get the amount of packages we can install.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(
-          installed_package_count);
-  ASSERT_NE(installable_package_count, std::numeric_limits<size_t>::max());
-
-  for (const auto& language_pack_key : kLanguagePackKeys) {
-    mock_component_manager.InstallMockLanguagePack(language_pack_key);
-    installed_package_count++;
-
-    if (installed_package_count < installable_package_count - 1) {
-      // The language pack count is less than the limitation.
-      TestCanTranslateResult(
-          "hi", "fr",
-          CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady);
-    } else if (installed_package_count < installable_package_count) {
-      // The language pack count is less than the limitation. But if
-      // we download the required language packs, the language pack count will
-      // exceed the limitation. So availability() returns `no`.
-      TestCanTranslateResult(
-          "hi", "fr",
-          CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
-    } else {
-      // The language pack count is 3, which is equal to the limitation. So no
-      // more language pack can be downloaded.
-      TestCanTranslateResult(
-          "hi", "fr",
-          CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation);
-      break;
-    }
-  }
-
-  ASSERT_EQ(installed_package_count, installable_package_count);
-}
-
-// Test the behavior of availability() when PassAcceptLanguagesCheck() checks
-// fails.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CanTranslateNoAcceptLanguagesCheckFailed) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .Times(0);
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ko);
-  // Korean is not treated as a popular language. So if `ko` is not in the
-  // accept languages, PassAcceptLanguagesCheck() will return false.
-  TestCanTranslateResult(
-      "en", "ko", CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
-}
-
 // Test the behavior of `availability()` when the execution context is not
 // valid.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
@@ -1828,20 +1667,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestTranslationAvailable(browser(), "en", "xx", "unavailable");
 }
 
-// Test the behavior of `availability()` when the `PassAcceptLanguagesCheck()`
-// check fails.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       Availability_Unavailable_AcceptLanguagesCheckFailed) {
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ko);
-  NavigateToEmptyPage();
-
-  // Korean is not treated as a popular language. So if `ko` is not in the
-  // accept languages, `PassAcceptLanguagesCheck()` will return false.
-  TestTranslationAvailable(browser(), "en", "ko", "unavailable");
-}
-
 // Test the behavior of `availability()` where the source language and the
 // target language are the same language.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
@@ -1852,92 +1677,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   NavigateToEmptyPage();
   TestTranslationAvailable(browser(), "ja", "ja", "unavailable");
   TestTranslationAvailable(browser(), "en", "en", "unavailable");
-}
-
-// Test the behavior of `availability()` when the language pack is not ready,
-// and the language pack count will exceed the imitation.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       Availability_No_ExceedsLangPackCountLimitation) {
-  // This test case uses English as the source language and French as the target
-  // language. To avoid the failure of `PassAcceptLanguagesCheck()`, we set the
-  // preferred languages to English and French.
-  SetSelectedLanguages("en,fr");
-  MockComponentManager mock_component_manager(GetTempDir());
-  NavigateToEmptyPage();
-  mock_component_manager.InstallMockTranslateKitComponent();
-
-  // No language packs are installed yet.
-  size_t installed_package_count = 0;
-
-  // Get the amount of packages we can install.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(
-          installed_package_count);
-  ASSERT_NE(installable_package_count, std::numeric_limits<size_t>::max());
-
-  for (const auto& language_pack_key : kLanguagePackKeys) {
-    mock_component_manager.InstallMockLanguagePack(language_pack_key);
-    installed_package_count++;
-
-    if (installed_package_count < installable_package_count) {
-      // The language pack count is less than the limitation.
-      TestTranslationAvailable(browser(), "en", "fr", "downloadable");
-    } else {
-      // The language pack count is equal to the limitation. So no more language
-      // pack can be downloaded.
-      TestTranslationAvailable(browser(), "en", "fr", "unavailable");
-      break;
-    }
-  }
-
-  ASSERT_EQ(installed_package_count, installable_package_count);
-}
-
-// Test the behavior of `availability()` when the language pack is not ready,
-// and the language pack count exceeds the limitation after downloading two
-// more language packs.
-IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationBrowserTest,
-    Availability_Unavailable_ExceedsLangPackCountLimitationTwoPackagesRequired) {
-  // This test case uses Hindi and French as the source and target languages.
-  // To translate from Hindi to French, two language packs are required: one for
-  // the hi->en translation and one for the en->fr translation.
-  SetSelectedLanguages("hi,fr");
-  MockComponentManager mock_component_manager(GetTempDir());
-  NavigateToEmptyPage();
-  mock_component_manager.InstallMockTranslateKitComponent();
-
-  // No language packs are installed yet.
-  size_t installed_package_count = 0;
-
-  // Get the amount of packages we can install.
-  size_t installable_package_count =
-      on_device_translation::GetInstallablePackageCount(
-          installed_package_count);
-  ASSERT_NE(installable_package_count, std::numeric_limits<size_t>::max());
-
-  for (const auto& language_pack_key : kLanguagePackKeys) {
-    mock_component_manager.InstallMockLanguagePack(language_pack_key);
-    installed_package_count++;
-
-    if (installed_package_count < installable_package_count - 1) {
-      // The language pack count is less than the limitation.
-      TestTranslationAvailable(browser(), "hi", "fr", "downloadable");
-    } else if (installed_package_count < installable_package_count) {
-      // The language pack count is less than the limitation.
-      // If we download the required language packs, the language pack count
-      // will exceed the limitation. As a result, `availability()` is
-      // 'unavailable'.
-      TestTranslationAvailable(browser(), "hi", "fr", "unavailable");
-    } else {
-      // The language pack count is 3, which is equal to the limitation. As a
-      // result, no more language packs can be downloaded.
-      TestTranslationAvailable(browser(), "hi", "fr", "unavailable");
-      break;
-    }
-  }
-
-  ASSERT_EQ(installed_package_count, installable_package_count);
 }
 
 // Test the behavior of `availability()` when both the library and the language
@@ -2085,7 +1824,14 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest,
       .Times(0);
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ko);
-  TestCanTranslateResult("en", "ko", CanCreateTranslatorResult::kReadily);
+  // Despite being ready, the availability will be masked since the site hasn't
+  // created a translator for this language pair yet.
+  // `kAfterDownloadTranslatorCreationRequired` is only ever returned in that
+  // situation, so receiving that value confirms that the package is readily
+  // available.
+  TestCanTranslateResult(
+      "en", "ko",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
 }
 
 // Test the behavior of Translator API in a cross origin iframe.
@@ -2127,14 +1873,19 @@ class OnDeviceTranslationCrossOriginBrowserTest
   }
 
   // Adds an iframe to the test page and optionally sets its permission policy.
-  void AddIframe(size_t index,
-                 Browser* target_browser,
-                 bool permission_policy_enabled) {
+  content::RenderFrameHost* AddIframe(size_t index,
+                                      Browser* target_browser,
+                                      bool permission_policy_enabled) {
     EXPECT_EQ(EvalJsCatchingError(JsReplace("return addIframe($1, $2);",
                                             CreateCrossOriginIframeUrl(index),
                                             permission_policy_enabled),
                                   target_browser),
               "loaded");
+
+    return ChildFrameAt((target_browser ? target_browser : browser())
+                            ->tab_strip_model()
+                            ->GetActiveWebContents(),
+                        index);
   }
 
   // Removes the iframe and waits for the service deletion.
@@ -2153,7 +1904,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
 
   // Creates a translator and translates in the iframe. Returns successful
   // translation or the error message.
-  std::string CheckTranslateInIframe(size_t index, Browser* target_browser) {
+  std::string CheckTranslateInIframe(content::RenderFrameHost* iframe) {
     const std::string_view translateTestScript = R"(
         (async () => {
           try {
@@ -2169,14 +1920,11 @@ class OnDeviceTranslationCrossOriginBrowserTest
           }
         })()
       )";
-    return EvalJsCatchingError(
-        JsReplace("return evalInIframe($1, $2);",
-                  CreateCrossOriginIframeUrl(index), translateTestScript),
-        target_browser);
+    return content::EvalJs(iframe, translateTestScript).ExtractString();
   }
 
   // Checks the result of availability() in the iframe.
-  std::string TryCanTranslateInIframe(size_t index, Browser* target_browser) {
+  std::string TryCanTranslateInIframe(content::RenderFrameHost* iframe) {
     const std::string_view translateTestScript = R"(
       (async () => {
         try {
@@ -2189,10 +1937,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
         }
       })()
     )";
-    return EvalJsCatchingError(
-        JsReplace("return evalInIframe($1, $2);",
-                  CreateCrossOriginIframeUrl(index), translateTestScript),
-        target_browser);
+    return content::EvalJs(iframe, translateTestScript).ExtractString();
   }
 
  private:
@@ -2268,11 +2013,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
       .Times(0);
 
   NavigateToTestPage(browser());
-  AddIframe(0, browser(), /*enable_permission_policy=*/false);
+  content::RenderFrameHost* iframe =
+      AddIframe(0, browser(), /*enable_permission_policy=*/false);
 
   // Translation is not available in cross-origin iframes without permission
   // policy.
-  EXPECT_EQ(CheckTranslateInIframe(0, browser()), "NotAllowedError");
+  EXPECT_EQ(CheckTranslateInIframe(iframe), "NotAllowedError");
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe when the
@@ -2289,25 +2035,27 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // Until the service count exceeds the limit, the translator can be created,
   // and the translation is successful.
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
-    AddIframe(i, browser(), /*enable_permission_policy=*/true);
-    EXPECT_EQ(CheckTranslateInIframe(i, browser()), "en to ja: hello");
-    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
+    content::RenderFrameHost* iframe =
+        AddIframe(i, browser(), /*enable_permission_policy=*/true);
+    EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
+    EXPECT_EQ(TryCanTranslateInIframe(iframe), "available");
   }
 
   // When the service count exceeds the limit, the translator cannot be created,
   // even when the permission policy is still enabled.
-  AddIframe(i, browser(), /*enable_permission_policy=*/true);
+  content::RenderFrameHost* iframe =
+      AddIframe(i, browser(), /*enable_permission_policy=*/true);
   auto console_observer = CreateConsoleObserver(
       "The translation service count exceeded the limitation.");
-  EXPECT_EQ(CheckTranslateInIframe(i, browser()), "NotSupportedError");
+  EXPECT_EQ(CheckTranslateInIframe(iframe), "NotSupportedError");
   WaitForConsoleObserver(*console_observer);
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "unavailable");
+  EXPECT_EQ(TryCanTranslateInIframe(iframe), "unavailable");
 
   // When the service count is back to under the limit, the translator can be
   // created again.
   RemoveIframeAndWaitForServiceDeletion(0, browser());
-  EXPECT_EQ(CheckTranslateInIframe(i, browser()), "en to ja: hello");
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
+  EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
+  EXPECT_EQ(TryCanTranslateInIframe(iframe), "available");
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe using the
@@ -2322,11 +2070,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   NavigateToTestPage(incognito_browser);
-  AddIframe(0, incognito_browser, /*enable_permission_policy=*/true);
-  EXPECT_EQ(CheckTranslateInIframe(0, incognito_browser), "en to ja: hello");
+  content::RenderFrameHost* iframe0 =
+      AddIframe(0, incognito_browser, /*enable_permission_policy=*/true);
+  EXPECT_EQ(CheckTranslateInIframe(iframe0), "en to ja: hello");
 
-  AddIframe(1, incognito_browser, /*enable_permission_policy=*/false);
-  EXPECT_EQ(CheckTranslateInIframe(1, incognito_browser), "NotAllowedError");
+  content::RenderFrameHost* iframe1 =
+      AddIframe(1, incognito_browser, /*enable_permission_policy=*/false);
+  EXPECT_EQ(CheckTranslateInIframe(iframe1), "NotAllowedError");
 }
 
 // Tests the behavior of the Translation API in a cross origin iframe using the
@@ -2341,14 +2091,18 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
 
   NavigateToTestPage(guest_browser);
-  AddIframe(0, guest_browser, /*enable_permission_policy=*/true);
-  EXPECT_EQ(CheckTranslateInIframe(0, guest_browser), "en to ja: hello");
+  content::RenderFrameHost* iframe =
+      AddIframe(0, guest_browser, /*enable_permission_policy=*/true);
+  EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
 }
 
+// TODO(crbug.com/423029203): This is timing out on a CQ bot so it is disabled
+// for now until we can resolve that issue.
+//
 // Tests the behavior of the Translation API in a cross origin iframe using
 // multiple profiles.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
-                       ServiceCountLimitIsolatedPerProfile) {
+                       DISABLED_ServiceCountLimitIsolatedPerProfile) {
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
@@ -2377,32 +2131,39 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // translation is successful.
   for (size_t i = 0; i < kTranslationAPIMaxServiceCount.Get(); i++) {
     for (auto* target_browser : browsers) {
-      AddIframe(i, target_browser, /*enable_permission_policy=*/true);
-      EXPECT_EQ(CheckTranslateInIframe(i, target_browser), "en to ja: hello");
+      content::RenderFrameHost* iframe =
+          AddIframe(i, target_browser, /*enable_permission_policy=*/true);
+      EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
     }
   }
 
   const size_t limit_count = kTranslationAPIMaxServiceCount.Get();
 
+  std::vector<content::RenderFrameHost*> iframes;
+
   // When the service count per profile exceeds the limit, the translator
   // cannot be created.
   for (auto* target_browser : browsers) {
-    AddIframe(limit_count, target_browser, /*enable_permission_policy=*/true);
+    content::RenderFrameHost* iframe = AddIframe(
+        limit_count, target_browser, /*enable_permission_policy=*/true);
+    iframes.push_back(iframe);
     auto console_observer = CreateConsoleObserver(
         "The translation service count exceeded the limitation.",
         target_browser);
-    EXPECT_EQ(CheckTranslateInIframe(limit_count, target_browser),
-              "NotSupportedError");
+    EXPECT_EQ(CheckTranslateInIframe(iframe), "NotSupportedError");
     // The console message should be logged.
     WaitForConsoleObserver(*console_observer);
   }
 
+  ASSERT_EQ(iframes.size(), browsers.size());
+
   // When the service count per profile is back to under the limit, the
   // translator can be created again.
-  for (auto* target_browser : browsers) {
+  for (size_t i = 0; i < browsers.size(); i++) {
+    Browser* target_browser = browsers[i];
+    content::RenderFrameHost* iframe = iframes[i];
     RemoveIframeAndWaitForServiceDeletion(0, target_browser);
-    EXPECT_EQ(CheckTranslateInIframe(limit_count, target_browser),
-              "en to ja: hello");
+    EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
   }
 }
 
@@ -2437,21 +2198,23 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginWithCommandLineBrowserTest,
   // Until the service count exceeds the limit, the translator can be created,
   // and the translation is successful.
   for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
-    AddIframe(i, browser(), /*enable_permission_policy=*/true);
-    EXPECT_EQ(CheckTranslateInIframe(i, browser()), "en to ja: hello");
-    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
+    content::RenderFrameHost* iframe =
+        AddIframe(i, browser(), /*enable_permission_policy=*/true);
+    EXPECT_EQ(CheckTranslateInIframe(iframe), "en to ja: hello");
+    EXPECT_EQ(TryCanTranslateInIframe(iframe), "available");
   }
 
   // When the service count exceeds the limit, the translator cannot be created.
-  AddIframe(i, browser(), /*enable_permission_policy=*/true);
-  EXPECT_EQ(CheckTranslateInIframe(i, browser()), "NotSupportedError");
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "unavailable");
+  content::RenderFrameHost* last_iframe =
+      AddIframe(i, browser(), /*enable_permission_policy=*/true);
+  EXPECT_EQ(CheckTranslateInIframe(last_iframe), "NotSupportedError");
+  EXPECT_EQ(TryCanTranslateInIframe(last_iframe), "unavailable");
 
   // When the service count is back to under the limit, the translator can be
   // created again.
   RemoveIframeAndWaitForServiceDeletion(0, browser());
-  EXPECT_EQ(CheckTranslateInIframe(i, browser()), "en to ja: hello");
-  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "available");
+  EXPECT_EQ(CheckTranslateInIframe(last_iframe), "en to ja: hello");
+  EXPECT_EQ(TryCanTranslateInIframe(last_iframe), "available");
 }
 
 // Tests the behavior of the Origin Trial token for the Translation API.
@@ -2687,7 +2450,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationPackagesCommandLineBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
   NavigateToEmptyPage();
-  TestCanTranslateResult("en", "ja", CanCreateTranslatorResult::kReadily);
+
+  // Despite being ready, the availability will be masked since the site hasn't
+  // created a translator for this language pair yet.
+  // `kAfterDownloadTranslatorCreationRequired` is only ever returned in that
+  // situation, so receiving that value confirms that the package is readily
+  // available.
+  TestCanTranslateResult(
+      "en", "ja",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
 }
 
 // Tests the behavior of availability() when the required language package

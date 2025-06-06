@@ -89,9 +89,6 @@ Availability HandleTranslatorAvailabilityCheckResult(
           execution_context, AIMetrics::AISessionType::kTranslator,
           mojom::blink::ModelAvailabilityCheckResult::
               kUnavailableUnsupportedLanguage);
-    case mojom::blink::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-    case mojom::blink::CanCreateTranslatorResult::
-        kNoExceedsLanguagePackCountLimitation:
     case mojom::blink::CanCreateTranslatorResult::kNoServiceCrashed:
     case mojom::blink::CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case mojom::blink::CanCreateTranslatorResult::

@@ -293,15 +293,6 @@ void TranslationManagerImpl::CreateTranslator(
     return;
   }
 
-  if (!PassAcceptLanguagesCheck(GetAcceptLanguages(browser_context()),
-                                source_language, target_language)) {
-    mojo::Remote(std::move(client))
-        ->OnResult(CreateTranslatorResult::NewError(
-                       CreateTranslatorError::kAcceptLanguagesCheckFailed),
-                   nullptr, nullptr);
-    return;
-  }
-
   if (options->observer_remote) {
     base::flat_set<std::string> component_ids = {
         component_updater::TranslateKitComponentInstallerPolicy::
@@ -325,8 +316,7 @@ void TranslationManagerImpl::CreateTranslator(
                      weak_ptr_factory_.GetWeakPtr(), std::move(client),
                      source_language, target_language);
 
-  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
-      add_fake_download_delay) {
+  if (add_fake_download_delay) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(create_translator), GetTranslatorDownloadDelay());
   } else {
@@ -374,14 +364,6 @@ void TranslationManagerImpl::TranslationAvailable(
   const std::vector<std::string_view> accept_languages =
       GetAcceptLanguages(browser_context());
 
-  // TODO(crbug.com/385173766): Remove once V1 is launched.
-  if (!PassAcceptLanguagesCheck(accept_languages, source_language,
-                                target_language)) {
-    std::move(callback).Run(
-        CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
-    return;
-  }
-
   bool are_source_and_target_accept_or_english =
       (IsInAcceptLanguage(accept_languages, source_language) ||
        l10n_util::GetLanguage(source_language) == "en") &&
@@ -389,7 +371,6 @@ void TranslationManagerImpl::TranslationAvailable(
        l10n_util::GetLanguage(target_language) == "en");
 
   bool mask_readily_result =
-      base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
       !HasInitializedTranslator(source_language, target_language) &&
       !are_source_and_target_accept_or_english;
 

@@ -15,10 +15,6 @@ namespace on_device_translation {
 
 namespace {
 
-// Limit the number of downloadable language packs to 5 during OT to mitigate
-// the risk of fingerprinting attacks.
-constexpr size_t kTranslationAPILimitLanguagePackCountMax = 5;
-
 base::FilePath GetPathFromCommandLine(const char* switch_name) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switch_name)) {
@@ -33,14 +29,6 @@ const base::FeatureParam<std::string> kTranslationAPILibraryMinimumVersion{
     &blink::features::kTranslationAPI, "TranslationAPILibraryMinimumVersion",
     "2025.1.10.0"};
 
-const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck{
-    &blink::features::kTranslationAPI, "TranslationAPIAcceptLanguagesCheck",
-    true};
-
-const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
-    &blink::features::kTranslationAPI, "TranslationAPILimitLanguagePackCount",
-    true};
-
 const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
     &blink::features::kTranslationAPI, "TranslationAPIServiceIdleTimeout",
     base::Minutes(1)};
@@ -51,17 +39,6 @@ const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);
-}
-
-size_t GetInstallablePackageCount(size_t installed_package_count) {
-  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
-      !kTranslationAPILimitLanguagePackCount.Get()) {
-    return std::numeric_limits<size_t>::max();
-  }
-  if (installed_package_count >= kTranslationAPILimitLanguagePackCountMax) {
-    return 0;
-  }
-  return kTranslationAPILimitLanguagePackCountMax - installed_package_count;
 }
 
 bool IsValidTranslateKitVersion(std::string_view version_str) {

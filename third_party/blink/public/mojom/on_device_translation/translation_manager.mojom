@@ -38,23 +38,16 @@ enum CanCreateTranslatorResult {
   // language pair is not supported.
   kNoNotSupportedLanguage = 5,
 
-  // The translator cannot be created because the Accept-Language check failed.
-  kNoAcceptLanguagesCheckFailed = 6,
-
-  // The translator cannot be created. New models need to be downloaded,
-  // but the number of downloaded language packs will exceedd the limit.
-  kNoExceedsLanguagePackCountLimitation = 7,
-
   // The translator cannot be created, because the translator service crashed.
-  kNoServiceCrashed = 8,
+  kNoServiceCrashed = 6,
 
   // The translator cannot be created, because the use of Translator API is
   // disallowed by `TranslatorAPIAllowed` Enterprise policy
-  kNoDisallowedByPolicy = 9,
+  kNoDisallowedByPolicy = 7,
 
   // The translator cannot be created, because the number of services exceeds
   // the limitation.
-  kNoExceedsServiceCountLimitation = 10,
+  kNoExceedsServiceCountLimitation = 8,
 };
 
 // The error of TranslationManager's CreateTranslator IPC.
@@ -74,30 +67,23 @@ enum CreateTranslatorError {
   // translator.
   kFailedToCreateTranslator = 4,
 
-  // The translator cannot be created because the Accept-Language check failed.
-  kAcceptLanguagesCheckFailed = 5,
-
-  // The translator cannot be created. New models need to be downloaded,
-  // but the number of downloaded language packs will exceedd the limit.
-  kExceedsLanguagePackCountLimitation = 6,
-
   // The translator cannot be created, because the translator service crashed.
-  kServiceCrashed = 7,
+  kServiceCrashed = 5,
 
   // The translator cannot be created, because the use of Translator API is
   // disallowed by `TranslatorAPIAllowed` Enterprise policy
-  kDisallowedByPolicy = 8,
+  kDisallowedByPolicy = 6,
 
   // The translator cannot be created, because the number of services exceeds
   // the limitation.
-  kExceedsServiceCountLimitation = 9,
+  kExceedsServiceCountLimitation = 7,
 
   // The translator cannot be created, because the number of pending tasks
   // exceeds the limitation.
-  kExceedsPendingTaskCountLimitation = 10,
+  kExceedsPendingTaskCountLimitation =  8,
 
   // The translator cannot be created because the library version is invalid.
-  kInvalidVersion = 11,
+  kInvalidVersion = 9,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.

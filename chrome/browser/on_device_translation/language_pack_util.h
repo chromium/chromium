@@ -85,10 +85,6 @@ std::string_view ToLanguageCode(SupportedLanguage supported_language);
 std::optional<SupportedLanguage> ToSupportedLanguage(
     std::string_view language_code);
 
-// Returns whether the language is in the top 12 by number of native speakers.
-// https://en.wikipedia.org/wiki/List_of_languages_by_number_of_native_speakers#Top_languages_by_population
-bool IsPopularLanguage(SupportedLanguage supported_language);
-
 // The key for language pack components.
 enum class LanguagePackKey {
   kEn_Es = 0,
