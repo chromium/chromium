@@ -125,10 +125,14 @@ public class PasswordManagerErrorMessageHelperBridge {
     }
 
     /**
-     * Starts the Android process to retrieve encryption keys in Chrome. This method will only work for users that have been previously syncing in Chrome.
+     * Starts the Android process to retrieve encryption keys in Chrome. This method will only work
+     * for users that have been previously syncing in Chrome.
      */
     @CalledByNative
-    static void startTrustedVaultKeyRetrievalFlow(WindowAndroid windowAndroid, Profile profile) {
+    static void startTrustedVaultKeyRetrievalFlow(
+            WindowAndroid windowAndroid,
+            Profile profile,
+            @TrustedVaultUserActionTriggerForUMA int trustedVaultUserActionTriggerForUMA) {
         final CoreAccountInfo primaryAccountInfo =
                 SyncServiceFactory.getForProfile(profile).getAccountInfo();
         // If the account has been removed before calling this method, there is nothing to do.
@@ -139,12 +143,9 @@ public class PasswordManagerErrorMessageHelperBridge {
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
-                            var action =
-                                    TrustedVaultUserActionTriggerForUMA
-                                            .PASSWORD_MANAGER_ERROR_MESSAGE;
                             var proxyIntent =
                                     SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                            intent, action);
+                                            intent, trustedVaultUserActionTriggerForUMA);
                             IntentUtils.safeStartActivity(activity, proxyIntent);
                         });
     }

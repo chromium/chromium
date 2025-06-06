@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -354,7 +355,7 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
       ->SaveCredentialsAndBlocklistedForOrigin(
           credentials,
           password_manager::CredentialCache::IsOriginBlocklisted(j_blocklisted),
-          origin);
+          std::nullopt, origin);
 }
 
 // static

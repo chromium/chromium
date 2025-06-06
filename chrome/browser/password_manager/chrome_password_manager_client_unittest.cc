@@ -352,7 +352,8 @@ class MockPasswordAccessoryControllerImpl
             password_client,
             driver_supplier,
             /*grouped_credential_sheet_controller=*/nullptr,
-            nullptr) {}
+            /*access_loss_warning_bridge=*/nullptr,
+            /*password_manager_error_message_helper_bridge=*/nullptr) {}
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
@@ -1830,7 +1831,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(
-          forms, CredentialCache::IsOriginBlocklisted(false), origin);
+          forms, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+          origin);
 
   // Check that a navigation within the same document does not clear the cache.
   content::MockNavigationHandle handle(web_contents());
@@ -1991,7 +1993,8 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(
-          forms, CredentialCache::IsOriginBlocklisted(false), origin);
+          forms, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+          origin);
 
   MockPasswordStoreInterface* profile_store =
       static_cast<MockPasswordStoreInterface*>(

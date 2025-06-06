@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/aura/window.h"
@@ -229,7 +230,9 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
     case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
     case PasswordStoreBackendErrorType::kEmptySecurityDomain:
     case PasswordStoreBackendErrorType::kIrretrievableSecurityDomain:
-      helper_bridge_->StartTrustedVaultKeyRetrievalFlow(web_contents);
+      helper_bridge_->StartTrustedVaultKeyRetrievalFlow(
+          web_contents, syncer::TrustedVaultUserActionTriggerForUMA::
+                            kPasswordManagerErrorMessage);
       break;
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
     case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:

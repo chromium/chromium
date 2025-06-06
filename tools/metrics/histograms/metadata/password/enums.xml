@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="'Select plus address' link in the password sheet"/>
   <int value="15" label="'Manage plus addresses' link in the password sheet"/>
   <int value="16" label="'Manage loyalty cards' link"/>
+  <int value="17" label="'Verify it's you' link"/>
 </enum>
 
 <enum name="AccessorySheetTrigger">

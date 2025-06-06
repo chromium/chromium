@@ -52,6 +52,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -294,7 +295,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
 
         PasswordManagerErrorMessageHelperBridge.startTrustedVaultKeyRetrievalFlow(
-                mWindowAndroidMock, mProfile);
+                mWindowAndroidMock, mProfile, TrustedVaultUserActionTriggerForUMA.ACCOUNT_MENU);
 
         intentPromise.fulfill(mPendingIntent);
         ShadowLooper.idleMainLooper();

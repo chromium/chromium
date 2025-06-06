@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -15,6 +16,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -23,6 +25,7 @@ namespace password_manager {
 
 namespace {
 
+using testing::IsEmpty;
 using testing::Property;
 using url::Origin;
 using IsOriginBlocklisted = CredentialCache::IsOriginBlocklisted;
@@ -100,7 +103,7 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
       CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
                   PasswordForm::MatchType::kPSL)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetCredentials(),
@@ -164,7 +167,7 @@ TEST_F(CredentialCacheTest,
                   PasswordForm::MatchType::kPSL)};
 
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetCredentials(),
@@ -234,7 +237,7 @@ TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
                                        shared_notified_credentials,
                                        shared_unnotified_credentials};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
@@ -258,11 +261,11 @@ TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
   std::vector<PasswordForm> matches1 = {CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches1, IsOriginBlocklisted(false), origin);
+      matches1, IsOriginBlocklisted(false), std::nullopt, origin);
   std::vector<PasswordForm> matches2 = {CreateEntry(
       "Abe", "B4dPW", GURL(kExampleSite2), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches2, IsOriginBlocklisted(false), origin2);
+      matches2, IsOriginBlocklisted(false), std::nullopt, origin2);
 
   EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
               testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
@@ -276,7 +279,8 @@ TEST_F(CredentialCacheTest, ClearsCredentials) {
   std::vector<PasswordForm> matches = {CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), Origin::Create(GURL(kExampleSite)));
+      matches, IsOriginBlocklisted(false), std::nullopt,
+      Origin::Create(GURL(kExampleSite)));
   ASSERT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
               testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
 
@@ -289,9 +293,43 @@ TEST_F(CredentialCacheTest, StoresBlocklistedWithCredentials) {
   std::vector<PasswordForm> matches = {CreateEntry(
       "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(true), Origin::Create(GURL(kExampleSite)));
+      matches, IsOriginBlocklisted(true), std::nullopt,
+      Origin::Create(GURL(kExampleSite)));
   EXPECT_EQ(OriginCredentialStore::BlocklistedStatus::kIsBlocklisted,
             cache()->GetCredentialStore(origin).GetBlocklistedStatus());
+}
+
+TEST_F(CredentialCacheTest, StoresBackendErrorAndCredentials) {
+  Origin origin = Origin::Create(GURL(kExampleSite));
+
+  // Only backend error.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, IsOriginBlocklisted(false),
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      Origin::Create(GURL(kExampleSite)));
+  EXPECT_EQ(PasswordStoreBackendErrorType::kAuthErrorResolvable,
+            cache()->backend_error());
+  EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(), IsEmpty());
+
+  // Backend error and matched passwords.
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, IsOriginBlocklisted(false),
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      Origin::Create(GURL(kExampleSite)));
+  EXPECT_EQ(PasswordStoreBackendErrorType::kAuthErrorResolvable,
+            cache()->backend_error());
+  EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
+              testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
+
+  // Backend error is cleared.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, IsOriginBlocklisted(false), std::nullopt,
+      Origin::Create(GURL(kExampleSite)));
+  EXPECT_EQ(std::nullopt, cache()->backend_error());
+  EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
+              testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -305,7 +343,7 @@ TEST_F(CredentialCacheTest, SplitsCredentialsInMainAndBackupFlagEnabled) {
   match_with_backup.SetPasswordBackupNote(u"backuppassword");
   std::vector<PasswordForm> matches = {std::move(match_with_backup)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetCredentials(),
@@ -326,7 +364,7 @@ TEST_F(CredentialCacheTest, IgnoresBackupCredentialIfFlagDisabled) {
   match_with_backup.SetPasswordBackupNote(u"backuppassword");
   std::vector<PasswordForm> matches = {std::move(match_with_backup)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), std::nullopt, origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetCredentials(),

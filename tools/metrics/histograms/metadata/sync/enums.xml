@@ -1339,6 +1339,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Password Manager Error Message"/>
   <int value="5" label="Account menu"/>
   <int value="6" label="Password Manager Settings"/>
+  <int value="7" label="Password Manager keyboard accessory"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTrigger) -->

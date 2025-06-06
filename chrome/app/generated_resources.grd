@@ -10854,6 +10854,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE" desc="Message indicating that the list of saved passwords for this site is empty.">
           No saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_TRUSTED_VAULT_KEY_RETRIEVAL_REQUIRED_MESSAGE" desc="Message indicating that trusted vault key retrieval is required before passwords can be used.">
+          You need to verify it's you before you can access your passwords
+        </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE" desc="The title of a list of saved passwords for the currently visible site." translateable="false">
           Saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
@@ -10865,6 +10868,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD" desc="The text of the link in the password sheet that opens a bottom sheet which shows all saved credentials from any origin if the user is about to fill a password or username field. Allows user to pick one of the saved passwords to be filled in.">
           Select password
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_RETRIEVE_TRUSTED_VAULT_KEY" desc="The text of the link in the password sheet that opens the trusted vault key retrieval flow.">
+          Verify it's you
         </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY" desc="The text of the link in the password sheet that opens the system's selection for available Passkeys.">
           Select passkey

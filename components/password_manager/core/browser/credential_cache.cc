@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -47,6 +49,7 @@ CredentialCache::~CredentialCache() = default;
 void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
     base::span<const PasswordForm> best_matches,
     IsOriginBlocklisted is_blocklisted,
+    std::optional<PasswordStoreBackendError> backend_error,
     const url::Origin& origin) {
   std::vector<UiCredential> credentials;
   credentials.reserve(best_matches.size());
@@ -91,16 +94,23 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
       // The cache is only useful when the sharing notification UI is displayed
       // since it is used to mark those credentials as notified after the user
       // interacts with the UI.
-        unnotified_shared_credentials.push_back(form);
+      unnotified_shared_credentials.push_back(form);
     }
   }
   GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(
       std::move(unnotified_shared_credentials));
+
+  backend_error_ = backend_error;
 }
 
 const OriginCredentialStore& CredentialCache::GetCredentialStore(
     const url::Origin& origin) {
   return GetOrCreateCredentialStore(origin);
+}
+
+const std::optional<PasswordStoreBackendError> CredentialCache::backend_error()
+    const {
+  return backend_error_;
 }
 
 void CredentialCache::ClearCredentials() {

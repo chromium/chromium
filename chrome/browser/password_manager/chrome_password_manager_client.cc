@@ -89,6 +89,7 @@
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -207,6 +208,7 @@ using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordManagerSettingsService;
+using password_manager::PasswordStoreBackendError;
 using password_manager::metrics_util::PasswordType;
 using sessions::SerializedNavigationEntry;
 
@@ -944,11 +946,12 @@ void ChromePasswordManagerClient::ResetSubmissionTrackingAfterTouchToFill() {
 void ChromePasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
     base::span<const PasswordForm> best_matches,
-    bool is_blocklisted) {
+    bool is_blocklisted,
+    std::optional<PasswordStoreBackendError> backend_error) {
 #if BUILDFLAG(IS_ANDROID)
   credential_cache_.SaveCredentialsAndBlocklistedForOrigin(
       best_matches, CredentialCache::IsOriginBlocklisted(is_blocklisted),
-      origin);
+      backend_error, origin);
 
 #endif
 }

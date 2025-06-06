@@ -18,6 +18,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -416,7 +417,9 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
+                                      kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -440,7 +443,9 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
+                                      kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -465,7 +470,9 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+              StartTrustedVaultKeyRetrievalFlow(
+                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
+                                      kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code

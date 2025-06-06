@@ -30,7 +30,9 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 }
 
 void PasswordManagerErrorMessageHelperBridgeImpl::
-    StartTrustedVaultKeyRetrievalFlow(content::WebContents* web_contents) {
+    StartTrustedVaultKeyRetrievalFlow(
+        content::WebContents* web_contents,
+        syncer::TrustedVaultUserActionTriggerForUMA user_action_trigger) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
   if (window_android == nullptr) {
@@ -41,7 +43,7 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startTrustedVaultKeyRetrievalFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      profile->GetJavaObject());
+      profile->GetJavaObject(), static_cast<jint>(user_action_trigger));
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(

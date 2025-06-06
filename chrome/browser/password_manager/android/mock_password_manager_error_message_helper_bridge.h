@@ -22,7 +22,8 @@ class MockPasswordManagerErrorMessageHelperBridge
               (override));
   MOCK_METHOD(void,
               StartTrustedVaultKeyRetrievalFlow,
-              (content::WebContents * web_contents),
+              (content::WebContents * web_contents,
+               syncer::TrustedVaultUserActionTriggerForUMA user_action_trigger),
               (override));
   MOCK_METHOD(bool,
               ShouldShowSignInErrorUI,

@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/web_contents.h"
 
 class PasswordManagerErrorMessageHelperBridge {
@@ -24,7 +25,8 @@ class PasswordManagerErrorMessageHelperBridge {
   // the Android process to retrieve key for on-device encryption. This method
   // will only work for users that are currently syncing.
   virtual void StartTrustedVaultKeyRetrievalFlow(
-      content::WebContents* web_contents) = 0;
+      content::WebContents* web_contents,
+      syncer::TrustedVaultUserActionTriggerForUMA user_action_trigger) = 0;
 
   // Checks if enough time has passed since the last error UI was shown.
   virtual bool ShouldShowSignInErrorUI(content::WebContents* web_contents) = 0;
