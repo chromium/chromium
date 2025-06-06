@@ -69,7 +69,7 @@ bool CastCrashReporterClientAndroid::GetCrashDumpLocation(
     return false;
   }
 
-  *crash_dir = app_data.Append("Crashpad");
+  *crash_dir = app_data.Append("CrashpadBrowser");
   return true;
 }
 
