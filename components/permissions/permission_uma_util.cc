@@ -837,7 +837,7 @@ void PermissionUmaUtil::PermissionRevoked(
                          /*web_contents=*/nullptr, browser_context,
                          /*render_frame_host*/ nullptr,
                          /*predicted_grant_likelihood=*/std::nullopt,
-                         /*prediction_request_relevance=*/std::nullopt,
+                         /*permission_request_relevance=*/std::nullopt,
                          /*prediction_decision_held_back=*/std::nullopt);
 }
 
