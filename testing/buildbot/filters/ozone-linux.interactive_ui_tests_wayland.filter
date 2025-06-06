@@ -14,6 +14,9 @@
 # TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
 -BookmarkBarViewTest4.ContextMenus
 
+# TODO(crbug.com/414696307): Often times out on the bot:
+-GeolocationUsageObserverBrowsertest.GetCurrentPositionWhileWatchingPosition
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
