@@ -174,8 +174,10 @@ public class ChildProcessRankingTest {
         ChildProcessConnection c3 = createConnection();
         ChildProcessConnection c4 = createConnection();
         ChildProcessConnection c5 = createConnection();
+        ChildProcessConnection c6 = createConnection();
+        ChildProcessConnection c7 = createConnection();
 
-        ChildProcessRanking ranking = new ChildProcessRanking(5);
+        ChildProcessRanking ranking = new ChildProcessRanking(7);
         ranking.enableServiceGroupImportance();
 
         // Insert in lowest ranked to highest ranked order.
@@ -195,28 +197,45 @@ public class ChildProcessRankingTest {
                 ChildProcessImportance.PERCEPTIBLE);
         ranking.addConnection(
                 c3,
+                /* visible= */ true,
+                /* frameDepth= */ 1,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+        ranking.addConnection(
+                c4,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.MODERATE);
         ranking.addConnection(
-                c4,
+                c5,
                 /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
-                c5,
+                c6,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
+        // Visible main frame should be ChildProcessImportance.MODERATE or higher. But there can be
+        // a race of inconsistency.
+        ranking.addConnection(
+                c7,
+                /* visible= */ true,
+                /* frameDepth= */ 0,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.PERCEPTIBLE);
 
-        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c5, c4, c3, c2, c1});
-        assertNotInGroup(new ChildProcessConnection[] {c5, c4, c3, c2});
+        assertRankingAndRemoveAll(
+                ranking, new ChildProcessConnection[] {c7, c6, c5, c4, c3, c2, c1});
+        assertNotInGroup(new ChildProcessConnection[] {c7, c6, c5, c4});
         assertInGroupOrderedByImportance(new ChildProcessConnection[] {c1});
     }
 

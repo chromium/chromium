@@ -21,6 +21,10 @@ namespace content {
 // Android version, PERCEPTIBLE importance falls back to NORMAL importance and
 // the corresponding waived service binding.
 //
+// Note that the numerical order in ChildProcessImportance should be consistent
+// because ChildProcessImportance is compared numerically in
+// ChildProcessRanking.java.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
 enum class ChildProcessImportance {
   // NORMAL is the default value.
