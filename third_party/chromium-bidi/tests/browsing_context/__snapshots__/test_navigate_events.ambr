@@ -1682,7 +1682,6 @@
       'params': dict({
         'children': None,
         'context': 'stable_0',
-        'originalOpener': 'stable_2',
         'parent': None,
         'url': 'stable_1',
         'userContext': 'default',
@@ -1698,7 +1697,6 @@
       'params': dict({
         'children': None,
         'context': 'stable_0',
-        'originalOpener': 'stable_2',
         'parent': None,
         'url': 'stable_1',
         'userContext': 'default',
@@ -1714,7 +1712,6 @@
       'params': dict({
         'children': None,
         'context': 'stable_0',
-        'originalOpener': 'stable_2',
         'parent': None,
         'url': 'stable_1',
         'userContext': 'default',
@@ -1730,7 +1727,6 @@
       'params': dict({
         'children': None,
         'context': 'stable_0',
-        'originalOpener': 'stable_2',
         'parent': None,
         'url': 'stable_1',
         'userContext': 'default',
@@ -1741,8 +1737,8 @@
       'method': 'browsingContext.navigationStarted',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
+        'navigation': 'stable_2',
+        'url': 'stable_3',
       }),
       'type': 'event',
     }),
@@ -1750,8 +1746,8 @@
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
+        'navigation': 'stable_2',
+        'url': 'stable_3',
       }),
       'type': 'event',
     }),
@@ -1759,8 +1755,8 @@
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
+        'navigation': 'stable_2',
+        'url': 'stable_3',
       }),
       'type': 'event',
     }),
@@ -1768,8 +1764,8 @@
       'method': 'browsingContext.load',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_3',
-        'url': 'stable_4',
+        'navigation': 'stable_2',
+        'url': 'stable_3',
       }),
       'type': 'event',
     }),

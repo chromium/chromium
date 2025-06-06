@@ -19,10 +19,9 @@ from test_helpers import (execute_command, goto_url, send_JSON_command,
                           subscribe)
 
 SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
-                         "response", "initiator", "realm", "clientWindow")
-KEYS_TO_STABILIZE = [
-    'context', 'navigation', 'id', 'url', 'request', 'originalOpener'
-]
+                         "response", "initiator", "realm", "clientWindow",
+                         "originalOpener")
+KEYS_TO_STABILIZE = ['context', 'navigation', 'id', 'url', 'request']
 
 
 async def set_beforeunload_handler(websocket, context_id, show_popup=False):
@@ -115,11 +114,7 @@ async def test_navigate_fragment_checkEvents(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_window_open_url_checkEvents(websocket, context_id, url_example,
-                                           read_messages, snapshot,
-                                           test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+                                           read_messages, snapshot):
     await subscribe(websocket, ["browsingContext"])
 
     await send_JSON_command(
@@ -145,11 +140,7 @@ async def test_window_open_url_checkEvents(websocket, context_id, url_example,
 @pytest.mark.asyncio
 @pytest.mark.parametrize("url", ["", "about:blank", "about:blank?test"])
 async def test_window_open_aboutBlank_checkEvents(websocket, context_id, url,
-                                                  read_messages, snapshot,
-                                                  test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+                                                  read_messages, snapshot):
     await subscribe(websocket, ["browsingContext"])
     await send_JSON_command(
         websocket, {

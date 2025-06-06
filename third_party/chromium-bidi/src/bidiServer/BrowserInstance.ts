@@ -64,31 +64,6 @@ export class BrowserInstance {
       path.join(os.tmpdir(), 'web-driver-bidi-server-'),
     );
 
-    // For HttpsFirstBalancedModeAutoEnable, crbug.com/378022921.
-    // HttpsUpgrades is required for testing proxy settings.
-    const disabledFeatures = new Set([
-      'DialMediaRouteProvider',
-      'TrackingProtection3pcd',
-      'HttpsFirstBalancedModeAutoEnable',
-    ]);
-
-    // Add all `disable-features` from chromeArgs to the disabledFeatures set.
-    const disableFeaturesArgStr =
-      chromeOptions.chromeArgs
-        .filter((arg) => arg.startsWith('--disable-features='))
-        .at(0) ?? '';
-    disableFeaturesArgStr
-      .replaceAll('--disable-features=', '')
-      .split(',')
-      .forEach((feature) => disabledFeatures.add(feature));
-
-    // Remove `disable-features` from chromeArgs.
-    chromeOptions.chromeArgs = [
-      ...chromeOptions.chromeArgs.filter(
-        (arg) => !arg.startsWith('--disable-features='),
-      ),
-    ];
-
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
       // keep-sorted start
@@ -103,7 +78,6 @@ export class BrowserInstance {
       '--no-first-run',
       '--password-store=basic',
       '--use-mock-keychain',
-      `--disable-features=${[...disabledFeatures.values()].join(',')}`,
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
       ...(chromeOptions.chromeArgs.includes('--remote-debugging-pipe')

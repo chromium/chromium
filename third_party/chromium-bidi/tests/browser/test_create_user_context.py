@@ -57,10 +57,7 @@ async def test_browser_create_user_context(websocket):
 
 @pytest.mark.asyncio
 async def test_browser_create_user_context_legacy_proxy(
-        websocket, http_proxy_server, test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+        websocket, http_proxy_server):
     # Localhost URLs are not proxied.
     example_url = "http://example.com"
 
@@ -96,23 +93,8 @@ async def test_browser_create_user_context_legacy_proxy(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('no_proxy', [True, False])
-@pytest.mark.parametrize(
-    'capabilities',
-    [{
-        'goog:chromeOptions': {
-            # Required to prevent automatic switch to https.
-            'args': ['--disable-features=HttpsUpgrades']
-        }
-    }],
-    indirect=True)
 async def test_browser_create_user_context_proxy(websocket, http_proxy_server,
-                                                 test_chromedriver_mode,
                                                  no_proxy):
-    if test_chromedriver_mode:
-        # For whatever reason, in chromedriver, the
-        # `disable-features=HttpsUpgrades` is not respected.
-        pytest.xfail(reason="TODO: #3294")
-
     example_url = "http://example.com/"
 
     user_context = await execute_command(

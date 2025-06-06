@@ -387,12 +387,13 @@ async def test_serialization_function(websocket, context_id, js_string,
 @pytest.mark.asyncio
 async def test_serialization_internal_id(websocket, context_id,
                                          test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
     """
     Test that internalId is mapped properly. Required, as generic
     `test_serialization_function` does not check it.
     """
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
+
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",

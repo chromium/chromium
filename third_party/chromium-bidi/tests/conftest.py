@@ -117,7 +117,11 @@ async def websocket(test_headless_mode, capabilities, request):
         default_capabilities = {
             "webSocketUrl": True,
             "goog:chromeOptions": {
-                "args": ["--disable-infobars"]
+                "args": [
+                    "--disable-infobars",
+                    # Required to prevent automatic switch to https.
+                    '--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades'
+                ]
             }
         }
 

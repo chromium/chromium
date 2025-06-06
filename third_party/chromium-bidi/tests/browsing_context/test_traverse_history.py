@@ -51,11 +51,7 @@ async def test_traverse_history(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_traverse_history_no_entry(websocket, context_id, html,
-                                         test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+async def test_traverse_history_no_entry(websocket, context_id, html):
     with pytest.raises(Exception,
                        match=str({
                            "error": "no such history entry",

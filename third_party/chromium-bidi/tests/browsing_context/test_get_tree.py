@@ -65,11 +65,7 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTree_contextsReturned(
-        websocket, context_id, html, iframe, url_all_origins,
-        test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+        websocket, context_id, html, iframe, url_all_origins):
     page_with_nested_iframe = html(iframe(url_all_origins))
     another_page_with_nested_iframe = html(iframe(url_all_origins))
 
