@@ -1,7 +1,6 @@
 include_rules = [
   "+content/public/browser",
   "+content/public/common",
-  "+mojo/public/cpp",
 ]
 
 specific_include_rules = {
