@@ -109,19 +109,6 @@ IN_PROC_BROWSER_TEST_F(
             GetView()->GetVectorIcon().name);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PasswordChangeIconViewsTest,
-    ViewIsVisibleWhenChangingPasswordWaitingForPasswordForm) {
-  EnableSignIn();
-  SetPrivacyNoticeAcceptedPref();
-  SetupPasswordChange();
-  EXPECT_TRUE(GetView()->GetVisible());
-  EXPECT_EQ(views::kPasswordChangeIcon.name, GetView()->GetVectorIcon().name);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK),
-            GetView()->GetText());
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
                        ViewIsVisibleWhenChangingPasswordFinished) {
   EnableSignIn();
