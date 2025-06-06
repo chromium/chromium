@@ -51,6 +51,7 @@ actions {
           values: {
             value:  {
               new {
+                id: 0
                 m_id: 0
               }
             }
@@ -60,6 +61,7 @@ actions {
           values: {
             value: {
               new {
+                id: 1
                 m_id: 1
               }
             }
@@ -75,11 +77,13 @@ actions {
                     id: 1
                     m_input_operand_id: {
                       new {
+                        id: 0
                         m_id: 0
                       }
                     }
                     m_output_operand_id: {
                       new {
+                        id: 1
                         m_id: 1
                       }
                     }
@@ -91,6 +95,7 @@ actions {
           }
         }
         m_constant_operand_ids_to_handles: {}
+        m_id_to_constant_tensor_operand_map: {}
       }
     }
   }
