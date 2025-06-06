@@ -10,13 +10,14 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './clear_browsing_data_account_indicator.html.js';
+import {canDeleteAccountData} from './clear_browsing_data_signin_util.js';
 
 const SettingsClearBrowsingDataAccountIndicatorBase =
     WebUiListenerMixin(PolymerElement);
@@ -93,24 +94,13 @@ export class SettingsClearBrowsingDataAccountIndicator extends
 
   /**
    * Determines when the account indicator should be shown, in the case where
-   * the user is actively signed in to Chrome.
+   * account data would be deleted.
    */
   private computeShouldShowAvatarRow_() {
-    if (!this.shownAccount_ || !this.syncStatus_) {
+    if (!this.shownAccount_) {
       return false;
     }
-
-    switch (this.syncStatus_.signedInState) {
-      case SignedInState.SIGNED_OUT:
-      case SignedInState.SIGNED_IN_PAUSED:
-      case SignedInState.WEB_ONLY_SIGNED_IN:
-        return false;
-      case SignedInState.SIGNED_IN:
-      case SignedInState.SYNCING:
-        return true;
-    }
-
-    assertNotReached('Invalid SignedInState');
+    return canDeleteAccountData(this.syncStatus_);
   }
 
   private getProfileImageSrc_(): string {

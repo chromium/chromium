@@ -146,7 +146,7 @@
         on-click="onDeleteBrowsingDataClick_"
         disabled="[[shouldDisableDeleteButton_(
             isDeletionInProgress_, isNoDatatypeSelected_)]]">
-      $i18n{clearData}
+      [[deleteButtonLabel_]]
     </cr-button>
   </div>
 </cr-dialog>

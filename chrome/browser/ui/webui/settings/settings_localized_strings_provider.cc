@@ -591,6 +591,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 
 void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
                                  Profile* profile) {
+  // TODO(crbug.com/397187800): Rename strings from "clear" to "delete".
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"clearTimeRange", IDS_SETTINGS_CLEAR_PERIOD_TITLE},
       {"clearBrowsingDataSignedIn", IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN},
@@ -1924,6 +1925,7 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"siteSettings", IDS_SETTINGS_SITE_SETTINGS},
       {"siteSettingsDescription", IDS_SETTINGS_SITE_SETTINGS_DESCRIPTION},
       {"clearData", IDS_SETTINGS_CLEAR_DATA},
+      {"deleteDataFromDevice", IDS_SETTINGS_DELETE_DATA_FROM_DEVICE},
       {"clearingData", IDS_SETTINGS_CLEARING_DATA},
       {"clearedData", IDS_SETTINGS_CLEARED_DATA},
       {"clearBrowsingData", IDS_SETTINGS_CLEAR_BROWSING_DATA},
