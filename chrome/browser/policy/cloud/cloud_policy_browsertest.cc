@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -64,6 +63,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -339,7 +339,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
         base::Time::NowFromSystemTime() - base::Time::UnixEpoch();
 
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [now](invalidation::InvalidationService* service) {
               static_cast<invalidation::FakeInvalidationService*>(service)
                   ->EmitInvalidationForTest(invalidation::Invalidation(
