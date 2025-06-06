@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
 namespace updater {
@@ -24,6 +23,7 @@ void RunAndReschedule() {
 }  // namespace
 
 void SchedulePeriodicTasks() {
+  // Delay a little bit to get out of the way of browser startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&RunAndReschedule), base::Seconds(19));
 }

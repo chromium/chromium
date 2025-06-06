@@ -11,8 +11,6 @@
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
-#include "chrome/browser/updater/check_updater_health_task.h"
-#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -23,21 +21,11 @@ void DoPeriodicTasks(base::OnceClosure callback) {
           [](base::OnceClosure callback) {
             // Run updater periodic tasks in case the launchd scheduled task is
             // blocked.
-            base::ThreadPool::PostTaskAndReplyWithResult(
+            base::ThreadPool::PostTaskAndReply(
                 FROM_HERE,
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                base::BindOnce(&GetBrowserUpdaterScope),
-                base::BindOnce(
-                    [](base::OnceClosure callback, UpdaterScope scope) {
-                      BrowserUpdaterClient::Create(scope)->RunPeriodicTasks(
-                          base::BindOnce(
-                              &CheckUpdaterHealthTask::Run,
-                              base::MakeRefCounted<CheckUpdaterHealthTask>(
-                                  scope),
-                              std::move(callback)));
-                    },
-                    std::move(callback)));
+                base::BindOnce(&WakeAllUpdaters), std::move(callback));
           },
           std::move(callback)));
 }

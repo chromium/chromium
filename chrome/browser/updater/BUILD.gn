@@ -83,7 +83,10 @@ source_set("scheduler") {
 
   if (enable_updater) {
     if (is_mac) {
-      sources += [ "scheduler_mac.cc" ]
+      sources += [
+        "scheduler_impl.cc",
+        "scheduler_mac.cc",
+      ]
       deps += [
         ":browser_updater_client",
         "//chrome/browser/ui",
@@ -91,7 +94,10 @@ source_set("scheduler") {
         "//chrome/updater:browser_sources",
       ]
     } else if (is_win) {
-      sources += [ "scheduler_win.cc" ]
+      sources += [
+        "scheduler_impl.cc",
+        "scheduler_win.cc",
+      ]
       deps += [
         ":browser_updater_client",
         "//chrome/updater:browser_sources",
