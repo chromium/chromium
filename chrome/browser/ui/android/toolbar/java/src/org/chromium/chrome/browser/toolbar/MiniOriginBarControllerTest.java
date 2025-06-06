@@ -451,6 +451,8 @@ public class MiniOriginBarControllerTest {
         animationListener.onPrepare(mImeAnimation);
         Assert.assertEquals(
                 MiniOriginState.ANIMATING, mMiniOriginBarController.getCurrentStateForTesting());
+        Assert.assertEquals(
+                LayoutParams.WRAP_CONTENT, mControlContainerHeightSupplier.get().intValue());
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         animationListener.onStart(mImeAnimation, bounds);
@@ -470,6 +472,9 @@ public class MiniOriginBarControllerTest {
         assertEquals(0, (int) mControlContainerTranslationSupplier.get());
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+        Assert.assertEquals(
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
+                mControlContainerHeightSupplier.get().intValue());
     }
 
     @Test
