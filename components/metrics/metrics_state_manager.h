@@ -289,11 +289,6 @@ class MetricsStateManager final {
   // team to be able to control and monitor if/how this function gets called.
   const ClonedInstallDetector& GetClonedInstallDetector() const;
 
-  // Returns a MetricsStateManagerProvider instance and sets its
-  // |log_normal_metric_state_.gen| with the provided random seed.
-  std::unique_ptr<MetricsProvider> GetProviderAndSetRandomSeedForTesting(
-      int64_t seed);
-
   // Backs up the current client info via |store_client_info_|.
   void BackUpCurrentClientInfo();
 

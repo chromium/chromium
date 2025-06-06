@@ -31,17 +31,6 @@ const base::FeatureParam<double> kAdditiveFactor{&kPseudoMetricsEffectFeature,
 
 }  // namespace internal
 
-BASE_FEATURE(kNonUniformityValidationFeature,
-             "UMANonUniformityLogNormal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<double> kLogNormalMean{
-    &kNonUniformityValidationFeature, "mean", 4.605};
-const base::FeatureParam<double> kLogNormalDelta{
-    &kNonUniformityValidationFeature, "delta", 0};
-const base::FeatureParam<double> kLogNormalStdDev{
-    &kNonUniformityValidationFeature, "stdDev", 1.238};
-
 double GetPseudoMetricsSample(double sample) {
   return sample * internal::kMultiplicativeFactor.Get() +
          internal::kAdditiveFactor.Get();

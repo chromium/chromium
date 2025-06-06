@@ -572,34 +572,6 @@ TEST_F(MetricsStateManagerTest, CheckProvider) {
   histogram_tester.ExpectTotalCount("UMA.IsClonedInstall", 0);
 }
 
-TEST_F(MetricsStateManagerTest, CheckProviderLogNormal) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  // Set the random seed to have a deterministic test.
-  std::unique_ptr<MetricsProvider> provider =
-      state_manager->GetProviderAndSetRandomSeedForTesting(42);
-
-  base::HistogramTester histogram_tester;
-  ChromeUserMetricsExtension uma_proto;
-  provider->ProvideCurrentSessionData(&uma_proto);
-  histogram_tester.ExpectUniqueSample("UMA.DataValidation.LogNormal", 189, 1);
-}
-
-TEST_F(MetricsStateManagerTest, CheckProviderLogNormalWithParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kNonUniformityValidationFeature, {{"delta", "10.0"}});
-  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  // Set the random seed to have a deterministic test.
-  std::unique_ptr<MetricsProvider> provider =
-      state_manager->GetProviderAndSetRandomSeedForTesting(42);
-
-  base::HistogramTester histogram_tester;
-  ChromeUserMetricsExtension uma_proto;
-  provider->ProvideCurrentSessionData(&uma_proto);
-  histogram_tester.ExpectUniqueSample("UMA.DataValidation.LogNormal", 2081, 1);
-}
-
 TEST_F(MetricsStateManagerTest, CheckClientIdWasNotUsedToAssignFieldTrial) {
   EnableMetricsReporting();
   ClientInfo client_info;
