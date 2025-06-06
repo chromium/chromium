@@ -37,6 +37,15 @@ BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 
+// Enables the Lens overlay searchbox for omnibox suggestions. This does the
+// same thing as kLensOverlayContextualSearchbox, but is used to enable the
+// feature from the omnibox contextual suggestions experiment. This relies on
+// the same params as kLensOverlayContextualSearchbox. This flag turns the meta
+// feature on to remove the dependency between the CSB experiment and omnibox
+// experiment.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions);
+
 // Enables the Lens overlay optimizations.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);

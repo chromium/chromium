@@ -35,6 +35,11 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_resetsSequence) {
 TEST_F(
     LensOverlayRequestIdGeneratorTest,
     GetNextIdForInitialRequest_IncrementsSequenceAndImageSequenceAndLongContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox,
+      {{"page-content-request-id-fix", "false"}});
+
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
       request_id_generator.GetNextRequestId(
@@ -168,6 +173,11 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
        GetNextIdForPageContentUpdate_IncrementsSequenceAndNewAnalyticsId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox,
+      {{"page-content-request-id-fix", "false"}});
+
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
       request_id_generator.GetNextRequestId(
