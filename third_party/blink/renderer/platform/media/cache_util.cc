@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -64,13 +65,11 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
   const base::TimeDelta kMinimumAgeForUsefulness =
       base::Seconds(3600);  // Arbitrary value.
 
-  const char kMaxAgePrefix[] = "max-age=";
-  const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
+  constexpr std::string_view kMaxAgePrefix = "max-age=";
   if (cache_control_header.starts_with(kMaxAgePrefix)) {
     int64_t max_age_seconds;
     base::StringToInt64(
-        base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
-                              cache_control_header.end()),
+        std::string_view(cache_control_header).substr(kMaxAgePrefix.size()),
         &max_age_seconds);
     if (base::Seconds(max_age_seconds) < kMinimumAgeForUsefulness) {
       reasons |= kShortMaxAge;
@@ -102,13 +101,11 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   // Max cache timeout ~= 1 month.
   base::TimeDelta ret = base::Days(30);
 
-  const char kMaxAgePrefix[] = "max-age=";
-  const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
+  constexpr std::string_view kMaxAgePrefix = "max-age=";
   if (cache_control_header.starts_with(kMaxAgePrefix)) {
     int64_t max_age_seconds;
     base::StringToInt64(
-        base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
-                              cache_control_header.end()),
+        std::string_view(cache_control_header).substr(kMaxAgePrefix.size()),
         &max_age_seconds);
 
     ret = std::min(ret, base::Seconds(max_age_seconds));
