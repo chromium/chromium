@@ -625,29 +625,6 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
                                                   .size()));
 }
 
-class AutofillElementRemovalDetectionTest : public AutofillTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillDetectRemovedFormControls};
-};
-
-IN_PROC_BROWSER_TEST_F(AutofillElementRemovalDetectionTest,
-                       DynamicForm_DiscoverRemovedFormFields) {
-  // Load a form that contains 3 fields.
-  GURL url = embedded_test_server()->GetURL(
-      "/autofill/dynamic_form_element_removed.html");
-  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  ui_test_utils::NavigateToURL(&params);
-  ASSERT_TRUE(WaitForFormWithNFields(3))
-      << "Waiting for form before field removal";
-
-  // Remove one field via JavaScript and expect that the AutofillManager learns
-  // about this.
-  ASSERT_TRUE(content::ExecJs(web_contents(), "RemoveCity();"));
-  EXPECT_TRUE(WaitForFormWithNFields(2))
-      << "Waiting for after before field removal";
-}
-
 // Accessibility Tests
 class AutofillAccessibilityTest : public AutofillTest {
  protected:

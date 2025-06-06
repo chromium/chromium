@@ -544,9 +544,7 @@ AutofillAgent::AutofillAgent(
       optimize_form_extraction_(base::FeatureList::IsEnabled(
           features::kAutofillOptimizeFormExtraction)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
-          features::kAutofillReplaceFormElementObserver)),
-      detect_removed_form_controls_(base::FeatureList::IsEnabled(
-          features::kAutofillDetectRemovedFormControls)) {
+          features::kAutofillReplaceFormElementObserver)) {
   form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
@@ -1808,7 +1806,7 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
     }
     // Early bailout for node removal.
     if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
-        !replace_form_element_observer_ && !detect_removed_form_controls_) {
+        !replace_form_element_observer_) {
       return false;
     }
     auto maybe_control_element = element.DynamicTo<WebFormControlElement>();
@@ -1848,12 +1846,8 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
           process_forms_after_dynamic_change_timer_, element);
       break;
     case blink::WebFormRelatedChangeType::kRemove:
-      form_tracker_->ElementDisappeared(element);
-      if (detect_removed_form_controls_) {
-        ExtractFormsAndNotifyPasswordAutofillAgent(
-            process_forms_after_dynamic_change_timer_, element);
-      }
-      break;
+      // Autofill currently notifies the browser of additions but not of
+      // deletions, see crbug.com/356236098#comment10 for further details.
     case blink::WebFormRelatedChangeType::kHide:
       form_tracker_->ElementDisappeared(element);
       break;

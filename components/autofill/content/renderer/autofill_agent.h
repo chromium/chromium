@@ -586,7 +586,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   const bool optimize_form_extraction_ = false;
   const bool replace_form_element_observer_ = false;
-  const bool detect_removed_form_controls_ = false;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

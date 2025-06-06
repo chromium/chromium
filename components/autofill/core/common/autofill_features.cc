@@ -448,13 +448,6 @@ BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
              "AutofillDisambiguateContradictingFieldTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, whenever form controls are removed from the DOM, the ChromeClient
-// is informed about this. This enables Autofill to trigger a reparsing of
-// forms.
-BASE_FEATURE(kAutofillDetectRemovedFormControls,
-             "AutofillDetectRemovedFormControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
