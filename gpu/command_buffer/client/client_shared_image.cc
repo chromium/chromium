@@ -556,6 +556,13 @@ std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
       new RasterScopedAccess(raster_interface, this, sync_token, readonly));
 }
 
+std::unique_ptr<RasterScopedAccess>
+ClientSharedImage::BeginGLAccessForCopySharedImage(InterfaceBase* gl_interface,
+                                                   const SyncToken& sync_token,
+                                                   bool readonly) {
+  return BeginRasterAccess(gl_interface, sync_token, readonly);
+}
+
 #if BUILDFLAG(IS_WIN)
 void ClientSharedImage::SetUsePreMappedMemory(bool use_premapped_memory) {
   CHECK(gpu_memory_buffer_);

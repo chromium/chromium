@@ -244,6 +244,13 @@ class GPU_EXPORT ClientSharedImage
       const SyncToken& sync_token,
       bool readonly);
 
+  // This is used for CopySharedImageToTextureINTERNAL, where we need GL access
+  // but do not create a GL texture.
+  std::unique_ptr<RasterScopedAccess> BeginGLAccessForCopySharedImage(
+      InterfaceBase* gl_interface,
+      const SyncToken& sync_token,
+      bool readonly);
+
 #if BUILDFLAG(IS_WIN)
   // Allows client to indicate the |gpu_memory_buffer_| to pre map its shared
   // memory region internally for performance optimization purposes. It is only

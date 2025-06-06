@@ -240,10 +240,12 @@ void SynchronizeVideoFrameRead(
   context_support->SignalQuery(query_id, std::move(on_query_done_cb));
 }
 
-void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
-                               gpu::gles2::GLES2Interface* gl,
-                               gpu::ContextSupport* context_support) {
-  WaitAndReplaceSyncTokenClient client(gl);
+void SynchronizeVideoFrameRead(
+    scoped_refptr<VideoFrame> video_frame,
+    gpu::gles2::GLES2Interface* gl,
+    gpu::ContextSupport* context_support,
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access = nullptr) {
+  WaitAndReplaceSyncTokenClient client(gl, std::move(ri_access));
   video_frame->UpdateReleaseSyncToken(&client);
   if (!video_frame->metadata().read_lock_fences_enabled)
     return;
@@ -1447,8 +1449,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
                       type, /*level=*/0, video_frame->visible_rect().size());
 
-    destination_gl->WaitSyncTokenCHROMIUM(
-        video_frame->acquire_sync_token().GetConstData());
+    auto destination_access = shared_image->BeginGLAccessForCopySharedImage(
+        destination_gl, video_frame->acquire_sync_token(), /*readonly=*/true);
 
     // Copy shared image to gl texture for hardware video decode with
     // multiplanar shared image formats.
@@ -1460,7 +1462,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
         shared_image->mailbox().name);
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                              raster_context_provider->ContextSupport());
+                              raster_context_provider->ContextSupport(),
+                              std::move(destination_access));
     return true;
   }
 
