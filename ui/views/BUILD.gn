@@ -1049,6 +1049,8 @@ source_set("test_support") {
     "test/combobox_test_api.h",
     "test/configurable_test_frame_view.cc",
     "test/configurable_test_frame_view.h",
+    "test/configurable_test_non_client_frame_view.cc",
+    "test/configurable_test_non_client_frame_view.h",
     "test/desktop_test_views_delegate.h",
     "test/dialog_test.cc",
     "test/dialog_test.h",
