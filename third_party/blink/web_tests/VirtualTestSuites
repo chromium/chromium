@@ -1866,7 +1866,7 @@
       "http/tests/inspector-protocol/service-worker/tentative/static-router"
     ],
     "args": ["--enable-features=ServiceWorkerStaticRouterTimingInfo"],
-    "expires": "Jun 5, 2025",
+    "expires": "Dec 5, 2025",
     "owners": ["suzukikeita@chromium.org", "yyanagisawa@chromium.org", "sisidovski@chromium.org"]
   },
   {
