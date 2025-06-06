@@ -24,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -401,7 +400,8 @@ constexpr SkColor kAvatarBubbleGaiaBackgroundColor =
     SkColorSetRGB(0xf5, 0xf5, 0xf5);
 constexpr SkColor kUserManagerBackgroundColor = SkColorSetRGB(0xee, 0xee, 0xee);
 
-constexpr char kDefaultUrlPrefix[] = "chrome://theme/IDR_PROFILE_AVATAR_";
+constexpr std::string_view kDefaultUrlPrefix =
+    "chrome://theme/IDR_PROFILE_AVATAR_";
 constexpr base::FilePath::CharType kGAIAPictureFileName[] =
     FILE_PATH_LITERAL("Google Profile Picture.png");
 constexpr base::FilePath::CharType kHighResAvatarFolderName[] =
@@ -831,15 +831,13 @@ bool IsDefaultAvatarIconIndex(size_t index) {
   return index < kDefaultAvatarIconsCount;
 }
 
-bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
+bool IsDefaultAvatarIconUrl(std::string_view url, size_t* icon_index) {
   DCHECK(icon_index);
   if (!base::StartsWith(url, kDefaultUrlPrefix, base::CompareCase::SENSITIVE))
     return false;
 
   int int_value = -1;
-  if (base::StringToInt(base::MakeStringPiece(
-                            url.begin() + strlen(kDefaultUrlPrefix), url.end()),
-                        &int_value)) {
+  if (base::StringToInt(url.substr(kDefaultUrlPrefix.size()), &int_value)) {
     if (int_value < 0 ||
         int_value >= static_cast<int>(kDefaultAvatarIconsCount))
       return false;
