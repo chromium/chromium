@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -490,6 +491,12 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
   }
+  std::string content_area_account_email =
+      enterprise_connectors::ContentAreaUserProvider::GetUser(
+          Profile::FromBrowserContext(context_), tab_url);
+  if (!content_area_account_email.empty()) {
+    event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
+  }
 
   AddAnalysisConnectorVerdictToEvent(result, event);
 
@@ -549,6 +556,12 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   }
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
+  }
+  std::string content_area_account_email =
+      enterprise_connectors::ContentAreaUserProvider::GetUser(
+          Profile::FromBrowserContext(context_), tab_url);
+  if (!content_area_account_email.empty()) {
+    event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
   }
 
   AddAnalysisConnectorVerdictToEvent(result, event);
@@ -774,6 +787,12 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
   event.Set(kKeyTrigger, trigger);
+  std::string content_area_account_email =
+      enterprise_connectors::ContentAreaUserProvider::GetUser(
+          Profile::FromBrowserContext(context_), tab_url);
+  if (!content_area_account_email.empty()) {
+    event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
+  }
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
 

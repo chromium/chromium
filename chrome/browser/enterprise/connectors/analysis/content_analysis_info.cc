@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -146,5 +147,65 @@ std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
 
   return accounts.GetAllAccounts()[user_index].email;
 }
+
+// static
+std::string ContentAreaUserProvider::GetUser(Profile* profile,
+                                             const GURL& tab_url) {
+  return ContentAreaUserProvider(IdentityManagerFactory::GetForProfile(profile),
+                                 tab_url)
+      .GetContentAreaAccountEmail();
+}
+
+const GURL& ContentAreaUserProvider::tab_url() const {
+  return *tab_url_;
+}
+
+signin::IdentityManager* ContentAreaUserProvider::identity_manager() const {
+  return im_;
+}
+
+const enterprise_connectors::AnalysisSettings&
+ContentAreaUserProvider::settings() const {
+  NOTREACHED();
+}
+
+int ContentAreaUserProvider::user_action_requests_count() const {
+  NOTREACHED();
+}
+
+std::string ContentAreaUserProvider::tab_title() const {
+  NOTREACHED();
+}
+
+std::string ContentAreaUserProvider::user_action_id() const {
+  NOTREACHED();
+}
+
+std::string ContentAreaUserProvider::email() const {
+  NOTREACHED();
+}
+
+std::string ContentAreaUserProvider::url() const {
+  NOTREACHED();
+}
+
+enterprise_connectors::ContentAnalysisRequest::Reason
+ContentAreaUserProvider::reason() const {
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+ContentAreaUserProvider::referrer_chain() const {
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<std::string>
+ContentAreaUserProvider::frame_url_chain() const {
+  NOTREACHED();
+}
+
+ContentAreaUserProvider::ContentAreaUserProvider(signin::IdentityManager* im,
+                                                 const GURL& tab_url)
+    : im_(im), tab_url_(tab_url) {}
 
 }  // namespace enterprise_connectors

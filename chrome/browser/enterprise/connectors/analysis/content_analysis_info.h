@@ -56,6 +56,34 @@ class ContentAnalysisInfo {
   std::string GetContentAreaAccountEmail() const;
 };
 
+// Simple implementation of `ContentAnalysisInfo` meant to be used for
+// `GetContentAreaAccountEmail` only
+class ContentAreaUserProvider : public ContentAnalysisInfo {
+ public:
+  static std::string GetUser(Profile* profile, const GURL& tab_url);
+
+ private:
+  const AnalysisSettings& settings() const override;
+  signin::IdentityManager* identity_manager() const override;
+  int user_action_requests_count() const override;
+  std::string tab_title() const override;
+  std::string user_action_id() const override;
+  std::string email() const override;
+  std::string url() const override;
+  const GURL& tab_url() const override;
+  ContentAnalysisRequest::Reason reason() const override;
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
+
+  explicit ContentAreaUserProvider(signin::IdentityManager* im,
+                                   const GURL& tab_url);
+
+  raw_ptr<signin::IdentityManager> im_;
+  raw_ref<const GURL> tab_url_;
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_

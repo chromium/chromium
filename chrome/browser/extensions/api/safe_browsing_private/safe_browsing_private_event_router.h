@@ -78,6 +78,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyTabUrl[];
   static constexpr char kKeyContentTransferMethod[] = "contentTransferMethod";
   static constexpr char kKeyHasWatermarking[] = "hasWatermarking";
+  static constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
   static const char kKeyUnscannedReason[];
 
   // String constants for the "trigger" event field.  This corresponds to
