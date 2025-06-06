@@ -30,10 +30,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -50,10 +52,21 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-@RunWith(BaseRobolectricTestRunner.class)
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinMediatorTest {
+    @Parameters
+    public static Collection testCases() {
+        return Arrays.asList(false, true);
+    }
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -66,8 +79,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
     private PropertyModel mModel;
     private EdgeToEdgeBottomChinMediator mMediator;
+    private final boolean mIsTablet;
 
     private static final int DEFAULT_HEIGHT = 60;
+
+    public EdgeToEdgeBottomChinMediatorTest(boolean isTablet) {
+        mIsTablet = isTablet;
+    }
 
     @Before
     public void setUp() {
@@ -80,7 +98,8 @@ public class EdgeToEdgeBottomChinMediatorTest {
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mBottomControlsStacker,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        !mIsTablet);
     }
 
     @Test
@@ -269,8 +288,10 @@ public class EdgeToEdgeBottomChinMediatorTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onStartedShowing(LayoutType.BROWSING);
         onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
-        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
+        assertLayerVisibility(mIsTablet);
+
         // Visibility was updated.
         verify(mBottomControlsStacker, times(2)).requestLayerUpdate(anyBoolean());
 
@@ -289,12 +310,16 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
+        assertLayerVisibility(mIsTablet);
 
         mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+
         assertTrue(
                 "The chin can still show, even when the page is opted into edge-to-edge.",
                 mModel.get(CAN_SHOW));
+        assertEquals(LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE, mMediator.getLayerVisibility());
     }
 
     @Test
@@ -308,13 +333,17 @@ public class EdgeToEdgeBottomChinMediatorTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onStartedShowing(LayoutType.BROWSING);
         onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
-        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
+        assertLayerVisibility(mIsTablet);
 
         onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
+
         assertTrue(
-                "The chin can still show, conditionally, when the page is opted into edge-to-edge.",
+                "The chin can still show, conditionally, when the page is opted into"
+                        + " edge-to-edge.",
                 mModel.get(CAN_SHOW));
+
         assertEquals(
                 BottomControlsStacker.LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE,
                 mMediator.getLayerVisibility());
@@ -351,15 +380,20 @@ public class EdgeToEdgeBottomChinMediatorTest {
     public void testUpdateVisibility_Fullscreen() {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+
         assertTrue("The chin should be visible.", mModel.get(CAN_SHOW));
+        assertLayerVisibility(mIsTablet);
 
         doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
         mMediator.onEnterFullscreen(null, null);
         assertFalse("The chin should not be visible when in fullscreen.", mModel.get(CAN_SHOW));
+        assertEquals(LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE, mMediator.getLayerVisibility());
 
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mMediator.onExitFullscreen(null);
+
         assertTrue("The chin should become visible when exit fullscreen.", mModel.get(CAN_SHOW));
+        assertLayerVisibility(mIsTablet);
     }
 
     @Test
@@ -431,11 +465,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
+        assertLayerVisibility(mIsTablet);
 
         mMediator.keyboardVisibilityChanged(true);
         assertTrue(
                 "The chin should still be visible as the keyboard has a zero inset.",
                 mModel.get(CAN_SHOW));
+        assertLayerVisibility(mIsTablet);
 
         mMediator.onKeyboardInsetChanged(180);
         assertFalse(
@@ -446,7 +482,16 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertTrue(
                 "The chin should be visible as the keyboard is no longer showing.",
                 mModel.get(CAN_SHOW));
-        assertEquals(LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
+
+        assertLayerVisibility(mIsTablet);
+    }
+
+    private void assertLayerVisibility(boolean isTablet) {
+        if (isTablet) {
+            assertEquals(LayerVisibility.VISIBLE_IF_OTHERS_VISIBLE, mMediator.getLayerVisibility());
+        } else {
+            assertEquals(LayerVisibility.VISIBLE, mMediator.getLayerVisibility());
+        }
     }
 
     private void onToEdgeChange(

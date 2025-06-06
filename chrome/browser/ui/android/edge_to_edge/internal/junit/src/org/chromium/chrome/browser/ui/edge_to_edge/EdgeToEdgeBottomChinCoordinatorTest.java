@@ -47,7 +47,8 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                         mEdgeToEdgeController,
                         mBottomControlsStacker,
                         mEdgeToEdgeBottomChinSceneLayer,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        false);
         verify(mLayoutManager).addSceneOverlay(any());
 
         coordinator.destroy();

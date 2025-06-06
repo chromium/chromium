@@ -1381,7 +1381,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManager::requestUpdate,
                         mEdgeToEdgeControllerSupplier.get(),
                         mBottomControlsStacker,
-                        mFullscreenManager);
+                        mFullscreenManager,
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         mSystemBarColorHelperSupplier.set(bottomChinColorHelper);
         return bottomChinColorHelper;
     }
