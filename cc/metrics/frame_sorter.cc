@@ -193,7 +193,8 @@ uint32_t FrameSorter::GetAverageThroughput() const {
   size_t good_frames = 0;
   for (auto it = End(); it; --it) {
     if (**it == FrameInfo::FrameFinalState::kPresentedAll ||
-        **it == FrameInfo::FrameFinalState::kPresentedPartialOldMain) {
+        **it == FrameInfo::FrameFinalState::kPresentedPartialOldMain ||
+        **it == FrameInfo::FrameFinalState::kPresentedPartialNewMain) {
       ++good_frames;
     }
   }
