@@ -154,7 +154,8 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testMakeTabGroupShared(String collaborationId) {
-        mService.makeTabGroupShared(LOCAL_TAB_GROUP_ID_1, collaborationId);
+        mService.makeTabGroupShared(
+                LOCAL_TAB_GROUP_ID_1, collaborationId, /* tabGroupSharingCallback= */ null);
     }
 
     @CalledByNative

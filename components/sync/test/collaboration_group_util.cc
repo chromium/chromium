@@ -10,6 +10,8 @@
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
+#include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
 

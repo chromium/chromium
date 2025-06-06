@@ -215,6 +215,7 @@ source_set("tab_group_sync_bridge") {
 
     # This is allowed until usage of SavedTabGroupKeyedService has been migrated
     # to TabGroupSyncService.
+    "//chrome/android:browser_test_support",
     "//chrome/browser",
     "//chrome/browser/sync/test/integration:*",
     "//chrome/browser/ui",

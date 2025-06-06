@@ -374,6 +374,28 @@ public class FakeServerHelper {
                                         mNativeFakeServer, collaborationId));
     }
 
+    /** Adds saved tab group to fake sync server. */
+    public void addSavedTabGroupToFakeServer(
+            @Nullable String syncGroupId, String groupTitle, int numberOfTabs) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        FakeServerHelperJni.get()
+                                .addSavedTabGroupToFakeServer(
+                                        mNativeFakeServer, syncGroupId, groupTitle, numberOfTabs));
+    }
+
+    /**
+     * Deletes all the SyncEntities on the fake server with the given dataType.
+     *
+     * @param dataType the type of entities to return.
+     */
+    public void deleteAllEntitiesForDataType(final int dataType) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        FakeServerHelperJni.get()
+                                .deleteAllEntitiesForDataType(mNativeFakeServer, dataType));
+    }
+
     @NativeMethods
     interface Natives {
         long createFakeServer();
@@ -457,5 +479,13 @@ public class FakeServerHelper {
 
         void addCollaborationGroupToFakeServer(
                 long fakeServer, @JniType("std::string") String collaborationId);
+
+        void addSavedTabGroupToFakeServer(
+                long fakeServer,
+                @Nullable String syncGroupId,
+                @JniType("std::string") String groupTitle,
+                int numberOfTabs);
+
+        void deleteAllEntitiesForDataType(long fakeServer, int dataType);
     }
 }

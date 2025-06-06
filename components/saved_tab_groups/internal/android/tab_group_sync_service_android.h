@@ -64,7 +64,8 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   void MakeTabGroupShared(JNIEnv* env,
                           const JavaParamRef<jobject>& j_caller,
                           const JavaParamRef<jobject>& j_group_id,
-                          const JavaParamRef<jstring>& j_collaboration_id);
+                          const JavaParamRef<jstring>& j_collaboration_id,
+                          const JavaParamRef<jobject>& j_boolean_callback);
 
   void AboutToUnShareTabGroup(JNIEnv* env,
                               const JavaParamRef<jobject>& j_caller,

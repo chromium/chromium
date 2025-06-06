@@ -79,6 +79,7 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for {@link CollaborationService}. */
@@ -97,6 +98,8 @@ public class CollaborationIntegrationTest {
     private static final long WAIT_TIMEOUT_MS = 1000L;
     private static final String TEST_COLLABORATION_ID = "collaboration_id";
     private static final String TEST_ACCESS_TOKEN = "access_token";
+    private static final String TEST_GROUP_TITLE = "group_title";
+    private static final long DELAY_MS_FOR_TAB_GROUP_ADDED = 1000;
 
     @Rule(order = 0)
     public SyncTestRule mActivityTestRule = new SyncTestRule();
@@ -319,7 +322,7 @@ public class CollaborationIntegrationTest {
         setupShareDelegateSupplier();
 
         onView(withId(R.id.share_button)).perform(relaxedClick());
-        prepareToShareTabGroup(/* owner= */ true, getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+        prepareToShareGroup(getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
         onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
@@ -373,22 +376,75 @@ public class CollaborationIntegrationTest {
         return dialogView.getVisibility() == View.VISIBLE && dialogContainerView.getAlpha() == 1f;
     }
 
-    // Prepares the tab group to be shared.
-    private void prepareToShareTabGroup(
-            boolean owner, LocalTabGroupId tabGroupId, String collaborationId) {
+    // Prepares to share the group with `tabGroupId` to the `collaborationId`. This is updating the
+    // fake sync server.
+    private void prepareToShareGroup(LocalTabGroupId tabGroupId, String collaborationId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
-                    assert (tabGroupSyncService != null && collaborationId != null);
+                    assert tabGroupSyncService != null && collaborationId != null;
                     tabGroupSyncService.setCollaborationAvailableInFinderForTesting(
                             collaborationId);
                     SavedTabGroup savedGroup = tabGroupSyncService.getGroup(tabGroupId);
-                    assert (savedGroup != null && savedGroup.collaborationId == null);
+                    assert savedGroup != null && savedGroup.collaborationId == null;
                     mActivityTestRule
                             .getFakeServerHelper()
                             .addCollaborationGroupToFakeServer(collaborationId);
 
                     mActivityTestRule.getSyncService().triggerRefresh();
+                });
+    }
+
+    // Sets the `collaborationId` for the given `tabGroupId` and makes tab group shared.
+    private void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
+                    assert tabGroupSyncService != null && collaborationId != null;
+                    prepareToShareGroup(tabGroupId, collaborationId);
+                    SavedTabGroup savedGroup = tabGroupSyncService.getGroup(tabGroupId);
+                    assert savedGroup != null && savedGroup.collaborationId == null;
+                    tabGroupSyncService.makeTabGroupShared(
+                            tabGroupId,
+                            collaborationId,
+                            (result) -> {
+                                assert result;
+                            });
+                });
+    }
+
+    // Sets the `collaborationId` for the given `syncGroupId` and makes tab group shared.
+    private void setCollaborationIdForSavedTabGroup(String syncGroupId, String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
+                    assert tabGroupSyncService != null && collaborationId != null;
+                    SavedTabGroup savedGroup = tabGroupSyncService.getGroup(syncGroupId);
+                    assert savedGroup != null && savedGroup.collaborationId == null;
+                    makeTabGroupShared(savedGroup.localId, collaborationId);
+                });
+    }
+
+    @SuppressWarnings("unused")
+    // Creates the shared tab group with the given `collab_id` and saves it to the fake server.
+    private void createSharedTabGroupInFakeServer(String collaborationId) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
+                    assert tabGroupSyncService != null && collaborationId != null;
+                    String syncGroupId = UUID.randomUUID().toString();
+                    mActivityTestRule
+                            .getFakeServerHelper()
+                            .addSavedTabGroupToFakeServer(
+                                    syncGroupId, TEST_GROUP_TITLE, /* numberOfTabs= */ 1);
+                    mActivityTestRule.getSyncService().triggerRefresh();
+                    // Post delayed task in order to make sure that `NotifyTabGroupAdded` is
+                    // called first.
+                    ThreadUtils.postOnUiThreadDelayed(
+                            () -> {
+                                setCollaborationIdForSavedTabGroup(syncGroupId, collaborationId);
+                            },
+                            DELAY_MS_FOR_TAB_GROUP_ADDED);
                 });
     }
 

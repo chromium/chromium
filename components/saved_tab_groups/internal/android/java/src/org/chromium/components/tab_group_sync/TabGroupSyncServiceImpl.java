@@ -84,11 +84,15 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId) {
+    public void makeTabGroupShared(
+            LocalTabGroupId tabGroupId,
+            String collaborationId,
+            @Nullable Callback<Boolean> tabGroupSharingCallback) {
         if (mNativePtr == 0) return;
         assert tabGroupId != null;
         TabGroupSyncServiceImplJni.get()
-                .makeTabGroupShared(mNativePtr, this, tabGroupId, collaborationId);
+                .makeTabGroupShared(
+                        mNativePtr, this, tabGroupId, collaborationId, tabGroupSharingCallback);
     }
 
     @Override
@@ -336,7 +340,8 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId tabGroupId,
-                String collaborationId);
+                String collaborationId,
+                @Nullable Callback<Boolean> tabGroupSharingCallback);
 
         void aboutToUnShareTabGroup(
                 long nativeTabGroupSyncServiceAndroid,

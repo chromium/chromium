@@ -1979,6 +1979,8 @@ if (_is_default_toolchain) {
       "//chrome/browser/sync",
       "//chrome/browser/thumbnail:test_support",
       "//components/offline_pages/core/background:test_support",
+      "//components/saved_tab_groups/internal:tab_group_sync_bridge",
+      "//components/saved_tab_groups/public",
       "//components/sync:test_support",
       "//content/test:test_support",
       "//net:test_support",

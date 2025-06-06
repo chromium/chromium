@@ -65,7 +65,10 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId, String tabTitle) {}
 
     @Override
-    public void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId) {}
+    public void makeTabGroupShared(
+            LocalTabGroupId tabGroupId,
+            String collaborationId,
+            @Nullable Callback<Boolean> tabGroupSharingCallback) {}
 
     @Override
     public void aboutToUnShareTabGroup(
