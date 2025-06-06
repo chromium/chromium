@@ -28,6 +28,9 @@ BASE_DECLARE_FEATURE(kMediaFoundationAV1L1T3Support);
 BASE_DECLARE_FEATURE(kMediaFoundationUseSWBRCForH264Camera);
 BASE_DECLARE_FEATURE(kMediaFoundationUseSWBRCForH264Desktop);
 
+BASE_DECLARE_FEATURE(kMediaFoundationSWBRCForH264ForceARMGPU);
+BASE_DECLARE_FEATURE(kMediaFoundationSWBRCForH264ForceAMDGPU);
+
 BASE_DECLARE_FEATURE(kMediaFoundationSWBRCUseFixedDeltaQP);
 extern const base::FeatureParam<int> kMediaFoundationSWBRCFixedDeltaQPValue;
 

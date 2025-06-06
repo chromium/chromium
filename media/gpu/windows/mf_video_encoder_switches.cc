@@ -34,9 +34,19 @@ BASE_FEATURE(kMediaFoundationAV1L1T3Support,
 
 BASE_FEATURE(kMediaFoundationUseSWBRCForH264Camera,
              "MediaFoundationUseSWBRCForH264Camera",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaFoundationUseSWBRCForH264Desktop,
              "MediaFoundationUseSWBRCForH264Desktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The following flags are used to force using of software BRC for H.264
+// encoding on ARM and AMD GPU architectures, ignoring existing GPU workaround
+// settings.
+BASE_FEATURE(kMediaFoundationSWBRCForH264ForceARMGPU,
+             "MediaFoundationSWBRCForH264ForceARMGPU",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationSWBRCForH264ForceAMDGPU,
+             "MediaFoundationSWBRCForH264ForceAMDGPU",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // H.264 SW Bitrate Controller works in fixed delta QP mode by default. The QP

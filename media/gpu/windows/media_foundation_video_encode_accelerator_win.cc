@@ -1440,10 +1440,21 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
       return;
     }
 
-    if (vendor_ == DriverVendor::kQualcomm) {
-      // Qualcomm H264 HMFT does not work with SW BRC.
-      // More info: https://crbug.com/390581539
-      return;
+    if (workarounds_.disable_h264_accelerator_sw_brc) {
+      if ((vendor_ == DriverVendor::kAMD &&
+           base::FeatureList::IsEnabled(
+               kMediaFoundationSWBRCForH264ForceAMDGPU)) ||
+          (vendor_ == DriverVendor::kQualcomm &&
+           base::FeatureList::IsEnabled(
+               kMediaFoundationSWBRCForH264ForceARMGPU))) {
+        // Force using SW BRC on AMD and ARM platforms when the corresponding
+        // feature flags are enabled.
+      } else {
+        // Disable SW BRC for H264 HMFT on AMD and ARM.
+        // More info:
+        // https://crbug.com/417752242 and https://crbug.com/390581539
+        return;
+      }
     }
 
     // Check feature flag for the camera source.

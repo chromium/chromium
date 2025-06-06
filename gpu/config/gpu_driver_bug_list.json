@@ -3539,6 +3539,34 @@
       "features": [
         "disable_av1_shared_image_encode"
       ]
+    },
+    {
+      "id": 448,
+      "cr_bugs": [
+        390581539
+      ],
+      "description": "Disable software bitrate control for H.264 encoding on Qualcomm GPUs on Windows.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "features": [
+        "disable_h264_accelerator_sw_brc"
+      ]
+    },
+    {
+      "id": 449,
+      "cr_bugs": [
+        417752242
+      ],
+      "description": "Disable software bitrate control for H.264 encoding on AMD GPUs on Windows.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disable_h264_accelerator_sw_brc"
+      ]
     }
   ]
 }
