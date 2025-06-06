@@ -1809,9 +1809,6 @@ crbug.com/808834 [ Win ] external/wpt/css/css-pseudo/first-letter-001.html [ Fai
 
 crbug.com/41320107 virtual/threaded/http/tests/devtools/tracing/idle-callback.js [ Crash Failure Pass Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6039744
-crbug.com/311438203 http/tests/devtools/throttling/mobile-throttling.js [ Failure Pass ]
-
 # failures in external/wpt/css/css-animations/ and web-animations/ from Mozilla tests
 crbug.com/849859 external/wpt/css/css-animations/Element-getAnimations-dynamic-changes.tentative.html [ Failure ]
 
