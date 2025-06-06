@@ -15,5 +15,6 @@ cast_test_group("starboard_media_tests") {
     "//chromecast/starboard/media/media:starboard_resampler_test",
     "//chromecast/starboard/media/media:starboard_video_decoder_test",
     "//chromecast/starboard/media/media:starboard_video_plane_test",
+    "//chromecast/starboard/media/renderer:chromium_starboard_conversions_test",
   ]
 }

@@ -4,12 +4,14 @@
 
 #include "chromecast/starboard/media/media/mime_utils.h"
 
+#include <limits>
 #include <string>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "chromecast/media/base/media_codec_support.h"
 
 namespace chromecast {
 namespace media {
@@ -190,11 +192,27 @@ std::string GetMimeType(VideoCodec codec, VideoProfile profile, int32_t level) {
   }
 }
 
+std::string GetMimeType(::media::VideoCodec codec,
+                        ::media::VideoCodecProfile profile,
+                        uint32_t level) {
+  // Ensure that `level` can be converted to int32_t safely.
+  if (int64_t{level} > int64_t{std::numeric_limits<int32_t>::max()}) {
+    LOG(ERROR) << "Invalid codec level: " << level;
+    return "";
+  }
+  return GetMimeType(ToCastVideoCodec(codec, profile),
+                     ToCastVideoProfile(profile), static_cast<int32_t>(level));
+}
+
 std::string GetMimeType(AudioCodec codec) {
   if (auto it = kAudioCodecToMime.find(codec); it != kAudioCodecToMime.end()) {
     return std::string(it->second);
   }
   return "";
+}
+
+std::string GetMimeType(::media::AudioCodec codec) {
+  return GetMimeType(ToCastAudioCodec(codec));
 }
 
 }  // namespace media

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
 import("//chromecast/starboard/starboard.gni")
 import("//testing/test.gni")
@@ -9,6 +10,14 @@ import("//testing/test.gni")
 if (!remove_starboard_headers) {
   import(
       "//chromecast/starboard/third_party/starboard/sabi/base_configuration.gni")
+}
+
+# This is necessary until code under //chromecast/starboard/media/renderer is
+# hooked up to production code. This way, gn can find those test targets.
+cast_test_group("starboard_renderer_tests") {
+  tests = [
+    "//chromecast/starboard/media/renderer:chromium_starboard_conversions_test",
+  ]
 }
 
 source_set("starboard") {
@@ -119,9 +128,13 @@ cast_source_set("mime_utils") {
     "mime_utils.cc",
     "mime_utils.h",
   ]
+  public_deps = [
+    "//chromecast/public/media",
+    "//media",
+  ]
   deps = [
     "//base",
-    "//chromecast/public/media",
+    "//chromecast/media/base:media_codec_support",
   ]
 }
 
@@ -222,6 +235,7 @@ test("mime_utils_test") {
   deps = [
     ":mime_utils",
     "//base/test:run_all_unittests",
+    "//chromecast/media/base:media_codec_support",
     "//chromecast/public/media",
     "//testing/gmock",
     "//testing/gtest",

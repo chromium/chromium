@@ -4,5 +4,6 @@ include_rules = [
   "+media/base",
   "+ui/base",
   "+ui/events",
+  "+ui/gfx",
   "+ui/platform_window",
 ]
