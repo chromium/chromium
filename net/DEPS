@@ -8,6 +8,7 @@ include_rules = [
   "+third_party/boringssl/src/pki",
   "+third_party/nss",
   "+third_party/protobuf/src/google/protobuf",
+  "+third_party/re2",
   "+third_party/zlib",
   "+third_party/simdutf",
 

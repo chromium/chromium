@@ -2119,6 +2119,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Googlecast"/>
     <variant name="Other"/>
     <variant name="PrintScan"/>
+    <variant name="UUID"/>
   </token>
 </histogram>
 

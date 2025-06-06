@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -878,6 +879,41 @@ TEST_F(MDnsTest, TransactionWithCache) {
 
   EXPECT_TRUE(record_privet.IsRecordWith("_privet._tcp.local",
                                          "hello._privet._tcp.local"));
+}
+
+TEST_F(MDnsTest, RecordQueryMetric) {
+  base::HistogramTester tester;
+
+  const uint8_t query_packet_uuid[] = {
+      // Header
+      0x00, 0x00,  // ID is zeroed out
+      0x00, 0x00,  // No flags.
+      0x00, 0x01,  // One question.
+      0x00, 0x00,  // 0 RRs (answers)
+      0x00, 0x00,  // 0 authority RRs
+      0x00, 0x00,  // 0 additional RRs
+
+      // Question
+      // This part is echoed back from the respective query.
+      0x24, 'd', '9', '6', '2', 'c', '9', 'd', 'e', '-', 'a', 'f', '2', 'a',
+      '-', '4', '5', '6', '0', '-', 'a', 'c', 'c', '5', '-', 'a', 'c', '3', 'a',
+      '0', '9', '8', '4', '1', '6', 'b', '2', 0x05, 'l', 'o', 'c', 'a', 'l',
+      0x00, 0x00, 0x0c,  // TYPE is PTR.
+      0x00, 0x01,        // CLASS is IN.
+  };
+
+  ExpectPacket(query_packet_uuid, sizeof(query_packet_uuid));
+
+  std::unique_ptr<MDnsTransaction> transaction_uuid =
+      test_client_->CreateTransaction(
+          dns_protocol::kTypePTR, "d962c9de-af2a-4560-acc5-ac3a098416b2.local",
+          MDnsTransaction::QUERY_NETWORK | MDnsTransaction::QUERY_CACHE |
+              MDnsTransaction::SINGLE_RESULT,
+          base::BindRepeating(&MDnsTest::MockableRecordCallback,
+                              base::Unretained(this)));
+
+  ASSERT_TRUE(transaction_uuid->Start());
+  tester.ExpectUniqueSample("Network.Mdns.UUID", 0, 1);
 }
 
 TEST_F(MDnsTest, AdditionalRecords) {

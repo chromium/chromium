@@ -29,6 +29,7 @@
 #include "net/dns/public/util.h"
 #include "net/dns/record_rdata.h"
 #include "net/socket/datagram_socket.h"
+#include "third_party/re2/src/re2/re2.h"
 
 // TODO(gene): Remove this temporary method of disabling NSEC support once it
 // becomes clear whether this feature should be
@@ -74,6 +75,10 @@ void RecordQueryMetric(mdnsQueryType query_type, std::string_view host) {
                                    return host.ends_with(service);
                                  })) {
     base::UmaHistogramEnumeration("Network.Mdns.PrintScan", query_type);
+  } else if (RE2::FullMatch(host,
+                            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+                            "[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\.local$")) {
+    base::UmaHistogramEnumeration("Network.Mdns.UUID", query_type);
   } else {
     base::UmaHistogramEnumeration("Network.Mdns.Other", query_type);
   }
