@@ -282,7 +282,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                     isCpaCheckedState
                             ? R.drawable
                                     .modern_toolbar_text_box_background_with_primary_color_square
-                            : R.drawable.modern_toolbar_text_box_background_with_primary_color;
+                            : R.drawable.modern_toolbar_text_box_background;
 
             mBackground.setImageDrawable(AppCompatResources.getDrawable(getContext(), resId));
             setBackgroundResourceHelper(isCpaCheckedState);
@@ -469,8 +469,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // If isCpaSpecUpdateEnabled, overriding the background in #updateButtonWithAnimation.
         mBackground.setImageDrawable(
                 AppCompatResources.getDrawable(
-                        getContext(),
-                        R.drawable.modern_toolbar_text_box_background_with_primary_color));
+                        getContext(), R.drawable.modern_toolbar_text_box_background));
     }
 
     /**

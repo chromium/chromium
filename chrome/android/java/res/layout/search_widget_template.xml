@@ -17,7 +17,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:alpha="0.9"
-        android:background="@drawable/modern_toolbar_text_box_background_with_primary_color"
+        android:background="@drawable/modern_toolbar_text_box_background"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:theme="@style/Theme.Chromium.Widget"

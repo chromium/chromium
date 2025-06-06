@@ -337,7 +337,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_switch_to_incognito.xml",
     "java/res/drawable/ic_widgets.xml",
     "java/res/drawable/menu_bg_bottom_tinted.xml",
-    "java/res/drawable/modern_toolbar_text_box_background_with_primary_color.xml",
     "java/res/drawable/modern_toolbar_text_box_background_with_primary_color_square.xml",
     "java/res/drawable/new_tab_icon.xml",
     "java/res/drawable/optional_button_background.xml",

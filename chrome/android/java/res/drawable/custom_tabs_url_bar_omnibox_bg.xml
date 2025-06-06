@@ -7,6 +7,6 @@ found in the LICENSE file.
 
 <inset
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/modern_toolbar_text_box_background_with_primary_color"
+    android:drawable="@drawable/modern_toolbar_text_box_background"
     android:insetLeft="@dimen/custom_tabs_url_bar_bg_horizontal_padding"
     android:insetRight="@dimen/custom_tabs_url_bar_bg_horizontal_padding"/>

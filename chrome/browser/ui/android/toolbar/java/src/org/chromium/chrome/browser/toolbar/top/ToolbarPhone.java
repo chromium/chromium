@@ -417,8 +417,7 @@ public class ToolbarPhone extends ToolbarLayout
     public static GradientDrawable createModernLocationBarBackground(Context context) {
         GradientDrawable drawable =
                 (GradientDrawable)
-                        context.getDrawable(
-                                R.drawable.modern_toolbar_text_box_background_with_primary_color);
+                        context.getDrawable(R.drawable.modern_toolbar_text_box_background);
         assumeNonNull(drawable);
         drawable.mutate();
         drawable.setColor(
