@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/data_source.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_memory_limit.h"

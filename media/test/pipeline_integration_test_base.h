@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/audio/clockless_audio_sink.h"
 #include "media/audio/null_audio_sink.h"
+#include "media/base/data_source.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_media_log.h"

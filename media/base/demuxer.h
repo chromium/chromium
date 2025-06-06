@@ -13,7 +13,6 @@
 
 #include "base/time/time.h"
 #include "media/base/container_names.h"
-#include "media/base/data_source.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"

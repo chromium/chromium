@@ -54,6 +54,7 @@ struct AVStream;
 
 namespace media {
 
+class DataSource;
 class MediaLog;
 class FFmpegBitstreamConverter;
 class FFmpegDemuxer;

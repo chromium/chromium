@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "media/base/data_source.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
