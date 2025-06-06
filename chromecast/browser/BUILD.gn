@@ -237,6 +237,7 @@ cast_source_set("browser") {
     "//chromecast/media/cdm:cdm_origin_provider",
     "//chromecast/media/common:media_pipeline_backend_manager",
     "//chromecast/media/service",
+    "//chromecast/media/service:video_geometry_setter_service",
     "//chromecast/media/service/mojom",
     "//chromecast/net",
     "//chromecast/net:connectivity_checker",

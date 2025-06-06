@@ -4,6 +4,23 @@
 
 import("//testing/test.gni")
 
+source_set("geometry_change_handler") {
+  public = [ "geometry_change_handler.h" ]
+  sources = [ "geometry_change_handler.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/media/service/mojom",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+  ]
+  deps = [
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//mojo/public/cpp/bindings",
+    "//ui/display",
+  ]
+}
+
 source_set("demuxer_stream_reader") {
   public = [ "demuxer_stream_reader.h" ]
   sources = [ "demuxer_stream_reader.cc" ]
@@ -88,6 +105,22 @@ test("chromium_starboard_conversions_test") {
     "//media",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
+
+test("geometry_change_handler_test") {
+  sources = [ "geometry_change_handler_test.cc" ]
+  deps = [
+    ":geometry_change_handler",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
+    "//mojo/core/embedder",
+    "//ui/display:test_support",
+    "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
 }
