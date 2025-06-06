@@ -347,6 +347,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShortCircuitUnfocusAnimation,
     &kShowHomeButtonPolicyAndroid,
     &kShowNewTabAnimations,
+    &kShowTabListAnimations,
     &kPartnerCustomizationsUma,
     &kQuickDeleteAndroidSurvey,
     &kReadAloud,
@@ -1133,6 +1134,10 @@ BASE_FEATURE(kShowHomeButtonPolicyAndroid,
 
 BASE_FEATURE(kShowNewTabAnimations,
              "ShowNewTabAnimations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShowTabListAnimations,
+             "ShowTabListAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerCustomizationsUma,

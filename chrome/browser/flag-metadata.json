@@ -8942,6 +8942,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "show-tab-list-animations",
+    "owners": [ "dregalo@google.com", "gurmeetk@google.com", "desiatyrikov@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "show-taps",
     "owners": [ "//ash/OWNERS" ],
     // This is a debug flag, so that video bug reports can show input taps to

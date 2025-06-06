@@ -3123,6 +3123,9 @@ extern const char kShowNewTabAnimationsDescription[];
 extern const char kShowReadyToPayDebugInfoName[];
 extern const char kShowReadyToPayDebugInfoDescription[];
 
+extern const char kShowTabListAnimationsName[];
+extern const char kShowTabListAnimationsDescription[];
+
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 
