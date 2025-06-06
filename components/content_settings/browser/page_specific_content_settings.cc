@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -50,6 +49,7 @@
 #include "content/public/common/content_constants.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -708,7 +708,7 @@ void PageSpecificContentSettings::StorageAccessed(
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::RenderFrameHost* rfh = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const content::GlobalRenderFrameHostToken& frame_token) {
             return content::RenderFrameHost::FromFrameToken(frame_token);
           },
