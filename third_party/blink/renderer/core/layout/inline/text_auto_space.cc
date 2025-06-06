@@ -10,11 +10,29 @@
 #include "base/check.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 
 namespace blink {
 
 namespace {
+
+bool IsMacrolanguageChinese(const InlineNode& node) {
+  const ComputedStyle& style = node.Style();
+  const LayoutLocale* locale = style.GetFontDescription().Locale();
+  return locale && locale->IsMacrolanguageChinese();
+}
+
+// Resolve UTR#59: East Asian Spacing "Conditional".
+// https://unicode.org/reports/tr59/
+inline EastAsianSpacingType ResolveConditional(EastAsianSpacingType& type,
+                                               bool is_chinese) {
+  if (type != EastAsianSpacingType::kConditional) {
+    return type;
+  }
+  return is_chinese ? EastAsianSpacingType::kNarrow
+                    : EastAsianSpacingType::kOther;
+}
 
 //
 // This class keeps track of the `InlineItem` in sync with the text offset, in
@@ -35,7 +53,6 @@ class SpacingApplier {
 
   SpacingApplier(wtf_size_t offset,
                  InlineItemList items,
-
                  TextAutoSpace::Callback* callback)
       : item_iter_(items.begin()),
         item_end_(items.end()),
@@ -158,7 +175,7 @@ class SpacingApplier {
 
 }  // namespace
 
-void TextAutoSpace::Apply(InlineItemsData& data) {
+void TextAutoSpace::Apply(const InlineNode& node, InlineItemsData& data) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), data.items.back()->EndOffset());
@@ -167,12 +184,13 @@ void TextAutoSpace::Apply(InlineItemsData& data) {
   EastAsianSpacingType last_type = EastAsianSpacingType::kOther;
   bool is_last_wide = false;
   std::optional<SpacingApplier> applier_opt;
+  std::optional<bool> is_chinese;
 
   const WTF::CodePointIterator::Utf16 char_begin{text.Span16()};
   const auto char_end = char_begin.EndForThis();
   for (auto char_iter = char_begin; char_iter != char_end;) {
     const UChar32 ch = *char_iter;
-    const EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
+    EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
     const bool is_wide = type == EastAsianSpacingType::kWide;
     if (is_wide || is_last_wide) [[unlikely]] {
       if (Character::IsGcMark(ch)) [[unlikely]] {
@@ -180,7 +198,13 @@ void TextAutoSpace::Apply(InlineItemsData& data) {
         continue;
       }
 
-      // TODO(crbug.com/40275399): Support `kConditional`.
+      // Resolve `kConditional` to `kNarrow` or `kOther`.
+      if (!is_chinese) [[unlikely]] {
+        is_chinese = IsMacrolanguageChinese(node);
+      }
+      type = ResolveConditional(type, *is_chinese);
+      last_type = ResolveConditional(last_type, *is_chinese);
+
       const bool needs_space =
           (is_last_wide && type == EastAsianSpacingType::kNarrow) ||
           (is_wide && last_type == EastAsianSpacingType::kNarrow);

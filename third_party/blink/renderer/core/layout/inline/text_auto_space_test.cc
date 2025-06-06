@@ -50,13 +50,12 @@ class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
 
   Vector<wtf_size_t> AutoSpaceOffsets(String html,
                                       String container_css = String()) {
-    const LayoutBlockFlow* container =
-        PreparePageLayoutBlock(html, container_css);
+    LayoutBlockFlow* container = PreparePageLayoutBlock(html, container_css);
     InlineNodeData* node_data = container->GetInlineNodeData();
     TextAutoSpace auto_space(*node_data);
     AutoSpaceCallback callback;
     auto_space.SetCallbackForTesting(&callback);
-    auto_space.ApplyIfNeeded(*node_data);
+    auto_space.ApplyIfNeeded(InlineNode(container), *node_data);
     return callback.offsets;
   }
 };

@@ -1592,7 +1592,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     shape_result->CopyRanges(text_item_ranges.data(), text_item_ranges.size());
   }
 
-  auto_space.ApplyIfNeeded(*data);
+  auto_space.ApplyIfNeeded(*this, *data);
 
 #if DCHECK_IS_ON()
   for (const Member<InlineItem>& item_ptr : *items) {

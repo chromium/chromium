@@ -18,6 +18,7 @@
 namespace blink {
 
 struct InlineItemsData;
+class InlineNode;
 
 // A wrapper of TextAutoSpace for the inline layout.
 class CORE_EXPORT TextAutoSpace {
@@ -40,10 +41,10 @@ class CORE_EXPORT TextAutoSpace {
   // https://drafts.csswg.org/css-text-4/#propdef-text-autospace
   //
   // The `data` must be the same instance as the one given to the constructor.
-  void Apply(InlineItemsData& data);
-  void ApplyIfNeeded(InlineItemsData& data) {
+  void Apply(const InlineNode& node, InlineItemsData& data);
+  void ApplyIfNeeded(const InlineNode& node, InlineItemsData& data) {
     if (MayApply()) [[unlikely]] {
-      Apply(data);
+      Apply(node, data);
     }
   }
 
