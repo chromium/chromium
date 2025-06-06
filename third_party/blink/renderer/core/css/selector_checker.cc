@@ -405,6 +405,227 @@ bool NeedsScopeActivation(
 
 }  // namespace
 
+SelectorChecker::FeaturelessMatch SelectorChecker::MatchesShadowHostInList(
+    const SelectorCheckingContext& context,
+    const CSSSelector* selector_list,
+    MatchResult& result) const {
+  SelectorCheckingContext sub_context(context);
+  sub_context.is_sub_selector = true;
+  sub_context.in_nested_complex_selector = true;
+  sub_context.pseudo_id = kPseudoIdNone;
+  FeaturelessMatch fail = kFeaturelessUnknown;
+  for (sub_context.selector = selector_list; sub_context.selector;
+       sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
+    SubResult sub_result(result);
+    switch (MatchShadowHost(sub_context, sub_result)) {
+      case kFeaturelessMatches:
+        return kFeaturelessMatches;
+      case kFeaturelessFails:
+        fail = kFeaturelessFails;
+        break;
+      case kFeaturelessUnknown:
+        break;
+    }
+  }
+  return fail;
+}
+
+SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
+    const SelectorCheckingContext& context,
+    MatchResult& result) const {
+  const CSSSelector& selector = *context.selector;
+  switch (selector.GetPseudoType()) {
+    case CSSSelector::kPseudoIs:
+    case CSSSelector::kPseudoWhere:
+    case CSSSelector::kPseudoAny:
+      return MatchesShadowHostInList(context, selector.SelectorListOrParent(),
+                                     result);
+    case CSSSelector::kPseudoNot: {
+      FeaturelessMatch match = MatchesShadowHostInList(
+          context, selector.SelectorListOrParent(), result);
+      switch (match) {
+        case kFeaturelessMatches:
+          return kFeaturelessFails;
+        case kFeaturelessFails:
+          return kFeaturelessMatches;
+        case kFeaturelessUnknown:
+          return kFeaturelessUnknown;
+      }
+    }
+    case CSSSelector::kPseudoParent: {
+      const CSSSelector* parent = selector.SelectorListOrParent();
+      if (parent == nullptr) {
+        // & at top level matches like :scope.
+        return CheckPseudoScope(context, result) ? kFeaturelessMatches
+                                                 : kFeaturelessFails;
+      } else {
+        return MatchesShadowHostInList(context, parent, result);
+      }
+    }
+    case CSSSelector::kPseudoHostContext:
+      UseCounter::Count(
+          context.element->GetDocument(),
+          mode_ == kQueryingRules
+              ? WebFeature::kCSSSelectorHostContextInSnapshotProfile
+              : WebFeature::kCSSSelectorHostContextInLiveProfile);
+      [[fallthrough]];
+    case CSSSelector::kPseudoHost:
+      return CheckPseudoHost(context, result) ? kFeaturelessMatches
+                                              : kFeaturelessFails;
+    case CSSSelector::kPseudoScope:
+      return CheckPseudoScope(context, result) ? kFeaturelessMatches
+                                               : kFeaturelessFails;
+    case CSSSelector::kPseudoHas:
+      return CheckPseudoHas(context, result) ? kFeaturelessMatches
+                                             : kFeaturelessFails;
+    case CSSSelector::kPseudoActive:
+    case CSSSelector::kPseudoActiveViewTransition:
+    case CSSSelector::kPseudoActiveViewTransitionType:
+    case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoAnyLink:
+    case CSSSelector::kPseudoAutofill:
+    case CSSSelector::kPseudoAutofillPreviewed:
+    case CSSSelector::kPseudoAutofillSelected:
+    case CSSSelector::kPseudoBackdrop:
+    case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoCheckMark:
+    case CSSSelector::kPseudoChecked:
+    case CSSSelector::kPseudoCornerPresent:
+    case CSSSelector::kPseudoCurrent:
+    case CSSSelector::kPseudoDecrement:
+    case CSSSelector::kPseudoDefault:
+    case CSSSelector::kPseudoDetailsContent:
+    case CSSSelector::kPseudoDialogInTopLayer:
+    case CSSSelector::kPseudoDisabled:
+    case CSSSelector::kPseudoDoubleButton:
+    case CSSSelector::kPseudoDrag:
+    case CSSSelector::kPseudoEmpty:
+    case CSSSelector::kPseudoEnabled:
+    case CSSSelector::kPseudoEnd:
+    case CSSSelector::kPseudoFileSelectorButton:
+    case CSSSelector::kPseudoFirstChild:
+    case CSSSelector::kPseudoFirstLetter:
+    case CSSSelector::kPseudoFirstLine:
+    case CSSSelector::kPseudoFirstOfType:
+    case CSSSelector::kPseudoFirstPage:
+    case CSSSelector::kPseudoFocus:
+    case CSSSelector::kPseudoFocusVisible:
+    case CSSSelector::kPseudoFocusWithin:
+    case CSSSelector::kPseudoFullPageMedia:
+    case CSSSelector::kPseudoHasInterest:
+    case CSSSelector::kPseudoHasPartialInterest:
+    case CSSSelector::kPseudoHasSlotted:
+    case CSSSelector::kPseudoHorizontal:
+    case CSSSelector::kPseudoHover:
+    case CSSSelector::kPseudoIncrement:
+    case CSSSelector::kPseudoIndeterminate:
+    case CSSSelector::kPseudoInvalid:
+    case CSSSelector::kPseudoLang:
+    case CSSSelector::kPseudoLastChild:
+    case CSSSelector::kPseudoLastOfType:
+    case CSSSelector::kPseudoLeftPage:
+    case CSSSelector::kPseudoLink:
+    case CSSSelector::kPseudoMarker:
+    case CSSSelector::kPseudoModal:
+    case CSSSelector::kPseudoNoButton:
+    case CSSSelector::kPseudoNthChild:
+    case CSSSelector::kPseudoNthLastChild:
+    case CSSSelector::kPseudoNthLastOfType:
+    case CSSSelector::kPseudoNthOfType:
+    case CSSSelector::kPseudoOnlyChild:
+    case CSSSelector::kPseudoOnlyOfType:
+    case CSSSelector::kPseudoOptional:
+    case CSSSelector::kPseudoPart:
+    case CSSSelector::kPseudoPermissionElementInvalidStyle:
+    case CSSSelector::kPseudoPermissionElementOccluded:
+    case CSSSelector::kPseudoPermissionGranted:
+    case CSSSelector::kPseudoPermissionIcon:
+    case CSSSelector::kPseudoPlaceholder:
+    case CSSSelector::kPseudoPlaceholderShown:
+    case CSSSelector::kPseudoReadOnly:
+    case CSSSelector::kPseudoReadWrite:
+    case CSSSelector::kPseudoRequired:
+    case CSSSelector::kPseudoResizer:
+    case CSSSelector::kPseudoRightPage:
+    case CSSSelector::kPseudoRoot:
+    case CSSSelector::kPseudoScrollbar:
+    case CSSSelector::kPseudoScrollbarButton:
+    case CSSSelector::kPseudoScrollbarCorner:
+    case CSSSelector::kPseudoScrollbarThumb:
+    case CSSSelector::kPseudoScrollbarTrack:
+    case CSSSelector::kPseudoScrollbarTrackPiece:
+    case CSSSelector::kPseudoSearchText:
+    case CSSSelector::kPseudoPickerIcon:
+    case CSSSelector::kPseudoPicker:
+    case CSSSelector::kPseudoSelection:
+    case CSSSelector::kPseudoSelectorFragmentAnchor:
+    case CSSSelector::kPseudoSingleButton:
+    case CSSSelector::kPseudoStart:
+    case CSSSelector::kPseudoState:
+    case CSSSelector::kPseudoTarget:
+    case CSSSelector::kPseudoTargetOfInterest:
+    case CSSSelector::kPseudoTargetOfPartialInterest:
+    case CSSSelector::kPseudoUnknown:
+    case CSSSelector::kPseudoUnparsed:
+    case CSSSelector::kPseudoUserInvalid:
+    case CSSSelector::kPseudoUserValid:
+    case CSSSelector::kPseudoValid:
+    case CSSSelector::kPseudoVertical:
+    case CSSSelector::kPseudoVisited:
+    case CSSSelector::kPseudoWebKitAutofill:
+    case CSSSelector::kPseudoWebkitAnyLink:
+    case CSSSelector::kPseudoWindowInactive:
+    case CSSSelector::kPseudoFullScreen:
+    case CSSSelector::kPseudoFullScreenAncestor:
+    case CSSSelector::kPseudoFullscreen:
+    case CSSSelector::kPseudoInRange:
+    case CSSSelector::kPseudoOutOfRange:
+    case CSSSelector::kPseudoPaused:
+    case CSSSelector::kPseudoPictureInPicture:
+    case CSSSelector::kPseudoPlaying:
+    case CSSSelector::kPseudoXrOverlay:
+    case CSSSelector::kPseudoWebKitCustomElement:
+    case CSSSelector::kPseudoBlinkInternalElement:
+    case CSSSelector::kPseudoColumn:
+    case CSSSelector::kPseudoCue:
+    case CSSSelector::kPseudoDefined:
+    case CSSSelector::kPseudoDir:
+    case CSSSelector::kPseudoFutureCue:
+    case CSSSelector::kPseudoGrammarError:
+    case CSSSelector::kPseudoHasDatalist:
+    case CSSSelector::kPseudoHighlight:
+    case CSSSelector::kPseudoHostHasNonAutoAppearance:
+    case CSSSelector::kPseudoIsHtml:
+    case CSSSelector::kPseudoListBox:
+    case CSSSelector::kPseudoMultiSelectFocus:
+    case CSSSelector::kPseudoOpen:
+    case CSSSelector::kPseudoPastCue:
+    case CSSSelector::kPseudoPopoverInTopLayer:
+    case CSSSelector::kPseudoPopoverOpen:
+    case CSSSelector::kPseudoRelativeAnchor:
+    case CSSSelector::kPseudoSlotted:
+    case CSSSelector::kPseudoSpatialNavigationFocus:
+    case CSSSelector::kPseudoSpellingError:
+    case CSSSelector::kPseudoTargetText:
+    case CSSSelector::kPseudoVideoPersistent:
+    case CSSSelector::kPseudoVideoPersistentAncestor:
+    case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoViewTransition:
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionGroupChildren:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionNew:
+    case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoScrollMarker:
+    case CSSSelector::kPseudoScrollMarkerGroup:
+    case CSSSelector::kPseudoScrollButton:
+      // These pseudos are not allowed to match featureless elements. When
+      // adding new pseudos here, they would typically be allowed if they are
+      // logical pseudos which take selector arguments.
+      return kFeaturelessUnknown;
+  }
+}
+
 // Recursive check of selectors and combinators
 // It can return 4 different values:
 // * SelectorMatches          - the selector matches the element e
@@ -940,18 +1161,21 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   // Also, we need to descend into selectors that contain lists instead of
   // just returning false, such that :is(:host, .doesnotmatch) (see [3]),
   // or similar via nesting, is handled correctly. (This also deals with
-  // :not().) Such cases will eventually recurse back into CheckOne(),
-  // so should do not get false positives from doing this; the featurelessness
-  // will be checked on a lower level.
+  // :not().) Having a separate code path for matching featureless elements
+  // (MatchShadowHost) ensures the featureless matching is done correctly.
   //
   // [1] https://drafts.csswg.org/css-scoping/#host-element-in-tree
   // [2] https://github.com/w3c/csswg-drafts/issues/9025
   // [3] https://drafts.csswg.org/selectors-4/#data-model
   if (ShadowHost(context) == element &&
-      (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
-       selector.GetPseudoType() != CSSSelector::kPseudoScope &&
-       selector.Match() != CSSSelector::kPseudoElement)) {
-    return false;
+      selector.Match() != CSSSelector::kPseudoElement) {
+    if (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
+        selector.GetPseudoType() != CSSSelector::kPseudoScope) {
+      return false;
+    }
+    if (RuntimeEnabledFeatures::CSSNegatedFeaturelessEnabled()) {
+      return MatchShadowHost(context, result) == kFeaturelessMatches;
+    }
   }
 
   switch (selector.Match()) {
@@ -1446,7 +1670,32 @@ bool MatchesExternalSVGUseTarget(Element& element) {
 
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
-  if (context.element->GetDocument().InPseudoHasChecking()) {
+  Element& element = *context.element;
+  if (mode_ == kResolvingStyle) {
+    // Set 'AffectedBySubjectHas' or 'AffectedByNonSubjectHas' flag to
+    // indicate that the element is affected by a subject or non-subject
+    // :has() state change. It means that, when we have a mutation on
+    // an element, and the element is in the :has() argument checking scope
+    // of a :has() anchor element, we may need to invalidate the subject
+    // element of the style rule containing the :has() pseudo class because
+    // the mutation can affect the state of the :has().
+    if (ImpactsSubject(context)) {
+      element.SetAffectedBySubjectHas();
+    }
+    if (ImpactsNonSubject(context)) {
+      element.SetAffectedByNonSubjectHas();
+    }
+
+    if (context.selector->ContainsPseudoInsideHasPseudoClass()) {
+      element.SetAffectedByPseudoInHas();
+    }
+
+    if (context.selector
+            ->ContainsComplexLogicalCombinationsInsideHasPseudoClass()) {
+      element.SetAffectedByLogicalCombinationsInHas();
+    }
+  }
+  if (element.GetDocument().InPseudoHasChecking()) {
     // :has() within :has() would normally be rejected parse-time, but we can
     // end up in this situation nevertheless, due to nesting. We just return
     // a not-matched for now; it is possible that we should fail the entire rule
@@ -1456,7 +1705,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     return false;
   }
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &context.element->GetDocument(), /*within_selector_checking=*/true);
+      &element.GetDocument(), /*within_selector_checking=*/true);
 
   Element* has_anchor_element = context.element;
   Document& document = has_anchor_element->GetDocument();
@@ -2339,6 +2588,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
               : WebFeature::kCSSSelectorHostContextInLiveProfile);
       [[fallthrough]];
     case CSSSelector::kPseudoHost:
+      if (RuntimeEnabledFeatures::CSSNegatedFeaturelessEnabled()) {
+        DCHECK(!IsAtShadowHost(context));
+        return false;
+      }
       return CheckPseudoHost(context, result);
     case CSSSelector::kPseudoSpatialNavigationFocus:
       DCHECK(is_ua_rule_);
@@ -2394,29 +2647,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoHas:
-      if (mode_ == kResolvingStyle) {
-        // Set 'AffectedBySubjectHas' or 'AffectedByNonSubjectHas' flag to
-        // indicate that the element is affected by a subject or non-subject
-        // :has() state change. It means that, when we have a mutation on
-        // an element, and the element is in the :has() argument checking scope
-        // of a :has() anchor element, we may need to invalidate the subject
-        // element of the style rule containing the :has() pseudo class because
-        // the mutation can affect the state of the :has().
-        if (ImpactsSubject(context)) {
-          element.SetAffectedBySubjectHas();
-        }
-        if (ImpactsNonSubject(context)) {
-          element.SetAffectedByNonSubjectHas();
-        }
-
-        if (selector.ContainsPseudoInsideHasPseudoClass()) {
-          element.SetAffectedByPseudoInHas();
-        }
-
-        if (selector.ContainsComplexLogicalCombinationsInsideHasPseudoClass()) {
-          element.SetAffectedByLogicalCombinationsInHas();
-        }
-      }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeAnchor:
       DCHECK(context.relative_anchor_element);

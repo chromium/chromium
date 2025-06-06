@@ -3390,7 +3390,6 @@ crbug.com/40755330 external/wpt/pointerevents/pointerevent_pointercapture_in_fra
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-closest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-farthest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-ellipse-closest-farthest-corner.html [ Failure ]
-crbug.com/361717707 external/wpt/css/selectors/featureless-004.html [ Failure ]
 crbug.com/361146527 external/wpt/streams/readable-streams/crashtests/from-cross-realm.https.html [ Timeout ]
 crbug.com/361146524 [ Mac15 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--12px-auto--nonpercent-width-nonpercent-height.html [ Failure ]
 crbug.com/360956937 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html [ Skip Timeout ]

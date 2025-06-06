@@ -446,6 +446,34 @@ class CORE_EXPORT SelectorChecker {
                         const CSSSelector* selector_list,
                         MatchResult& result) const;
 
+  enum FeaturelessMatch {
+    // Matches a selector which is allowed to match the featureless element.
+    kFeaturelessMatches,
+    // Fails to match a selector which is allowed to match the featureless
+    // element.
+    kFeaturelessFails,
+    // Tried to match a selector which is not allowed to match the featureless
+    // element.
+    kFeaturelessUnknown,
+  };
+
+  // Helper function to match selector list arguments for MatchShadowHost().
+  SelectorChecker::FeaturelessMatch MatchesShadowHostInList(
+      const SelectorCheckingContext& context,
+      const CSSSelector* selector_list,
+      MatchResult& result) const;
+  // Separate code path for matching selectors against a featureless shadow host
+  // element. Necessary to handle negated selectors properly.
+  // For instance, :not(.notmatching) will fail matching with this function.
+  // Return values:
+  //   kFeaturelessMatches - selector matches
+  //   kFeaturelessFails - selector does not match
+  //   kFeaturelessUnknown - all selector paths include a simple selector
+  //                         which can never match a featureless element.
+  SelectorChecker::FeaturelessMatch MatchShadowHost(
+      const SelectorCheckingContext& context,
+      MatchResult& result) const;
+
   const StyleScopeActivations& EnsureActivations(const SelectorCheckingContext&,
                                                  const StyleScope&) const;
   const StyleScopeActivations* CalculateActivations(
