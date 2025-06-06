@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -39,6 +40,15 @@ const SkColor4f kDefaultBackgroundColor = SkColors::kTransparent;
 const float kDefaultExternalPageScaleFactor = 1.0f;
 const float kDefaultDeviceScaleFactor = 1.0f;
 const float kDefaultPaintedDeviceScaleFactor = 1.0f;
+const FrameSinkId kDefaultFrameSinkId = FrameSinkId(1, 1);
+const LocalSurfaceId kDefaultLocalSurfaceId(
+    1,
+    base::UnguessableToken::CreateForTesting(2u, 3u));
+const SurfaceId kDefaultSurfaceId(kDefaultFrameSinkId, kDefaultLocalSurfaceId);
+const SurfaceRange kDefaultSurfaceRange(std::nullopt, kDefaultSurfaceId);
+
+// Default Layer property values
+const gfx::Size kDefaultLayerBounds(10, 10);
 
 // Default TextureLayer property values
 const bool kDefaultBlendBackgroundColor = false;
@@ -46,13 +56,19 @@ const bool kDefaultForceTextureToOpaque = false;
 const gfx::PointF kDefaultUVTopLeft = gfx::PointF();
 const gfx::PointF kDefaultUVBottomRight = gfx::PointF(1.f, 1.f);
 
+// Default SurfaceLayer property values
+const uint32_t kDefaultDeadlineInFrames = 0u;
+const bool kDefaultStretchContentToFillBounds = false;
+const bool kDefaultSurfaceHitTestable = false;
+const bool kDefaultHasPointerEventsNone = false;
+const bool kDefaultIsReflection = false;
+const bool kDefaultWillDrawNeedsReset = false;
+const bool kDefaultOverrideChildPaintFlags = false;
+
 class LayerContextImplTest : public testing::Test {
  public:
   LayerContextImplTest()
-      : frame_sink_manager_(FrameSinkManagerImpl::InitParams()),
-        default_local_surface_id_(
-            LocalSurfaceId(1,
-                           base::UnguessableToken::CreateForTesting(2u, 3u))) {}
+      : frame_sink_manager_(FrameSinkManagerImpl::InitParams()) {}
 
   void SetUp() override {
     compositor_frame_sink_support_ =
@@ -111,7 +127,7 @@ class LayerContextImplTest : public testing::Test {
 
     // Other defaults
     update->display_color_spaces = gfx::DisplayColorSpaces();
-    update->local_surface_id_from_parent = default_local_surface_id_;
+    update->local_surface_id_from_parent = kDefaultLocalSurfaceId;
 
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta interval = base::Milliseconds(16);
@@ -216,6 +232,19 @@ class LayerContextImplTest : public testing::Test {
         extra->uv_bottom_right = kDefaultUVBottomRight;
         return mojom::LayerExtra::NewTextureLayerExtra(std::move(extra));
       }
+      case cc::mojom::LayerType::kSurface: {
+        auto extra = mojom::SurfaceLayerExtra::New();
+        extra->surface_range = kDefaultSurfaceRange;
+        extra->deadline_in_frames = kDefaultDeadlineInFrames;
+        extra->stretch_content_to_fill_bounds =
+            kDefaultStretchContentToFillBounds;
+        extra->surface_hit_testable = kDefaultSurfaceHitTestable;
+        extra->has_pointer_events_none = kDefaultHasPointerEventsNone;
+        extra->is_reflection = kDefaultIsReflection;
+        extra->will_draw_needs_reset = kDefaultWillDrawNeedsReset;
+        extra->override_child_paint_flags = kDefaultOverrideChildPaintFlags;
+        return mojom::LayerExtra::NewSurfaceLayerExtra(std::move(extra));
+      }
 
       default:
         // TODO(vmiura): Add each layer type's initialization.
@@ -238,6 +267,7 @@ class LayerContextImplTest : public testing::Test {
     layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
     layer->clip_tree_index = cc::kRootPropertyNodeId;
     layer->effect_tree_index = cc::kSecondaryRootPropertyNodeId;
+    layer->bounds = kDefaultLayerBounds;
     layer->layer_extra = CreateDefaultLayerExtra(type);
 
     update->layers.push_back(std::move(layer));
@@ -260,11 +290,8 @@ class LayerContextImplTest : public testing::Test {
   }
 
  protected:
-  static constexpr FrameSinkId kDefaultFrameSinkId = FrameSinkId(1, 1);
-
   FakeCompositorFrameSinkClient dummy_client_;
   FrameSinkManagerImpl frame_sink_manager_;
-  LocalSurfaceId default_local_surface_id_;
 
   std::unique_ptr<CompositorFrameSinkSupport> compositor_frame_sink_support_;
   std::unique_ptr<LayerContextImpl> layer_context_impl_;
@@ -1645,7 +1672,7 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
   mojom::LayerPtr CreateManualLayer(
       int id,
       cc::mojom::LayerType type = cc::mojom::LayerType::kLayer,
-      const gfx::Size& bounds = gfx::Size(10, 10),
+      const gfx::Size& bounds = kDefaultLayerBounds,
       int transform_idx = cc::kSecondaryRootPropertyNodeId,
       int clip_idx = cc::kRootPropertyNodeId,
       int effect_idx = cc::kSecondaryRootPropertyNodeId,
@@ -1669,10 +1696,6 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   constexpr int kLayerId3 = 4;
   constexpr int kNonExistentLayerId = 99;
 
-  (void)kLayerId2;
-  (void)kLayerId3;
-  (void)kNonExistentLayerId;
-
   // Test Case 1: Basic Layer Lifecycle (Create, Update Bounds, Remove)
   // Update 1: Create Layer ID kLayerId1.
   auto update1 = CreateDefaultUpdate();
@@ -1681,16 +1704,17 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
   VerifyLayerExists(kLayerId1, true);
-  VerifyLayerBounds(kLayerId1, gfx::Size(0, 0));  // Default bounds
+  VerifyLayerBounds(kLayerId1, kDefaultLayerBounds);  // Default bounds
 
   // Update 2: Update bounds of Layer ID kLayerId1.
   auto update2 = CreateDefaultUpdate();
+  const gfx::Size kUpdatedBounds1(20, 20);
   update2->layers.push_back(CreateManualLayer(
-      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(20, 20)));
+      kLayerId1, cc::mojom::LayerType::kLayer, kUpdatedBounds1));
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   VerifyLayerExists(kLayerId1, true);
-  VerifyLayerBounds(kLayerId1, gfx::Size(20, 20));
+  VerifyLayerBounds(kLayerId1, kUpdatedBounds1);
 
   // Update 3: Remove Layer ID kLayerId1.
   auto update3 = CreateDefaultUpdate();
@@ -1721,12 +1745,13 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
 
   // Update 6: Update Layer ID kLayerId1.
   auto update6 = CreateDefaultUpdate();
+  const gfx::Size kUpdatedBounds2(30, 30);
   update6->layers.push_back(CreateManualLayer(
-      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(30, 30)));
+      kLayerId1, cc::mojom::LayerType::kLayer, kUpdatedBounds2));
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update6)).has_value());
-  VerifyLayerBounds(kLayerId1, gfx::Size(30, 30));
-  VerifyLayerBounds(kLayerId2, gfx::Size(0, 0));  // Unaffected
+  VerifyLayerBounds(kLayerId1, kUpdatedBounds2);
+  VerifyLayerBounds(kLayerId2, kDefaultLayerBounds);  // Unaffected
 
   // Update 7: Remove Layer ID kLayerId1.
   auto update7 = CreateDefaultUpdate();
@@ -1756,13 +1781,17 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
 
   // Update 10: Attempt to update kNonExistentLayerId.
   auto update10 = CreateDefaultUpdate();
+  const gfx::Size kUpdatedBounds3(5, 5);
   update10->layers.push_back(
       CreateManualLayer(kNonExistentLayerId, cc::mojom::LayerType::kLayer,
-                        gfx::Size(5, 5)));  // Update non-existent
+                        kUpdatedBounds3));  // Update non-existent
   auto result10 = layer_context_impl_->DoUpdateDisplayTree(std::move(update10));
   ASSERT_FALSE(result10.has_value());
   EXPECT_EQ(result10.error(), "Invalid layer ID");
   VerifyLayerExists(kLayerId1, true);  // Unaffected
+  VerifyLayerBounds(
+      kLayerId1,
+      kDefaultLayerBounds);  // Should be reset to default or last valid
   VerifyLayerExists(kNonExistentLayerId, false);
   VerifyLayerOrder({1, kLayerId1});
 
@@ -1776,8 +1805,9 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
 
   // Update 12: Attempt to update kLayerId1 (removed).
   auto update12 = CreateDefaultUpdate();
+  const gfx::Size kUpdatedBounds4(40, 40);
   update12->layers.push_back(CreateManualLayer(
-      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(40, 40)));
+      kLayerId1, cc::mojom::LayerType::kLayer, kUpdatedBounds4));
   auto result12 = layer_context_impl_->DoUpdateDisplayTree(std::move(update12));
   ASSERT_FALSE(result12.has_value());
   EXPECT_EQ(result12.error(), "Invalid layer ID");
@@ -1792,22 +1822,22 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update13))
                   .has_value());
   VerifyLayerExists(kLayerId1, true);
-  VerifyLayerBounds(kLayerId1, gfx::Size(0, 0));
+  VerifyLayerBounds(kLayerId1, kDefaultLayerBounds);
   VerifyLayerOrder({1, kLayerId1});
 
   // Update 14: Try to add another instance of kLayerId1 with different bounds.
   auto update14 = CreateDefaultUpdate();
+  const gfx::Size kUpdatedBounds5(50, 50);
   update14->layers.push_back(CreateManualLayer(
-      kLayerId1, cc::mojom::LayerType::kLayer, gfx::Size(50, 50)));
+      kLayerId1, cc::mojom::LayerType::kLayer, kUpdatedBounds5));
   update14->layer_order = layer_order_;
   update14->layer_order->push_back(kLayerId1);
 
   auto result14 = layer_context_impl_->DoUpdateDisplayTree(std::move(update14));
   ASSERT_FALSE(result14.has_value());
   EXPECT_EQ(result14.error(), "Invalid or duplicate layer ID");
-
   VerifyLayerExists(kLayerId1, true);
-  VerifyLayerBounds(kLayerId1, gfx::Size(50, 50));  // Layer should be updated
+  VerifyLayerBounds(kLayerId1, kUpdatedBounds5);  // Layer should be updated
   VerifyLayerOrder({1, kLayerId1});  // Layer Order should not update
 
   // Update 15: Try to add a Non Existent layer to Layer Order
@@ -1824,7 +1854,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
   auto update16 = CreateDefaultUpdate();
   update16->layers.push_back(
       CreateManualLayer(kLayerId2, cc::mojom::LayerType::kLayer,
-                        gfx::Size(10, 10), /*transform_idx=*/999));
+                        kDefaultLayerBounds, /*transform_idx=*/999));
   update16->layer_order = layer_order_;
   update16->layer_order->push_back(kLayerId2);
   EXPECT_FALSE(layer_context_impl_->DoUpdateDisplayTree(std::move(update16))
@@ -1940,9 +1970,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, CreateLayersOfAllTypes) {
       }
       case cc::mojom::LayerType::kSurface: {
         auto extra = mojom::SurfaceLayerExtra::New();
-        extra->surface_range = SurfaceRange(
-            std::nullopt,
-            SurfaceId(kDefaultFrameSinkId, default_local_surface_id_));
+        extra->surface_range = kDefaultSurfaceRange;
         extra->deadline_in_frames = 0u;
         layer->layer_extra =
             mojom::LayerExtra::NewSurfaceLayerExtra(std::move(extra));
@@ -1986,6 +2014,8 @@ TEST_F(LayerContextImplLayerLifecycleTest, CreateLayersOfAllTypes) {
 }
 
 TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
+  const gfx::Size kUpdatedBounds(50, 50);
+
   auto update = CreateDefaultUpdate();
   int layer_id1 = AddDefaultLayerToUpdate(update.get());
   int layer_id2 = AddDefaultLayerToUpdate(update.get());
@@ -1994,7 +2024,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
 
   auto update_props = CreateDefaultUpdate();
   auto layer1_props = CreateManualLayer(layer_id1);
-  layer1_props->bounds = gfx::Size(50, 50);
+  layer1_props->bounds = kUpdatedBounds;
   layer1_props->contents_opaque = true;
   layer1_props->contents_opaque_for_text = true;
   layer1_props->background_color = SkColors::kRed;
@@ -2012,7 +2042,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
 
   cc::LayerImpl* layer1_impl = GetLayerFromActiveTree(layer_id1);
   ASSERT_NE(nullptr, layer1_impl);
-  EXPECT_EQ(layer1_impl->bounds(), gfx::Size(50, 50));
+  EXPECT_EQ(layer1_impl->bounds(), kUpdatedBounds);
   EXPECT_TRUE(layer1_impl->contents_opaque());
   EXPECT_TRUE(layer1_impl->contents_opaque_for_text());
   EXPECT_EQ(layer1_impl->background_color(), SkColors::kRed);
@@ -2284,8 +2314,8 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   // Test Case 1: Update with invalid transform_tree_index.
   auto update_invalid_transform = CreateDefaultUpdate();
   update_invalid_transform->layers.push_back(CreateManualLayer(
-      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kInvalidIndex,
-      kValidIndex, kValidIndex, kValidIndex));
+      kLayerId, cc::mojom::LayerType::kLayer, kDefaultLayerBounds,
+      kInvalidIndex, kValidIndex, kValidIndex, kValidIndex));
   auto result_transform = layer_context_impl_->DoUpdateDisplayTree(
       std::move(update_invalid_transform));
   ASSERT_FALSE(result_transform.has_value());
@@ -2295,7 +2325,7 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   // Test Case 2: Update with invalid clip_tree_index.
   auto update_invalid_clip = CreateDefaultUpdate();
   update_invalid_clip->layers.push_back(CreateManualLayer(
-      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kValidIndex,
+      kLayerId, cc::mojom::LayerType::kLayer, kDefaultLayerBounds, kValidIndex,
       kInvalidIndex, kValidIndex, kValidIndex));
   auto result_clip =
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid_clip));
@@ -2305,7 +2335,7 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   // Test Case 3: Update with invalid effect_tree_index (similar for scroll).
   auto update_invalid_effect = CreateDefaultUpdate();
   update_invalid_effect->layers.push_back(CreateManualLayer(
-      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kValidIndex,
+      kLayerId, cc::mojom::LayerType::kLayer, kDefaultLayerBounds, kValidIndex,
       kValidIndex, kInvalidIndex, kValidIndex));
   auto result_effect = layer_context_impl_->DoUpdateDisplayTree(
       std::move(update_invalid_effect));
@@ -2357,8 +2387,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest, UpdateUVRect) {
 
   // Second update: Update UV rect.
   auto update2 = CreateDefaultUpdate();
-  auto layer_props = CreateManualLayer(
-      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto layer_props =
+      CreateManualLayer(kTextureLayerId, cc::mojom::LayerType::kTexture);
   auto& texture_extra = layer_props->layer_extra->get_texture_layer_extra();
   texture_extra->uv_top_left = kUpdatedUVTopLeft;
   texture_extra->uv_bottom_right = kUpdatedUVBottomRight;
@@ -2392,8 +2422,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
 
   // Second update: Update blend_background_color to true.
   auto update2 = CreateDefaultUpdate();
-  auto layer_props2 = CreateManualLayer(
-      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto layer_props2 =
+      CreateManualLayer(kTextureLayerId, cc::mojom::LayerType::kTexture);
   auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
   texture_extra2->blend_background_color = kUpdatedBlendBackgroundColor;
   update2->layers.push_back(std::move(layer_props2));
@@ -2431,8 +2461,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
 
   // Second update: Update force_texture_to_opaque to true.
   auto update2 = CreateDefaultUpdate();
-  auto layer_props2 = CreateManualLayer(
-      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto layer_props2 =
+      CreateManualLayer(kTextureLayerId, cc::mojom::LayerType::kTexture);
   auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
   texture_extra2->force_texture_to_opaque = kUpdatedForceTextureToOpaque;
   update2->layers.push_back(std::move(layer_props2));
@@ -2512,6 +2542,151 @@ TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
   EXPECT_TRUE(texture_layer_impl->transferable_resource().is_empty());
+}
+
+class LayerContextImplUpdateDisplayTreeSurfaceLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::SurfaceLayerImpl* GetSurfaceLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (layer && layer->GetLayerType() == cc::mojom::LayerType::kSurface) {
+      return static_cast<cc::SurfaceLayerImpl*>(layer);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeSurfaceLayerTest,
+       UpdateBooleanProperties) {
+  constexpr int kSurfaceLayerId = 2;
+
+  // Initial update: Create SurfaceLayer with default boolean values.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kSurface,
+                          kSurfaceLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kSurfaceLayerId, true);
+
+  cc::SurfaceLayerImpl* layer_impl =
+      GetSurfaceLayerFromActiveTree(kSurfaceLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+
+  // Defaults should be false from CreateDefaultLayerExtra.
+  EXPECT_EQ(layer_impl->stretch_content_to_fill_bounds(),
+            kDefaultStretchContentToFillBounds);
+  EXPECT_EQ(layer_impl->surface_hit_testable(), kDefaultSurfaceHitTestable);
+  EXPECT_EQ(layer_impl->has_pointer_events_none(),
+            kDefaultHasPointerEventsNone);
+  EXPECT_EQ(layer_impl->is_reflection(), kDefaultIsReflection);
+  EXPECT_EQ(layer_impl->override_child_paint_flags(),
+            kDefaultOverrideChildPaintFlags);
+
+  // Second update: Update all boolean properties to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kSurfaceLayerId, cc::mojom::LayerType::kSurface);
+  auto& surface_extra2 = layer_props2->layer_extra->get_surface_layer_extra();
+  surface_extra2->stretch_content_to_fill_bounds = true;
+  surface_extra2->surface_hit_testable = true;
+  surface_extra2->has_pointer_events_none = true;
+  surface_extra2->is_reflection = true;
+  surface_extra2->override_child_paint_flags = true;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_TRUE(layer_impl->stretch_content_to_fill_bounds());
+  EXPECT_TRUE(layer_impl->surface_hit_testable());
+  EXPECT_TRUE(layer_impl->has_pointer_events_none());
+  EXPECT_TRUE(layer_impl->is_reflection());
+  EXPECT_TRUE(layer_impl->override_child_paint_flags());
+
+  // Third update: Update all boolean properties back to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 =
+      CreateManualLayer(kSurfaceLayerId, cc::mojom::LayerType::kSurface);
+  auto& surface_extra3 = layer_props3->layer_extra->get_surface_layer_extra();
+  surface_extra3->stretch_content_to_fill_bounds = false;
+  surface_extra3->surface_hit_testable = false;
+  surface_extra3->has_pointer_events_none = false;
+  surface_extra3->is_reflection = false;
+  surface_extra3->override_child_paint_flags = false;
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_FALSE(layer_impl->stretch_content_to_fill_bounds());
+  EXPECT_FALSE(layer_impl->surface_hit_testable());
+  EXPECT_FALSE(layer_impl->has_pointer_events_none());
+  EXPECT_FALSE(layer_impl->is_reflection());
+  EXPECT_FALSE(layer_impl->override_child_paint_flags());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeSurfaceLayerTest,
+       UpdateSurfaceRangeAndDeadline) {
+  constexpr int kSurfaceLayerId = 2;
+  constexpr uint32_t kUpdatedDeadlineInFrames = 5u;
+
+  // Initial update: Create SurfaceLayer with default range and deadline.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kSurface,
+                          kSurfaceLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::SurfaceLayerImpl* layer_impl =
+      GetSurfaceLayerFromActiveTree(kSurfaceLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->range(), kDefaultSurfaceRange);
+  EXPECT_EQ(layer_impl->deadline_in_frames(), kDefaultDeadlineInFrames);
+
+  // Second update: Update surface_range and deadline_in_frames.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kSurfaceLayerId, cc::mojom::LayerType::kSurface);
+  auto& surface_extra2 = layer_props2->layer_extra->get_surface_layer_extra();
+  LocalSurfaceId new_lsi(4, base::UnguessableToken::CreateForTesting(5, 6));
+  surface_extra2->surface_range =
+      SurfaceRange(std::nullopt, SurfaceId(kDefaultFrameSinkId, new_lsi));
+  surface_extra2->deadline_in_frames = kUpdatedDeadlineInFrames;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->range().end(), SurfaceId(kDefaultFrameSinkId, new_lsi));
+  EXPECT_EQ(layer_impl->deadline_in_frames(), kUpdatedDeadlineInFrames);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeSurfaceLayerTest,
+       UpdateWillDrawNeedsReset) {
+  constexpr int kSurfaceLayerId = 2;
+
+  // Initial update: Create SurfaceLayer with default will_draw_needs_reset.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kSurface,
+                          kSurfaceLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::SurfaceLayerImpl* layer_impl1 =
+      GetSurfaceLayerFromActiveTree(kSurfaceLayerId);
+  ASSERT_NE(nullptr, layer_impl1);
+  EXPECT_EQ(layer_impl1->will_draw_needs_reset(), kDefaultWillDrawNeedsReset);
+
+  // Second update: Set will_draw_needs_reset to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kSurfaceLayerId, cc::mojom::LayerType::kSurface);
+  auto& surface_extra2 = layer_props2->layer_extra->get_surface_layer_extra();
+  surface_extra2->will_draw_needs_reset = true;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  cc::SurfaceLayerImpl* layer_impl2 =
+      GetSurfaceLayerFromActiveTree(kSurfaceLayerId);
+  ASSERT_NE(nullptr, layer_impl2);
+  EXPECT_TRUE(layer_impl2->will_draw_needs_reset());
 }
 
 }  // namespace viz
