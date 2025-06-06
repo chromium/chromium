@@ -42,6 +42,8 @@ source_set("tab_groups") {
     "//ios/chrome/browser/data_sharing/model:observer_bridge",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/first_run/public:best_features_item",
+    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",

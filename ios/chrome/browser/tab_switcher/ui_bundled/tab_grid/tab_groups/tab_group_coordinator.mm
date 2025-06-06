@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -110,6 +112,12 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   [self setUpViewController];
   ProfileIOS* profile = self.profile;
   Browser* browser = self.browser;
+
+  // Notify Welcome Back to remove Tab Groups from the eligible
+  // features.
+  if (IsWelcomeBackInFirstRunEnabled()) {
+    MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kTabGroups);
+  }
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);

@@ -7,6 +7,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -104,6 +106,12 @@ bool TailoredSecurityServiceInfobarDelegate::Accept() {
             profile->GetPrefs(),
             safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
             /*is_esb_enabled_by_account_integration=*/false);
+        // Notify Welcome Back to remove Enhanced Safe Browsing from the
+        // eligible features.
+        if (IsWelcomeBackInFirstRunEnabled()) {
+          MarkWelcomeBackFeatureUsed(
+              BestFeaturesItemType::kEnhancedSafeBrowsing);
+        }
         break;
     }
   }

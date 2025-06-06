@@ -17,6 +17,8 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "ios/chrome/browser/first_run/public/best_features_item.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_alert_presenter.h"
@@ -330,6 +332,12 @@ using PriceNotificationItems =
   [self recordProductStatusFromSource:PriceNotificationTrackingSource::
                                           kPriceTracking
                                status:PriceNotificationProductStatus::kTrack];
+
+  // Notify Welcome Back to remove Price Tracking and Insights from the eligible
+  // features.
+  if (IsWelcomeBackInFirstRunEnabled()) {
+    MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kPriceTrackingAndInsights);
+  }
 }
 
 // This function handles the response from the user attempting to unsubscribe to
