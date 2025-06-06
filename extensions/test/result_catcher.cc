@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -26,16 +27,17 @@ bool ResultCatcher::GetNextResult() {
     run_loop.Run();
   }
 
-  if (!results_.empty()) {
-    bool ret = results_.front();
-    results_.pop_front();
-    message_ = messages_.front();
-    messages_.pop_front();
-    return ret;
+  // Can happen if the test timed out and never produced a result.
+  if (results_.empty()) {
+    ADD_FAILURE() << "ResultCatcher never received a result.";
+    return false;
   }
 
-  DUMP_WILL_BE_NOTREACHED();
-  return false;
+  bool ret = results_.front();
+  results_.pop_front();
+  message_ = messages_.front();
+  messages_.pop_front();
+  return ret;
 }
 
 void ResultCatcher::OnTestPassed(content::BrowserContext* browser_context) {
