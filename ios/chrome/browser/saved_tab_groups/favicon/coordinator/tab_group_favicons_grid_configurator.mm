@@ -189,6 +189,9 @@ void TabGroupFaviconsGridConfigurator::FetchFaviconsGrid(
     favicon_loader_->FaviconForPageUrl(
         saved_tab.url(), kFaviconSize, kFaviconMinimumSize,
         /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+          if (completion_block_executed) {
+            return;
+          }
           // Synchronously returned default favicon.
           if (attributes.usesDefaultImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
