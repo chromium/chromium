@@ -336,6 +336,7 @@ class AuthenticatorClientPinEntrySheetModel
   AcceptButtonState GetAcceptButtonState() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+  bool IsOtherMechanismButtonVisible() const override;
 
   std::u16string pin_code_;
   std::u16string pin_confirmation_;

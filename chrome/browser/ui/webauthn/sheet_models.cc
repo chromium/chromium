@@ -876,6 +876,13 @@ void AuthenticatorClientPinEntrySheetModel::OnAccept() {
   }
 }
 
+bool AuthenticatorClientPinEntrySheetModel::IsOtherMechanismButtonVisible()
+    const {
+  // Always allow restarting the request to select a different security key or
+  // hybrid authenticator.
+  return true;
+}
+
 // AuthenticatorClientPinTapAgainSheetModel ----------------------
 
 AuthenticatorClientPinTapAgainSheetModel::
