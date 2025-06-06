@@ -23,6 +23,7 @@ class BaseDialogUIDelegate {
   virtual ~BaseDialogUIDelegate() = default;
 
   virtual void ResizeNativeView(int height) = 0;
+  virtual BrowserWindowInterface* GetBrowser() = 0;
   virtual void ShowNativeView(base::OnceCallback<void()> callback) = 0;
   virtual void CloseNativeView() = 0;
   virtual notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice() = 0;

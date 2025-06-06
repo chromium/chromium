@@ -41,6 +41,7 @@ class MockBaseDialogUIDelegate : public BaseDialogUIDelegate {
               (override));
   MOCK_METHOD(void, OpenPrivacySandboxSettings, (), (override));
   MOCK_METHOD(void, OpenPrivacySandboxAdMeasurementSettings, (), (override));
+  MOCK_METHOD(BrowserWindowInterface*, GetBrowser, (), (override));
 };
 
 class MockBaseDialogPage : public dialog::mojom::BaseDialogPage {

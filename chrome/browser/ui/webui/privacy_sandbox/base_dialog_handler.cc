@@ -122,4 +122,8 @@ bool BaseDialogHandler::IsNativeDialogShownForTesting() {
   return native_dialog_shown_;
 }
 
+BrowserWindowInterface* BaseDialogHandler::GetBrowser() {
+  return delegate_->GetBrowser();
+}
+
 }  // namespace privacy_sandbox

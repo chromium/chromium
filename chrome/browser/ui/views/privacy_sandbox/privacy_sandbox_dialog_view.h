@@ -44,6 +44,7 @@ class PrivacySandboxDialogView : public views::View,
   void ResizeNativeView(int height) override;
   void ShowNativeView(base::OnceCallback<void()> view_shown_callback =
                           base::DoNothing()) override;
+  BrowserWindowInterface* GetBrowser() override;
   privacy_sandbox::notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice()
       override;
   void SetPrivacySandboxNotice(

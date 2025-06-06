@@ -242,6 +242,10 @@ void PrivacySandboxDialogView::CloseNativeView() {
   GetWidget()->Close();
 }
 
+BrowserWindowInterface* PrivacySandboxDialogView::GetBrowser() {
+  return browser_;
+}
+
 void PrivacySandboxDialogView::ResizeNativeView(int height) {
   const int max_height = browser_->GetWebContentsModalDialogHostForWindow()
                              ->GetMaximumDialogSize()

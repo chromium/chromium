@@ -22,6 +22,7 @@ class MockDesktopViewManagerObserver
               MaybeNavigateToNextStep,
               (std::optional<notice::mojom::PrivacySandboxNotice>),
               (override));
+  MOCK_METHOD(BrowserWindowInterface*, GetBrowser, (), (override));
 };
 
 }  // namespace privacy_sandbox

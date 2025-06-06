@@ -37,6 +37,9 @@ class BaseDialogHandler
       std::optional<privacy_sandbox::notice::mojom::PrivacySandboxNotice>
           next_id) override;
 
+  // DesktopViewManagerInterface::Observer:
+  BrowserWindowInterface* GetBrowser() override;
+
   // privacy_sandbox::dialog::mojom::BaseDialogPageHandler
   void ResizeDialog(uint32_t height) override;
   void ShowDialog() override;

@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_view_manager_test_peer.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_desktop_view_manager_observer.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
@@ -16,28 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace privacy_sandbox {
-
-// Allow tests to access private variables and functions from
-// `DesktopViewManager`.
-class DesktopViewManagerTestPeer {
- public:
-  explicit DesktopViewManagerTestPeer(DesktopViewManager* desktop_view_manager)
-      : desktop_view_manager_(desktop_view_manager) {}
-  ~DesktopViewManagerTestPeer() = default;
-
-  void SetPendingNotices(
-      std::vector<notice::mojom::PrivacySandboxNotice> pending_notices) {
-    desktop_view_manager_->SetPendingNoticesToShow(pending_notices);
-  }
-
-  void CreateView(BrowserWindowInterface* browser,
-                  DesktopViewManager::ShowViewCallback show) {
-    desktop_view_manager_->MaybeCreateView(browser, std::move(show));
-  }
-
- private:
-  raw_ptr<DesktopViewManager> desktop_view_manager_;
-};
 
 namespace {
 using base::MockCallback;

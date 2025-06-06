@@ -54,6 +54,8 @@ class DesktopViewManager : public DesktopViewManagerInterface {
   // Notifies open views to close.
   void CloseAllOpenViews();
 
+  bool IsPromptShowingOnBrowser(BrowserWindowInterface* browser);
+
   // If the event taken isn't a shown event, notifies open views to advance to
   // the next step. If the next step doesn't exist, all open views will be
   // notified to close.

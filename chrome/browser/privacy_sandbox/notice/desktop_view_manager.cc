@@ -112,12 +112,27 @@ NavigationHandler* DesktopViewManager::GetNavigationHandler() {
   return navigation_handler_.get();
 }
 
+bool DesktopViewManager::IsPromptShowingOnBrowser(
+    BrowserWindowInterface* browser) {
+  for (auto& observer : observers_) {
+    // Return true if an observer is registered for the current browser.
+    if (observer.GetBrowser() == browser) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void DesktopViewManager::HandleChromeOwnedPageNavigation(
     BrowserWindowInterface* browser_interface) {
   // TODO(crbug.com/408016824): Move this Feature flag check to the orchestrator
   // once implemented.
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxNoticeFramework)) {
+    if (IsPromptShowingOnBrowser(browser_interface)) {
+      return;
+    }
+
     // Create a view through the bound `Show` function.
     MaybeCreateView(browser_interface,
                     base::BindOnce(static_cast<void (*)(BrowserWindowInterface*,

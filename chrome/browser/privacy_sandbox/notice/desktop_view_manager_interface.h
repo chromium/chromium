@@ -26,7 +26,10 @@ class DesktopViewManagerInterface {
     // Fired whenever observers are required to proceed to the next step.
     virtual void MaybeNavigateToNextStep(
         std::optional<notice::mojom::PrivacySandboxNotice> next_id) = 0;
+
+    virtual BrowserWindowInterface* GetBrowser() = 0;
   };
+
   virtual ~DesktopViewManagerInterface();
 
   // Returns handler responsible for tracking navigations.

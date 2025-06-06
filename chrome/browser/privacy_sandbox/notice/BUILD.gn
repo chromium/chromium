@@ -97,6 +97,7 @@ if (!is_android) {
     public = [
       "desktop_entrypoint_handlers.h",
       "desktop_view_manager.h",
+      "desktop_view_manager_test_peer.h",
     ]
     deps = [
       ":core",
@@ -108,7 +109,7 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui:ui",
       "//chrome/browser/ui/browser_window:browser_window",
-      "//chrome/browser/ui/privacy_sandbox:privacy_sandbox",
+      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/common",
       "//components/privacy_sandbox:features",
       "//components/tabs:public",
@@ -217,10 +218,14 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    sources += [ "desktop_entrypoint_handlers_browsertest.cc" ]
+    sources += [
+      "desktop_entrypoint_handlers_browsertest.cc",
+      "desktop_view_manager_browsertest.cc",
+    ]
     deps += [
       ":desktop_view_manager",
       "//chrome/browser/sync",
+      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/test:test_support_ui",
       "//components/privacy_sandbox:features",
     ]
