@@ -148,8 +148,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() final;
-
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
   // Computes the digest that corresponds to the "input" of this canvas,
@@ -168,6 +166,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   CanvasResourceProvider* CreateCanvasResourceProvider2D();
   CanvasResourceProvider* CreateCanvasResourceProviderWebGL();
   CanvasResourceProvider* CreateCanvasResourceProviderWebGPU();
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl();
 
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;

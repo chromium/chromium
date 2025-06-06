@@ -2292,10 +2292,11 @@ HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
     CanvasHibernationHandler& hibernation_handler) {
   CHECK(IsRenderingContext2D());
 
-  // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
-  // circular callstack.
-  CanvasResourceProvider* resource_provider =
-      CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl();
+  // We call
+  // CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D()
+  // directly here to prevent a circular callstack.
+  CanvasResourceProvider* resource_provider = CanvasRenderingContextHost::
+      GetOrCreateCanvasResourceProviderForCanvas2D();
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }

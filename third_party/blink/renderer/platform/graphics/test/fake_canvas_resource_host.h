@@ -37,9 +37,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
       override {
-    return GetOrCreateCanvasResourceProviderImpl();
-  }
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() override {
     if (ResourceProvider())
       return ResourceProvider();
     constexpr auto kShouldInitialize =

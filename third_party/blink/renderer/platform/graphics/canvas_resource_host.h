@@ -100,9 +100,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
- protected:
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
-
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
