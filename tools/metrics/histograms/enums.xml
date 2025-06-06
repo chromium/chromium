@@ -24491,6 +24491,9 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="DOM modification condition not met"/>
   <int value="6" label="No paint or DOM modification"/>
   <int value="7" label="No conditions met"/>
+  <int value="8"
+      label="No SoftNavContext during url change, but we merged URL into an
+             existing active context"/>
 </enum>
 
 <enum name="SpeculationEagerness">

@@ -166,11 +166,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   // events, this remains alive until the next interaction.
   Member<SoftNavigationContext> active_interaction_context_;
 
-  // Save a strong reference to the most recent soft navigation detected.  This
+  // Save a strong reference to the most recent context that changed URL.  This
   // context could still be pending (not emitted) as we wait to observe more
   // paints, or it might have already been emitted, but we still want to
   // continue measuring paints for a while.
-  Member<SoftNavigationContext> most_recent_context_to_meet_non_paint_criteria_;
+  Member<SoftNavigationContext> context_for_current_url_;
 
   uint32_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;

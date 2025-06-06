@@ -416,9 +416,9 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
   ASSERT_TRUE(task_state);
   EXPECT_EQ(task_state->GetSoftNavigationContext(), context);
 
-  EXPECT_TRUE(context->Url().empty());
+  EXPECT_FALSE(context->HasUrl());
   heuristics->SameDocumentNavigationCommitted("foo.html", context);
-  EXPECT_FALSE(context->Url().empty());
+  EXPECT_TRUE(context->HasUrl());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {

@@ -50,10 +50,6 @@ bool SoftNavigationContext::AddPaintedArea(Node* node,
     return false;
   }
 
-  // For now, we only check paint after we meet other criteria, in order to
-  // reduce the risk of needless tree walks during paint.
-  CHECK(SatisfiesSoftNavNonPaintCriteria());
-
   // Iterate up the dom tree:
   for (Node* current_node = node; current_node;
        current_node = current_node->parentNode()) {
@@ -103,7 +99,7 @@ bool SoftNavigationContext::AddPaintedArea(Node* node,
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
-  return HasDomModification() && !url_.empty() &&
+  return HasDomModification() && HasUrl() &&
          !user_interaction_timestamp_.is_null();
 }
 
@@ -148,9 +144,10 @@ void SoftNavigationContext::WriteIntoTrace(
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
 
   dict.Add("softNavContextId", context_id_);
-  dict.Add("interactionTimestamp", UserInteractionTimestamp());
-  dict.Add("url", Url());
-  dict.Add("wasEmitted", WasEmitted());
+  dict.Add("interactionTimestamp", user_interaction_timestamp_);
+  dict.Add("initialURL", initial_url_);
+  dict.Add("mostRecentURL", most_recent_url_);
+  dict.Add("wasEmitted", was_emitted_);
 
   dict.Add("domModifications", num_modified_dom_nodes_);
   dict.Add("paintedArea", painted_area_);

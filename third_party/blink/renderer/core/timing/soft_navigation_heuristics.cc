@@ -42,9 +42,10 @@ const char kPageLoadInternalSoftNavigationOutcome[] =
 enum SoftNavigationOutcome {
   kSoftNavigationDetected = 0,
 
-  kNoSoftNavContextDuringUrlChange = 1,
-  kInsufficientPaints = 2,
-  kNoDomModification = 4,
+  kNoSoftNavContextDuringUrlChange = 1 << 0,
+  kInsufficientPaints = 1 << 1,
+  kNoDomModification = 1 << 2,
+  kNoSoftNavContextDuringUrlChangeButMergingIntoPreviousContext = 1 << 3,
 
   // For now, this next value is equivalent to kNoDomModification, because we
   // cannot have paints without a dom mod.
@@ -52,7 +53,7 @@ enum SoftNavigationOutcome {
   // such that you could have paints without a dom mod.
   kNoPaintOrDomModification = kInsufficientPaints | kNoDomModification,
 
-  kMaxValue = kNoPaintOrDomModification,
+  kMaxValue = kNoSoftNavContextDuringUrlChangeButMergingIntoPreviousContext,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
 
@@ -65,7 +66,7 @@ void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
 
   // Don't bother to log if the URL was never set.  That means it was just a
   // normal interaction.
-  if (context.Url().empty()) {
+  if (!context.HasUrl()) {
     return;
   }
 
@@ -228,7 +229,9 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
     SoftNavigationContext* context) {
   context = EnsureContextForCurrentWindow(context);
-  if (!context) {
+  if (!context && !context_for_current_url_) {
+    // If we don't have a context for this task, and we haven't had a context
+    // for a recent URL change, then this URL change is not a soft-navigation.
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
                         "SoftNavigationHeuristics::"
                         "SameDocumentNavigationCommittedWithoutContext",
@@ -236,16 +239,39 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     base::UmaHistogramEnumeration(
         kPageLoadInternalSoftNavigationOutcome,
         SoftNavigationOutcome::kNoSoftNavContextDuringUrlChange);
-    return;
+  } else if (!context) {
+    // All URL changes which follow an attributed URL change are assumed to be
+    // client-side-redirects and will not disable paint attribution or change
+    // the emitting of existing contexts.
+    // TODO(crbug.com/353043684, crbug.com/40943017): Perhaps there should be
+    // limits to how long we will keep the current context as active.
+    context_for_current_url_->AddUrl(url);
+
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SoftNavigationHeuristics::"
+                        "SameDocumentNavigationCommittedWithoutContextButMerg"
+                        "edIntoPreviousContext",
+                        "context", *context_for_current_url_, "url", url);
+    base::UmaHistogramEnumeration(
+        kPageLoadInternalSoftNavigationOutcome,
+        SoftNavigationOutcome::
+            kNoSoftNavContextDuringUrlChangeButMergingIntoPreviousContext);
+  } else {
+    context->AddUrl(url);
+    // TODO(crbug.com/416705860): If we replace a previous context that is for a
+    // previous URL change, maybe we should check if it was emitted?  If not,
+    // we will no longer be attributing paints to it and so it will never meet
+    // criteria again (unless it changes URL again).  We might want to clean up
+    // and exhaust this context immediately.
+    context_for_current_url_ = context;
+
+    TRACE_EVENT_INSTANT(
+        TRACE_DISABLED_BY_DEFAULT("loading"),
+        "SoftNavigationHeuristics::SameDocumentNavigationCommitted", "context",
+        *context);
+
+    EmitSoftNavigationEntryIfAllConditionsMet(context);
   }
-  context->SetUrl(url);
-
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("loading"),
-      "SoftNavigationHeuristics::SameDocumentNavigationCommitted", "context",
-      *context);
-
-  EmitSoftNavigationEntryIfAllConditionsMet(context);
 }
 
 bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
@@ -276,14 +302,6 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     return false;
   }
 
-  // Once we've met all criteria with a new context, we replace the active
-  // soft_navigation. This helps us collect paints even after Task graph is
-  // exhausted, and allows the previous context to get cleaned up.
-  // TODO(crbug.com/416705860): Consider always making this the context which
-  // was last to update the URL, immediately upon changing, rather than waiting
-  // for other criteria (like dom modification) to be met.
-  most_recent_context_to_meet_non_paint_criteria_ = context;
-
   // Are we done?
   uint64_t required_paint_area = CalculateRequiredPaintArea();
   if (!context->SatisfiesSoftNavPaintCriteria(required_paint_area)) {
@@ -309,7 +327,7 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   ++soft_navigation_count_;
   window_->GenerateNewNavigationId();
   auto* performance = DOMWindowPerformance::performance(*window_.Get());
-  performance->AddSoftNavigationEntry(AtomicString(context->Url()),
+  performance->AddSoftNavigationEntry(AtomicString(context->InitialUrl()),
                                       context->UserInteractionTimestamp());
 
   CommitPreviousPaintTimings(frame);
@@ -326,12 +344,8 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
 void SoftNavigationHeuristics::RecordPaint(LocalFrame* frame,
                                            const gfx::RectF& rect,
                                            Node* node) {
-  // For now, we only care to map paints for the most recent context to meet
-  // non-paint criteria.
-  if (most_recent_context_to_meet_non_paint_criteria_ &&
-      most_recent_context_to_meet_non_paint_criteria_->AddPaintedArea(
-          node, rect, true)) {
-    return;
+  if (context_for_current_url_) {
+    context_for_current_url_->AddPaintedArea(node, rect, true);
   }
 }
 
@@ -412,7 +426,7 @@ void SoftNavigationHeuristics::CommitPreviousPaintTimings(LocalFrame* frame) {
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(active_interaction_context_);
-  visitor->Trace(most_recent_context_to_meet_non_paint_criteria_);
+  visitor->Trace(context_for_current_url_);
   // Register a custom weak callback, which runs after processing weakness for
   // the container. This allows us to observe the collection becoming empty
   // without needing to observe individual element disposal.
@@ -470,15 +484,15 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
     return false;
   });
 
-  // This should never happen if we have a last_interaction_context_.
-  // numbecrbug.com/416706750aints?  Perhaps once all dom nodes modified by the
-  // context and/or number of paints?  Perhaps once all dom nodes modified by
-  // the context have been painted at least once, we don't care about more data?
-  // Perhaps after user scrolls/interacts after history change?
+  // If we fully clear out all contexts via GC, then turn off soft-navs tracking
+  // on document.  This should never happen if we have a
+  // `context_for_current_url_`, which means we won't ever turn off tracking
+  // once an attributable URL change is detected.
+  // TODO(crbug.com/416706750, crbug.com/420402247): Consider enabling some
+  // mechanism for eventually resetting things.
   if (potential_soft_navigations_.empty()) {
     CHECK(!active_interaction_context_, base::NotFatalUntil::M142);
-    CHECK(!most_recent_context_to_meet_non_paint_criteria_,
-          base::NotFatalUntil::M142);
+    CHECK(!context_for_current_url_, base::NotFatalUntil::M142);
     SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   }
 }
