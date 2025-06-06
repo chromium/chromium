@@ -420,6 +420,28 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    public void getInstanceCount_ExceedsLimit() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        int maxInstances = 3;
+        MultiWindowUtils.setMaxInstancesForTesting(maxInstances);
+
+        // Simulate persistence of instance state for max instances = 3.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
+        writeInstanceInfo(
+                INSTANCE_ID_2, URL_3, /* tabCount= */ 6, /* incognitoTabCount= */ 2, TASK_ID_7);
+
+        // Simulate downgrade of instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(maxInstances - 1);
+
+        // Verify instance count.
+        assertEquals(3, MultiWindowUtils.getInstanceCount());
+    }
+
+    @Test
     @Config(sdk = 31)
     public void testGetInstanceIdForViewIntent_LessThanMaxInstancesOpen() {
         MultiWindowTestUtils.enableMultiInstance();
