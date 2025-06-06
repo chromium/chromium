@@ -429,6 +429,7 @@ ts_test_files = [
   "file_manager/foreground/js/actions_model_unittest.ts",
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
+  "file_manager/foreground/js/dialog_action_controller_unittest.ts",
   "file_manager/foreground/js/directory_contents_unittest.ts",
   "file_manager/foreground/js/directory_model_unittest.ts",
   "file_manager/foreground/js/empty_folder_controller_unittest.ts",

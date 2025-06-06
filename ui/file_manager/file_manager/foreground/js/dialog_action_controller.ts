@@ -290,7 +290,13 @@ export class DialogActionController {
       return null;  // No specific filter selected.
     }
     return new RegExp(
-        '\\.(' + this.fileTypes_[selectedIndex - 1]!.extensions.join('|') +
+        '\\.(' +
+            this.fileTypes_[selectedIndex - 1]!
+                .extensions
+                // RegExp.escape is available since M136, but Typescript doesn't
+                // recognize it yet, hence the "as any" below.
+                .map(ext => (RegExp as any).escape(ext))
+                .join('|') +
             ')$',
         'i');
   }
