@@ -66,18 +66,15 @@ class BrowsingDataRemover {
   // Mask used for Remove.
   using DataType = uint64_t;
   // Storage datatypes.
-  static constexpr DataType DATA_TYPE_APP_CACHE_DEPRECATED = 1 << 0;
-  static constexpr DataType DATA_TYPE_FILE_SYSTEMS = 1 << 1;
-  static constexpr DataType DATA_TYPE_INDEXED_DB = 1 << 2;
-  static constexpr DataType DATA_TYPE_LOCAL_STORAGE = 1 << 3;
-  static constexpr DataType DATA_TYPE_WEB_SQL_DEPRECATED = 1 << 4;
-  static constexpr DataType DATA_TYPE_SERVICE_WORKERS = 1 << 5;
-  static constexpr DataType DATA_TYPE_CACHE_STORAGE = 1 << 6;
-  // This is also persisted, keep with storage datatypes.
-  static constexpr DataType DATA_TYPE_BACKGROUND_FETCH = 1 << 14;
+  static constexpr DataType DATA_TYPE_FILE_SYSTEMS = 1 << 0;
+  static constexpr DataType DATA_TYPE_INDEXED_DB = 1 << 1;
+  static constexpr DataType DATA_TYPE_LOCAL_STORAGE = 1 << 2;
+  static constexpr DataType DATA_TYPE_SERVICE_WORKERS = 1 << 3;
+  static constexpr DataType DATA_TYPE_CACHE_STORAGE = 1 << 4;
+  static constexpr DataType DATA_TYPE_BACKGROUND_FETCH = 1 << 5;
 
   // Used to request the deletion of embedder-specific storage datatypes.
-  static constexpr DataType DATA_TYPE_EMBEDDER_DOM_STORAGE = 1 << 7;
+  static constexpr DataType DATA_TYPE_EMBEDDER_DOM_STORAGE = 1 << 6;
 
   // DOM-accessible storage (https://www.w3.org/TR/clear-site-data/#storage).
   // Has the same effect as selecting all storage datatypes listed above
@@ -88,81 +85,79 @@ class BrowsingDataRemover {
       DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH;
 
   // Other datatypes.
-  static constexpr DataType DATA_TYPE_COOKIES = 1 << 8;
-  static constexpr DataType DATA_TYPE_CACHE = 1 << 10;
-  static constexpr DataType DATA_TYPE_DOWNLOADS = 1 << 11;
-  static constexpr DataType DATA_TYPE_MEDIA_LICENSES = 1 << 12;
+  static constexpr DataType DATA_TYPE_COOKIES = 1 << 7;
+  static constexpr DataType DATA_TYPE_CACHE = 1 << 8;
+  static constexpr DataType DATA_TYPE_DOWNLOADS = 1 << 9;
+  static constexpr DataType DATA_TYPE_MEDIA_LICENSES = 1 << 10;
 
   // REMOVE_NOCHECKS intentionally does not check if the browser context is
   // prohibited from deleting history or downloads.
-  static constexpr DataType DATA_TYPE_NO_CHECKS = 1 << 13;
-
-  // 14 is already taken by DATA_TYPE_BACKGROUND_FETCH.
+  static constexpr DataType DATA_TYPE_NO_CHECKS = 1 << 11;
 
   // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
   // deleting COOKIES, BrowsingDataRemover should skip
   // storage backends whose deletion would cause closing network connections.
   // TODO(crbug.com/41363015): Remove when fixed.
-  static constexpr DataType DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15;
+  static constexpr DataType DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 12;
 
   // Trust Token API (https://github.com/wicg/trust-token-api) persistent
   // storage.
-  static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 16;
+  static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 13;
 
   // Attribution Reporting
   // (https://github.com/WICG/conversion-measurement-api) persistent
   // storage that was initiated by a site.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED =
-      1 << 17;
+      1 << 14;
 
   // Aggregation Service
   // (https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#data-processing-through-a-secure-aggregation-service)
   // persistent storage.
-  static constexpr DataType DATA_TYPE_AGGREGATION_SERVICE = 1 << 18;
+  static constexpr DataType DATA_TYPE_AGGREGATION_SERVICE = 1 << 15;
 
   // Interest groups are stored as part of the Interest Group API experiment
   // Public explainer here:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-  static constexpr DataType DATA_TYPE_INTEREST_GROUPS = 1 << 19;
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS = 1 << 16;
 
   // Shared storage API
   // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
-  static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 20;
+  static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 17;
 
   // Similar to DATA_TYPE_ATTRIBUTION_REPORTING_SITE_INITIATED, but only
   // refers to data stored internally by the API, such as privacy budgeting
   // information.
-  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL = 1 << 21;
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL = 1 << 18;
 
   // Private Aggregation API
   // (https://github.com/alexmturner/private-aggregation-api) persistent
   // storage. This only refers to data stored internally by the API, such as
   // privacy budgeting information. Note that currently the API does not persist
   // any other data. Should only be cleared by user-initiated deletions.
-  static constexpr DataType DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL = 1 << 22;
+  static constexpr DataType DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL = 1 << 19;
 
   // Similar to DATA_TYPE_INTEREST_GROUPS, but only refers to data stored
   // internally by the API, such as k-Anonymity cache and rate limiting
   // information.
-  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 20;
 
   // Permissions granted by Related Website Sets
   // (https://github.com/WICG/first-party-sets).
   static constexpr DataType DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS = 1
-                                                                         << 24;
+                                                                         << 21;
 
   // Device bound sessions
   // (https://github.com/WICG/dbsc/blob/main/README.md)
-  static constexpr DataType DATA_TYPE_DEVICE_BOUND_SESSIONS = 1 << 25;
+  static constexpr DataType DATA_TYPE_DEVICE_BOUND_SESSIONS = 1 << 22;
 
   // Interest group data that should be cleared in response to user action,
   // but not Clear-Site-Site data.
   // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md)
-  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_USER_CLEAR = 1 << 26;
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_USER_CLEAR = 1 << 23;
 
   // Clear-Site-Data Interaction with Prefetch and Prerender.
-  static constexpr DataType DATA_TYPE_PREFETCH_CACHE = 1 << 27;
-  static constexpr DataType DATA_TYPE_PRERENDER_CACHE = 1 << 28;
+  static constexpr DataType DATA_TYPE_PREFETCH_CACHE = 1 << 24;
+  static constexpr DataType DATA_TYPE_PRERENDER_CACHE = 1 << 25;
 
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END = DATA_TYPE_PRERENDER_CACHE;
@@ -190,9 +185,8 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_ON_STORAGE_PARTITION =
       DATA_TYPE_DOM_STORAGE | DATA_TYPE_COOKIES |
       DATA_TYPE_AVOID_CLOSING_CONNECTIONS | DATA_TYPE_CACHE |
-      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_PRIVACY_SANDBOX |
-      DATA_TYPE_DEVICE_BOUND_SESSIONS | DATA_TYPE_PREFETCH_CACHE |
-      DATA_TYPE_PRERENDER_CACHE;
+      DATA_TYPE_PRIVACY_SANDBOX | DATA_TYPE_DEVICE_BOUND_SESSIONS |
+      DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_PRERENDER_CACHE;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected
