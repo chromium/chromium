@@ -682,7 +682,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
 }
 
 // TODO(crbug.com/414519997): Flaky on Linux_ASan_LSan.
-#if defined(SANITIZER_LINUX)
+#if (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)) && \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
 #else
 #define MAYBE_IncognitoBasic IncognitoBasic
