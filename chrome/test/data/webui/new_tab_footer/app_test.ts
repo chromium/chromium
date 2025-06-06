@@ -123,6 +123,7 @@ suite('NewTabFooterAppTest', () => {
       const managementNotice: ManagementNotice = {
         text: 'Managed by your organization',
         bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        isCustomLogo: false,
       };
 
       // Act.
@@ -133,12 +134,12 @@ suite('NewTabFooterAppTest', () => {
       const managementNoticeContainer =
           element.shadowRoot.querySelector('#managementNoticeContainer');
       assertTrue(!!managementNoticeContainer);
-      let managementNoticeText = managementNoticeContainer.querySelector('p');
+      let managementNoticeText = $$(element, '#managementNoticeContainer p');
       assertTrue(!!managementNoticeText);
       assertEquals(
           managementNoticeText.innerText, 'Managed by your organization');
       let managementNoticeLogo =
-          managementNoticeContainer.querySelector<HTMLImageElement>('img');
+          $$<HTMLImageElement>(element, '#managementNoticeLogo');
       assertTrue(!!managementNoticeLogo);
       assertEquals(
           managementNoticeLogo.src,
@@ -154,6 +155,39 @@ suite('NewTabFooterAppTest', () => {
       assertFalse(!!managementNoticeText);
       assertFalse(!!managementNoticeLogo);
     });
+
+    test('Management notice logo style', async () => {
+      // Arrange.
+      const managementNoticeWithCustomLogo: ManagementNotice = {
+        text: 'Managed by your organization',
+        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        isCustomLogo: true,
+      };
+
+      // Act.
+      callbackRouter.setManagementNotice(managementNoticeWithCustomLogo);
+      await callbackRouter.$.flushForTesting();
+
+      // Assert.
+      let logoContainter = $$(element, '#managementNoticeLogoContainer');
+      assertTrue(!!logoContainter);
+      assertTrue(logoContainter.classList.contains('custom_logo'));
+
+      const managementNoticeWithDefaultLogo: ManagementNotice = {
+        text: 'Managed by your organization',
+        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        isCustomLogo: false,
+      };
+
+      // Act.
+      callbackRouter.setManagementNotice(managementNoticeWithDefaultLogo);
+      await callbackRouter.$.flushForTesting();
+
+      logoContainter = $$(element, '#managementNoticeLogoContainer');
+      assertTrue(!!logoContainter);
+      assertEquals(logoContainter.classList.length, 0);
+    });
+
   });
 
   suite('CustomizeChromeButton', () => {

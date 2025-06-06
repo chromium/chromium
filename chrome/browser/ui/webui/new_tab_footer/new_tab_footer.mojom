@@ -15,6 +15,7 @@ struct ManagementNotice {
   // Url to the management icon. This will be a default business icon or custom
   // icon set by policy.
   url.mojom.Url bitmap_data_url;
+  bool is_custom_logo;
 };
 
 // Used by the WebUI document to bootstrap bidirectional communication.

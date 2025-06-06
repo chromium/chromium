@@ -328,6 +328,7 @@
   /* New Tab Footer colors. */ \
   E_CPONLY(kColorNewTabFooterBackground) \
   E_CPONLY(kColorNewTabFooterText) \
+  E_CPONLY(kColorNewTabFooterLogoBackground) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxActionIcon) \
   E_CPONLY(kColorOmniboxActionIconHover) \

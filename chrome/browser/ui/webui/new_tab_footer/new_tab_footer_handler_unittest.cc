@@ -345,6 +345,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_CustomLogo) {
         // We only test the base URL as the data is very long and not readable.
         EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
                                      "data:image/png;base64,"));
+        EXPECT_TRUE(notice->is_custom_logo);
       });
   handler().UpdateManagementNotice();
 
@@ -371,6 +372,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_DefaultLogo) {
         // We only test the base URL as the data is very long and not readable.
         EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
                                      "data:image/png;base64,"));
+        EXPECT_FALSE(notice->is_custom_logo);
       });
   handler().UpdateManagementNotice();
 

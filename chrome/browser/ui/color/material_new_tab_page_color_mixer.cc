@@ -142,5 +142,6 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   /* NewTabFooter */
   mixer[kColorNewTabFooterBackground] = {ui::kColorSysSurface2};
   mixer[kColorNewTabFooterText] = {ui::kColorSysOnSurface};
-  // LINT.ThenChange(chrome/browser/ui/color/new_tab_page_color_mixer.cc)
+  mixer[kColorNewTabFooterLogoBackground] = {ui::kColorSysSurface};
+  // LINT.ThenChange(//chrome/browser/ui/color/new_tab_page_color_mixer.cc)
 }

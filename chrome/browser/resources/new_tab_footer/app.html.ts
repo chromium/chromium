@@ -15,10 +15,14 @@ separated from each other by a divider.
 -->
 <div id="container">
   <div id="infoContainer">
-    ${this.managementNotice_ ? html`
-      <div id="managementNoticeContainer" class="notice-item">
-        <img id="managementNoticeLogo" alt=""
-            src="${this.managementNotice_.bitmapDataUrl.url}">
+  ${this.managementNotice_ ?
+      html`<div id="managementNoticeContainer" class="notice-item">
+        <div id="managementNoticeLogoContainer"
+             class=${this.managementNotice_.isCustomLogo ?
+             'custom_logo' : ''}>
+          <img id="managementNoticeLogo" alt=""
+               src="${this.managementNotice_.bitmapDataUrl.url}">
+        </div>
         <p title="${this.managementNotice_.text}">
           ${this.managementNotice_.text}
         </p>

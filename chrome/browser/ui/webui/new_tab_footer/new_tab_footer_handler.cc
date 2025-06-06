@@ -101,6 +101,9 @@ void NewTabFooterHandler::UpdateManagementNotice() {
   notice->text = GetManagementNoticeText();
   notice->bitmap_data_url =
       GURL(webui::GetBitmapDataUrl(GetManagementNoticeIconBitmap()));
+  notice->is_custom_logo =
+      policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->GetManagementIconForBrowser() != nullptr;
   document_->SetManagementNotice(std::move(notice));
 }
 
