@@ -139,8 +139,9 @@ bool IsPageContextEligible(
       !lens::features::UseApcAsContext()) {
     return true;
   }
-  return page_context_eligibility->api().IsPageContextEligible(
-      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata));
+  return optimization_guide::IsPageContextEligible(
+      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata),
+      page_context_eligibility);
 }
 
 }  // namespace
