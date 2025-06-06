@@ -226,6 +226,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
+  void AddVideoMemoryUsageStatsOnCompositorGpu(
+      GetVideoMemoryUsageStatsCallback callback,
+      gpu::VideoMemoryUsageStats video_memory_usage_stats);
+
   // These methods can be called from the CrBrowserMain thread and the
   // VizCompositorThread (with InputVizard) for PeakGpuMemory tracking.
   void StartPeakMemoryMonitor(uint32_t sequence_num) override;

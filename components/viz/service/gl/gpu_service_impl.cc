@@ -814,6 +814,36 @@ void GpuServiceImpl::GetVideoMemoryUsageStats(
   }
   gpu::VideoMemoryUsageStats video_memory_usage_stats;
   gpu_channel_manager_->GetVideoMemoryUsageStats(&video_memory_usage_stats);
+
+  if (compositor_gpu_thread()) {
+    // when DrDC is enabled, add SKIA and SHARED_CONTEXT_STATE memory from
+    // CompositorGpuThread.
+    AddVideoMemoryUsageStatsOnCompositorGpu(std::move(callback),
+                                            video_memory_usage_stats);
+  } else {
+    std::move(callback).Run(video_memory_usage_stats);
+  }
+}
+
+void GpuServiceImpl::AddVideoMemoryUsageStatsOnCompositorGpu(
+    GetVideoMemoryUsageStatsCallback callback,
+    gpu::VideoMemoryUsageStats video_memory_usage_stats) {
+  // Called only when CompositorGpuThread exists.
+  CompositorGpuThread* thread = compositor_gpu_thread();
+  DCHECK(thread);
+  if (!thread->task_runner()->BelongsToCurrentThread()) {
+    thread->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuServiceImpl::AddVideoMemoryUsageStatsOnCompositorGpu,
+                       weak_ptr_, std::move(callback),
+                       video_memory_usage_stats));
+    return;
+  }
+
+  uint64_t size = thread->GetSharedContextState()->GetMemoryUsage();
+  video_memory_usage_stats.process_map[base::GetCurrentProcId()].video_memory +=
+      size;
+  video_memory_usage_stats.bytes_allocated += size;
   std::move(callback).Run(video_memory_usage_stats);
 }
 
