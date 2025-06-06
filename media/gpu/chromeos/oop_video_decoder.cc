@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_context_for_oopvd_impl.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"

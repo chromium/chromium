@@ -27,7 +27,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"

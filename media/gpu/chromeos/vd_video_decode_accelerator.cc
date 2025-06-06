@@ -14,7 +14,6 @@
 #include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
