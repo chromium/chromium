@@ -629,7 +629,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
 void ServiceWorkerContextCore::DeleteForStorageKey(const blink::StorageKey& key,
                                                    StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  registry()->GetRegistrationsForStorageKey(
+  registry().GetRegistrationsForStorageKey(
       key,
       base::BindOnce(
           &ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey,
@@ -651,7 +651,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
   // unload.
   std::vector<scoped_refptr<ServiceWorkerRegistration>>
       uninstalling_registrations =
-          registry()->GetUninstallingRegistrationsForStorageKey(key);
+          registry().GetUninstallingRegistrationsForStorageKey(key);
   for (const auto& uninstalling_registration : uninstalling_registrations) {
     job_coordinator_->Abort(uninstalling_registration->scope(), key);
     uninstalling_registration->DeleteAndClearImmediately();
@@ -1069,7 +1069,7 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
     }
   }
 
-  registry()->DeleteAndStartOver(std::move(callback));
+  registry().DeleteAndStartOver(std::move(callback));
 }
 
 void ServiceWorkerContextCore::ClearAllServiceWorkersForTest(
@@ -1082,7 +1082,7 @@ void ServiceWorkerContextCore::ClearAllServiceWorkersForTest(
     return;
   }
   was_service_worker_registered_ = false;
-  registry()->GetAllRegistrationsInfos(
+  registry().GetAllRegistrationsInfos(
       base::BindOnce(&ClearAllServiceWorkersHelper::DidGetAllRegistrations,
                      helper, AsWeakPtr()));
 }
@@ -1091,7 +1091,7 @@ void ServiceWorkerContextCore::CheckHasServiceWorker(
     const GURL& url,
     const blink::StorageKey& key,
     ServiceWorkerContext::CheckHasServiceWorkerCallback callback) {
-  registry()->FindRegistrationForClientUrl(
+  registry().FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, url, key,
       base::BindOnce(&ServiceWorkerContextCore::
                          DidFindRegistrationForCheckHasServiceWorker,

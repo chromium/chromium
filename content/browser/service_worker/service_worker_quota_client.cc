@@ -56,7 +56,7 @@ void ServiceWorkerQuotaClient::GetBucketUsage(
     std::move(callback).Run(0);
     return;
   }
-  context_->registry()->GetStorageUsageForStorageKey(
+  context_->registry().GetStorageUsageForStorageKey(
       bucket.storage_key,
       base::BindOnce(&FindUsageForStorageKey, std::move(callback)));
 }
@@ -64,7 +64,7 @@ void ServiceWorkerQuotaClient::GetBucketUsage(
 void ServiceWorkerQuotaClient::GetDefaultStorageKeys(
     GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_->registry()->GetRegisteredStorageKeys(std::move(callback));
+  context_->registry().GetRegisteredStorageKeys(std::move(callback));
 }
 
 void ServiceWorkerQuotaClient::DeleteBucketData(
@@ -87,7 +87,7 @@ void ServiceWorkerQuotaClient::DeleteBucketData(
 void ServiceWorkerQuotaClient::PerformStorageCleanup(
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_->registry()->PerformStorageCleanup(std::move(callback));
+  context_->registry().PerformStorageCleanup(std::move(callback));
 }
 
 }  // namespace content

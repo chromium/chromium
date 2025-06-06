@@ -754,7 +754,7 @@ void ServiceWorkerContextWrapper::GetAllStorageKeysInfo(
         base::BindOnce(std::move(callback), std::vector<StorageUsageInfo>()));
     return;
   }
-  context()->registry()->GetAllRegistrationsInfos(base::BindOnce(
+  context()->registry().GetAllRegistrationsInfos(base::BindOnce(
       &ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllStorageKeys,
       this, std::move(callback)));
 }
@@ -973,7 +973,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
   TRACE_EVENT1("ServiceWorker", "StartServiceWorkerForNavigationHint",
                "document_url", document_url.spec());
 
-  context_core_->registry()->FindRegistrationForClientUrl(
+  context_core_->registry().FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation,
       net::SimplifyUrlForRequest(document_url), key,
       base::BindOnce(
@@ -1186,7 +1186,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForClientUrl(
                             nullptr);
     return;
   }
-  context_core_->registry()->FindRegistrationForClientUrl(
+  context_core_->registry().FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation,
       net::SimplifyUrlForRequest(client_url), key,
       base::BindOnce(
@@ -1205,7 +1205,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForScope(
     return;
   }
   const bool include_installing_version = false;
-  context_core_->registry()->FindRegistrationForScope(
+  context_core_->registry().FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope), key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
@@ -1232,7 +1232,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForId(
                             nullptr);
     return;
   }
-  context_core_->registry()->FindRegistrationForId(
+  context_core_->registry().FindRegistrationForId(
       registration_id, key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
@@ -1248,7 +1248,7 @@ void ServiceWorkerContextWrapper::FindReadyRegistrationForIdOnly(
                             nullptr);
     return;
   }
-  context_core_->registry()->FindRegistrationForIdOnly(
+  context_core_->registry().FindRegistrationForIdOnly(
       registration_id,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
@@ -1266,7 +1266,7 @@ void ServiceWorkerContextWrapper::GetAllRegistrations(
                        std::vector<ServiceWorkerRegistrationInfo>()));
     return;
   }
-  context_core_->registry()->GetAllRegistrationsInfos(std::move(callback));
+  context_core_->registry().GetAllRegistrationsInfos(std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetRegistrationsForStorageKey(
@@ -1281,8 +1281,8 @@ void ServiceWorkerContextWrapper::GetRegistrationsForStorageKey(
             std::vector<scoped_refptr<ServiceWorkerRegistration>>()));
     return;
   }
-  context_core_->registry()->GetRegistrationsForStorageKey(key,
-                                                           std::move(callback));
+  context_core_->registry().GetRegistrationsForStorageKey(key,
+                                                          std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetRegistrationUserData(
@@ -1298,8 +1298,8 @@ void ServiceWorkerContextWrapper::GetRegistrationUserData(
                        blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->GetUserData(registration_id, keys,
-                                         std::move(callback));
+  context_core_->registry().GetUserData(registration_id, keys,
+                                        std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetRegistrationUserDataByKeyPrefix(
@@ -1315,8 +1315,8 @@ void ServiceWorkerContextWrapper::GetRegistrationUserDataByKeyPrefix(
                        blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->GetUserDataByKeyPrefix(registration_id, key_prefix,
-                                                    std::move(callback));
+  context_core_->registry().GetUserDataByKeyPrefix(registration_id, key_prefix,
+                                                   std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetRegistrationUserKeysAndDataByKeyPrefix(
@@ -1332,7 +1332,7 @@ void ServiceWorkerContextWrapper::GetRegistrationUserKeysAndDataByKeyPrefix(
                                   base::flat_map<std::string, std::string>()));
     return;
   }
-  context_core_->registry()->GetUserKeysAndDataByKeyPrefix(
+  context_core_->registry().GetUserKeysAndDataByKeyPrefix(
       registration_id, key_prefix, std::move(callback));
 }
 
@@ -1349,8 +1349,8 @@ void ServiceWorkerContextWrapper::StoreRegistrationUserData(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->StoreUserData(
-      registration_id, key, key_value_pairs, std::move(callback));
+  context_core_->registry().StoreUserData(registration_id, key, key_value_pairs,
+                                          std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::ClearRegistrationUserData(
@@ -1366,8 +1366,8 @@ void ServiceWorkerContextWrapper::ClearRegistrationUserData(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->ClearUserData(registration_id, keys,
-                                           std::move(callback));
+  context_core_->registry().ClearUserData(registration_id, keys,
+                                          std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::ClearRegistrationUserDataByKeyPrefixes(
@@ -1382,7 +1382,7 @@ void ServiceWorkerContextWrapper::ClearRegistrationUserDataByKeyPrefixes(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->ClearUserDataByKeyPrefixes(
+  context_core_->registry().ClearUserDataByKeyPrefixes(
       registration_id, key_prefixes, std::move(callback));
 }
 
@@ -1397,8 +1397,8 @@ void ServiceWorkerContextWrapper::GetUserDataForAllRegistrations(
                        blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->GetUserDataForAllRegistrations(
-      key, std::move(callback));
+  context_core_->registry().GetUserDataForAllRegistrations(key,
+                                                           std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::GetUserDataForAllRegistrationsByKeyPrefix(
@@ -1416,7 +1416,7 @@ void ServiceWorkerContextWrapper::GetUserDataForAllRegistrationsByKeyPrefix(
     return;
   }
 
-  context_core_->registry()->GetUserDataForAllRegistrationsByKeyPrefix(
+  context_core_->registry().GetUserDataForAllRegistrationsByKeyPrefix(
       key_prefix, std::move(callback));
 }
 
@@ -1432,7 +1432,7 @@ void ServiceWorkerContextWrapper::ClearUserDataForAllRegistrationsByKeyPrefix(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->ClearUserDataForAllRegistrationsByKeyPrefix(
+  context_core_->registry().ClearUserDataForAllRegistrationsByKeyPrefix(
       key_prefix, std::move(callback));
 }
 
@@ -1447,7 +1447,7 @@ void ServiceWorkerContextWrapper::StartActiveServiceWorker(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context_core_->registry()->FindRegistrationForScope(
+  context_core_->registry().FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope), key,
       base::BindOnce(&DidFindRegistrationForStartActiveWorker,
                      std::move(callback)));
@@ -1459,7 +1459,7 @@ void ServiceWorkerContextWrapper::SkipWaitingWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_)
     return;
-  context_core_->registry()->FindRegistrationForScope(
+  context_core_->registry().FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope), key,
       base::BindOnce([](blink::ServiceWorkerStatusCode status,
                         scoped_refptr<ServiceWorkerRegistration> registration) {
@@ -1478,7 +1478,7 @@ void ServiceWorkerContextWrapper::UpdateRegistration(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_)
     return;
-  context_core_->registry()->FindRegistrationForScope(
+  context_core_->registry().FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope), key,
       base::BindOnce(&ServiceWorkerContextWrapper::DidFindRegistrationForUpdate,
                      this));
@@ -1529,7 +1529,7 @@ void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
                             nullptr);
     return;
   }
-  context_core_->registry()->FindRegistrationForScope(
+  context_core_->registry().FindRegistrationForScope(
       net::SimplifyUrlForRequest(scope), key,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForFindImpl, this,
@@ -1559,7 +1559,7 @@ void ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest() {
                "ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest",
                "document_url", document_url.spec());
 
-  context_core_->registry()->FindRegistrationForClientUrl(
+  context_core_->registry().FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation,
       net::SimplifyUrlForRequest(document_url), key,
       base::BindOnce(&ServiceWorkerContextWrapper::DidFindRegistrationForWarmUp,

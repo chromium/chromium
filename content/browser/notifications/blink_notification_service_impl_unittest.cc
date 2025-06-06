@@ -187,7 +187,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     {
       base::RunLoop run_loop;
-      embedded_worker_helper_->context()->registry()->FindRegistrationForId(
+      embedded_worker_helper_->context()->registry().FindRegistrationForId(
           service_worker_registration_id, storage_key_,
           base::BindOnce(&BlinkNotificationServiceImplTest::
                              DidFindServiceWorkerRegistration,

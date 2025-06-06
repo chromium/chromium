@@ -189,7 +189,7 @@ class ServiceWorkerRegistrationTest : public testing::Test {
   }
 
   ServiceWorkerContextCore* context() { return helper_->context(); }
-  ServiceWorkerRegistry* registry() { return helper_->context()->registry(); }
+  ServiceWorkerRegistry& registry() { return helper_->context()->registry(); }
 
   class RegistrationListener : public ServiceWorkerRegistration::Listener {
    public:
@@ -427,7 +427,7 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
         EmbeddedWorkerTestHelper::CreateMainScriptResponse());
     std::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
-    context()->registry()->StoreRegistration(
+    context()->registry().StoreRegistration(
         registration_.get(), version_1.get(),
         ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
     run_loop.Run();
@@ -883,7 +883,7 @@ class ServiceWorkerRegistrationObjectHostTest
       int64_t registration_id,
       const blink::StorageKey& key) {
     std::optional<blink::ServiceWorkerStatusCode> status;
-    registry()->FindRegistrationForId(
+    registry().FindRegistrationForId(
         registration_id, key,
         base::BindOnce(
             [](std::optional<blink::ServiceWorkerStatusCode>* out_status,
@@ -936,7 +936,7 @@ class ServiceWorkerRegistrationObjectHostTest
     bool called = false;
     blink::ServiceWorkerStatusCode status =
         blink::ServiceWorkerStatusCode::kErrorFailed;
-    registry()->StoreRegistration(
+    registry().StoreRegistration(
         registration.get(), version.get(),
         base::BindOnce(&SaveStatusCallback, &called, &status));
     base::RunLoop().RunUntilIdle();

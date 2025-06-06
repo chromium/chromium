@@ -105,7 +105,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // For re-creating the registry from the old one. This is called when
   // something went wrong during storage access.
   ServiceWorkerRegistry(ServiceWorkerContextCore& context,
-                        ServiceWorkerRegistry* old_registry);
+                        ServiceWorkerRegistry& old_registry);
 
   ~ServiceWorkerRegistry();
 

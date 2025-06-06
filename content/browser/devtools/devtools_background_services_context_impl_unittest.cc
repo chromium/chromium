@@ -125,7 +125,7 @@ class DevToolsBackgroundServicesContextTest
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage_control() {
     return embedded_worker_test_helper_.context()
         ->registry()
-        ->GetRemoteStorageControl();
+        .GetRemoteStorageControl();
   }
 
  protected:
@@ -247,7 +247,7 @@ class DevToolsBackgroundServicesContextTest
 
     {
       base::RunLoop run_loop;
-      embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
+      embedded_worker_test_helper_.context()->registry().FindRegistrationForId(
           service_worker_registration_id, key,
           base::BindOnce(&DidFindServiceWorkerRegistration,
                          &service_worker_registration_,

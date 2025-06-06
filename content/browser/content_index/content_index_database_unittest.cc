@@ -270,7 +270,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
 
     {
       base::RunLoop run_loop;
-      embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
+      embedded_worker_test_helper_.context()->registry().FindRegistrationForId(
           service_worker_registration_id,
           blink::StorageKey::CreateFirstParty(origin),
           base::BindOnce(&DidFindServiceWorkerRegistration,

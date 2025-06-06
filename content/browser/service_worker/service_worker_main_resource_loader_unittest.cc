@@ -518,7 +518,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     registration_->set_last_update_check(base::Time::Now());
     std::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
-    registry()->StoreRegistration(
+    registry().StoreRegistration(
         registration_.get(), version_.get(),
         ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
     run_loop.Run();
@@ -548,7 +548,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     }
   }
 
-  ServiceWorkerRegistry* registry() { return helper_->context()->registry(); }
+  ServiceWorkerRegistry& registry() { return helper_->context()->registry(); }
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
   GetStorageControl() {
     return helper_->context()->GetStorageControl();

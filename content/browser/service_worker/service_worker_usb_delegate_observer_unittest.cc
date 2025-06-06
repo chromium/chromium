@@ -227,8 +227,8 @@ class ServiceWorkerUsbDelegateObserverTest
     TestFuture<blink::ServiceWorkerStatusCode,
                scoped_refptr<ServiceWorkerRegistration>>
         future;
-    registry()->FindRegistrationForId(registration_id, key,
-                                      future.GetCallback());
+    registry().FindRegistrationForId(registration_id, key,
+                                     future.GetCallback());
     return future.Take();
   }
 

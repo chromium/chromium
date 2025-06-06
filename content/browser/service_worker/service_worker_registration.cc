@@ -362,7 +362,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
     return;
   }
 
-  context_->registry()->DeleteRegistration(
+  context_->registry().DeleteRegistration(
       this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
 
   if (!active_version() || !active_version()->HasControllee())
@@ -372,7 +372,7 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
 void ServiceWorkerRegistration::DeleteAndClearImmediately() {
   DCHECK(context_);
   if (!is_deleted()) {
-    context_->registry()->DeleteRegistration(
+    context_->registry().DeleteRegistration(
         this,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
   }
@@ -395,14 +395,14 @@ void ServiceWorkerRegistration::AbortPendingClear(StatusCallback callback) {
           << "attempt to resurrect a completely uninstalled registration";
   }
 
-  context_->registry()->NotifyDoneUninstallingRegistration(this,
-                                                           Status::kIntact);
+  context_->registry().NotifyDoneUninstallingRegistration(this,
+                                                          Status::kIntact);
 
   scoped_refptr<ServiceWorkerVersion> most_recent_version =
       waiting_version() ? waiting_version() : active_version();
   DCHECK(most_recent_version.get());
-  context_->registry()->NotifyInstallingRegistration(this);
-  context_->registry()->StoreRegistration(
+  context_->registry().NotifyInstallingRegistration(this);
+  context_->registry().StoreRegistration(
       this, most_recent_version.get(),
       base::BindOnce(&ServiceWorkerRegistration::OnRestoreFinished, this,
                      std::move(callback), most_recent_version));
@@ -613,13 +613,13 @@ void ServiceWorkerRegistration::ForceDelete() {
 
   // Delete the registration and its state from storage.
   if (status() == Status::kIntact) {
-    context_->registry()->DeleteRegistration(
+    context_->registry().DeleteRegistration(
         this,
         base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
   }
   DCHECK(is_uninstalling());
-  context_->registry()->NotifyDoneUninstallingRegistration(
-      this, Status::kUninstalled);
+  context_->registry().NotifyDoneUninstallingRegistration(this,
+                                                          Status::kUninstalled);
 
   // Tell observers that this registration is gone.
   NotifyRegistrationFailed();
@@ -714,7 +714,7 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
     activating_version->router_evaluator()->RecordRouterRuleInfo();
   }
 
-  context_->registry()->UpdateToActiveState(id(), key_, base::DoNothing());
+  context_->registry().UpdateToActiveState(id(), key_, base::DoNothing());
 }
 
 void ServiceWorkerRegistration::OnDeleteFinished(
@@ -736,7 +736,7 @@ void ServiceWorkerRegistration::Clear() {
   auto protect = base::WrapRefCounted(this);
 
   if (context_) {
-    context_->registry()->NotifyDoneUninstallingRegistration(
+    context_->registry().NotifyDoneUninstallingRegistration(
         this, Status::kUninstalled);
   }
 
@@ -781,8 +781,8 @@ void ServiceWorkerRegistration::OnRestoreFinished(
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
     return;
   }
-  context_->registry()->NotifyDoneInstallingRegistration(this, version.get(),
-                                                         status);
+  context_->registry().NotifyDoneInstallingRegistration(this, version.get(),
+                                                        status);
   std::move(callback).Run(status);
 }
 

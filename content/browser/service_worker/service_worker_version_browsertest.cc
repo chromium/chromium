@@ -448,7 +448,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
         wrapper()->context()->registry(), registration_.get(),
         embedded_test_server()->GetURL(worker_url), script_type);
     // Make the registration findable via storage functions.
-    wrapper()->context()->registry()->NotifyInstallingRegistration(
+    wrapper()->context()->registry().NotifyInstallingRegistration(
         registration_.get());
   }
 
@@ -509,7 +509,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     blink::ServiceWorkerStatusCode status;
     ServiceWorkerVersion* version =
         wrapper()->context()->GetLiveVersion(version_id);
-    wrapper()->context()->registry()->StoreRegistration(
+    wrapper()->context()->registry().StoreRegistration(
         registration_.get(), version,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode actual_status) {
@@ -519,7 +519,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
             }));
     run_loop.Run();
 
-    wrapper()->context()->registry()->NotifyDoneInstallingRegistration(
+    wrapper()->context()->registry().NotifyDoneInstallingRegistration(
         registration_.get(), version_.get(), status);
   }
 
@@ -555,7 +555,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     blink::ServiceWorkerStatusCode status =
         blink::ServiceWorkerStatusCode::kErrorFailed;
     base::RunLoop run_loop;
-    wrapper()->context()->registry()->FindRegistrationForId(
+    wrapper()->context()->registry().FindRegistrationForId(
         id, key,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode actual_status,

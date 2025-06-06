@@ -34,7 +34,7 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 }
 
 void ServiceWorkerUnregisterJob::Start() {
-  context_->registry()->FindRegistrationForScope(
+  context_->registry().FindRegistrationForScope(
       scope_, key_,
       base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
                      weak_factory_.GetWeakPtr()));

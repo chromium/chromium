@@ -156,7 +156,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
   version_->context()
       ->registry()
-      ->GetRemoteStorageControl()
+      .GetRemoteStorageControl()
       ->CreateResourceWriter(cache_resource_id,
                              writer.BindNewPipeAndPassReceiver());
 

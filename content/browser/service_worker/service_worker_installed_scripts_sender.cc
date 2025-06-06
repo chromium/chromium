@@ -84,11 +84,8 @@ void ServiceWorkerInstalledScriptsSender::StartSendingScript(
   current_sending_url_ = script_url;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader;
-  owner_->context()
-      ->registry()
-      ->GetRemoteStorageControl()
-      ->CreateResourceReader(resource_id,
-                             resource_reader.BindNewPipeAndPassReceiver());
+  owner_->context()->registry().GetRemoteStorageControl()->CreateResourceReader(
+      resource_id, resource_reader.BindNewPipeAndPassReceiver());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker", "SendingScript", this,
                                     "script_url", current_sending_url_.spec());
   reader_ = std::make_unique<ServiceWorkerInstalledScriptReader>(

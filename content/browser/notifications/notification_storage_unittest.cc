@@ -90,7 +90,7 @@ class NotificationStorageTest : public ::testing::Test {
 
     {
       base::RunLoop run_loop;
-      helper_->context()->registry()->FindRegistrationForId(
+      helper_->context()->registry().FindRegistrationForId(
           service_worker_registration_id_, key,
           base::BindOnce(
               &NotificationStorageTest::DidFindServiceWorkerRegistration,

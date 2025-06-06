@@ -100,7 +100,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
       const blink::StorageKey& key) {
     base::RunLoop loop;
     blink::ServiceWorkerStatusCode status;
-    context()->registry()->FindRegistrationForScope(
+    context()->registry().FindRegistrationForScope(
         scope, key,
         base::BindLambdaForTesting(
             [&](blink::ServiceWorkerStatusCode result_status,
@@ -332,7 +332,7 @@ TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKey_UnregisterFail) {
                }));
   // Disable storage before it finishes. This causes the Unregister job to
   // complete with an error.
-  context()->registry()->DisableStorageForTesting(base::DoNothing());
+  context()->registry().DisableStorageForTesting(base::DoNothing());
   loop.Run();
 
   // The operation should still complete.

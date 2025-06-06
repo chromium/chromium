@@ -137,7 +137,7 @@ class ServiceWorkerVersionTest
     // Make the registration findable via storage functions.
     std::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
-    helper_->context()->registry()->StoreRegistration(
+    helper_->context()->registry().StoreRegistration(
         registration_.get(), version_.get(),
         ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
     run_loop.Run();
@@ -442,7 +442,7 @@ TEST_P(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   // Delete the registration.
   std::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
-  helper_->context()->registry()->DeleteRegistration(
+  helper_->context()->registry().DeleteRegistration(
       registration_,
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   run_loop.Run();
@@ -1798,7 +1798,7 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
   const std::string kMetadata("Test metadata");
 
   base::RunLoop loop;
-  helper_->context()->registry()->DisableStorageForTesting(loop.QuitClosure());
+  helper_->context()->registry().DisableStorageForTesting(loop.QuitClosure());
   loop.Run();
 
   net::TestCompletionCallback completion;

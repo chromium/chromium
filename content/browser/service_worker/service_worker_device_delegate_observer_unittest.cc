@@ -123,8 +123,8 @@ void ServiceWorkerDeviceDelegateObserverTest::InitializeTestHelper() {
 void ServiceWorkerDeviceDelegateObserverTest::StoreRegistration(
     const RegistrationAndVersionPair& pair) {
   TestFuture<blink::ServiceWorkerStatusCode> status;
-  registry()->StoreRegistration(pair.first.get(), pair.second.get(),
-                                status.GetCallback());
+  registry().StoreRegistration(pair.first.get(), pair.second.get(),
+                               status.GetCallback());
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.Get());
 }
 
@@ -189,7 +189,7 @@ TEST_F(ServiceWorkerDeviceDelegateObserverTest,
   EXPECT_FALSE(context()->GetLiveRegistration(registration_id));
   base::test::TestFuture<storage::mojom::ServiceWorkerDatabaseStatus>
       delete_future;
-  registry()->GetRemoteStorageControl()->Delete(delete_future.GetCallback());
+  registry().GetRemoteStorageControl()->Delete(delete_future.GetCallback());
   EXPECT_EQ(delete_future.Take(),
             storage::mojom::ServiceWorkerDatabaseStatus::kOk);
 

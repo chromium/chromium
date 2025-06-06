@@ -75,13 +75,13 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
   }
 
   ServiceWorkerContextCore* context() { return wrapper_->context(); }
-  ServiceWorkerRegistry* registry() { return context()->registry(); }
+  ServiceWorkerRegistry& registry() { return context()->registry(); }
 
   blink::ServiceWorkerStatusCode StoreRegistration(
       scoped_refptr<ServiceWorkerRegistration> registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
-    registry()->StoreRegistration(
+    registry().StoreRegistration(
         registration.get(), registration->waiting_version(),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
@@ -95,7 +95,7 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
       scoped_refptr<ServiceWorkerRegistration> registration) {
     blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
-    registry()->DeleteRegistration(
+    registry().DeleteRegistration(
         registration,
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
           result = status;
@@ -136,7 +136,7 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
 
   // Store it.
   base::RunLoop loop;
-  registry()->StoreRegistration(
+  registry().StoreRegistration(
       registration.get(), registration->waiting_version(),
       base::BindLambdaForTesting(
           [&loop](blink::ServiceWorkerStatusCode status) {

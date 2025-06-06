@@ -230,7 +230,7 @@ void ServiceWorkerContainerHostForClient::GetRegistration(
       service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
           service_worker_client().key(), client_url);
 
-  context()->registry()->FindRegistrationForClientUrl(
+  context()->registry().FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationComplete,
@@ -263,7 +263,7 @@ void ServiceWorkerContainerHostForClient::GetRegistrations(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrations",
       TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
                           trace_id));
-  context()->registry()->GetRegistrationsForStorageKey(
+  context()->registry().GetRegistrationsForStorageKey(
       service_worker_client().key(),
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::GetRegistrationsComplete,

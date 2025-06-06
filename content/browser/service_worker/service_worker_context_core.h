@@ -386,7 +386,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                               const GURL& source_url) override;
 
   ServiceWorkerContextWrapper* wrapper() const { return wrapper_; }
-  ServiceWorkerRegistry* registry() { return &registry_; }
+  ServiceWorkerRegistry& registry() { return registry_; }
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
   GetStorageControl();
   ServiceWorkerProcessManager* process_manager();

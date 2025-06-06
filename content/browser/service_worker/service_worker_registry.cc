@@ -225,10 +225,10 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerContextCore& context,
-    ServiceWorkerRegistry* old_registry)
+    ServiceWorkerRegistry& old_registry)
     : ServiceWorkerRegistry(context,
-                            old_registry->quota_manager_proxy_.get(),
-                            old_registry->special_storage_policy_.get()) {}
+                            old_registry.quota_manager_proxy_.get(),
+                            old_registry.special_storage_policy_.get()) {}
 
 ServiceWorkerRegistry::~ServiceWorkerRegistry() = default;
 

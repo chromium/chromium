@@ -73,7 +73,7 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
 
   // Make the registration findable via storage functions.
   base::test::TestFuture<blink::ServiceWorkerStatusCode> status;
-  helper_->context()->registry()->StoreRegistration(
+  helper_->context()->registry().StoreRegistration(
       pair.first.get(), pair.second.get(), status.GetCallback());
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.Get());
 
