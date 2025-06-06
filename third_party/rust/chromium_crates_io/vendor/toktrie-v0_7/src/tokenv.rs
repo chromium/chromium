@@ -72,7 +72,12 @@ pub trait TokenizerEnv: Send {
 
     /// Tokenize a string. It will interpret <|special_tokens|> as special.
     fn tokenize_special(&self, s: &str) -> Vec<TokenId> {
-        self.tokenize(s)
+        self.tokenize_bytes_special(s.as_bytes())
+    }
+
+    /// Tokenize a byte slice. It will interpret <|special_tokens|> as special.
+    fn tokenize_bytes_special(&self, s: &[u8]) -> Vec<TokenId> {
+        self.tokenize_bytes(s)
     }
 
     /// End of sentence token

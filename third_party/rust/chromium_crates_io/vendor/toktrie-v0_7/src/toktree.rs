@@ -515,6 +515,68 @@ impl TokTrie {
         tokens
     }
 
+    /// Tokenize a string, interpreting `<name>` as special tokens.
+    pub fn tokenize_with_special<F>(&self, s: &str, str_tokenize: F) -> Vec<TokenId>
+    where
+        F: Fn(&str) -> Vec<TokenId>,
+    {
+        let max_len = 100;
+
+        let bytes = s.as_bytes();
+        let mut out = Vec::new();
+        let mut last = 0; // byte‐offset of the next “raw” segment
+        let mut i = 0; // current byte index
+
+        while i < bytes.len() {
+            if bytes[i] != b'<' {
+                i += 1;
+                continue;
+            }
+            // Potential start of `<...>`
+            let mut valid = true;
+            let mut j = i + 1;
+            let mut len_inside = 0;
+            // scan up to max_len chars or until we hit `>` or `<`
+            while j < bytes.len() && len_inside < max_len {
+                match bytes[j] {
+                    b'<' => {
+                        valid = false;
+                        break;
+                    }
+                    b'>' => break,
+                    _ => {
+                        len_inside += 1;
+                        j += 1;
+                    }
+                }
+            }
+            if !valid || j >= bytes.len() || bytes[j] != b'>' || len_inside == 0 {
+                // treat this `<` as literal
+                i += 1;
+                continue;
+            }
+
+            let name = &s[i..=j];
+            if let Some(special_tok) = self.get_special_token(name) {
+                if last < i {
+                    out.extend(str_tokenize(&s[last..i]));
+                }
+                out.push(special_tok);
+            } else {
+                // fallback: tokenize `<name>` literally
+                out.extend(str_tokenize(&s[last..=j]));
+            }
+            // advance past the `>`
+            i = j + 1;
+            last = i;
+        }
+        // any trailing text:
+        if last < bytes.len() {
+            out.extend(str_tokenize(&s[last..]));
+        }
+        out
+    }
+
     pub fn tokenize_with_greedy_fallback(
         &self,
         bytes: &[u8],
