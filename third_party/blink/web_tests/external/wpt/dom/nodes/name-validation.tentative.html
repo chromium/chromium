@@ -203,6 +203,12 @@ test(() => {
         `element.toggleAttribute should not have thrown an error for: ${debugString(validAttributeName)} ${error.toString()}`);
     }
     try {
+      element.toggleAttribute(validAttributeName, false);
+    } catch (error) {
+      assert_unreached(
+        `element.toggleAttribute with false should not have thrown an error for: ${debugString(validAttributeName)} ${error.toString()}`);
+    }
+    try {
       document.createAttribute(validAttributeName);
     } catch (error) {
       assert_unreached(
@@ -219,6 +225,10 @@ test(() => {
       'InvalidCharacterError',
       () => element.toggleAttribute(invalidAttributeName),
       `element.toggleAttribute should throw an error for: ${debugString(invalidAttributeName)}`);
+    assert_throws_dom(
+      'InvalidCharacterError',
+      () => element.toggleAttribute(invalidAttributeName, false),
+      `element.toggleAttribute with false should throw an error for: ${debugString(invalidAttributeName)}`);
     assert_throws_dom(
       'InvalidCharacterError',
       () => document.createAttribute(invalidAttributeName),

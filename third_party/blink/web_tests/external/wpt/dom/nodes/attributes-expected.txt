@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
 Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (toggleAttribute)
-  assert_throws_dom: function "function() { el.toggleAttribute(invalid_names[i]) }" did not throw
+  assert_throws_dom: function "function() { el.toggleAttribute(invalid_names[i], true) }" did not throw
 [FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown, even if the attribute is already present. (toggleAttribute)
-  assert_throws_dom: function "function() {\n      el.children[i].toggleAttribute("~")\n    }" did not throw
+  assert_throws_dom: function "function() {\n      el.children[i].toggleAttribute("~", false)\n    }" did not throw
 [FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (setAttribute)
   assert_throws_dom: function "function() { el.setAttribute(invalid_names[i], "test") }" did not throw
 [FAIL] When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown, even if the attribute is already present. (setAttribute)

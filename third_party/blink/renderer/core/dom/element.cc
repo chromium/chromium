@@ -3151,7 +3151,11 @@ bool Element::toggleAttribute(const AtomicString& qualified_name,
   // https://dom.spec.whatwg.org/#dom-element-toggleattribute
   // 1. If qualifiedName does not match the Name production in XML, then throw
   // an "InvalidCharacterError" DOMException.
-  if (!Document::IsValidName(qualified_name)) {
+  bool is_valid =
+      RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()
+          ? Document::IsValidAttributeLocalNameNewSpec(qualified_name)
+          : Document::IsValidName(qualified_name);
+  if (!is_valid) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "'" + qualified_name + "' is not a valid attribute name.");
