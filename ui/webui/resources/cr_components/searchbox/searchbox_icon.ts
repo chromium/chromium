@@ -18,6 +18,7 @@ export interface SearchboxIconElement {
   $: {
     container: HTMLElement,
     icon: HTMLElement,
+    iconImg: HTMLImageElement,
     image: HTMLImageElement,
   };
 }
@@ -94,6 +95,18 @@ export class SearchboxIconElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /**
+       * Whether suggestion is an enterprise search aggregator people
+       * suggestion. Enterprise search aggregator people suggestions should not
+       * use a set background color when image is missing, unlike other rich
+       * suggestion answers.
+       */
+      isEnterpriseSearchAggregatorPeopleType: {
+        type: Boolean,
+        computed: `computeIsEnterpriseSearchAggregatorPeopleType_(match)`,
+        reflectToAttribute: true,
+      },
+
       /** Used as a mask image on #icon if |backgroundImage| is empty. */
       maskImage: {
         type: String,
@@ -112,6 +125,31 @@ export class SearchboxIconElement extends PolymerElement {
       iconStyle_: {
         type: String,
         computed: `computeIconStyle_(backgroundImage, maskImage)`,
+      },
+
+      iconSrc_: {
+        type: String,
+        computed: `computeIconSrc_(match.iconUrl, match)`,
+        observer: 'onIconSrcChanged_',
+      },
+
+      /**
+       * Flag indicating whether or not an icon image is loading. This is used
+       * to show a default icon while the image is loading.
+       */
+      iconLoading_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether to use the icon image instead of the default icon for the
+       * suggestion.
+       */
+      showIconImg_: {
+        type: Boolean,
+        computed: `computeShowIconImg_(isLensSearchbox_, match.iconUrl,
+            match, iconLoading_)`,
       },
 
       imageSrc_: {
@@ -143,9 +181,13 @@ export class SearchboxIconElement extends PolymerElement {
   declare inSearchbox: boolean;
   declare isAnswer: boolean;
   declare isWeatherAnswer: boolean;
+  declare isEnterpriseSearchAggregatorPeopleType: boolean;
   declare maskImage: string;
   declare match: AutocompleteMatch;
   declare private iconStyle_: string;
+  declare private iconSrc_: string;
+  declare private iconLoading_: boolean;
+  declare private showIconImg_: boolean;
   declare private imageSrc_: string;
   declare private imageLoading_: boolean;
   declare private isLensSearchbox_: boolean;
@@ -167,7 +209,7 @@ export class SearchboxIconElement extends PolymerElement {
 
       if (this.match.type === DOCUMENT_MATCH_TYPE ||
           this.match.type === PEDAL) {
-        return `url(${this.match.iconUrl})`;
+        return `url(${this.match.iconPath})`;
       }
     }
 
@@ -191,13 +233,28 @@ export class SearchboxIconElement extends PolymerElement {
     return this.match?.isWeatherAnswerSuggestion || false;
   }
 
+  private computeIsEnterpriseSearchAggregatorPeopleType_(): boolean {
+    return this.match?.isEnterpriseSearchAggregatorPeopleType || false;
+  }
+
+  private computeShowIconImg_(): boolean {
+    // Lens searchbox should not use icon URL.
+    return !this.isLensSearchbox_ && this.match && !!this.match.iconUrl &&
+        !this.iconLoading_;
+  }
+
   private computeMaskImage_(): string {
     // Lens searchboxes should always have the Google G in the searchbox.
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return `url(${this.defaultIcon})`;
     }
-    if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
-      return `url(${this.match.iconUrl})`;
+    // Enterprise search aggregator people suggestions should show icon even in
+    // searchbox.
+    if (this.match &&
+        (!this.match.isRichSuggestion ||
+         this.match.isEnterpriseSearchAggregatorPeopleType ||
+         !this.inSearchbox)) {
+      return `url(${this.match.iconPath})`;
     } else {
       return `url(${this.defaultIcon})`;
     }
@@ -245,18 +302,25 @@ export class SearchboxIconElement extends PolymerElement {
     return false;
   }
 
-  private computeImageSrc_(): string {
-    const imageUrl = this.match?.imageUrl;
-    if (!imageUrl) {
+  private computeSrc_(url: string|undefined): string {
+    if (!url) {
       return '';
     }
 
-    if (imageUrl.startsWith('data:image/')) {
-      // Zero-prefix matches come with the data URI content in |match.imageUrl|.
-      return imageUrl;
+    if (url.startsWith('data:image/')) {
+      // Zero-prefix matches come with the data URI content in |url|.
+      return url;
     }
 
-    return `//image?staticEncode=true&encodeType=webp&url=${imageUrl}`;
+    return `//image?staticEncode=true&encodeType=webp&url=${url}`;
+  }
+
+  private computeIconSrc_(): string {
+    return this.computeSrc_(this.match?.iconUrl);
+  }
+
+  private computeImageSrc_(): string {
+    return this.computeSrc_(this.match?.imageUrl);
   }
 
   private containerBgColor_(imageDominantColor: string, imageLoading: boolean):
@@ -267,6 +331,15 @@ export class SearchboxIconElement extends PolymerElement {
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${imageDominantColor}40` :
         'transparent';
+  }
+
+  private onIconSrcChanged_() {
+    // If iconSrc_ changes to a new truthy value, a new icon is being loaded.
+    this.iconLoading_ = !!this.iconSrc_;
+  }
+
+  private onIconLoad_() {
+    this.iconLoading_ = false;
   }
 
   private onImageSrcChanged_() {
