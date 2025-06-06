@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 
+#include "base/strings/string_number_conversions.h"
+
 namespace test {
 
 void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id) {

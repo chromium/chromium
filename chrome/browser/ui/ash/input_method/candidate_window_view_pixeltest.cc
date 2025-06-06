@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/i18n/base_i18n_switches.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/ash/input_method/candidate_view.h"
 #include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
 #include "chrome/browser/ui/browser.h"
