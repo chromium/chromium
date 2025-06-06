@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WebAuthn Get Immediate</title>
+    <script>
+      function getImmediate() {
+        navigator.credentials.get({
+          mediation: 'immediate',
+          publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            timeout: 30000,
+            userVerification: "preferred",
+          },
+        }).then(success => {
+            document.getElementById('success-message').style.display = 'block';
+          }, error => {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('message-container').innerText = error.toString();
+          }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="getImmediate()" id="get-immediate-button">
+      Get Immediate Credentials
+    </button>
+    <div id="success-message" style="display: none">Success!</div>
+    <div id="error-message" style="display: none">Error!</div>
+    <div id="message-container"></div>
+  </body>
+</html>

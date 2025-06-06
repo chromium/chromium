@@ -7,6 +7,8 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "enclave_authenticator_browsertest_base.cc",
+      "enclave_authenticator_browsertest_base.h",
       "fake_magic_arch.cc",
       "fake_magic_arch.h",
       "fake_recovery_key_store.cc",
@@ -19,12 +21,31 @@ if (!is_android) {
 
     deps = [
       "//base",
+      "//chrome/browser",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/test:sync_integration_test_support",
+      "//chrome/test:test_support_ui",
+      "//components/os_crypt/sync:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
       "//components/trusted_vault",
+      "//components/trusted_vault:test_support",
       "//components/trusted_vault/proto:proto",
+      "//components/webauthn/core/browser",
+      "//components/webauthn/core/browser:passkey_model",
+      "//crypto:test_support",
       "//device/fido:fido",
+      "//device/fido:test_support",
       "//net:net",
+      "//testing/gmock",
+      "//testing/gtest",
       "//url",
     ]
+
+    if (is_mac) {
+      deps += [ "//device/fido:icloud_keychain_test_support" ]
+    }
 
     data_deps = [ "//third_party/cloud_authenticator/test/local_service:cloud_authenticator_test_service" ]
   }
