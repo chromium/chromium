@@ -622,8 +622,12 @@ void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
 void ChromeRenderFrameObserver::InvokeTool(
     actor::mojom::ToolInvocationPtr request,
     InvokeToolCallback callback) {
-  actor::ToolExecutor executor(render_frame(), *actor_journal_);
-  executor.InvokeTool(std::move(request), std::move(callback));
+  if (!tool_executor_) {
+    tool_executor_ =
+        std::make_unique<actor::ToolExecutor>(render_frame(), *actor_journal_);
+  }
+
+  tool_executor_->InvokeTool(std::move(request), std::move(callback));
 }
 
 void ChromeRenderFrameObserver::StartActorJournal(

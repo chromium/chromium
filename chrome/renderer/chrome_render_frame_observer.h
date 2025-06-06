@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_
 #define CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/actor.mojom.h"
+#include "chrome/renderer/actor/tool_executor.h"
 #endif
 
 class SkBitmap;
@@ -190,6 +192,10 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #if !BUILDFLAG(IS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<std::u16string> webui_javascript_;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<actor::ToolExecutor> tool_executor_;
 #endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;

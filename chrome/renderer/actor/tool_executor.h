@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/stack_allocated.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -25,13 +24,7 @@ class Journal;
 //
 // This class is responsible for receiving tool request messages and invoking
 // the requested tool in the renderer.
-//
-// WARNING: This class is stack allocated but is written in a way that implies
-// that tools can be asynchronously executed. In practice the tools are
-// synchronous, and there's a lot of re-entrancy.
 class ToolExecutor {
-  STACK_ALLOCATED();
-
  public:
   using ToolExecutorCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   explicit ToolExecutor(content::RenderFrame* frame, Journal& journal);
@@ -47,8 +40,8 @@ class ToolExecutor {
   void ToolFinished(ToolExecutorCallback callback,
                     mojom::ActionResultPtr result);
 
-  // Raw ref since the executor is currently only stack allocated by the
-  // render frame so it must be outlived.
+  // Raw ref since the executor is owned by the RenderFrameObserver which has
+  // the same lifetime as RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
   std::unique_ptr<ToolBase> tool_;
   base::raw_ref<Journal> journal_;

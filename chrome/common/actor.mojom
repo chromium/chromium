@@ -179,6 +179,10 @@ enum ActionResultCode {
   // The task for the action was paused.
   kTaskPaused = 23,
 
+  // The tool executor in the renderer was destroyed before the tool finished
+  // executing.
+  kExecutorDestroyed = 24,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)

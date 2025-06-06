@@ -2217,6 +2217,72 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
   ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
 }
 
+// Ensure a page tool (click, in this case) causing a cross-document navigation
+// works successfully.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, PageToolNavigates) {
+  const GURL url_start =
+      embedded_test_server()->GetURL("/actor/cross_document_nav.html");
+  const GURL url_next =
+      embedded_test_server()->GetURL("/actor/simple_iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  // Send a click to the link.
+  std::optional<int> link_id = GetDOMNodeId(*main_frame(), "#link");
+  ASSERT_TRUE(link_id);
+
+  // TODO(crbug.com/414662842): Add cases where the new document load is delayed
+  // as well as the PageTool doesn't outlive the outgoing RenderFrame
+
+  BrowserAction action = MakeClick(*main_frame(), link_id.value());
+  TestFuture<mojom::ActionResultPtr> result;
+
+  // TODO(crbug.com/414662842): The TestNavigationManager can be removed once
+  // PageTools observe loading navigations.
+  TestNavigationManager main_manager(web_contents(), url_next);
+  actor_coordinator().Act(action, result.GetCallback());
+  ASSERT_TRUE(main_manager.WaitForNavigationFinished());
+
+  ExpectOkResult(result);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_next);
+}
+
+// Ensure a page tool (click, in this case) causing a cross-document navigation
+// works successfully in cross-site cases (where a new RenderFrameHost is
+// guaranteed).
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, PageToolNavigatesCrossSite) {
+  const GURL url_start = embedded_https_test_server().GetURL(
+      "foo.com", "/actor/cross_document_nav.html");
+  const GURL url_next = embedded_https_test_server().GetURL(
+      "bar.com", "/actor/simple_iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  // The link in the file is relative so replace it to include the mock
+  // hostname.
+  ASSERT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("document.getElementById('link').href = $1", url_next)));
+
+  // Send a click to the link.
+  std::optional<int> link_id = GetDOMNodeId(*main_frame(), "#link");
+  ASSERT_TRUE(link_id);
+
+  // TODO(crbug.com/414662842): Add cases where the new document load is delayed
+  // as well as the PageTool doesn't outlive the outgoing RenderFrame
+
+  BrowserAction action = MakeClick(*main_frame(), link_id.value());
+  TestFuture<mojom::ActionResultPtr> result;
+
+  // TODO(crbug.com/414662842): The TestNavigationManager can be removed once
+  // PageTools observe loading navigations.
+  TestNavigationManager main_manager(web_contents(), url_next);
+  actor_coordinator().Act(action, result.GetCallback());
+  ASSERT_TRUE(main_manager.WaitForNavigationFinished());
+
+  ExpectOkResult(result);
+
+  EXPECT_EQ(web_contents()->GetURL(), url_next);
+}
 }  // namespace
 
 }  // namespace actor
