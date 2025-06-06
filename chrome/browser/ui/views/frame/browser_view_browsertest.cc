@@ -207,9 +207,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
 #endif
 
 // Verifies that page and devtools WebViews are being correctly laid out
-// when DevTools is opened/closed/updated/undocked.
-// TODO(crbug.com/40834238): Re-enable; currently failing on multiple platforms.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
+// when DevTools is opened/closed/updated while docked.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsDockedUpdatesBrowserWindow) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/wayland doesn't support getting/setting window position in global
+  // screen coordinates. So this test is not applicable.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
   gfx::Rect full_bounds =
       browser_view()->GetContentsContainerForTest()->GetLocalBounds();
   gfx::Rect small_bounds(10, 20, 30, 40);
@@ -243,8 +249,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   EXPECT_FALSE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
   EXPECT_EQ(full_bounds, contents_web_view()->bounds());
+}
 
-  // Undocked.
+// Verifies that page and devtools WebViews are being correctly laid out
+// when DevTools is opened/closed/updated while undocked.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUndockedUpdatesBrowserWindow) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/wayland doesn't support getting/setting window position in global
+  // screen coordinates. So this test is not applicable.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
+  gfx::Rect full_bounds =
+      browser_view()->GetContentsContainerForTest()->GetLocalBounds();
+  gfx::Rect small_bounds(10, 20, 30, 40);
+
   OpenDevToolsWindow(false);
   EXPECT_TRUE(devtools_web_view()->web_contents());
   EXPECT_EQ(full_bounds, devtools_web_view()->bounds());
