@@ -57,6 +57,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
+  void DoDraw(const BeginFrameArgs& begin_frame_args);
 
   // Receive exported resources returned from the frame sink.
   void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);

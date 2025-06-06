@@ -1429,10 +1429,18 @@ void LayerContextImpl::SetVisible(bool visible) {
 
 void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   CHECK(receiver_);
+
+  const BeginFrameArgs begin_frame_args = update->begin_frame_args;
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
     receiver_->ReportBadMessage(result.error());
   }
+
+  // After a tree update, either Draw or schedule animations.
+  DoDraw(begin_frame_args);
+
+  // We may have resources to return after a tree update and draw.
+  DoReturnResources();
 }
 
 base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
@@ -1652,28 +1660,26 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   RETURN_IF_ERROR(DeserializeAnimationUpdates(*update, *animation_host));
   host_impl_->ActivateAnimations();
 
+  return base::ok();
+}
+
+void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args) {
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     compositor_sink_->SetLayerContextWantsBeginFrames(true);
   } else {
     if (host_impl_->CanDraw()) {
-      host_impl_->WillBeginImplFrame(update->begin_frame_args);
+      host_impl_->WillBeginImplFrame(begin_frame_args);
 
       cc::LayerTreeHostImpl::FrameData frame;
       const bool has_damage = true;
-      frame.begin_frame_ack =
-          BeginFrameAck(update->begin_frame_args, has_damage);
-      frame.origin_begin_main_frame_args = update->begin_frame_args;
+      frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
+      frame.origin_begin_main_frame_args = begin_frame_args;
       host_impl_->PrepareToDraw(&frame);
       host_impl_->DrawLayers(&frame);
       host_impl_->DidDrawAllLayers(frame);
-      host_impl_->DidFinishImplFrame(update->begin_frame_args);
+      host_impl_->DidFinishImplFrame(begin_frame_args);
     }
   }
-
-  // We may have resources to return after a tree update and draw.
-  DoReturnResources();
-
-  return base::ok();
 }
 
 void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,

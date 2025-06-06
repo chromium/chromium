@@ -22,6 +22,7 @@
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -299,6 +300,274 @@ TEST_F(LayerContextImplTest, ScrollingContentsCullRectsAreSynchronized) {
           .scrolling_contents_cull_rects();
   EXPECT_EQ(scrolling_contents_cull_rects,
             synchronized_scrolling_contents_cull_rects);
+}
+
+class LayerContextImplUpdateDisplayTreeTransformNodeTest
+    : public LayerContextImplTest {
+ protected:
+  cc::TransformNode* GetTransformNodeFromActiveTree(int node_id) {
+    if (node_id < static_cast<int>(layer_context_impl_->host_impl()
+                                       ->active_tree()
+                                       ->property_trees()
+                                       ->transform_tree()
+                                       .size())) {
+      return layer_context_impl_->host_impl()
+          ->active_tree()
+          ->property_trees()
+          ->transform_tree_mutable()
+          .Node(node_id);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateExistingTransformNodeProperties) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  // Keep parent_id same as default.
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->local = gfx::Transform::MakeScale(2.0f);
+  node_update->origin = gfx::Point3F(1.f, 2.f, 3.f);
+  node_update->post_translation = gfx::Vector2dF(10.f, 20.f);
+  node_update->scroll_offset = gfx::PointF(5.f, 6.f);
+  node_update->sorting_context_id = 1;
+  node_update->flattens_inherited_transform = true;
+  node_update->will_change_transform = true;
+  node_update->damage_reasons_bit_mask =
+      (cc::DamageReasonSet{cc::DamageReason::kUntracked}).ToEnumBitmask();
+  node_update->moved_by_safe_area_bottom = true;
+
+  update2->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->local, gfx::Transform::MakeScale(2.0f));
+  EXPECT_EQ(node_impl->origin, gfx::Point3F(1.f, 2.f, 3.f));
+  EXPECT_EQ(node_impl->post_translation, gfx::Vector2dF(10.f, 20.f));
+  EXPECT_EQ(node_impl->scroll_offset(), gfx::PointF(5.f, 6.f));
+  EXPECT_EQ(node_impl->sorting_context_id, 1);
+  EXPECT_TRUE(node_impl->flattens_inherited_transform);
+  EXPECT_TRUE(node_impl->will_change_transform);
+  EXPECT_TRUE(node_impl->damage_reasons().Has(cc::DamageReason::kUntracked));
+  EXPECT_TRUE(node_impl->moved_by_safe_area_bottom);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       AddRemoveTransformNodes) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  uint32_t initial_node_count = layer_context_impl_->host_impl()
+                                    ->active_tree()
+                                    ->property_trees()
+                                    ->transform_tree()
+                                    .nodes()
+                                    .size();
+
+  // Add a new node.
+  auto update_add = CreateDefaultUpdate();
+  int new_node_id =
+      AddTransformNode(update_add.get(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_EQ(update_add->num_transform_nodes, initial_node_count + 1);
+
+  auto result_add =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add));
+  ASSERT_TRUE(result_add.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->transform_tree()
+                .nodes()
+                .size(),
+            initial_node_count + 1);
+  cc::TransformNode* added_node_impl =
+      GetTransformNodeFromActiveTree(new_node_id);
+  ASSERT_TRUE(added_node_impl);
+  EXPECT_EQ(added_node_impl->parent_id, cc::kSecondaryRootPropertyNodeId);
+
+  // Remove the added node.
+  auto update_remove = CreateDefaultUpdate();
+  update_remove->num_transform_nodes = initial_node_count;
+  // To remove, we just send fewer nodes in num_transform_nodes.
+  // The actual nodes in transform_nodes vector can be empty or partial.
+  // Here we send an empty list for simplicity.
+  update_remove->transform_nodes.clear();
+
+  auto result_remove =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove));
+  ASSERT_TRUE(result_remove.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->transform_tree()
+                .nodes()
+                .size(),
+            initial_node_count);
+  EXPECT_FALSE(GetTransformNodeFromActiveTree(new_node_id));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       UpdateTransformTreeProperties) {
+  auto update = CreateDefaultUpdate();
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  tree_props->page_scale_factor = 1.5f;
+  tree_props->device_scale_factor = 2.0f;
+  tree_props->device_transform_scale_factor = 2.5f;
+  tree_props->nodes_affected_by_outer_viewport_bounds_delta = {
+      cc::kSecondaryRootPropertyNodeId};
+  tree_props->nodes_affected_by_safe_area_bottom = {
+      cc::kSecondaryRootPropertyNodeId};
+  update->transform_tree_update = std::move(tree_props);
+
+  // The top level page_scale_factor overrides whatever we set
+  // in the transform tree, so set it to the same value.
+  // TODO(vmiura): See if we could just remove syncing the
+  // transform tree scale factors?
+  update->page_scale_factor = 1.5f;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& transform_tree = layer_context_impl_->host_impl()
+                                   ->active_tree()
+                                   ->property_trees()
+                                   ->transform_tree();
+  EXPECT_EQ(transform_tree.page_scale_factor(), 1.5f);
+  EXPECT_EQ(transform_tree.device_scale_factor(), 2.0f);
+  EXPECT_EQ(transform_tree.device_transform_scale_factor(), 2.5f);
+  EXPECT_THAT(transform_tree.nodes_affected_by_outer_viewport_bounds_delta(),
+              testing::ElementsAre(cc::kSecondaryRootPropertyNodeId));
+  EXPECT_THAT(transform_tree.nodes_affected_by_safe_area_bottom(),
+              testing::ElementsAre(cc::kSecondaryRootPropertyNodeId));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       StickyPositionDataValid) {
+  auto update = CreateDefaultUpdate();
+  int scroll_node_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto sticky_data = mojom::StickyPositionNodeData::New();
+  sticky_data->scroll_ancestor = scroll_node_id;
+  sticky_data->is_anchored_top = true;
+  sticky_data->top_offset = 10.f;
+  tree_props->sticky_position_data.push_back(std::move(sticky_data));
+  update->transform_tree_update = std::move(tree_props);
+
+  // Add a transform node that will use this sticky data.
+  auto transform_node_update = mojom::TransformNode::New();
+  transform_node_update->id =
+      AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+  transform_node_update->parent_id = cc::kRootPropertyNodeId;
+  transform_node_update->sticky_position_constraint_id = 0;
+  update->transform_nodes.push_back(std::move(transform_node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& transform_tree = layer_context_impl_->host_impl()
+                                   ->active_tree()
+                                   ->property_trees()
+                                   ->transform_tree();
+  ASSERT_EQ(transform_tree.sticky_position_data().size(), 1u);
+  EXPECT_EQ(transform_tree.sticky_position_data()[0].scroll_ancestor,
+            scroll_node_id);
+  EXPECT_TRUE(
+      transform_tree.sticky_position_data()[0].constraints.is_anchored_top);
+  EXPECT_EQ(transform_tree.sticky_position_data()[0].constraints.top_offset,
+            10.f);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       StickyPositionDataInvalidScrollAncestor) {
+  auto update = CreateDefaultUpdate();
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto sticky_data = mojom::StickyPositionNodeData::New();
+  sticky_data->scroll_ancestor = 99;  // Invalid scroll node ID
+  tree_props->sticky_position_data.push_back(std::move(sticky_data));
+  update->transform_tree_update = std::move(tree_props);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid scroll ancestor ID");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       AnchorPositionDataValid) {
+  auto update = CreateDefaultUpdate();
+  int adjustment_container_id =
+      AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto anchor_data = mojom::AnchorPositionScrollData::New();
+  anchor_data->adjustment_container_ids.push_back(
+      cc::ElementId(adjustment_container_id));
+  anchor_data->accumulated_scroll_origin = gfx::Vector2d(5, 5);
+  tree_props->anchor_position_scroll_data.push_back(std::move(anchor_data));
+  update->transform_tree_update = std::move(tree_props);
+
+  // Add a transform node that will use this anchor data.
+  auto transform_node_update = mojom::TransformNode::New();
+  transform_node_update->id =
+      AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+  transform_node_update->parent_id = cc::kRootPropertyNodeId;
+  transform_node_update->anchor_position_scroll_data_id = 0;
+  update->transform_nodes.push_back(std::move(transform_node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& transform_tree = layer_context_impl_->host_impl()
+                                   ->active_tree()
+                                   ->property_trees()
+                                   ->transform_tree();
+  ASSERT_EQ(transform_tree.anchor_position_scroll_data().size(), 1u);
+  EXPECT_THAT(
+      transform_tree.anchor_position_scroll_data()[0].adjustment_container_ids,
+      testing::ElementsAre(cc::ElementId(adjustment_container_id)));
+  EXPECT_EQ(
+      transform_tree.anchor_position_scroll_data()[0].accumulated_scroll_origin,
+      gfx::Vector2d(5, 5));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidTransformNodeParentId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = next_transform_id_++;  // New node
+  node_update->parent_id = 99;             // Invalid parent ID
+  update->transform_nodes.push_back(std::move(node_update));
+  update->num_transform_nodes = next_transform_id_;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidTransformNodeIdOnUpdate) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  node_update->id = 99;  // Invalid node ID to update
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  update->transform_nodes.push_back(std::move(node_update));
+  // num_transform_nodes remains the same as default.
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid property tree node ID");
 }
 
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
