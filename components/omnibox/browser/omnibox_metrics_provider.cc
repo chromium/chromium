@@ -491,6 +491,9 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
       log.session->zero_prefix_search_suggestions_shown_in_session);
   event.SetZeroPrefixUrlShown(
       log.session->zero_prefix_url_suggestions_shown_in_session);
+  event.SetZeroPrefixContextualSearchShown(
+      log.session->contextual_search_suggestions_shown_in_session);
+  event.SetZeroPrefixLensActionShown(log.session->lens_action_shown_in_session);
   event.Record(ukm::UkmRecorder::Get());
 }
 
