@@ -17,6 +17,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/decoder_buffer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -29,8 +30,6 @@ class AudioParameters;
 }  // namespace media
 
 namespace blink {
-
-class AudioTrackEncoder;
 class MediaStreamComponent;
 
 // AudioTrackRecorder is a MediaStreamAudioSink that encodes the audio buses
@@ -72,14 +71,6 @@ class MODULES_EXPORT AudioTrackRecorder
     virtual void OnSourceReadyStateChanged() = 0;
   };
 
-  using OnEncodedAudioCB = base::RepeatingCallback<void(
-      const media::AudioParameters& params,
-      scoped_refptr<media::DecoderBuffer> encoded_data,
-      std::optional<media::AudioEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_time)>;
-
-  using OnEncodedAudioErrorCB = media::EncoderStatus::Callback;
-
   static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
 
   AudioTrackRecorder(
@@ -113,11 +104,10 @@ class MODULES_EXPORT AudioTrackRecorder
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
-  static std::unique_ptr<AudioTrackEncoder> CreateAudioEncoder(
+  WTF::SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
       CodecId codec,
-      scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
-      OnEncodedAudioCB on_encoded_audio_cb,
-      OnEncodedAudioErrorCB on_encoded_audio_error_cb,
+      AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
+      AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode);
 
@@ -133,7 +123,7 @@ class MODULES_EXPORT AudioTrackRecorder
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   // Thin wrapper around the chosen encoder.
-  WTF::SequenceBound<std::unique_ptr<AudioTrackEncoder>> encoder_;
+  WTF::SequenceBound<AudioTrackEncoder> encoder_;
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;

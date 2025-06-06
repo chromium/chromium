@@ -206,7 +206,7 @@ class AudioTrackMojoEncoderTest : public testing::Test {
       scheduler::GetSequencedTaskRunnerForTesting(),
       AudioTrackRecorder::CodecId::kAac,
       /*on_encoded_audio_cb=*/
-      base::BindLambdaForTesting(
+      WTF::CrossThreadBindRepeating(base::BindLambdaForTesting(
           [this](const media::AudioParameters& /*params*/,
                  scoped_refptr<media::DecoderBuffer> /*encoded_data*/,
                  std::optional<
@@ -214,13 +214,14 @@ class AudioTrackMojoEncoderTest : public testing::Test {
                  base::TimeTicks capture_time) {
             ++output_count_;
             capture_times_.push_back(capture_time);
-          }),
+          })),
       /*on_encoded_audio_error_cb=*/
-      base::BindLambdaForTesting([this](media::EncoderStatus status) {
-        ASSERT_EQ(error_code_, media::EncoderStatus::Codes::kOk);
-        ASSERT_FALSE(status.is_ok());
-        error_code_ = status.code();
-      })};
+      WTF::CrossThreadBindOnce(
+          base::BindLambdaForTesting([this](media::EncoderStatus status) {
+            ASSERT_EQ(error_code_, media::EncoderStatus::Codes::kOk);
+            ASSERT_FALSE(status.is_ok());
+            error_code_ = status.code();
+          }))};
 };
 
 TEST_F(AudioTrackMojoEncoderTest, InputArrivingAfterInitialization) {

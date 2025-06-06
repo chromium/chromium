@@ -27,7 +27,7 @@ void AudioTrackPcmEncoder::OnSetFormat(
 
   if (!input_params.IsValid()) {
     DLOG(ERROR) << "Invalid params: " << input_params.AsHumanReadableString();
-    if (!on_encoded_audio_error_cb_.is_null()) {
+    if (on_encoded_audio_error_cb_) {
       std::move(on_encoded_audio_error_cb_)
           .Run(media::EncoderStatus::Codes::kEncoderUnsupportedConfig);
     }

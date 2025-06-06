@@ -29,17 +29,17 @@ namespace blink {
 // which is owned by AudioTrackRecorder.
 class AudioTrackEncoder {
  public:
-  using OnEncodedAudioCB = base::RepeatingCallback<void(
+  using OnEncodedAudioCB = WTF::CrossThreadRepeatingFunction<void(
       const media::AudioParameters& params,
       scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_desc,
       base::TimeTicks capture_time)>;
 
-  using OnEncodedAudioErrorCB = media::EncoderStatus::Callback;
+  using OnEncodedAudioErrorCB =
+      WTF::CrossThreadOnceFunction<void(media::EncoderStatus error_status)>;
 
-  explicit AudioTrackEncoder(
-      OnEncodedAudioCB on_encoded_audio_cb,
-      OnEncodedAudioErrorCB on_encoded_audio_error_cb = base::DoNothing());
+  AudioTrackEncoder(OnEncodedAudioCB on_encoded_audio_cb,
+                    OnEncodedAudioErrorCB on_encoded_audio_error_cb);
   virtual ~AudioTrackEncoder() = default;
 
   AudioTrackEncoder(const AudioTrackEncoder&) = delete;

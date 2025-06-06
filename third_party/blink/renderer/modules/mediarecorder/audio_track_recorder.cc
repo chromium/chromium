@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
+
 #include <memory>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_mojo_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_opus_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_pcm_encoder.h"
@@ -21,7 +21,9 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/bind_post_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -42,10 +44,16 @@
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<media::AudioParameters> {
+struct CrossThreadCopier<std::optional<media::AudioEncoder::CodecDescription>>
+    : public CrossThreadCopierPassThrough<
+          std::optional<media::AudioEncoder::CodecDescription>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = media::AudioParameters;
-  static Type Copy(Type pointer) { return pointer; }
+};
+
+template <>
+struct CrossThreadCopier<media::EncoderStatus>
+    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 }  // namespace WTF
@@ -74,20 +82,20 @@ AudioTrackRecorder::AudioTrackRecorder(
                         WrapPersistent(callback_interface)))),
       track_(track),
       encoder_task_runner_(std::move(encoder_task_runner)),
-      encoder_(encoder_task_runner_,
-               CreateAudioEncoder(
-                   codec,
-                   encoder_task_runner_,
-                   base::BindPostTask(
-                       main_thread_task_runner,
-                       WTF::BindRepeating(&CallbackInterface::OnEncodedAudio,
-                                          WrapPersistent(callback_interface))),
-                   base::BindPostTask(
-                       main_thread_task_runner,
-                       WTF::BindOnce(&CallbackInterface::OnAudioEncodingError,
-                                     WrapPersistent(callback_interface))),
-                   bits_per_second,
-                   bitrate_mode)),
+      encoder_(CreateAudioEncoder(
+          codec,
+          WTF::BindPostTask(
+              main_thread_task_runner,
+              WTF::CrossThreadBindRepeating(
+                  &CallbackInterface::OnEncodedAudio,
+                  MakeUnwrappingCrossThreadHandle(callback_interface))),
+          WTF::BindPostTask(
+              main_thread_task_runner,
+              WTF::CrossThreadBindOnce(
+                  &CallbackInterface::OnAudioEncodingError,
+                  MakeUnwrappingCrossThreadHandle(callback_interface))),
+          bits_per_second,
+          bitrate_mode)),
       callback_interface_(callback_interface) {
   DCHECK(IsMainThread());
   DCHECK(track_);
@@ -104,31 +112,32 @@ AudioTrackRecorder::~AudioTrackRecorder() {
 
 // Creates an audio encoder from the codec. Returns nullptr if the codec is
 // invalid.
-std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
+WTF::SequenceBound<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     CodecId codec,
-    scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
-    OnEncodedAudioCB on_encoded_audio_cb,
-    OnEncodedAudioErrorCB on_encoded_audio_error_cb,
+    AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
+    AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second,
     BitrateMode bitrate_mode) {
-  std::unique_ptr<AudioTrackEncoder> encoder;
   switch (codec) {
     case CodecId::kPcm:
-      return std::make_unique<AudioTrackPcmEncoder>(
-          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb));
+      return WTF::SequenceBound<AudioTrackPcmEncoder>(
+          encoder_task_runner_, std::move(on_encoded_audio_cb),
+          std::move(on_encoded_audio_error_cb));
     case CodecId::kAac:
 #if HAS_AAC_ENCODER
-      return std::make_unique<AudioTrackMojoEncoder>(
-          encoder_task_runner, codec, std::move(on_encoded_audio_cb),
-          std::move(on_encoded_audio_error_cb), bits_per_second);
+      return WTF::SequenceBound<AudioTrackMojoEncoder>(
+          encoder_task_runner_, encoder_task_runner_, codec,
+          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb),
+          bits_per_second);
 #else
       NOTREACHED() << "AAC encoder is not supported.";
 #endif
     case CodecId::kOpus:
     default:
-      return std::make_unique<AudioTrackOpusEncoder>(
-          std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb),
-          bits_per_second, bitrate_mode == BitrateMode::kVariable);
+      return WTF::SequenceBound<AudioTrackOpusEncoder>(
+          encoder_task_runner_, std::move(on_encoded_audio_cb),
+          std::move(on_encoded_audio_error_cb), bits_per_second,
+          bitrate_mode == BitrateMode::kVariable);
   }
 }
 

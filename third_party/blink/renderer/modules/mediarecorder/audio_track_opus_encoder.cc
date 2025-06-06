@@ -228,10 +228,8 @@ void AudioTrackOpusEncoder::DestroyExistingOpusEncoder() {
 }
 
 void AudioTrackOpusEncoder::NotifyError(media::EncoderStatus error) {
-  if (on_encoded_audio_error_cb_.is_null()) {
-    return;
+  if (on_encoded_audio_error_cb_) {
+    std::move(on_encoded_audio_error_cb_).Run(std::move(error));
   }
-
-  std::move(on_encoded_audio_error_cb_).Run(std::move(error));
 }
 }  // namespace blink
