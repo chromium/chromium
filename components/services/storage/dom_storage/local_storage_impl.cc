@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -603,8 +604,16 @@ void LocalStorageImpl::ForceFakeOpenStorageAreaForTesting(
 
 LocalStorageImpl::~LocalStorageImpl() {
   DCHECK_EQ(connection_state_, CONNECTION_SHUTDOWN);
-  // ShutDown() should run before this destructor and clear `areas_`.
-  CHECK(areas_.empty());
+  // ShutDown() should run before this destructor and clear `areas_`. If this
+  // didn't occur, collect a crash dump to help diagnose the issue.
+  // TODO(crbug.com/396030877): Remove this DWOC and workaround once the issue
+  // is resolved.
+  if (!areas_.empty()) {
+    base::debug::DumpWithoutCrashing();
+    // Clear `areas_`to avoid a UaF crash in the StorageAreaHolder d'tor which
+    // tries to access `this`'s state.
+    areas_.clear();
+  }
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
