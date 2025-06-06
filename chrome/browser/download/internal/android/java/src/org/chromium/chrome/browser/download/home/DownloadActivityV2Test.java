@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -47,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -110,6 +112,7 @@ public class DownloadActivityV2Test {
     @Mock private Tracker mTracker;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock private DownloadHelpPageLauncher mHelpPageLauncher;
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -229,6 +232,7 @@ public class DownloadActivityV2Test {
                         settingsNavigation,
                         mSnackbarManager,
                         mModalDialogManager,
+                        mHelpPageLauncher,
                         mTracker,
                         faviconProvider,
                         mStubbedOfflineContentProvider,
@@ -537,6 +541,47 @@ public class DownloadActivityV2Test {
                             .check(doesNotExist());
                 });
         onView(withText(containsString("Using 2.10 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testWarningBypassDialogLearnMore() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/*showDangerousItems*/ true);
+                });
+
+        // Add a dangerous item.
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        // Open bypass dialog by clicking on the item.
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Click the Learn more button.
+        onView(allOf(withId(R.id.positive_button), withText("Learn more")))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        Mockito.verify(mHelpPageLauncher).openUrl(eq(sActivity), anyString());
     }
 
     @Test

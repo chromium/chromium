@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.home.DownloadHelpPageLauncher;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -28,6 +29,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class DownloadWarningBypassDialog {
+    public static final String DOWNLOAD_BLOCKED_LEARN_MORE_URL =
+            "https://support.google.com/chrome?p=ib_download_blocked";
+
     /**
      * Events related to the download warning bypass dialog. Reported to UMA and used to communicate
      * the result of the dialog. These values are persisted to logs. Entries should not be
@@ -57,6 +61,7 @@ public class DownloadWarningBypassDialog {
      *
      * @param context Context for showing the dialog.
      * @param modalDialogManager Manager for managing the modal dialog.
+     * @param helpPageLauncher Helper for opening the "Learn more" help page.
      * @param fileName Name of the download file.
      * @param callback Callback to run when reporting whether the user selected the bypass option on
      *     the dialog.
@@ -64,6 +69,7 @@ public class DownloadWarningBypassDialog {
     public void show(
             Context context,
             ModalDialogManager modalDialogManager,
+            DownloadHelpPageLauncher helpPageLauncher,
             String fileName,
             Callback<Boolean> callback) {
         var controller =
@@ -95,7 +101,7 @@ public class DownloadWarningBypassDialog {
                             callback.onResult(result == DownloadWarningBypassDialogEvent.VALIDATE);
                         }
                         if (result == DownloadWarningBypassDialogEvent.LEARN_MORE) {
-                            openLearnMorePage();
+                            openLearnMorePage(helpPageLauncher, context);
                         }
                     }
                 };
@@ -139,8 +145,8 @@ public class DownloadWarningBypassDialog {
     }
 
     /** Opens the "Learn More" help page URL in a Custom Tab. */
-    void openLearnMorePage() {
-        // TODO(crbug.com/397407934): send an intent to open Learn More URL in a CCT.
+    void openLearnMorePage(DownloadHelpPageLauncher helpPageLauncher, Context context) {
+        helpPageLauncher.openUrl(context, DOWNLOAD_BLOCKED_LEARN_MORE_URL);
     }
 
     void logDialogEventHistogram(@DownloadWarningBypassDialogEvent int event) {

@@ -67,6 +67,7 @@ class DownloadManagerCoordinatorImpl
             Callback<Context> settingsNavigation,
             SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,
+            DownloadHelpPageLauncher helpPageLauncher,
             Tracker tracker,
             FaviconProvider faviconProvider,
             OfflineContentProvider provider,
@@ -86,6 +87,7 @@ class DownloadManagerCoordinatorImpl
                         this::notifyFilterChanged,
                         createDateOrderedListObserver(),
                         modalDialogManager,
+                        helpPageLauncher,
                         faviconProvider,
                         discardableReferencePool);
         mToolbarCoordinator =

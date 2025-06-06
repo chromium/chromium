@@ -54,6 +54,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogProperties.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/download/home/DownloadHelpPageLauncher.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfig.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfigHelper.java",

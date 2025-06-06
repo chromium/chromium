@@ -377,6 +377,7 @@ public class IntentHandler {
         IncognitoCctCallerId.READER_MODE,
         IncognitoCctCallerId.READ_LATER,
         IncognitoCctCallerId.EPHEMERAL_TAB,
+        IncognitoCctCallerId.DOWNLOAD_HOME,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IncognitoCctCallerId {
@@ -394,8 +395,14 @@ public class IntentHandler {
         // An ephemeral custom tab without incognito branding.
         int EPHEMERAL_TAB = 5;
 
+        // Chrome feature.
+        // The Download Home UI may launch a CCT to display a help page for a download.
+        // If the file was downloaded in an Incognito profile, the CCT for the help page should
+        // likewise be an Incognito tab.
+        int DOWNLOAD_HOME = 6;
+
         // Update {@link IncognitoCctCallerId} in enums.xml when adding new items.
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 7;
     }
 
     /** Intent extra to open an incognito tab. */

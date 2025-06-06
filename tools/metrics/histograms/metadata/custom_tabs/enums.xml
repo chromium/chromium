@@ -254,6 +254,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chrome - Reader mode"/>
   <int value="4" label="Chrome - Read later"/>
   <int value="5" label="Ephemeral Tab"/>
+  <int value="6" label="Chrome - Download Home"/>
 </enum>
 
 <enum name="MayLaunchUrlType">

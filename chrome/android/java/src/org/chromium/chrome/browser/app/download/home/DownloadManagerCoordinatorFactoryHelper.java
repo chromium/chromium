@@ -56,6 +56,7 @@ class DownloadManagerCoordinatorFactoryHelper {
                 settingsLaunchHelper,
                 snackbarManager,
                 modalDialogManager,
+                new DownloadHelpPageLauncherImpl(profile),
                 TrackerFactory.getTrackerForProfile(profile),
                 new FaviconProviderImpl(profile),
                 OfflineContentAggregatorFactory.get(),
