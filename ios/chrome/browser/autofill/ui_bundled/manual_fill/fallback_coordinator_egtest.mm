@@ -291,9 +291,10 @@ void OpenAddressManualFillView() {
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
 - (void)testOpeningIncognitoTabsDoNotLeak {
+  [AutofillAppInterface saveExampleProfile];
+
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
-  [AutofillAppInterface saveExampleProfile];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
