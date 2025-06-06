@@ -51,6 +51,9 @@
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
           '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64"])'));
+  testRunner.log('has form factors?' + await session.evaluateAsync(async () => {
+    return (await navigator.userAgentData.getHighEntropyValues(["formFactors"])).formFactors.length > 0;
+  }));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-bitness');

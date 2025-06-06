@@ -816,6 +816,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     ua_metadata_override_->architecture = ua_metadata.getArchitecture().Ascii();
     ua_metadata_override_->model = ua_metadata.getModel().Ascii();
     ua_metadata_override_->mobile = ua_metadata.getMobile();
+    ua_metadata_override_->form_factors = default_ua_metadata.form_factors;
 
     if (ua_metadata.hasBitness()) {
       ua_metadata_override_->bitness = ua_metadata.getBitness("").Ascii();

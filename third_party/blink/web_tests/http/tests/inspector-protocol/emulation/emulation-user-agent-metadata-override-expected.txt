@@ -48,6 +48,7 @@ is mobile?true
     uaFullVersion : 42.0.3.14159
     wow64 : false
 }
+has form factors?true
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-arch: "Electromechanical"
 sec-ch-ua-bitness: "64"

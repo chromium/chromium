@@ -187,6 +187,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, DefaultValues) {
 // UA Metadata is available via `navigator.userAgentData` when overridden via
 // Devtools.
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, CDPOverride) {
+  auto expected = embedder_support::GetUserAgentMetadata();
   OverrideUserAgentMetadata(MakeFakeMetadata());
 
   EXPECT_THAT(GetUAMetadataValue(kBrandVersionScript),
@@ -209,9 +210,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, CDPOverride) {
               DictHasValue("result.result.value", "1.2.3"));
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", true));
-  // TODO(crbug.com/40910451): Allow overriding formFactors.
   EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
-              DictHasValue("result.result.value", ""));
+              DictHasValue("result.result.value",
+                           base::JoinString(expected.form_factors, ", ")));
 }
 
 class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
