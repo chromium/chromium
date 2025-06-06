@@ -280,48 +280,6 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     media::VideoFrameConverter frame_converter_;
   };
 
-  // Class to encapsulate the enumeration of CodecIds/VideoCodecProfiles
-  // supported by the VEA underlying platform. Provides methods to query the
-  // preferred CodecId and to check if a given CodecId is supported.
-  class MODULES_EXPORT CodecEnumerator {
-   public:
-    explicit CodecEnumerator(
-        const media::VideoEncodeAccelerator::SupportedProfiles&
-            vea_supported_profiles);
-
-    CodecEnumerator(const CodecEnumerator&) = delete;
-    CodecEnumerator& operator=(const CodecEnumerator&) = delete;
-
-    ~CodecEnumerator();
-
-    // Returns the first CodecId that has an associated VEA VideoCodecProfile,
-    // or VP8 if none available.
-    CodecId GetPreferredCodecId(MediaTrackContainerType type) const;
-
-    // Returns supported VEA VideoCodecProfile which matches |codec| and
-    // |profile| and whether VEA supports VBR encoding for the profile.
-    std::pair<media::VideoCodecProfile, bool> FindSupportedVideoCodecProfile(
-        CodecId codec,
-        media::VideoCodecProfile profile) const;
-
-    // Returns VEA's first supported VideoCodedProfile for a given CodecId and
-    // whether VBR encoding is supported by VEA for the profile, or
-    // VIDEO_CODEC_PROFILE_UNKNOWN otherwise.
-    std::pair<media::VideoCodecProfile, bool>
-    GetFirstSupportedVideoCodecProfile(CodecId codec) const;
-
-    // Returns a list of supported media::VEA::SupportedProfile for a given
-    // CodecId, or empty vector if CodecId is unsupported.
-    media::VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
-        CodecId codec) const;
-
-   private:
-    // VEA-supported profiles grouped by CodecId.
-    HashMap<CodecId, media::VideoEncodeAccelerator::SupportedProfiles>
-        supported_profiles_;
-    CodecId preferred_codec_id_ = CodecId::kLast;
-  };
-
   VideoTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       WeakCell<CallbackInterface>* callback_interface);

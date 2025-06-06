@@ -171,12 +171,6 @@ media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
       media::VideoEncodeAccelerator::SupportedProfiles());
 }
 
-VideoTrackRecorderImpl::CodecEnumerator* GetCodecEnumerator() {
-  static VideoTrackRecorderImpl::CodecEnumerator* enumerator =
-      new VideoTrackRecorderImpl::CodecEnumerator(GetVEASupportedProfiles());
-  return enumerator;
-}
-
 void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -385,96 +379,6 @@ VideoTrackRecorderImpl::CodecProfile::CodecProfile(
     media::VideoCodecProfile profile,
     media::VideoCodecLevel level)
     : codec_id(codec_id), profile(profile), level(level) {}
-
-VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
-    const media::VideoEncodeAccelerator::SupportedProfiles&
-        vea_supported_profiles) {
-  for (const auto& supported_profile : vea_supported_profiles) {
-    const media::VideoCodecProfile codec = supported_profile.profile;
-    for (auto& codec_id_and_profile : kPreferredCodecIdAndVEAProfiles) {
-      if (codec >= codec_id_and_profile.min_profile &&
-          codec <= codec_id_and_profile.max_profile) {
-        DVLOG(2) << "Accelerated codec found: " << media::GetProfileName(codec)
-                 << ", min_resolution: "
-                 << supported_profile.min_resolution.ToString()
-                 << ", max_resolution: "
-                 << supported_profile.max_resolution.ToString()
-                 << ", max_framerate: "
-                 << supported_profile.max_framerate_numerator << "/"
-                 << supported_profile.max_framerate_denominator;
-        auto iter = supported_profiles_.find(codec_id_and_profile.codec_id);
-        if (iter == supported_profiles_.end()) {
-          auto result = supported_profiles_.insert(
-              codec_id_and_profile.codec_id,
-              media::VideoEncodeAccelerator::SupportedProfiles());
-          result.stored_value->value.push_back(supported_profile);
-        } else {
-          iter->value.push_back(supported_profile);
-        }
-        if (preferred_codec_id_ == CodecId::kLast) {
-          preferred_codec_id_ = codec_id_and_profile.codec_id;
-        }
-      }
-    }
-  }
-}
-
-VideoTrackRecorderImpl::CodecEnumerator::~CodecEnumerator() = default;
-
-std::pair<media::VideoCodecProfile, bool>
-VideoTrackRecorderImpl::CodecEnumerator::FindSupportedVideoCodecProfile(
-    CodecId codec,
-    media::VideoCodecProfile profile) const {
-  const auto profiles = supported_profiles_.find(codec);
-  if (profiles == supported_profiles_.end()) {
-    return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
-  }
-  for (const auto& p : profiles->value) {
-    if (p.profile == profile) {
-      const bool vbr_support =
-          p.rate_control_modes & media::VideoEncodeAccelerator::kVariableMode;
-      return {profile, vbr_support};
-    }
-  }
-  return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
-}
-
-VideoTrackRecorderImpl::CodecId
-VideoTrackRecorderImpl::CodecEnumerator::GetPreferredCodecId(
-    MediaTrackContainerType type) const {
-  if (preferred_codec_id_ == CodecId::kLast) {
-    if (type == MediaTrackContainerType::kVideoMp4 ||
-        type == MediaTrackContainerType::kAudioMp4) {
-      return CodecId::kVp9;
-    }
-    return CodecId::kVp8;
-  }
-
-  return preferred_codec_id_;
-}
-
-std::pair<media::VideoCodecProfile, bool>
-VideoTrackRecorderImpl::CodecEnumerator::GetFirstSupportedVideoCodecProfile(
-    CodecId codec) const {
-  const auto profile = supported_profiles_.find(codec);
-  if (profile == supported_profiles_.end()) {
-    return {media::VIDEO_CODEC_PROFILE_UNKNOWN, false};
-  }
-
-  const auto& supported_profile = profile->value.front();
-  const bool vbr_support = supported_profile.rate_control_modes &
-                           media::VideoEncodeAccelerator::kVariableMode;
-  return {supported_profile.profile, vbr_support};
-}
-
-media::VideoEncodeAccelerator::SupportedProfiles
-VideoTrackRecorderImpl::CodecEnumerator::GetSupportedProfiles(
-    CodecId codec) const {
-  const auto profile = supported_profiles_.find(codec);
-  return profile == supported_profiles_.end()
-             ? media::VideoEncodeAccelerator::SupportedProfiles()
-             : profile->value;
-}
 
 VideoTrackRecorderImpl::Counter::Counter() : count_(0u) {}
 
@@ -768,7 +672,37 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
 // static
 VideoTrackRecorderImpl::CodecId VideoTrackRecorderImpl::GetPreferredCodecId(
     MediaTrackContainerType type) {
-  return GetCodecEnumerator()->GetPreferredCodecId(type);
+  const auto preferred_codec_id = []() {
+    for (const auto& supported_profile : GetVEASupportedProfiles()) {
+      const media::VideoCodecProfile codec = supported_profile.profile;
+      for (auto& codec_id_and_profile : kPreferredCodecIdAndVEAProfiles) {
+        if (codec >= codec_id_and_profile.min_profile &&
+            codec <= codec_id_and_profile.max_profile) {
+          DVLOG(2) << "Accelerated codec found: "
+                   << media::GetProfileName(codec) << ", min_resolution: "
+                   << supported_profile.min_resolution.ToString()
+                   << ", max_resolution: "
+                   << supported_profile.max_resolution.ToString()
+                   << ", max_framerate: "
+                   << supported_profile.max_framerate_numerator << "/"
+                   << supported_profile.max_framerate_denominator;
+          return codec_id_and_profile.codec_id;
+        }
+      }
+    }
+    return CodecId::kLast;
+  }();
+
+  if (preferred_codec_id != CodecId::kLast) {
+    return preferred_codec_id;
+  }
+
+  if (type == MediaTrackContainerType::kVideoMp4 ||
+      type == MediaTrackContainerType::kAudioMp4) {
+    return CodecId::kVp9;
+  }
+
+  return CodecId::kVp8;
 }
 
 // static
@@ -786,20 +720,37 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
     }
   }
 
-  const auto profiles =
-      GetCodecEnumerator()->GetSupportedProfiles(codec_profile.codec_id);
-  if (profiles.empty()) {
-    return false;
-  }
-
-  for (const auto& profile : profiles) {
-    if (profile.profile == media::VIDEO_CODEC_PROFILE_UNKNOWN) {
-      return false;
+  const auto media_codec_id = [](CodecId codec) {
+    switch (codec) {
+      case VideoTrackRecorder::CodecId::kVp8:
+        return media::VideoCodec::kVP8;
+      case VideoTrackRecorder::CodecId::kVp9:
+        return media::VideoCodec::kVP9;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      case VideoTrackRecorder::CodecId::kH264:
+        return media::VideoCodec::kH264;
+#endif
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      case VideoTrackRecorder::CodecId::kHevc:
+        return media::VideoCodec::kHEVC;
+#endif
+      case VideoTrackRecorder::CodecId::kAv1:
+        return media::VideoCodec::kAV1;
+      case VideoTrackRecorder::CodecId::kLast:
+        return media::VideoCodec::kUnknown;
     }
-    // Skip other profiles if the profile is specified.
-    if (codec_profile.profile && *codec_profile.profile != profile.profile) {
+  }(codec_profile.codec_id);
+
+  for (const auto& profile : GetVEASupportedProfiles()) {
+    DCHECK_NE(profile.profile, media::VIDEO_CODEC_PROFILE_UNKNOWN);
+
+    // Skip other profiles if the profile is specified or skip on codec.
+    if ((codec_profile.profile && *codec_profile.profile != profile.profile) ||
+        media_codec_id !=
+            media::VideoCodecProfileToVideoCodec(profile.profile)) {
       continue;
     }
+
     // Skip if profile is OS software encoder profile and we don't allow use
     // OS software encoder.
     if (profile.is_software_codec &&
