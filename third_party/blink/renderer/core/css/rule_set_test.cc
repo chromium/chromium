@@ -186,10 +186,10 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
-  sheet.AddCSSRules(":host { }");
+  sheet.AddCSSRules(":host { } :not(:not(:host)):host { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   const base::span<const RuleData> rules = rule_set.ShadowHostRules();
-  ASSERT_EQ(1u, rules.size());
+  ASSERT_EQ(2u, rules.size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostWithId) {
