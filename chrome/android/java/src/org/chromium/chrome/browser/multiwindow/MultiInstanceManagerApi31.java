@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -87,8 +86,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
@@ -641,22 +638,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @VisibleForTesting
     static void updateTaskMap(int instanceId, int taskId) {
         ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
-    }
-
-    static Set<Integer> getPersistedInstanceIds() {
-        Set<Integer> ids = new HashSet<>();
-        Map<String, Long> lastAccessedTimeMap =
-                ChromeSharedPreferences.getInstance()
-                        .readLongsWithPrefix(
-                                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
-        for (String prefKey : lastAccessedTimeMap.keySet()) {
-            Pattern pattern = Pattern.compile("(\\d+)$");
-            Matcher matcher = pattern.matcher(prefKey);
-            assert matcher.find() : "Key should be suffixed with the instance id.";
-            assumeNonNull(matcher.group(1));
-            ids.add(Integer.parseInt(matcher.group(1)));
-        }
-        return ids;
     }
 
     private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {

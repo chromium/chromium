@@ -63,7 +63,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Utilities for detecting multi-window/multi-instance support.
@@ -407,9 +406,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static int getInstanceCount() {
         if (sInstanceCountForTesting != null) return sInstanceCountForTesting;
         int count = 0;
-        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds();
-        for (Integer id : ids) {
-            if (isRestorableInstance(id)) {
+        for (int i = 0; i < getMaxInstances(); ++i) {
+            if (MultiInstanceManagerApi31.instanceEntryExists(i) && isRestorableInstance(i)) {
                 count++;
             }
         }
