@@ -47,8 +47,8 @@ function startPlayback() {
     logOutput('Playback complete.');
     sendResult('SUCCESS');
   }
-  dstVideo.onerror = e => {
-    logOutput(`Test failed: ${e.message}`);
+  dstVideo.onerror = _ => {
+    logOutput(`Test failed: ${dstVideo.error.message}`);
     abort = true;
     sendResult('FAIL');
   };
@@ -94,8 +94,8 @@ function main() {
   dstVideo.muted = true;  // No need to exercise audio paths.
   setVideoSize();
 
-  srcVideo.onerror = e => {
-    logOutput(`Test failed: ${e.message}`);
+  srcVideo.onerror = _ => {
+    logOutput(`Test failed: ${dstVideo.error.message}`);
     abort = true;
     sendResult('FAIL');
   };
