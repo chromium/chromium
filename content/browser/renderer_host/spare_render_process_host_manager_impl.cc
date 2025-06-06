@@ -51,6 +51,8 @@ BASE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure,
              "kSpareRPHKeepOneAliveOnMemoryPressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr char kSpareProcessMaybeTakeActionUmaName[] =
+    "BrowserRenderProcessHost.SpareProcessMaybeTakeAction";
 constexpr char kSpareRendererTakenTimeSinceCreation[] =
     "BrowserRenderProcessHost.SpareRendererTaken.TimeSinceCreation";
 constexpr char kSpareRendererTakenIsReady[] =
@@ -266,10 +268,18 @@ void LogNoSparePresentUmas(
   }
 }
 
-void LogSpareProcessTakeActionUMAs(RenderProcessHost* host,
-                                   SpareProcessMaybeTakeAction action) {
-  base::UmaHistogramEnumeration(
-      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
+void LogSpareProcessTakeActionUMAs(
+    RenderProcessHost* host,
+    SpareProcessMaybeTakeAction action,
+    const ProcessAllocationContext& allocation_context) {
+  base::UmaHistogramEnumeration(kSpareProcessMaybeTakeActionUmaName, action);
+  if (allocation_context.source ==
+      ProcessAllocationSource::kNavigationRequest) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kSpareProcessMaybeTakeActionUmaName, ".NavigationRequest"}),
+        action);
+  }
   if (action == SpareProcessMaybeTakeAction::kSpareTaken) {
     CHECK(host);
     base::UmaHistogramBoolean(kSpareRendererTakenIsReady, host->IsReady());
@@ -593,7 +603,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   } else {
     action = SpareProcessMaybeTakeAction::kSpareTaken;
   }
-  LogSpareProcessTakeActionUMAs(next_spare_rph, action);
+  LogSpareProcessTakeActionUMAs(next_spare_rph, action, allocation_context);
 
   if (spare_renderer_maybe_take_timer_) {
     auto maybe_take_time = spare_renderer_maybe_take_timer_->Elapsed();

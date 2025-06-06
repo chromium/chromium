@@ -1372,6 +1372,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction.NavigationRequest"
+    enum="SpareProcessMaybeTakeAction" expires_after="2025-12-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records what happens when an attempt is made to use a spare
+    RenderProcessHost during a navigation request. The UMA logs that either the
+    attempt succeeded or why it failed.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeTime"
     units="seconds" expires_after="2025-10-26">
   <owner>gjc@google.com</owner>
