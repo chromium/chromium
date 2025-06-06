@@ -257,51 +257,6 @@ mojom::TransferableUIResourceRequestPtr CreateUIResourceRequest(
 
 }  // namespace
 
-TEST_F(LayerContextImplTest, EmptyScrollingContentsCullRectsByDefault) {
-  EXPECT_TRUE(layer_context_impl_->host_impl()
-                  ->active_tree()
-                  ->property_trees()
-                  ->scroll_tree()
-                  .scrolling_contents_cull_rects()
-                  .empty());
-
-  auto result = layer_context_impl_->DoUpdateDisplayTree(CreateDefaultUpdate());
-  ASSERT_TRUE(result.has_value());
-
-  EXPECT_TRUE(layer_context_impl_->host_impl()
-                  ->active_tree()
-                  ->property_trees()
-                  ->scroll_tree()
-                  .scrolling_contents_cull_rects()
-                  .empty());
-}
-
-TEST_F(LayerContextImplTest, ScrollingContentsCullRectsAreSynchronized) {
-  constexpr cc::ElementId kElementId = cc::ElementId(42);
-  constexpr gfx::Rect kCullRect = gfx::Rect{100, 100};
-  base::flat_map<cc::ElementId, gfx::Rect> scrolling_contents_cull_rects;
-  scrolling_contents_cull_rects[kElementId] = kCullRect;
-
-  auto scroll_tree_update = mojom::ScrollTreeUpdate::New();
-  scroll_tree_update->scrolling_contents_cull_rects =
-      scrolling_contents_cull_rects;
-
-  auto update = CreateDefaultUpdate();
-  update->scroll_tree_update = std::move(scroll_tree_update);
-
-  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  EXPECT_TRUE(result.has_value());
-
-  auto synchronized_scrolling_contents_cull_rects =
-      layer_context_impl_->host_impl()
-          ->active_tree()
-          ->property_trees()
-          ->scroll_tree()
-          .scrolling_contents_cull_rects();
-  EXPECT_EQ(scrolling_contents_cull_rects,
-            synchronized_scrolling_contents_cull_rects);
-}
-
 class LayerContextImplUpdateDisplayTreeTransformNodeTest
     : public LayerContextImplTest {
  protected:
@@ -950,6 +905,188 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, InvalidBlendMode) {
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Invalid blend_mode for effect node");
+}
+
+class LayerContextImplUpdateDisplayTreeScrollNodeTest
+    : public LayerContextImplTest {
+ protected:
+  cc::ScrollNode* GetScrollNodeFromActiveTree(int node_id) {
+    if (node_id < static_cast<int>(layer_context_impl_->host_impl()
+                                       ->active_tree()
+                                       ->property_trees()
+                                       ->scroll_tree()
+                                       .size())) {
+      return layer_context_impl_->host_impl()
+          ->active_tree()
+          ->property_trees()
+          ->scroll_tree_mutable()
+          .Node(node_id);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       UpdateExistingScrollNodeProperties) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  // Keep parent_id same as default.
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->container_bounds = gfx::Size(50, 60);
+  node_update->bounds = gfx::Size(70, 80);
+  node_update->user_scrollable_horizontal = true;
+  node_update->user_scrollable_vertical = true;
+  node_update->element_id = cc::ElementId(123);
+  // Use a valid existing transform node ID.
+  node_update->transform_id = cc::kSecondaryRootPropertyNodeId;
+  update2->scroll_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::ScrollNode* node_impl =
+      GetScrollNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->container_bounds, gfx::Size(50, 60));
+  EXPECT_EQ(node_impl->bounds, gfx::Size(70, 80));
+  EXPECT_TRUE(node_impl->user_scrollable_horizontal);
+  EXPECT_TRUE(node_impl->user_scrollable_vertical);
+  EXPECT_EQ(node_impl->element_id, cc::ElementId(123));
+  EXPECT_EQ(node_impl->transform_id, cc::kSecondaryRootPropertyNodeId);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest, AddRemoveScrollNodes) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  uint32_t initial_node_count = layer_context_impl_->host_impl()
+                                    ->active_tree()
+                                    ->property_trees()
+                                    ->scroll_tree()
+                                    .nodes()
+                                    .size();
+
+  // Add a new node.
+  auto update_add = CreateDefaultUpdate();
+  int new_node_id =
+      AddScrollNode(update_add.get(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_EQ(update_add->num_scroll_nodes, initial_node_count + 1);
+
+  auto result_add =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add));
+  ASSERT_TRUE(result_add.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->scroll_tree()
+                .nodes()
+                .size(),
+            initial_node_count + 1);
+  cc::ScrollNode* added_node_impl = GetScrollNodeFromActiveTree(new_node_id);
+  ASSERT_TRUE(added_node_impl);
+  EXPECT_EQ(added_node_impl->parent_id, cc::kSecondaryRootPropertyNodeId);
+
+  // Remove the added node.
+  auto update_remove = CreateDefaultUpdate();
+  update_remove->num_scroll_nodes = initial_node_count;
+  update_remove->scroll_nodes.clear();
+
+  auto result_remove =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove));
+  ASSERT_TRUE(result_remove.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->scroll_tree()
+                .nodes()
+                .size(),
+            initial_node_count);
+  EXPECT_FALSE(GetScrollNodeFromActiveTree(new_node_id));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       InvalidScrollNodeParentId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = next_scroll_id_++;  // New node
+  node_update->parent_id = 99;          // Invalid parent ID
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->scroll_nodes.push_back(std::move(node_update));
+  update->num_scroll_nodes = next_scroll_id_;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       InvalidScrollNodeTransformId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = 99;  // Invalid transform ID
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid transform_id for scroll node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       UpdateScrollTreeProperties) {
+  auto update = CreateDefaultUpdate();
+  auto tree_props = mojom::ScrollTreeUpdate::New();
+  cc::ElementId element_id(123);
+  tree_props->synced_scroll_offsets[element_id] =
+      base::MakeRefCounted<cc::SyncedScrollOffset>();
+  tree_props->synced_scroll_offsets[element_id]->SetCurrent(
+      gfx::PointF(10.f, 20.f));
+  tree_props->scrolling_contents_cull_rects[element_id] =
+      gfx::Rect(5, 5, 15, 15);
+  update->scroll_tree_update = std::move(tree_props);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  const auto& scroll_tree = layer_context_impl_->host_impl()
+                                ->active_tree()
+                                ->property_trees()
+                                ->scroll_tree();
+  EXPECT_EQ(scroll_tree.synced_scroll_offset_map()
+                .at(element_id)
+                ->Current(
+                    /*is_active_tree=*/true),
+            gfx::PointF(10.f, 20.f));
+  EXPECT_EQ(scroll_tree.scrolling_contents_cull_rects().at(element_id),
+            gfx::Rect(5, 5, 15, 15));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       EmptyScrollingContentsCullRectsByDefault) {
+  EXPECT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->scroll_tree()
+                  .scrolling_contents_cull_rects()
+                  .empty());
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(CreateDefaultUpdate());
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->scroll_tree()
+                  .scrolling_contents_cull_rects()
+                  .empty());
 }
 
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
