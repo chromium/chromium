@@ -82,37 +82,37 @@ enum PolicySource {
 // priority, so source is used directly in the priority comparison.
 enum PolicyPriorityBrowser {
   // The policy was set through remapping or debugging.
-  POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT,
+  kEnterpriseDefault,
 
   // The policy was set by command line flag for testing purposes.
-  POLICY_PRIORITY_BROWSER_COMMAND_LINE,
+  kCommandLine,
 
   // The policy was set by a cloud source at the user level.
-  POLICY_PRIORITY_BROWSER_CLOUD_USER,
+  kCloudUser,
 
   // The policy was set by a platform source at the user level.
-  POLICY_PRIORITY_BROWSER_PLATFORM_USER,
+  kPlatformUser,
 
   // The policy was set by a cloud source at the machine level.
-  POLICY_PRIORITY_BROWSER_CLOUD_MACHINE,
+  kCloudMachine,
 
   // The policy was set by a cloud source at the user level. Its priority is
   // raised above that of cloud machine policies.
-  POLICY_PRIORITY_BROWSER_CLOUD_USER_RAISED,
+  kCloudUserRaised,
 
   // The policy was set by a platform source at the machine level.
-  POLICY_PRIORITY_BROWSER_PLATFORM_MACHINE,
+  kPlatformMachine,
 
   // The policy was set by a platform source at the machine level. Its priority
   // is raised above that of platform machine policies.
-  POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED,
+  kCloudMachineRaised,
 
   // The policy was set by a cloud source at the user level. Its priority is
   // raised above that of platform and cloud machine policies.
-  POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED,
+  kCloudUserDoubleRaised,
 
   // The policy coming from multiple sources and its value has been merged.
-  POLICY_PRIORITY_BROWSER_MERGED,
+  kMerged,
 };
 
 // The `PolicyFetchReason` enum is used to tag requests to DMServer. This allows
