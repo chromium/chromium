@@ -88,8 +88,6 @@ class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
   bool should_show_close_ = false;
 };
 
-}  // namespace
-
 class TestBubbleFrameView : public BubbleFrameView {
  public:
   explicit TestBubbleFrameView(ViewsTestBase* test_base)
@@ -108,18 +106,7 @@ class TestBubbleFrameView : public BubbleFrameView {
   TestBubbleFrameView(const TestBubbleFrameView&) = delete;
   TestBubbleFrameView& operator=(const TestBubbleFrameView&) = delete;
 
-  ~TestBubbleFrameView() override {
-    // This is needed because in this case the View owns the Widget, which is
-    // the other way around in production code. Because of this, the Widget gets
-    // destroyed before the View, and without the following code, it causes a
-    // dangling pointer issue in the View's destructor.
-    //
-    // TODO(https://crbug.com/422382420): Remove this once the view is no longer
-    // owned by the widget. We should move this class back to the unnamed
-    // namespace above, and remove the friend declaration for
-    // TestBubbleFrameView in view.h.
-    SetWidget(nullptr);
-  }
+  ~TestBubbleFrameView() override = default;
 
   void SetAvailableAnchorWindowBounds(gfx::Rect bounds) {
     available_anchor_window_bounds_ = bounds;
@@ -155,6 +142,8 @@ class TestBubbleFrameView : public BubbleFrameView {
   std::unique_ptr<TestBubbleFrameViewWidgetDelegate> widget_delegate_;
   std::unique_ptr<Widget> widget_;
 };
+
+}  // namespace
 
 class BubbleFrameViewTest : public ViewsTestBase {
  public:

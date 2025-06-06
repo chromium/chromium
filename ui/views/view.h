@@ -2036,7 +2036,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   friend class internal::RootView;
   friend class internal::ScopedChildrenLock;
   friend class FocusManager;
-  friend class TestBubbleFrameView;
   friend class ViewDebugWrapperImpl;
   friend class ViewLayerTest;
   friend class ViewLayerPixelCanvasTest;
@@ -2130,8 +2129,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Calls ViewHierarchyChanged() and notifies observers.
   void ViewHierarchyChangedImpl(const ViewHierarchyChangedDetails& details);
-
-  void SetWidget(Widget* widget);
 
   // Size and disposition ------------------------------------------------------
 
@@ -2378,10 +2375,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   int group_ = -1;
 
   // Tree operations -----------------------------------------------------------
-
-  // The widget that this view is attached to. This is null if the view is not
-  // attached to a widget.
-  raw_ptr<Widget> widget_ = nullptr;
 
   // This view's parent.
   raw_ptr<View> parent_ = nullptr;
