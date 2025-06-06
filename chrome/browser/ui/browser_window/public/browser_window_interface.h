@@ -102,12 +102,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
 
-  // Returns true if the window is minimized.
-  virtual bool IsMinimized() const = 0;
-
-  // Returns true if the window is visible.
-  virtual bool IsVisible() const = 0;
-
   // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
   // An appropriate use case is as a variable passed to an asynchronously
   // invoked PostTask.

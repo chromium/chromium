@@ -838,8 +838,6 @@ class Browser : public TabStripModelObserver,
   base::CallbackListSubscription RegisterBrowserDidClose(
       BrowserDidCloseCallback callback) override;
   views::View* TopContainer() override;
-  bool IsMinimized() const override;
-  bool IsVisible() const override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
   views::View* LensOverlayView() override;
   base::CallbackListSubscription RegisterActiveTabDidChange(

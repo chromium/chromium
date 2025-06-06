@@ -26,6 +26,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
@@ -138,9 +139,9 @@ class BrowserActivityObserver : public BrowserListObserver {
     }
     bool browser_hidden = true;
     for (Browser* browser : *BrowserList::GetInstance()) {
-      if (!browser->IsMinimized() &&
+      if (!browser->GetWindow()->IsMinimized() &&
           browser->capabilities()->IsVisibleOnScreen() &&
-          browser->IsVisible()) {
+          browser->GetWindow()->IsVisible()) {
         browser_hidden = false;
         break;
       }

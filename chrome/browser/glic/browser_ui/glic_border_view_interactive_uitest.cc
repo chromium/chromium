@@ -26,6 +26,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor_switches.h"
@@ -51,13 +52,13 @@ class WidgetShowStateObserver : public views::WidgetObserver {
   }
 
   void Wait() {
-    if (browser_->IsMinimized() != should_be_minimized_) {
+    if (browser_->GetWindow()->IsMinimized() != should_be_minimized_) {
       run_loop_.Run();
     }
   }
 
   void OnWidgetShowStateChanged(views::Widget* widget) override {
-    if (browser_->IsMinimized() == should_be_minimized_) {
+    if (browser_->GetWindow()->IsMinimized() == should_be_minimized_) {
       run_loop_.Quit();
     }
   }

@@ -1237,14 +1237,6 @@ views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
 }
 
-bool Browser::IsMinimized() const {
-  return window_->IsMinimized();
-}
-
-bool Browser::IsVisible() const {
-  return window_->IsVisible();
-}
-
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
   return AsWeakPtr();
 }
