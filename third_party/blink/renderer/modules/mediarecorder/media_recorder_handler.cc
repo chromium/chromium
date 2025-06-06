@@ -1201,7 +1201,7 @@ void MediaRecorderHandler::Trace(Visitor* visitor) const {
 }
 
 void MediaRecorderHandler::OnVideoEncodingError(
-    const media::EncoderStatus& error_status) {
+    media::EncoderStatus error_status) {
   if (recorder_) {
     recorder_->OnError(DOMExceptionCode::kEncodingError,
                        String(media::EncoderStatusCodeToString(error_status)));

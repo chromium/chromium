@@ -188,7 +188,7 @@ class MockVideoTrackRecorderCallbackInterface
 
   MOCK_METHOD(void,
               OnVideoEncodingError,
-              (const media::EncoderStatus& status),
+              (media::EncoderStatus status),
               (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
   void Trace(Visitor* v) const override { v->Trace(weak_factory_); }

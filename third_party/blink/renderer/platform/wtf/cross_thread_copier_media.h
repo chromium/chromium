@@ -38,6 +38,8 @@ namespace media {
 class AudioBus;
 class AudioParameters;
 struct AudioGlitchInfo;
+template <typename T>
+class TypedStatus;
 class VideoFrame;
 struct VideoCaptureFeedback;
 struct VideoTransformation;
@@ -60,6 +62,12 @@ struct CrossThreadCopier<media::AudioParameters>
 template <>
 struct CrossThreadCopier<media::AudioGlitchInfo>
     : public CrossThreadCopierPassThrough<media::AudioGlitchInfo> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <typename T>
+struct CrossThreadCopier<media::TypedStatus<T>>
+    : public CrossThreadCopierPassThrough<media::TypedStatus<T>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

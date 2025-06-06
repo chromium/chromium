@@ -128,11 +128,10 @@ class MediaRecorderEncoderWrapperTest
 
  protected:
   MOCK_METHOD(void, CreateEncoder, (), ());
-  MOCK_METHOD(void, OnError, (const media::EncoderStatus&), ());
+  MOCK_METHOD(void, OnError, (media::EncoderStatus), ());
   MOCK_METHOD(void, MockVideoEncoderWrapperDtor, (), ());
 
-  std::unique_ptr<media::VideoEncoder> CreateMockVideoEncoder(
-      media::GpuVideoAcceleratorFactories* /*gpu_factories*/) {
+  std::unique_ptr<media::VideoEncoder> CreateMockVideoEncoder() {
     CreateEncoder();
     return std::make_unique<MockVideoEncoderWrapper>(
         &mock_encoder_,
@@ -145,14 +144,15 @@ class MediaRecorderEncoderWrapperTest
     encoder_wrapper_ = std::make_unique<MediaRecorderEncoderWrapper>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), profile_,
         kDefaultBitrate, is_screencast,
-        /*gpu_factories=*/nullptr,
-        WTF::BindRepeating(
+        /*is_hardware_encoder=*/false,
+        WTF::CrossThreadBindRepeating(
             &MediaRecorderEncoderWrapperTest::CreateMockVideoEncoder,
-            base::Unretained(this)),
-        WTF::BindRepeating(&MediaRecorderEncoderWrapperTest::OnEncodedVideo,
-                           base::Unretained(this)),
-        WTF::BindRepeating(&MediaRecorderEncoderWrapperTest::OnError,
-                           base::Unretained(this)));
+            WTF::CrossThreadUnretained(this)),
+        WTF::CrossThreadBindRepeating(
+            &MediaRecorderEncoderWrapperTest::OnEncodedVideo,
+            WTF::CrossThreadUnretained(this)),
+        WTF::CrossThreadBindOnce(&MediaRecorderEncoderWrapperTest::OnError,
+                                 WTF::CrossThreadUnretained(this)));
     EXPECT_EQ(is_screencast,
               encoder_wrapper_->IsScreenContentEncodingForTesting());
     auto metrics_provider =
