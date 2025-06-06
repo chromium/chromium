@@ -21,6 +21,20 @@ source_set("geometry_change_handler") {
   ]
 }
 
+source_set("starboard_player_manager") {
+  public = [ "starboard_player_manager.h" ]
+  sources = [ "starboard_player_manager.cc" ]
+  public_deps = [
+    ":client_stats_tracker",
+    ":demuxer_stream_reader",
+    "//base",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [ ":chromium_starboard_conversions" ]
+}
+
 source_set("demuxer_stream_reader") {
   public = [ "demuxer_stream_reader.h" ]
   sources = [ "demuxer_stream_reader.cc" ]
@@ -121,6 +135,23 @@ test("geometry_change_handler_test") {
     "//mojo/core/embedder",
     "//ui/display:test_support",
     "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+  ]
+}
+
+test("starboard_player_manager_test") {
+  sources = [ "starboard_player_manager_test.cc" ]
+  deps = [
+    ":starboard_player_manager",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
+    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//chromecast/starboard/media/media:test_matchers",
+    "//media",
+    "//media:test_support",
     "//ui/gfx/geometry",
   ]
 }
