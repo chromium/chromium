@@ -570,6 +570,130 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   EXPECT_EQ(result.error(), "Invalid property tree node ID");
 }
 
+class LayerContextImplUpdateDisplayTreeClipNodeTest
+    : public LayerContextImplTest {
+ protected:
+  cc::ClipNode* GetClipNodeFromActiveTree(int node_id) {
+    if (node_id < static_cast<int>(layer_context_impl_->host_impl()
+                                       ->active_tree()
+                                       ->property_trees()
+                                       ->clip_tree()
+                                       .size())) {
+      return layer_context_impl_->host_impl()
+          ->active_tree()
+          ->property_trees()
+          ->clip_tree_mutable()
+          .Node(node_id);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
+       UpdateExistingClipNodeProperties) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  // Keep parent_id same as default.
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->clip = gfx::RectF(10.f, 20.f, 30.f, 40.f);
+  // Use a valid existing transform node ID.
+  node_update->transform_id = cc::kSecondaryRootPropertyNodeId;
+  update2->clip_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::ClipNode* node_impl =
+      GetClipNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->clip, gfx::RectF(10.f, 20.f, 30.f, 40.f));
+  EXPECT_EQ(node_impl->transform_id, cc::kSecondaryRootPropertyNodeId);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest, AddRemoveClipNodes) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  uint32_t initial_node_count = layer_context_impl_->host_impl()
+                                    ->active_tree()
+                                    ->property_trees()
+                                    ->clip_tree()
+                                    .nodes()
+                                    .size();
+
+  // Add a new node.
+  auto update_add = CreateDefaultUpdate();
+  int new_node_id =
+      AddClipNode(update_add.get(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_EQ(update_add->num_clip_nodes, initial_node_count + 1);
+
+  auto result_add =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add));
+  ASSERT_TRUE(result_add.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->clip_tree()
+                .nodes()
+                .size(),
+            initial_node_count + 1);
+  cc::ClipNode* added_node_impl = GetClipNodeFromActiveTree(new_node_id);
+  ASSERT_TRUE(added_node_impl);
+  EXPECT_EQ(added_node_impl->parent_id, cc::kSecondaryRootPropertyNodeId);
+
+  // Remove the added node.
+  auto update_remove = CreateDefaultUpdate();
+  update_remove->num_clip_nodes = initial_node_count;
+  update_remove->clip_nodes.clear();
+
+  auto result_remove =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove));
+  ASSERT_TRUE(result_remove.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->clip_tree()
+                .nodes()
+                .size(),
+            initial_node_count);
+  EXPECT_FALSE(GetClipNodeFromActiveTree(new_node_id));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest, InvalidClipNodeParentId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = next_clip_id_++;  // New node
+  node_update->parent_id = 99;        // Invalid parent ID
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->clip_nodes.push_back(std::move(node_update));
+  update->num_clip_nodes = next_clip_id_;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
+       InvalidClipNodeTransformId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = 99;  // Invalid transform ID
+  update->clip_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid transform_id for clip node");
+}
+
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
     : public LayerContextImplTest,
       public ::testing::WithParamInterface<std::tuple<float, bool>> {};
