@@ -2231,64 +2231,60 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
 }
 
 CanvasResourceProvider*
-HTMLCanvasElement::GetOrCreateCanvasResourceProviderImpl() {
-  if (IsRenderingContext2D()) {
-    CanvasResourceProvider* resource_provider =
-        GetResourceProviderForCanvas2D();
-    if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
-      DCHECK(!resource_provider);
+HTMLCanvasElement::GetOrCreateCanvasResourceProviderForCanvas2D() {
+  CHECK(IsRenderingContext2D());
+  CanvasResourceProvider* resource_provider = GetResourceProviderForCanvas2D();
+  if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
+    DCHECK(!resource_provider);
+    return nullptr;
+  }
+
+  if (resource_provider) {
+    if (!resource_provider->IsValid()) {
+      // The canvas context is not lost but the provider is invalid. This
+      // happens if the GPU process dies in the middle of a render task. The
+      // canvas is notified of GPU context losses via the
+      // `NotifyGpuContextLost` callback and restoration happens in
+      // `TryRestoreContextEvent`. Both callbacks are executed in their own
+      // separate task. If the GPU context goes invalid in the middle of a
+      // render task, the canvas won't immediately know about it and canvas
+      // APIs will continue using the provider that is now invalid. We can
+      // early return here, trying to re-create the provider right away would
+      // just fail. We need to let `TryRestoreContextEvent` wait for the GPU
+      // process to up again.
       return nullptr;
     }
-
-    if (resource_provider) {
-      if (!resource_provider->IsValid()) {
-        // The canvas context is not lost but the provider is invalid. This
-        // happens if the GPU process dies in the middle of a render task. The
-        // canvas is notified of GPU context losses via the
-        // `NotifyGpuContextLost` callback and restoration happens in
-        // `TryRestoreContextEvent`. Both callbacks are executed in their own
-        // separate task. If the GPU context goes invalid in the middle of a
-        // render task, the canvas won't immediately know about it and canvas
-        // APIs will continue using the provider that is now invalid. We can
-        // early return here, trying to re-create the provider right away would
-        // just fail. We need to let `TryRestoreContextEvent` wait for the GPU
-        // process to up again.
-        return nullptr;
-      }
-      return resource_provider;
-    }
-
-    if (did_fail_to_create_resource_provider_) {
-      return nullptr;
-    }
-
-    if (!IsValidImageSize()) {
-      did_fail_to_create_resource_provider_ = true;
-      if (!Size().IsEmpty() && context_) {
-        context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-      }
-      return nullptr;
-    }
-
-    UpdatePreferred2DRasterMode();
-
-    if (!hibernation_handler_) {
-      hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-    }
-
-    resource_provider = RecreateCanvasResourceProviderFor2DContext(
-        CHECK_DEREF(hibernation_handler_.get()));
-
-    UpdateMemoryUsage();
-
-    if (context_) {
-      SetNeedsCompositingUpdate();
-    }
-
     return resource_provider;
   }
 
-  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl();
+  if (did_fail_to_create_resource_provider_) {
+    return nullptr;
+  }
+
+  if (!IsValidImageSize()) {
+    did_fail_to_create_resource_provider_ = true;
+    if (!Size().IsEmpty() && context_) {
+      context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
+    }
+    return nullptr;
+  }
+
+  UpdatePreferred2DRasterMode();
+
+  if (!hibernation_handler_) {
+    hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
+  }
+
+  resource_provider = RecreateCanvasResourceProviderFor2DContext(
+      CHECK_DEREF(hibernation_handler_.get()));
+
+  UpdateMemoryUsage();
+
+  if (context_) {
+    SetNeedsCompositingUpdate();
+  }
+
+  return resource_provider;
 }
 
 CanvasResourceProvider*

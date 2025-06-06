@@ -148,7 +148,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() override;
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() final;
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
