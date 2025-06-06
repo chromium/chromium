@@ -1,0 +1,84 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac",
+        "chromeos"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {
+            "WatermarkStyle": {
+              "fill_opacity": 10,
+              "outline_opacity": 10,
+              "font_size": 10
+            }
+          },
+          "prefs": {
+            "policy.watermark_style.fill_opacity": {
+              "value": 10
+            },
+            "policy.watermark_style.outline_opacity": {
+              "value": 10
+            },
+            "policy.watermark_style.font_size": {
+              "value": 10
+            }
+          }
+        },
+        {
+          "policies": {},
+          "prefs": {
+            "policy.watermark_style.fill_opacity": {
+              "default_value": 4
+            },
+            "policy.watermark_style.outline_opacity": {
+              "default_value": 6
+            },
+            "policy.watermark_style.font_size": {
+              "default_value": 24
+            }
+          }
+        },
+        {
+          "policies": {
+            "WatermarkStyle": {
+              "fill_opacity": 50
+            }
+          },
+          "prefs": {
+            "policy.watermark_style.fill_opacity": {
+              "value": 50
+            },
+            "policy.watermark_style.outline_opacity": {
+              "default_value": 6
+            },
+            "policy.watermark_style.font_size": {
+              "default_value": 24
+            }
+          }
+        },
+        {
+          "policies": {
+            "WatermarkStyle": {
+              "fill_opacity": 70,
+              "outline_opacity": 80
+            }
+          },
+          "prefs": {
+            "policy.watermark_style.fill_opacity": {
+              "value": 70
+            },
+            "policy.watermark_style.outline_opacity": {
+              "value": 80
+            },
+            "policy.watermark_style.font_size": {
+              "default_value": 24
+            }
+          }
+        }
+
+      ]
+    }
+  ]

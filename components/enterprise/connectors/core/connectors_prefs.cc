@@ -62,6 +62,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterListPref(kOnSecurityEventPref);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  registry->RegisterIntegerPref(kWatermarkStyleFillOpacityPref,
+                                kWatermarkStyleFillOpacityDefault);
+  registry->RegisterIntegerPref(kWatermarkStyleOutlineOpacityPref,
+                                kWatermarkStyleOutlineOpacityDefault);
+  registry->RegisterIntegerPref(kWatermarkStyleFontSizePref,
+                                kWatermarkStyleFontSizeDefault);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnFileAttachedPref);

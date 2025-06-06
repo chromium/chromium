@@ -6642,6 +6642,7 @@ static_library("browser") {
       "enterprise/watermark/settings.h",
     ]
     deps += [
+      "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//components/enterprise/watermarking",
       "//components/enterprise/watermarking/content",
     ]

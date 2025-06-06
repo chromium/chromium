@@ -261,6 +261,10 @@
 #include "components/enterprise/client_certificates/core/prefs.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/watermark/watermark_style_policy_handler.h"
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #endif
@@ -2547,6 +2551,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       false));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  handlers->AddHandler(
+      std::make_unique<WatermarkStylePolicyHandler>(chrome_schema));
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   handlers->AddHandler(
       std::make_unique<
