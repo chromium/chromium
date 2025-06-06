@@ -4,12 +4,14 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -333,12 +335,8 @@ CreateContactInfoEntityDataFromAutofillProfile(
   return entity_data;
 }
 
-std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
+AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
     const ContactInfoSpecifics& specifics) {
-  if (!AreContactInfoSpecificsValid(specifics)) {
-    return std::nullopt;
-  }
-
   std::u16string country_name_or_code =
       base::ASCIIToUTF16(specifics.address_country().value());
   std::string country_code =
@@ -438,7 +436,16 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
 
 bool AreContactInfoSpecificsValid(
     const sync_pb::ContactInfoSpecifics& specifics) {
-  return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
+  if (!base::Uuid::ParseLowercase(specifics.guid()).is_valid()) {
+    return false;
+  }
+  // H/W addresses need to meet Autofill's completeness requirements since they
+  // are read from a source that doesn't enforce them.
+  return specifics.address_type() == sync_pb::ContactInfoSpecifics::REGULAR ||
+         (base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForHomeAndWork) &&
+          IsMinimumAddress(
+              CreateAutofillProfileFromContactInfoSpecifics(specifics)));
 }
 
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(

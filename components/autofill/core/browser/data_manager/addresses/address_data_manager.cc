@@ -170,10 +170,6 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfiles(
     ProfileOrder order) const {
   std::vector<const AutofillProfile*> profiles =
       base::ToVector(profiles_, [](const AutofillProfile& p) { return &p; });
-  // Filter incomplete H/W addresses.
-  std::erase_if(profiles, [](const AutofillProfile* p) {
-    return p->IsHomeAndWorkProfile() && !IsMinimumAddress(*p);
-  });
   OrderProfiles(profiles, order);
   return profiles;
 }

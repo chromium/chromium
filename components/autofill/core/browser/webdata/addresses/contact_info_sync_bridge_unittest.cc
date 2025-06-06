@@ -42,7 +42,7 @@ constexpr char kInvalidGUID[] = "1234";
 // Matches `syncer::EntityData*` and expects that the specifics of it match
 // the `expected_profile`.
 MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
-  AutofillProfile arg_profile = *CreateAutofillProfileFromContactInfoSpecifics(
+  AutofillProfile arg_profile = CreateAutofillProfileFromContactInfoSpecifics(
       arg->specifics.contact_info());
   if (!test_api(arg_profile).EqualsIncludingUsageStats(expected_profile)) {
     *result_listener << "entry\n[" << arg_profile << "]\n"
@@ -69,7 +69,7 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
   std::vector<AutofillProfile> profiles;
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
-    profiles.push_back(*CreateAutofillProfileFromContactInfoSpecifics(
+    profiles.push_back(CreateAutofillProfileFromContactInfoSpecifics(
         data_pair.second->specifics.contact_info()));
   }
   return profiles;

@@ -783,6 +783,8 @@ TEST_F(ContactInfoSyncUtilTest,
 // ContactInfoSpecifics::address_type correctly.
 TEST_F(ContactInfoSyncUtilTest,
        CreateContactInfoEntityDataFromAutofillProfile_HWRecordTypes) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile profile = ConstructBaseProfile();
 
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
@@ -875,19 +877,9 @@ TEST_P(ContactInfoSyncUtilTest, CreateAutofillProfileFromContactInfoSpecifics) {
       GetContactInfoSpecificsForCountry(GetParam());
   AutofillProfile profile = GetAutofillProfileForCountry(GetParam());
 
-  std::optional<AutofillProfile> converted_profile =
+  AutofillProfile converted_profile =
       CreateAutofillProfileFromContactInfoSpecifics(specifics);
-  ASSERT_TRUE(converted_profile.has_value());
-  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(*converted_profile));
-}
-
-// Test that only specifics with valid GUID are converted.
-TEST_F(ContactInfoSyncUtilTest,
-       CreateAutofillProfileFromContactInfoSpecifics_InvalidGUID) {
-  ContactInfoSpecifics specifics;
-  specifics.set_guid(kInvalidGuid);
-  EXPECT_FALSE(
-      CreateAutofillProfileFromContactInfoSpecifics(specifics).has_value());
+  EXPECT_TRUE(test_api(profile).EqualsIncludingUsageStats(converted_profile));
 }
 
 // Tests that H/W address types are converted to
@@ -898,13 +890,43 @@ TEST_F(ContactInfoSyncUtilTest,
 
   specifics.set_address_type(ContactInfoSpecifics::HOME);
   EXPECT_EQ(
-      CreateAutofillProfileFromContactInfoSpecifics(specifics)->record_type(),
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).record_type(),
       AutofillProfile::RecordType::kAccountHome);
 
   specifics.set_address_type(ContactInfoSpecifics::WORK);
   EXPECT_EQ(
-      CreateAutofillProfileFromContactInfoSpecifics(specifics)->record_type(),
+      CreateAutofillProfileFromContactInfoSpecifics(specifics).record_type(),
       AutofillProfile::RecordType::kAccountWork);
+}
+
+// Tests that specifics without valid GUIDs are rejected.
+TEST_F(ContactInfoSyncUtilTest, AreContactInfoSpecificsValid_GUID) {
+  ContactInfoSpecifics specifics;
+  specifics.set_guid(kInvalidGuid);
+  EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_guid(kGuid);
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+}
+
+// Tests that for H/W addresses, minimum address requirements need to be met.
+TEST_F(ContactInfoSyncUtilTest, AreContactInfoSpecificsValid_Completeness) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
+
+  ContactInfoSpecifics specifics = ConstructBaseSpecifics();
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_address_type(ContactInfoSpecifics::HOME);
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_address_type(ContactInfoSpecifics::WORK);
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+
+  specifics.clear_address_city();
+  specifics.set_address_type(ContactInfoSpecifics::REGULAR);
+  EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_address_type(ContactInfoSpecifics::HOME);
+  EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
+  specifics.set_address_type(ContactInfoSpecifics::HOME);
+  EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
 }
 
 // Tests that if a token's `value` changes by external means, its observations
@@ -931,10 +953,9 @@ TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
 
   // Simulate syncing the `specifics` back to Autofill. Expect that the
   // NAME_FIRST observations are cleared.
-  std::optional<AutofillProfile> updated_profile =
+  AutofillProfile updated_profile =
       CreateAutofillProfileFromContactInfoSpecifics(*specifics);
-  ASSERT_TRUE(updated_profile.has_value());
-  EXPECT_TRUE(updated_profile->token_quality()
+  EXPECT_TRUE(updated_profile.token_quality()
                   .GetObservationTypesForFieldType(NAME_FIRST)
                   .empty());
 }

@@ -115,23 +115,19 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_UPDATE: {
         // Deserialize the ContactInfoSpecifics and add/update them in the DB.
         DCHECK(change->data().specifics.has_contact_info());
-        std::optional<AutofillProfile> remote =
-            CreateAutofillProfileFromContactInfoSpecifics(
-                change->data().specifics.contact_info());
-        // Since the specifics are guaranteed to be valid by
-        // `IsEntityDataValid()`, the conversion will succeed.
-        DCHECK(remote);
+        AutofillProfile remote = CreateAutofillProfileFromContactInfoSpecifics(
+            change->data().specifics.contact_info());
         // Since the distinction between adds and updates is not always clear,
         // we check the existence of the profile manually and act accordingly.
         // TODO(crbug.com/40100455): Consider adding an AddOrUpdate() function
         // to AutofillTable's API.
-        if (GetAutofillTable()->GetAutofillProfile(remote->guid())) {
-          if (!GetAutofillTable()->UpdateAutofillProfile(*remote)) {
+        if (GetAutofillTable()->GetAutofillProfile(remote.guid())) {
+          if (!GetAutofillTable()->UpdateAutofillProfile(remote)) {
             return syncer::ModelError(FROM_HERE,
                                       "Failed to update profile in table.");
           }
         } else {
-          if (!GetAutofillTable()->AddAutofillProfile(*remote)) {
+          if (!GetAutofillTable()->AddAutofillProfile(remote)) {
             return syncer::ModelError(FROM_HERE,
                                       "Failed to add profile to table.");
           }

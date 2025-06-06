@@ -80,7 +80,9 @@ class CountryDataMap {
       const std::string& country_code) const;
 
   // Return a constant reference to a vector of all country codes.
-  const std::vector<std::string>& country_codes() { return country_codes_; }
+  const std::vector<std::string>& country_codes() const {
+    return country_codes_;
+  }
 
  private:
   CountryDataMap();
