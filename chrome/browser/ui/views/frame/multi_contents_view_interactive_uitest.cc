@@ -239,8 +239,17 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActiveContentsViewHasFocus) {
 
 // Split view active tab change while browser window doesn't have focus. This
 // is used to simulate tab switching scenarios using Tab Search
+// TODO(https://crbug.com/422941990): Flaky (times out) on Linux and Windows
+// debug bots.
+#if !defined(NDEBUG) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
+#define MAYBE_TabChangeInSplitViewWithInactiveBrowserWindow \
+  DISABLED_TabChangeInSplitViewWithInactiveBrowserWindow
+#else
+#define MAYBE_TabChangeInSplitViewWithInactiveBrowserWindow \
+  TabChangeInSplitViewWithInactiveBrowserWindow
+#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
-                       TabChangeInSplitViewWithInactiveBrowserWindow) {
+                       MAYBE_TabChangeInSplitViewWithInactiveBrowserWindow) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
   RunTestSequence(
@@ -263,8 +272,17 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 // Switch to the not last used tab inside a split view from a not split tab
 // while the browser is inactive. This is used to simulate tab switching
 // scenarios using Tab Search
+// TODO(https://crbug.com/422941990): Flaky (times out) on Linux and Windows
+// debug bots.
+#if !defined(NDEBUG) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX))
+#define MAYBE_SwitchToSplitViewWithInactiveBrowserWindow \
+  DISABLED_SwitchToSplitViewWithInactiveBrowserWindow
+#else
+#define MAYBE_SwitchToSplitViewWithInactiveBrowserWindow \
+  SwitchToSplitViewWithInactiveBrowserWindow
+#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
-                       SwitchToSplitViewWithInactiveBrowserWindow) {
+                       MAYBE_SwitchToSplitViewWithInactiveBrowserWindow) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
   RunTestSequence(
