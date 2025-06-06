@@ -1014,11 +1014,30 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   // Generate the URL to fetch.
   GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
 
+  HttpMethod request_method;
+  std::string request_string;
+  if (lens::features::
+          SendClientContextToClusterInfoRequestForContextualSuggest()) {
+    request_method = HttpMethod::kPost;
+
+    // Create the client context to include in the request.
+    lens::LensOverlayClientContext client_context = CreateClientContext();
+    lens::LensOverlayServerClusterInfoRequest request;
+    request.set_enable_search_session_id(true);
+    request.set_surface(client_context.surface());
+    request.set_platform(client_context.platform());
+    request.mutable_rendering_context()->CopyFrom(
+        client_context.rendering_context());
+    CHECK(request.SerializeToString(&request_string));
+  } else {
+    request_method = HttpMethod::kGet;
+  }
+
   // Create the EndpointFetcher, responsible for making the request using our
   // given params. Store in class variable to keep endpoint fetcher alive until
   // the request is made.
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
-      /*request_string=*/std::string(), fetch_url, HttpMethod::kGet,
+      std::move(request_string), fetch_url, request_method,
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
       request_headers, cors_exempt_headers, base::DoNothing());
 

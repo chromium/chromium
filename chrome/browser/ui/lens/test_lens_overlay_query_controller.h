@@ -188,6 +188,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_upload_chunk_requests_sent_;
   }
 
+  const std::optional<lens::LensOverlayServerClusterInfoRequest>&
+  last_cluster_info_request() const {
+    return last_cluster_info_request_;
+  }
+
   int latency_gen_204_counter(
       lens::LensOverlayGen204Controller::LatencyType latency_type) const {
     auto it = latency_gen_204_counter_.find(latency_type);
@@ -402,6 +407,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The number of upload chunk requests sent by the query controller.
   int num_upload_chunk_requests_sent_ = 0;
+
+  // The last cluster info request received.
+  std::optional<lens::LensOverlayServerClusterInfoRequest>
+      last_cluster_info_request_;
 
   // The last encoded request id attached to a latency gen204 ping.
   std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id_;

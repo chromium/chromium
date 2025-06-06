@@ -8,14 +8,26 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_client_context.proto";
 import "lens_overlay_client_logs.proto";
+import "lens_overlay_platform.proto";
 import "lens_overlay_routing_info.proto";
 import "lens_overlay_service_deps.proto";
+import "lens_overlay_surface.proto";
 
 // The cluster info request for a Lens Overlay session.
 message LensOverlayServerClusterInfoRequest {
   // Whether to return a search session id alongside the server session id.
   bool enable_search_session_id = 1;
+
+  // The client surface.
+  Surface surface = 2;
+
+  // The client platform.
+  Platform platform = 3;
+
+  // The rendering context.
+  RenderingContext rendering_context = 4;
 }
 
 message LensOverlayServerClusterInfoResponse {
