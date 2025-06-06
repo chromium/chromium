@@ -499,6 +499,9 @@ public class EdgeToEdgeUtils {
 
             String windowMetricsInsetsState = "";
             String windowMetricsInsetsStateTappable = "";
+            String windowMetricsInsetsStateMandatoryGestures = "";
+            String windowMetricsInsetsStateSystemGestures = "";
+            String windowMetricsInsetsStateSystemOverlays = "";
             if (Build.VERSION.SDK_INT >= VERSION_CODES.R) {
                 if (window != null
                         && window.getWindowManager() != null
@@ -521,6 +524,36 @@ public class EdgeToEdgeUtils {
                                             .toString();
                     windowMetricsInsetsStateTappable =
                             " \nwindowMetricsInsetsTappable: " + insetsStringTappable;
+
+                    var insetsStringMandatoryGestures =
+                            windowInsets == null
+                                    ? "null"
+                                    : windowInsets
+                                            .getInsets(
+                                                    WindowInsetsCompat.Type
+                                                            .mandatorySystemGestures())
+                                            .toString();
+                    windowMetricsInsetsStateMandatoryGestures =
+                            " \nwindowMetricsInsetsMandatoryGestures: "
+                                    + insetsStringMandatoryGestures;
+
+                    var insetsStringSystemGestures =
+                            windowInsets == null
+                                    ? "null"
+                                    : windowInsets
+                                            .getInsets(WindowInsetsCompat.Type.systemGestures())
+                                            .toString();
+                    windowMetricsInsetsStateSystemGestures =
+                            " \nwindowMetricsInsetsSystemGestures: " + insetsStringSystemGestures;
+
+                    var insetsStringSystemOverlays =
+                            windowInsets == null
+                                    ? "null"
+                                    : windowInsets
+                                            .getInsets(WindowInsetsCompat.Type.systemOverlays())
+                                            .toString();
+                    windowMetricsInsetsStateSystemOverlays =
+                            " \nwindowMetricsInsetsSystemOverlays: " + insetsStringSystemOverlays;
                 }
             }
 
@@ -535,7 +568,10 @@ public class EdgeToEdgeUtils {
                             + rawWindowInsetsIgnoringVisibilityState
                             + rawWindowInsetsTappableState
                             + windowMetricsInsetsState
-                            + windowMetricsInsetsStateTappable);
+                            + windowMetricsInsetsStateTappable
+                            + windowMetricsInsetsStateMandatoryGestures
+                            + windowMetricsInsetsStateSystemGestures
+                            + windowMetricsInsetsStateSystemOverlays);
         }
 
         /** Returns whether the the instance has uploaded any report. */
