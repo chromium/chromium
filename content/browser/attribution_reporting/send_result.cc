@@ -6,29 +6,29 @@
 
 #include <variant>
 
-#include "base/functional/overloaded.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace content {
 
 SendResult::Status SendResult::status() const {
   return std::visit(
-      base::Overloaded{[](Sent sent) {
-                         switch (sent.result) {
-                           case Sent::Result::kSent:
-                             return Status::kSent;
-                           case Sent::Result::kTransientFailure:
-                             return Status::kTransientFailure;
-                           case Sent::Result::kFailure:
-                             return Status::kFailure;
-                         }
-                       },
-                       [](Dropped) { return Status::kDropped; },
-                       [](Expired) { return Status::kExpired; },
-                       [](AssemblyFailure failure) {
-                         return failure.transient
-                                    ? Status::kTransientAssemblyFailure
-                                    : Status::kAssemblyFailure;
-                       }},
+      absl::Overload{[](Sent sent) {
+                       switch (sent.result) {
+                         case Sent::Result::kSent:
+                           return Status::kSent;
+                         case Sent::Result::kTransientFailure:
+                           return Status::kTransientFailure;
+                         case Sent::Result::kFailure:
+                           return Status::kFailure;
+                       }
+                     },
+                     [](Dropped) { return Status::kDropped; },
+                     [](Expired) { return Status::kExpired; },
+                     [](AssemblyFailure failure) {
+                       return failure.transient
+                                  ? Status::kTransientAssemblyFailure
+                                  : Status::kAssemblyFailure;
+                     }},
       result);
 }
 

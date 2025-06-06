@@ -26,7 +26,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -77,6 +76,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -2407,7 +2407,7 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
           registration_type] = std::move(pending_decode);
 
   AttributionReportingIssueType issue_type = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](SourceRegistrationError) {
             return AttributionReportingIssueType::kInvalidRegisterSourceHeader;
           },

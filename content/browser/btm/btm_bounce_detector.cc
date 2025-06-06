@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +47,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -338,7 +338,7 @@ void BtmRedirectContext::HandleUncommitted(
   // Uncommitted navigations leave the user on the last-committed page; use that
   // for `final_url`.
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](BtmRedirectInfoPtr client_redirect) {
             // The uncommitted navigation began with a client redirect, so its
             // chain is considered an extension of *this*
@@ -385,7 +385,7 @@ void BtmRedirectContext::AppendCommitted(
   // `BtmBounceDetector::client_bounce_detection_timer_` timedout, grow the
   // chain. Otherwise, end it.
   std::visit(  //
-      base::Overloaded{
+      absl::Overload{
           [this](BtmRedirectInfoPtr client_redirect) {
             // The committed navigation began with a client redirect, so extend
             // the in-progress redirect chain.

@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -47,6 +46,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -1394,7 +1394,7 @@ AttributionResolverImpl::MaybeStoreEventLevelReport(
   };
 
   std::optional<CreateReportResult::EventLevel> result = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](ReplaceReportError)
               -> std::optional<CreateReportResult::EventLevel> {
             return CreateReportResult::InternalError();

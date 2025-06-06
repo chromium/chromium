@@ -8,9 +8,9 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace content {
 
@@ -46,7 +46,7 @@ StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
 
 Status StoreSourceResult::status() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](Success) {
             return is_noised_ ? Status::kSuccessNoised : Status::kSuccess;
           },

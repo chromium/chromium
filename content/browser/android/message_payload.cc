@@ -13,8 +13,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 
@@ -64,7 +64,7 @@ base::android::ScopedJavaLocalRef<jobject> ConvertWebMessagePayloadToJava(
     const blink::WebMessagePayload& payload) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [env](const std::u16string& str) {
             return Java_MessagePayloadJni_createFromString(
                 env, base::android::ConvertUTF16ToJavaString(env, str));

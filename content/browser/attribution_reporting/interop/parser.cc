@@ -18,7 +18,6 @@
 
 #include "base/check.h"
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,6 +37,7 @@
 #include "net/http/http_version.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 
@@ -90,7 +90,7 @@ std::ostream& operator<<(std::ostream& out, const ContextPath& path) {
   }
 
   for (Context context : path) {
-    std::visit(base::Overloaded{
+    std::visit(absl::Overload{
                    [&](std::string_view key) { out << "[\"" << key << "\"]"; },
                    [&](size_t index) { out << '[' << index << ']'; },
                },

@@ -30,7 +30,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -94,6 +93,7 @@
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -1629,7 +1629,7 @@ void AttributionStorageSql::ClearDataWithFilter(
   // The deletion of OS-registration data doesn't need to be atomic with respect
   // to deletion of web-registration data as they're completely independent.
   StoragePartition::StorageKeyMatcherFunction filter = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](StoragePartition::StorageKeyMatcherFunction filter_cb) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
             os_registrations_table_.ClearDataForOriginsInRange(
@@ -2091,28 +2091,28 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
         int num_event_reports_deleted = 0;
         int num_aggregatable_reports_deleted = 0;
         bool ok = std::visit(
-            base::Overloaded{[](std::monostate) { return true; },
-                             [&](const StoredSource::Id id)
-                                 VALID_CONTEXT_REQUIRED(sequence_checker_) {
-                                   auto ids = base::span_from_ref(id);
-                                   if (!DeleteSources(ids)) {
-                                     return false;
-                                   }
-                                   num_sources_deleted++;
+            absl::Overload{[](std::monostate) { return true; },
+                           [&](const StoredSource::Id id)
+                               VALID_CONTEXT_REQUIRED(sequence_checker_) {
+                                 auto ids = base::span_from_ref(id);
+                                 if (!DeleteSources(ids)) {
+                                   return false;
+                                 }
+                                 num_sources_deleted++;
 
-                                   return ClearReportsForSourceIds(
-                                       ids, num_event_reports_deleted,
-                                       num_aggregatable_reports_deleted);
-                                 },
-                             [&](AttributionReport::Id id)
-                                 VALID_CONTEXT_REQUIRED(sequence_checker_) {
-                                   bool success = DeleteReportInternal(id);
-                                   if (success) {
-                                     // Increment arbitrary counter.
-                                     num_event_reports_deleted++;
-                                   }
-                                   return success;
-                                 }},
+                                 return ClearReportsForSourceIds(
+                                     ids, num_event_reports_deleted,
+                                     num_aggregatable_reports_deleted);
+                               },
+                           [&](AttributionReport::Id id)
+                               VALID_CONTEXT_REQUIRED(sequence_checker_) {
+                                 bool success = DeleteReportInternal(id);
+                                 if (success) {
+                                   // Increment arbitrary counter.
+                                   num_event_reports_deleted++;
+                                 }
+                                 return success;
+                               }},
             corruption_case.source_or_report_id);
         if (!ok || !transaction.Commit()) {
           return;

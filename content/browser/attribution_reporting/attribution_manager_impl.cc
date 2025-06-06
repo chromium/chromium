@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -98,6 +97,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -354,7 +354,7 @@ void LogAggregatableReportHistogramCustomTimes(const char* suffix,
 // to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const AttributionReport::EventLevelData&) {
             // Use a large time range to capture users that might not open the
             // browser for a long time while a conversion report is pending.
@@ -1249,7 +1249,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // from storage.
 
   std::optional<base::Time> new_report_time =
-      std::visit(base::Overloaded{
+      std::visit(absl::Overload{
                      [&](SendResult::Sent sent) -> std::optional<base::Time> {
                        switch (sent.result) {
                          case SendResult::Sent::Result::kSent:

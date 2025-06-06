@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/functional/overloaded.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
@@ -24,6 +23,7 @@
 #include "content/public/utility/content_utility_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace variations {
 class VariationsIdsProvider;
@@ -170,7 +170,7 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
 MATCHER_P(InvokedInMatcher, process_type, "") {
   // `arg` is an std::variant. Return true if the type held by the variant is
   // correct for `process_type` (empty means the browser process).
-  return std::visit(base::Overloaded{
+  return std::visit(absl::Overload{
                         [&](ContentMainDelegate::InvokedInBrowserProcess) {
                           return process_type.empty();
                         },

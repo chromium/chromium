@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -55,6 +54,7 @@
 #include "net/http/structured_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -877,7 +877,7 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
 }
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](SendResult::Sent sent) { out << sent; },
                  [&](SendResult::Dropped) { out << "{Dropped={}}"; },
                  [&](SendResult::Expired) { out << "{Expired={}}"; },

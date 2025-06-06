@@ -10,12 +10,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/overloaded.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace content {
 
@@ -90,7 +90,7 @@ CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
 
 EventLevelResult CreateReportResult::event_level_status() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const EventLevelSuccess& v) {
             return v.replaced_report.has_value()
                        ? EventLevelResult::kSuccessDroppedLowerPriority
@@ -147,7 +147,7 @@ EventLevelResult CreateReportResult::event_level_status() const {
 
 AggregatableResult CreateReportResult::aggregatable_status() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const AggregatableSuccess&) {
             return AggregatableResult::kSuccess;
           },
@@ -232,7 +232,7 @@ AttributionReport* CreateReportResult::new_aggregatable_report() {
 const AttributionReport* CreateReportResult::dropped_event_level_report()
     const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const PriorityTooLow& v) { return &v.dropped_report; },
           [](const ExcessiveEventLevelReports& v) { return &v.dropped_report; },
           [](const auto&) -> const AttributionReport* { return nullptr; }},

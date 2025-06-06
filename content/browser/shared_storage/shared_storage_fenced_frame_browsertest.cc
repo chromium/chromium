@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -63,6 +62,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -136,7 +136,7 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
                                    const FencedFrameNavigationTarget& target) {
     return EvalJs(
         root,
-        std::visit(base::Overloaded{
+        std::visit(absl::Overload{
                        [](const GURL& url) {
                          return JsReplace(
                              "f.config = new FencedFrameConfig($1);", url);

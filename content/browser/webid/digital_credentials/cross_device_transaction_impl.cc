@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
@@ -21,6 +20,7 @@
 #include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
@@ -225,7 +225,7 @@ void TransactionImpl::OnHaveResponse(
     FIDO_LOG(EVENT) << "Have response from digital identity request.";
     std::move(callback_).Run(std::move(response).value());
   } else {
-    std::visit(base::Overloaded{
+    std::visit(absl::Overload{
                    [this](ProtocolError error) {
                      FIDO_LOG(EVENT)
                          << "Protocol error from digital identity request: "

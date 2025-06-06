@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,6 +38,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -83,7 +83,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
   };
 
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](StoreSourceResult::ProhibitedByBrowserPolicy) {
             return std::optional<DebugDataTypeAndBody>();
           },
@@ -152,7 +152,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::EventLevel& result) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const CreateReportResult::EventLevelSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
           },
@@ -231,7 +231,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::Aggregatable& result) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const CreateReportResult::AggregatableSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
           },

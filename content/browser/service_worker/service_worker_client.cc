@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
@@ -38,6 +37,7 @@
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_running_status_callback.mojom.h"
@@ -431,7 +431,7 @@ blink::mojom::ServiceWorkerClientType ServiceWorkerClient::GetClientType()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::visit(
-      base::Overloaded(
+      absl::Overload(
           [](GlobalRenderFrameHostId render_frame_host_id) {
             return blink::mojom::ServiceWorkerClientType::kWindow;
           },
@@ -639,7 +639,7 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
   const url::Origin origin = url::Origin::Create(url);
 
   const std::optional<blink::StorageKey> storage_key = std::visit(
-      base::Overloaded(
+      absl::Overload(
           [&](GlobalRenderFrameHostId render_frame_host_id) {
             if (is_initiated_by_prefetch_) {
               // Falls back to the `CreateFromOriginAndIsolationInfo()` case

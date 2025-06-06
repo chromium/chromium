@@ -23,7 +23,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -70,6 +69,7 @@
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1657,7 +1657,7 @@ TEST_F(AttributionStorageSqlTest,
     CloseDatabase();
 
     std::string metadata =
-        std::visit(base::Overloaded{
+        std::visit(absl::Overload{
                        [](const AttributionEventLevelMetadataRecord& record) {
                          return SerializeReportMetadata(record);
                        },
@@ -1907,7 +1907,7 @@ TEST_F(AttributionStorageSqlTest,
     CloseDatabase();
 
     std::string metadata =
-        std::visit(base::Overloaded{
+        std::visit(absl::Overload{
                        [](const AttributionAggregatableMetadataRecord& record) {
                          return SerializeReportMetadata(record);
                        },
@@ -2013,7 +2013,7 @@ TEST_F(AttributionStorageSqlTest,
     CloseDatabase();
 
     std::string metadata = std::visit(
-        base::Overloaded{
+        absl::Overload{
             [](const AttributionNullAggregatableMetadataRecord& record) {
               return SerializeReportMetadata(record);
             },

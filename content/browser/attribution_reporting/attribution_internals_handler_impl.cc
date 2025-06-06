@@ -21,7 +21,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -58,6 +57,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -169,7 +169,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
   const AttributionInfo& attribution_info = report.attribution_info();
 
   ai_mojom::WebUIReportDataPtr data = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const AttributionReport::EventLevelData& event_level_data) {
             return ai_mojom::WebUIReportData::NewEventLevelData(
                 ai_mojom::WebUIReportEventLevelData::New(
@@ -378,7 +378,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
     bool is_debug_report,
     const SendResult& info) {
   ReportStatusPtr status = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](SendResult::Sent sent) {
             return ReportStatus::NewNetworkStatus(NetworkStatus(sent.status));
           },
@@ -427,7 +427,7 @@ void AttributionInternalsHandlerImpl::OnAggregatableDebugReportSent(
   web_report->process_result = process_result;
 
   web_report->send_result = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const SendAggregatableDebugReportResult::Sent& sent) {
             return attribution_internals::mojom::
                 SendAggregatableDebugReportResult::NewNetworkStatus(

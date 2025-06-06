@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/safety_checks.h"
 #include "build/build_config.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -56,6 +55,7 @@
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -286,7 +286,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   RenderFrameHostImpl* creator_render_frame_host = nullptr;
   DedicatedWorkerHost* creator_worker = nullptr;
 
-  std::visit(base::Overloaded(
+  std::visit(absl::Overload(
                  [&](const GlobalRenderFrameHostId& render_frame_host_id) {
                    creator_render_frame_host =
                        RenderFrameHostImpl::FromID(render_frame_host_id);

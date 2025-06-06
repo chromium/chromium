@@ -16,7 +16,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -78,6 +77,7 @@
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
@@ -2389,7 +2389,7 @@ void StorageHandler::OnReportSent(const AttributionReport& report,
   std::optional<String> net_error_name;
   std::optional<int> http_status_code;
   Storage::AttributionReportingReportResult out_result = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](SendResult::Sent result) {
             if (result.status >= 0) {
               http_status_code = result.status;

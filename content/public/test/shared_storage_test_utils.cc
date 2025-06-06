@@ -10,7 +10,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -30,6 +29,7 @@
 #include "content/test/fenced_frame_test_utils.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -211,7 +211,7 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 
   EvalJsResult result =
       EvalJs(root,
-             std::visit(base::Overloaded{
+             std::visit(absl::Overload{
                             [](const GURL& url) {
                               return JsReplace(
                                   "f.config = new FencedFrameConfig($1);", url);

@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/overloaded.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +24,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -195,7 +195,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
   base::Value::Dict dict;
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const EventLevelData& data) {
             dict.Set("attribution_destination", data.destinations.ToJson());
 
@@ -242,7 +242,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
 
 AttributionReport::Type AttributionReport::GetReportType() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const EventLevelData&) {
             return AttributionReport::Type::kEventLevel;
           },
@@ -277,7 +277,7 @@ std::optional<base::Time> AttributionReport::MinReportTime(
 
 const SuitableOrigin& AttributionReport::GetSourceOrigin() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const AttributionReport::EventLevelData& data)
               -> const SuitableOrigin& { return data.source_origin; },
           [&](const AttributionReport::AggregatableData& data)

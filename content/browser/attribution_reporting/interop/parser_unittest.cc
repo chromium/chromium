@@ -12,7 +12,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
@@ -28,6 +27,7 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -652,7 +652,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
     SCOPED_TRACE(test_case.json);
 
     AttributionInteropConfig expected;
-    std::visit(base::Overloaded{
+    std::visit(absl::Overload{
                    [&](MakeAttributionConfigFunc f) {
                      f(expected.attribution_config);
                    },
