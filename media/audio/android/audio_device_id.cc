@@ -4,8 +4,7 @@
 
 #include "media/audio/android/audio_device_id.h"
 
-#include <aaudio/AAudio.h>
-
+#include <cstdint>
 #include <optional>
 #include <string_view>
 
@@ -14,12 +13,6 @@
 #include "media/audio/audio_device_description.h"
 
 namespace media::android {
-
-AudioDeviceId::AudioDeviceId(int32_t id) : id_(id) {}
-
-AudioDeviceId AudioDeviceId::Default() {
-  return AudioDeviceId(AAUDIO_UNSPECIFIED);
-}
 
 std::optional<AudioDeviceId> AudioDeviceId::NonDefault(int id) {
   if (id == AAUDIO_UNSPECIFIED) {

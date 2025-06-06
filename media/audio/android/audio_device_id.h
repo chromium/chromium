@@ -5,6 +5,8 @@
 #ifndef MEDIA_AUDIO_ANDROID_AUDIO_DEVICE_ID_H_
 #define MEDIA_AUDIO_ANDROID_AUDIO_DEVICE_ID_H_
 
+#include <aaudio/AAudio.h>
+
 #include <compare>
 #include <optional>
 #include <string_view>
@@ -17,7 +19,9 @@ namespace media::android {
 // device and string conversion.
 class MEDIA_EXPORT AudioDeviceId {
  public:
-  static AudioDeviceId Default();
+  constexpr static AudioDeviceId Default() {
+    return AudioDeviceId(AAUDIO_UNSPECIFIED);
+  }
 
   // Creates an `AudioDeviceId` representing the ID of a non-default device.
   // Returns `std::nullopt` if the default device ID is provided.
@@ -36,7 +40,7 @@ class MEDIA_EXPORT AudioDeviceId {
   std::strong_ordering operator<=>(const AudioDeviceId& other) const = default;
 
  private:
-  explicit AudioDeviceId(int32_t id);
+  constexpr explicit AudioDeviceId(int32_t id) : id_(id) {}
 
   // Numeric ID compatible with AAudio and Java Android APIs, or
   // `AAUDIO_UNSPECIFIED` in the case of the "default" device.
