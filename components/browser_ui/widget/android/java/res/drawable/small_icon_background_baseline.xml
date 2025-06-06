@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+  android:color="@color/white_alpha_20">
+  <item
+    android:id="@android:id/content"
+    android:width="@dimen/small_icon_background_size"
+    android:height="@dimen/small_icon_background_size"
+    android:gravity="center"
+    android:drawable="@drawable/default_icon_background_selector_baseline" />
+</ripple>

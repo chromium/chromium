@@ -54,7 +54,8 @@ public class BackButtonCoordinator {
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Runnable onNavigationPopupShown,
-            NavigationPopup.HistoryDelegate historyDelegate) {
+            NavigationPopup.HistoryDelegate historyDelegate,
+            boolean isWebApp) {
         mView = view;
         mTabSupplier = tabSupplier;
         mHistoryDelegate = historyDelegate;
@@ -79,7 +80,8 @@ public class BackButtonCoordinator {
                         enabledSupplier,
                         this::showNavigationPopup,
                         mView.getResources(),
-                        mView.getContext());
+                        mView.getContext(),
+                        isWebApp);
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
 

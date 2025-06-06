@@ -1037,7 +1037,8 @@ public class ToolbarManager
                             mActivityTabProvider,
                             mToolbarNavControlsEnabledSupplier,
                             /* onNavigationPopupShown= */ () -> {},
-                            historyDelegate);
+                            historyDelegate,
+                            /* isWebApp= */ false);
         }
 
         mToolbarLongPressMenuHandler =
