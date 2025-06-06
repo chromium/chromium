@@ -2069,30 +2069,25 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
 // `UpdateSearchboxStats()` once we've rolled all session-related data into a
 // single `SessionData` property on matches.
 void AutocompleteController::UpdateShownInSession(AutocompleteResult* result) {
+  // Currently, `AutocompleteClassifier::Classify()` is the only place where
+  // `omit_asynchronous_matches` is set to `true`. Therefore, this check is
+  // essentially asking "Is `UpdateShownInSession()` being invoked via
+  // `AutocompleteClassifier::Classify()`?"
+  //
+  // The internal `AutocompleteResult` generated during the match
+  // classification process is not actually shown to the user in any way, so it
+  // doesn't make sense to record session-based "suggestion shown" metrics
+  // in this particular case.
+  if (input_.omit_asynchronous_matches()) {
+    return;
+  }
+
   for (auto& match : *result) {
     result->set_suggestions_shown_in_session(input_.IsZeroSuggest(), match);
   }
 
   for (auto& match : *result) {
-    const auto [zero_prefix_search_shown, zero_prefix_url_shown] =
-        result->suggestions_shown_in_session(/*is_zero_suggest=*/true);
-    match.zero_prefix_search_suggestions_shown_in_session =
-        zero_prefix_search_shown;
-    match.zero_prefix_url_suggestions_shown_in_session = zero_prefix_url_shown;
-
-    match.zero_prefix_suggestions_shown_in_session =
-        zero_prefix_search_shown || zero_prefix_url_shown;
-
-    const auto [typed_search_shown, typed_url_shown] =
-        result->suggestions_shown_in_session(/*is_zero_suggest=*/false);
-    match.typed_search_suggestions_shown_in_session = typed_search_shown;
-    match.typed_url_suggestions_shown_in_session = typed_url_shown;
-
-    const auto [contextual_search_shown, lens_action_shown] =
-        result->contextual_suggestions_shown_in_session();
-    match.contextual_search_suggestions_shown_in_session =
-        contextual_search_shown;
-    match.lens_action_shown_in_session = lens_action_shown;
+    match.session = result->session();
   }
 }
 
