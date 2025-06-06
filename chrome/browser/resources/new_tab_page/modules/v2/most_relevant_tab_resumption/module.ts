@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './page_favicon.js';
 import '../icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {recordOccurence as recordOccurrence} from '../../../metrics_utils.js';
@@ -85,22 +85,6 @@ export class ModuleElement extends I18nMixinLit
       loadTimeData.getBoolean(
           'mostRelevantTabResumptionAllowFaviconServerFallback');
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('urlVisits') && this.urlVisits.length === 0) {
-      const urlVisit = changedProperties.get('urlVisits')![0];
-      this.fire('dismiss-module-instance', {
-        message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
-        restoreCallback: () => {
-          MostRelevantTabResumptionProxyImpl.getInstance()
-              .handler.restoreURLVisit(urlVisit);
-          this.urlVisits = [urlVisit];
-        },
-      });
-    }
-  }
-
-
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [
@@ -160,30 +144,33 @@ export class ModuleElement extends I18nMixinLit
     const urlVisitElem = (e.target! as HTMLElement).parentElement!;
     const index = Number(urlVisitElem.dataset['index']);
     const urlVisit = this.urlVisits[index];
+    assert(urlVisit);
 
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.TabResumption.VisitDismissIndex', index);
     MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissURLVisit(
-        this.urlVisits[index]);
+        urlVisit);
 
     this.urlVisits =
       [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
-    if (this.urlVisits.length > 0) {
-      this.fire('dismiss-module-element', {
-        message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
-        restoreCallback: () => {
-          chrome.metricsPrivate.recordSmallCount(
-              'NewTabPage.TabResumption.VisitRestoreIndex', index);
-          this.urlVisits = [
-            ...this.urlVisits.slice(0, index),
-            urlVisit,
-            ...this.urlVisits.slice(index),
-          ];
-          MostRelevantTabResumptionProxyImpl.getInstance()
-              .handler.restoreURLVisit(this.urlVisits[index]);
-        },
-      });
-    }
+    assert(this.urlVisits.length >= 0);
+
+    const eventName = this.urlVisits.length > 0 ? 'dismiss-module-element' :
+                                                  'dismiss-module-instance';
+    this.fire(eventName, {
+      message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
+      restoreCallback: () => {
+        chrome.metricsPrivate.recordSmallCount(
+            'NewTabPage.TabResumption.VisitRestoreIndex', index);
+        this.urlVisits = [
+          ...this.urlVisits.slice(0, index),
+          urlVisit,
+          ...this.urlVisits.slice(index),
+        ];
+        MostRelevantTabResumptionProxyImpl.getInstance()
+            .handler.restoreURLVisit(urlVisit);
+      },
+    });
   }
 
   protected onUrlVisitClick_(e: Event) {
@@ -191,6 +178,8 @@ export class ModuleElement extends I18nMixinLit
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
     const urlVisit = this.urlVisits[index];
+    assert(urlVisit);
+
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.TabResumption.ClickIndex', index);
     chrome.metricsPrivate.recordEnumerationValue(
