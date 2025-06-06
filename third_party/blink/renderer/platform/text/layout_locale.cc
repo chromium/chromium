@@ -219,12 +219,7 @@ void LayoutLocale::ComputeCaseMapLocale() const {
 LayoutLocale::LayoutLocale(const AtomicString& locale)
     : string_(locale),
       harfbuzz_language_(ToHarfbuzLanguage(locale)),
-      script_(LocaleToScriptCodeForFontSelection(locale)),
-      script_for_han_(USCRIPT_COMMON),
-      has_script_for_han_(false),
-      hyphenation_computed_(false),
-      quotes_data_computed_(false),
-      case_map_computed_(false) {}
+      script_(LocaleToScriptCodeForFontSelection(locale)) {}
 
 // static
 const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {
