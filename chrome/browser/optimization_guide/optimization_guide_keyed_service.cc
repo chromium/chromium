@@ -331,8 +331,7 @@ void OptimizationGuideKeyedService::Initialize() {
                   profile_path.Append(
                       optimization_guide::kOptimizationGuideHintStore),
                   base::ThreadPool::CreateSequencedTaskRunner(
-                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-                  profile->GetPrefs())
+                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }

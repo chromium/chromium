@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -24,13 +23,9 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/optimization_guide/core/hints/memory_hint.h"
-#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 
 namespace optimization_guide {
 
@@ -111,30 +106,19 @@ bool KeySetFilter(const base::flat_set<std::string>& key_set,
 OptimizationGuideStore::OptimizationGuideStore(
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
-    scoped_refptr<base::SequencedTaskRunner> store_task_runner,
-    PrefService* pref_service)
-    : store_task_runner_(store_task_runner), pref_service_(pref_service) {
+    scoped_refptr<base::SequencedTaskRunner> store_task_runner)
+    : store_task_runner_(store_task_runner) {
   database_ = database_provider->GetDB<proto::StoreEntry>(
       leveldb_proto::ProtoDbType::HINT_CACHE_STORE, database_dir,
       store_task_runner_);
-
   RecordStatusChange(status_);
-
-  // Clean up any file paths that were slated for deletion in previous sessions.
-  CleanUpFilePaths();
 }
 
 OptimizationGuideStore::OptimizationGuideStore(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::StoreEntry>> database,
-    scoped_refptr<base::SequencedTaskRunner> store_task_runner,
-    PrefService* pref_service)
-    : database_(std::move(database)),
-      store_task_runner_(store_task_runner),
-      pref_service_(pref_service) {
+    scoped_refptr<base::SequencedTaskRunner> store_task_runner)
+    : database_(std::move(database)), store_task_runner_(store_task_runner) {
   RecordStatusChange(status_);
-
-  // Clean up any file paths that were slated for deletion in previous sessions.
-  CleanUpFilePaths();
 }
 
 OptimizationGuideStore::~OptimizationGuideStore() {
@@ -826,52 +810,6 @@ void OptimizationGuideStore::OnLoadHint(
       entry_key,
       std::make_unique<MemoryHint>(
           expiry_time, std::unique_ptr<proto::Hint>(entry->release_hint())));
-}
-
-void OptimizationGuideStore::CleanUpFilePaths() {
-  if (!pref_service_) {
-    return;
-  }
-
-  ScopedDictPrefUpdate file_paths_to_delete_pref(
-      pref_service_, prefs::kStoreFilePathsToDelete);
-  for (const auto entry : *file_paths_to_delete_pref) {
-    std::optional<base::FilePath> path_to_delete =
-        StringToFilePath(entry.first);
-    if (!path_to_delete) {
-      // This is probably not a real file path so delete it from the pref, so we
-      // don't go through this sequence again.
-      OnFilePathDeleted(entry.first, /*success=*/true);
-      continue;
-    }
-    // Note that the delete function doesn't care whether the target is a
-    // directory or file. But in the case of a directory, it is recursively
-    // deleted.
-    //
-    // We post it to the generic thread pool since we don't really care what
-    // thread deletes it at this point as long as it gets deleted.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&base::DeletePathRecursively, *path_to_delete),
-        base::BindOnce(&OptimizationGuideStore::OnFilePathDeleted,
-                       weak_ptr_factory_.GetWeakPtr(), entry.first));
-  }
-}
-
-void OptimizationGuideStore::OnFilePathDeleted(
-    const std::string& file_path_to_clean_up,
-    bool success) {
-  if (!success) {
-    // Try to delete again later.
-    return;
-  }
-
-  // If we get here, we should have a pref service.
-  DCHECK(pref_service_);
-  ScopedDictPrefUpdate update(pref_service_, prefs::kStoreFilePathsToDelete);
-  update->Remove(file_path_to_clean_up);
 }
 
 }  // namespace optimization_guide

@@ -19,12 +19,9 @@
 #include "components/optimization_guide/core/hints/store_update_data.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -67,11 +64,6 @@ class OptimizationGuideStoreTest : public testing::Test {
   OptimizationGuideStoreTest(const OptimizationGuideStoreTest&) = delete;
   OptimizationGuideStoreTest& operator=(const OptimizationGuideStoreTest&) =
       delete;
-
-  void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterProfilePrefs(pref_service_->registry());
-  }
 
   void TearDown() override { last_loaded_hint_.reset(); }
 
@@ -164,8 +156,7 @@ class OptimizationGuideStoreTest : public testing::Test {
     db_ = db.get();
 
     guide_store_ = std::make_unique<OptimizationGuideStore>(
-        std::move(db), task_environment_.GetMainThreadTaskRunner(),
-        pref_service_.get());
+        std::move(db), task_environment_.GetMainThreadTaskRunner());
   }
 
   void InitializeDatabase(bool success, bool purge_existing_data = false) {
@@ -327,11 +318,6 @@ class OptimizationGuideStoreTest : public testing::Test {
     last_loaded_entry_key_ = hint_entry_key;
     last_loaded_hint_ = std::move(loaded_hint);
   }
-  bool IsStoreFilesToDeletePrefEmpty() {
-    const base::Value::Dict& pref_dict =
-        pref_service_->GetDict(prefs::kStoreFilePathsToDelete);
-    return pref_dict.empty();
-  }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -340,7 +326,6 @@ class OptimizationGuideStoreTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
   raw_ptr<FakeDB<proto::StoreEntry>> db_;

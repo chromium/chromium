@@ -224,7 +224,6 @@ source_set("hints") {
     ":features",
     ":filters",
     ":interfaces",
-    ":model_executor",
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
@@ -232,6 +231,7 @@ source_set("hints") {
     "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/re2",
   ]
 
   # TODO: crbug.com/421262905 - Some utilities should be extracted from
