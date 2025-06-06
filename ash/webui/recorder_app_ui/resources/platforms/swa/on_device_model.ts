@@ -120,12 +120,18 @@ abstract class OnDeviceModel<T> implements Model<T> {
     const size = await this.getInputTokenSize(text, session);
 
     if (size < MIN_TOKEN_LENGTH) {
+      console.warn(
+        `Skip GenAI model execution: too small token size: ${size}.`,
+      );
       return {
         kind: 'error',
         error: ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
       };
     }
     if (size > this.modelInfo.inputTokenLimit) {
+      console.warn(
+        `Skip GenAI model execution: too large token size: ${size}.`,
+      );
       return {
         kind: 'error',
         error: ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
@@ -168,6 +174,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     // When the model returns the canned response, show the same UI as
     // unsafe content for now.
     if (isCannedResponse(result)) {
+      console.warn('Invalid GenAI result: canned response.');
       return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
@@ -177,6 +184,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
           parsedResult,
           expectedBulletPointCount,
         )) {
+      console.warn('Invalid GenAI result: invalid format.');
       return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
@@ -189,6 +197,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
     // Show unsafe content if no valid bullet point.
     if (finalBulletPoints.length === 0) {
+      console.warn('Invalid GenAI result: no valid bullet point.');
       return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
@@ -264,6 +273,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
       return {kind: 'error', error: ModelExecutionError.GENERAL};
     }
     if (await this.contentIsUnsafe(prompt, requestSafetyFeature, language)) {
+      console.warn('Unsafe GenAI prompt.');
       return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
     const response = await this.executeRaw(
@@ -280,6 +290,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
           responseSafetyFeature,
           language,
         )) {
+      console.warn('Unsafe GenAI result.');
       return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
     return {kind: 'success', result: response.result};
@@ -508,6 +519,9 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
   override async loadAndExecute(content: string, language: LanguageCode):
     Promise<ModelResponse<T>> {
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
+      console.warn(
+        `Skip GenAI model execution: unsupported language: ${language}.`,
+      );
       return {kind: 'error', error: ModelExecutionError.UNSUPPORTED_LANGUAGE};
     }
 
