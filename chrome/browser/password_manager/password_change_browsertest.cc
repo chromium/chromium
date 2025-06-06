@@ -933,6 +933,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
 
   EXPECT_EQ(PasswordChangeDelegate::State::kOtpDetected,
             delegate->GetCurrentState());
-  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  // TODO(crbug.com/417388947): Check that dialog is displayed instead.
+  EXPECT_FALSE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 }

@@ -330,13 +330,13 @@ void PasswordChangeDelegateImpl::UpdateState(
     case State::kOfferingPasswordChange:
     case State::kPasswordChangeFailed:
     case State::kChangePasswordFormNotFound:
+    case State::kOtpDetected:
       return;
     case State::kPasswordSuccessfullyChanged:
       NotifyPasswordChangeFinishedSuccessfully(originator_);
       // Fallthrough to trigger bubble display.
       [[fallthrough]];
     case State::kWaitingForAgreement:
-    case State::kOtpDetected:
       DisplayChangePasswordBubbleAutomatically(originator_);
       break;
   }

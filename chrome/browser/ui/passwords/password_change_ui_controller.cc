@@ -24,12 +24,12 @@ bool ShouldDisplayDialog(PasswordChangeDelegate::State state) {
     case PasswordChangeDelegate::State::kOfferingPasswordChange:
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kOtpDetected:
       return true;
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kOtpDetected:
       return false;
   }
 }
@@ -83,6 +83,27 @@ std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
       .Build();
 }
 
+// Creates dialog for `PasswordChangeDelegate::State::kOtpDetected`.
+std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
+    base::OnceClosure accept_callback) {
+  return ui::DialogModel::Builder()
+      .SetBannerImage(
+          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL),
+          ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL_DARK))
+      // TODO(crbug.com/417937595): Update strings once finalized by UXW.
+      .SetTitle(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_OTP_DURING_PASSWORD_CHANGE_TITLE))
+      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_OTP_DURING_PASSWORD_CHANGE_BODY)))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_CANCEL)))
+      .AddOkButton(std::move(accept_callback),
+                   ui::DialogModel::Button::Params().SetLabel(
+                       l10n_util::GetStringUTF16(IDS_CONTINUE)))
+      .Build();
+}
+
 // Creates dialog for `state`.
 std::unique_ptr<ui::DialogModel> CreateDialog(
     PasswordChangeDelegate::State state,
@@ -96,11 +117,12 @@ std::unique_ptr<ui::DialogModel> CreateDialog(
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       return CreatePasswordChangeFailedDialog(std::move(accept_callback),
                                               /*use_error_image=*/true);
+    case PasswordChangeDelegate::State::kOtpDetected:
+      return CreateOtpDetectedDialog(std::move(accept_callback));
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kOtpDetected:
       NOTREACHED();
   }
 }
@@ -159,6 +181,7 @@ void PasswordChangeUIController::OnDialogAccepted() {
       return;
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kOtpDetected:
       password_change_delegate_->OpenPasswordChangeTab();
       password_change_delegate_->Stop();
       return;
@@ -166,7 +189,6 @@ void PasswordChangeUIController::OnDialogAccepted() {
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kOtpDetected:
       NOTREACHED();
   }
 }
