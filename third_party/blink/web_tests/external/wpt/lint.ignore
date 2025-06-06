@@ -820,6 +820,7 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-address-manual.h
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-option-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/payment-request-event-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/supports-shipping-contact-delegation-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: speech-api/SpeechRecognition-phrases-manual.https.html
 
 # Tests automatically imported from the WebAssembly/spec repository that should be removed after getting fixed upstream.
 SET TIMEOUT: wasm/core/js/harness/testharness.js
