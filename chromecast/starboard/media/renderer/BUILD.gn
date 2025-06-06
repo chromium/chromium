@@ -4,6 +4,23 @@
 
 import("//testing/test.gni")
 
+source_set("demuxer_stream_reader") {
+  public = [ "demuxer_stream_reader.h" ]
+  sources = [ "demuxer_stream_reader.cc" ]
+  public_deps = [
+    "//base",
+    "//chromecast/starboard/media/media:drm_util",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+  deps = [
+    ":chromium_starboard_conversions",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/media:starboard_resampler",
+  ]
+}
+
 source_set("chromium_starboard_conversions") {
   public = [ "chromium_starboard_conversions.h" ]
   sources = [ "chromium_starboard_conversions.cc" ]
@@ -39,6 +56,23 @@ test("client_stats_tracker_test") {
     "//base",
     "//base/test:run_all_unittests",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("demuxer_stream_reader_test") {
+  sources = [ "demuxer_stream_reader_test.cc" ]
+  deps = [
+    ":demuxer_stream_reader",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//chromecast/starboard/media/media:test_matchers",
+    "//media",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
