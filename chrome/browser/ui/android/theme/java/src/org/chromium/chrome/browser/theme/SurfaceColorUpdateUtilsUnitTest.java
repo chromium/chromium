@@ -403,7 +403,7 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testGetCardViewTextColor_NewGm3FlagDisabled_withColorId() {
-        // If GM3 flag is disabled, colorId should be ignored, and it should use fallback logic.
+
         @TabGroupColorId int testColorId = TabGroupColorId.RED;
 
         // Test non-incognito.
@@ -433,7 +433,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     public void testGetCardViewTextColor_NewGm3FlagDisabled_colorIdNull() {
-        // If GM3 flag is disabled and colorId is null, it should use fallback logic.
 
         // Test non-incognito.
         @ColorInt int expectedNonIncognito = SemanticColorUtils.getDefaultTextColor(mContext);
@@ -457,5 +456,164 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 "Text color mismatch for incognito with GM3 flag disabled and null colorId.",
                 expectedIncognito,
                 actualIncognito);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
+    public void testGetCardViewGroupNumberTextColor_gm3FlagEnabled_withColorId() {
+        @TabGroupColorId int testColorId = TabGroupColorId.CYAN;
+
+        // Test non-incognito.
+        @ColorInt
+        int expectedNonIncognito =
+                TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                        mContext, testColorId, /* isIncognito= */ false);
+        @ColorInt
+        int actualNonIncognito =
+                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                        mContext, /* isIncognito= */ false, testColorId);
+        assertEquals(
+                "Group number text color mismatch for non-incognito with GM3 flag and colorId.",
+                expectedNonIncognito,
+                actualNonIncognito);
+
+        // Test incognito.
+        @ColorInt
+        int expectedIncognito =
+                TabGroupColorPickerUtils.getTabGroupCardTextColor(
+                        mContext, testColorId, /* isIncognito= */ true);
+        @ColorInt
+        int actualIncognito =
+                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                        mContext, /* isIncognito= */ true, testColorId);
+        assertEquals(
+                "Group number text color mismatch for incognito with GM3 flag and colorId.",
+                expectedIncognito,
+                actualIncognito);
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
+    public void testGetCardViewGroupNumberTextColor_gm3FlagDisabled() {
+
+        @TabGroupColorId int testColorId = TabGroupColorId.PINK;
+
+        // Test non-incognito (fallback path).
+        @ColorInt int expectedNonIncognito = SemanticColorUtils.getDefaultTextColor(mContext);
+        @ColorInt
+        int actualNonIncognito =
+                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                        mContext, /* isIncognito= */ false, testColorId);
+        assertEquals(
+                "Group number text color mismatch for non-incognito with GM3 flag disabled (colorId"
+                        + " ignored).",
+                expectedNonIncognito,
+                actualNonIncognito);
+
+        // Test incognito (fallback path).
+        @ColorInt
+        int expectedIncognito =
+                ContextCompat.getColor(mContext, R.color.incognito_tab_tile_number_color);
+        @ColorInt
+        int actualIncognito =
+                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                        mContext, /* isIncognito= */ true, testColorId);
+        assertEquals(
+                "Group number text color mismatch for incognito with GM3 flag disabled (colorId"
+                        + " ignored).",
+                expectedIncognito,
+                actualIncognito);
+
+        // Test with a null colorId to ensure it behaves the same as with a non-null colorId when
+        // the flag is off.
+        @ColorInt
+        int actualNonIncognitoNullId =
+                SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                        mContext, /* isIncognito= */ false, /* colorId= */ null);
+        assertEquals(
+                "Group number text color should be the same for null and non-null colorId when GM3"
+                        + " flag is disabled.",
+                expectedNonIncognito,
+                actualNonIncognitoNullId);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
+    public void testGetCardViewMiniThumbnailPlaceholderColor_gm3FlagEnabled_withColorId() {
+        @TabGroupColorId int testColorId = TabGroupColorId.PURPLE;
+
+        // Test non-incognito.
+        @ColorInt
+        int expectedNonIncognito =
+                TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
+                        mContext, testColorId, /* isIncognito= */ false);
+        @ColorInt
+        int actualNonIncognito =
+                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
+                        mContext, /* isIncognito= */ false, testColorId);
+        assertEquals(
+                "Placeholder color mismatch for non-incognito with GM3 flag and colorId.",
+                expectedNonIncognito,
+                actualNonIncognito);
+
+        // Test incognito.
+        @ColorInt
+        int expectedIncognito =
+                TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
+                        mContext, testColorId, /* isIncognito= */ true);
+        @ColorInt
+        int actualIncognito =
+                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
+                        mContext, /* isIncognito= */ true, testColorId);
+        assertEquals(
+                "Placeholder color mismatch for incognito with GM3 flag and colorId.",
+                expectedIncognito,
+                actualIncognito);
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
+    public void testGetCardViewMiniThumbnailPlaceholderColor_gm3FlagDisabled() {
+
+        @TabGroupColorId int testColorId = TabGroupColorId.ORANGE;
+
+        // Test non-incognito (fallback path).
+        @ColorInt
+        int expectedNonIncognito = SemanticColorUtils.getColorSurfaceContainerLow(mContext);
+        @ColorInt
+        int actualNonIncognito =
+                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
+                        mContext, /* isIncognito= */ false, testColorId);
+        assertEquals(
+                "Placeholder color mismatch for non-incognito with GM3 flag disabled (colorId"
+                        + " ignored).",
+                expectedNonIncognito,
+                actualNonIncognito);
+
+        // Test incognito (fallback path).
+        @ColorInt
+        int expectedIncognito =
+                ContextCompat.getColor(mContext, R.color.incognito_tab_thumbnail_placeholder_color);
+        @ColorInt
+        int actualIncognito =
+                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
+                        mContext, /* isIncognito= */ true, testColorId);
+        assertEquals(
+                "Placeholder color mismatch for incognito with GM3 flag disabled (colorId"
+                        + " ignored).",
+                expectedIncognito,
+                actualIncognito);
+
+        // Test with a null colorId to ensure it behaves the same as with a non-null colorId when
+        // the flag is off.
+        @ColorInt
+        int actualNonIncognitoNullId =
+                SurfaceColorUpdateUtils.getCardViewMiniThumbnailPlaceholderColor(
+                        mContext, /* isIncognito= */ false, /* colorId= */ null);
+        assertEquals(
+                "Placeholder color should be the same for null and non-null colorId when GM3 flag"
+                        + " is disabled.",
+                expectedNonIncognito,
+                actualNonIncognitoNullId);
     }
 }

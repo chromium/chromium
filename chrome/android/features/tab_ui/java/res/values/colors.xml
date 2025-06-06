@@ -23,7 +23,6 @@ found in the LICENSE file.
     <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
     <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_80_alpha_10</color>
 
-    <color name="incognito_tab_tile_number_color">@color/baseline_neutral_90</color>
     <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_20</color>
 
     <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_80</color>

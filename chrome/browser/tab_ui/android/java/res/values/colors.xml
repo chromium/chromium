@@ -13,4 +13,6 @@ found in the LICENSE file.
   <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_20_alpha_38</color>
 
   <color name="incognito_tab_bg_selected_color">@color/baseline_primary_80</color>
+
+  <color name="incognito_tab_tile_number_color">@color/baseline_neutral_90</color>
 </resources>

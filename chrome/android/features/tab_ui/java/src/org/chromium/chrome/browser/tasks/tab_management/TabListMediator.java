@@ -671,6 +671,7 @@ class TabListMediator implements TabListNotificationHandler {
                     updateTabGroupColorViewProvider(model, tab, newColor);
                     updateDescriptionString(tab, model);
                     updateActionButtonDescriptionString(tab, model);
+                    updateThumbnailFetcher(model, rootId);
                 }
 
                 @Override
@@ -2140,7 +2141,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     private String getDomainForTab(Tab tab) {
         if (!mActionsOnAllRelatedTabs) return getDomain(tab);
-
         List<Tab> relatedTabs = getRelatedTabsForId(tab.getId());
 
         List<String> domainNames = new ArrayList<>();

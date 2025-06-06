@@ -160,7 +160,7 @@ public class SurfaceColorUpdateUtils {
      *
      * @param context {@link Context} used to retrieve colors.
      * @param isIncognito Whether the color is used for incognito mode.
-     * @param colorId User chosen color ID.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
      * @return The background color.
      */
     public static @ColorInt int getCardViewBackgroundColor(
@@ -187,12 +187,13 @@ public class SurfaceColorUpdateUtils {
     }
 
     /**
-     * Returns the text color for the card view in grid tab switcher on the enabled flag
+     * Returns the text color for the card view in grid tab switcher on the enabled flag and
+     * incognito.
      *
      * @param context {@link Context} used to retrieve colors.
      * @param isIncognito Whether the color is used for incognito mode.
-     * @param colorId USer chosen color ID.
-     * @return The text color.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
+     * @return The text appearance for the tab grid card title.
      */
     public static @ColorInt int getCardViewTextColor(
             Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
@@ -201,6 +202,46 @@ public class SurfaceColorUpdateUtils {
         }
         return isIncognito
                 ? context.getColor(R.color.incognito_tab_title_color)
+                : SemanticColorUtils.getDefaultTextColor(context);
+    }
+
+    /**
+     * Returns the placeholder color for the card view in grid tab switcher on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
+     * @return The mini-thumbnail placeholder color.
+     */
+    public static @ColorInt int getCardViewMiniThumbnailPlaceholderColor(
+            Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardMiniThumbnailPlaceholderColor(
+                    context, colorId, isIncognito);
+        }
+        if (isIncognito) {
+            return context.getColor(R.color.incognito_tab_thumbnail_placeholder_color);
+        }
+        return SemanticColorUtils.getColorSurfaceContainerLow(context);
+    }
+
+    /**
+     * Returns the text color used for the card view in grid tab switcher on the enabled flag and
+     * incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
+     * @return The text color for the number used on the tab group cards.
+     */
+    public static @ColorInt int getCardViewGroupNumberTextColor(
+            Context context, boolean isIncognito, @Nullable @TabGroupColorId Integer colorId) {
+        if (useNewGm3GtsTabGroupColors() && colorId != null) {
+            return TabGroupColorPickerUtils.getTabGroupCardTextColor(context, colorId, isIncognito);
+        }
+        return isIncognito
+                ? context.getColor(R.color.incognito_tab_tile_number_color)
                 : SemanticColorUtils.getDefaultTextColor(context);
     }
 

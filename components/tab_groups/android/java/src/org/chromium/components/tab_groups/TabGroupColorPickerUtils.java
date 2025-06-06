@@ -190,6 +190,54 @@ public class TabGroupColorPickerUtils {
         };
     }
 
+    /**
+     * Get the color corresponding to the color id that is passed in. Adjust the color depending on
+     * light/dark/incognito mode as well as dynamic color themes. This function should only be used
+     * for retrieving items from the tab group card mini thumbnail placeholder color.
+     *
+     * @param context The current context.
+     * @param colorId The color id corresponding to the color item in the color picker.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     */
+    public static @ColorInt int getTabGroupCardMiniThumbnailPlaceholderColor(
+            Context context, @TabGroupColorId int colorId, boolean isIncognito) {
+        @ColorRes int colorRes = getTabGroupCardMiniThumbnailPlaceholderColorResource(colorId);
+        return resolveGroupRelatedColor(context, colorRes, isIncognito);
+    }
+
+    /**
+     * Get the color resource corresponding to the respective color item. This function should only
+     * be used for retrieving items from the tab group color.
+     *
+     * @param colorId The color id corresponding to the color of the Tab Group.
+     */
+    public static @ColorRes int getTabGroupCardMiniThumbnailPlaceholderColorResource(
+            @TabGroupColorId int colorId) {
+        switch (colorId) {
+            case TabGroupColorId.GREY:
+                return R.color.tab_group_card_placeholder_color_grey;
+            case TabGroupColorId.BLUE:
+                return R.color.tab_group_card_placeholder_color_blue;
+            case TabGroupColorId.RED:
+                return R.color.tab_group_card_placeholder_color_red;
+            case TabGroupColorId.YELLOW:
+                return R.color.tab_group_card_placeholder_color_yellow;
+            case TabGroupColorId.GREEN:
+                return R.color.tab_group_card_placeholder_color_green;
+            case TabGroupColorId.PINK:
+                return R.color.tab_group_card_placeholder_color_pink;
+            case TabGroupColorId.PURPLE:
+                return R.color.tab_group_card_placeholder_color_purple;
+            case TabGroupColorId.CYAN:
+                return R.color.tab_group_card_placeholder_color_cyan;
+            case TabGroupColorId.ORANGE:
+                return R.color.tab_group_card_placeholder_color_orange;
+            default:
+                assert false : "Invalid tab group text color id " + colorId;
+                return Resources.ID_NULL;
+        }
+    }
+
     private static @ColorInt int resolveGroupRelatedColor(
             Context context, @ColorRes int colorRes, boolean isIncognito) {
         @ColorInt int color = ContextCompat.getColor(context, colorRes);

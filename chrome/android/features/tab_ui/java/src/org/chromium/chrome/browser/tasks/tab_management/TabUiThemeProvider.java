@@ -15,10 +15,12 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Utility class that provides theme related attributes for Tab UI. */
 @NullMarked
@@ -41,22 +43,21 @@ public class TabUiThemeProvider {
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param isSelected Whether the tab is currently selected.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
      * @return The text color for the number used on the tab group cards.
      */
     public static @ColorInt int getTabGroupNumberTextColor(
-            Context context, boolean isIncognito, boolean isSelected) {
-        if (isIncognito) {
-            @ColorRes
-            int colorRes =
-                    isSelected
-                            ? R.color.incognito_tab_tile_number_selected_color
-                            : R.color.incognito_tab_tile_number_color;
-            return context.getColor(colorRes);
-        } else {
-            return isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
+        if (isSelected) {
+            return isIncognito
+                    ? context.getColor(R.color.incognito_tab_tile_number_selected_color)
+                    : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
         }
+        return SurfaceColorUpdateUtils.getCardViewGroupNumberTextColor(
+                context, isIncognito, colorId);
     }
 
     /**

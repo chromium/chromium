@@ -233,7 +233,7 @@ public class TabThumbnailView extends ImageView {
         // Step 1: Background color.
         mBackgroundDrawable.setColor(
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(
-                        getContext(), isIncognito, isSelected));
+                        getContext(), isIncognito, isSelected, colorId));
         final int oldColor = mPaint.getColor();
         final int newColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
