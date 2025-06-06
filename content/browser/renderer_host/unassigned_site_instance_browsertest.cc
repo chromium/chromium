@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
   }
 
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
   }
 
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
   }
 
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
   }
 
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(iframe_si->HasSite());
   EXPECT_EQ(iframe_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(iframe_si->IsDefaultSiteInstance());
   }
 
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(iframe_si->HasSite());
   EXPECT_EQ(iframe_si, original_si);
 
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_TRUE(iframe_si->IsDefaultSiteInstance());
   }
 
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
       original_rfh->child_at(0)->current_frame_host()->GetSiteInstance();
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_FALSE(post_navigation_si->HasSite());
     EXPECT_TRUE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
   } else {
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_EQ(instance1,
             web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_TRUE(instance1->HasSite());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(RegularUrlOriginMaybeWithPort(), instance1->GetSiteURL());
   } else {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), other_regular_url));
   exit_observer.Wait();
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(instance1,
               web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   } else {
@@ -745,6 +745,12 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   if (AreAllSitesIsolatedForTesting()) {
     // In site-per-process, we cannot use foo.com's SiteInstance for a.com.
     EXPECT_FALSE(instance1->IsSuitableForUrlInfo(
+        UrlInfo::CreateForTesting(embedder_defined_unassigned_url())));
+  } else if (AreStrictSiteInstancesEnabled()) {
+    // If neither foo.com nor a.com require dedicated processes, and we're using
+    // default SiteInstanceGroup instead of default SiteInstance, then we can
+    // use the same process.
+    EXPECT_TRUE(instance1->IsSuitableForUrlInfo(
         UrlInfo::CreateForTesting(embedder_defined_unassigned_url())));
   } else {
     // Since |instance1| is a default SiteInstance AND this test explicitly
