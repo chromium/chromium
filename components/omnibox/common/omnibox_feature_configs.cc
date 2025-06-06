@@ -300,7 +300,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
 
   realbox_unscoped_suggestions =
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "realbox_unscoped_suggestions", false)
+                               "realbox_unscoped_suggestions", true)
           .Get();
 
   scoring_max_matches_created_per_type =
