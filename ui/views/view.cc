@@ -310,8 +310,7 @@ View::~View() {
 // Tree operations -------------------------------------------------------------
 
 const Widget* View::GetWidget() const {
-  // The root view holds a reference to this view hierarchy's Widget.
-  return parent_ ? parent_->GetWidget() : nullptr;
+  return widget_;
 }
 
 Widget* View::GetWidget() {
@@ -2988,6 +2987,14 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   const auto pos = children_.insert(
       std::next(children_.cbegin(), static_cast<ptrdiff_t>(index)), view);
 
+  // If the view was previously attached to a widget before being added here,
+  // its Widget pointer will already be cached. Propagate it to the new child.
+  // This must be done now because the functions below may call `GetWidget()`.
+  Widget* widget = GetWidget();
+  if (widget) {
+    view->SetWidget(widget);
+  }
+
   view->RemoveFromFocusList();
   SetFocusSiblings(view, pos);
 
@@ -2995,7 +3002,6 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // code. This way if client code further modifies the view tree we are in a
   // sane state.
   const bool did_reparent_any_layers = view->UpdateParentLayers();
-  Widget* widget = GetWidget();
   if (did_reparent_any_layers && widget) {
     widget->LayerTreeChanged();
   }
@@ -3147,6 +3153,7 @@ void View::PropagateRemoveNotifications(View* old_parent,
   if (is_removed_from_widget) {
     RemovedFromWidget();
     observers_.Notify(&ViewObserver::OnViewRemovedFromWidget, this);
+    widget_ = nullptr;
   }
 }
 
@@ -3192,6 +3199,16 @@ void View::ViewHierarchyChangedImpl(
   observers_.Notify(&ViewObserver::OnViewHierarchyChanged, this, details);
 
   details.parent->needs_layout_ = true;
+}
+
+void View::SetWidget(Widget* widget) {
+  widget_ = widget;
+
+  // Recursively set the widget on all child views.
+  internal::ScopedChildrenLock lock(this);
+  for (View* child : children_) {
+    child->SetWidget(widget);
+  }
 }
 
 // Size and disposition --------------------------------------------------------
