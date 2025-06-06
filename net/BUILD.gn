@@ -2204,6 +2204,8 @@ static_library("test_support") {
     "test/test_net_log_manager.h",
     "test/test_with_task_environment.cc",
     "test/test_with_task_environment.h",
+    "test/two_qwac_cert_binding_builder.cc",
+    "test/two_qwac_cert_binding_builder.h",
     "test/url_request/ssl_certificate_error_job.cc",
     "test/url_request/ssl_certificate_error_job.h",
     "test/url_request/url_request_failed_job.cc",
