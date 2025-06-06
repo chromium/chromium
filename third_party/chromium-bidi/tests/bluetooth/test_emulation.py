@@ -31,12 +31,6 @@ async def teardown(websocket, context_id):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("state_1", ["absent", "powered-off", "powered-on"])
 @pytest.mark.parametrize("state_2", ["absent", "powered-off", "powered-on"])
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
                                              state_2):
     await execute_command(
@@ -59,12 +53,6 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                                                     html):
     await subscribe(websocket, ['bluetooth'])
@@ -86,12 +74,6 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                                                    accept):

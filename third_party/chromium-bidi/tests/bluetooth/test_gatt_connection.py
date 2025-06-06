@@ -44,12 +44,6 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 @pytest.mark.parametrize('code', [0x0, 0x1, 0x2])
 async def test_bluetooth_simulateGattConnectionResponse(
         websocket, context_id, html, code):

@@ -120,7 +120,9 @@ async def websocket(test_headless_mode, capabilities, request):
                 "args": [
                     "--disable-infobars",
                     # Required to prevent automatic switch to https.
-                    '--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades'
+                    "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsUpgrades",
+                    # Required for bluetooth testing.
+                    "--enable-features=WebBluetooth"
                 ]
             }
         }

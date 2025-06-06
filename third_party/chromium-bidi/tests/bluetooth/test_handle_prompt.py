@@ -29,12 +29,6 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                                                     html):
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
@@ -56,12 +50,6 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                                                    accept):

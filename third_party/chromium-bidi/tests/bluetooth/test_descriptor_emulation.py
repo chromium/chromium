@@ -84,12 +84,6 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_simulateService(websocket, context_id, html):
     device_address = await setup_granted_device(
         websocket, context_id, html,
@@ -145,12 +139,6 @@ async def test_bluetooth_simulateService(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_add_same_descriptor_uuid_twice(websocket, context_id):
     device_address = await setup_device(websocket, context_id)
     await simulate_service(websocket, context_id, device_address,
@@ -177,12 +165,6 @@ async def test_bluetooth_add_same_descriptor_uuid_twice(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_remove_unknown_descriptor_uuid(websocket, context_id):
     device_address = await setup_device(websocket, context_id)
     await simulate_service(websocket, context_id, device_address,
@@ -209,12 +191,6 @@ async def test_bluetooth_remove_unknown_descriptor_uuid(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_add_descriptor_to_unknown_device(
         websocket, context_id):
     await execute_command(
@@ -238,12 +214,6 @@ async def test_bluetooth_add_descriptor_to_unknown_device(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_add_descriptor_to_unknown_service(
         websocket, context_id):
     device_address = await setup_device(websocket, context_id)
@@ -261,12 +231,6 @@ async def test_bluetooth_add_descriptor_to_unknown_service(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_add_descriptor_to_unknown_characteristic(
         websocket, context_id):
     device_address = await setup_device(websocket, context_id)
@@ -288,12 +252,6 @@ async def test_bluetooth_add_descriptor_to_unknown_characteristic(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
     await setup_descriptor(websocket, context_id, html,
                            HEART_RATE_SERVICE_UUID,
@@ -348,12 +306,6 @@ async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
-        'args': ['--enable-features=WebBluetooth']
-    }
-}],
-                         indirect=True)
 async def test_bluetooth_descriptor_read_event(websocket, context_id, html):
     await setup_descriptor(websocket, context_id, html,
                            HEART_RATE_SERVICE_UUID,
