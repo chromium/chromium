@@ -64,6 +64,11 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   static const LayoutLocale* LocaleForHan(const LayoutLocale*);
   const char* LocaleForHanForSkFontMgr() const;
 
+  bool IsMacrolanguageChinese() const {
+    return is_macrolanguage_chinese_computed_ ? is_macrolanguage_chinese_
+                                              : IsMacrolanguageChineseSlow();
+  }
+
   // The normalized locale data to construct |CaseMap| from.
   const CaseMap::Locale& CaseMapLocale() const {
     if (case_map_computed_)
@@ -89,6 +94,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
  private:
   explicit LayoutLocale(const AtomicString&);
 
+  bool IsMacrolanguageChineseSlow() const;
+
   void ComputeScriptForHan() const;
   void ComputeCaseMapLocale() const;
 
@@ -108,6 +115,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   mutable unsigned hyphenation_computed_ : 1 = false;
   mutable unsigned quotes_data_computed_ : 1 = false;
   mutable unsigned case_map_computed_ : 1 = false;
+  mutable unsigned is_macrolanguage_chinese_computed_ : 1 = false;
+  mutable unsigned is_macrolanguage_chinese_ : 1 = false;
 };
 
 }  // namespace blink
