@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {StoreObserver} from 'chrome://resources/js/store.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
-import {ACCOUNT_HEADING_NODE_ID, BOOKMARKS_BAR_ID} from './constants.js';
+import {ROOT_NODE_ID} from './constants.js';
 import {Store} from './store.js';
 import type {BookmarksPageState} from './types.js';
 
@@ -75,9 +75,10 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
   onStateChanged(state: BookmarksPageState) {
     this.selectedId_ = state.selectedFolder;
     this.searchTerm_ = state.search.term;
-    this.defaultId_ = state.nodes[ACCOUNT_HEADING_NODE_ID] ?
-        ACCOUNT_HEADING_NODE_ID :
-        BOOKMARKS_BAR_ID;
+    // Default to the first child of root, which could be
+    // ACCOUNT_HEADING_NODE_ID, BOOKMARKS_BAR_ID (local), or the id of the
+    // account bookmark bar.
+    this.defaultId_ = state.nodes[ROOT_NODE_ID]!.children![0]!;
     if (this.updateStateTimeout_) {
       clearTimeout(this.updateStateTimeout_);
     }
