@@ -149,6 +149,74 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ]
       })");
 
+const std::string kQueryGoodJsonResponse = R"({
+    "querySuggestions": [
+      {
+        "suggestion": "John's Document 1",
+        "dataStore": []
+      }
+    ]
+  })";
+
+const std::string kPeopleGoodJsonResponse = R"({
+    "peopleSuggestions": [
+      {
+        "suggestion": "john@example.com",
+        "document": {
+          "name": "sundar",
+          "derivedStructData": {
+            "name": {
+              "display_name_lower": "john doe",
+              "familyName": "Doe",
+              "givenName": "John",
+              "given_name_lower": "john",
+              "family_name_lower": "doe",
+              "displayName": "John Doe",
+              "userName": "john"
+            },
+            "emails": [
+              {
+                "type": "primary",
+                "value": "john@example.com"
+              }
+            ],
+            "displayPhoto": {
+              "url": "https://example.com/image.png"
+            }
+          }
+        },
+        "destinationUri": "https://example.com/people/jdoe",
+        "score": 0.8,
+        "dataStore": "project 1"
+      }
+    ]
+  })";
+
+const std::string kContentGoodJsonResponse = R"({
+    "contentSuggestions": [
+      {
+        "suggestion": "John's doodle",
+        "contentType": "THIRD_PARTY",
+        "document": {
+          "name": "Document 2",
+          "derivedStructData": {
+            "source_type": "jira",
+            "entity_type": "issue",
+            "title": "John's doodle",
+            "link": "https://www.example.co.uk",
+            "owner": "John Doe",
+            "mime_type": "application/vnd.google-apps.document",
+            "updated_time": 1192487100
+          }
+        },
+        "destinationUri": "https://www.example.com",
+        "iconUri": "https://example.com/icon.png",
+        "score": 0.4,
+        "dataStore": "project2"
+      }
+    ]
+  })";
+
 const std::string kGoodEmptyJsonResponse = base::StringPrintf(
     R"({
         "querySuggestions": [],
@@ -527,6 +595,14 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   }
 
   void ParseResponse(const std::string& response_string) {
+    ParseResponse(response_string, response_string, response_string,
+                  response_string);
+  }
+
+  void ParseResponse(const std::string& full_response_string,
+                     const std::string& people_response_string,
+                     const std::string& content_response_string,
+                     const std::string& query_response_string) {
     InitRequests();
     StartAllRequests();
     provider_->matches_.clear();
@@ -534,15 +610,30 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
       request.matches.clear();
     }
 
-    std::optional<base::Value::Dict> response =
-        base::JSONReader::ReadDict(response_string);
-    ASSERT_TRUE(response);
+    std::optional<base::Value::Dict> full_response =
+        base::JSONReader::ReadDict(full_response_string);
+    ASSERT_TRUE(full_response);
+    std::optional<base::Value::Dict> people_response =
+        base::JSONReader::ReadDict(people_response_string);
+    ASSERT_TRUE(people_response);
+    std::optional<base::Value::Dict> content_response =
+        base::JSONReader::ReadDict(content_response_string);
+    ASSERT_TRUE(content_response);
+    std::optional<base::Value::Dict> query_response =
+        base::JSONReader::ReadDict(query_response_string);
+    ASSERT_TRUE(query_response);
     if (omnibox_feature_configs::SearchAggregatorProvider::Get()
             .multiple_requests) {
-      provider_->ParseEnterpriseSearchAggregatorSearchResults(2, *response);
-      provider_->ParseEnterpriseSearchAggregatorSearchResults(1, *response);
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(2,
+                                                              *query_response);
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(
+          1, *content_response);
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(0,
+                                                              *people_response);
+    } else {
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(0,
+                                                              *full_response);
     }
-    provider_->ParseEnterpriseSearchAggregatorSearchResults(0, *response);
   }
 
   void InitRequests() {
@@ -593,10 +684,19 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
                                .multiple_requests
                            ? provider_->requests_.size()
                            : 1;
+    std::vector<std::string> responses;
     for (int i = 0; i < num_requests; ++i) {
+      responses.push_back(response);
+    }
+    RequestsStartAndComplete(response_code, responses);
+  }
+
+  void RequestsStartAndComplete(int response_code,
+                                std::vector<std::string> responses) {
+    for (int i = 0; i < static_cast<int>(responses.size()); i++) {
       provider_->RequestStarted(i, nullptr);
       provider_->RequestCompleted(i, nullptr, response_code,
-                                  std::make_unique<std::string>(response));
+                                  std::make_unique<std::string>(responses[i]));
     }
   }
 
@@ -844,7 +944,60 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   scoped_config_.Get().relevance_scoring_mode = "server";
 
   provider_->adjusted_input_ = CreateInput(u"john d", true);
-  ParseResponse(kGoodJsonResponse);
+  ParseResponse(kGoodJsonResponse, kPeopleGoodJsonResponse,
+                kContentGoodJsonResponse, kQueryGoodJsonResponse);
+
+  ACMatches matches = provider_->matches_;
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[0].relevance, 810);
+  EXPECT_EQ(matches[0].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
+  EXPECT_EQ(matches[0].description, u"John Doe");
+  EXPECT_EQ(matches[0].destination_url,
+            GURL("https://example.com/people/jdoe"));
+  EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
+  EXPECT_EQ(matches[0].icon_url, GURL("https://www.google.com/favicon.ico"));
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
+  EXPECT_EQ(matches[0].fill_into_edit,
+            u"keyword https://example.com/people/jdoe");
+
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
+  EXPECT_EQ(matches[1].relevance, 410);
+  EXPECT_EQ(matches[1].contents, u"10/15/07 - John Doe - Google Docs");
+  EXPECT_EQ(matches[1].description, u"John's doodle");
+  EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
+  EXPECT_EQ(matches[1].image_url, GURL());
+  EXPECT_EQ(matches[1].icon_url, GURL("https://example.com/icon.png"));
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[1].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
+  EXPECT_EQ(matches[1].fill_into_edit, u"keyword https://www.example.com");
+
+  EXPECT_EQ(matches[2].type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(matches[2].relevance, 0);
+  EXPECT_EQ(matches[2].contents, u"John's Document 1");
+  EXPECT_EQ(matches[2].description, u"");
+  EXPECT_EQ(matches[2].destination_url,
+            GURL("https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_EQ(matches[2].image_url, GURL());
+  EXPECT_EQ(matches[2].icon_url, GURL());
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[2].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
+  EXPECT_EQ(matches[2].fill_into_edit, u"keyword John's Document 1");
+}
+
+// Test response is parsed accurately.
+TEST_F(EnterpriseSearchAggregatorProviderTest, Parse_MultipleResponses) {
+  base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
+
+  scoped_config_.Get().relevance_scoring_mode = "server";
+
+  provider_->adjusted_input_ = CreateInput(u"john d", true);
+  ParseResponse(kGoodJsonResponse, kPeopleGoodJsonResponse,
+                kContentGoodJsonResponse, kQueryGoodJsonResponse);
 
   ACMatches matches = provider_->matches_;
   ASSERT_EQ(matches.size(), 3u);
@@ -1048,10 +1201,13 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   // Complete request with non-empty results, old match should be replaced.
   provider_->done_ = false;
   InitRequests();
-  RequestsStartAndComplete(/*response_code=*/200,
-                           /*response=*/kGoodJsonResponse);
+  RequestsStartAndComplete(
+      /*response_code=*/200,
+      /*responses=*/{kPeopleGoodJsonResponse, kContentGoodJsonResponse,
+                     kQueryGoodJsonResponse});
   ASSERT_TRUE(provider_->WaitForUpdateResults());
-  ParseResponse(kGoodJsonResponse);
+  ParseResponse(kGoodJsonResponse, kPeopleGoodJsonResponse,
+                kContentGoodJsonResponse, kQueryGoodJsonResponse);
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://example.com/people/jdoe",
@@ -1080,10 +1236,11 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
       .Times(0);
 
   provider_->Start(input, false);
-  RequestsStartAndComplete(/*response_code=*/200,
-                           /*response=*/kGoodJsonResponse);
+  RequestsStartAndComplete(
+      /*response_code=*/200,
+      /*responses=*/{kPeopleGoodJsonResponse, kContentGoodJsonResponse,
+                     kQueryGoodJsonResponse});
   ASSERT_TRUE(provider_->WaitForUpdateResults());
-  ParseResponse(kGoodJsonResponse);
   EXPECT_EQ(provider_->matches_[0].keyword, u"unfeatured");
   EXPECT_THAT(GetMatches(), testing::ElementsAre(
                                 u"https://example.com/people/jdoe",
@@ -1091,7 +1248,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
                                 u"http://www.yahoo.com/John's%20Document%201"));
 }
 
-// Test things work in unscoped mode.
+// Test things work in unscoped mode and query suggestions are skipped.
 TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
   AutocompleteInput input = CreateInput(u"john d", false);
 
@@ -1101,15 +1258,13 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
       .Times(0);
 
   provider_->Start(input, false);
-  RequestsStartAndComplete(/*response_code=*/200,
-                           /*response=*/kGoodJsonResponse);
+  RequestsStartAndComplete(
+      /*response_code=*/200,
+      /*responses=*/{kPeopleGoodJsonResponse, kContentGoodJsonResponse});
   ASSERT_TRUE(provider_->WaitForUpdateResults());
-  ParseResponse(kGoodJsonResponse);
-  EXPECT_THAT(
-      GetMatches(),
-      testing::ElementsAre(u"https://example.com/people/jdoe",
-                           u"https://www.example.com/",
-                           u"https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(u"https://example.com/people/jdoe",
+                                   u"https://www.example.com/"));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
@@ -1874,7 +2029,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndUpdateLogging) {
     provider_->done_ = false;
     provider_->requests_.clear();
     InitRequests();
-    ParseResponse(kGoodJsonResponse);
+    ParseResponse(kGoodJsonResponse, kPeopleGoodJsonResponse,
+                  kContentGoodJsonResponse, kQueryGoodJsonResponse);
     for (std::string type : SuggestionTypeStrings) {
       histogram_tester.ExpectTotalCount(
           base::StringPrintf("Omnibox.SuggestRequestsSent.ResultCount."
@@ -1890,8 +2046,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndUpdateLogging) {
     provider_->done_ = false;
     provider_->requests_.clear();
     InitRequests();
-    RequestsStartAndComplete(/*response_code=*/200,
-                             /*response=*/kGoodJsonResponse);
+    RequestsStartAndComplete(
+        /*response_code=*/200,
+        /*responses=*/{kPeopleGoodJsonResponse, kContentGoodJsonResponse,
+                       kQueryGoodJsonResponse});
     ASSERT_TRUE(provider_->WaitForUpdateResults());
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestRequestsSent.ResultCount."

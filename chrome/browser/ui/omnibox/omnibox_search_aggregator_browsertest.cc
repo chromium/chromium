@@ -121,6 +121,75 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ]
       })");
 
+const std::string kQueryGoodJsonResponse = R"({
+    "querySuggestions": [
+      {
+        "suggestion": "John's Demise",
+        "score": 0.1,
+        "dataStore": []
+      }
+    ]
+  })";
+
+const std::string kPeopleGoodJsonResponse = R"({
+    "peopleSuggestions": [
+      {
+        "suggestion": "john@example.com",
+        "document": {
+          "name": "sundar",
+          "derivedStructData": {
+            "name": {
+              "display_name_lower": "john doe",
+              "familyName": "Doe",
+              "givenName": "John",
+              "given_name_lower": "john",
+              "family_name_lower": "doe",
+              "displayName": "John Doe",
+              "userName": "john"
+            },
+            "emails": [
+              {
+                "type": "primary",
+                "value": "john@example.com"
+              }
+            ],
+            "displayPhoto": {
+              "url": "https://example.com/image.png"
+            }
+          }
+        },
+        "destinationUri": "https://www.example.com/people/john",
+        "score": 0.8,
+        "dataStore": "project 1"
+      }
+    ]
+  })";
+
+const std::string kContentGoodJsonResponse = R"({
+    "contentSuggestions": [
+      {
+        "suggestion": "John's Document",
+        "contentType": "THIRD_PARTY",
+        "document": {
+          "name": "Document 2",
+          "structData": {
+            "title": "John's Document",
+            "uri": "www.example.com"
+          },
+          "derivedStructData": {
+            "source_type": "jira",
+            "entity_type": "issue",
+            "title": "John's Document",
+            "link": "https://www.example.co.uk"
+          }
+        },
+        "destinationUri": "https://www.example.com/",
+        "score": 0.4,
+        "dataStore": "project2"
+      }
+    ]
+  })";
+
 }  // namespace
 
 class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
@@ -327,7 +396,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
 IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
                        GoodJsonResponseMultipleRequests) {
   scoped_config_.Get().multiple_requests = true;
-  net::test_server::ControllableHttpResponse search_aggregator_response(
+  net::test_server::ControllableHttpResponse search_aggregator_people_response(
+      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+  net::test_server::ControllableHttpResponse search_aggregator_content_response(
+      embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+  net::test_server::ControllableHttpResponse search_aggregator_query_response(
       embedded_test_server(), kSearchAggregatorPolicySuggestPath);
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -347,17 +420,42 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
-  // Respond for the first SearchAggregator request.
-  search_aggregator_response.WaitForRequest();
-  EXPECT_EQ(search_aggregator_response.http_request()->method,
+  // Respond to the first SearchAggregator request (2 - people).
+  search_aggregator_people_response.WaitForRequest();
+  EXPECT_EQ(search_aggregator_people_response.http_request()->method,
             net::test_server::METHOD_POST);
-  EXPECT_EQ(search_aggregator_response.http_request()->content,
+  EXPECT_EQ(search_aggregator_people_response.http_request()->content,
+            base::StringPrintf(R"({"experimentIds":["%s"],)"
+                               R"("query":"john d","suggestionTypes":[2]})",
+                               kEnterpriseSearchAggregatorExperimentId));
+  search_aggregator_people_response.Send(net::HTTP_OK, "application/json",
+                                         kPeopleGoodJsonResponse);
+  search_aggregator_people_response.Done();
+
+  // Respond to the second SearchAggregator request (3,5 - content/Google
+  // Workspace).
+  search_aggregator_content_response.WaitForRequest();
+  EXPECT_EQ(search_aggregator_content_response.http_request()->method,
+            net::test_server::METHOD_POST);
+  EXPECT_EQ(search_aggregator_content_response.http_request()->content,
+            base::StringPrintf(R"({"experimentIds":["%s"],)"
+                               R"("query":"john d","suggestionTypes":[3,5]})",
+                               kEnterpriseSearchAggregatorExperimentId));
+  search_aggregator_content_response.Send(net::HTTP_OK, "application/json",
+                                          kContentGoodJsonResponse);
+  search_aggregator_content_response.Done();
+
+  // Respond to the third SearchAggregator request (1 - query).
+  search_aggregator_query_response.WaitForRequest();
+  EXPECT_EQ(search_aggregator_query_response.http_request()->method,
+            net::test_server::METHOD_POST);
+  EXPECT_EQ(search_aggregator_query_response.http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
                                R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
-  search_aggregator_response.Send(net::HTTP_OK, "application/json",
-                                  kGoodJsonResponse);
-  search_aggregator_response.Done();
+  search_aggregator_query_response.Send(net::HTTP_OK, "application/json",
+                                        kQueryGoodJsonResponse);
+  search_aggregator_query_response.Done();
 
   // Wait for the autocomplete controller to finish.
   WaitForAutocompleteDone(browser());
@@ -438,7 +536,13 @@ class OmniboxSearchAggregatorHTTPErrorTest
     OmniboxSearchAggregatorTest::SetUpOnMainThread();
 
     // Handle search aggregator response
-    search_aggregator_response_ =
+    search_aggregator_people_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+    search_aggregator_content_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), kSearchAggregatorPolicySuggestPath);
+    search_aggregator_query_response_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
             embedded_test_server(), kSearchAggregatorPolicySuggestPath);
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -459,13 +563,26 @@ class OmniboxSearchAggregatorHTTPErrorTest
     policy_provider()->UpdateChromePolicy(policies);
   }
 
-  net::test_server::ControllableHttpResponse* search_aggregator_response() {
-    return search_aggregator_response_.get();
+  net::test_server::ControllableHttpResponse*
+  search_aggregator_people_response() {
+    return search_aggregator_people_response_.get();
+  }
+  net::test_server::ControllableHttpResponse*
+  search_aggregator_content_response() {
+    return search_aggregator_content_response_.get();
+  }
+  net::test_server::ControllableHttpResponse*
+  search_aggregator_query_response() {
+    return search_aggregator_query_response_.get();
   }
 
  private:
   std::unique_ptr<net::test_server::ControllableHttpResponse>
-      search_aggregator_response_;
+      search_aggregator_people_response_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      search_aggregator_content_response_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      search_aggregator_query_response_;
 };
 
 // TODO(crbug.com/421836646): Re-enable this test once the flakiness is
@@ -484,16 +601,39 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
   input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
   controller()->Start(input);
 
-  // Respond for SearchAggregator request.
-  search_aggregator_response()->WaitForRequest();
-  EXPECT_EQ(search_aggregator_response()->http_request()->method,
+  // Respond to the first SearchAggregator request (2 - people).
+  search_aggregator_people_response()->WaitForRequest();
+  EXPECT_EQ(search_aggregator_people_response()->http_request()->method,
             net::test_server::METHOD_POST);
-  EXPECT_EQ(search_aggregator_response()->http_request()->content,
+  EXPECT_EQ(search_aggregator_people_response()->http_request()->content,
+            base::StringPrintf(R"({"experimentIds":["%s"],)"
+                               R"("query":"john d","suggestionTypes":[2]})",
+                               kEnterpriseSearchAggregatorExperimentId));
+  search_aggregator_people_response()->Send(GetHttpStatusCode());
+  search_aggregator_people_response()->Done();
+
+  // Respond to the second SearchAggregator request (3,5 - content/Google
+  // Workspace).
+  search_aggregator_content_response()->WaitForRequest();
+  EXPECT_EQ(search_aggregator_content_response()->http_request()->method,
+            net::test_server::METHOD_POST);
+  EXPECT_EQ(search_aggregator_content_response()->http_request()->content,
+            base::StringPrintf(R"({"experimentIds":["%s"],)"
+                               R"("query":"john d","suggestionTypes":[3,5]})",
+                               kEnterpriseSearchAggregatorExperimentId));
+  search_aggregator_content_response()->Send(GetHttpStatusCode());
+  search_aggregator_content_response()->Done();
+
+  // Respond to the third SearchAggregator request (1 - query).
+  search_aggregator_query_response()->WaitForRequest();
+  EXPECT_EQ(search_aggregator_query_response()->http_request()->method,
+            net::test_server::METHOD_POST);
+  EXPECT_EQ(search_aggregator_query_response()->http_request()->content,
             base::StringPrintf(R"({"experimentIds":["%s"],)"
                                R"("query":"john d","suggestionTypes":[1]})",
                                kEnterpriseSearchAggregatorExperimentId));
-  search_aggregator_response()->Send(GetHttpStatusCode());
-  search_aggregator_response()->Done();
+  search_aggregator_query_response()->Send(GetHttpStatusCode());
+  search_aggregator_query_response()->Done();
 
   // Wait for the autocomplete controller to finish.
   WaitForAutocompleteDone(browser());

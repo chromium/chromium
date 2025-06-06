@@ -617,8 +617,11 @@ void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
   const int kGoogleWorkspace = 5;
   std::vector<std::vector<int>> request_types;
   if (kMultipleRequests()) {
+    // The order of requests must match the fixed parsing order in
+    // `ParseEnterpriseSearchAggregatorSearchResults` and the mapping in
+    // `RequestIndexToSuggestionType`: 0 for People, 1 for Content, 2 for Query.
     if (adjusted_input_.InKeywordMode()) {
-      request_types = {{kQuery}, {kPeople}, {kContent, kGoogleWorkspace}};
+      request_types = {{kPeople}, {kContent, kGoogleWorkspace}, {kQuery}};
     } else {
       request_types = {{kPeople}, {kContent, kGoogleWorkspace}};
     }
