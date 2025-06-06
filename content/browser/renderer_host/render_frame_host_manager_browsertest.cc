@@ -7013,7 +7013,7 @@ IN_PROC_BROWSER_TEST_P(
     // TODO(https://crbug.com/376777350): Reconsider if we really should do
     // process swap on BrowsingInstance swap when site isolation is turned off.
     bool first_call_created_new_process =
-        (AreStrictSiteInstancesEnabled() || IsBackForwardCacheEnabled());
+        (AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled());
     if (AreStrictSiteInstancesEnabled() ||
         CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
       // First call created speculative RFH because of strict SiteInstances,
@@ -7032,6 +7032,27 @@ IN_PROC_BROWSER_TEST_P(
                     WastedSpeculativeRFHCase::kNotWasted_WasUnassociated, 1),
                 base::Bucket(
                     WastedSpeculativeRFHCase::kWasted_NowUseNewSpeculativeRFH,
+                    1)));
+      } else if (AreStrictSiteInstancesEnabled()) {
+        // If we are using default SiteInstanceGroups, the navigation started in
+        // a speculative RFH for C. After the redirect to D, it committed in
+        // either the current RFH for D (without RenderDocument), or a new
+        // speculative RFH for D (with RenderDocument). So, the wasted
+        // speculative RFH metric should indicate that there was a change from
+        // speculative to current RFH (without RenderDocument), or from one
+        // speculative RFH to another (with RenderDocument).
+        wasted_speculative_rfh = true;
+        EXPECT_THAT(
+            histogram_tester.GetAllSamples(
+                "Navigation.All.WastedSpeculativeRFHCase"),
+            testing::ElementsAre(
+                base::Bucket(
+                    WastedSpeculativeRFHCase::kNotWasted_WasUnassociated, 1),
+                base::Bucket(
+                    ShouldCreateNewHostForAllFrames()
+                        ? WastedSpeculativeRFHCase::
+                              kWasted_NowUseNewSpeculativeRFH
+                        : WastedSpeculativeRFHCase::kWasted_NowUseCurrentRFH,
                     1)));
       } else if (ShouldCreateNewHostForAllFrames()) {
         // The navigation needs to commit in a speculative RFH, and it can reuse
@@ -7129,7 +7150,7 @@ IN_PROC_BROWSER_TEST_P(
               base::Bucket(WastedSpeculativeRFHCase::kNotWasted_WasUnassociated,
                            1),
               base::Bucket(
-                  AreAllSitesIsolatedForTesting()
+                  AreStrictSiteInstancesEnabled()
                       ? WastedSpeculativeRFHCase::
                             kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH
                       : WastedSpeculativeRFHCase::
@@ -7145,16 +7166,27 @@ IN_PROC_BROWSER_TEST_P(
           false, 1);
       // The replacement speculative RFH created a new process for E, if site
       // isolation is turned on, or BFCache is enabled.
+      //
       // TODO(https://crbug.com/376777350): Investigate if we should suppress
       // the process creation for BFCache when site isolation is turned off.
-      histogram_tester.ExpectUniqueSample(
-          "Navigation.All.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess",
-          AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
-      // Process differs between the wasted RFH and the newly chosen RFH if a
-      // new process is created for E.
-      histogram_tester.ExpectUniqueSample(
-          "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
-          AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
+      //
+      // TODO(https://crbug.com/390571607): These metrics do not behave properly
+      // with default SiteInstanceGroups. They indicate that in this case, a new
+      // process is created, whereas in fact it is not created but rather
+      // reused.  As a result, ProcessDiffers and ReplacementRFHCreateNewProcess
+      // are both incorrect (true instead of false) with default
+      // SiteInstanceGroups, which should be fixed.
+      if (!ShouldUseDefaultSiteInstanceGroup()) {
+        histogram_tester.ExpectUniqueSample(
+            "Navigation.All.WastedSpeculativeRFH."
+            "ReplacementRFHCreatedNewProcess",
+            AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
+        // Process differs between the wasted RFH and the newly chosen RFH if a
+        // new process is created for E.
+        histogram_tester.ExpectUniqueSample(
+            "Navigation.All.WastedSpeculativeRFH.ProcessDiffers",
+            AreAllSitesIsolatedForTesting() || IsBackForwardCacheEnabled(), 1);
+      }
       // No cross-origin isolation difference.
       histogram_tester.ExpectUniqueSample(
           "Navigation.All.WastedSpeculativeRFH.CrossOriginIsolationDiffers",
