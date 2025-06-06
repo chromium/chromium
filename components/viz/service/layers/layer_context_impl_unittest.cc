@@ -50,6 +50,12 @@ class LayerContextImplTest : public testing::Test {
         compositor_frame_sink_support_.get(), /*draw_mode_is_gpu=*/true);
   }
 
+  void ResetTestState() {
+    // Property tree node IDs and layers are reinitialized in
+    // CreateDefaultUpdate if first_update_ is true.
+    first_update_ = true;
+  }
+
   mojom::LayerTreeUpdatePtr CreateDefaultUpdate() {
     auto update = mojom::LayerTreeUpdate::New();
 
@@ -103,6 +109,14 @@ class LayerContextImplTest : public testing::Test {
   }
 
   void AddFirstTimeDefaultProperties(mojom::LayerTreeUpdate* update) {
+    // Set internal state to defaults.
+    next_layer_id_ = 1;
+    next_transform_id_ = 0;
+    next_clip_id_ = 0;
+    next_effect_id_ = 0;
+    next_scroll_id_ = 0;
+    layer_order_.clear();
+
     // Root & Secondary transform nodes are always expected 1st
     AddTransformNode(update, cc::kInvalidPropertyNodeId);
     AddTransformNode(update, cc::kRootPropertyNodeId);
@@ -1603,7 +1617,8 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
       const gfx::Size& bounds = gfx::Size(10, 10),
       int transform_idx = cc::kSecondaryRootPropertyNodeId,
       int clip_idx = cc::kRootPropertyNodeId,
-      int effect_idx = cc::kSecondaryRootPropertyNodeId) {
+      int effect_idx = cc::kSecondaryRootPropertyNodeId,
+      int scroll_idx = cc::kSecondaryRootPropertyNodeId) {
     auto layer = mojom::Layer::New();
     layer->id = id;
     layer->type = type;
@@ -1611,6 +1626,7 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
     layer->transform_tree_index = transform_idx;
     layer->clip_tree_index = clip_idx;
     layer->effect_tree_index = effect_idx;
+    layer->scroll_tree_index = scroll_idx;
     return layer;
   }
 };
@@ -1833,6 +1849,445 @@ TEST_F(LayerContextImplLayerLifecycleTest, LayerLifecycleAndEdgeCases) {
                   .has_value());
   VerifyLayerExists(kLayerId2, false);
   VerifyLayerOrder({1, kLayerId3, kLayerId1});
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, CreateLayersOfAllTypes) {
+  auto update = CreateDefaultUpdate();
+
+  // Test a subset of layer types that have distinct LayerImpl classes or
+  // specific handling in CreateLayer.
+  const std::vector<cc::mojom::LayerType> types_to_test = {
+      cc::mojom::LayerType::kLayer,
+      cc::mojom::LayerType::kMirror,
+      cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      cc::mojom::LayerType::kPaintedScrollbar,
+      cc::mojom::LayerType::kTileDisplay,
+      cc::mojom::LayerType::kSolidColorScrollbar,
+      cc::mojom::LayerType::kSurface,
+      cc::mojom::LayerType::kTexture,
+      cc::mojom::LayerType::kViewTransitionContent,
+      // Add other relevant types here.
+  };
+
+  std::vector<int> layer_ids;
+  for (cc::mojom::LayerType type : types_to_test) {
+    int layer_id = next_layer_id_++;
+    layer_ids.push_back(layer_id);
+    auto layer = CreateManualLayer(layer_id, type);
+    switch (type) {
+      case cc::mojom::LayerType::kMirror: {
+        auto extra = mojom::MirrorLayerExtra::New();
+        // Mirroring the root layer (ID 1) by default for simplicity.
+        extra->mirrored_layer_id = 1;
+        layer->layer_extra =
+            mojom::LayerExtra::NewMirrorLayerExtra(std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kNinePatchThumbScrollbar: {
+        auto extra = mojom::NinePatchThumbScrollbarLayerExtra::New();
+        extra->scrollbar_base_extra = mojom::ScrollbarLayerBaseExtra::New();
+        layer->layer_extra =
+            mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
+                std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kPaintedScrollbar: {
+        auto extra = mojom::PaintedScrollbarLayerExtra::New();
+        extra->scrollbar_base_extra = mojom::ScrollbarLayerBaseExtra::New();
+        layer->layer_extra =
+            mojom::LayerExtra::NewPaintedScrollbarLayerExtra(std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kSolidColorScrollbar: {
+        auto extra = mojom::SolidColorScrollbarLayerExtra::New();
+        extra->scrollbar_base_extra = mojom::ScrollbarLayerBaseExtra::New();
+        layer->layer_extra =
+            mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
+                std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kSurface: {
+        auto extra = mojom::SurfaceLayerExtra::New();
+        extra->surface_range = SurfaceRange(
+            std::nullopt,
+            SurfaceId(kDefaultFrameSinkId, default_local_surface_id_));
+        extra->deadline_in_frames = 0u;
+        layer->layer_extra =
+            mojom::LayerExtra::NewSurfaceLayerExtra(std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kTexture: {
+        auto extra = mojom::TextureLayerExtra::New();
+        // TextureLayer can have an optional TransferableResource.
+        // For this basic creation test, leaving it null is fine.
+        layer->layer_extra =
+            mojom::LayerExtra::NewTextureLayerExtra(std::move(extra));
+        break;
+      }
+      case cc::mojom::LayerType::kViewTransitionContent: {
+        auto extra = mojom::ViewTransitionContentLayerExtra::New();
+        extra->resource_id = ViewTransitionElementResourceId(
+            blink::ViewTransitionToken(), 1, false);
+        layer->layer_extra =
+            mojom::LayerExtra::NewViewTransitionContentLayerExtra(
+                std::move(extra));
+        break;
+      }
+      default:
+        // No layer_extra needed for other types in this test.
+        break;
+    }
+    update->layers.push_back(std::move(layer));
+    layer_order_.push_back(layer_id);
+  }
+  update->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  for (size_t i = 0; i < types_to_test.size(); ++i) {
+    VerifyLayerExists(layer_ids[i], true);
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_ids[i]);
+    ASSERT_NE(nullptr, layer);
+    EXPECT_EQ(layer->GetLayerType(), types_to_test[i]);
+  }
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
+  auto update = CreateDefaultUpdate();
+  int layer_id1 = AddDefaultLayerToUpdate(update.get());
+  int layer_id2 = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  auto update_props = CreateDefaultUpdate();
+  auto layer1_props = CreateManualLayer(layer_id1);
+  layer1_props->bounds = gfx::Size(50, 50);
+  layer1_props->contents_opaque = true;
+  layer1_props->contents_opaque_for_text = true;
+  layer1_props->background_color = SkColors::kRed;
+  layer1_props->transform_tree_index = cc::kRootPropertyNodeId;
+  update_props->layers.push_back(std::move(layer1_props));
+
+  auto layer2_props = CreateManualLayer(layer_id2);
+  layer2_props->is_drawable = false;
+  layer2_props->clip_tree_index = cc::kSecondaryRootPropertyNodeId;
+  layer2_props->effect_tree_index = cc::kRootPropertyNodeId;
+  update_props->layers.push_back(std::move(layer2_props));
+
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_props))
+                  .has_value());
+
+  cc::LayerImpl* layer1_impl = GetLayerFromActiveTree(layer_id1);
+  ASSERT_NE(nullptr, layer1_impl);
+  EXPECT_EQ(layer1_impl->bounds(), gfx::Size(50, 50));
+  EXPECT_TRUE(layer1_impl->contents_opaque());
+  EXPECT_TRUE(layer1_impl->contents_opaque_for_text());
+  EXPECT_EQ(layer1_impl->background_color(), SkColors::kRed);
+  EXPECT_EQ(layer1_impl->transform_tree_index(), cc::kRootPropertyNodeId);
+
+  cc::LayerImpl* layer2_impl = GetLayerFromActiveTree(layer_id2);
+  ASSERT_NE(nullptr, layer2_impl);
+  EXPECT_FALSE(layer2_impl->draws_content());
+  EXPECT_EQ(layer2_impl->clip_tree_index(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_EQ(layer2_impl->effect_tree_index(), cc::kRootPropertyNodeId);
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, ReorderLayers) {
+  auto update = CreateDefaultUpdate();
+  int layer_id1 = AddDefaultLayerToUpdate(update.get());
+  int layer_id2 = AddDefaultLayerToUpdate(update.get());
+  int layer_id3 = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+  VerifyLayerOrder({1, layer_id1, layer_id2, layer_id3});
+
+  // Move layer_id1 to the end.
+  auto update_reorder1 = CreateDefaultUpdate();
+  layer_order_ = {1, layer_id2, layer_id3, layer_id1};
+  update_reorder1->layer_order = layer_order_;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_reorder1))
+          .has_value());
+  VerifyLayerOrder({1, layer_id2, layer_id3, layer_id1});
+
+  // Move layer_id3 to the beginning (after root).
+  auto update_reorder2 = CreateDefaultUpdate();
+  layer_order_ = {1, layer_id3, layer_id2, layer_id1};
+  update_reorder2->layer_order = layer_order_;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_reorder2))
+          .has_value());
+  VerifyLayerOrder({1, layer_id3, layer_id2, layer_id1});
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, RemoveLayers) {
+  auto update = CreateDefaultUpdate();
+  int layer_id1 = AddDefaultLayerToUpdate(update.get());
+  int layer_id2 = AddDefaultLayerToUpdate(update.get());
+  int layer_id3 = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+  VerifyLayerOrder({1, layer_id1, layer_id2, layer_id3});
+
+  // Remove from the middle.
+  auto update_remove1 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update_remove1.get(), layer_id2);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove1))
+          .has_value());
+  VerifyLayerExists(layer_id2, false);
+  VerifyLayerOrder({1, layer_id1, layer_id3});
+
+  // Remove from the beginning (after root).
+  auto update_remove2 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update_remove2.get(), layer_id1);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove2))
+          .has_value());
+  VerifyLayerExists(layer_id1, false);
+  VerifyLayerOrder({1, layer_id3});
+
+  // Remove from the end.
+  auto update_remove3 = CreateDefaultUpdate();
+  RemoveLayerInUpdate(update_remove3.get(), layer_id3);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove3))
+          .has_value());
+  VerifyLayerExists(layer_id3, false);
+  VerifyLayerOrder({1});
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, LayerPropertyChangedFlags) {
+  auto update = CreateDefaultUpdate();
+  int layer_id = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  // Test layer_property_changed_not_from_property_trees
+  auto update_flag1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(layer_id);
+  layer_props1->layer_property_changed_not_from_property_trees = true;
+  update_flag1->layers.push_back(std::move(layer_props1));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_flag1))
+                  .has_value());
+  cc::LayerImpl* layer_impl_flag1 = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_flag1);
+  EXPECT_TRUE(layer_impl_flag1->LayerPropertyChangedNotFromPropertyTrees());
+
+  // Test layer_property_changed_from_property_trees
+  auto update_flag2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(layer_id);
+  layer_props2->layer_property_changed_from_property_trees = true;
+  update_flag2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_flag2))
+                  .has_value());
+  // This flag is reset after processing, so we can't directly verify it here
+  // without more complex state tracking or inspecting internal LayerImpl
+  // states that are affected by it. For now, we ensure the update passes.
+  // A more thorough test would involve checking if draw properties were
+  // actually updated.
+  ASSERT_NE(nullptr, GetLayerFromActiveTree(layer_id));
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, RareProperties) {
+  auto update = CreateDefaultUpdate();
+  int layer_id = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  const auto kFirstId = RegionCaptureCropId::CreateRandom();
+  const auto kSecondId = RegionCaptureCropId::CreateRandom();
+  const RegionCaptureBounds kLayerBounds{
+      {{kFirstId, gfx::Rect{0, 0, 250, 250}}, {kSecondId, gfx::Rect{}}}};
+
+  auto update_rare = CreateDefaultUpdate();
+  auto layer_props = CreateManualLayer(layer_id);
+  layer_props->rare_properties = mojom::RareProperties::New();
+  layer_props->rare_properties->filter_quality =
+      cc::PaintFlags::FilterQuality::kMedium;
+  layer_props->rare_properties->dynamic_range_limit =
+      cc::PaintFlags::DynamicRangeLimitMixture(1.f, 0.5f);
+  layer_props->rare_properties->capture_bounds = kLayerBounds;
+  update_rare->layers.push_back(std::move(layer_props));
+
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_rare))
+                  .has_value());
+
+  cc::LayerImpl* layer_impl_rare = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_rare);
+  EXPECT_EQ(layer_impl_rare->GetFilterQuality(),
+            cc::PaintFlags::FilterQuality::kMedium);
+  EXPECT_EQ(layer_impl_rare->GetDynamicRangeLimit(),
+            cc::PaintFlags::DynamicRangeLimitMixture(1.f, 0.5f));
+  ASSERT_TRUE(layer_impl_rare->capture_bounds());
+  EXPECT_EQ(*layer_impl_rare->capture_bounds(), kLayerBounds);
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
+  ResetTestState();
+  auto update = CreateDefaultUpdate();
+  int layer_id = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  // Valid: contents_opaque = true, contents_opaque_for_text = true
+  auto update_valid1 = CreateDefaultUpdate();
+  auto layer_props_valid1 = CreateManualLayer(layer_id);
+  layer_props_valid1->contents_opaque = true;
+  layer_props_valid1->contents_opaque_for_text = true;
+  update_valid1->layers.push_back(std::move(layer_props_valid1));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid1))
+                  .has_value());
+  cc::LayerImpl* layer_impl_valid1 = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_valid1);
+  EXPECT_TRUE(layer_impl_valid1->contents_opaque());
+  EXPECT_TRUE(layer_impl_valid1->contents_opaque_for_text());
+
+  // Invalid: contents_opaque = true, contents_opaque_for_text = false
+  auto update_invalid = CreateDefaultUpdate();
+  auto layer_props_invalid = CreateManualLayer(layer_id);
+  layer_props_invalid->contents_opaque = true;
+  layer_props_invalid->contents_opaque_for_text = false;
+  update_invalid->layers.push_back(std::move(layer_props_invalid));
+  auto result_invalid =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid));
+  ASSERT_FALSE(result_invalid.has_value());
+  EXPECT_EQ(result_invalid.error(),
+            "Invalid contents_opaque_for_text: cannot be false if "
+            "contents_opaque is true.");
+  // Verify properties remain from the last valid update
+  cc::LayerImpl* layer_impl_invalid = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_invalid);
+  EXPECT_TRUE(layer_impl_invalid->contents_opaque());
+  EXPECT_TRUE(layer_impl_invalid->contents_opaque_for_text());
+
+  // Valid: contents_opaque = false, contents_opaque_for_text = true
+  auto update_valid2 = CreateDefaultUpdate();
+  auto layer_props_valid2 = CreateManualLayer(layer_id);
+  layer_props_valid2->contents_opaque = false;
+  layer_props_valid2->contents_opaque_for_text = true;
+  update_valid2->layers.push_back(std::move(layer_props_valid2));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid2))
+                  .has_value());
+  cc::LayerImpl* layer_impl_valid2 = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_valid2);
+  EXPECT_FALSE(layer_impl_valid2->contents_opaque());
+  EXPECT_TRUE(layer_impl_valid2->contents_opaque_for_text());
+
+  // Valid: contents_opaque = false, contents_opaque_for_text = false
+  auto update_valid3 = CreateDefaultUpdate();
+  auto layer_props_valid3 = CreateManualLayer(layer_id);
+  layer_props_valid3->contents_opaque = false;
+  layer_props_valid3->contents_opaque_for_text = false;
+  update_valid3->layers.push_back(std::move(layer_props_valid3));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid3))
+                  .has_value());
+  cc::LayerImpl* layer_impl_valid3 = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl_valid3);
+  EXPECT_FALSE(layer_impl_valid3->contents_opaque());
+  EXPECT_FALSE(layer_impl_valid3->contents_opaque_for_text());
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
+  const std::vector<cc::mojom::LayerType> types_requiring_extra = {
+      cc::mojom::LayerType::kMirror,
+      cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      cc::mojom::LayerType::kPaintedScrollbar,
+      cc::mojom::LayerType::kSolidColorScrollbar,
+      cc::mojom::LayerType::kSurface,
+      cc::mojom::LayerType::kTexture,
+      cc::mojom::LayerType::kViewTransitionContent,
+  };
+
+  for (cc::mojom::LayerType type : types_requiring_extra) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing LayerType: " << static_cast<int>(type));
+    ResetTestState();
+    // Create a valid root layer first.
+    auto initial_update = CreateDefaultUpdate();
+    EXPECT_TRUE(
+        layer_context_impl_->DoUpdateDisplayTree(std::move(initial_update))
+            .has_value());
+
+    auto update_missing_extra = CreateDefaultUpdate();
+    int layer_id = next_layer_id_++;
+    // Create the layer manually without setting layer_extra.
+    auto layer = CreateManualLayer(layer_id, type);
+    // Ensure layer_extra is indeed null.
+    layer->layer_extra = nullptr;
+
+    update_missing_extra->layers.push_back(std::move(layer));
+    update_missing_extra->layer_order = layer_order_;
+    update_missing_extra->layer_order->push_back(layer_id);
+
+    auto result = layer_context_impl_->DoUpdateDisplayTree(
+        std::move(update_missing_extra));
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), "Invalid layer_extra");
+  }
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest,
+       UpdateExistingLayerWithInvalidPropertyTreeIndicesFails) {
+  constexpr int kLayerId = 2;
+  constexpr int kValidIndex = 1;     // Assumes root (0) and secondary_root (1)
+  constexpr int kInvalidIndex = 99;  // An index that will be out of bounds.
+
+  // Setup: Create a layer with valid indices and small property trees.
+  auto setup_update = CreateDefaultUpdate();
+
+  AddDefaultLayerToUpdate(setup_update.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  // Set initial valid indices for the layer.
+  setup_update->layers.back()->transform_tree_index = kValidIndex;
+  setup_update->layers.back()->clip_tree_index = kValidIndex;
+  setup_update->layers.back()->effect_tree_index = kValidIndex;
+  setup_update->layers.back()->scroll_tree_index = kValidIndex;
+
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(setup_update))
+                  .has_value());
+  VerifyLayerExists(kLayerId, true);
+
+  // Test Case 1: Update with invalid transform_tree_index.
+  auto update_invalid_transform = CreateDefaultUpdate();
+  update_invalid_transform->layers.push_back(CreateManualLayer(
+      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kInvalidIndex,
+      kValidIndex, kValidIndex, kValidIndex));
+  auto result_transform = layer_context_impl_->DoUpdateDisplayTree(
+      std::move(update_invalid_transform));
+  ASSERT_FALSE(result_transform.has_value());
+  EXPECT_THAT(result_transform.error(),
+              testing::StartsWith("Invalid transform tree ID"));
+
+  // Test Case 2: Update with invalid clip_tree_index.
+  auto update_invalid_clip = CreateDefaultUpdate();
+  update_invalid_clip->layers.push_back(CreateManualLayer(
+      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kValidIndex,
+      kInvalidIndex, kValidIndex, kValidIndex));
+  auto result_clip =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid_clip));
+  ASSERT_FALSE(result_clip.has_value());
+  EXPECT_THAT(result_clip.error(), testing::StartsWith("Invalid clip tree ID"));
+
+  // Test Case 3: Update with invalid effect_tree_index (similar for scroll).
+  auto update_invalid_effect = CreateDefaultUpdate();
+  update_invalid_effect->layers.push_back(CreateManualLayer(
+      kLayerId, cc::mojom::LayerType::kLayer, gfx::Size(10, 10), kValidIndex,
+      kValidIndex, kInvalidIndex, kValidIndex));
+  auto result_effect = layer_context_impl_->DoUpdateDisplayTree(
+      std::move(update_invalid_effect));
+  ASSERT_FALSE(result_effect.has_value());
+  EXPECT_THAT(result_effect.error(),
+              testing::StartsWith("Invalid effect tree ID"));
+
+  // Verify layer properties remain from the last successful update.
+  cc::LayerImpl* layer_impl_after_invalid = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl_after_invalid);
+  EXPECT_EQ(layer_impl_after_invalid->transform_tree_index(), kValidIndex);
+  EXPECT_EQ(layer_impl_after_invalid->clip_tree_index(), kValidIndex);
+  EXPECT_EQ(layer_impl_after_invalid->effect_tree_index(), kValidIndex);
+  EXPECT_EQ(layer_impl_after_invalid->scroll_tree_index(), kValidIndex);
 }
 
 }  // namespace viz

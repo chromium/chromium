@@ -48,6 +48,13 @@ namespace viz {
 
 namespace {
 
+#define RETURN_IF_FALSE(expr, error)  \
+  do {                                \
+    if (!(expr)) {                    \
+      return base::unexpected(error); \
+    }                                 \
+  } while (false)
+
 int GenerateNextDisplayTreeId() {
   static int next_id = 1;
   return next_id++;
@@ -61,75 +68,92 @@ cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu) {
   return settings;
 }
 
-std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
-                                           cc::LayerTreeImpl& tree,
-                                           const mojom::Layer& wire) {
+base::expected<void, std::string> CreateLayer(
+    cc::LayerTreeHostImpl& host_impl,
+    cc::LayerTreeImpl& tree,
+    const mojom::Layer& wire,
+    std::unique_ptr<cc::LayerImpl>& layer) {
   cc::mojom::LayerType type = wire.type;
   int id = wire.id;
   switch (type) {
     case cc::mojom::LayerType::kLayer:
-      return cc::LayerImpl::Create(&tree, id);
+      layer = cc::LayerImpl::Create(&tree, id);
+      break;
 
     case cc::mojom::LayerType::kMirror:
-      return cc::MirrorLayerImpl::Create(&tree, id);
+      layer = cc::MirrorLayerImpl::Create(&tree, id);
+      break;
 
     case cc::mojom::LayerType::kNinePatchThumbScrollbar: {
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       auto& extra =
           wire.layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
       cc::ScrollbarOrientation orientation =
           extra->scrollbar_base_extra->is_horizontal_orientation
               ? cc::ScrollbarOrientation::kHorizontal
               : cc::ScrollbarOrientation::kVertical;
-      return cc::NinePatchThumbScrollbarLayerImpl::Create(
+      layer = cc::NinePatchThumbScrollbarLayerImpl::Create(
           &tree, id, orientation,
           extra->scrollbar_base_extra->is_left_side_vertical_scrollbar);
+      break;
     }
 
     case cc::mojom::LayerType::kPaintedScrollbar: {
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       auto& extra = wire.layer_extra->get_painted_scrollbar_layer_extra();
       cc::ScrollbarOrientation orientation =
           extra->scrollbar_base_extra->is_horizontal_orientation
               ? cc::ScrollbarOrientation::kHorizontal
               : cc::ScrollbarOrientation::kVertical;
-      return cc::PaintedScrollbarLayerImpl::Create(
+      layer = cc::PaintedScrollbarLayerImpl::Create(
           &tree, id, orientation,
           extra->scrollbar_base_extra->is_left_side_vertical_scrollbar,
           extra->scrollbar_base_extra->is_overlay_scrollbar);
+      break;
     }
 
     case cc::mojom::LayerType::kTileDisplay:
-      return std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
+      layer = std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
+      break;
 
     case cc::mojom::LayerType::kSolidColorScrollbar: {
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       auto& extra = wire.layer_extra->get_solid_color_scrollbar_layer_extra();
       cc::ScrollbarOrientation orientation =
           extra->scrollbar_base_extra->is_horizontal_orientation
               ? cc::ScrollbarOrientation::kHorizontal
               : cc::ScrollbarOrientation::kVertical;
-      return cc::SolidColorScrollbarLayerImpl::Create(
+      layer = cc::SolidColorScrollbarLayerImpl::Create(
           &tree, id, orientation, extra->thumb_thickness, extra->track_start,
           extra->scrollbar_base_extra->is_left_side_vertical_scrollbar);
+      break;
     }
 
     case cc::mojom::LayerType::kSurface:
       // The callback is triggered in the renderer side during WillDraw(),
       // and there is no need to do it in viz.
-      return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
+      layer = cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
+      break;
 
     case cc::mojom::LayerType::kTexture:
-      return cc::TextureLayerImpl::Create(&tree, id);
+      layer = cc::TextureLayerImpl::Create(&tree, id);
+      break;
 
     case cc::mojom::LayerType::kViewTransitionContent: {
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       auto& extra = wire.layer_extra->get_view_transition_content_layer_extra();
-      return cc::ViewTransitionContentLayerImpl::Create(
+      layer = cc::ViewTransitionContentLayerImpl::Create(
           &tree, id, extra->resource_id, extra->is_live_content_layer,
           extra->max_extents_rect);
+      break;
     }
 
     default:
       // TODO(rockot): Support other layer types.
-      return cc::SolidColorLayerImpl::Create(&tree, id);
+      layer = cc::SolidColorLayerImpl::Create(&tree, id);
+      break;
   }
+  return base::ok();
 }
 
 template <typename TreeType>
@@ -574,6 +598,12 @@ void UpdateViewTransitionContentLayerExtra(
 
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
                                               cc::LayerImpl& layer) {
+  if (wire.contents_opaque && !wire.contents_opaque_for_text) {
+    return base::unexpected(
+        "Invalid contents_opaque_for_text: cannot be false if contents_opaque "
+        "is true.");
+  }
+
   layer.SetBounds(wire.bounds);
   layer.SetContentsOpaque(wire.contents_opaque);
   layer.SetContentsOpaqueForText(wire.contents_opaque_for_text);
@@ -640,33 +670,40 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
 
   switch (wire.type) {
     case cc::mojom::LayerType::kMirror:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateMirrorLayerExtra(wire.layer_extra->get_mirror_layer_extra(),
                              static_cast<cc::MirrorLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kNinePatchThumbScrollbar:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateNinePatchThumbScrollbarLayerExtra(
           wire.layer_extra->get_nine_patch_thumb_scrollbar_layer_extra(),
           static_cast<cc::NinePatchThumbScrollbarLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kPaintedScrollbar:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdatePaintedScrollbarLayerExtra(
           wire.layer_extra->get_painted_scrollbar_layer_extra(),
           static_cast<cc::PaintedScrollbarLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kSolidColorScrollbar:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateSolidColorScrollbarLayerExtra(
           wire.layer_extra->get_solid_color_scrollbar_layer_extra(),
           static_cast<cc::SolidColorScrollbarLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kSurface:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateSurfaceLayerExtra(wire.layer_extra->get_surface_layer_extra(),
                               static_cast<cc::SurfaceLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kTexture:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateTextureLayerExtra(wire.layer_extra->get_texture_layer_extra(),
                               static_cast<cc::TextureLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kViewTransitionContent:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateViewTransitionContentLayerExtra(
           wire.layer_extra->get_view_transition_content_layer_extra(),
           static_cast<cc::ViewTransitionContentLayerImpl&>(layer));
@@ -705,7 +742,7 @@ base::expected<void, std::string> CreateOrUpdateLayers(
   for (auto& wire : updates) {
     auto& layer = layer_map[wire->id];
     if (!layer) {
-      layer = CreateLayer(host_impl, layers, *wire);
+      RETURN_IF_ERROR(CreateLayer(host_impl, layers, *wire, layer));
     }
     // TODO(crbug.com/418022040): Make sure we support re-creating Layers with
     // a previously used Id.
