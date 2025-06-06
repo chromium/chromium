@@ -36,24 +36,36 @@ permission::-internal-permission-text {
   font-size: inherit;
   font-style: inherit;
   font-weight: inherit;
-  height: 100%;
+  height: fit-content;
+  width: fit-content;
   hyphenate-character: auto;
   line-height: normal;
-  margin: auto;
   min-height: inherit;
   max-height: inherit;
   outline: none;
   user-select:none;
   white-space:nowrap;
-  width: fit-content;
   word-wrap: normal;
   word-spacing: inherit;
 }
 
-::permission-icon {
+permission::-internal-permission-container {
   display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: fit-content;
+  min-height: inherit;
+  max-height: inherit;
+  margin: auto;
+}
+
+::permission-icon {
   width: 1.3em;
   height: 1.3em;
-  margin: auto;
-  float: inline-start;
+  margin-inline-end: 5px;
+  margin-block-start: 0px !important;
+  margin-block-end: 0px !important;
+  margin-inline-start: 0px !important;
 }

@@ -803,6 +803,13 @@
       valid_type: "bool",
     },
 
+    // Whether the property can be applied to ::permission-icon elements.
+    // See https://github.com/WICG/PEPC/blob/main/explainer.md#locking-the-pepc-style
+    valid_for_permission_icon: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_position_try: true
     //
     // Whether the property can be used in a @position-try rule
@@ -3165,6 +3172,7 @@
       // so we turn off incremental style for all them all.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       invalidate: ["layout", "paint"],
     },
     {
@@ -3211,6 +3219,7 @@
       style_builder_custom_functions: ["value"],
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      valid_for_permission_icon: true,
       invalidate: ["paint"],
     },
     {
@@ -3534,6 +3543,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
@@ -3896,6 +3906,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -3920,6 +3931,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
       anchor_mode: "width",
@@ -4140,6 +4152,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
@@ -4162,6 +4175,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
@@ -4183,6 +4197,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
@@ -4204,6 +4219,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
@@ -5512,6 +5528,7 @@
       style_builder_custom_functions: ["value"],
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      valid_for_permission_icon: true,
       invalidate: ["paint", "stroke"],
     },
     {
@@ -5616,6 +5633,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      valid_for_permission_icon: true,
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
     },
@@ -7282,6 +7300,7 @@
       valid_for_position_try: true,
       affected_by_zoom: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
       invalidate: ["layout", "scroll-anchor"],
     },
@@ -7447,6 +7466,7 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_permission_icon: true,
       valid_for_page_context: true,
     },
     {
@@ -8578,6 +8598,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      valid_for_permission_icon: true,
     },
     {
       name: "margin-block",

@@ -445,6 +445,7 @@ V8PermissionState HTMLPermissionElement::permissionStatus() const {
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(embedded_permission_control_receiver_);
+  visitor->Trace(permission_container_);
   visitor->Trace(permission_text_span_);
   visitor->Trace(permission_internal_icon_);
   visitor->Trace(intersection_observer_);
@@ -782,16 +783,20 @@ void HTMLPermissionElement::AttributeChanged(
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  permission_container_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  permission_container_->SetShadowPseudoId(
+      shadow_element_names::kPseudoInternalPermissionContainer);
+  root.AppendChild(permission_container_);
   if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
           GetDocument().GetExecutionContext())) {
     permission_internal_icon_ =
         MakeGarbageCollected<HTMLPermissionIconElement>(GetDocument());
-    root.AppendChild(permission_internal_icon_);
+    permission_container_->AppendChild(permission_internal_icon_);
   }
   permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);
-  root.AppendChild(permission_text_span_);
+  permission_container_->AppendChild(permission_text_span_);
 }
 
 void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
@@ -1728,11 +1733,7 @@ void HTMLPermissionElement::EnableFallbackMode() {
   // time.
   UserAgentShadowRoot()->AppendChild(
       MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
-  UserAgentShadowRoot()->RemoveChild(permission_text_span_);
-  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
-          GetDocument().GetExecutionContext())) {
-    UserAgentShadowRoot()->RemoveChild(permission_internal_icon_);
-  }
+  UserAgentShadowRoot()->RemoveChild(permission_container_);
   MaybeDispatchValidationChangeEvent();
 }
 

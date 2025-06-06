@@ -175,6 +175,10 @@
       Symbol: "kPseudoInternalPermissionTextSpan",
     },
     {
+      name: "-internal-permission-container",
+      Symbol: "kPseudoInternalPermissionContainer",
+    },
+    {
       name: "-internal-optgroup-label",
       Symbol: "kIdOptGroupLabel",
     },

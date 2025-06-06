@@ -15,6 +15,10 @@ class HTMLPermissionIconElement final : public HTMLSpanElement {
  public:
   explicit HTMLPermissionIconElement(Document&);
 
+  CascadeFilter GetCascadeFilter() const override {
+    // Reject all properties for which 'kValidForPermissionIcon' is false.
+    return CascadeFilter(CSSProperty::kValidForPermissionIcon);
+  }
   void SetIcon(mojom::blink::PermissionName permission_type,
                bool is_precise_location);
 

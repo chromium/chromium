@@ -277,6 +277,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // 1ull << 35 is taken by kNotLegacyOverlapping above.
     // Whether this property is valid in a :visited selector.
     kValidForVisited = 1ull << 36,
+    // See valid_for_permission_icon in css_properties.json5
+    kValidForPermissionIcon = 1ull << 37,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
