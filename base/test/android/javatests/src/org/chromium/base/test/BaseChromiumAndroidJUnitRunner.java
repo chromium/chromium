@@ -191,7 +191,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 "org.mockito.android.target",
                 sInMemorySharedPreferencesContext.getCacheDir().getPath());
         // Reduce the time Espresso waits before failing to be less than the Python test timeout.
-        IdlingPolicies.setMasterPolicyTimeout(20, TimeUnit.SECONDS);
+        IdlingPolicies.setMasterPolicyTimeout(5, TimeUnit.SECONDS);
         if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
