@@ -54,12 +54,8 @@ static_library("model_executor") {
   sources = [
     "execution_status.cc",
     "execution_status.h",
-    "model_enums.h",
     "model_executor.h",
-    "model_info.cc",
-    "model_info.h",
-    "model_util.cc",
-    "model_util.h",
+    "model_handler.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -67,8 +63,12 @@ static_library("model_executor") {
       "base_model_executor_helpers.h",
       "bert_model_executor.cc",
       "bert_model_executor.h",
+      "bert_model_handler.cc",
+      "bert_model_handler.h",
       "model_execution_timeout_watchdog.cc",
       "model_execution_timeout_watchdog.h",
+      "model_validator.cc",
+      "model_validator.h",
       "signature_model_executor.h",
       "tflite_model_executor.h",
     ]
@@ -90,7 +90,9 @@ static_library("model_executor") {
   ]
 
   deps = [
+    ":core_util",
     ":features",
+    ":prediction",
     "//base",
     "//net",
     "//url",
@@ -271,66 +273,6 @@ source_set("core_util") {
   visibility = [ ":*" ]
 }
 
-# TODO: crbug.com/421262905 - Eliminate this target
-source_set("core_unsorted") {
-  sources = [
-    "model_handler.h",
-    "optimization_guide_model_provider.h",
-    "optimization_target_model_observer.h",
-    "prediction_model_fetcher.h",
-    "prediction_model_fetcher_impl.cc",
-    "prediction_model_fetcher_impl.h",
-  ]
-
-  if (build_with_tflite_lib) {
-    sources += [
-      "bert_model_handler.cc",
-      "bert_model_handler.h",
-      "model_validator.cc",
-      "model_validator.h",
-    ]
-  }
-  deps = [
-    ":core_util",
-    ":features",
-    ":interfaces",
-    ":model_executor",
-    "//base",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
-    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/optimization_guide/public/mojom",
-    "//components/prefs",
-    "//components/signin/public/identity_manager:identity_manager",
-    "//components/variations",
-    "//components/variations/net",
-    "//google_apis",
-    "//services/network/public/cpp",
-    "//services/on_device_model/public/cpp",
-    "//services/on_device_model/public/mojom",
-    "//third_party/tflite:buildflags",
-    "//url:url",
-  ]
-
-  if (build_with_tflite_lib) {
-    deps += [
-      ":machine_learning",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-      "//third_party/zlib/google:compression_utils",
-    ]
-  }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  visibility = [
-    ":core",
-    ":model_execution",
-  ]
-}
-
 source_set("model_execution") {
   # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
@@ -440,10 +382,10 @@ source_set("model_execution") {
       output_proto_descriptors_cc_file,
     ]
     deps += [
-      ":core_unsorted",
       ":core_util",
       ":model_executor",
       ":on_device_model_execution_proto_generator",
+      ":prediction",
       "//components/component_updater",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/optimization_guide/public/mojom",
@@ -468,13 +410,13 @@ static_library("core") {
   ]
   deps = [ "//base" ]
   public_deps = [
-    ":core_unsorted",
     ":core_util",
     ":features",
     ":filters",
     ":hints",
     ":model_execution",
     ":model_executor",
+    ":prediction",
     "//components/autofill/core/common",
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
@@ -497,8 +439,15 @@ static_library("core") {
 
 static_library("prediction") {
   sources = [
+    "model_enums.h",
+    "model_info.cc",
+    "model_info.h",
     "model_store_metadata_entry.cc",
     "model_store_metadata_entry.h",
+    "model_util.cc",
+    "model_util.h",
+    "optimization_guide_model_provider.h",
+    "optimization_target_model_observer.h",
     "prediction_manager.cc",
     "prediction_manager.h",
     "prediction_model_download_manager.cc",
@@ -506,19 +455,24 @@ static_library("prediction") {
     "prediction_model_download_observer.h",
     "prediction_model_fetch_timer.cc",
     "prediction_model_fetch_timer.h",
+    "prediction_model_fetcher.h",
+    "prediction_model_fetcher_impl.cc",
+    "prediction_model_fetcher_impl.h",
     "prediction_model_override.cc",
     "prediction_model_override.h",
     "prediction_model_store.cc",
     "prediction_model_store.h",
   ]
   deps = [
+    ":core_util",
+    ":features",
     "//components/crx_file",
     "//components/download/public/background_service:public",
-    "//components/optimization_guide/core",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/services/unzip/public/cpp",
+    "//components/variations/net",
     "//crypto",
     "//google_apis",
     "//google_apis/common:request_util",
