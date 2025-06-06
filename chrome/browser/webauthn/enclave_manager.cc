@@ -31,7 +31,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -103,6 +102,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -1394,7 +1394,7 @@ class EnclaveManager::StateMachine {
 
   static std::string ToString(const Event& event) {
     return std::visit(
-        base::Overloaded{
+        absl::Overload{
             [](const None&) { return std::string(); },
             [](const Failure&) { return std::string("Failure"); },
             [](const FileContents&) { return std::string("FileContents"); },

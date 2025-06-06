@@ -25,7 +25,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/i18n/string_compare.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -84,6 +83,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
@@ -395,7 +395,7 @@ const gfx::VectorIcon& GetMechanismIcon(
     content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation,
     std::optional<AuthenticatorTransport> effective_transport = std::nullopt) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [ui_presentation](const Mechanism::Credential& credential)
               -> const gfx::VectorIcon& {
             if (ui_presentation == UIPresentation::kModalImmediate) {

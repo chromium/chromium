@@ -13,10 +13,10 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -59,7 +59,7 @@ class UserVerifyingSigningKeyCros : public crypto::UserVerifyingSigningKey {
 
  private:
   void VerifyUser(base::OnceCallback<void(bool)> callback) {
-    auto visitor = base::Overloaded(
+    auto visitor = absl::Overload(
         // Legacy code path.
         [&](raw_ptr<ash::WebAuthNDialogController> controller) {
           CHECK(controller);
