@@ -45,6 +45,38 @@ namespace {
 
 using password_manager_test_utils::DeleteCredential;
 
+id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
+  return grey_allOf(grey_accessibilityID(id),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+id<GREYMatcher> SubtitleString(const GURL& url) {
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE,
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url)));
+}
+
+// Returns the matcher for the edit button from the navigation bar.
+id<GREYMatcher> NavigationBarEditButton() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                    grey_not(chrome_test_util::TabGridEditButton()),
+                    grey_userInteractionEnabled(), nil);
+}
+
+// Returns the matcher for the use password button.
+id<GREYMatcher> UsePasswordButton() {
+  return chrome_test_util::StaticTextWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
+}
+
+// Returns the matcher for the open keyboard button.
+id<GREYMatcher> OpenKeyboardButton() {
+  return chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+}
+
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
 UIViewController* TopPresentedViewController() {
@@ -56,18 +88,6 @@ UIViewController* TopPresentedViewController() {
     topController = controller;
   }
   return topController;
-}
-
-id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
-  return grey_allOf(grey_accessibilityID(id),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-}
-
-id<GREYMatcher> SubtitleString(const GURL& url) {
-  return grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE,
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url)));
 }
 
 // Verifies the number of Password Details visits recorded.
@@ -206,26 +226,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/simple_login_form_empty_passkey.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
-}
-
-// Returns the matcher for the edit button from the navigation bar.
-id<GREYMatcher> NavigationBarEditButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                    grey_not(chrome_test_util::TabGridEditButton()),
-                    grey_userInteractionEnabled(), nil);
-}
-
-// Returns the matcher for the use password button.
-id<GREYMatcher> UsePasswordButton() {
-  return chrome_test_util::StaticTextWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
-}
-
-// Returns the matcher for the open keyboard button.
-id<GREYMatcher> OpenKeyboardButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
 }
 
 - (void)verifyPasswordFieldsHaveBeenFilled:(NSString*)username {
