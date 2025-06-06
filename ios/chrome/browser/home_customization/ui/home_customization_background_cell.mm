@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -194,15 +195,25 @@ const CGFloat kFeedsWidth = 70.0;
   ]];
 }
 
-- (void)configureWithBackgroundOption:
-            (BackgroundCustomizationConfiguration*)option
-                           logoVendor:(id<LogoVendor>)logoVendor {
+- (void)
+    configureWithBackgroundOption:(BackgroundCustomizationConfiguration*)option
+                       logoVendor:(id<LogoVendor>)logoVendor
+                     colorPalette:(HomeCustomizationColorPaletteConfiguration*)
+                                      colorPalette {
   if (_isConfigured) {
     return;
   }
   _backgroundConfiguration = option;
+  BOOL imageBackground = !option.thumbnailURL.is_empty();
+
+  logoVendor.usesMonochromeLogo = colorPalette || imageBackground;
   UIView* logoView = logoVendor.view;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Change the tint of the logo based on the background.
+  logoView.tintColor = imageBackground ? [UIColor whiteColor]
+                       : colorPalette  ? colorPalette.darkColor
+                                       : logoView.tintColor;
 
   // Insert the logo view right after the spacer.
   [self.innerContentView insertArrangedSubview:logoView atIndex:1];

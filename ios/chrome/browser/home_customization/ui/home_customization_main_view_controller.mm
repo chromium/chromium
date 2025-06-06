@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
@@ -376,9 +377,14 @@
   BackgroundCustomizationConfiguration* backgroundConfiguration =
       _backgroundCustomizationConfigurationMap[itemIdentifier];
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
+  HomeCustomizationColorPaletteConfiguration* colorPalette =
+      [self.colorPaletteProvider
+          provideColorPaletteFromSeedColor:backgroundConfiguration
+                                               .backgroundColor];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
-                           logoVendor:logoVendor];
+                           logoVendor:logoVendor
+                         colorPalette:colorPalette];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {
     [self.collectionView

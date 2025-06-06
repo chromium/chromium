@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_provider.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_util.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
@@ -39,7 +41,8 @@ CGFloat const kSheetCornerRadius = 30;
 @interface HomeCustomizationCoordinator () <
     UISheetPresentationControllerDelegate,
     HomeCustomizationBackgroundPickerPresentationDelegate,
-    HomeCustomizationLogoVendorProvider> {
+    HomeCustomizationLogoVendorProvider,
+    HomeCustomizationColorPaletteProvider> {
   // Displays the background picker action sheet.
   HomeCustomizationBackgroundPickerActionSheetCoordinator*
       _backgroundPickerActionSheetCoordinator;
@@ -186,6 +189,7 @@ CGFloat const kSheetCornerRadius = 30;
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.logoVendorProvider = self;
+      self.mainViewController.colorPaletteProvider = self;
       self.mediator.mainPageConsumer = self.mainViewController;
       [self.mediator configureMainPageData];
       menuPage = self.mainViewController;
@@ -266,6 +270,13 @@ CGFloat const kSheetCornerRadius = 30;
 - (id<LogoVendor>)provideLogoVendor {
   return ios::provider::CreateLogoVendor(
       self.browser, self.browser->GetWebStateList()->GetActiveWebState());
+}
+
+#pragma mark - HomeCustomizationColorPaletteProvider
+
+- (HomeCustomizationColorPaletteConfiguration*)provideColorPaletteFromSeedColor:
+    (UIColor*)seedColor {
+  return CreateColorPaletteConfigurationFromSeedColor(seedColor);
 }
 
 @end

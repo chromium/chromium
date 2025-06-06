@@ -300,7 +300,8 @@ const CGFloat kHeaderInsetSides = 7.5;
   id<LogoVendor> logoVendor = [self.logoVendorProvider provideLogoVendor];
 
   [cell configureWithBackgroundOption:backgroundConfiguration
-                           logoVendor:logoVendor];
+                           logoVendor:logoVendor
+                         colorPalette:nil];
 
   if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {
     [_collectionView selectItemAtIndexPath:indexPath

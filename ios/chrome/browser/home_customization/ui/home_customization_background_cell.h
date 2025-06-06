@@ -9,6 +9,7 @@
 
 @protocol LogoVendor;
 @protocol HomeCustomizationMutator;
+@class HomeCustomizationColorPaletteConfiguration;
 
 // Represents a mini preview of how the NTP will look with a particular
 // background selected. This cell is part of the background customization
@@ -26,7 +27,10 @@
 // Configures the cell using the given background customization configuration.
 - (void)configureWithBackgroundOption:
             (BackgroundCustomizationConfiguration*)backgroundConfiguration
-                           logoVendor:(id<LogoVendor>)logoVendor;
+                           logoVendor:(id<LogoVendor>)logoVendor
+                         colorPalette:
+                             (HomeCustomizationColorPaletteConfiguration*)
+                                 colorPalette;
 
 // Updates the background image displayed behind the cell’s content.
 - (void)updateBackgroundImage:(UIImage*)image;
