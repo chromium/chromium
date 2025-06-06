@@ -1032,7 +1032,8 @@ public class ChromeTabbedActivity extends ChromeActivity
                         mArchivedTabsAutoDeletePromoManager,
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                                        .getTabGroupSyncController());
+                                        .getTabGroupSyncController(),
+                        mLayoutStateProviderSupplier);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

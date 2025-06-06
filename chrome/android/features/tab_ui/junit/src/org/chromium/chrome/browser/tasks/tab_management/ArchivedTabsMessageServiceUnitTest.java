@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -50,6 +52,8 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
@@ -112,8 +116,12 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserverCaptor;
     @Captor private ArgumentCaptor<OnDropOnArchivalMessageCardEventListener> mOnDropObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -123,6 +131,8 @@ public class ArchivedTabsMessageServiceUnitTest {
     private final ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new ObservableSupplierImpl<>();
 
     @Before
@@ -141,6 +151,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     }
 
     private void createArchivedTabsMessageService() {
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mArchivedTabsMessageService =
                 new ArchivedTabsMessageService(
                         mActivity,
@@ -161,7 +172,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mTabGroupSyncService,
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
-                        mCurrentTabGroupModelFilterSupplier);
+                        mCurrentTabGroupModelFilterSupplier,
+                        mLayoutStateProviderSupplier);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
@@ -175,6 +187,7 @@ public class ArchivedTabsMessageServiceUnitTest {
                 .getArchivedTabModelOrchestratorObserverForTesting()
                 .onTabModelCreated(mArchivedTabModel);
         verify(mTabArchiveSettings).addObserver(mTabArchiveSettingsObserverCaptor.capture());
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
     }
 
     @Test
@@ -286,6 +299,18 @@ public class ArchivedTabsMessageServiceUnitTest {
         verify(mArchivedTabsDialogCoordinator).destroy();
         verify(mTabListCoordinator).removeTabListItemSizeChangedObserver(any());
         assertFalse(mTabCountSupplier.hasObservers());
+    }
+
+    @Test
+    public void testDestroyDialogWhenLeavingTabSwitcher() {
+        createArchivedTabsMessageService();
+        mLayoutStateObserverCaptor.getValue().onStartedHiding(LayoutType.BROWSING);
+        verify(mArchivedTabsDialogCoordinator, times(0)).destroy();
+        assertNotNull(mArchivedTabsMessageService.getArchivedTabsDialogCoordinatorForTesting());
+
+        mLayoutStateObserverCaptor.getValue().onStartedHiding(LayoutType.TAB_SWITCHER);
+        verify(mArchivedTabsDialogCoordinator).destroy();
+        assertNull(mArchivedTabsMessageService.getArchivedTabsDialogCoordinatorForTesting());
     }
 
     @Test

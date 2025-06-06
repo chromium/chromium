@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -72,6 +73,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final UndoBarThrottle mUndoBarThrottle;
     private final @NonNull Supplier<PaneManager> mPaneManagerSupplier;
     private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final @NonNull Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
 
     /**
@@ -98,6 +100,8 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param undoBarThrottle Used to throttle the undo bar.
      * @param paneManagerSupplier Used to switch and communicate with other panes.
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
+     * @param layoutStateProviderSupplier Supplies the LayoutStateProvider, which is used to observe
+     *     when the TabSwitcher is hidden.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -120,7 +124,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             UndoBarThrottle undoBarThrottle,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -143,6 +148,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mUndoBarThrottle = undoBarThrottle;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
     }
 
     /**
@@ -266,7 +272,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mDesktopWindowStateManager,
                             mEdgeToEdgeSupplier,
                             mPaneManagerSupplier,
-                            mTabGroupUiActionHandlerSupplier);
+                            mTabGroupUiActionHandlerSupplier,
+                            mLayoutStateProviderSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

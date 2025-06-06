@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -377,6 +378,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
+    private final @NonNull DestroyChecker mDestroyChecker = new DestroyChecker();
+
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private TabListRecyclerView mDialogRecyclerView;
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
@@ -494,6 +497,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     /** Hides the dialog. */
     public void destroy() {
+        mDestroyChecker.checkNotDestroyed();
+        mDestroyChecker.destroy();
+
         if (mTabListEditorCoordinator != null) {
             mRootView.removeView(mDialogView);
             mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
@@ -974,5 +980,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     @VisibleForTesting
     FrameLayout getCloseAllTabsButtonContainer() {
         return mDialogView.findViewById(R.id.close_all_tabs_button_container);
+    }
+
+    DestroyChecker getDestroyCheckerForTesting() {
+        return mDestroyChecker;
     }
 }

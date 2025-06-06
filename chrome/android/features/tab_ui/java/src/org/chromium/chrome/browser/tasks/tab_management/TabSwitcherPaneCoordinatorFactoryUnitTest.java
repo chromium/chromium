@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -138,6 +139,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
@@ -212,7 +214,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mTabBookmarkerSupplier,
                         mUndoBarThrottle,
                         mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        mLayoutStateProviderSupplier);
     }
 
     @Test

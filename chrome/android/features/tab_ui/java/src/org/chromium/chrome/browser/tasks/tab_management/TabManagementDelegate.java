@@ -130,6 +130,8 @@ public interface TabManagementDelegate {
      * @param archivedTabsAutoDeletePromoManager Manager class for Archived Tabs Auto Delete Promo.
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
      *     groups.
+     * @param layoutStateProviderSupplier Supplies the LayoutStateProvider, which is used to observe
+     *     when the TabSwitcher is hidden.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             Activity activity,
@@ -160,7 +162,8 @@ public interface TabManagementDelegate {
             UndoBarThrottle undoBarThrottle,
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
-            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<LayoutStateProvider> layoutStateProviderSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

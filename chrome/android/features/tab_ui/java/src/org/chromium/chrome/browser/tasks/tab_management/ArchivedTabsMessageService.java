@@ -34,6 +34,9 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
@@ -166,6 +169,16 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final @NonNull ObservableSupplier<Integer> mTabCountSupplier;
+    private final @NonNull Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final @NonNull LayoutStateObserver mLayoutStateObserver =
+            new LayoutStateObserver() {
+                @Override
+                public void onStartedHiding(@LayoutType int layoutType) {
+                    if (layoutType == LayoutType.TAB_SWITCHER) {
+                        maybeDestroyArchivedTabsDialog();
+                    }
+                }
+            };
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -196,7 +209,8 @@ public class ArchivedTabsMessageService extends MessageService
             @Nullable TabGroupSyncService tabGroupSyncService,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
+            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            @NonNull Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mActivity = activity;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -217,6 +231,10 @@ public class ArchivedTabsMessageService extends MessageService
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        if (mLayoutStateProviderSupplier.hasValue()) {
+            mLayoutStateProviderSupplier.get().addObserver(mLayoutStateObserver);
+        }
 
         mTabListCoordinatorSupplier.addObserver(
                 (tabListCoordinator) -> {
@@ -279,6 +297,10 @@ public class ArchivedTabsMessageService extends MessageService
 
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountObserver);
+        }
+
+        if (mLayoutStateProviderSupplier.hasValue()) {
+            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
         }
     }
 
@@ -407,6 +429,12 @@ public class ArchivedTabsMessageService extends MessageService
         mCustomCardModel.set(WIDTH, spanCount == 4 ? cardSize.getWidth() * 2 : MATCH_PARENT);
     }
 
+    private void maybeDestroyArchivedTabsDialog() {
+        if (mArchivedTabsDialogCoordinator == null) return;
+        mArchivedTabsDialogCoordinator.destroy();
+        mArchivedTabsDialogCoordinator = null;
+    }
+
     // Testing methods.
 
     PropertyModel getCustomCardModelForTesting() {
@@ -422,7 +450,7 @@ public class ArchivedTabsMessageService extends MessageService
         mArchivedTabsDialogCoordinator = archivedTabsDialogCoordinator;
     }
 
-    Callback<Integer> getTabCountObserverForTesting() {
-        return mTabCountObserver;
+    ArchivedTabsDialogCoordinator getArchivedTabsDialogCoordinatorForTesting() {
+        return mArchivedTabsDialogCoordinator;
     }
 }

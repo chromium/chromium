@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -103,6 +104,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -169,7 +171,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         /* desktopWindowStateManager= */ null,
                         mEdgeToEdgeSupplier,
                         mPaneManagerSupplier,
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        mLayoutStateProviderSupplier);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator,
