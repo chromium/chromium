@@ -14,7 +14,9 @@
 # limitations under the License.
 
 import asyncio
+import logging
 import os
+from asyncio import Timeout
 from collections.abc import Callable, Generator
 from uuid import uuid4
 
@@ -28,6 +30,9 @@ from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
 
 from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @pytest_asyncio.fixture(scope='session')
@@ -163,12 +168,17 @@ async def websocket(test_headless_mode, capabilities, request):
             try:
                 await create_session(connection)
                 return connection
-            except (asyncio.exceptions.CancelledError, asyncio.TimeoutError):
+            except (asyncio.exceptions.CancelledError,
+                    asyncio.TimeoutError) as e:
                 # Timeout during creating session is expected due to infra issues.
-                await connection.close()
                 current_attempt = current_attempt + 1
+                await connection.close()
                 if current_attempt >= max_attempt:
                     raise
+                else:
+                    logger.info(
+                        f"Error during creating session. Attempts: {current_attempt}/{max_attempt}. {e}"
+                    )
             except Exception:
                 await connection.close()
                 raise
@@ -191,13 +201,37 @@ async def websocket(test_headless_mode, capabilities, request):
             "method": "session.end",
             "params": {}
         })
-        await _websocket_connection.close()
     except websockets.exceptions.ConnectionClosedError:
-        # The session and connection can be already closed if the test did it,
+        # The session can be already closed if the test did it,
         # or if the last tab was closed. Details:
         # https://w3c.github.io/webdriver/#dfn-close-window
         # TODO: revisit after BiDi specification is clarified:
         #  https://github.com/w3c/webdriver-bidi/issues/187
+        pass
+    except RuntimeError:
+        # There can be another coroutine waiting for websocket messages, which
+        # is fine.
+        pass
+    except Timeout:
+        # Node runner can fail sending session.end response. Ignore the error.
+        pass
+    except Exception as e:
+        logger.info(f"Error during closing session. {e}")
+        raise
+
+    try:
+        # Close websocket connection.
+        await _websocket_connection.close()
+    except websockets.exceptions.ConnectionClosedError:
+        # The connection can be already closed if the test did it,
+        # or if the last tab was closed. Details:
+        # https://w3c.github.io/webdriver/#dfn-close-window
+        # TODO: revisit after BiDi specification is clarified:
+        #  https://github.com/w3c/webdriver-bidi/issues/187
+        pass
+    except Exception as e:
+        logger.info(
+            f"Error during closing websocket connection. {type(e)} {e}")
         pass
 
 

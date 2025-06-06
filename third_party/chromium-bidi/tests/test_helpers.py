@@ -89,9 +89,15 @@ async def execute_command(websocket, command: dict, timeout: int = 5) -> dict:
     await send_JSON_command(websocket, command)
 
     logger.info(
-        f"Executing command with method '{command['method']}' and params '{command['params']}'..."
+        f"Executing command {command['id']} with method '{command['method']}' and params '{command['params']}'..."
     )
-    return await wait_for_command(websocket, command["id"], timeout)
+    try:
+        result = await wait_for_command(websocket, command["id"], timeout)
+        logger.info(f"Command {command['id']} finished with {result}")
+        return result
+    except Exception as e:
+        logger.info(f"Command {command['id']} failed with {type(e)}, {e}")
+        raise
 
 
 async def wait_for_command(websocket,
