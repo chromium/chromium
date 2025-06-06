@@ -50,7 +50,6 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
-#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"

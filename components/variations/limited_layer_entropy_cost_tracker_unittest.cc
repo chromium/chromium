@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/variations/entropy_provider.h"
-#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -159,7 +158,6 @@ class LimitedLayerEntropyCostTrackerTest : public ::testing::Test {
             // entropy randomization source.
             {0, 100},
             kTestLimitedEntropyRandomizationSource) {
-    EnableLimitedEntropyModeForTesting();
   }
 
  protected:

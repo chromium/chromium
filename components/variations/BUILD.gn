@@ -55,8 +55,6 @@ component("variations") {
     "field_trial_internals_utils.h",
     "hashing.cc",
     "hashing.h",
-    "limited_entropy_mode_gate.cc",
-    "limited_entropy_mode_gate.h",
     "limited_layer_entropy_cost_tracker.cc",
     "limited_layer_entropy_cost_tracker.h",
     "metrics.cc",
