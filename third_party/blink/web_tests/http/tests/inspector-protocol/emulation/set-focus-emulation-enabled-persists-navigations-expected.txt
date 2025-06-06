@@ -1,4 +1,0 @@
-Tests that page focus emulation persists between navigations
-hasFocus(before navigation):true
-hasFocus(after navigation):true
-

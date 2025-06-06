@@ -1325,17 +1325,8 @@ FocusController::FocusController(Page* page)
 
 void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
   DCHECK(!frame || frame->GetPage() == page_);
-  if (focused_frame_ == frame || (is_changing_focused_frame_ && frame)) {
+  if (focused_frame_ == frame || (is_changing_focused_frame_ && frame))
     return;
-  }
-
-  // DevTools starts emulating focus early in the lifecycle.
-  // blink calls SetFocusedFrame(nullptr) after DevTools has already
-  // set a focused frame. Returning early to not discard previously
-  // set emulation state.
-  if (is_emulating_focus_ && !frame) {
-    return;
-  }
 
   is_changing_focused_frame_ = true;
 
@@ -1460,12 +1451,6 @@ bool FocusController::IsDocumentFocused(const Document& document) const {
 
   if (!focused_frame_) {
     return false;
-  }
-
-  // If DevTools is emulating focus, any document
-  // is focused irrespective of the tree.
-  if (is_emulating_focus_) {
-    return true;
   }
 
   if (IsA<HTMLFrameOwnerElement>(focused_frame_->Owner())) {
