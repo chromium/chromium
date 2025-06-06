@@ -577,9 +577,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
               observer.last_initiator_process_id());
   }
 
-  // The RenderFrameHost should have changed unless full site isolation and
-  // proactive BrowsingInstance swaps are both disabled.
-  if (!AreAllSitesIsolatedForTesting() &&
+  // The RenderFrameHost should have changed unless strict SiteInstances (either
+  // full site isolation or default SiteInstanceGroups) and proactive
+  // BrowsingInstance swaps are both disabled.
+  if (!AreStrictSiteInstancesEnabled() &&
       !CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     EXPECT_EQ(initial_rfh, current_frame_host());
   } else {

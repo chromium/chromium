@@ -103,7 +103,7 @@ namespace {
 // Helper function that return true in cases where the current process model
 // will return the same SiteInstance for a cross-process navigation.
 bool ExpectSameSiteInstance() {
-  return !AreAllSitesIsolatedForTesting() &&
+  return !AreStrictSiteInstancesEnabled() &&
          !CanCrossSiteNavigationsProactivelySwapBrowsingInstances();
 }
 
