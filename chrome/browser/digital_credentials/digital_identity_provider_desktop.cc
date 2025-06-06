@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
@@ -28,6 +27,7 @@
 #include "crypto/random.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -168,7 +168,7 @@ void DigitalIdentityProviderDesktop::Transact(
 
 void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,
                                              Event event) {
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [this, qr_url](SystemEvent event) {
                    switch (event) {
                      case SystemEvent::kBluetoothNotPowered:
@@ -225,7 +225,7 @@ void DigitalIdentityProviderDesktop::OnFinished(
   }
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [this](SystemError error) {
             EndRequestWithError(RequestStatusForMetrics::kErrorOther);
           },
