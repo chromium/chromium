@@ -204,6 +204,12 @@ inline constexpr char kSyncLastSyncedTime[] = "sync.last_synced_time";
 inline constexpr char kSyncLastPollTime[] = "sync.last_poll_time";
 inline constexpr char kSyncPollInterval[] = "sync.short_poll_interval";
 
+// Deprecated 06/2025.
+inline constexpr char kVariationsLimitedEntropySyntheticTrialSeed[] =
+    "variations_limited_entropy_synthetic_trial_seed";
+inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
+    "variations_limited_entropy_synthetic_trial_seed_v2";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -678,6 +684,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
 
   registry->RegisterTimePref(prefs::kLensOverlayLastPresented, base::Time());
+
+  // Deprecated 06/2025.
+  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeed, 0);
+  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeedV2,
+                               0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1137,6 +1148,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 04/2025.
   prefs->ClearPref("set_up_list.disabled");
+
+  // Added 06/2025.
+  prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
+  prefs->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
 }
 
 // This method should be periodically pruned of year+ old migrations.

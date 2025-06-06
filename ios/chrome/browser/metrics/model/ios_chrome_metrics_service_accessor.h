@@ -16,7 +16,6 @@
 class ApplicationBreadcrumbsLogger;
 class DiscoverFeedExperimentsTracker;
 class IOSChromeSyncClient;
-class IOSChromeVariationsServiceClient;
 class OptimizationGuideService;
 class CrashesDOMHandler;
 
@@ -46,8 +45,6 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
  private:
   friend class IOSChromeMetricsServicesManagerClient;
-  friend class IOSChromeVariationsServiceClient;
-
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
   friend class DiscoverFeedExperimentsTracker;

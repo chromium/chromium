@@ -184,10 +184,7 @@ class MetricsStateManager final {
   // only returns an entropy provider that is based on a low entropy source.
   //
   // When |enable_limited_entropy_mode| is true, a limited entropy
-  // randomization source value will be generated for this client. This
-  // parameter can only be false before the limited entropy synthetic trial
-  // completes (See limited_entropy_synthetic_trial.h), after which it should be
-  // removed (TODO(crbug.com/40948861)).
+  // randomization source value will be generated for this client.
   std::unique_ptr<const variations::EntropyProviders> CreateEntropyProviders(
       bool enable_limited_entropy_mode);
 

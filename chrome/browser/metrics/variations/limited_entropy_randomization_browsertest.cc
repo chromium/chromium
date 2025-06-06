@@ -29,7 +29,6 @@
 #include "components/variations/hashing.h"
 #include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/pref_names.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_switches.h"
@@ -120,15 +119,8 @@ class LimitedEntropyRandomizationBrowserTest : public InProcessBrowserTest {
 // the test study and the synthetic trial are registered, and 2) verify that the
 // browser doesn't crash in any of the intermediate steps.
 IN_PROC_BROWSER_TEST_F(LimitedEntropyRandomizationBrowserTest,
-                       MANUAL_SyntheticTrialAndStudyRegistrationSubTest) {
+                       MANUAL_LimitedLayerConstrainedStudyRegistrationSubTest) {
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestStudyName));
-
-  std::vector<ActiveGroupId> synthetic_trials =
-      g_browser_process->metrics_service()
-          ->GetSyntheticTrialRegistry()
-          ->GetCurrentSyntheticFieldTrialsForTest();
-  EXPECT_TRUE(
-      ContainsTrialName(synthetic_trials, kLimitedEntropySyntheticTrialName));
 }
 
 class LimitedEntropyRandomizationBrowserTestHelper : public ::testing::Test {
@@ -161,9 +153,10 @@ class LimitedEntropyRandomizationBrowserTestHelper : public ::testing::Test {
     args.AppendSwitch(switches::kAcceptEmptySeedSignatureForTesting);
     args.AppendSwitchASCII(switches::kFakeVariationsChannel, "canary");
 
-    args.AppendSwitchASCII(base::kGTestFilterFlag,
-                           "LimitedEntropyRandomizationBrowserTest."
-                           "MANUAL_SyntheticTrialAndStudyRegistrationSubTest");
+    args.AppendSwitchASCII(
+        base::kGTestFilterFlag,
+        "LimitedEntropyRandomizationBrowserTest."
+        "MANUAL_LimitedLayerConstrainedStudyRegistrationSubTest");
     args.AppendSwitch(::switches::kRunManualTestsFlag);
     args.AppendSwitch(::switches::kSingleProcessTests);
 
@@ -197,7 +190,7 @@ class LimitedEntropyRandomizationBrowserTestHelper : public ::testing::Test {
 };
 
 TEST_F(LimitedEntropyRandomizationBrowserTestHelper,
-       SyntheticTrialAndStudyRegistration) {
+       LimitedLayerConstrainedStudyRegistration) {
   std::unique_ptr<PrefService> local_state = LoadLocalState(local_state_file());
   auto args = GetArgsForBrowserTest();
 
@@ -209,10 +202,6 @@ TEST_F(LimitedEntropyRandomizationBrowserTestHelper,
       prefs::kVariationsCompressedSeed,
       GZipAndB64EncodeToHexString(CreateTestSeedWithLimitedEntropyLayer()));
 
-  // This will pick the "Enabled" group in the synthetic trial.
-  local_state->SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed,
-                         10);
-
   // Block until the above prefs values are committed to disk. The sub test will
   // spin up a separate browser process which will load its prefs values from
   // the same disk location.
@@ -222,10 +211,10 @@ TEST_F(LimitedEntropyRandomizationBrowserTestHelper,
   loop.Run();
 
   // The test verifications are in the sub test,
-  // i.e. "MANUAL_SyntheticTrialAndStudyRegistrationSubTest", which is triggered
-  // from the command line run. If any of the verifications fail, the command
-  // line run will fail and the details of the error will be printed through
-  // `output.standard_output`.
+  // i.e. "MANUAL_LimitedLayerConstrainedStudyRegistrationSubTest", which is
+  // triggered from the command line run. If any of the verifications fail, the
+  // command line run will fail and the details of the error will be printed
+  // through `output.standard_output`.
   auto output = RunWithCommandLine(args);
   EXPECT_EQ(0, output.exit_code) << "Test failed: " << output.standard_output;
 }

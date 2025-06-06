@@ -52,7 +52,6 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/limited_entropy_randomization.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/service/variations_service_utils.h"
@@ -181,16 +180,6 @@ void MaybeExtendVariationsSafeMode(
       /*is_extended_safe_mode=*/true);
 }
 
-// Returns true iff the given seed contains a layer with LIMITED entropy mode.
-bool ContainsLimitedEntropyLayer(const VariationsSeed& seed) {
-  for (const Layer& layer_proto : seed.layers()) {
-    if (layer_proto.entropy_mode() == Layer::LIMITED) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
@@ -217,12 +206,11 @@ Study::Channel ConvertProductChannelToStudyChannel(
 VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
-    base::OnceCallback<std::string(PrefService*)> locale_cb,
-    LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial)
+    base::OnceCallback<std::string(PrefService*)> locale_cb)
     : client_(client),
       seed_store_(std::move(seed_store)),
-      application_locale_(std::move(locale_cb).Run(seed_store_->local_state())),
-      limited_entropy_synthetic_trial_(limited_entropy_synthetic_trial) {}
+      application_locale_(
+          std::move(locale_cb).Run(seed_store_->local_state())) {}
 
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
 
@@ -628,22 +616,6 @@ VariationsFieldTrialCreatorBase::GetGoogleGroupsFromPrefs() {
   return groups;
 }
 
-bool VariationsFieldTrialCreatorBase::
-    ShouldActivateLimitedEntropySyntheticTrial(const VariationsSeed& seed) {
-  return limited_entropy_synthetic_trial_ &&
-         IsLimitedEntropyModeEnabled(client_->GetChannelForVariations()) &&
-         ContainsLimitedEntropyLayer(seed);
-}
-
-void VariationsFieldTrialCreatorBase::
-    RegisterLimitedEntropySyntheticTrialIfNeeded(
-        const VariationsSeed& seed,
-        SyntheticTrialRegistry* synthetic_trial_registry) {
-  if (ShouldActivateLimitedEntropySyntheticTrial(seed)) {
-    limited_entropy_synthetic_trial_->Register(*synthetic_trial_registry);
-  }
-}
-
 bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
@@ -704,7 +676,6 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
                                              : SeedUsage::kRegularSeedUsed);
   SetSeedVersion(seed.version());
 
-  RegisterLimitedEntropySyntheticTrialIfNeeded(seed, synthetic_trial_registry);
   VariationsLayers layers(seed, entropy_providers);
 
   // The server is not expected to send a seed with misconfigured entropy. Just
@@ -713,14 +684,12 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   // Also, generate a crash report, so that the misconfigured seed can be
   // identified and rolled back.
   //
-  // Checking `IsLimitedEntropyModeEnabled()` is a safety measure, but is
-  // redundant given that `VariationsLayers` ensures that no layer with
-  // `EntropyMode.LIMITED` is marked as active for clients without a limited
-  // entropy provider (i.e. have limited entropy mode disabled, see
-  // `IsLimitedEntropyRandomizationSourceEnabled()`). For such clients,
-  // `SeedHasMisconfiguredEntropy()` will always be false.
-  if (IsLimitedEntropyModeEnabled(client_->GetChannelForVariations()) &&
-      SeedHasMisconfiguredEntropy(layers, seed)) {
+  // Note that `VariationsLayers` ensures that no limited-entropy-mode layer
+  // is marked as active for clients without a limited entropy provider, which
+  // is the case for clients on platforms, like Android WebView, that do not
+  // support limited entropy randomization. For such clients,
+  // `SeedHasMisconfiguredEntropy()`is always false.
+  if (SeedHasMisconfiguredEntropy(layers, seed)) {
     base::debug::DumpWithoutCrashing();
     return false;
   }
@@ -815,21 +784,6 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
 
 VariationsSeedStore* VariationsFieldTrialCreatorBase::GetSeedStore() {
   return seed_store_.get();
-}
-
-// static
-bool VariationsFieldTrialCreatorBase::
-    IsLimitedEntropyRandomizationSourceEnabled(
-        version_info::Channel channel,
-        LimitedEntropySyntheticTrial* trial) {
-  // Channel gated clients should not generate a limited entropy randomization
-  // source.
-  if (!IsLimitedEntropyModeEnabled(channel)) {
-    return false;
-  }
-  // Only clients in the enabled group of the limited entropy synthetic trial
-  // should have a limited entropy randomization source.
-  return trial && trial->IsEnabled();
 }
 
 }  // namespace variations

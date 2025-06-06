@@ -11,7 +11,6 @@
 #import "components/variations/seed_response.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"

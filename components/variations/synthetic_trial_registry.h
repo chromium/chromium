@@ -28,7 +28,6 @@ namespace variations {
 struct ActiveGroupId;
 class FieldTrialsProvider;
 class FieldTrialsProviderTest;
-class LimitedEntropySyntheticTrial;
 class SyntheticTrialRegistryTest;
 
 namespace internal {
@@ -78,7 +77,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 
  private:
   friend metrics::MetricsServiceAccessor;
-  friend LimitedEntropySyntheticTrial;
   friend FieldTrialsProvider;
   friend FieldTrialsProviderTest;
   friend SyntheticTrialRegistryTest;

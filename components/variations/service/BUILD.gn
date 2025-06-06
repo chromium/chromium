@@ -38,8 +38,6 @@ static_library("service") {
     "google_groups_manager_prefs.h",
     "limited_entropy_randomization.cc",
     "limited_entropy_randomization.h",
-    "limited_entropy_synthetic_trial.cc",
-    "limited_entropy_synthetic_trial.h",
     "safe_seed_manager.cc",
     "safe_seed_manager.h",
     "safe_seed_manager_base.cc",
@@ -88,7 +86,6 @@ source_set("unit_tests") {
   sources = [
     "google_groups_manager_unittest.cc",
     "limited_entropy_randomization_unittest.cc",
-    "limited_entropy_synthetic_trial_unittest.cc",
     "safe_seed_manager_unittest.cc",
     "ui_string_overrider_unittest.cc",
     "variations_field_trial_creator_unittest.cc",

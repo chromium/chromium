@@ -34,7 +34,6 @@ class BrowserProcessImpl;
 class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
-class ChromeVariationsServiceClient;
 class GlobalFeatures;
 class HttpsFirstModeService;
 class NavigationMetricsRecorder;
@@ -177,9 +176,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeMetricsServicesManagerClient;
   friend class ChromeSigninClient;
   friend class browser_sync::ChromeSyncClient;
-  // TODO(crbug.com/40948861): Remove this friend when the limited entropy
-  // synthetic trial has wrapped up.
-  friend class ChromeVariationsServiceClient;
   friend bool domain_reliability::ShouldCreateService();
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;

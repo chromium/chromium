@@ -112,8 +112,7 @@ void SetUpFieldTrials(PrefService* local_state,
               /*entropy_providers=*/nullptr),
           variations_service_client.GetChannelForVariations(),
           variations_service_client.GetVariationsSeedFileDir()),
-      variations::UIStringOverrider(),
-      /*limited_entropy_synthetic_trial=*/nullptr);
+      variations::UIStringOverrider());
 
   variations::SafeSeedManager safe_seed_manager(local_state);
 

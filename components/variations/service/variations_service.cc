@@ -42,7 +42,6 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_simulator.h"
@@ -351,17 +350,13 @@ VariationsService::VariationsService(
       local_state_(local_state),
       synthetic_trial_registry_(synthetic_trial_registry),
       state_manager_(state_manager),
-      limited_entropy_synthetic_trial_(
-          local_state,
-          client_.get()->GetChannelForVariations()),
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
+      // TODO(crbug.com/421912603): Verify whether all callers should pass
+      // `true` here.
       entropy_providers_(state_manager_->CreateEntropyProviders(
-          VariationsFieldTrialCreatorBase::
-              IsLimitedEntropyRandomizationSourceEnabled(
-                  client_->GetChannelForVariations(),
-                  &limited_entropy_synthetic_trial_))),
+          /*enable_limited_entropy_mode=*/true)),
       field_trial_creator_(
           client_.get(),
           std::make_unique<VariationsSeedStore>(
@@ -376,8 +371,7 @@ VariationsService::VariationsService(
               client_.get()->GetChannelForVariations(),
               client_.get()->GetVariationsSeedFileDir(),
               entropy_providers_.get()),
-          ui_string_overrider,
-          &limited_entropy_synthetic_trial_) {
+          ui_string_overrider) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 
@@ -562,7 +556,6 @@ std::string VariationsService::GetDefaultVariationsServerURLForTesting() {
 void VariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   SafeSeedManager::RegisterPrefs(registry);
   VariationsSeedStore::RegisterPrefs(registry);
-  LimitedEntropySyntheticTrial::RegisterPrefs(registry);
   RegisterFieldTrialInternalsPrefs(*registry);
 
   registry->RegisterIntegerPref(

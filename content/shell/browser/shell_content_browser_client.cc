@@ -966,10 +966,7 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
               /*entropy_providers=*/nullptr),
           variations_service_client.GetChannelForVariations(),
           variations_service_client.GetVariationsSeedFileDir()),
-      variations::UIStringOverrider(),
-      // The limited entropy synthetic trial will not be registered for this
-      // purpose.
-      /*limited_entropy_synthetic_trial=*/nullptr);
+      variations::UIStringOverrider());
 
   variations::SafeSeedManager safe_seed_manager(
       GetSharedState().local_state.get());

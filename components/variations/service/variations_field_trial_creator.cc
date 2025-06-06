@@ -26,15 +26,13 @@ namespace variations {
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
-    const UIStringOverrider& ui_string_overrider,
-    LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial)
+    const UIStringOverrider& ui_string_overrider)
     : VariationsFieldTrialCreatorBase(
           client,
           std::move(seed_store),
           base::BindOnce([](PrefService* local_state) {
             return language::GetApplicationLocale(local_state);
-          }),
-          limited_entropy_synthetic_trial),
+          })),
       ui_string_overrider_(ui_string_overrider) {}
 
 VariationsFieldTrialCreator::~VariationsFieldTrialCreator() = default;

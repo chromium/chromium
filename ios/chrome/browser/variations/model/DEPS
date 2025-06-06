@@ -1,6 +1,0 @@
-include_rules = [
-  # To access IOSChromeMetricsServiceAccessor.
-  # TODO(crbug.com/40948861): Remove this entry once the limited entropy
-  # synthetic trial has been wrapped up.
-  "+ios/chrome/browser/metrics/model",
-]

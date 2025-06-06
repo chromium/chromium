@@ -1134,6 +1134,10 @@ inline constexpr char kPrivacySandboxFakeNoticeFirstSignOutTime[] =
 // Deprecated 06/2025.
 inline constexpr char kStorageGarbageCollect[] =
     "extensions.storage.garbagecollect";
+inline constexpr char kVariationsLimitedEntropySyntheticTrialSeed[] =
+    "variations_limited_entropy_synthetic_trial_seed";
+inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
+    "variations_limited_entropy_synthetic_trial_seed_v2";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1250,6 +1254,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 05/2025.
   registry->RegisterStringPref(kModuleBlocklistCacheMD5Digest, "");
 #endif
+
+  // Deprecated 06/2025.
+  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeed, 0);
+  registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeedV2,
+                               0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2536,6 +2545,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Deprecated 05/2025.
   local_state->ClearPref(kModuleBlocklistCacheMD5Digest);
 #endif
+
+  // Added 06/2025.
+  local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
+  local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

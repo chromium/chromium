@@ -527,8 +527,6 @@ MetricsStateManager::AddOnClonedInstallDetectedCallback(
 
 std::unique_ptr<const variations::EntropyProviders>
 MetricsStateManager::CreateEntropyProviders(bool enable_limited_entropy_mode) {
-  // TODO(crbug.com/40948861): remove `enable_limited_entropy_mode` when it's
-  // true for all callers.
   auto limited_entropy_randomization_source =
       enable_limited_entropy_mode ? GetLimitedEntropyRandomizationSource()
                                   : std::string_view();
