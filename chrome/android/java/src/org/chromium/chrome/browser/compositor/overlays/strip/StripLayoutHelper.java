@@ -2216,6 +2216,21 @@ public class StripLayoutHelper
         mTabContextMenuCoordinator.showMenu(anchorRectProvider, tab.getTabId());
     }
 
+    /**
+     * Opens the context menu for the keyboard-focused view, if applicable.
+     *
+     * @return Whether the context menu was successfully opened.
+     */
+    public boolean openKeyboardFocusedContextMenu() {
+        List<VirtualView> virtualViews = new ArrayList<>();
+        getVirtualViews(virtualViews);
+        for (VirtualView view : virtualViews) {
+            if (!view.isKeyboardFocused()) continue;
+            return showContextMenu((StripLayoutView) view);
+        }
+        return false;
+    }
+
     /* package */ void showTabContextMenuForTesting(StripLayoutTab tab) {
         showTabContextMenu(tab);
     }
@@ -2889,16 +2904,28 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    private void showContextMenu(StripLayoutView clickedView) {
+    /**
+     * Show the context menu originating at {@param clickedView}, and returns true if a context menu
+     * was shown. (Note: this will return false if there is no context menu to be shown at {@param
+     * clickedView}.
+     *
+     * @param clickedView The view for which to show a context menu.
+     * @return Whether a context menu was shown.
+     */
+    private boolean showContextMenu(StripLayoutView clickedView) {
         if (clickedView instanceof StripLayoutTab clickedTab
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
             showTabContextMenu(clickedTab);
+            return true;
         } else if (clickedView instanceof CompositorButton button
                 && button.getType() == ButtonType.TAB_CLOSE) {
             showCloseButtonMenu((StripLayoutTab) button.getParentView());
+            return true;
         } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
             showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
+            return true;
         }
+        return false;
     }
 
     private void handleTabClick(StripLayoutTab tab) {

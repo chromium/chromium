@@ -342,6 +342,16 @@ public class KeyboardShortcutsTest {
                         /* id= */ eq(R.id.switch_keyboard_focus_row), /* fromMenu= */ eq(false));
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)
+    public void testOpenStripContextMenu() {
+        keyDown(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON, true);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.open_tab_strip_context_menu), /* fromMenu= */ eq(false));
+    }
+
     private void testOpenBookmarks(
             boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
         assertEquals(expectHandled, keyDown(KeyEvent.KEYCODE_O, metaState, isCurrentTabVisible));

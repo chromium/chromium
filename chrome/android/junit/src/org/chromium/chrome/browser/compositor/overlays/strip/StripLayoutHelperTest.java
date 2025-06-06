@@ -6295,6 +6295,74 @@ public class StripLayoutHelperTest {
                 /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
     }
 
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
+        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
+    })
+    @Test
+    public void testOpenContextMenu_notApplicable() {
+        initializeTest(false, false, 0);
+        setupForIndividualTabContextMenu();
+        assertFalse(
+                "If nothing is keyboard focused, expect context menu to not open",
+                mStripLayoutHelper.openKeyboardFocusedContextMenu());
+    }
+
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
+        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
+    })
+    @Test
+    public void testOpenContextMenu_tab() {
+        initializeTest(false, false, 0);
+        setupForIndividualTabContextMenu();
+        StripLayoutTab tabToFocus = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
+        tabToFocus.setKeyboardFocused(true);
+        assertTrue(
+                "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
+                mStripLayoutHelper.openKeyboardFocusedContextMenu());
+        verify(mTabContextMenuCoordinator, times(1)).showMenu(any(), anyInt());
+    }
+
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
+        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
+    })
+    @Test
+    public void testOpenContextMenu_tabGroup() {
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+        setupForGroupContextMenu();
+        StripLayoutGroupTitle groupTitle =
+                (StripLayoutGroupTitle) mStripLayoutHelper.getStripLayoutViewsForTesting()[0];
+        groupTitle.setKeyboardFocused(true);
+        assertTrue(
+                "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
+                mStripLayoutHelper.openKeyboardFocusedContextMenu());
+        verify(mTabGroupContextMenuCoordinator, times(1)).showMenu(any(), any());
+    }
+
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_KEYBOARD_A11Y,
+        ChromeFeatureList.TAB_STRIP_CONTEXT_MENU
+    })
+    @Test
+    public void testOpenContextMenu_closeButton() {
+        initializeTest(false, false, 0);
+        // Set up a view for ListMenu to use (otherwise constructing the ListMenu will fail).
+        View tabView = new View(mActivity);
+        when(mModel.getTabAt(anyInt())).thenReturn(mTab);
+        when(mTab.getView()).thenReturn(tabView);
+        StripLayoutTab parentTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
+        parentTab.getCloseButton().setKeyboardFocused(true);
+        assertTrue(
+                "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
+                mStripLayoutHelper.openKeyboardFocusedContextMenu());
+        assertTrue(
+                "Expected close button context menu to be showing",
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+    }
+
     @Test
     @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testTabCreated_HorizontalAnimation() {

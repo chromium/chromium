@@ -1647,4 +1647,13 @@ public class StripLayoutHelperManager
     public boolean containsKeyboardFocus() {
         return mManagerHost.containsKeyboardFocus(this);
     }
+
+    /**
+     * Opens the context menu for the currently keyboard-focused item, if applicable.
+     *
+     * @return Whether the context menu was successfully opened.
+     */
+    public boolean openKeyboardFocusedContextMenu() {
+        return getActiveStripLayoutHelper().openKeyboardFocusedContextMenu();
+    }
 }

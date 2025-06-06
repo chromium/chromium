@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
@@ -1811,6 +1812,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (id == R.id.switch_keyboard_focus_row) {
             mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
             return true;
+        } else if (id == R.id.open_tab_strip_context_menu) {
+            @Nullable
+            StripLayoutHelperManager stripLayoutHelperManager =
+                    mLayoutManager.getStripLayoutHelperManager();
+            if (stripLayoutHelperManager == null) return false;
+            return stripLayoutHelperManager.openKeyboardFocusedContextMenu();
         } else if (id == R.id.focus_bookmarks) {
             if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
             return true;

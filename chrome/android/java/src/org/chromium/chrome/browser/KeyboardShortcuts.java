@@ -673,7 +673,7 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning
                         .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
-                new KeyCombo(KeyEvent.KEYCODE_F7, KeyEvent.META_SHIFT_ON),
+                new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON),
                 /* resId= */ Resources.ID_NULL,
                 /* groupId= */ Resources.ID_NULL);
         new KeyboardShortcutDefinition(
@@ -1135,6 +1135,14 @@ public class KeyboardShortcuts {
                         // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
                         return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                                 R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
+                    } else {
+                        return false;
+                    }
+                case KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
+                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
                     } else {
                         return false;
                     }
