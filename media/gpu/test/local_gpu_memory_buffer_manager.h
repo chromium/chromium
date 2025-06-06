@@ -34,19 +34,15 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
   LocalGpuMemoryBufferManager& operator=(const LocalGpuMemoryBufferManager&) =
       delete;
 
-  // gpu::GpuMemoryBufferManager implementation
   ~LocalGpuMemoryBufferManager() override;
+
+  // gpu::GpuMemoryBufferManager implementation
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void CopyGpuMemoryBufferAsync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion memory_region,
-      base::OnceCallback<void(bool)> callback) override;
-  bool IsConnected() override;
 
   // Imports a DmaBuf as a GpuMemoryBuffer to be able to map it. The
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the

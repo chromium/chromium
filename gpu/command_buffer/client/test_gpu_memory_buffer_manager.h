@@ -41,11 +41,6 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event) override;
-  void CopyGpuMemoryBufferAsync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion memory_region,
-      base::OnceCallback<void(bool)> callback) override;
-  bool IsConnected() override;
 
  private:
   // This class is called by multiple threads at the same time. Hold this lock

@@ -236,22 +236,11 @@ class GPU_EXPORT SharedImageInterface
   // is done to copy the content of |buffer_handle| into a shared memory
   // |memory_region| via below methods. This shared memory is mappable in any
   // process and is used internally during GpuMemoryBuffer::Map().
-  // This will block on calling client thread.
-  virtual bool CopyNativeGmbToSharedMemorySync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion memory_region);
-
-  // This is non-blocking version of above method. The |callback| will be run
-  // when the copy is done.
+  // The |callback| will be run when the copy is done.
   virtual void CopyNativeGmbToSharedMemoryAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
-
-  // Checks if the GpuChannel is connected to this interface. This is
-  // used on windows to find if SII is still connected to the GPU service so
-  // that GpuMemoryBufferManager can use it.
-  virtual bool IsConnected();
 
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference

@@ -276,17 +276,6 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return std::make_unique<GpuMemoryBufferImplGbm>(format, buffer_object);
 }
 
-void LocalGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
-bool LocalGpuMemoryBufferManager::IsConnected() {
-  return true;
-}
-
 std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,

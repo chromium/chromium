@@ -10,16 +10,11 @@ GpuMemoryBufferManager::GpuMemoryBufferManager() = default;
 
 GpuMemoryBufferManager::~GpuMemoryBufferManager() = default;
 
-void GpuMemoryBufferManager::AddObserver(
-    GpuMemoryBufferManagerObserver* observer) {}
-
-void GpuMemoryBufferManager::RemoveObserver(
-    GpuMemoryBufferManagerObserver* observer) {}
-
-void GpuMemoryBufferManager::NotifyObservers() {
-  for (auto& observer : observers_) {
-    observer.OnGpuMemoryBufferManagerDestroyed();
-  }
+void GpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
 }
 
 }  // namespace gpu

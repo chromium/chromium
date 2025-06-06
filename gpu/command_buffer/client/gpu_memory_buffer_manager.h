@@ -21,15 +21,6 @@ class WaitableEvent;
 
 namespace gpu {
 
-// Used to observe the destruction of GpuMemoryBufferManager.
-class GPU_EXPORT GpuMemoryBufferManagerObserver : public base::CheckedObserver {
- public:
-  virtual void OnGpuMemoryBufferManagerDestroyed() = 0;
-
- protected:
-  ~GpuMemoryBufferManagerObserver() override = default;
-};
-
 class GPU_EXPORT GpuMemoryBufferManager {
  public:
   GpuMemoryBufferManager();
@@ -50,20 +41,7 @@ class GPU_EXPORT GpuMemoryBufferManager {
   virtual void CopyGpuMemoryBufferAsync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
-      base::OnceCallback<void(bool)> callback) = 0;
-
-  // Checks if the GpuMemoryBufferManager is connected to the GPU Service
-  // Currently on GPU process crash the connection isn't restored.
-  virtual bool IsConnected() = 0;
-
-  // Implementations of GpuMemoryBufferManager can override below methods if
-  // they want to add/remove observers to notify its destruction.
-  virtual void AddObserver(GpuMemoryBufferManagerObserver* observer);
-  virtual void RemoveObserver(GpuMemoryBufferManagerObserver* observer);
-
- protected:
-  void NotifyObservers();
-  base::ObserverList<GpuMemoryBufferManagerObserver> observers_;
+      base::OnceCallback<void(bool)> callback);
 };
 
 }  // namespace gpu

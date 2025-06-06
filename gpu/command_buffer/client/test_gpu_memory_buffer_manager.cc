@@ -188,15 +188,4 @@ TestGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return result;
 }
 
-void TestGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
-bool TestGpuMemoryBufferManager::IsConnected() {
-  return true;
-}
-
 }  // namespace gpu

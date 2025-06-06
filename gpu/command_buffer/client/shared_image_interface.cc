@@ -108,20 +108,10 @@ void SharedImageInterface::CopyToGpuMemoryBufferAsync(
   NOTREACHED();
 }
 
-bool SharedImageInterface::CopyNativeGmbToSharedMemorySync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region) {
-  NOTREACHED();
-}
-
 void SharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED();
-}
-
-bool SharedImageInterface::IsConnected() {
   NOTREACHED();
 }
 

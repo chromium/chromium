@@ -287,25 +287,12 @@ void SharedImageInterfaceProxy::UpdateSharedImage(
       std::move(dependencies), /*release_count=*/0);
 }
 
-void SharedImageInterfaceProxy::CopyNativeGmbToSharedMemorySync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region,
-    bool* status) {
-  mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-  host_->CopyNativeGmbToSharedMemorySync(std::move(buffer_handle),
-                                         std::move(memory_region), status);
-}
-
 void SharedImageInterfaceProxy::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
   host_->CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
-}
-
-bool SharedImageInterfaceProxy::IsConnected() {
-  return host_->IsConnected();
 }
 #endif  // BUILDFLAG(IS_WIN)
 

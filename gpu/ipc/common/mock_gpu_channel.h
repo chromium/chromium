@@ -74,10 +74,6 @@ class MockGpuChannel : public mojom::GpuChannel {
                     const std::vector<SyncToken>&,
                     uint64_t,
                     CopyToGpuMemoryBufferAsyncCallback));
-  MOCK_METHOD3(CopyNativeGmbToSharedMemorySync,
-               void(gfx::GpuMemoryBufferHandle,
-                    base::UnsafeSharedMemoryRegion,
-                    CopyNativeGmbToSharedMemorySyncCallback));
   MOCK_METHOD3(CopyNativeGmbToSharedMemoryAsync,
                void(gfx::GpuMemoryBufferHandle,
                     base::UnsafeSharedMemoryRegion,

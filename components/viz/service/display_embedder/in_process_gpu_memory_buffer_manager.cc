@@ -78,17 +78,6 @@ InProcessGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return gmb;
 }
 
-void InProcessGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
-bool InProcessGpuMemoryBufferManager::IsConnected() {
-  return true;
-}
-
 bool InProcessGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
