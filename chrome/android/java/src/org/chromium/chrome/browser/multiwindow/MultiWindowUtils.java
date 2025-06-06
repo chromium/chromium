@@ -817,7 +817,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         SparseIntArray windowIdsOfRunningTabbedActivities =
                 MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
-        for (int i = 0; i < maxInstances; i++) {
+        for (int i : MultiInstanceManagerApi31.getPersistedInstanceIds()) {
             // Exclude instance IDs of non-running activities.
             if (windowIdsOfRunningTabbedActivities.indexOfValue(i) < 0) continue;
             if (MultiWindowUtils.readLastAccessedTime(i)

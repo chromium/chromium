@@ -383,8 +383,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
-        for (int i = 0; i < mMaxInstances; ++i) {
-            if (!instanceEntryExists(i)) continue;
+        for (int i : getPersistedInstanceIds()) {
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
             if (a != null) {
@@ -695,8 +694,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         List<Integer> instancesRemoved = new ArrayList<>();
         // Remove persistent data for unrecoverable instances.
-        for (int i = 0; i < mMaxInstances; ++i) {
-            if (instanceEntryExists(i) && !MultiWindowUtils.isRestorableInstance(i)) {
+        for (int i : getPersistedInstanceIds()) {
+            if (!MultiWindowUtils.isRestorableInstance(i)) {
                 instancesRemoved.add(i);
                 removeInstanceInfo(i);
             }
@@ -762,7 +761,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     private int getInstanceByTask(int taskId) {
-        for (int i = 0; i < mMaxInstances; ++i) {
+        for (int i : getPersistedInstanceIds()) {
             if (taskId == getTaskFromMap(i)) return i;
         }
         return INVALID_WINDOW_ID;
@@ -1252,8 +1251,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     InstanceInfo getInstanceInfoFor(Activity activity) {
         // Loop thru all instances to determine if the destination activity is present.
         int destinationWindowTaskId = INVALID_TASK_ID;
-        for (int i = 0; i < mMaxInstances; ++i) {
-            if (!instanceEntryExists(i)) continue;
+        for (int i : getPersistedInstanceIds()) {
             Activity activityById = getActivityById(i);
             if (activityById != null) {
                 // The task for the activity must match the one found in our mapping.
