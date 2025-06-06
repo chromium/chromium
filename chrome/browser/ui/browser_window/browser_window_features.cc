@@ -224,7 +224,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   desktop_browser_window_capabilities_ =
       std::make_unique<DesktopBrowserWindowCapabilities>(
-          browser->window(), browser->GetUnownedUserDataHost());
+          browser, browser->window(), browser->GetUnownedUserDataHost());
 
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be

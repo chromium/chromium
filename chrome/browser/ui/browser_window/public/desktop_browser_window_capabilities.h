@@ -10,6 +10,7 @@
 
 class BrowserWindowInterface;
 class BrowserWindow;
+class DesktopBrowserWindowCapabilitiesDelegate;
 class UnownedUserDataHost;
 
 // A collection of capabilities related to desktop browser windows. Most
@@ -19,8 +20,10 @@ class DesktopBrowserWindowCapabilities {
  public:
   static const char* kDataKey;
 
-  DesktopBrowserWindowCapabilities(BrowserWindow* browser_window,
-                                   UnownedUserDataHost& host);
+  DesktopBrowserWindowCapabilities(
+      DesktopBrowserWindowCapabilitiesDelegate* delegate,
+      BrowserWindow* browser_window,
+      UnownedUserDataHost& host);
   ~DesktopBrowserWindowCapabilities();
 
   static DesktopBrowserWindowCapabilities* From(
@@ -31,7 +34,13 @@ class DesktopBrowserWindowCapabilities {
   // Returns true if the browser window is visible on the screen.
   bool IsVisibleOnScreen() const;
 
+  // See Browser::IsAttemptingToCloseBrowser() for more details.
+  bool IsAttemptingToCloseBrowser() const;
+
  private:
+  // The associated delegate. Must outlive this class.
+  raw_ptr<DesktopBrowserWindowCapabilitiesDelegate> delegate_ = nullptr;
+
   // The corresponding BrowserWindow. This should be valid for the lifetime of
   // this class, since this is constructed by BrowserWindowFeatures after
   // Browser creation and destroyed before Browser teardown.

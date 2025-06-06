@@ -88,9 +88,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the browser controls are hidden due to being in fullscreen.
   virtual bool ShouldHideUIForFullscreen() const = 0;
 
-  // See Browser::IsAttemptingToCloseBrowser() for more details.
-  virtual bool IsAttemptingToCloseBrowser() const = 0;
-
   // Register callbacks invoked when browser has successfully processed its
   // close request and has been scheduled for deletion.
   using BrowserDidCloseCallback =

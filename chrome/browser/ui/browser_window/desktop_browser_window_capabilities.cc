@@ -6,15 +6,19 @@
 
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
 
 // static
 const char* DesktopBrowserWindowCapabilities::kDataKey =
     "DesktopBrowserWindowCapabilities";
 
 DesktopBrowserWindowCapabilities::DesktopBrowserWindowCapabilities(
+    DesktopBrowserWindowCapabilitiesDelegate* delegate,
     BrowserWindow* browser_window,
     UnownedUserDataHost& host)
-    : browser_window_(browser_window), scoped_data_holder_(host, this) {}
+    : delegate_(delegate),
+      browser_window_(browser_window),
+      scoped_data_holder_(host, this) {}
 
 DesktopBrowserWindowCapabilities::~DesktopBrowserWindowCapabilities() = default;
 
@@ -32,4 +36,8 @@ const DesktopBrowserWindowCapabilities* DesktopBrowserWindowCapabilities::From(
 
 bool DesktopBrowserWindowCapabilities::IsVisibleOnScreen() const {
   return browser_window_->IsVisibleOnScreen();
+}
+
+bool DesktopBrowserWindowCapabilities::IsAttemptingToCloseBrowser() const {
+  return delegate_->IsAttemptingToCloseBrowser();
 }

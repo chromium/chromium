@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -144,7 +145,8 @@ class Browser : public TabStripModelObserver,
                 public zoom::ZoomObserver,
                 public ThemeServiceObserver,
                 public ui::SelectFileDialog::Listener,
-                public BrowserWindowInterface {
+                public BrowserWindowInterface,
+                public DesktopBrowserWindowCapabilitiesDelegate {
  public:
   // Possible elements of the Browser window.
   enum WindowFeature {

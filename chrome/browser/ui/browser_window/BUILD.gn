@@ -15,6 +15,7 @@ source_set("browser_window") {
     "public/browser_window_interface.h",
     "public/browser_window_interface_iterator.h",
     "public/desktop_browser_window_capabilities.h",
+    "public/desktop_browser_window_capabilities_delegate.h",
   ]
   public_deps = [
     "//base",

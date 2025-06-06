@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sync/base/features.h"
@@ -98,5 +99,5 @@ bool BrowserSyncedWindowDelegate::ShouldSync() const {
   }
 
   // Do not sync windows which are about to be closed.
-  return !browser_->IsAttemptingToCloseBrowser();
+  return !browser_->capabilities()->IsAttemptingToCloseBrowser();
 }

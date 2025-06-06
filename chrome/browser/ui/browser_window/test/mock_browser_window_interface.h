@@ -27,7 +27,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               RegisterBrowserDidClose,
               (BrowserDidCloseCallback callback),
               (override));
-  MOCK_METHOD(bool, IsAttemptingToCloseBrowser, (), (const, override));
   MOCK_METHOD(views::View*, TopContainer, (), (override));
   MOCK_METHOD(bool, IsMinimized, (), (const, override));
   MOCK_METHOD(bool, IsVisible, (), (const, override));
