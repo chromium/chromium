@@ -27,14 +27,6 @@ interface TabModelOrderController {
     int determineInsertionIndex(@TabLaunchType int type, int position, Tab newTab);
 
     /**
-     * Determine the insertion index of the next tab.
-     *
-     * @param type The launch type of the new tab.
-     * @return Where to insert the tab.
-     */
-    int determineInsertionIndex(@TabLaunchType int type, Tab newTab);
-
-    /**
      * Determine if a launch type will result in the tab being opened in the foreground.
      *
      * @param type The type of opening event.

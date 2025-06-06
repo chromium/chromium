@@ -34,7 +34,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             return -1;
         }
         if (mightBeAdjacent(type)) {
-            position = determineInsertionIndex(type, newTab);
+            position = determineInsertionIndexIfMaybeAdjacent(type, newTab);
         }
 
         if (willOpenInForeground(type, newTab.isIncognitoBranded())) {
@@ -54,8 +54,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         return position;
     }
 
-    @Override
-    public int determineInsertionIndex(@TabLaunchType int type, Tab newTab) {
+    private int determineInsertionIndexIfMaybeAdjacent(@TabLaunchType int type, Tab newTab) {
         TabModel currentModel = mTabModelSelector.getCurrentModel();
 
         if (sameModelType(currentModel, newTab)) {
