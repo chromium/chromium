@@ -46,6 +46,12 @@
 - (void)destroyLensUI:(BOOL)animated
                reason:(lens::LensOverlayDismissalSource)dismissalSource;
 
+/// Destroy lens overlay (called e.g. in response to memory pressure).
+/// Completion is called when the Lens Overlay is destroyed.
+- (void)destroyLensUI:(BOOL)animated
+               reason:(lens::LensOverlayDismissalSource)dismissalSource
+           completion:(void (^)())completion;
+
 /// Prepares for a tab change that is about to happen in the background.
 - (void)prepareLensUIForBackgroundTabChange;
 

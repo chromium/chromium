@@ -60,6 +60,8 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 @implementation BadgeViewController
 
+@synthesize forceDisabled = _forceDisabled;
+
 - (instancetype)initWithButtonFactory:(BadgeButtonFactory*)buttonFactory {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
@@ -140,8 +142,10 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
     self.displayedBadge = nil;
   }
 
-  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
-  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
+  if (!self.forceDisabled) {
+    BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
+    [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
+  }
 }
 
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
@@ -172,6 +176,24 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   if (self.unreadIndicatorView) {
     self.unreadIndicatorView.hidden = read;
   }
+}
+
+- (void)setForceDisabled:(BOOL)forceDisabled {
+  if (_forceDisabled == forceDisabled) {
+    return;
+  }
+
+  if (forceDisabled) {
+    [self.visibilityDelegate setBadgeViewHidden:YES];
+  } else {
+    // Turning off force disable mode doesn't imply that the badge view will
+    // not remain hidden. Check if there is a badge to be displayed to avoid
+    // accidentally removing the placeholder as a side effect of unhiding.
+    BOOL badgeViewHidden = !(self.fullScreenBadge || self.displayedBadge);
+    [self.visibilityDelegate setBadgeViewHidden:badgeViewHidden];
+  }
+
+  _forceDisabled = forceDisabled;
 }
 
 #pragma mark FullscreenUIElement
