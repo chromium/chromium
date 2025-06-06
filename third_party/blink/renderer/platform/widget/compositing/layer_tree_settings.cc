@@ -486,9 +486,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     settings.max_memory_for_prepaint_percentage = 50;
   }
 
-  // TODO(danakj): Only do this on low end devices.
-  settings.create_low_res_tiling = true;
-
 #else   // BUILDFLAG(IS_ANDROID)
   const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
 
@@ -549,11 +546,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       settings.max_gpu_raster_tile_size = gfx::Size(512, 256);
     }
   }
-
-  if (cmd.HasSwitch(switches::kEnableLowResTiling))
-    settings.create_low_res_tiling = true;
-  if (cmd.HasSwitch(switches::kDisableLowResTiling))
-    settings.create_low_res_tiling = false;
 
   if (cmd.HasSwitch(switches::kEnableRGBA4444Textures) &&
       !cmd.HasSwitch(switches::kDisableRGBA4444Textures)) {

@@ -133,7 +133,6 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
  public:
   LayerTreeSettings CreateSettings() override {
     auto settings = TestLayerTreeHostBase::CreateSettings();
-    settings.create_low_res_tiling = false;
     return settings;
   }
 
@@ -1984,7 +1983,6 @@ class TileManagerOcclusionTest : public TileManagerTest {
  public:
   LayerTreeSettings CreateSettings() override {
     auto settings = TileManagerTest::CreateSettings();
-    settings.create_low_res_tiling = false;
     settings.use_occlusion_for_tile_prioritization = true;
     return settings;
   }

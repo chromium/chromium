@@ -589,10 +589,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return raster_caps().use_gpu_rasterization;
   }
 
-  bool create_low_res_tiling() const {
-    return settings_.create_low_res_tiling &&
-           !raster_caps().use_gpu_rasterization;
-  }
+  // TODO(crbug.com/418234930): Remove this method and all the code that is now
+  // dead.
+  bool create_low_res_tiling() const { return false; }
   ResourcePool* resource_pool() { return resource_pool_.get(); }
   ImageAnimationController* image_animation_controller() {
     return &image_animation_controller_;
