@@ -76,7 +76,8 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   UTF16RagelIterator operator-(int v) { return *this + -v; }
 
   int operator-(const UTF16RagelIterator& other) {
-    DCHECK_EQ(buffer_, other.buffer_);
+    DCHECK_EQ(buffer_.data(), other.buffer_.data());
+    DCHECK_EQ(buffer_.size(), other.buffer_.size());
     return cursor_ - other.cursor_;
   }
 
