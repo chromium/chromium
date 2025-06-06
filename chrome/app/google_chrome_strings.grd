@@ -988,6 +988,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_INSTALLER_DOWNLOADER_BUTTON_LABEL" desc="Button label for the installer downloader infobar to download the Chrome installer.">
         Download Chrome Installer
       </message>
+      <message name="IDS_INSTALLER_DOWNLOADER_LINK" desc="Text for the link in the installer downloader infobar to learn more about installing Chrome">
+        Learn more about installing Chrome
+      </message>
 
       <!-- Enterprise sign-in dialog -->
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account when it is mandatory to sign in to Chrome with the enterprise account.">

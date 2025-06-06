@@ -84,7 +84,7 @@ std::u16string InstallerDownloaderInfoBarDelegate::GetMessageText() const {
 }
 
 std::u16string InstallerDownloaderInfoBarDelegate::GetLinkText() const {
-  return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  return l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_LINK);
 }
 
 int InstallerDownloaderInfoBarDelegate::GetButtons() const {
