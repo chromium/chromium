@@ -45,11 +45,10 @@ ClickTool::ClickTool(content::RenderFrame& frame,
 
 ClickTool::~ClickTool() = default;
 
-void ClickTool::Execute(ToolFinishedCallback callback) {
+mojom::ActionResultPtr ClickTool::Execute() {
   ValidatedResult validated_result = Validate();
   if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
+    return std::move(validated_result.error());
   }
 
   gfx::PointF click_point = validated_result.value();
@@ -77,9 +76,8 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
     }
   }
 
-  mojom::ActionResultPtr result = CreateAndDispatchClick(
-      button, click_count, click_point, frame_->GetWebFrame()->FrameWidget());
-  std::move(callback).Run(std::move(result));
+  return CreateAndDispatchClick(button, click_count, click_point,
+                                frame_->GetWebFrame()->FrameWidget());
 }
 
 std::string ClickTool::DebugString() const {

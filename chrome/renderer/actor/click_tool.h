@@ -12,10 +12,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 
-namespace blink {
-class WebMouseEvent;
-}  // namespace blink
-
 namespace content {
 class RenderFrame;
 }  // namespace content
@@ -36,15 +32,12 @@ class ClickTool : public ToolBase {
   ~ClickTool() override;
 
   // actor::ToolBase
-  void Execute(ToolFinishedCallback callback) override;
+  mojom::ActionResultPtr Execute() override;
   std::string DebugString() const override;
 
  private:
   using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
-
-  void SendMouseUp(blink::WebMouseEvent mouse_event,
-                   ToolFinishedCallback callback);
 
   mojom::ClickActionPtr action_;
 };

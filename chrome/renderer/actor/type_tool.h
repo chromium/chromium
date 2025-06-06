@@ -35,7 +35,7 @@ class TypeTool : public ToolBase {
   ~TypeTool() override;
 
   // actor::ToolBase
-  void Execute(ToolFinishedCallback callback) override;
+  mojom::ActionResultPtr Execute() override;
   std::string DebugString() const override;
 
  private:

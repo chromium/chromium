@@ -36,11 +36,10 @@ ScrollTool::ScrollTool(content::RenderFrame& frame,
 
 ScrollTool::~ScrollTool() = default;
 
-void ScrollTool::Execute(ToolFinishedCallback callback) {
+mojom::ActionResultPtr ScrollTool::Execute() {
   ValidatedResult validated_result = Validate();
   if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
+    return std::move(validated_result.error());
   }
 
   WebElement scrolling_element = validated_result->scroller;
@@ -54,10 +53,9 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
   scrolling_element.SetScrollOffset(start_offset_css + offset_css);
 
   bool did_scroll = scrolling_element.GetScrollOffset() != start_offset_css;
-  std::move(callback).Run(
-      did_scroll
-          ? MakeOkResult()
-          : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange));
+  return did_scroll
+             ? MakeOkResult()
+             : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange);
 }
 
 std::string ScrollTool::DebugString() const {

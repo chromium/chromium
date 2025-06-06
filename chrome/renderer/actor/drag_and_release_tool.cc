@@ -37,11 +37,10 @@ DragAndReleaseTool::DragAndReleaseTool(content::RenderFrame& frame,
 
 DragAndReleaseTool::~DragAndReleaseTool() = default;
 
-void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
+mojom::ActionResultPtr DragAndReleaseTool::Execute() {
   ValidatedResult validated_result = Validate();
   if (!validated_result.has_value()) {
-    std::move(callback).Run(std::move(validated_result.error()));
-    return;
+    return std::move(validated_result.error());
   }
 
   gfx::PointF from_point = validated_result->from;
@@ -52,34 +51,27 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   // Move and press down the mouse on the from_point.
   if (!InjectMouseEvent(EventType::kMouseMove, from_point,
                         WebMouseEvent::Button::kNoButton)) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseFromMoveSuppressed));
-    return;
+    return MakeResult(
+        mojom::ActionResultCode::kDragAndReleaseFromMoveSuppressed);
   }
 
   if (!InjectMouseEvent(EventType::kMouseDown, from_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed));
-    return;
+    return MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed);
   }
 
   // Move and release the mouse on the to_point.
   if (!InjectMouseEvent(EventType::kMouseMove, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed));
-    return;
+    return MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed);
   }
 
   if (!InjectMouseEvent(EventType::kMouseUp, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed));
-    return;
+    return MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed);
   }
 
-  std::move(callback).Run(MakeOkResult());
+  return MakeOkResult();
 }
 
 std::string DragAndReleaseTool::DebugString() const {

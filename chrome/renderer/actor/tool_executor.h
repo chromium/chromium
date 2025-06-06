@@ -37,13 +37,9 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
-  void ToolFinished(ToolExecutorCallback callback,
-                    mojom::ActionResultPtr result);
-
   // Raw ref since the executor is owned by the RenderFrameObserver which has
   // the same lifetime as RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
-  std::unique_ptr<ToolBase> tool_;
   base::raw_ref<Journal> journal_;
 };
 
