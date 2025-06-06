@@ -4,6 +4,8 @@
 
 #include "content/browser/url_info.h"
 
+#include <sstream>
+
 #include "content/browser/isolation_context.h"
 
 namespace content {

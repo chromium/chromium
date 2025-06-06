@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <sstream>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/test/icu_test_util.h"

@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
