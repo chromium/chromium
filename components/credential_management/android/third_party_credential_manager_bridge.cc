@@ -95,7 +95,7 @@ class JniDelegateImpl : public JniDelegate {
   }
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> GetOrCreateBridge() {
+  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateBridge() {
     if (!java_bridge_) {
       java_bridge_.Reset(Java_ThirdPartyCredentialManagerBridge_Constructor(
           jni_zero::AttachCurrentThread()));
@@ -104,7 +104,7 @@ class JniDelegateImpl : public JniDelegate {
   }
 
   // The corresponding Java ThirdPartyCredentialManagerBridge.
-  base::android::ScopedJavaLocalRef<jobject> java_bridge_;
+  base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 };
 
 ThirdPartyCredentialManagerBridge::ThirdPartyCredentialManagerBridge()
