@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"

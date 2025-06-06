@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_view_controller.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"

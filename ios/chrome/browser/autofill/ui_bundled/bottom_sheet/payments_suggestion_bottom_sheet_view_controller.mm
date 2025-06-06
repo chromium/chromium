@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"

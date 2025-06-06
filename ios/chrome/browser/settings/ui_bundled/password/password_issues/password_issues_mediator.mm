@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
