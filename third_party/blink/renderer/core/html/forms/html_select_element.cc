@@ -360,6 +360,15 @@ bool HTMLSelectElement::IsPresentationAttribute(
   return HTMLFormControlElementWithState::IsPresentationAttribute(name);
 }
 
+namespace {
+void MaybeUseCountMultipleSizeOne(HTMLSelectElement& select) {
+  if (select.IsMultiple() && select.FastHasAttribute(html_names::kSizeAttr) &&
+      select.size() == 1) {
+    UseCounter::Count(select.GetDocument(), WebFeature::kSelectMultipleSizeOne);
+  }
+}
+}  // namespace
+
 void HTMLSelectElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kSizeAttr) {
@@ -376,8 +385,10 @@ void HTMLSelectElement::ParseAttribute(
       select_type_->UpdateTextStyleAndContent();
       select_type_->SaveListboxActiveSelection();
     }
+    MaybeUseCountMultipleSizeOne(*this);
   } else if (params.name == html_names::kMultipleAttr) {
     ParseMultipleAttribute(params.new_value);
+    MaybeUseCountMultipleSizeOne(*this);
   } else if (params.name == html_names::kAccesskeyAttr) {
     // FIXME: ignore for the moment.
     //
