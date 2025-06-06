@@ -20,6 +20,31 @@ source_set("chromium_starboard_conversions") {
   ]
 }
 
+source_set("client_stats_tracker") {
+  sources = [
+    "client_stats_tracker.cc",
+    "client_stats_tracker.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+}
+
+test("client_stats_tracker_test") {
+  sources = [ "client_stats_tracker_test.cc" ]
+  deps = [
+    ":client_stats_tracker",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 test("chromium_starboard_conversions_test") {
   sources = [ "chromium_starboard_conversions_test.cc" ]
   deps = [
