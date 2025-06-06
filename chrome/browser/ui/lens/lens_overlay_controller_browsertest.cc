@@ -4781,8 +4781,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
+// TODO(crbug.com/422501416): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OverlayInBackgroundClosesIfRendererExits \
+  DISABLED_OverlayInBackgroundClosesIfRendererExits
+#else
+#define MAYBE_OverlayInBackgroundClosesIfRendererExits \
+  OverlayInBackgroundClosesIfRendererExits
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       OverlayInBackgroundClosesIfRendererExits) {
+                       MAYBE_OverlayInBackgroundClosesIfRendererExits) {
   WaitForPaint();
 
   // State should start in off.
