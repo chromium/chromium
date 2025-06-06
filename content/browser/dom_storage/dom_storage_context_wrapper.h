@@ -141,11 +141,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   ~DOMStorageContextWrapper() override;
 
   void MaybeBindSessionStorageControl();
-  void MaybeBindLocalStorageControl();
-#if BUILDFLAG(IS_MAC)
-  void MaybeBindLocalStorageControlAndReportLifecycle(
+  void MaybeBindLocalStorageControl(
       storage::mojom::LocalStorageLifecycle lifecycle);
-#endif  // BUILDFLAG(IS_MAC)
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;
 

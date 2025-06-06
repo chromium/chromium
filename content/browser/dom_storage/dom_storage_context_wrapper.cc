@@ -43,9 +43,9 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
-#if BUILDFLAG(IS_MAC)
+
 using LocalStorageLifecycle = storage::mojom::LocalStorageLifecycle;
-#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 void AdaptSessionStorageUsageInfo(
@@ -74,7 +74,6 @@ void AdaptStorageUsageInfo(
   std::move(callback).Run(result);
 }
 
-#if BUILDFLAG(IS_MAC)
 LocalStorageLifecycle GetLocalStorageLifecycle(
     bool recovering,
     bool storage_service_remote_was_bound) {
@@ -88,7 +87,6 @@ LocalStorageLifecycle GetLocalStorageLifecycle(
                : LocalStorageLifecycle::kInitializingWithUnboundStorageService;
   }
 }
-#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -118,18 +116,17 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
       base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
                           base::Unretained(this)));
 
-#if BUILDFLAG(IS_MAC)
+  // `partition_` can be null in test environments.
+  if (!partition_) {
+    return;
+  }
+
   // Binding Session or Local storage will result in the storage service getting
   // bound. So, we capture this state before those calls.
   LocalStorageLifecycle lifecycle = GetLocalStorageLifecycle(
       /*recovering=*/false, partition_->IsStorageServiceRemoteValid());
-#endif  // BUILDFLAG(IS_MAC)
   MaybeBindSessionStorageControl();
-#if BUILDFLAG(IS_MAC)
-  MaybeBindLocalStorageControlAndReportLifecycle(lifecycle);
-#else
-  MaybeBindLocalStorageControl();
-#endif  // BUILDFLAG(IS_MAC)
+  MaybeBindLocalStorageControl(lifecycle);
 }
 
 DOMStorageContextWrapper::~DOMStorageContextWrapper() {
@@ -359,18 +356,12 @@ bool DOMStorageContextWrapper::IsRequestValid(
 
 void DOMStorageContextWrapper::RecoverFromStorageServiceCrash() {
   DCHECK(partition_);
-#if BUILDFLAG(IS_MAC)
   // Binding Session or Local storage will result in the storage service getting
   // bound. So, we capture this state before those calls.
   LocalStorageLifecycle lifecycle = GetLocalStorageLifecycle(
       /*recovering=*/true, partition_->IsStorageServiceRemoteValid());
-#endif  // BUILDFLAG(IS_MAC)
   MaybeBindSessionStorageControl();
-#if BUILDFLAG(IS_MAC)
-  MaybeBindLocalStorageControlAndReportLifecycle(lifecycle);
-#else
-  MaybeBindLocalStorageControl();
-#endif  // BUILDFLAG(IS_MAC)
+  MaybeBindLocalStorageControl(lifecycle);
 
   // Make sure the service is aware of namespaces we asked a previous instance
   // to create, so it can properly service renderers trying to manipulate those
@@ -389,26 +380,15 @@ void DOMStorageContextWrapper::MaybeBindSessionStorageControl() {
       session_storage_control_.BindNewPipeAndPassReceiver());
 }
 
-void DOMStorageContextWrapper::MaybeBindLocalStorageControl() {
-  if (!partition_)
-    return;
-  local_storage_control_.reset();
-  partition_->GetStorageServicePartition()->BindLocalStorageControl(
-      local_storage_control_.BindNewPipeAndPassReceiver());
-}
-
-#if BUILDFLAG(IS_MAC)
-void DOMStorageContextWrapper::MaybeBindLocalStorageControlAndReportLifecycle(
+void DOMStorageContextWrapper::MaybeBindLocalStorageControl(
     LocalStorageLifecycle lifecycle) {
   if (!partition_) {
     return;
   }
   local_storage_control_.reset();
-  partition_->GetStorageServicePartition()
-      ->BindLocalStorageControlAndReportLifecycle(
-          lifecycle, local_storage_control_.BindNewPipeAndPassReceiver());
+  partition_->GetStorageServicePartition()->BindLocalStorageControl(
+      lifecycle, local_storage_control_.BindNewPipeAndPassReceiver());
 }
-#endif  // BUILDFLAG(IS_MAC)
 
 scoped_refptr<SessionStorageNamespaceImpl>
 DOMStorageContextWrapper::MaybeGetExistingNamespace(
