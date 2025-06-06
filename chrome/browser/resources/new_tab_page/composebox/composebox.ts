@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+
+class ComposeboxFile {
+  uuid: string;
+  name: string;
+  objectUrl: string|null;
+  type: string;
+}
+
+export interface ComposeboxElement {
+  $: {
+    attachmentUploader: HTMLInputElement,
+    imageUploader: HTMLInputElement,
+  };
+}
 
 export class ComposeboxElement extends CrLitElement {
   static get is() {
@@ -18,6 +33,57 @@ export class ComposeboxElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      attachmentFileTypes_: {type: String},
+      files_: {type: Array},
+      imageFileTypes_: {type: String},
+    };
+  }
+
+  protected accessor attachmentFileTypes_: string =
+      loadTimeData.getString('composeboxAttachmentFileTypes');
+  protected accessor files_: ComposeboxFile[] = [];
+  protected accessor imageFileTypes_: string =
+      loadTimeData.getString('composeboxImageFileTypes');
+
+  private maxFileSize_: number =
+      loadTimeData.getInteger('composeboxFileMaxSize');
+
+  protected onFileChange_(e: Event) {
+    const files = (e.target as HTMLInputElement).files;
+    if (!files || files.length === 0) {
+      return;
+    }
+    const newFiles: ComposeboxFile[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files.item(i)!;
+      if (file.size === 0 || file.size > this.maxFileSize_) {
+        // TODO(crbug.com/422559050): Show error state.
+      } else {
+        newFiles.push({
+          uuid: this.createUuid(),
+          name: file.name,
+          objectUrl: e.target === this.$.imageUploader ?
+              URL.createObjectURL(file) :
+              null,
+          type: file.type,
+        });
+        // TODO(crbug.com/422559977): Upload the file.
+      }
+    }
+    this.files_ = this.files_.concat(newFiles);
+  }
+
+  private createUuid(): string {
+    return BigInt
+        .asUintN(
+            64,
+            BigInt(`0x${crypto.randomUUID().replace(/-/g, '')}`),
+            )
+        .toString();
   }
 }
 

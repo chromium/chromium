@@ -474,6 +474,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("modulesReloadable", microsoft_module_enabled);
   source->AddBoolean("waitToLoadModules", microsoft_module_enabled);
 
+  // ComposeBox LoadTimeData
+  source->AddString("composeboxImageFileTypes", "image/*");
+  source->AddString("composeboxAttachmentFileTypes", ".pdf,application/pdf");
+  source->AddInteger("composeboxFileMaxSize", 1000000);
+
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
       /*enable_voice_search=*/true,

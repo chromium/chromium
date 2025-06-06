@@ -10,6 +10,7 @@
  * elements (either not visible by default or not as performance critical).
  */
 
+import './composebox/composebox.js';
 import './middle_slot_promo.js';
 import './voice_search_overlay.js';
 import './modules/module_descriptors.js';
@@ -17,6 +18,7 @@ import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
+export {ComposeboxElement} from './composebox/composebox.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';

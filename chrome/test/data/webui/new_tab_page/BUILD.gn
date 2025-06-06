@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("../build_webui_tests.gni")
+import("./composebox/composebox.gni")
 import("./modules/modules.gni")
 
 build_webui_tests("build") {
@@ -22,7 +23,7 @@ build_webui_tests("build") {
             "transparency_test.ts",
             "transparency_test_support.ts",
             "voice_search_overlay_test.ts",
-          ] + modules_test_files
+          ] + modules_test_files + composebox_test_files
 
   ts_tsconfig_base = "tsconfig_base.json"
 
