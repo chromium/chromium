@@ -29,9 +29,6 @@
 // Called when the sign-in in progress status changes.
 - (void)promoProgressStateDidChange;
 
-// Called when the sign-in is finished.
-- (void)signinDidFinish;
-
 // Called when the close button is tapped.
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator;

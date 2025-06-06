@@ -906,6 +906,23 @@ id<SystemIdentity> GetDisplayedIdentity(
   _syncObserverBridge.reset();
 }
 
+// Finishes the sign-in process.
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+  if (self.signinPromoViewState == SigninPromoViewState::kInvalid) {
+    // The mediator owner can remove the view before the sign-in is done.
+    return;
+  }
+  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
+  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
+  // a post task issue.
+  self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
+                               [self shouldWaitForInitialSync];
+  DCHECK_EQ(SigninPromoViewState::kUsedAtLeastOnce, self.signinPromoViewState)
+      << base::SysNSStringToUTF8([self description]);
+  DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
+  self.signinInProgress = NO;
+}
+
 #pragma mark - Public properties
 
 - (BOOL)isInvalidClosedOrNeverVisible {
@@ -1007,48 +1024,22 @@ id<SystemIdentity> GetDisplayedIdentity(
                                                            displayedCount);
 }
 
-// Finishes the sign-in process.
-- (void)signinCallbackWithResult:(SigninCoordinatorResult)result {
-  if (self.signinPromoViewState == SigninPromoViewState::kInvalid) {
-    // The mediator owner can remove the view before the sign-in is done.
-    return;
-  }
-  // We can turn on `self.initialSyncInProgress`, if the sign-in is successful.
-  // We can't call now GetTypesWithPendingDownloadForInitialSync() related to
-  // a post task issue.
-  self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
-                               [self shouldWaitForInitialSync];
-  DCHECK_EQ(SigninPromoViewState::kUsedAtLeastOnce, self.signinPromoViewState)
-      << base::SysNSStringToUTF8([self description]);
-  DCHECK(self.signinInProgress) << base::SysNSStringToUTF8([self description]);
-  self.signinInProgress = NO;
-}
-
 // Starts sign-in process with the Chrome identity from `identity`.
 - (void)showSigninWithIdentity:(id<SystemIdentity>)identity
                      operation:(AuthenticationOperation)operation
                    promoAction:(signin_metrics::PromoAction)promoAction {
   self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;
   self.signinInProgress = YES;
-  __weak SigninPromoViewMediator* weakSelf = self;
   // This mediator might be removed before the sign-in callback is invoked.
   // (if the owner receive primary account notification).
   // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
   // in a variable and not get it from weakSelf (that might not exist anymore).
-  __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  SigninCoordinatorCompletionCallback completion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf signinCallbackWithResult:result];
-        if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
-          [weakConsumer signinDidFinish];
-        }
-      };
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
                       initWithOperation:operation
                                identity:identity
                             accessPoint:self.accessPoint
                             promoAction:promoAction
-                             completion:completion
+                             completion:nil
       changeProfileContinuationProvider:_changeProfileContinuationProvider];
   [_delegate showSignin:self command:command];
 }

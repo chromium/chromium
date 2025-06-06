@@ -697,8 +697,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)showSignin:(ShowSigninCommand*)command {
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
-    [weakSelf stopSigninCoordinator];
+  [command addSigninCompletion:^(SigninCoordinatorResult result,
+                                 id<SystemIdentity>) {
+    [weakSelf signinDidCompleteWithResult:result];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
@@ -729,6 +730,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (void)showAccountSettings {
   [self ensureBookmarksCoordinator];
   [self.bookmarksCoordinator showAccountSettings];
+}
+
+#pragma mark - BookmarksHomeConsumer Helper
+
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+  [self.mediator signinDidCompleteWithResult:result];
+  [self stopSigninCoordinator];
 }
 
 #pragma mark - Action sheet callbacks

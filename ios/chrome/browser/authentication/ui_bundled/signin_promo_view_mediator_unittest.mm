@@ -531,12 +531,11 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
   EXPECT_TRUE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
-  EXPECT_NE(nil, command.completion);
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);
-  command.completion(SigninCoordinatorResultSuccess, nil);
+
+  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
   EXPECT_FALSE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
@@ -566,9 +565,8 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);
-  command.completion(SigninCoordinatorResultSuccess, nil);
+  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
 }
 
 // Tests that no update notification is sent by the mediator to its consumer,
@@ -601,9 +599,8 @@ TEST_F(SigninPromoViewMediatorTest,
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   // Finishs the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
-  OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);
-  command.completion(SigninCoordinatorResultSuccess, nil);
+  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultSuccess];
 }
 
 // Tests that promos aren't shown if browser sign-in is disabled by policy
@@ -670,8 +667,7 @@ TEST_F(SigninPromoViewMediatorTest,
     // Finish the sign-in.
     OCMExpect([consumer_ promoProgressStateDidChange]);
     ExpectConfiguratorNotification(/*identity_changed=*/NO);
-    OCMExpect([consumer_ signinDidFinish]);
-    command.completion(SigninCoordinatorResultInterrupted, nil);
+    [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultInterrupted];
 
     // Remove the sign-in promo.
     [mediator_ disconnect];
@@ -711,8 +707,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   // Finish the sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);
-  OCMExpect([consumer_ signinDidFinish]);
-  command.completion(SigninCoordinatorResultInterrupted, nil);
+  [mediator_ signinDidCompleteWithResult:SigninCoordinatorResultInterrupted];
 
   // Remove the sign-in promo.
   [mediator_ disconnect];

@@ -17,6 +17,7 @@ class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninPresenter;
 @protocol AccountSettingsPresenter;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @class SigninPromoViewConfigurator;
 @class ShowSigninCommand;
 @protocol SigninPromoViewConsumer;
@@ -175,6 +176,9 @@ enum class SigninPromoAction {
 // promo view is removed from the view hierarchy (it or one of its superviews is
 // removed). The mediator should not be used after this called.
 - (void)disconnect;
+
+// Callback for the SigninPresenter.
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
 
 @end
 

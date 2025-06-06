@@ -550,14 +550,23 @@
            command:(ShowSigninCommand*)command {
   CHECK_EQ(mediator, _signinPromoViewMediator);
   __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinatorResult, id<SystemIdentity>) {
-    [weakSelf stopSigninCoordinator];
+  [command addSigninCompletion:^(SigninCoordinatorResult result,
+                                 id<SystemIdentity>) {
+    [weakSelf signinDidCompleteWithResult:result];
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
                            browser:self.browser
                 baseViewController:self.navigationController];
   [_signinCoordinator start];
+}
+
+#pragma mark - SigninPromoViewMediatorDelegate Helper
+
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+  [_signinPromoViewMediator signinDidCompleteWithResult:result];
+  [self updateSignInPromoVisibility];
+  [self stopSigninCoordinator];
 }
 
 #pragma mark - AccountSettingsPresenter
@@ -580,10 +589,6 @@
 }
 
 - (void)promoProgressStateDidChange {
-  [self updateSignInPromoVisibility];
-}
-
-- (void)signinDidFinish {
   [self updateSignInPromoVisibility];
 }
 

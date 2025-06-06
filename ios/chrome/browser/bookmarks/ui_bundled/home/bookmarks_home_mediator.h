@@ -16,6 +16,7 @@
 @class BookmarkTableCell;
 @protocol BookmarkTableCellTitleEditing;
 class Browser;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @class TableViewModel;
 
 namespace bookmarks {
@@ -135,6 +136,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // `bookmarkNode`.
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
     (const bookmarks::BookmarkNode*)bookmarkNode;
+
+// Callback for the SigninPresenter.
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
 
 @end
 

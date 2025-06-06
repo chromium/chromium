@@ -177,10 +177,6 @@
   [self updateShouldShowSigninPromo];
 }
 
-- (void)signinDidFinish {
-  [self updateShouldShowSigninPromo];
-}
-
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   [self updateShouldShowSigninPromo];
