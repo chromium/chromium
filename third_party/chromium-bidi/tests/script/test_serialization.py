@@ -385,15 +385,11 @@ async def test_serialization_function(websocket, context_id, js_string,
 
 
 @pytest.mark.asyncio
-async def test_serialization_internal_id(websocket, context_id,
-                                         test_chromedriver_mode):
+async def test_serialization_internal_id(websocket, context_id, snapshot):
     """
     Test that internalId is mapped properly. Required, as generic
     `test_serialization_function` does not check it.
     """
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
     result = await execute_command(
         websocket, {
             "method": "script.evaluate",
@@ -413,59 +409,9 @@ async def test_serialization_internal_id(websocket, context_id,
             }
         })
 
-    stabilize_key_values(result, ["internalId", "sharedId"])
+    stabilize_key_values(result, ["internalId", "sharedId", "handle"])
 
-    assert result["result"] == {
-        "type": "object",
-        "handle": ANY_STR,
-        "internalId": "stable_4",
-        "value": [[
-            '1', {
-                "type": "object",
-                "value": [["a", {
-                    "type": "array",
-                    "value": []
-                }],
-                          [
-                              'document', {
-                                  'internalId': 'stable_1',
-                                  'sharedId': 'stable_0',
-                                  'type': 'node',
-                                  'value': {
-                                      'childNodeCount': 1,
-                                      'nodeType': 9,
-                                  }
-                              }
-                          ]],
-                "internalId": "stable_2",
-            }
-        ], ['2', {
-            "type": "object",
-            "internalId": "stable_2",
-        }],
-                  [
-                      '3', {
-                          "type": "array",
-                          "value": [{
-                              "type": "number",
-                              "value": 1
-                          }, {
-                              "type": "number",
-                              "value": 2
-                          }, {
-                              'internalId': 'stable_1',
-                              'type': 'node',
-                          }],
-                          "internalId": "stable_3",
-                      }
-                  ], ['4', {
-                      "type": "array",
-                      "internalId": "stable_3",
-                  }], ["self", {
-                      "type": "object",
-                      "internalId": "stable_4",
-                  }]],
-    }
+    assert result["result"] == snapshot
 
 
 @pytest.mark.asyncio

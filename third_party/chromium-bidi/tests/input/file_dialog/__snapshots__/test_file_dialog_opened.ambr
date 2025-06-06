@@ -6,7 +6,7 @@
       'result': dict({
         'realm': 'stable_1',
         'result': dict({
-          'sharedId': 'stable_4',
+          'sharedId': 'stable_2',
           'type': 'node',
           'value': dict({
             'attributes': dict({
@@ -18,7 +18,7 @@
             'namespaceURI': 'http://www.w3.org/1999/xhtml',
             'nodeType': 1,
             'shadowRoot': dict({
-              'sharedId': 'stable_2',
+              'sharedId': 'stable_4',
               'type': 'node',
               'value': dict({
                 'childNodeCount': 2,
@@ -37,7 +37,7 @@
       'params': dict({
         'context': 'stable_5',
         'element': dict({
-          'sharedId': 'stable_4',
+          'sharedId': 'stable_2',
         }),
         'multiple': False,
       }),
@@ -52,7 +52,7 @@
       'result': dict({
         'realm': 'stable_1',
         'result': dict({
-          'sharedId': 'stable_4',
+          'sharedId': 'stable_2',
           'type': 'node',
           'value': dict({
             'attributes': dict({
@@ -65,7 +65,7 @@
             'namespaceURI': 'http://www.w3.org/1999/xhtml',
             'nodeType': 1,
             'shadowRoot': dict({
-              'sharedId': 'stable_2',
+              'sharedId': 'stable_4',
               'type': 'node',
               'value': dict({
                 'childNodeCount': 2,
@@ -84,7 +84,7 @@
       'params': dict({
         'context': 'stable_5',
         'element': dict({
-          'sharedId': 'stable_4',
+          'sharedId': 'stable_2',
         }),
         'multiple': True,
       }),

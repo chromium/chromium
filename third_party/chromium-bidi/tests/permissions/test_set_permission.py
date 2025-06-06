@@ -22,7 +22,7 @@ from test_helpers import execute_command, get_origin, goto_url
 async def test_permissions_set_permission(websocket, context_id, url_example,
                                           test_chromedriver_mode):
     if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
+        pytest.xfail(reason="ChromeDriver handles permissions differently")
 
     origin = get_origin(url_example)
     await goto_url(websocket, context_id, url_example)

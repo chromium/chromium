@@ -86,11 +86,8 @@ async def test_file_dialog_show_directory_event(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.parametrize('multiple', [True, False])
 async def test_file_dialog_input_click_event(websocket, context_id, html,
-                                             read_messages, multiple, snapshot,
-                                             test_chromedriver_mode):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="TODO: #3294")
-
+                                             read_messages, multiple,
+                                             snapshot):
     await goto_url(
         websocket, context_id,
         html(f"<input id=input type=file {'multiple' if multiple else ''} />"))

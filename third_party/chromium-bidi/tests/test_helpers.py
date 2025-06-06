@@ -509,6 +509,11 @@ def stabilize_key_values(obj,
     {'1': 'stable_0', '2': 'stable_1'}
     {'KEY_1': 'stable_0', 'KEY_2': 'stable_1'}
 
+    # same key different values
+    >>> x={'KEY_2': 2, 'KEY_1': 1}; stabilize_key_values(x, ['KEY_1', 'KEY_2']); x;
+    {'1': 'stable_0', '2': 'stable_1'}
+    {'KEY_2': 'stable_1', 'KEY_1': 'stable_0'}
+
     # value of list
     >>> x={'KEY_1': [1, 2, 1], 'KEY_2': {'KEY_1': [1, 2, 1],}}; stabilize_key_values(x, ['KEY_1']); x;
     {'[1, 2, 1]': 'stable_0'}
@@ -551,7 +556,9 @@ def stabilize_key_values(obj,
             stabilize_key_values(value, keys_to_stabilize, known_values)
 
     if type(obj) is dict:
-        for key in obj.keys():
+        keys = list(obj.keys())
+        keys.sort()
+        for key in keys:
             # First stabilize content to produce a stable JSON
             stabilize_key_values(obj[key], keys_to_stabilize, known_values)
 
