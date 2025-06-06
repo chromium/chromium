@@ -576,9 +576,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
 
 void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
     const SequencedContextId& context_id) {
-  if (context_id.browser_context_id != browser_context_->UniqueId()) {
-    return;
-  }
+  CHECK_EQ(context_id.browser_context_id, browser_context_->UniqueId());
 
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK_NE(ServiceWorkerState::BrowserState::kStarted,
