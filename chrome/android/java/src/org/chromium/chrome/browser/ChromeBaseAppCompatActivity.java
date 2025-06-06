@@ -667,7 +667,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     private InsetObserver createInsetObserver() {
         return new InsetObserver(
-                new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()));
+                new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()),
+                ChromeFeatureList.sAccountForSuppressedKeyboardInsets.isEnabled());
     }
 
     private void setAutomotiveToolbarBackButtonAction() {

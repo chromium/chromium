@@ -5,7 +5,9 @@
 package org.chromium.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
@@ -120,7 +122,10 @@ public class InsetObserverTest {
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemGestures());
 
-        mInsetObserver = new InsetObserver(new ImmutableWeakReference<View>(mContentView));
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<View>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
         mInsetObserver.addObserver(mObserver);
     }
 
@@ -212,6 +217,16 @@ public class InsetObserverTest {
                 insets.getInsets(WindowInsetsCompat.Type.systemBars()));
         verify(mInsetsConsumer2).onApplyWindowInsets(mContentView, mInsets);
         verify(mInsetsConsumer1).onApplyWindowInsets(mContentView, mModifiedInsets);
+    }
+
+    @Test
+    @SmallTest
+    public void isKeyboardInOverlayMode() {
+        mInsetObserver.setKeyboardInOverlayMode(true);
+        assertTrue(mInsetObserver.isKeyboardInOverlayMode());
+
+        mInsetObserver.setKeyboardInOverlayMode(false);
+        assertFalse(mInsetObserver.isKeyboardInOverlayMode());
     }
 
     @Test
@@ -377,7 +392,10 @@ public class InsetObserverTest {
     @Config(sdk = VERSION_CODES.R)
     public void initializeWithLastSeenRawWindowInsets() {
         doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
-        mInsetObserver = new InsetObserver(new ImmutableWeakReference<View>(mContentView));
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<View>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
         assertEquals(
                 "WindowInsets is different.",
                 WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),

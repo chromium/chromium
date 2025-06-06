@@ -10,6 +10,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /**
@@ -52,6 +53,8 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     private @Nullable ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
     private @Nullable ObservableSupplier<Integer> mBottomSheetInsetSupplier;
+
+    private @Nullable InsetObserver mInsetObserver;
 
     /** The observer that gets attached to all inset suppliers. */
     private final Callback<Integer> mInsetSupplierObserver = (unused) -> computeInsets();
@@ -129,9 +132,22 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     }
 
     /**
+     * Sets the {@link InsetObserver} for observing the keyboard.
+     *
+     * <p>Pass null to unset the current InsetObserver.
+     */
+    public void setInsetObserver(@Nullable InsetObserver insetObserver) {
+        mInsetObserver = insetObserver;
+    }
+
+    private boolean isKeyboardInOverlayMode() {
+        return mInsetObserver != null && mInsetObserver.isKeyboardInOverlayMode();
+    }
+
+    /**
      * Sets the inset supplier for the keyboard accessory.
      *
-     * Pass null to unset the current supplier.
+     * <p>Pass null to unset the current supplier.
      */
     public void setKeyboardAccessoryInsetSupplier(
             @Nullable ObservableSupplier<Integer> insetSupplier) {
@@ -174,7 +190,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     private void computeInsets() {
         ViewportInsets newValues = new ViewportInsets();
 
-        int keyboardInset = intFromSupplier(mKeyboardInsetSupplier);
+        int keyboardInset = isKeyboardInOverlayMode() ? 0 : intFromSupplier(mKeyboardInsetSupplier);
         int accessoryInset = intFromSupplier(mKeyboardAccessoryInsetSupplier);
         int totalKeyboardInset = keyboardInset + accessoryInset;
 
