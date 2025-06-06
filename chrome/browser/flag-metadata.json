@@ -6935,6 +6935,11 @@
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150
   },
+    {
+    "name": "ntp-show-compose-button",
+    "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 150
+  },
   {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],

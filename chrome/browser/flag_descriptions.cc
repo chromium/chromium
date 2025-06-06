@@ -5630,6 +5630,10 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
+const char kNtpSearchboxShowComposeButtonName[] = "NTP Compose Box";
+const char kNtpSearchboxShowComposeButtonDescription[] =
+    "Shows the Compose button on the New Tab Page Searchbox.";
+
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
