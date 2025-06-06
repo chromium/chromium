@@ -15,7 +15,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 
 namespace viz {

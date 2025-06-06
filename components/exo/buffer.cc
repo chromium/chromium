@@ -40,7 +40,6 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 #include "ui/aura/env.h"
 #include "ui/color/color_id.h"

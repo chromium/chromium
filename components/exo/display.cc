@@ -31,7 +31,6 @@
 #include "components/exo/toast_surface.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/xdg_shell_surface.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
