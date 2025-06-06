@@ -325,8 +325,8 @@ class HttpsUpgradesBrowserTest
 
     http_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(http_server_.Start());
-    ASSERT_TRUE(https_server_.Start());
+    http_server_.StartAcceptingConnections();
+    https_server_.StartAcceptingConnections();
 
     HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server()->port());
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server()->port());
@@ -367,6 +367,19 @@ class HttpsUpgradesBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     mock_cert_verifier_.SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(http_server_.InitializeAndListen());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+
+    // Treat the test server as public to bypass Local Network Access checks.
+    //
+    // TODO(crbug.com/422956041): figure out why we need to do this, there may
+    // be a bug where IP address spaces are not being set correctly.
+    command_line->AppendSwitchASCII(
+        network::switches::kIpAddressSpaceOverrides,
+        base::StringPrintf("%s=public,%s=public",
+                           http_server_.host_port_pair().ToString().c_str(),
+                           https_server_.host_port_pair().ToString().c_str()));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
