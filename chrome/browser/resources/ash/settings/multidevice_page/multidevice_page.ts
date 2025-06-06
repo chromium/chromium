@@ -568,7 +568,10 @@ export class SettingsMultidevicePageElement extends
   private onForgetDeviceRequested_(): void {
     this.browserProxy_.removeHostDevice();
     recordSettingChange(Setting.kForgetPhone);
-    Router.getInstance().navigateTo(routes.MULTIDEVICE);
+
+    const params = new URLSearchParams();
+    params.set('settingId', Setting.kSetUpMultiDevice.toString());
+    Router.getInstance().navigateTo(routes.MULTIDEVICE, params);
   }
 
   private onPermissionSetupRequested_(): void {
