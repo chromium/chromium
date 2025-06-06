@@ -126,6 +126,10 @@ ContextualSearch::ContextualSearch() {
   contextual_suggestions_ablate_others_when_present =
       base::FeatureList::IsEnabled(
           kContextualSuggestionsAblateOthersWhenPresent);
+  contextual_suggestions_ablate_search_only =
+      base::FeatureParam<bool>(&kContextualSuggestionsAblateOthersWhenPresent,
+                               "AblateSearchOnly", false)
+          .Get();
   starter_pack_page = feature_enabled(kStarterPackPage);
   contextual_zero_suggest_lens_fulfillment =
       feature_enabled(kContextualZeroSuggestLensFulfillment);

@@ -160,6 +160,12 @@ struct ContextualSearch : Config<ContextualSearch> {
   // search matches.
   bool contextual_suggestions_ablate_others_when_present;
 
+  // Whether to restrict the ablation logic, triggered via
+  // `contextual_suggestions_ablate_others_when_present`, such that we only
+  // remove (non-contextual) search suggestions, instead of removing all
+  // (non-contextual) zero suggest matches altogether.
+  bool contextual_suggestions_ablate_search_only;
+
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
 
