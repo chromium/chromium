@@ -441,8 +441,9 @@ class ViewTransitionCaptureTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/400187507): Disabled due to continuous flakiness.
 IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
-                       ViewTransitionNoArtifactDuringCapture) {
+                       DISABLED_ViewTransitionNoArtifactDuringCapture) {
   const auto& [frametest, url] = GetParam();
   GURL test_url(embedded_test_server()->GetURL(url));
   auto* web_contents = shell()->web_contents();
