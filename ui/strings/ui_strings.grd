@@ -990,6 +990,15 @@ need to be translated for each locale.-->
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_FINISH_LABEL" desc="Message to inform the user that the calibration is now complete">
         Calibration is completed
       </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_TOP_RIGHT" desc="A11Y message to inform the user that the calibration circle moved to top right" is_accessibility_with_no_ui="true">
+        Touch target moved to top right. Tap here.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_LEFT" desc="A11Y message to inform the user that the calibration circle moved to bottom left" is_accessibility_with_no_ui="true">
+        Touch target moved to bottom left. Tap here.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_RIGHT" desc="A11Y message to inform the user that the calibration circle moved to bottom right" is_accessibility_with_no_ui="true">
+        Touch target moved to bottom right. Tap here.
+      </message>
 
       <!-- Display names -->
       <message name="IDS_DISPLAY_NAME_UNKNOWN" desc="The name used for a display whose name is unknown, which is shown in the display settings and ash tray.">

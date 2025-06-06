@@ -12,6 +12,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/root_window_transformers.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -568,6 +569,12 @@ bool FullscreenMagnifierController::RedrawDIP(
 
     if (display_identification_highlight)
       undo_transform_windows.push_back(display_identification_highlight);
+
+    // Do not magnify overlay if calibration tool is running too.
+    if (Shell::Get()->cros_display_config()->IsCalibrating()) {
+      undo_transform_windows.push_back(
+          root_window_->GetChildById(kShellWindowId_OverlayContainer));
+    }
 
     for (auto* window : undo_transform_windows) {
       ui::ScopedLayerAnimationSettings layer_settings(

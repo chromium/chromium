@@ -20,6 +20,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -295,12 +296,14 @@ class HintBox : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnAccessibilityInitializing(ui::AXNodeData* data) override;
 
   void SetLabel(const std::u16string& text, const SkColor& color);
   void SetSubLabel(const std::u16string& text, const SkColor& color);
 
  private:
   void UpdateWidth(int updated_width);
+  void UpdateAccessibleName();
 
   std::u16string label_text_;
   std::u16string sublabel_text_;
@@ -365,6 +368,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
 
   sublabel_text_bounds_.SetRect(horizontal_offset_, top_offset, 0,
                                 label_height);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
 }
 
 HintBox::~HintBox() = default;
@@ -392,6 +396,8 @@ void HintBox::SetLabel(const std::u16string& text, const SkColor& color) {
       size.width() + 2 * horizontal_offset_ - arrow_width_;
   if (minimum_expected_width > rounded_rect_bounds_.width())
     UpdateWidth(minimum_expected_width);
+
+  UpdateAccessibleName();
 }
 
 void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
@@ -412,6 +418,8 @@ void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
       size.width() + 2 * horizontal_offset_ - arrow_width_;
   if (minimum_expected_width > rounded_rect_bounds_.width())
     UpdateWidth(minimum_expected_width);
+
+  UpdateAccessibleName();
 }
 
 void HintBox::OnPaint(gfx::Canvas* canvas) {
@@ -422,6 +430,19 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawStringRectWithFlags(sublabel_text_, sublabel_font_list_,
                                   sublabel_color_, sublabel_text_bounds_,
                                   gfx::Canvas::NO_ELLIPSIS);
+}
+void HintBox::OnAccessibilityInitializing(ui::AXNodeData* ax_data) {
+  views::View::OnAccessibilityInitializing(ax_data);
+  UpdateAccessibleName();
+}
+
+void HintBox::UpdateAccessibleName() {
+  // Combine the two text fields into one accessible name for Chromevox to read.
+  std::u16string accessible_name = label_text_;
+  if (!sublabel_text_.empty()) {
+    accessible_name += u" " + sublabel_text_;
+  }
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 BEGIN_METADATA(HintBox)
@@ -469,6 +490,8 @@ CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
   flags_.setColor(SK_ColorWHITE);
   flags_.setStyle(cc::PaintFlags::kFill_Style);
   flags_.setAntiAlias(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
+  GetViewAccessibility().SetName(message);
 }
 
 CompletionMessageView::~CompletionMessageView() = default;
@@ -686,6 +709,11 @@ void TouchCalibratorView::AnimationEnded(const gfx::Animation* animation) {
       if (is_primary_view_) {
         touch_point_view_->SetVisible(true);
         hint_box_view_->SetVisible(true);
+        // Notify about both new messages, but only once on primary view.
+        exit_label_->GetViewAccessibility().NotifyEvent(
+          ax::mojom::Event::kAlert, true);
+        hint_box_view_->GetViewAccessibility().NotifyEvent(
+            ax::mojom::Event::kAlert, true);
       }
       break;
     case BACKGROUND_FADING_OUT:
@@ -704,16 +732,29 @@ void TouchCalibratorView::OnLayerAnimationStarted(
 
 void TouchCalibratorView::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   switch (state_) {
     case ANIMATING_1_TO_2:
       state_ = DISPLAY_POINT_2;
       tap_label_->SetVisible(true);
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_TOP_RIGHT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_2_TO_3:
       state_ = DISPLAY_POINT_3;
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_LEFT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_3_TO_4:
       state_ = DISPLAY_POINT_4;
+      tap_label_->GetViewAccessibility().SetName(rb.GetLocalizedString(
+          IDS_DISPLAY_TOUCH_CALIBRATION_A11Y_TARGET_MOVED_BOTTOM_RIGHT));
+      tap_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                     true);
       break;
     case ANIMATING_FINAL_MESSAGE:
       state_ = CALIBRATION_COMPLETE;
@@ -784,6 +825,11 @@ void TouchCalibratorView::AdvanceToNextState() {
       state_ = ANIMATING_FINAL_MESSAGE;
       completion_message_view_->layer()->SetOpacity(0.0f);
       completion_message_view_->SetVisible(true);
+      completion_message_view_->GetViewAccessibility().NotifyEvent(
+          ax::mojom::Event::kAlert, true);
+
+      exit_label_->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kAlert,
+                                                      true);
 
       touch_point_view_->SetVisible(false);
 

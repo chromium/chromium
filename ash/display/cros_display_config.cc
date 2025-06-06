@@ -1100,4 +1100,8 @@ void CrosDisplayConfig::DragDisplayDelta(int64_t display_id,
       display_id, delta_x, delta_y);
 }
 
+bool CrosDisplayConfig::IsCalibrating() const {
+  return touch_calibrator_ && touch_calibrator_->IsCalibrating();
+}
+
 }  // namespace ash

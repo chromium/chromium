@@ -11,6 +11,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/chromevox/touch_accessibility_enabler.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
@@ -139,6 +140,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
   root_window_->GetHost()->ConvertPixelsToDIP(&root_location);
 
   bool exclude =
+      (Shell::HasInstance() &&
+       Shell::Get()->cros_display_config()->IsCalibrating()) ||
       IsTargetedToArcVirtualKeyboard(location) ||
       (!exclude_bounds_.IsEmpty() && exclude_bounds_.Contains(location));
   if (exclude) {

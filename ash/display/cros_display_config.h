@@ -63,6 +63,8 @@ class ASH_EXPORT CrosDisplayConfig
                         int32_t delta_x,
                         int32_t delta_y) override;
 
+  bool IsCalibrating() const;
+
   TouchCalibratorController* touch_calibrator_for_test() {
     return touch_calibrator_.get();
   }
