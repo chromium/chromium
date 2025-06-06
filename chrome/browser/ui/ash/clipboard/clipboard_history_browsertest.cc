@@ -520,15 +520,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, HandleClickCancelEvent) {
 }
 
 // Verifies item deletion through the mouse click at the delete button.
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(https://crbug.com/394710875): Fix ui_test_utils::Navigation timeout.
-#define MAYBE_DeleteItemByClickAtDeleteButton \
-  DISABLED_DeleteItemByClickAtDeleteButton
-#else
-#define MAYBE_DeleteItemByClickAtDeleteButton DeleteItemByClickAtDeleteButton
-#endif
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
-                       MAYBE_DeleteItemByClickAtDeleteButton) {
+                       DeleteItemByClickAtDeleteButton) {
   base::HistogramTester histogram_tester;
 
   // Write some things to the clipboard.
