@@ -423,7 +423,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                                 (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
                         progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
                         progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
-                        progressBarLayoutParams.gravity = Gravity.TOP;
+                        progressBarLayoutParams.gravity = Gravity.CENTER;
                         mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
                     };
 

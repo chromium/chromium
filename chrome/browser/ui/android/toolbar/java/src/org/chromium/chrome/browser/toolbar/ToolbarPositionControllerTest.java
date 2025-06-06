@@ -303,7 +303,7 @@ public class ToolbarPositionControllerTest {
         mBrowserControlsSizer.setControlsPosition(
                 ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0, 0, 0);
         mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
-        mProgressBarLayoutParams.gravity = Gravity.TOP;
+        mProgressBarLayoutParams.gravity = Gravity.CENTER;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
 
@@ -900,7 +900,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(TOOLBAR_HEIGHT, mHairlineLayoutParams.topMargin);
         assertEquals(0, mHairlineLayoutParams.bottomMargin);
         assertEquals(Gravity.START | Gravity.TOP, mControlContainerLayoutParams.gravity);
-        assertEquals(Gravity.TOP, mProgressBarLayoutParams.gravity);
+        assertEquals(Gravity.CENTER, mProgressBarLayoutParams.gravity);
         assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.anchorGravity);
         assertEquals(CONTROL_CONTAINER_ID, mProgressBarLayoutParams.getAnchorId());
     }
