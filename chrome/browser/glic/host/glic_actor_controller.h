@@ -13,6 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+
+namespace optimization_guide::proto {
+class BrowserStartTaskResult;
+}
 
 namespace actor {
 class ActorCoordinator;
@@ -37,6 +42,10 @@ class GlicActorController {
   GlicActorController& operator=(const GlicActorController&) = delete;
   ~GlicActorController();
 
+  // ActorKeyedService, the underlying framework, supports multi-tab actuation.
+  // But this class does not because it does not expose the concept of
+  // start/stop task. Instead it keeps track of any ongoing task, and implicitly
+  // creates one for Act() if one does not already exist.
   // Invokes the actor to complete an action.
   void Act(const FocusedTabData& focused_tab_data,
            const optimization_guide::proto::BrowserAction& action,
@@ -56,6 +65,12 @@ class GlicActorController {
       tabs::TabInterface* tab);
 
  private:
+  void OnTaskStartedForAct(
+      const optimization_guide::proto::BrowserAction& action,
+      const mojom::GetTabContextOptions& options,
+      mojom::WebClientHandler::ActInFocusedTabCallback callback,
+      optimization_guide::proto::BrowserStartTaskResult result);
+
   // Core logic to execute an action.
   void ActImpl(base::WeakPtr<tabs::TabInterface> tab,
                const optimization_guide::proto::BrowserAction& action,
@@ -78,6 +93,8 @@ class GlicActorController {
   // The most recently created task, or nullptr if no task has ever been
   // created.
   raw_ptr<actor::ActorTask> actor_task_ = nullptr;
+  // True if and only if a task is in the process of being started.
+  bool starting_task_ = false;
   base::WeakPtrFactory<GlicActorController> weak_ptr_factory_{this};
 };
 

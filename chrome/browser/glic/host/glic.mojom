@@ -128,6 +128,8 @@ enum ActInFocusedTabErrorReason {
   kInvalidActionProto = 2,
   // Action target is not found.
   kTargetNotFound = 3,
+  // Failed to start a new task.
+  [MinVersion=1] kFailedToStartTask = 4,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
 

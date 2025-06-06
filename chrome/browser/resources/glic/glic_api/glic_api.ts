@@ -970,6 +970,8 @@ export enum ActInFocusedTabErrorReason {
   INVALID_ACTION_PROTO = 2,
   /** Action target is not found. */
   TARGET_NOT_FOUND = 3,
+  /** Failed to start a new task. */
+  FAILED_TO_START_TASK = 4,
 }
 
 /**
