@@ -7,11 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_simple_task_runner.h"
@@ -19,7 +22,6 @@
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -71,15 +73,6 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     gpu_memory_buffer_pool_.reset();
     RunUntilIdle();
     mock_gpu_factories_.reset();
-
-    if (y_data_)
-      delete[] y_data_;
-    if (u_data_)
-      delete[] u_data_;
-    if (v_data_)
-      delete[] v_data_;
-    if (uv_data_)
-      delete[] uv_data_;
   }
 
   void RunUntilIdle() {
@@ -131,11 +124,12 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     const int multiplier = format == PIXEL_FORMAT_YUV420P10 ? 2 : 1;
 
     int dimension_aligned = (dimension + 1) & ~1;
-    y_data_ = new uint8_t[multiplier * dimension * dimension]();
-    u_data_ =
-        new uint8_t[multiplier * dimension_aligned * dimension_aligned / 4]();
-    v_data_ =
-        new uint8_t[multiplier * dimension_aligned * dimension_aligned / 4]();
+    y_data_ =
+        base::HeapArray<uint8_t>::Uninit(multiplier * dimension * dimension);
+    u_data_ = base::HeapArray<uint8_t>::Uninit(multiplier * dimension_aligned *
+                                               dimension_aligned / 4);
+    v_data_ = base::HeapArray<uint8_t>::Uninit(multiplier * dimension_aligned *
+                                               dimension_aligned / 4);
 
     // Initialize the last pixel of each plane
     int y_size = multiplier * dimension * dimension;
@@ -221,9 +215,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     // Set the video buffer memory dimension to the same size of the requested
     // dimension.
     int dimension_aligned = (dimension + 1) & ~1;
-    y_data_ = new uint8_t[dimension * dimension]();
+    y_data_ = base::HeapArray<uint8_t>::Uninit(dimension * dimension);
     // Subsampled by 2x2, two components.
-    uv_data_ = new uint8_t[dimension_aligned * dimension_aligned / 2]();
+    uv_data_ = base::HeapArray<uint8_t>::Uninit(dimension_aligned *
+                                                dimension_aligned / 2);
 
     // Initialize the last pixel of each plane
     y_data_[dimension * dimension - 1] = kYValue;
@@ -261,10 +256,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   static constexpr uint8_t kUValue = 50;
   static constexpr uint8_t kVValue = 150;
 
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> y_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> u_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> v_data_ = nullptr;
-  raw_ptr<uint8_t, DanglingUntriaged | AllowPtrArithmetic> uv_data_ = nullptr;
+  base::HeapArray<uint8_t> y_data_;
+  base::HeapArray<uint8_t> u_data_;
+  base::HeapArray<uint8_t> v_data_;
+  base::HeapArray<uint8_t> uv_data_;
 
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;

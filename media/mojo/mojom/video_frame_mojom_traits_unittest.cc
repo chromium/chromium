@@ -149,10 +149,12 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
         ASSERT_TRUE(region.IsValid());
 
-        std::array<uint8_t*, 3> data = {};
-        data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
-        for (size_t i = 1; i < strides.size(); ++i) {
-          data[i] = data[i - 1] + sizes[i - 1];
+        std::array<base::span<uint8_t>, 3> data = {};
+        auto mapping_span = region.mapping.GetMemoryAsSpan<uint8_t>();
+        size_t offset = 0;
+        for (size_t i = 0; i < strides.size(); ++i) {
+          data[i] = mapping_span.subspan(offset, sizes[i]);
+          offset += sizes[i];
         }
 
         if (format == PIXEL_FORMAT_I420) {

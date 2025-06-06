@@ -379,17 +379,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       size_t y_stride,
       size_t uv_stride,
-      const uint8_t* y_data,
-      const uint8_t* uv_data,
-      base::TimeDelta timestamp);
-
-  static scoped_refptr<VideoFrame> WrapExternalYuvData(
-      VideoPixelFormat format,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      size_t y_stride,
-      size_t uv_stride,
       base::span<const uint8_t> y_data,
       base::span<const uint8_t> uv_data,
       base::TimeDelta timestamp);

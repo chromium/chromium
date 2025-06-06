@@ -477,11 +477,26 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
     }
     case webrtc::VideoFrameBuffer::Type::kNV12: {
       const webrtc::NV12BufferInterface* nv12_buffer = buffer->GetNV12();
+      const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_NV12;
+      const size_t luma_rows = size.height();
+      const size_t chroma_rows =
+          media::VideoFrame::PlaneSizeInSamples(
+              pixel_format, media::VideoFrame::Plane::kUV, size)
+              .height();
+      // TODO(issues.webrtc.org/issues/42225170):
+      // webrtc::I420BufferInterface should expose ArrayView instead of raw
+      // pointers.
+      auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          nv12_buffer->DataY(),
+          base::saturated_cast<size_t>(nv12_buffer->StrideY()) * luma_rows));
+      auto uv_plane = UNSAFE_TODO(base::span<const uint8_t>(
+          nv12_buffer->DataUV(),
+          base::saturated_cast<size_t>(nv12_buffer->StrideUV()) * chroma_rows));
+
       video_frame = media::VideoFrame::WrapExternalYuvData(
           media::PIXEL_FORMAT_NV12, size, gfx::Rect(size), size,
-          nv12_buffer->StrideY(), nv12_buffer->StrideUV(),
-          const_cast<uint8_t*>(nv12_buffer->DataY()),
-          const_cast<uint8_t*>(nv12_buffer->DataUV()), timestamp);
+          nv12_buffer->StrideY(), nv12_buffer->StrideUV(), y_plane, uv_plane,
+          timestamp);
       break;
     }
     default:

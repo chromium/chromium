@@ -376,8 +376,8 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_NV12, config_.input_visible_size,
         gfx::Rect(config_.input_visible_size), config_.input_visible_size,
-        y_size.width(), uv_size.width(), map.data().first(uv_offset).data(),
-        map.data().subspan(uv_offset).data(), frame.timestamp());
+        y_size.width(), uv_size.width(), map.data().first(uv_offset),
+        map.data().subspan(uv_offset), frame.timestamp());
     EncoderStatus result =
         frame_converter_.ConvertAndScale(frame, *upload_frame);
     if (!result.is_ok()) {
