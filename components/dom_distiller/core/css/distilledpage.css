@@ -284,7 +284,6 @@ video::-webkit-media-controls-fullscreen-button {
 #main-content {
   flex: 1 1 auto;
   margin: 0 auto;
-  max-width: 35em;
   width: 100%;
 }
 
