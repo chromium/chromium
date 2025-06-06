@@ -340,12 +340,9 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     CallWith=ScriptState
   ] MLOpSupportLimits opSupportLimits();
 
-  // TODO(crbug.com/345352987): remove device once MLContext(gpuDevice) is
-  // implemented.
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<GPUBuffer> exportToGPU(
-    GPUDevice device, MLTensor tensor);
+  ] Promise<GPUBuffer> exportToGPU(MLTensor tensor);
 };
