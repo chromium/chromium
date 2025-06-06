@@ -53,7 +53,6 @@ class CORE_EXPORT TextAutoSpace {
 
  private:
   bool may_apply_ = false;
-  InlineItemSegments::RunSegmenterRanges ranges_;
   Callback* callback_for_testing_ = nullptr;
 };
 
