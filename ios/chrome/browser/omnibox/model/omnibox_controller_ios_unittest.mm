@@ -25,12 +25,13 @@ class OmniboxControllerIOSTest : public PlatformTest {
     ClipboardRecentContent::SetInstance(
         std::make_unique<FakeClipboardRecentContent>());
 
-    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
+    client_ = std::make_unique<TestOmniboxClient>();
+    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(client_.get());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestOmniboxClient> client_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
 };
 

@@ -9,34 +9,15 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
-    OmniboxControllerIOS* controller,
+    OmniboxEditModelIOS* omnibox_edit_model,
     OmniboxAutocompleteController* omnibox_autocomplete_controller)
-    : controller_(controller),
-      omnibox_autocomplete_controller_(omnibox_autocomplete_controller) {
-  DCHECK(controller);
-  model()->set_popup_view(this);
+    : omnibox_autocomplete_controller_(omnibox_autocomplete_controller) {
+  model_ = omnibox_edit_model->AsWeakPtr();
+  model_->set_popup_view(this);
 }
 
 OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
-  model()->set_popup_view(nullptr);
-}
-
-OmniboxEditModelIOS* OmniboxPopupViewIOS::model() {
-  return const_cast<OmniboxEditModelIOS*>(
-      const_cast<const OmniboxPopupViewIOS*>(this)->model());
-}
-
-const OmniboxEditModelIOS* OmniboxPopupViewIOS::model() const {
-  return controller_->edit_model();
-}
-
-OmniboxControllerIOS* OmniboxPopupViewIOS::controller() {
-  return const_cast<OmniboxControllerIOS*>(
-      const_cast<const OmniboxPopupViewIOS*>(this)->controller());
-}
-
-const OmniboxControllerIOS* OmniboxPopupViewIOS::controller() const {
-  return controller_;
+  model_->set_popup_view(nullptr);
 }
 
 bool OmniboxPopupViewIOS::IsOpen() const {

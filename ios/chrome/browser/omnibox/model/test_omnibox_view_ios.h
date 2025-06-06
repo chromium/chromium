@@ -15,8 +15,7 @@
 // Fake implementation of OmniboxViewIOS for use in tests.
 class TestOmniboxViewIOS : public OmniboxViewIOS {
  public:
-  explicit TestOmniboxViewIOS(std::unique_ptr<OmniboxClient> client)
-      : OmniboxViewIOS(nil, std::move(client), nil, nil, nil) {}
+  explicit TestOmniboxViewIOS() : OmniboxViewIOS(nil) {}
 
   TestOmniboxViewIOS(const TestOmniboxViewIOS&) = delete;
   TestOmniboxViewIOS& operator=(const TestOmniboxViewIOS&) = delete;

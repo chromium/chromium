@@ -17,6 +17,7 @@ class AutocompleteResult;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 class OmniboxControllerIOS;
+class OmniboxEditModelIOS;
 @class OmniboxTextController;
 
 /// Controller for the omnibox autocomplete system. Handles interactions with
@@ -43,7 +44,9 @@ class OmniboxControllerIOS;
 
 /// Initializes with an OmniboxController.
 - (instancetype)initWithOmniboxController:
-    (OmniboxControllerIOS*)omniboxController NS_DESIGNATED_INITIALIZER;
+                    (OmniboxControllerIOS*)omniboxController
+                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Removes all C++ references.

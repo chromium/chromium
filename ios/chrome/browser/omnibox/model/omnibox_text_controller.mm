@@ -47,11 +47,12 @@
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
+                         omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                             inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
-    _omniboxEditModel = omniboxController->edit_model();
+    _omniboxEditModel = omniboxEditModel;
     _omniboxViewIOS = omniboxViewIOS;
     _inLensOverlay = inLensOverlay;
   }

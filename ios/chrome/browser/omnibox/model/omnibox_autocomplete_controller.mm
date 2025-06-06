@@ -63,12 +63,13 @@ using base::UserMetricsAction;
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
 }
 
-- (instancetype)initWithOmniboxController:
-    (OmniboxControllerIOS*)omniboxController {
+- (instancetype)
+    initWithOmniboxController:(OmniboxControllerIOS*)omniboxController
+             omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
-    _omniboxEditModel = omniboxController->edit_model();
+    _omniboxEditModel = omniboxEditModel;
 
     _autocompleteControllerObserverBridge =
         std::make_unique<AutocompleteControllerObserverBridge>(self);

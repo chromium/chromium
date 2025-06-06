@@ -108,25 +108,24 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(
-        /*view=*/nullptr, std::move(omnibox_client));
+    omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    omnibox_controller_ =
+        std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
 
     auto autocomplete = std::make_unique<MockAutocompleteController>();
     autocomplete_controller_ = autocomplete.get();
     omnibox_controller_->SetAutocompleteControllerForTesting(
         std::move(autocomplete));
 
-    auto edit_model =
+    omnibox_edit_model_ =
         std::make_unique<MockOmniboxEditModel>(omnibox_controller_.get());
-    omnibox_edit_model_ = edit_model.get();
-    omnibox_controller_->SetEditModelForTesting(std::move(edit_model));
 
     controller_delegate_ =
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxController:omnibox_controller_.get()];
+        initWithOmniboxController:omnibox_controller_.get()
+                 omniboxEditModel:omnibox_edit_model_.get()];
     controller_.delegate = controller_delegate_;
   }
 
@@ -136,6 +135,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     autocomplete_controller_ = nullptr;
     omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
+    omnibox_client_ = nullptr;
     controller_delegate_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
@@ -162,7 +162,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
   OmniboxAutocompleteController* controller_;
   raw_ptr<MockAutocompleteController> autocomplete_controller_;
-  raw_ptr<MockOmniboxEditModel> omnibox_edit_model_;
+  std::unique_ptr<MockOmniboxEditModel> omnibox_edit_model_;
+  std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   id controller_delegate_;

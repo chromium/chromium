@@ -86,29 +86,31 @@ void OpenUrlFromEditBox(OmniboxControllerIOS* controller,
 class OmniboxEditModelIOSTest : public PlatformTest {
  public:
   OmniboxEditModelIOSTest() {
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_client_ = omnibox_client.get();
+    omnibox_client_ = std::make_unique<TestOmniboxClient>();
 
-    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
-                                                  view_.get(),
-                                                  /*pref_service=*/nullptr));
+    omnibox_controller_ =
+        std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
+    view_ = std::make_unique<TestOmniboxViewIOS>();
+    omnibox_edit_model_ = std::make_unique<TestOmniboxEditModelIOS>(
+        omnibox_controller_.get(), view_.get(), /*pref_service=*/nullptr);
+
+    view_->SetOmniboxEditModel(omnibox_edit_model_.get());
+    view_->SetOmniboxController(omnibox_controller_.get());
   }
 
   TestOmniboxViewIOS* view() { return view_.get(); }
   TestLocationBarModel* location_bar_model() {
     return omnibox_client_->location_bar_model();
   }
-  TestOmniboxEditModelIOS* model() {
-    return static_cast<TestOmniboxEditModelIOS*>(view_->model());
-  }
-  OmniboxControllerIOS* controller() { return view_->controller(); }
+  TestOmniboxEditModelIOS* model() { return omnibox_edit_model_.get(); }
+  OmniboxControllerIOS* controller() { return omnibox_controller_.get(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
+  std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<TestOmniboxViewIOS> view_;
+  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
+  std::unique_ptr<TestOmniboxEditModelIOS> omnibox_edit_model_;
 };
 
 TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
@@ -229,67 +231,6 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_TRUE(model()->CurrentTextIsURL());
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// Popup-related tests
-
-class OmniboxEditModelIOSPopupTest : public PlatformTest {
- public:
-  OmniboxEditModelIOSPopupTest() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    // `kExperimentalOmniboxLabs` feature flag has to be enabled
-    // before the test client initialization for the `UnscopedExtensionProvider`
-    // to be initialized. The provider is needed for
-    // `GetIconForExtensionWithImageURL` test.
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExperimentalOmniboxLabs);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    EXPECT_CALL(*omnibox_client, GetPrefs())
-        .WillRepeatedly(Return(pref_service()));
-
-    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
-                                                  view_.get(), pref_service()));
-
-    omnibox::RegisterProfilePrefs(pref_service_.registry());
-    model()->set_popup_view(&popup_view_);
-    model()->SetPopupIsOpen(true);
-  }
-  OmniboxEditModelIOSPopupTest(const OmniboxEditModelIOSPopupTest&) = delete;
-  OmniboxEditModelIOSPopupTest& operator=(const OmniboxEditModelIOSPopupTest&) =
-      delete;
-
-  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
-  OmniboxTriggeredFeatureService* triggered_feature_service() {
-    return &triggered_feature_service_;
-  }
-  TestOmniboxEditModelIOS* model() {
-    return static_cast<TestOmniboxEditModelIOS*>(view_->model());
-  }
-  OmniboxControllerIOS* controller() { return view_->controller(); }
-  TestOmniboxClient* client() {
-    return static_cast<TestOmniboxClient*>(controller()->client());
-  }
-  AutocompleteResult* published_result() {
-    return const_cast<AutocompleteResult*>(
-        &view_->controller()->autocomplete_controller()->result());
-  }
-  AutocompleteInput& autocomplete_input() {
-    return const_cast<AutocompleteInput&>(
-        view_->controller()->autocomplete_controller()->input());
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::TaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<TestOmniboxViewIOS> view_;
-  TestOmniboxPopupViewIOS popup_view_;
-  OmniboxTriggeredFeatureService triggered_feature_service_;
-};
 
 TEST_F(OmniboxEditModelIOSTest, IPv4AddressPartsCount) {
   base::HistogramTester histogram_tester;

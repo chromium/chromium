@@ -218,6 +218,10 @@ class OmniboxEditModelIOS {
       size_t index,
       base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
+  base::WeakPtr<OmniboxEditModelIOS> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.

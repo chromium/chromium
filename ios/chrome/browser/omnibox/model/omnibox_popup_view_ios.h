@@ -7,31 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 
 @class OmniboxAutocompleteController;
-class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
 
 class OmniboxPopupViewIOS {
  public:
   OmniboxPopupViewIOS(
-      OmniboxControllerIOS* controller,
+      OmniboxEditModelIOS* omnibox_edit_model,
       OmniboxAutocompleteController* omnibox_autocomplete_controller);
   virtual ~OmniboxPopupViewIOS();
-
-  OmniboxEditModelIOS* model();
-  const OmniboxEditModelIOS* model() const;
-
-  OmniboxControllerIOS* controller();
-  const OmniboxControllerIOS* controller() const;
 
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const;
 
  private:
-  // Owned by OmniboxViewIOS which owns this.
-  const raw_ptr<OmniboxControllerIOS> controller_;
+  base::WeakPtr<OmniboxEditModelIOS> model_;
 
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };

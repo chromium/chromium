@@ -38,78 +38,16 @@
 #import "ui/gfx/image/image_unittest_util.h"
 #import "ui/gfx/paint_vector_icon.h"
 
-using base::ASCIIToUTF16;
-using testing::_;
-using testing::DoAll;
-using testing::Return;
-using testing::SaveArg;
-using testing::SaveArgPointee;
-
-namespace {
-
 class OmniboxViewIOSTest : public PlatformTest {
  public:
-  OmniboxViewIOSTest()
-      : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_client_ = omnibox_client.get();
-    EXPECT_CALL(*client(), GetBookmarkModel())
-        .WillRepeatedly(Return(bookmark_model_.get()));
-
-    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
-                                                  view_.get(),
-                                                  /*pref_service=*/nullptr));
-  }
+  OmniboxViewIOSTest() { view_ = std::make_unique<TestOmniboxViewIOS>(); }
 
   TestOmniboxViewIOS* view() { return view_.get(); }
-
-  TestOmniboxEditModelIOS* model() {
-    return static_cast<TestOmniboxEditModelIOS*>(view_->model());
-  }
-
-  TestOmniboxClient* client() { return omnibox_client_; }
-
-  bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxViewIOS> view_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<TestOmniboxClient> omnibox_client_;
 };
-
-class OmniboxViewIOSPopupTest : public PlatformTest {
- public:
-  OmniboxViewIOSPopupTest() {
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_client_ = omnibox_client.get();
-
-    view_ = std::make_unique<TestOmniboxViewIOS>(std::move(omnibox_client));
-    view_->controller()->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModelIOS>(view_->controller(),
-                                                  view_.get(),
-                                                  /*pref_service=*/nullptr));
-    model()->set_popup_view(&popup_view_);
-    model()->SetPopupIsOpen(true);
-  }
-
-  TestOmniboxViewIOS* view() { return view_.get(); }
-
-  TestOmniboxEditModelIOS* model() {
-    return static_cast<TestOmniboxEditModelIOS*>(view_->model());
-  }
-
-  TestOmniboxClient* client() { return omnibox_client_; }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxViewIOS> view_;
-  raw_ptr<TestOmniboxClient> omnibox_client_;
-  TestOmniboxPopupViewIOS popup_view_;
-};
-}  // namespace
 
 // Tests GetStateChanges correctly determines if text was deleted.
 TEST_F(OmniboxViewIOSTest, GetStateChanges_DeletedText) {

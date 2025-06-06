@@ -14,15 +14,10 @@
 #import "base/memory/weak_ptr.h"
 #import "components/omnibox/browser/location_bar_model.h"
 
-class OmniboxClient;
-@protocol OmniboxCommands;
 class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
-@protocol OmniboxFocusDelegate;
 @class OmniboxTextController;
 @class OmniboxTextFieldIOS;
-class ProfileIOS;
-@protocol ToolbarCommands;
 
 // Wraps a UITextField and interfaces with the rest of the autocomplete system.
 class OmniboxViewIOS {
@@ -42,20 +37,14 @@ class OmniboxViewIOS {
   };
 
   // Retains `field`.
-  OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                 std::unique_ptr<OmniboxClient> client,
-                 ProfileIOS* profile,
-                 id<OmniboxCommands> omnibox_focuser,
-                 id<ToolbarCommands> toolbar_commands_handler);
+  OmniboxViewIOS(OmniboxTextFieldIOS* field);
   OmniboxViewIOS(const OmniboxViewIOS&) = delete;
   OmniboxViewIOS& operator=(const OmniboxViewIOS&) = delete;
   virtual ~OmniboxViewIOS();
 
-  OmniboxEditModelIOS* model();
-  const OmniboxEditModelIOS* model() const;
+  void SetOmniboxEditModel(OmniboxEditModelIOS* edit_model);
 
-  OmniboxControllerIOS* controller();
-  const OmniboxControllerIOS* controller() const;
+  void SetOmniboxController(OmniboxControllerIOS* omnibox_controller);
 
   void SetOmniboxTextController(OmniboxTextController* controller) {
     omnibox_text_controller_ = controller;
@@ -160,8 +149,7 @@ class OmniboxViewIOS {
   // Internally invoked whenever the text changes in some way.
   virtual void TextChanged();
 
-  std::unique_ptr<OmniboxControllerIOS> controller_;
-
+  base::WeakPtr<OmniboxControllerIOS> controller_;
   OmniboxTextFieldIOS* field_;
 
   State state_before_change_;
@@ -178,6 +166,8 @@ class OmniboxViewIOS {
   /// Controller that will replace OmniboxViewIOS at the end of the refactoring
   /// crbug.com/390409559.
   __weak OmniboxTextController* omnibox_text_controller_;
+
+  base::WeakPtr<OmniboxEditModelIOS> model_;
 
   // Used to cancel clipboard callbacks if this is deallocated;
   base::WeakPtrFactory<OmniboxViewIOS> weak_ptr_factory_{this};

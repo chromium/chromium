@@ -14,14 +14,12 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 
 class OmniboxClient;
-class OmniboxViewIOS;
 
 // This class controls the various services that can modify the content of the
 // omnibox, including `AutocompleteController` and `OmniboxEditModelIOS`.
 class OmniboxControllerIOS : public AutocompleteController::Observer {
  public:
-  OmniboxControllerIOS(OmniboxViewIOS* view,
-                       std::unique_ptr<OmniboxClient> client,
+  OmniboxControllerIOS(OmniboxClient* client,
                        base::TimeDelta autocomplete_stop_timer_duration =
                            kAutocompleteDefaultStopTimerDuration);
   ~OmniboxControllerIOS() override;
@@ -43,12 +41,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
 
   OmniboxClient* client() { return client_.get(); }
 
-  OmniboxEditModelIOS* edit_model() { return edit_model_.get(); }
-
-  void SetEditModelForTesting(std::unique_ptr<OmniboxEditModelIOS> edit_model) {
-    edit_model_ = std::move(edit_model);
-  }
-
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
   }
@@ -62,16 +54,14 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
     autocomplete_controller_ = std::move(autocomplete_controller);
   }
 
-  std::unique_ptr<OmniboxClient> client_;
+  base::WeakPtr<OmniboxControllerIOS> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtr<OmniboxClient> client_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
-
-  // `edit_model_` may indirectly contains raw pointers (e.g.
-  // `edit_model_->current_match_->provider`) into `AutocompleteProvider`
-  // objects owned by `autocomplete_controller_`.  Because of this (per
-  // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
-  // *after* the `autocomplete_controller_` field.
-  std::unique_ptr<OmniboxEditModelIOS> edit_model_;
 
   base::WeakPtrFactory<OmniboxControllerIOS> weak_ptr_factory_{this};
 };

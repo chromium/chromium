@@ -19,7 +19,6 @@
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/location_bar_model.h"
-#import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -53,35 +52,18 @@ using base::UserMetricsAction;
 
 #pragma mark - Public
 
-OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                               std::unique_ptr<OmniboxClient> client,
-                               ProfileIOS* profile,
-                               id<OmniboxCommands> omnibox_focuser,
-                               id<ToolbarCommands> toolbar_commands_handler)
-    : controller_(std::make_unique<OmniboxControllerIOS>(
-          /*view=*/this,
-          std::move(client))),
-      field_(field),
-      ignore_popup_updates_(false) {}
+OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field)
+    : field_(field), ignore_popup_updates_(false) {}
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
-OmniboxEditModelIOS* OmniboxViewIOS::model() {
-  return const_cast<OmniboxEditModelIOS*>(
-      const_cast<const OmniboxViewIOS*>(this)->model());
+void OmniboxViewIOS::SetOmniboxEditModel(OmniboxEditModelIOS* edit_model) {
+  model_ = edit_model->AsWeakPtr();
 }
 
-const OmniboxEditModelIOS* OmniboxViewIOS::model() const {
-  return controller_->edit_model();
-}
-
-OmniboxControllerIOS* OmniboxViewIOS::controller() {
-  return const_cast<OmniboxControllerIOS*>(
-      const_cast<const OmniboxViewIOS*>(this)->controller());
-}
-
-const OmniboxControllerIOS* OmniboxViewIOS::controller() const {
-  return controller_.get();
+void OmniboxViewIOS::SetOmniboxController(
+    OmniboxControllerIOS* omnibox_controller) {
+  controller_ = omnibox_controller->AsWeakPtr();
 }
 
 std::u16string OmniboxViewIOS::GetText() const {
@@ -94,7 +76,9 @@ void OmniboxViewIOS::SetUserText(const std::u16string& text) {
 
 void OmniboxViewIOS::SetUserText(const std::u16string& text,
                                  bool update_popup) {
-  model()->SetUserText(text);
+  if (model_) {
+    model_->SetUserText(text);
+  }
   SetWindowTextAndCaretPos(text, text.length(), update_popup, true);
 }
 
@@ -115,7 +99,9 @@ void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
 void OmniboxViewIOS::RevertAll() {
   ignore_popup_updates_ = true;
   // This will clear the model's `user_input_in_progress_`.
-  model()->Revert();
+  if (model_) {
+    model_->Revert();
+  }
 
   // This will stop the `AutocompleteController`. This should happen after
   // `user_input_in_progress_` is cleared above; otherwise, closing the popup
@@ -133,7 +119,9 @@ void OmniboxViewIOS::UpdatePopup() {
 }
 
 void OmniboxViewIOS::CloseOmniboxPopup() {
-  controller()->StopAutocomplete(/*clear_result=*/true);
+  if (controller_) {
+    controller_->StopAutocomplete(/*clear_result=*/true);
+  }
 }
 
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
@@ -164,10 +152,10 @@ bool OmniboxViewIOS::OnAfterPossibleChange() {
       GetStateChanges(state_before_change_, new_state);
 
   const bool something_changed =
-      model() && model()->OnAfterPossibleChange(state_changes);
+      model_ && model_->OnAfterPossibleChange(state_changes);
 
-  if (model()) {
-    model()->OnChanged();
+  if (model_) {
+    model_->OnChanged();
   }
 
   // TODO(crbug.com/379695536): Find a different place to call this. Give the
@@ -265,7 +253,7 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
 
 void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   // Sanitize pasted text.
-  if (model() && model()->is_pasting()) {
+  if (model_ && model_->is_pasting()) {
     std::u16string pastedText = base::SysNSStringToUTF16(field_.text);
     std::u16string newText = omnibox::SanitizeTextForPaste(pastedText);
     if (pastedText != newText) {
@@ -357,5 +345,5 @@ OmniboxViewIOS::StateChanges OmniboxViewIOS::GetStateChanges(
 }
 
 void OmniboxViewIOS::TextChanged() {
-  model()->OnChanged();
+  model_->OnChanged();
 }

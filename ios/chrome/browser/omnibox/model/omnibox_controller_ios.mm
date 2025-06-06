@@ -26,18 +26,13 @@
 #import "ui/gfx/geometry/rect.h"
 
 OmniboxControllerIOS::OmniboxControllerIOS(
-    OmniboxViewIOS* view,
-    std::unique_ptr<OmniboxClient> client,
+    OmniboxClient* client,
     base::TimeDelta autocomplete_stop_timer_duration)
-    : client_(std::move(client)),
+    : client_(client->AsWeakPtr()),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders(),
-          autocomplete_stop_timer_duration)),
-      edit_model_(std::make_unique<OmniboxEditModelIOS>(
-          /*omnibox_controller=*/this,
-          view)) {
-
+          autocomplete_stop_timer_duration)) {
   // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);

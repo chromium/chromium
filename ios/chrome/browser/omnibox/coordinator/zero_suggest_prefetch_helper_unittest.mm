@@ -49,9 +49,7 @@ class MockAutocompleteController : public AutocompleteController {
 
 class TestOmniboxController : public OmniboxControllerIOS {
  public:
-  TestOmniboxController(OmniboxViewIOS* view,
-                        std::unique_ptr<OmniboxClient> client)
-      : OmniboxControllerIOS(view, std::move(client)) {}
+  TestOmniboxController(OmniboxClient* client) : OmniboxControllerIOS(client) {}
 
   ~TestOmniboxController() override = default;
   TestOmniboxController(const TestOmniboxController&) = delete;
@@ -76,10 +74,9 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     PlatformTest::SetUp();
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    client_ = std::make_unique<TestOmniboxClient>();
 
-    controller_ = std::make_unique<TestOmniboxController>(
-        /*view=*/nullptr, std::move(omnibox_client));
+    controller_ = std::make_unique<TestOmniboxController>(client_.get());
     controller_->SetAutocompleteControllerForTesting(
         std::make_unique<MockAutocompleteController>());
   }
@@ -96,6 +93,7 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
 
   std::unique_ptr<TestOmniboxController> controller_;
+  std::unique_ptr<TestOmniboxClient> client_;
 
   ZeroSuggestPrefetchHelper* helper_;
 };

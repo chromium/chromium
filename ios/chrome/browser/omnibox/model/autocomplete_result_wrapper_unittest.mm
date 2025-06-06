@@ -42,11 +42,9 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   AutocompleteResultWrapperTest() {
     _fake_autocomplete_wrapper_delegate =
         [[FakeAutocompleteResultWrapperDelegate alloc] init];
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    omnibox_controller_ = std::make_unique<OmniboxControllerIOS>(
-        /*view=*/nullptr, std::move(omnibox_client));
+    omnibox_client_ = std::make_unique<TestOmniboxClient>();
     wrapper_ = [[AutocompleteResultWrapper alloc]
-        initWithOmniboxClient:omnibox_controller_->client()];
+        initWithOmniboxClient:omnibox_client_.get()];
     wrapper_.incognito = NO;
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();
@@ -69,7 +67,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
-  std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
+  std::unique_ptr<TestOmniboxClient> omnibox_client_;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.
