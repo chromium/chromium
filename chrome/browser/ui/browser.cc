@@ -1340,10 +1340,6 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
-void Browser::ActivateWindow() {
-  window_->Activate();
-}
-
 bool Browser::IsTabModalPopupDeprecated() const {
   return is_tab_modal_popup_deprecated_;
 }
@@ -1354,6 +1350,10 @@ bool Browser::CanShowCallToAction() const {
 
 std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
   return std::make_unique<ScopedWindowCallToActionImpl>(this);
+}
+
+ui::BaseWindow* Browser::GetWindow() {
+  return window_.get();
 }
 
 DesktopBrowserWindowCapabilities* Browser::capabilities() {

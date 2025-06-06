@@ -863,10 +863,10 @@ class Browser : public TabStripModelObserver,
   web_app::AppBrowserController* GetAppBrowserController() override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
-  void ActivateWindow() override;
   bool IsTabModalPopupDeprecated() const override;
   bool CanShowCallToAction() const override;
   std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() override;
+  ui::BaseWindow* GetWindow() override;
   DesktopBrowserWindowCapabilities* capabilities() override;
   const DesktopBrowserWindowCapabilities* capabilities() const override;
 

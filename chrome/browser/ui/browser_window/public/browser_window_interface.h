@@ -22,6 +22,10 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
+namespace ui {
+class BaseWindow;
+}  // namespace ui
+
 namespace views {
 class WebView;
 class View;
@@ -247,10 +251,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // incremental migration.
   virtual Browser* GetBrowserForMigrationOnly() = 0;
 
-  // Activates (brings to front) the window. Restores the window from minimized
-  // state if necessary.
-  virtual void ActivateWindow() = 0;
-
   // Changes the blocked state of |web_contents|. WebContentses are considered
   // blocked while displaying a web contents modal dialog. During that time
   // renderer host will ignore any UI interaction within WebContents outside of
@@ -272,6 +272,11 @@ class BrowserWindowInterface : public content::PageNavigator {
   // window level call to action Uis.
   virtual bool CanShowCallToAction() const = 0;
   virtual std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() = 0;
+
+  // Returns the ui::BaseWindow for this browser window. This allows for
+  // generic window actions, such as activation, querying minimize/maximized
+  // state, etc.
+  virtual ui::BaseWindow* GetWindow() = 0;
 
   virtual DesktopBrowserWindowCapabilities* capabilities() = 0;
   virtual const DesktopBrowserWindowCapabilities* capabilities() const = 0;
