@@ -134,6 +134,9 @@
 [submodule "third_party/anonymous_tokens/src"]
 	path = third_party/anonymous_tokens/src
 	url = https://chromium.googlesource.com/external/github.com/google/anonymous-tokens
+[submodule "third_party/readability/src"]
+	path = third_party/readability/src
+	url = https://chromium.googlesource.com/external/github.com/mozilla/readability
 [submodule "third_party/content_analysis_sdk/src"]
 	path = third_party/content_analysis_sdk/src
 	url = https://chromium.googlesource.com/external/github.com/chromium/content_analysis_sdk
