@@ -637,6 +637,8 @@ static_library("browser") {
     "lifetime/browser_shutdown.h",
     "loader/from_gws_navigation_and_keep_alive_request_observer.cc",
     "loader/from_gws_navigation_and_keep_alive_request_observer.h",
+    "loader/from_gws_navigation_and_keep_alive_request_tab_helper.cc",
+    "loader/from_gws_navigation_and_keep_alive_request_tab_helper.h",
     "loader/from_gws_navigation_and_keep_alive_request_tracker.cc",
     "loader/from_gws_navigation_and_keep_alive_request_tracker.h",
     "loader/from_gws_navigation_and_keep_alive_request_tracker_factory.cc",
