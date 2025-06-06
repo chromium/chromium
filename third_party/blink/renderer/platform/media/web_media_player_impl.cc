@@ -1971,7 +1971,9 @@ void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
 void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  observer_->OnHlsManifestDetected();
+  if (observer_) {
+    observer_->OnHlsManifestDetected();
+  }
   SetMemoryReportingState(false);
   StartPipeline();
 #else
