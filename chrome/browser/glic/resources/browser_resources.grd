@@ -43,6 +43,9 @@ found in the LICENSE file.
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING" desc="[Placeholder Description]" translateable="false">
         [Placeholder String]
       </message>
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="[Placeholder Description]" translateable="false">
+        [Placeholder String]
+      </message>
       <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title." translateable="false">
         [placeholder text]
       </message>
@@ -60,6 +63,11 @@ found in the LICENSE file.
         </message>
       </if>
       <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="[Placeholder Description]" translateable="false">
+        <ph name="WINDOW_TITLE">
+          $1<ex>Google Photos</ex>
+        </ph> - [Placeholder String]
+      </message>
+      <message name="IDS_TAB_AX_LABEL_GLIC_SHARING" is_accessibility_with_no_ui="true" desc="[Placeholder Description]" translateable="false">
         <ph name="WINDOW_TITLE">
           $1<ex>Google Photos</ex>
         </ph> - [Placeholder String]
@@ -325,6 +333,19 @@ found in the LICENSE file.
       <!-- Task Manager -->
       <message name="IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX" desc="Task Manager row for a render process used to host the Glic UI" translateable="false">
         Glic Host Renderer
+      </message>
+
+      <!-- Multi Page -->
+      <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="Placeholder description" translateable="false">
+        [Placeholder string]
+      </message>
+
+      <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="Placeholder description" translateable="false">
+        [Placeholder string]
+      </message>
+
+      <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="Placeholder description" translateable="false">
+        [Placeholder string]
       </message>
     </messages>
   </release>
