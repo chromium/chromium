@@ -867,16 +867,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     if (this.settings_.mediaSize.available) {
       const defaultOption = caps.media_size!.option.find(o => !!o.is_default) ||
           caps.media_size!.option[0];
-      let matchingOption = null;
-      // If the setting does not have a valid value, the UI has just started so
-      // do not try to get a matching value; just set the printer default in
-      // case the user doesn't have sticky settings.
-      if (this.settings_.mediaSize.setFromUi) {
-        const currentMediaSize = this.getSettingValue('mediaSize');
-        matchingOption = this.destination.getMediaSize(
-            currentMediaSize.width_microns, currentMediaSize.height_microns);
-      }
-      this.setSetting('mediaSize', matchingOption || defaultOption, true);
+      this.setSetting('mediaSize', defaultOption, true);
     }
 
     if (this.settings_.dpi.available) {

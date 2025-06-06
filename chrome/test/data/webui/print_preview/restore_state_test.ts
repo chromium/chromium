@@ -4,7 +4,7 @@
 
 import type {NativeInitialSettings, PrintPreviewAppElement, SerializedSettings, Settings, SettingsMixinInterface} from 'chrome://print/print_preview.js';
 import {getInstance, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -293,6 +293,10 @@ suite('RestoreStateTest', function() {
       nativeLayer.whenCalled('getInitialSettings'),
       nativeLayer.whenCalled('getPrinterCapabilities'),
     ]);
+
+    await microtasksFinished();
+    assertTrue(getInstance().initialized());
+
     // Set all the settings sections.
     testData.forEach((testValue: TestCase, index: number) => {
       if (index === testData.length - 1) {

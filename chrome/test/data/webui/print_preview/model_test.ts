@@ -573,14 +573,21 @@ suite('ModelTest', function() {
     assertEquals(true, model.getSettingValue('duplex'));
 
     // Set to a new destination with the same capabilities. Confirm that
-    // everything stays the same.
-    const oldSettings = JSON.stringify(model.observable.getTarget());
+    // everything stays the same, except for 'mediaSize' which is reverted back
+    // to the printer's default value.
+    const oldSettings: Record<string, any> =
+        structuredClone(model.observable.getTarget());
     model.destination = testDestination2;
     await microtasksFinished();
-    const newSettings = JSON.stringify(model.observable.getTarget());
+    const newSettings: Record<string, any> =
+        structuredClone(model.observable.getTarget());
 
-    // Should be the same (same printer capabilities).
-    assertEquals(oldSettings, newSettings);
+    // Should be the same (same printer capabilities), except for 'mediaSize'
+    // which is reset to the printer's default value.
+    assertEquals('NA_LETTER', model.getSettingValue('mediaSize').name);
+    delete oldSettings['mediaSize'];
+    delete newSettings['mediaSize'];
+    assertEquals(JSON.stringify(oldSettings), JSON.stringify(newSettings));
 
     // Create a printer with different capabilities.
     const testDestination3 =
