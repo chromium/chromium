@@ -53,6 +53,14 @@ macro_rules! debug {
     }
 }
 
+macro_rules! debug_def {
+    ($s:expr, $($arg:tt)*) => {
+        if cfg!(feature = "logging") && DEBUG && $s.scratch.log_enabled() {
+            eprintln!($($arg)*);
+        }
+    }
+}
+
 macro_rules! item_trace {
     ($($arg:tt)*) => {
         if ITEM_TRACE {
@@ -322,6 +330,8 @@ struct Scratch {
     // mode, which is used for computing the token mask on the
     // pre-lexemes.
     definitive: bool,
+
+    log_override: bool,
 }
 
 #[derive(Clone)]
@@ -425,6 +435,7 @@ struct ParserState {
     // history - items are not popped in definitive mode.
     lexer_stack: Vec<LexerState>,
     lexer_stack_top_eos: bool,
+    lexer_stack_flush_position: usize,
     rows: Vec<Row>,
     rows_valid_end: usize,
 
@@ -488,7 +499,12 @@ impl Scratch {
             items: vec![],
             grammar_stack: vec![],
             definitive: true,
+            log_override: false,
         }
+    }
+
+    fn log_enabled(&self) -> bool {
+        self.definitive || self.log_override
     }
 
     // Set current working Earley to empty set
@@ -523,7 +539,7 @@ impl Scratch {
     }
 
     fn push_grammar_stack(&mut self, node: GrammarStackNode) {
-        if self.definitive {
+        if self.log_enabled() {
             debug!("push_grammar_stack: {:?}", node);
         }
         let ptr = GrammarStackPtr::new(self.grammar_stack.len());
@@ -543,7 +559,7 @@ impl Scratch {
         } else {
             self.items[self.row_end] = item;
         }
-        if self.definitive {
+        if self.log_enabled() {
             debug!(
                 "      addu: {} ({})",
                 self.item_to_string(self.row_end),
@@ -650,6 +666,7 @@ impl ParserState {
             limits,
             backtrack_byte_count: 0,
             lexer_stack_top_eos: false,
+            lexer_stack_flush_position: 0,
             lexer_stack: vec![LexerState {
                 row_idx: 0,
                 lexer_state,
@@ -776,12 +793,6 @@ impl ParserState {
                     }
                 }
             });
-        }
-
-        if set.is_zero() {
-            // nothing allowed
-            // we're going to be stopped outside - we better flush the lexer
-            let _ = self.flush_lexer();
         }
 
         let eos = computer.trie().eos_token();
@@ -920,7 +931,7 @@ impl ParserState {
         self.stats = ParserStats::default();
     }
 
-    fn assert_definitive(&self) {
+    fn assert_definitive_inner(&self) {
         assert!(self.scratch.definitive);
         assert!(self.backtrack_byte_count == 0);
         if self.num_rows() != self.row_infos.len() {
@@ -929,6 +940,14 @@ impl ParserState {
                 self.num_rows(),
                 self.row_infos.len()
             );
+        }
+    }
+
+    fn assert_definitive(&self) {
+        self.assert_definitive_inner();
+
+        if self.lexer_spec().can_rollback() {
+            self.check_lexer_bytes_invariant();
         }
     }
 
@@ -980,7 +999,6 @@ impl ParserState {
             n_bytes,
             self.byte_to_token_idx.len()
         );
-        self.check_lexer_bytes_invariant();
 
         let new_len = self.byte_to_token_idx.len() - n_bytes;
 
@@ -995,7 +1013,6 @@ impl ParserState {
         self.rows_valid_end = self.num_rows();
 
         self.assert_definitive();
-        self.check_lexer_bytes_invariant();
 
         Ok(())
     }
@@ -1003,6 +1020,7 @@ impl ParserState {
     pub fn validate_tokens(&mut self, tokens: &[TokenId]) -> usize {
         self.assert_definitive();
         self.run_speculative("validate_tokens", |state| {
+            state.scratch.log_override = true;
             let mut applied_idx = state.byte_to_token_idx.len();
             let tok_env = state.tok_env.clone();
             let trie = tok_env.tok_trie();
@@ -1081,6 +1099,12 @@ impl ParserState {
                     .push(self.token_idx.try_into().unwrap());
             }
         }
+        debug_def!(
+            self,
+            "add_numeric_token: idx={:?} bytes={:?}",
+            idx,
+            tok_bytes
+        );
         let ok = self.advance_parser(PreLexeme::just_idx(MatchingLexemesIdx::Single(idx)));
         ensure!(
             ok,
@@ -1140,8 +1164,19 @@ impl ParserState {
                 let row_idx = self.num_rows() - 1;
                 self.row_infos[row_idx].apply_token_idx(self.token_idx);
 
+                self.lexer_stack_flush_position = 0;
                 let idx = self.flush_and_check_numeric(tok_id).unwrap();
                 self.add_numeric_token(idx, tok_bytes)?;
+
+                // if flush_lexer() added a stack entry
+                if self.lexer_stack_flush_position > 0 {
+                    // we make sure it's not on the top
+                    assert!(self.lexer_stack_flush_position + 1 < self.lexer_stack.len());
+                    // and remove it
+                    self.lexer_stack.remove(self.lexer_stack_flush_position);
+                }
+
+                self.assert_definitive();
 
                 return Ok(0);
             }
@@ -1297,6 +1332,8 @@ impl ParserState {
         if false {
             self.print_row(self.num_rows() - 1);
         }
+
+        self.assert_definitive();
 
         Ok(0)
     }
@@ -1458,10 +1495,6 @@ impl ParserState {
         // debug!("trie_started: rows={} lexer={}", self.num_rows(), self.lexer_stack.len());
         self.assert_definitive();
 
-        if self.lexer_spec().can_rollback() {
-            self.check_lexer_bytes_invariant();
-        }
-
         self.trie_lexer_stack = self.lexer_stack.len();
         self.trie_grammar_stack = self.scratch.grammar_stack.len();
         self.scratch.definitive = false;
@@ -1497,6 +1530,8 @@ impl ParserState {
         self.scratch.definitive = true;
         self.assert_definitive();
         self.rows_valid_end = self.num_rows();
+        self.scratch.log_override = false; // reset
+        self.lexer_stack_flush_position = 0;
     }
 
     fn run_speculative<T>(&mut self, lbl: &str, f: impl FnOnce(&mut Self) -> T) -> T {
@@ -1655,14 +1690,19 @@ impl ParserState {
         }
         let curr = self.lexer_state();
         let lex_result = self.lexer_mut().try_lexeme_end(curr.lexer_state);
+        let prev_len = self.lexer_stack.len();
         let r = self.advance_lexer_or_parser(lex_result, curr);
+        if self.lexer_stack.len() != prev_len {
+            assert!(self.lexer_stack.len() == prev_len + 1);
+            assert!(prev_len > 0);
+            self.lexer_stack_flush_position = prev_len;
+        }
         assert!(self.backtrack_byte_count == 0);
         r
     }
 
     pub fn scan_eos(&mut self) -> bool {
         self.assert_definitive(); // ???
-        self.check_lexer_bytes_invariant();
 
         let lexer_eos = self.lexer_allows_eos();
 
@@ -1691,7 +1731,7 @@ impl ParserState {
             self.lexer_stack_top_eos = true;
         }
 
-        self.check_lexer_bytes_invariant();
+        self.assert_definitive(); // ???
 
         false
     }
@@ -1758,14 +1798,13 @@ impl ParserState {
         self.scratch.new_row(items.end);
         self.scratch.push_lexeme_idx = lexeme.idx;
 
-        if self.scratch.definitive {
-            debug!(
-                "  scan: {} at row={} token={}",
-                self.lexer().dbg_lexeme(lexeme),
-                row_idx,
-                self.token_idx,
-            );
-        }
+        debug_def!(
+            self,
+            "  scan: {} at row={} token={}",
+            self.lexer().dbg_lexeme(lexeme),
+            row_idx,
+            self.token_idx,
+        );
 
         // This loop performs the scan inference rule
         // (slide 21 of Kallmeyer 2018).  It is an
@@ -1886,9 +1925,7 @@ impl ParserState {
             let item_idx = agenda_ptr;
             let item = self.scratch.items[agenda_ptr];
             agenda_ptr += 1;
-            if self.scratch.definitive {
-                debug!("    agenda: {}", self.item_to_string(item_idx));
-            }
+            debug_def!(self, "    agenda: {}", self.item_to_string(item_idx));
 
             let rule = item.rhs_ptr();
             let after_dot = self.grammar.sym_idx_dot(rule);
@@ -1984,13 +2021,12 @@ impl ParserState {
                     .start_state(&self.scratch.push_allowed_lexemes)
             };
 
-            if self.scratch.definitive {
-                debug!(
-                    "  push row: {} {:?}",
-                    self.allowed_lexemes_dbg(lex_start),
-                    grammar_id
-                );
-            }
+            debug_def!(
+                self,
+                "  push row: {} {:?}",
+                self.allowed_lexemes_dbg(lex_start),
+                grammar_id
+            );
 
             // Add the working row to the parser state
             let idx = self.num_rows();
@@ -2038,9 +2074,7 @@ impl ParserState {
     }
 
     fn process_max_tokens(&mut self, ptr: GrammarStackPtr, lexeme: &Lexeme) {
-        if self.scratch.definitive {
-            debug!("  process_max_tokens");
-        }
+        debug_def!(self, "  process_max_tokens");
         let curr_idx = self.num_rows();
         let top = &self.scratch.grammar_stack[ptr.as_usize()];
         self.scratch.push_grm_top = top.back_ptr;
@@ -2114,12 +2148,13 @@ impl ParserState {
 
         while grm_stack_top.as_usize() > 0 {
             let grm_top = &self.scratch.grammar_stack[grm_stack_top.as_usize()];
-            if self.scratch.definitive {
-                debug!(
-                    "  pop grammar_stack: top={:?}, curr={:?}, #{}",
-                    grm_top.grammar_id, grammar_ids, self.token_idx
-                );
-            }
+            debug_def!(
+                self,
+                "  pop grammar_stack: top={:?}, curr={:?}, #{}",
+                grm_top.grammar_id,
+                grammar_ids,
+                self.token_idx
+            );
             if grammar_ids.contains(&grm_top.grammar_id) {
                 // token_idx is one behind
                 if grm_top.token_horizon <= self.token_idx as u32 {
@@ -2128,12 +2163,12 @@ impl ParserState {
                     // We only pop one grammar off the stack.
                     // If more grammars have the same token horizon, they will get popped
                     // in the next step - we might overrun a bit.
-                    if self.scratch.definitive {
-                        debug!(
-                            "  hit token limit horizon={} token_idx={}",
-                            grm_top.token_horizon, self.token_idx
-                        );
-                    }
+                    debug_def!(
+                        self,
+                        "  hit token limit horizon={} token_idx={}",
+                        grm_top.token_horizon,
+                        self.token_idx
+                    );
                     max_token_ptr = Some(grm_stack_top);
                 }
                 break;
@@ -2248,13 +2283,14 @@ impl ParserState {
                     .saturating_sub(1);
                 self.row_infos[added_row].start_byte_idx -= new_start;
             }
-            debug!(
-                "lex: re-start {:?} (via {:?}); allowed: {}",
-                no_hidden.lexer_state,
-                transition_byte.map(|b| b as char),
-                self.allowed_lexemes_dbg(added_row_start_state)
-            );
         }
+        debug_def!(
+            self,
+            "lex: re-start {:?} (via {:?}); allowed: {}",
+            no_hidden.lexer_state,
+            transition_byte.map(|b| b as char),
+            self.allowed_lexemes_dbg(added_row_start_state)
+        );
 
         no_hidden
     }
@@ -2273,7 +2309,7 @@ impl ParserState {
 
         let hidden_bytes = lexeme.hidden_bytes();
 
-        let trace_here = self.scratch.definitive;
+        let trace_here = self.scratch.log_enabled();
 
         if trace_here {
             trace!(
@@ -2344,7 +2380,7 @@ impl ParserState {
                 });
             }
             if self.scratch.definitive {
-                self.assert_definitive();
+                self.assert_definitive_inner();
             }
         } else {
             if trace_here {
@@ -2357,7 +2393,7 @@ impl ParserState {
                     byte: None,
                     ..no_hidden
                 });
-                self.assert_definitive();
+                self.assert_definitive_inner();
                 self.backtrack_byte_count = hidden_bytes.len();
             } else {
                 // prevent any further matches in this branch
@@ -2463,9 +2499,7 @@ impl ParserState {
                         .lexer_mut()
                         .check_for_single_byte_lexeme(no_hidden.lexer_state, b);
                     if let Some(second_lexeme) = single {
-                        if self.scratch.definitive {
-                            debug!("single byte lexeme: {:?}", second_lexeme);
-                        }
+                        debug_def!(self, "single byte lexeme: {:?}", second_lexeme);
                         no_hidden.byte = None;
                         self.lexer_stack.push(no_hidden);
 
@@ -2484,16 +2518,15 @@ impl ParserState {
                         }
                     }
                 }
+                debug_def!(self, "  push normal: {no_hidden:?}");
                 self.lexer_stack.push(no_hidden);
             }
             if self.scratch.definitive {
-                self.assert_definitive();
+                self.assert_definitive_inner();
             }
             true
         } else {
-            if self.scratch.definitive {
-                debug!("  scan failed");
-            }
+            debug_def!(self, "  scan failed");
             false
         }
     }
@@ -2826,5 +2859,11 @@ impl Parser {
         let shared = self.shared.lock().unwrap();
         copy.shared = Arc::new(Mutex::new(shared.clone()));
         copy
+    }
+
+    pub fn test_trigger_lexer_error(&mut self) -> Result<()> {
+        self.with_shared(|_state| {
+            panic!("synthetic error");
+        })
     }
 }

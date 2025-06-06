@@ -330,6 +330,7 @@ pub struct LlgConstraint {
     last_commit_result: CommitResult,
 }
 
+#[derive(Clone)]
 pub struct LlgStopController {
     stop_controller: StopController,
     last_result: String,
@@ -921,6 +922,16 @@ pub extern "C" fn llg_stop_commit_token(
     *is_stopped_p = stop_ctrl.stop_controller.is_stopped();
     stop_ctrl.last_result = format!("{r}\0");
     stop_ctrl.last_result.as_ptr() as *const c_char
+}
+
+/// Clone the stop-sequence controller.
+/// The cloned controller shares (under mutex) regex caches if any, so that
+/// cloning is cheap.
+#[no_mangle]
+pub extern "C" fn llg_clone_stop_controller(
+    stop_ctrl: &LlgStopController,
+) -> *mut LlgStopController {
+    Box::into_raw(Box::new(stop_ctrl.clone()))
 }
 
 /// Free the stop-sequence controller

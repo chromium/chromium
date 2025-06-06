@@ -434,6 +434,13 @@ const char *llg_stop_commit_token(struct LlgStopController *stop_ctrl,
                                   bool *is_stopped_p);
 
 /**
+ * Clone the stop-sequence controller.
+ * The cloned controller shares (under mutex) regex caches if any, so that
+ * cloning is cheap.
+ */
+struct LlgStopController *llg_clone_stop_controller(const struct LlgStopController *stop_ctrl);
+
+/**
  * Free the stop-sequence controller
  */
 void llg_free_stop_controller(struct LlgStopController *stop_ctrl);

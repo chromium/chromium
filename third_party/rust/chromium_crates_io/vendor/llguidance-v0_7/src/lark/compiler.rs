@@ -111,6 +111,10 @@ impl Compiler {
                 let id = self.do_token_expansions(expansions)?;
                 Ok(self.builder.regex.optional(id))
             }
+            Atom::Not(inner) => {
+                let id = self.do_token_atom(*inner)?;
+                Ok(self.builder.regex.not(id))
+            }
             Atom::Value(value) => match value {
                 Value::LiteralRange(a, b) => {
                     ensure!(
@@ -218,12 +222,18 @@ impl Compiler {
             .into_iter()
             .map(|alias| {
                 let args = alias
-                    .expansion
-                    .0
+                    .conjuncts
                     .into_iter()
-                    .map(|e| self.do_token_expr(e))
+                    .map(|exp| {
+                        let args = exp
+                            .0
+                            .into_iter()
+                            .map(|e| self.do_token_expr(e))
+                            .collect::<Result<Vec<_>>>()?;
+                        Ok(self.builder.regex.concat(args))
+                    })
                     .collect::<Result<Vec<_>>>()?;
-                Ok(self.builder.regex.concat(args))
+                Ok(self.builder.regex.and(args))
             })
             .collect::<Result<Vec<_>>>()
             .map_err(|e| expansions.0.augment(e))?;
@@ -264,6 +274,11 @@ impl Compiler {
             Atom::Maybe(expansions) => {
                 let id = self.do_expansions(expansions)?;
                 Ok(self.builder.optional(id))
+            }
+            Atom::Not(_) => {
+                // treat as token
+                let rx = self.do_token_atom(expr)?;
+                Ok(self.lift_regex(rx)?)
             }
             Atom::Value(value) => {
                 match &value {
@@ -363,9 +378,15 @@ impl Compiler {
         let options = expansions
             .1
             .into_iter()
-            .map(|alias| {
+            .map(|mut alias| {
+                ensure!(
+                    alias.conjuncts.len() == 1,
+                    "& is only supported for tokens, not rules; try renaming the rule to UPPERCASE"
+                );
                 let args = alias
-                    .expansion
+                    .conjuncts
+                    .pop()
+                    .unwrap()
                     .0
                     .into_iter()
                     .map(|e| self.do_expr(&loc, e))
@@ -478,8 +499,7 @@ impl Compiler {
                         return self.gen_grammar(g, rule.temperature, props);
                     }
                     Some(Atom::Value(Value::Json(_) | Value::NestedLark(_))) => {
-                        if let Atom::Value(x) = rule.expansions.1[0].expansion.0.pop().unwrap().atom
-                        {
+                        if let Some(Atom::Value(x)) = rule.expansions.take_single_atom() {
                             return self.do_nested(&rule.expansions.0, x, rule.temperature, props);
                         } else {
                             unreachable!();
@@ -580,11 +600,11 @@ impl Grammar {
             expansions: Expansions(
                 loc.clone(),
                 vec![Alias {
-                    expansion: Expansion(vec![Expr {
+                    conjuncts: vec![Expansion(vec![Expr {
                         atom: Atom::Value(Value::LiteralRegex(regex.to_string(), "".to_string())),
                         op: None,
                         range: None,
-                    }]),
+                    }])],
                     alias: None,
                 }],
             ),

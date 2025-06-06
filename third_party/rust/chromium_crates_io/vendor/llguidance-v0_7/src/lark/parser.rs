@@ -357,13 +357,20 @@ impl Parser {
 
     /// Parses an alias.
     fn parse_alias(&mut self) -> Result<Alias> {
-        let expansion = self.parse_expansion()?;
+        let mut conjuncts = Vec::with_capacity(1);
+        loop {
+            let expansion = self.parse_expansion()?;
+            conjuncts.push(expansion);
+            if !self.match_token(Token::And) {
+                break;
+            }
+        }
         let alias = if self.match_token(Token::Arrow) {
             Some(self.expect_token_val(Token::Rule)?)
         } else {
             None
         };
-        Ok(Alias { expansion, alias })
+        Ok(Alias { conjuncts, alias })
     }
 
     /// Parses an expansion.
@@ -376,6 +383,7 @@ impl Parser {
                 || self.has_token(Token::RBrace)
                 || self.has_token(Token::RParen)
                 || self.has_token(Token::RBracket)
+                || self.has_token(Token::And)
             {
                 break;
             }
@@ -391,7 +399,8 @@ impl Parser {
         let mut range = None;
         if let Some(op_token) = self.match_token_with_value(Token::Op) {
             op = Some(Op(op_token.clone()));
-        } else if self.match_token(Token::Tilde) {
+        } else if self.has_tokens(&[Token::Tilde, Token::Number]) {
+            self.expect_token(Token::Tilde)?;
             let start_num = self.expect_token_val(Token::Number)?.parse::<i32>()?;
             let end_num = if self.match_token(Token::DotDot) {
                 Some(self.expect_token_val(Token::Number)?.parse::<i32>()?)
@@ -426,16 +435,27 @@ impl Parser {
 
     /// Parses an atom.
     fn parse_atom(&mut self) -> Result<Atom> {
-        if self.match_token(Token::LParen) {
+        let mut negated = false;
+        if self.match_token(Token::Tilde) {
+            negated = true;
+        }
+
+        let res = if self.match_token(Token::LParen) {
             let expansions = self.parse_expansions()?;
             self.expect_token(Token::RParen)?;
-            Ok(Atom::Group(expansions))
+            Atom::Group(expansions)
         } else if self.match_token(Token::LBracket) {
             let expansions = self.parse_expansions()?;
             self.expect_token(Token::RBracket)?;
-            Ok(Atom::Maybe(expansions))
+            Atom::Maybe(expansions)
         } else {
-            Ok(Atom::Value(self.parse_value()?))
+            Atom::Value(self.parse_value()?)
+        };
+
+        if negated {
+            Ok(Atom::Not(Box::new(res)))
+        } else {
+            Ok(res)
         }
     }
 

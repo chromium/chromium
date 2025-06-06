@@ -86,6 +86,10 @@ impl Matcher {
         self.consume_tokens(&[token])
     }
 
+    pub fn test_trigger_lexer_error(&mut self) -> Result<()> {
+        self.with_inner(|inner| inner.parser.parser.test_trigger_lexer_error())
+    }
+
     pub fn rollback(&mut self, num_tokens: usize) -> Result<()> {
         self.with_inner(|inner| inner.parser.rollback(num_tokens))
     }

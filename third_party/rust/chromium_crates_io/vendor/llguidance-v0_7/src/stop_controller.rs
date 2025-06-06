@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use anyhow::Result;
 use derivre::{RegexAst, RegexBuilder, StateID};
 use toktrie::{TokEnv, TokTrie, TokenId};
@@ -10,12 +12,14 @@ use crate::{
     },
 };
 
+#[derive(Clone)]
 struct StopRegex {
-    dfa: RegexVec,
+    dfa: Arc<Mutex<RegexVec>>,
     state: StateID,
     initial_state: StateID,
 }
 
+#[derive(Clone)]
 pub struct StopController {
     tok_env: TokEnv,
     is_stopped: bool,
@@ -73,7 +77,7 @@ impl StopController {
             )?;
             let initial_state = dfa.initial_state(&all_regex);
             res.regex = Some(StopRegex {
-                dfa,
+                dfa: Arc::new(Mutex::new(dfa)),
                 state: initial_state,
                 initial_state,
             });
@@ -104,23 +108,24 @@ impl StopController {
                 buf.extend_from_slice(format!("<[{}]>", tok_id).as_bytes());
             } else if let Some(rx) = self.regex.as_mut() {
                 let mut state = rx.state;
+                let mut dfa = rx.dfa.lock().unwrap();
                 for &b in bytes {
                     buf.push(b);
-                    let state2 = rx.dfa.transition(state, b);
+                    let state2 = dfa.transition(state, b);
                     // println!("state: {:?} -{:?}-> {:?}", state, b as char, state2);
                     state = state2;
                     assert!(!state.is_dead());
                     if state.has_lowest_match() {
                         self.is_stopped = true;
                         rx.state = state;
-                        let stop_len = rx.dfa.lookahead_len_for_state(state).unwrap_or(0);
+                        let stop_len = dfa.lookahead_len_for_state(state).unwrap_or(0);
                         buf.truncate(buf.len().saturating_sub(stop_len));
                         return buf;
                     }
                 }
 
                 rx.state = state;
-                let chop = rx.dfa.possible_lookahead_len(state);
+                let chop = dfa.possible_lookahead_len(state);
                 let to_return = buf.len().saturating_sub(chop);
                 // println!("chop: {:?} {}", String::from_utf8_lossy(&buf), chop);
                 let valid_len = valid_utf8_len(&buf[..to_return]);

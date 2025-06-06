@@ -79,29 +79,41 @@ pub struct RuleParams(pub Vec<String>);
 #[derive(Debug, Clone)]
 pub struct TokenParams(pub Vec<String>);
 
-/// Represents a list of expansions.
+/// Represents an alternative (OR) of productions in a grammar.
 #[derive(Debug)]
 pub struct Expansions(pub Location, pub Vec<Alias>);
 
 impl Expansions {
     pub fn single_atom(&self) -> Option<&Atom> {
-        if self.1.len() == 1 && self.1[0].expansion.0.len() == 1 {
-            Some(&self.1[0].expansion.0[0].atom)
+        if self.1.len() == 1
+            && self.1[0].conjuncts.len() == 1
+            && self.1[0].conjuncts[0].0.len() == 1
+        {
+            Some(&self.1[0].conjuncts[0].0[0].atom)
         } else {
             None
+        }
+    }
+
+    pub fn take_single_atom(&mut self) -> Option<Atom> {
+        if self.single_atom().is_none() {
+            None
+        } else {
+            Some(self.1[0].conjuncts.pop().unwrap().0.pop().unwrap().atom)
         }
     }
 }
 
 /// Represents an alias in the grammar.
+/// Each alias consists of possibly multiple conjuncts (AND).
 #[derive(Debug)]
 pub struct Alias {
-    pub expansion: Expansion,
+    pub conjuncts: Vec<Expansion>,
     #[allow(dead_code)]
     pub alias: Option<String>,
 }
 
-/// Represents an expansion consisting of expressions.
+/// Represents a concatenation of expressions in the grammar.
 #[derive(Debug)]
 pub struct Expansion(pub Vec<Expr>);
 
@@ -119,6 +131,7 @@ pub enum Atom {
     Group(Expansions),
     Maybe(Expansions),
     Value(Value),
+    Not(Box<Atom>),
 }
 
 /// Represents different values in the grammar.

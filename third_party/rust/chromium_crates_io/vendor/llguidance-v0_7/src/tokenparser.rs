@@ -18,6 +18,7 @@ pub struct TokenParser {
     pub logger: Logger,
     pub limits: ParserLimits,
     pub bias_computer: Arc<dyn BiasComputer>,
+    pub dbg_grammar: String,
     last_step_stats: ParserStats,
     max_step_stats: ParserStats,
     eos_token: TokenId,
@@ -106,6 +107,7 @@ impl TokenParser {
             stop_reason: StopReason::NotStopped,
             error_message: None,
             parser,
+            dbg_grammar: String::new(),
             eos_token,
             llm_tokens: Vec::new(),
             llm_bytes: Vec::new(),
@@ -274,12 +276,19 @@ impl TokenParser {
     }
 
     pub fn augment_err(&self, e: impl Display) -> String {
-        format!("{e}\n<state>\n{}\n</state>", self.dump_state())
+        format!(
+            "{e}\n<state>\n{}\n</state><grammar>\n{}\n</grammar>",
+            self.dump_state(),
+            self.dbg_grammar
+        )
     }
 
     pub fn dump_state(&self) -> String {
+        // make sure not take self.parser.shared lock
+        // for example, self.parser.lexer_stats() takes it
+        // if we take it after panic, it will be poisoned
         format!(
-            "Tokens: {}\n{} tokens, {} bytes; grm_prefix: {:?}\nFlags:{}{}\nLexer: {}\nParser: {}\nStop: {}\nError: {}",
+            "Tokens: {}\n{} tokens, {} bytes; grm_prefix: {:?}\nFlags:{}{}\nParser: {}\nStop: {}\nError: {}",
             self.tok_trie().tokens_dbg(&self.llm_tokens),
             self.llm_tokens.len(),
             self.llm_bytes.len(),
@@ -294,7 +303,6 @@ impl TokenParser {
             } else {
                 ""
             },
-            self.parser.lexer_stats(),
             self.parser.stats(),
             self.stop_reason,
             self.error_message.as_deref().unwrap_or("None"),

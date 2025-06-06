@@ -132,6 +132,9 @@ impl RegexBuilder {
     }
 
     pub fn and(&mut self, nodes: Vec<RegexId>) -> RegexId {
+        if nodes.len() == 1 {
+            return nodes[0];
+        }
         self.add_ast(RegexAst::And(map_ids(&nodes))).unwrap()
     }
 

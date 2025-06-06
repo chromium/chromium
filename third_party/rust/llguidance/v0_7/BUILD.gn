@@ -67,7 +67,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
-  cargo_pkg_version = "0.7.21"
+  cargo_pkg_version = "0.7.29"
 
   allow_unsafe = true
 

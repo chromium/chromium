@@ -49,6 +49,7 @@ pub enum Token {
     Number,
     Newline,
     VBar,
+    And,          // &
     SpecialToken, // <something>
     GrammarRef,   // @grammar_id or @7
     // special
@@ -144,6 +145,7 @@ impl Token {
         (Token::RBracket, "]"),
         (Token::Tilde, "~"),
         (Token::VBar, "|"),
+        (Token::And, "&"),
         (Token::Equals, "="),
     ];
 
