@@ -1081,9 +1081,7 @@ class LayerTreeHostPresentationDuringAnimation
     EXPECT_GT(received_token_, request_token_);
     EXPECT_GE(received_token_, 5u);
     EXPECT_TRUE(base::StatisticsRecorder::FindHistogram(
-        "CompositorLatency.TotalLatency"));
-    EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
-        "CompositorLatency.Universal.TotalLatency"));
+        "CompositorLatency2.TotalLatency"));
   }
 
  private:

@@ -325,8 +325,7 @@ class CC_EXPORT CompositorFrameReporter {
   static const char* GetStageName(
       StageType stage_type,
       std::optional<VizBreakdown> viz_breakdown = std::nullopt,
-      std::optional<BlinkBreakdown> blink_breakdown = std::nullopt,
-      bool impl_only = false);
+      std::optional<BlinkBreakdown> blink_breakdown = std::nullopt);
 
   // Name for the viz breakdowns which are shown in traces as substages under
   // PipelineReporter -> SubmitCompositorFrameToPresentationCompositorFrame or

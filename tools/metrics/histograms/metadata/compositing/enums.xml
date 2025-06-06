@@ -156,13 +156,6 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="SCRGB_LINEAR_80_NITS"/>
 </enum>
 
-<enum name="FrameReportType">
-  <int value="0" label="Presented Frame"/>
-  <int value="1" label="Missed Deadline Frame"/>
-  <int value="2" label="Dropped Frame"/>
-  <int value="3" label="Compositor Only Frame"/>
-</enum>
-
 <enum name="LCDTextDisallowedReason">
   <int value="0" label="None"/>
   <int value="1" label="Setting"/>

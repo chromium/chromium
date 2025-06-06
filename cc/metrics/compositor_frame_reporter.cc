@@ -49,8 +49,6 @@ using BlinkBreakdown = CompositorFrameReporter::BlinkBreakdown;
 using VizBreakdown = CompositorFrameReporter::VizBreakdown;
 using FrameFinalState = FrameInfo::FrameFinalState;
 
-constexpr int kFrameReportTypeCount =
-    static_cast<int>(FrameReportType::kMaxValue) + 1;
 constexpr int kStageTypeCount = static_cast<int>(StageType::kStageTypeCount);
 constexpr int kAllBreakdownCount =
     static_cast<int>(VizBreakdown::kBreakdownCount) +
@@ -71,25 +69,12 @@ constexpr int kFrameSequenceTrackerTypeCount =
 // also means too much memory usage.
 constexpr size_t kMaxOwnedPartialUpdateDependents = 300u;
 
-// Names for CompositorFrameReporter::FrameReportType, which should be
-// updated in case of changes to the enum.
-constexpr auto kReportTypeNames = std::to_array<const char*>({
-    "",
-    "MissedDeadlineFrame.",
-    "DroppedFrame.",
-    "CompositorOnlyFrame.",
-});
-
-static_assert(std::size(kReportTypeNames) == kFrameReportTypeCount,
-              "Compositor latency report types has changed.");
-
 // This value should be recalculated in case of changes to the number of values
 // in CompositorFrameReporter::DroppedFrameReportType or in
 // CompositorFrameReporter::StageType.
 constexpr int kStagesWithBreakdownCount = kStageTypeCount + kAllBreakdownCount;
 constexpr int kMaxCompositorLatencyHistogramIndex =
-    kFrameReportTypeCount *
-    (kFrameSequenceTrackerTypeCount + kStagesWithBreakdownCount);
+    kFrameSequenceTrackerTypeCount * kStagesWithBreakdownCount;
 
 constexpr base::TimeDelta kCompositorLatencyHistogramMin =
     base::Microseconds(1);
@@ -140,7 +125,6 @@ constexpr double kWeightOfCurStageInPercent = 25;
 constexpr double kEpsilon = 0.001;
 
 std::string GetCompositorLatencyHistogramName(
-    FrameReportType report_type,
     FrameSequenceTrackerType frame_sequence_tracker_type,
     StageType stage_type,
     std::optional<VizBreakdown> viz_breakdown,
@@ -150,12 +134,10 @@ std::string GetCompositorLatencyHistogramName(
       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
           frame_sequence_tracker_type);
   DCHECK(tracker_type_name);
-  bool impl_only_frame = report_type == FrameReportType::kCompositorOnlyFrame;
-  return base::StrCat(
-      {"CompositorLatency.", kReportTypeNames[static_cast<int>(report_type)],
-       tracker_type_name, *tracker_type_name ? "." : "",
-       CompositorFrameReporter::GetStageName(
-           stage_type, viz_breakdown, blink_breakdown, impl_only_frame)});
+  return base::StrCat({"CompositorLatency2.", tracker_type_name,
+                       *tracker_type_name ? "." : "",
+                       CompositorFrameReporter::GetStageName(
+                           stage_type, viz_breakdown, blink_breakdown)});
 }
 
 // Helper function to record UMA histogram for an EventLatency metric. There
@@ -634,8 +616,7 @@ CompositorFrameReporter::CompositorFrameReporter(
 const char* CompositorFrameReporter::GetStageName(
     StageType stage_type,
     std::optional<VizBreakdown> viz_breakdown,
-    std::optional<BlinkBreakdown> blink_breakdown,
-    bool impl_only) {
+    std::optional<BlinkBreakdown> blink_breakdown) {
   DCHECK(!viz_breakdown ||
          stage_type ==
              StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
@@ -643,12 +624,10 @@ const char* CompositorFrameReporter::GetStageName(
          stage_type == StageType::kSendBeginMainFrameToCommit);
   switch (stage_type) {
     case StageType::kBeginImplFrameToSendBeginMainFrame:
-      return impl_only ? "BeginImplFrameToFinishImpl"
-                       : "BeginImplFrameToSendBeginMainFrame";
+      return "BeginImplFrameToSendBeginMainFrame";
     case StageType::kSendBeginMainFrameToCommit:
       if (!blink_breakdown) {
-        return impl_only ? "SendBeginMainFrameToBeginMainAbort"
-                         : "SendBeginMainFrameToCommit";
+        return "SendBeginMainFrameToCommit";
       }
       switch (*blink_breakdown) {
         case BlinkBreakdown::kHandleInputEvents:
@@ -683,8 +662,7 @@ const char* CompositorFrameReporter::GetStageName(
     case StageType::kActivation:
       return "Activation";
     case StageType::kEndActivateToSubmitCompositorFrame:
-      return impl_only ? "ImplFrameDoneToSubmitCompositorFrame"
-                       : "EndActivateToSubmitCompositorFrame";
+      return "EndActivateToSubmitCompositorFrame";
     case StageType::kSubmitCompositorFrameToPresentationCompositorFrame:
       if (!viz_breakdown)
         return "SubmitCompositorFrameToPresentationCompositorFrame";
@@ -1032,100 +1010,16 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
     return;
 
   for (const StageData& stage : stage_history_) {
-    ReportStageHistogramWithBreakdown(stage);
-
-    if (stage.stage_type == StageType::kTotalLatency) {
-      for (size_t type = 0; type < active_trackers_.size(); ++type) {
-        if (active_trackers_.test(type)) {
-          // Report stage breakdowns.
-          ReportStageHistogramWithBreakdown(
-              stage, static_cast<FrameSequenceTrackerType>(type));
-        }
-      }
+    // Top-level breakdowns are only reported for presented frames.
+    if (TestReportType(FrameReportType::kNonDroppedFrame)) {
+      ReportStageHistogramWithBreakdown(stage);
     }
-  }
-
-  for (size_t type = 0; type < report_types_.size(); ++type) {
-    if (!report_types_.test(type))
-      continue;
-    FrameReportType report_type = static_cast<FrameReportType>(type);
-    UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type", report_type);
-    bool any_active_interaction = false;
-    for (size_t fst_type = 0; fst_type < active_trackers_.size(); ++fst_type) {
-      const auto tracker_type = static_cast<FrameSequenceTrackerType>(fst_type);
-      if (!active_trackers_.test(fst_type) ||
-          tracker_type == FrameSequenceTrackerType::kCustom ||
-          tracker_type == FrameSequenceTrackerType::kMaxType) {
-        continue;
+    for (size_t type = 0; type < active_trackers_.size(); ++type) {
+      if (active_trackers_.test(type)) {
+        // Report stage breakdowns for each `FrameSequenceTrackerType`
+        ReportStageHistogramWithBreakdown(
+            stage, static_cast<FrameSequenceTrackerType>(type));
       }
-      any_active_interaction = true;
-      switch (tracker_type) {
-        case FrameSequenceTrackerType::kCompositorAnimation:
-          UMA_HISTOGRAM_ENUMERATION(
-              "CompositorLatency.Type.CompositorAnimation", report_type);
-          break;
-        case FrameSequenceTrackerType::kMainThreadAnimation:
-          UMA_HISTOGRAM_ENUMERATION(
-              "CompositorLatency.Type.MainThreadAnimation", report_type);
-          break;
-        case FrameSequenceTrackerType::kPinchZoom:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.PinchZoom",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kRAF:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.RAF", report_type);
-          break;
-        case FrameSequenceTrackerType::kTouchScroll:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.TouchScroll",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kVideo:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.Video",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kWheelScroll:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.WheelScroll",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kScrollbarScroll:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.ScrollbarScroll",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kCanvasAnimation:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.CanvasAnimation",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kJSAnimation:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.JSAnimation",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kSETCompositorAnimation:
-          UMA_HISTOGRAM_ENUMERATION(
-              "CompositorLatency.Type.SETCompositorAnimation", report_type);
-          break;
-        case FrameSequenceTrackerType::kSETMainThreadAnimation:
-          UMA_HISTOGRAM_ENUMERATION(
-              "CompositorLatency.Type.SETMainThreadAnimation", report_type);
-          break;
-        case FrameSequenceTrackerType::kCompositorNativeAnimation:
-          UMA_HISTOGRAM_ENUMERATION(
-              "CompositorLatency.Type.NativePropertyAnimation", report_type);
-          break;
-        case FrameSequenceTrackerType::kCompositorRasterAnimation:
-          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.RasterAnimation",
-                                    report_type);
-          break;
-        case FrameSequenceTrackerType::kCustom:
-        case FrameSequenceTrackerType::kMaxType:
-          NOTREACHED();
-      }
-    }
-    if (any_active_interaction) {
-      UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.AnyInteraction",
-                                report_type);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.NoInteraction",
-                                report_type);
     }
   }
 
@@ -1228,50 +1122,37 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
              StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
   DCHECK(!blink_breakdown ||
          stage_type == StageType::kSendBeginMainFrameToCommit);
-  for (size_t type = 0; type < report_types_.size(); ++type) {
-    if (!report_types_.test(type))
-      continue;
-    FrameReportType report_type = static_cast<FrameReportType>(type);
-    const int report_type_index = static_cast<int>(report_type);
-    const int frame_sequence_tracker_type_index =
-        static_cast<int>(frame_sequence_tracker_type);
-    const int stage_type_index =
-        blink_breakdown
-            ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
-        : viz_breakdown
-            ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
-            : static_cast<int>(stage_type);
-    const int histogram_index =
-        (stage_type_index == static_cast<int>(StageType::kTotalLatency)
-             ? kStagesWithBreakdownCount + frame_sequence_tracker_type_index
-             : stage_type_index) *
-            kFrameReportTypeCount +
-        report_type_index;
+  const int frame_sequence_tracker_type_index =
+      static_cast<int>(frame_sequence_tracker_type);
+  const int stage_type_index =
+      blink_breakdown
+          ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
+      : viz_breakdown
+          ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
+          : static_cast<int>(stage_type);
+  const int histogram_index =
+      stage_type_index * kFrameSequenceTrackerTypeCount +
+      frame_sequence_tracker_type_index;
 
-    CHECK_LT(stage_type_index, kStagesWithBreakdownCount);
-    CHECK_GE(stage_type_index, 0);
-    CHECK_LT(report_type_index, kFrameReportTypeCount);
-    CHECK_GE(report_type_index, 0);
-    CHECK_LT(histogram_index, kMaxCompositorLatencyHistogramIndex);
-    CHECK_GE(histogram_index, 0);
+  CHECK_LT(stage_type_index, kStagesWithBreakdownCount);
+  CHECK_GE(stage_type_index, 0);
+  CHECK_LT(histogram_index, kMaxCompositorLatencyHistogramIndex);
+  CHECK_GE(histogram_index, 0);
 
-    // Note: There's a 1:1 mapping between `histogram_index` and the name
-    // returned by `GetCompositorLatencyHistogramName()` which allows the use of
-    // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        GetCompositorLatencyHistogramName(
-            report_type, frame_sequence_tracker_type, stage_type, viz_breakdown,
-            blink_breakdown),
-        histogram_index, kMaxCompositorLatencyHistogramIndex,
-        AddTimeMicrosecondsGranularity(time_delta),
-        base::Histogram::FactoryMicrosecondsTimeGet(
-            GetCompositorLatencyHistogramName(
-                report_type, frame_sequence_tracker_type, stage_type,
-                viz_breakdown, blink_breakdown),
-            kCompositorLatencyHistogramMin, kCompositorLatencyHistogramMax,
-            kCompositorLatencyHistogramBucketCount,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-  }
+  auto histogram_name = GetCompositorLatencyHistogramName(
+      frame_sequence_tracker_type, stage_type, viz_breakdown, blink_breakdown);
+
+  // Note: There's a 1:1 mapping between `histogram_index` and the name
+  // returned by `GetCompositorLatencyHistogramName()` which allows the use
+  // of `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
+  STATIC_HISTOGRAM_POINTER_GROUP(
+      histogram_name, histogram_index, kMaxCompositorLatencyHistogramIndex,
+      AddTimeMicrosecondsGranularity(time_delta),
+      base::Histogram::FactoryMicrosecondsTimeGet(
+          histogram_name, kCompositorLatencyHistogramMin,
+          kCompositorLatencyHistogramMax,
+          kCompositorLatencyHistogramBucketCount,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 void CompositorFrameReporter::ReportEventLatencyMetrics() const {

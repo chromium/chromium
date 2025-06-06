@@ -881,64 +881,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
-    units="microseconds" expires_after="2025-10-12">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Tracks the duration of various stages in the pipeline as a single frame goes
-    through the various stages in the compositor in the cases that there is no
-    damage from main thread.
-
-    This metric uses base::Histogram::FactoryMicrosecondsTimeGet so only users
-    with high resolution clocks will report this metric.
-
-    Note: This metric was expired from 2023-03-01 to 2023-05-05.
-  </summary>
-  <token key="InteractionType">
-    <variant name=""/>
-    <variant name=".CanvasAnimation"/>
-    <variant name=".CompositorAnimation"/>
-    <variant name=".JSAnimation"/>
-    <variant name=".MainThreadAnimation"/>
-    <variant name=".NativePropertyAnimation"/>
-    <variant name=".PinchZoom"/>
-    <variant name=".RAF"/>
-    <variant name=".RasterAnimation"/>
-    <variant name=".ScrollbarScroll"/>
-    <variant name=".SETCompositorAnimation"/>
-    <variant name=".SETMainThreadAnimation"/>
-    <variant name=".TouchScroll"/>
-    <variant name=".WheelScroll"/>
-  </token>
-  <token key="StageType">
-    <variant name="BeginImplFrameToFinishImpl"/>
-    <variant name="ImplFrameDoneToSubmitCompositorFrame"/>
-    <variant name="SendBeginMainFrameToBeginMainAbort"/>
-    <variant name="SubmitCompositorFrameToPresentationCompositorFrame"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.BufferAvailableToBufferReady"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.BufferReadyToLatch"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.LatchToSwapEnd"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToBufferAvailable"/>
-    <variant
-        name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"/>
-    <variant name="TotalLatency"/>
-  </token>
-</histogram>
-
 <histogram name="CompositorLatency.IpcThread.{LatencyType}"
     units="microseconds" expires_after="2025-10-26">
   <owner>jonross@chromium.org</owner>
@@ -972,57 +914,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CompositorLatency.Type{Sequence}" enum="FrameReportType"
-    expires_after="2025-10-26">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Whether frame is dropped or presented meeting or missing the deadline or is
-    a compositor only frame.
-  </summary>
-  <token key="Sequence">
-    <variant name="" summary="All Sequences"/>
-    <variant name=".AnyInteraction" summary="At least one active interaction"/>
-    <variant name=".CanvasAnimation" summary="Main-thread canvas animation"/>
-    <variant name=".CompositorAnimation" summary="Compositor-driven animation"/>
-    <variant name=".JSAnimation" summary="JS-driven animation"/>
-    <variant name=".MainThreadAnimation"
-        summary="Main-thread driven animation"/>
-    <variant name=".NoInteraction" summary="No active interaction"/>
-    <variant name=".PinchZoom" summary="Pinch-to-zoom interaction"/>
-    <variant name=".RAF" summary="rAF callback driven animation"/>
-    <variant name=".ScrollbarScroll" summary="Scrollbar driven scrolls"/>
-    <variant name=".TouchScroll" summary="Touchscreen driven interaction"/>
-    <variant name=".Video" summary="Video playback"/>
-    <variant name=".WheelScroll" summary="Mousewheel driven interaction"/>
-  </token>
-</histogram>
-
-<histogram name="CompositorLatency{ReportType}{InteractionType}.{StageType}"
+<histogram name="CompositorLatency2{InteractionType}.{StageType}"
     units="microseconds" expires_after="2025-10-05">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
-    through the various stages in the compositor {ReportType}.
+    through the various stages in the compositor.
 
     This metric uses base::Histogram::FactoryMicrosecondsTimeGet so only users
     with high resolution clocks will report this metric.
   </summary>
-  <token key="ReportType">
-    <variant name=""
-        summary="reported for frames that went through all the compositor
-                 stages in chromium, and was presented to the user"/>
-    <variant name=".DroppedFrame"
-        summary="reported for frames that the user did not see: this includes
-                 frames that are dropped in various stages inside chromium,
-                 or even frames that went through all stages in chromium, but
-                 ultimately was not presented to the user"/>
-    <variant name=".MissedDeadlineFrame"
-        summary="reported for frames that went through all the compositor
-                 stages in chromium, and was presented to the user, but were
-                 delayed and missed their deadline"/>
-  </token>
   <token key="InteractionType">
     <variant name=""/>
     <variant name=".CanvasAnimation"/>
@@ -1046,6 +948,7 @@ chromium-metrics-reviews@google.com.
     <variant name="EndActivateToSubmitCompositorFrame"/>
     <variant name="EndCommitToActivation"/>
     <variant name="SendBeginMainFrameToCommit"/>
+    <variant name="SendBeginMainFrameToCommit.AccessibiltyUpdate"/>
     <variant name="SendBeginMainFrameToCommit.Animate"/>
     <variant name="SendBeginMainFrameToCommit.BeginMainSentToStarted"/>
     <variant name="SendBeginMainFrameToCommit.CompositeCommit"/>

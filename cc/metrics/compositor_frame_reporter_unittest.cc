@@ -288,16 +288,16 @@ TEST_F(CompositorFrameReporterTest, MainFrameAbortedReportingTest) {
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.BeginImplFrameToSendBeginMainFrame", 1);
+      "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 1);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.SendBeginMainFrameToCommit", 1);
-  histogram_tester.ExpectTotalCount("CompositorLatency.Commit", 0);
-  histogram_tester.ExpectTotalCount("CompositorLatency.EndCommitToActivation",
+      "CompositorLatency2.SendBeginMainFrameToCommit", 1);
+  histogram_tester.ExpectTotalCount("CompositorLatency2.Commit", 0);
+  histogram_tester.ExpectTotalCount("CompositorLatency2.EndCommitToActivation",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.EndActivateToSubmitCompositorFrame", 1);
+      "CompositorLatency2.EndActivateToSubmitCompositorFrame", 1);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.SubmitCompositorFrameToPresentationCompositorFrame",
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame",
       1);
 }
 
@@ -320,8 +320,8 @@ TEST_F(CompositorFrameReporterTest, ReplacedByNewReporterReportingTest) {
   EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
-  histogram_tester.ExpectTotalCount("CompositorLatency.Commit", 0);
-  histogram_tester.ExpectTotalCount("CompositorLatency.EndCommitToActivation",
+  histogram_tester.ExpectTotalCount("CompositorLatency2.Commit", 0);
+  histogram_tester.ExpectTotalCount("CompositorLatency2.EndCommitToActivation",
                                     0);
 }
 
@@ -344,58 +344,21 @@ TEST_F(CompositorFrameReporterTest, SubmittedFrameReportingTest) {
   EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
-  histogram_tester.ExpectTotalCount("CompositorLatency.Activation", 1);
+  histogram_tester.ExpectTotalCount("CompositorLatency2.Activation", 1);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.EndActivateToSubmitCompositorFrame", 1);
-  histogram_tester.ExpectTotalCount("CompositorLatency.TotalLatency", 1);
-  histogram_tester.ExpectTotalCount("CompositorLatency.DroppedFrame.Activation",
-                                    0);
+      "CompositorLatency2.EndActivateToSubmitCompositorFrame", 1);
+  histogram_tester.ExpectTotalCount("CompositorLatency2.TotalLatency", 1);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.DroppedFrame.EndActivateToSubmitCompositorFrame", 0);
+      "CompositorLatency2.DroppedFrame.Activation", 0);
   histogram_tester.ExpectTotalCount(
-      "CompositorLatency.DroppedFrame.TotalLatency", 0);
+      "CompositorLatency2.DroppedFrame.EndActivateToSubmitCompositorFrame", 0);
+  histogram_tester.ExpectTotalCount(
+      "CompositorLatency2.DroppedFrame.TotalLatency", 0);
 
-  histogram_tester.ExpectBucketCount("CompositorLatency.Activation", 3, 1);
+  histogram_tester.ExpectBucketCount("CompositorLatency2.Activation", 3, 1);
   histogram_tester.ExpectBucketCount(
-      "CompositorLatency.EndActivateToSubmitCompositorFrame", 2, 1);
-  histogram_tester.ExpectBucketCount("CompositorLatency.TotalLatency", 5, 1);
-}
-
-TEST_F(CompositorFrameReporterTest, SubmittedDroppedFrameReportingTest) {
-  base::HistogramTester histogram_tester;
-
-  pipeline_reporter_->StartStage(
-      CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
-  EXPECT_EQ(0u, pipeline_reporter_->stage_history_size_for_testing());
-
-  AdvanceNowByUs(3);
-  pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
-                                 Now());
-  EXPECT_EQ(1u, pipeline_reporter_->stage_history_size_for_testing());
-
-  AdvanceNowByUs(2);
-  pipeline_reporter_->TerminateFrame(
-      CompositorFrameReporter::FrameTerminationStatus::kDidNotPresentFrame,
-      Now());
-  EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
-
-  pipeline_reporter_ = nullptr;
-  histogram_tester.ExpectTotalCount(
-      "CompositorLatency.DroppedFrame.SendBeginMainFrameToCommit", 1);
-  histogram_tester.ExpectTotalCount("CompositorLatency.DroppedFrame.Commit", 1);
-  histogram_tester.ExpectTotalCount(
-      "CompositorLatency.DroppedFrame.TotalLatency", 1);
-  histogram_tester.ExpectTotalCount(
-      "CompositorLatency.SendBeginMainFrameToCommit", 0);
-  histogram_tester.ExpectTotalCount("CompositorLatency.Commit", 0);
-  histogram_tester.ExpectTotalCount("CompositorLatency.TotalLatency", 0);
-
-  histogram_tester.ExpectBucketCount(
-      "CompositorLatency.DroppedFrame.SendBeginMainFrameToCommit", 3, 1);
-  histogram_tester.ExpectBucketCount("CompositorLatency.DroppedFrame.Commit", 2,
-                                     1);
-  histogram_tester.ExpectBucketCount(
-      "CompositorLatency.DroppedFrame.TotalLatency", 5, 1);
+      "CompositorLatency2.EndActivateToSubmitCompositorFrame", 2, 1);
+  histogram_tester.ExpectBucketCount("CompositorLatency2.TotalLatency", 5, 1);
 }
 
 // Tests that when a frame is presented to the user, total event latency metrics
