@@ -2881,6 +2881,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_ktx_java",
+      ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_livedata_core_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       ":androidx_savedstate_savedstate_java",
