@@ -2218,7 +2218,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
 
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
-      RecreateCanvasResourceProviderFor2DContext(
+      RecreateCanvasResourceProviderForCanvas2D(
           CHECK_DEREF(hibernation_handler_.get()));
   if (!new_provider) {
     return;
@@ -2275,7 +2275,7 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderForCanvas2D() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  resource_provider = RecreateCanvasResourceProviderFor2DContext(
+  resource_provider = RecreateCanvasResourceProviderForCanvas2D(
       CHECK_DEREF(hibernation_handler_.get()));
 
   UpdateMemoryUsage();
@@ -2288,8 +2288,10 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderForCanvas2D() {
 }
 
 CanvasResourceProvider*
-HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
+HTMLCanvasElement::RecreateCanvasResourceProviderForCanvas2D(
     CanvasHibernationHandler& hibernation_handler) {
+  CHECK(IsRenderingContext2D());
+
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack.
   CanvasResourceProvider* resource_provider =
