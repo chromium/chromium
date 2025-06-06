@@ -919,6 +919,21 @@
             ]
         }
     ],
+    "AndroidTabStripLayoutOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabStripLayoutOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
         {
             "platforms": [
@@ -23891,21 +23906,6 @@
                     },
                     "enable_features": [
                         "IPH_TabSearch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabStripLayoutOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripLayoutOptimization"
                     ]
                 }
             ]
