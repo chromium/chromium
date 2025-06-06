@@ -89,8 +89,19 @@ DocumentSuggestionsService::DocumentSuggestionsService(
 DocumentSuggestionsService::~DocumentSuggestionsService() = default;
 
 bool DocumentSuggestionsService::HasPrimaryAccount() {
+  if (has_primary_account_for_testing_) {
+    return true;
+  }
+
   return identity_manager_ &&
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void DocumentSuggestionsService::SetAccountStateForTesting(bool valid) {
+  has_primary_account_for_testing_ = valid;
+  account_is_subject_to_enterprise_policies_for_testing_ = valid;
+  account_is_subject_to_enterprise_policies_ =
+      IsAccountSubjectToEnterprisePolicies();
 }
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
@@ -171,6 +182,11 @@ DocumentSuggestionsService::IsAccountSubjectToEnterprisePolicies() {
   if (!HasPrimaryAccount()) {
     return signin::Tribool::kFalse;
   }
+
+  if (account_is_subject_to_enterprise_policies_for_testing_) {
+    return signin::Tribool::kTrue;
+  }
+
   const auto& account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   const auto& account_info =

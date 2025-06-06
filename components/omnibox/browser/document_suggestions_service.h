@@ -51,6 +51,10 @@ class DocumentSuggestionsService : public KeyedService,
   // Returns whether the user's primary account is available.
   bool HasPrimaryAccount();
 
+  // Test-only method to set the account state to be valid for enabling
+  // documents suggestions or not.
+  void SetAccountStateForTesting(bool valid);
+
   // Creates and starts a document suggestion request for |query|.
   // May obtain an OAuth2 token for the signed-in user.
   void CreateDocumentSuggestionsRequest(const std::u16string& query,
@@ -108,6 +112,11 @@ class DocumentSuggestionsService : public KeyedService,
 
   base::ScopedObservation<signin::IdentityManager, DocumentSuggestionsService>
       identity_manager_observation_{this};
+
+  // Override for HasPrimaryAccount(). For testing only.
+  bool has_primary_account_for_testing_ = false;
+  // Override for IsAccountSubjectToEnterprisePolicies(). For testing only.
+  bool account_is_subject_to_enterprise_policies_for_testing_ = false;
 
   // Whether the primary account is a Dasher one. Obtained from the user account
   // capability. Updated when primary account signin state or capability change.

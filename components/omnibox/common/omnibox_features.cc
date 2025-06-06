@@ -164,13 +164,13 @@ BASE_FEATURE(kDocumentProvider,
 // cookie jar.
 BASE_FEATURE(kDocumentProviderPrimaryAccountRequirement,
              "OmniboxDocumentProviderPrimaryAccountRequirement",
-             DISABLED);
+             ENABLED);
 
 // If enabled, the primary account must be subject to enterprise policies in
 // order to receive Drive suggestions.
 BASE_FEATURE(kDocumentProviderEnterpriseEligibility,
              "OmniboxDocumentProviderEnterpriseEligibility",
-             DISABLED);
+             ENABLED);
 
 // If enabled, the enterprise eligibility requirement for Drive suggestions
 // is considered met even when the account capability is unknown. Has no effect
@@ -184,7 +184,7 @@ BASE_FEATURE(kDocumentProviderEnterpriseEligibilityWhenUnknown,
 // requirements.
 BASE_FEATURE(kDocumentProviderNoSyncRequirement,
              "OmniboxDocumentProviderNoSyncRequirement",
-             DISABLED);
+             ENABLED);
 
 // Feature to determine if the HQP should double as a domain provider by
 // suggesting up to the provider limit for each of the user's highly visited

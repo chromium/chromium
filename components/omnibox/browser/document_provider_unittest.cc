@@ -136,6 +136,7 @@ DocumentProviderTest::DocumentProviderTest() = default;
 
 void DocumentProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
+  client_->GetDocumentSuggestionsService()->SetAccountStateForTesting(true);
 
   TemplateURLService* turl_model = client_->GetTemplateURLService();
   turl_model->Load();
@@ -176,7 +177,6 @@ void DocumentProviderTest::InitClient() {
   EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*client_.get(), IsAuthenticated()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
 }
 
@@ -200,9 +200,11 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   }
 
   // Search suggestions must be enabled.
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
+      .WillRepeatedly(Return(false));
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
+      .WillRepeatedly(Return(true));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
 
   // Should not be an incognito window.
@@ -210,25 +212,6 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-
-  // Sync should be enabled.
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
-  EXPECT_FALSE(provider_->IsDocumentProviderAllowed(ac_input));
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
-  EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-
-  // Unless the "no sync requirement" Feature is enabled, in which case the Sync
-  // state shouldn't matter.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        omnibox::kDocumentProviderNoSyncRequirement);
-
-    EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
-    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-    EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
-    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(ac_input));
-  }
 
   // Backoff state should be respected.
   provider_->backoff_for_this_instance_only_ = true;
