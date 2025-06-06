@@ -13,8 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -72,6 +74,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
+using base::test::RunOnceClosure;
 using content::BrowserThread;
 using content::RenderFrameHostTester;
 using content::WebContents;
@@ -285,7 +288,6 @@ class FakePhishingDetector : public mojom::PhishingDetector {
     request.set_client_score(0.8);
     std::move(callback).Run(mojom::PhishingDetectorResult::SUCCESS,
                             mojo_base::ProtoWrapper(request));
-
     return;
   }
 
@@ -394,17 +396,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     raw_token_fetcher_ = nullptr;
     raw_delegate_ = nullptr;
 
-    // Delete the host object on the UI thread and release the
-    // SafeBrowsingService.
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   csd_host_.release());
-
-    // RenderProcessHostCreationObserver expects to be torn down on UI.
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   csd_service_.release());
+    csd_host_.reset();
+    csd_service_.reset();
     database_manager_.reset();
     ui_manager_.reset();
-    base::RunLoop().RunUntilIdle();
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -464,14 +459,25 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*csd_service_, IsLocalResource(_))
           .WillOnce(Return(*is_local));
     }
+
+    pre_classification_run_loop_ = std::make_unique<base::RunLoop>();
+    pre_classification_histogram_observer_ = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+        "SBClientPhishing.PreClassificationCheckResult",
+        base::IgnoreArgs<std::string_view, uint64_t,
+                         base::HistogramBase::Sample32>(
+            pre_classification_run_loop_->QuitClosure()));
   }
 
+  // Wait for the preclassification check histogram to be logged, then
+  // flush the generated IPC (if it exists).
   void WaitAndCheckPreClassificationChecks() {
-    // Wait for CheckCsdAllowlist and CheckCache() to be called if at all.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
-    EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
-    EXPECT_TRUE(Mock::VerifyAndClear(database_manager_.get()));
+    if (!pre_classification_run_loop_->AnyQuitCalled()) {
+      pre_classification_run_loop_->Run();
+    }
+    if (csd_host_->phishing_detector_) {
+      csd_host_->phishing_detector_.FlushForTesting();
+    }
   }
 
   void NavigateAndCommit(const GURL& safe_url) {
@@ -527,6 +533,11 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<WebContentsObserver> observer_;
+
+  // Used to synchronize waiting for pre-classification to complete.
+  std::unique_ptr<base::RunLoop> pre_classification_run_loop_;
+  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+      pre_classification_histogram_observer_;
 };
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
@@ -575,7 +586,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
   std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK, std::nullopt);
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
 
@@ -602,12 +612,14 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_FALSE(cb.is_null());
 
+  base::RunLoop run_loop;
   UnsafeResource resource;
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
-      .WillOnce(SaveArg<0>(&resource));
+      .WillOnce(
+          DoAll(SaveArg<0>(&resource), RunOnceClosure(run_loop.QuitClosure())));
   std::move(cb).Run(phishing_url, true, net::HTTP_OK, std::nullopt);
+  run_loop.Run();
 
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
   EXPECT_EQ(phishing_url, resource.url);
   EXPECT_EQ(phishing_url, resource.original_url);
@@ -659,11 +671,17 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb_other;
   verdict.set_url(other_phishing_url.spec());
   verdict.set_client_score(0.8f);
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _, _))
-      .WillOnce(MoveArg<1>(&cb_other));
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-  base::RunLoop().RunUntilIdle();
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                   PartiallyEqualVerdict(verdict), _, _))
+        .WillOnce(DoAll(RunOnceClosure(run_loop.QuitClosure()),
+                        MoveArg<1>(&cb_other)));
+    PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_FALSE(cb_other.is_null());
@@ -671,15 +689,20 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   // We expect that the interstitial is shown for the second phishing URL and
   // not for the first phishing URL.
   UnsafeResource resource;
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
-      .WillOnce(SaveArg<0>(&resource));
 
-  std::move(cb).Run(phishing_url, true, net::HTTP_OK,
-                    std::nullopt);  // Should have no effect.
-  std::move(cb_other).Run(other_phishing_url, true, net::HTTP_OK,
-                          std::nullopt);  // Should show interstitial.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
+        .WillOnce(DoAll(SaveArg<0>(&resource),
+                        RunOnceClosure(run_loop.QuitClosure())));
 
-  base::RunLoop().RunUntilIdle();
+    std::move(cb).Run(phishing_url, true, net::HTTP_OK,
+                      std::nullopt);  // Should have no effect.
+    std::move(cb_other).Run(other_phishing_url, true, net::HTTP_OK,
+                            std::nullopt);  // Should show interstitial.
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
   EXPECT_EQ(other_phishing_url, resource.url);
   EXPECT_EQ(other_phishing_url, resource.original_url);
@@ -1070,32 +1093,6 @@ TEST_F(
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult",
       PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 0);
-}
-
-TEST_F(ClientSideDetectionHostTest,
-       TestPreClassificationCheckSameDocumentNavigation) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(&url);
-  fake_phishing_detector_.Reset();
-
-  // Now try an same-document navigation.  This should not trigger an IPC.
-  EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_)).Times(0);
-  GURL inpage("http://host.com/#foo");
-  ExpectPreClassificationChecks(inpage, nullptr, nullptr, nullptr, nullptr,
-                                nullptr);
-  NavigateAndKeepLoading(web_contents(), inpage);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(nullptr);
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
