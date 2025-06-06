@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -87,6 +88,7 @@ class SyncServiceImpl : public SyncService,
     ~InitParams();
 
     std::unique_ptr<SyncClient> sync_client;
+    CreateHttpPostProviderFactory create_http_post_provider_factory;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
     raw_ptr<network::NetworkConnectionTracker> network_connection_tracker =
         nullptr;
@@ -252,8 +254,10 @@ class SyncServiceImpl : public SyncService,
   // TODO(crbug.com/41451146): Inject this in the ctor instead. As it is, it's
   // possible that the real callback was already used before the test had a
   // chance to call this.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void OverrideNetworkForTest(const CreateHttpPostProviderFactory&
                                   create_http_post_provider_factory_cb);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   DataTypeSet GetRegisteredDataTypesForTest() const;
   bool HasAnyModelErrorForTest(DataTypeSet types) const;
@@ -393,6 +397,12 @@ class SyncServiceImpl : public SyncService,
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 
+  // Callback used to create network connections.
+  const CreateHttpPostProviderFactory create_http_post_provider_factory_;
+
+  std::optional<CreateHttpPostProviderFactory>
+      create_http_post_provider_factory_override_for_test_;
+
   // The class that handles getting, setting, and persisting sync preferences.
   SyncPrefs sync_prefs_;
 
@@ -481,8 +491,6 @@ class SyncServiceImpl : public SyncService,
   // This is the last `SyncProtocolError` we received from the server that had
   // an action set on it.
   SyncProtocolError last_actionable_error_;
-
-  CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 
   std::unique_ptr<SyncStoppedReporter> sync_stopped_reporter_;
 

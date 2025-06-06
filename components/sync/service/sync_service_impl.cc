@@ -45,7 +45,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
-#include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -175,14 +174,6 @@ EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
   return factory_switches;
 }
 
-std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
-    const std::string& user_agent,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
-  return std::make_unique<HttpBridgeFactory>(
-      user_agent, std::move(pending_url_loader_factory));
-}
-
 base::TimeDelta GetDeferredInitDelay() {
   if (base::FeatureList::IsEnabled(kDeferredSyncStartupCustomDelay)) {
     return base::Seconds(kDeferredSyncStartupCustomDelayInSeconds.Get());
@@ -225,6 +216,8 @@ SyncServiceImpl::InitParams::~InitParams() = default;
 
 SyncServiceImpl::SyncServiceImpl(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
+      create_http_post_provider_factory_(
+          std::move(init_params.create_http_post_provider_factory)),
       sync_prefs_(sync_client_->GetPrefService()),
       identity_manager_(sync_prefs_.IsLocalSyncEnabled()
                             ? nullptr
@@ -238,9 +231,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       crypto_(this, sync_client_->GetTrustedVaultClient()),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
       network_connection_tracker_(
-          std::move(init_params.network_connection_tracker)),
-      create_http_post_provider_factory_cb_(
-          base::BindRepeating(&CreateHttpBridgeFactory)) {
+          std::move(init_params.network_connection_tracker)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_client_);
   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);
@@ -609,8 +600,9 @@ void SyncServiceImpl::TryStartImpl() {
   params.extensions_activity = sync_client_->GetExtensionsActivity();
   params.service_url = sync_service_url_;
   params.http_factory_getter = base::BindOnce(
-      create_http_post_provider_factory_cb_, MakeUserAgentForSync(channel_),
-      url_loader_factory_->Clone());
+      create_http_post_provider_factory_override_for_test_.value_or(
+          create_http_post_provider_factory_),
+      MakeUserAgentForSync(channel_), url_loader_factory_->Clone());
   params.authenticated_account_info = authenticated_account_info;
 
   params.sync_manager_factory =
@@ -2155,6 +2147,7 @@ SyncTokenStatus SyncServiceImpl::GetSyncTokenStatusForDebugging() const {
   return auth_manager_->GetSyncTokenStatus();
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void SyncServiceImpl::OverrideNetworkForTest(
     const CreateHttpPostProviderFactory& create_http_post_provider_factory_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2191,18 +2184,18 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // one would be backed off, which breaks tests. So reset the backoff.
   auth_manager_->ResetRequestAccessTokenBackoffForTest();  // IN-TEST
 
-  create_http_post_provider_factory_cb_ = create_http_post_provider_factory_cb;
-
-  // For allowing tests to easily reset to the default (real) callback.
-  if (!create_http_post_provider_factory_cb_) {
-    create_http_post_provider_factory_cb_ =
-        base::BindRepeating(&CreateHttpBridgeFactory);
-  }
+  // The null callback allows tests to easily reset to the default (real)
+  // callback.
+  create_http_post_provider_factory_override_for_test_ =
+      create_http_post_provider_factory_cb
+          ? std::make_optional(create_http_post_provider_factory_cb)
+          : std::nullopt;
 
   if (restart) {
     TryStart();
   }
 }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 SyncEncryptionHandler::Observer*
 SyncServiceImpl::GetEncryptionObserverForTest() {

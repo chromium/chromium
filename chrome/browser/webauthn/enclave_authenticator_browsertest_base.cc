@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_server_network_resources.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -145,6 +144,7 @@ void EnclaveAuthenticatorTestBase::SetUp() {
 }
 
 void EnclaveAuthenticatorTestBase::SetUpInProcessBrowserTestFixture() {
+  SyncTest::SetUpInProcessBrowserTestFixture();
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(
@@ -163,13 +163,6 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
           browser()->profile());
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          browser()->profile());
-  sync_service->OverrideNetworkForTest(
-      fake_server::CreateFakeServerHttpPostProviderFactory(
-          GetFakeServer()->AsWeakPtr()));
-
   sync_harness_ = SyncServiceImplHarness::Create(
       browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   if (sync_feature_enabled_) {
@@ -177,6 +170,9 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   } else {
     ASSERT_TRUE(sync_harness_->SignInPrimaryAccount());
   }
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser()->profile());
   ASSERT_EQ(kSyncEmail, sync_service->GetAccountInfo().email);
   sync_service->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,

@@ -1476,13 +1476,10 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
           ->SetRefreshTokenForPrimaryAccount();
     }
 
-    std::unique_ptr<KeyedService> sync_service =
-        SyncServiceFactory::GetDefaultFactory().Run(context);
-    static_cast<syncer::SyncServiceImpl*>(sync_service.get())
-        ->OverrideNetworkForTest(
-            fake_server::CreateFakeServerHttpPostProviderFactory(
-                fake_server_.AsWeakPtr()));
-    return sync_service;
+    return SyncServiceFactory::GetDefaultFactory(
+               fake_server::CreateFakeServerHttpPostProviderFactory(
+                   fake_server_.AsWeakPtr()))
+        .Run(context);
   }
 
   void SignInAndEnableSync() {

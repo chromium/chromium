@@ -12,6 +12,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -130,10 +131,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   ~SyncTest() override;
 
   void SetUp() override;
-
   void TearDown() override;
-
   void PostRunTestOnMainThread() override;
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
 
   // Sets up command line flags required for sync tests.
   void SetUpCommandLine(base::CommandLine* cl) override;
@@ -283,6 +283,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
+  // Invoked during initialization when threads have been initialized.
+  void PostCreateThreads();
+
   // Handles Profile creation for given index. Profile's path and type is
   // determined at runtime based on server type.
   bool CreateProfile(int index);
@@ -419,6 +422,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
+
+  base::WeakPtrFactory<SyncTest> weak_ptr_factory_{this};
 };
 
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode();

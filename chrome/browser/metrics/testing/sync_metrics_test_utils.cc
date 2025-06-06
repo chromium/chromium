@@ -4,22 +4,16 @@
 
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
-#include "components/sync/test/fake_server_network_resources.h"
 
 namespace metrics {
 namespace test {
 
+// TODO(https://crbug.com/41451146): Remove this function as it is trivial.
 std::unique_ptr<SyncServiceImplHarness> InitializeProfileForSync(
     Profile* profile,
     base::WeakPtr<fake_server::FakeServer> fake_server) {
   DCHECK(profile);
-
-  SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile)
-      ->OverrideNetworkForTest(
-          fake_server::CreateFakeServerHttpPostProviderFactory(
-              fake_server->AsWeakPtr()));
 
   return SyncServiceImplHarness::Create(
       profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);

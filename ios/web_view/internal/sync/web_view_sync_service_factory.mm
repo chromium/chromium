@@ -21,6 +21,7 @@
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
+#import "components/sync/engine/net/http_bridge.h"
 #import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
@@ -172,6 +173,14 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
       WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
           browser_state));
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
+  init_params.create_http_post_provider_factory = base::BindRepeating(
+      [](const std::string& user_agent,
+         std::unique_ptr<network::PendingSharedURLLoaderFactory>
+             pending_url_loader_factory)
+          -> std::unique_ptr<syncer::HttpPostProviderFactory> {
+        return std::make_unique<syncer::HttpBridgeFactory>(
+            user_agent, std::move(pending_url_loader_factory));
+      });
   init_params.network_connection_tracker =
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
   init_params.channel = version_info::Channel::STABLE;

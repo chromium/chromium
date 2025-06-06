@@ -241,5 +241,6 @@ source_set("factories") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles",
+    "//components/sync/engine",
   ]
 }

@@ -93,7 +93,6 @@
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/common/web_app_id.h"
@@ -910,6 +909,7 @@ class ProfileMenuClickTest : public SyncTest,
   ~ProfileMenuClickTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
@@ -932,9 +932,6 @@ class ProfileMenuClickTest : public SyncTest,
       return sync_harness_.get();
     }
 
-    sync_service()->OverrideNetworkForTest(
-        fake_server::CreateFakeServerHttpPostProviderFactory(
-            GetFakeServer()->AsWeakPtr()));
     sync_harness_ = SyncServiceImplHarness::Create(
         GetProfile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
     return sync_harness_.get();

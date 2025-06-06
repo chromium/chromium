@@ -12192,6 +12192,7 @@ source_set("sync_integration_test_support") {
   ]
   deps = [
     "//base",
+    "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",

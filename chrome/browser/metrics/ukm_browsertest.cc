@@ -266,6 +266,7 @@ class UkmBrowserTest : public UkmBrowserTestBase {
 
 #if BUILDFLAG(IS_ANDROID)
   void PreRunTestOnMainThread() override {
+    UkmBrowserTestBase::PreRunTestOnMainThread();
     // At some point during set-up, Android's TabModelList is populated with a
     // TabModel. However, it is desirable to begin the tests with an empty
     // TabModelList to avoid complicated logic in CreatePlatformBrowser.
@@ -336,7 +337,7 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-    InProcessBrowserTest::CreatedBrowserMainParts(parts);
+    UkmBrowserTestBase::CreatedBrowserMainParts(parts);
     // IsMetricsReportingEnabled() in non-official builds always returns false.
     // Enable the official build checks so that this test can work in both
     // official and non-official builds.

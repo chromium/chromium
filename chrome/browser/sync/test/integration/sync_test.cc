@@ -31,6 +31,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -74,6 +76,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
+#include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -131,6 +134,22 @@ void SetURLLoaderFactoryForTest(
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+// A small ChromeBrowserMainExtraParts that invokes a callback when threads are
+// ready.
+class ChromeBrowserMainExtraPartsThreadNotifier final
+    : public ChromeBrowserMainExtraParts {
+ public:
+  explicit ChromeBrowserMainExtraPartsThreadNotifier(
+      base::OnceClosure threads_ready_closure)
+      : threads_ready_closure_(std::move(threads_ready_closure)) {}
+
+  // ChromeBrowserMainExtraParts:
+  void PostCreateThreads() final { std::move(threads_ready_closure_).Run(); }
+
+ private:
+  base::OnceClosure threads_ready_closure_;
+};
 
 }  // namespace
 
@@ -234,6 +253,14 @@ void SyncTest::PostRunTestOnMainThread() {
 #endif
 }
 
+void SyncTest::CreatedBrowserMainParts(content::BrowserMainParts* parts) {
+  static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsThreadNotifier>(
+          base::BindOnce(&SyncTest::PostCreateThreads,
+                         weak_ptr_factory_.GetWeakPtr())));
+  PlatformBrowserTest::CreatedBrowserMainParts(parts);
+}
+
 void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
   // Disable non-essential access of external network resources.
   if (!cl->HasSwitch(switches::kDisableBackgroundNetworking)) {
@@ -274,6 +301,45 @@ void SyncTest::BeforeSetupClient(int index,
 base::FilePath SyncTest::GetProfileBaseName(int index) {
   return base::FilePath::FromASCII("SyncIntegrationTestClient" +
                                    base::NumberToString(index));
+}
+
+void SyncTest::PostCreateThreads() {
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      // Allows google.com as well as country-specific TLDs.
+      host_resolver()->AllowDirectLookup("*.google.com");
+      host_resolver()->AllowDirectLookup("accounts.google.*");
+      host_resolver()->AllowDirectLookup("*.googleusercontent.com");
+      // Allow connection to googleapis.com for oauth token requests in E2E
+      // tests.
+      host_resolver()->AllowDirectLookup("*.googleapis.com");
+
+      // On Linux, we use Chromium's NSS implementation which uses the following
+      // hosts for certificate verification. Without these overrides, running
+      // the integration tests on Linux causes error as we make external DNS
+      // lookups.
+      host_resolver()->AllowDirectLookup("*.thawte.com");
+      host_resolver()->AllowDirectLookup("*.geotrust.com");
+      host_resolver()->AllowDirectLookup("*.gstatic.com");
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      // Start up a sync test server and setup mock gaia responses.
+      // Note: This must be done prior to the call to SetUpOnMainThread()
+      // because PlatformBrowserTest creates a default profile early, shortly
+      // after the threadpool is initialized.
+      base::FilePath user_data_dir;
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+      fake_server_ = std::make_unique<fake_server::FakeServer>(
+          user_data_dir.AppendASCII("FakeServer"));
+      fake_server_sync_invalidation_sender_ =
+          std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+              fake_server_.get());
+
+      SetupMockGaiaResponses();
+      break;
+    }
+  }
 }
 
 bool SyncTest::CreateProfile(int index) {
@@ -524,18 +590,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   DCHECK_EQ(static_cast<size_t>(index), browsers_.size() - 1);
 #endif
 
-  // Make sure the SyncServiceImpl has been created before creating the
-  // SyncServiceImplHarness - some tests expect the SyncServiceImpl to
-  // already exist.
-  SyncServiceImpl* sync_service_impl =
-      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-          GetProfile(index));
-
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_service_impl->OverrideNetworkForTest(
-        fake_server::CreateFakeServerHttpPostProviderFactory(
-            GetFakeServer()->AsWeakPtr()));
-
     // Make sure that an instance of GCMProfileService has been created. This is
     // required for some tests which only call SetupClients().
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
@@ -800,14 +855,20 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
 void SyncTest::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
   if (server_type_ == EXTERNAL_LIVE_SERVER) {
-    // DO NOTHING. External live sync servers use GCM to notify profiles of
-    // any invalidations in sync'ed data. No need to provide a testing
-    // factory for ProfileInvalidationProvider and SyncInvalidationsService.
+    // DO NOTHING. External live sync servers use real factories without quirks
+    // or overrides.
     return;
   }
+
+  CHECK(GetFakeServer());
+
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateGCMProfileService,
                                    base::Unretained(this)));
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
+      context, SyncServiceFactory::GetDefaultFactory(
+                   fake_server::CreateFakeServerHttpPostProviderFactory(
+                       GetFakeServer()->AsWeakPtr())));
 }
 
 std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(
@@ -881,42 +942,9 @@ void SyncTest::ResetSyncForPrimaryAccount() {
 }
 
 void SyncTest::SetUpOnMainThread() {
-  switch (server_type_) {
-    case EXTERNAL_LIVE_SERVER: {
-      // Allows google.com as well as country-specific TLDs.
-      host_resolver()->AllowDirectLookup("*.google.com");
-      host_resolver()->AllowDirectLookup("accounts.google.*");
-      host_resolver()->AllowDirectLookup("*.googleusercontent.com");
-      // Allow connection to googleapis.com for oauth token requests in E2E
-      // tests.
-      host_resolver()->AllowDirectLookup("*.googleapis.com");
-
-      // On Linux, we use Chromium's NSS implementation which uses the following
-      // hosts for certificate verification. Without these overrides, running
-      // the integration tests on Linux causes error as we make external DNS
-      // lookups.
-      host_resolver()->AllowDirectLookup("*.thawte.com");
-      host_resolver()->AllowDirectLookup("*.geotrust.com");
-      host_resolver()->AllowDirectLookup("*.gstatic.com");
-      break;
-    }
-    case IN_PROCESS_FAKE_SERVER: {
-      // Start up a sync test server and setup mock gaia responses.
-      // Note: This must be done prior to the call to SetupClients() because we
-      // want the mock gaia responses to be available before GaiaUrls is
-      // initialized.
-      base::FilePath user_data_dir;
-      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-      fake_server_ = std::make_unique<fake_server::FakeServer>(
-          user_data_dir.AppendASCII("FakeServer"));
-      fake_server_sync_invalidation_sender_ =
-          std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
-              fake_server_.get());
-
-      SetupMockGaiaResponses();
-      SetupMockGaiaResponsesForProfile(
-          ProfileManager::GetLastUsedProfileIfLoaded());
-    }
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    SetupMockGaiaResponsesForProfile(
+        ProfileManager::GetLastUsedProfileIfLoaded());
   }
 }
 
