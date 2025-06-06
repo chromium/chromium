@@ -21,7 +21,7 @@ public class TransitAsserts {
      * happened.
      *
      * <p>A different instance of the same subclass {@link Station} does not count; it must be the
-     * {@link Station} instance returned by the last {@link Trip} transition.
+     * {@link Station} instance returned by the last transition that traveled to a Station.
      *
      * @param expectedStation the {@link Station} expected to be the last
      * @param expectedFacilities the {@link Facility}'s expected to be the active

@@ -713,12 +713,12 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ScrollableFacility.java",
       "android/javatests/src/org/chromium/base/test/transit/SimpleConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/Station.java",
+      "android/javatests/src/org/chromium/base/test/transit/StationToStationTrip.java",
       "android/javatests/src/org/chromium/base/test/transit/StatusStore.java",
       "android/javatests/src/org/chromium/base/test/transit/TrafficControl.java",
       "android/javatests/src/org/chromium/base/test/transit/TransitAsserts.java",
       "android/javatests/src/org/chromium/base/test/transit/Transition.java",
       "android/javatests/src/org/chromium/base/test/transit/TravelException.java",
-      "android/javatests/src/org/chromium/base/test/transit/Trip.java",
       "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
@@ -737,9 +737,7 @@ if (is_android) {
       "//third_party/junit",
     ]
 
-    sources = [
-      "android/javatests/src/org/chromium/base/test/transit/TripUnitTest.java",
-    ]
+    sources = [ "android/javatests/src/org/chromium/base/test/transit/ElementFactoryUnitTest.java" ]
   }
 }
 

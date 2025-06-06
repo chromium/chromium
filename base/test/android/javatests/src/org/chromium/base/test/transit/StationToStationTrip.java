@@ -16,7 +16,7 @@ import java.util.List;
  * point.
  */
 @NullMarked
-class Trip extends Transition {
+class StationToStationTrip extends Transition {
     private final List<Station<?>> mOrigins;
     private final List<Station<?>> mDestinations;
 
@@ -34,7 +34,7 @@ class Trip extends Transition {
      * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition. e.g. clicking a View.
      */
-    Trip(
+    StationToStationTrip(
             List<Station<?>> origins,
             List<Station<?>> destinations,
             TransitionOptions options,

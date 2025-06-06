@@ -19,11 +19,11 @@ import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Unit Tests for {@link Trip}. */
+/** Unit Tests for {@link ElementFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class TripUnitTest {
+public class ElementFactoryUnitTest {
 
-    private static final String TAG = "TripUnitTest";
+    private static final String TAG = "TransitUnitTest";
 
     private static class NestedFactoryStation extends Station<Activity> {
         public final CallbackHelper mDeclareElementsCallbackHelper = new CallbackHelper();

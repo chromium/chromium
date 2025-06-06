@@ -124,7 +124,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      * Starts a transition from this origin {@link Station} to another destination {@link Station}.
      * Runs the transition |trigger|, and blocks until the destination {@link Station} is considered
      * ACTIVE (enter Conditions are fulfilled), the origin {@link Station} is considered FINISHED
-     * (exit Conditions are fulfilled), and the {@link Trip}'s transition conditions are fulfilled.
+     * (exit Conditions are fulfilled), and the {@link StationToStationTrip}'s transition conditions
+     * are fulfilled.
      *
      * @param destination the {@link Facility} to arrive at.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
@@ -133,8 +134,9 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      */
     public final <T extends Station<?>> T travelToSync(T destination, @Nullable Trigger trigger) {
         destination.requireToBeInSameTask(this);
-        Trip trip =
-                new Trip(List.of(this), List.of(destination), TransitionOptions.DEFAULT, trigger);
+        StationToStationTrip trip =
+                new StationToStationTrip(
+                        List.of(this), List.of(destination), TransitionOptions.DEFAULT, trigger);
         trip.transitionSync();
         return destination;
     }
@@ -143,7 +145,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     public final <T extends Station<?>> T travelToSync(
             T destination, TransitionOptions options, @Nullable Trigger trigger) {
         destination.requireToBeInSameTask(this);
-        Trip trip = new Trip(List.of(this), List.of(destination), options, trigger);
+        StationToStationTrip trip =
+                new StationToStationTrip(List.of(this), List.of(destination), options, trigger);
         trip.transitionSync();
         return destination;
     }
@@ -326,8 +329,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
      * <p>Useful for opening a new window.
      *
      * <p>Runs the transition |trigger|, and blocks until the destination {@link Station} is
-     * considered ACTIVE (enter Conditions are fulfilled) and the {@link Trip}'s transition
-     * conditions are fulfilled.
+     * considered ACTIVE (enter Conditions are fulfilled) and the {@link StationToStationTrip}'s
+     * transition conditions are fulfilled.
      *
      * @param destination the {@link Facility} to arrive at.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
@@ -342,7 +345,8 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     public static <T extends Station<?>> T spawnSync(
             T destination, TransitionOptions options, @Nullable Trigger trigger) {
         destination.requireToBeInNewTask();
-        Trip trip = new Trip(List.of(), List.of(destination), options, trigger);
+        StationToStationTrip trip =
+                new StationToStationTrip(List.of(), List.of(destination), options, trigger);
         trip.transitionSync();
         return destination;
     }
