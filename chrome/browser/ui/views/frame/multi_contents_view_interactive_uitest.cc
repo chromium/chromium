@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
 
 // Tests switching tabs with split views. This also adds coverage to ensuring
 // that there isn't any unnecessary re-layout during tab switching.
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitViews) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitView) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewBoundsChangedObserver,
                                       kMultiContentsViewBoundsChangedObserver);
   RunTestSequence(
@@ -235,6 +235,70 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActiveContentsViewHasFocus) {
       FocusWebContents(kSecondTab),
       CheckResult([this]() { return tab_strip_model()->count(); }, 3u),
       EnterSplitView(2, 0), CheckTabIsActive(2), CheckActiveContentsHasFocus());
+}
+
+// Split view active tab change while browser window doesn't have focus. This
+// is used to simulate tab switching scenarios using Tab Search
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       TabChangeInSplitViewWithInactiveBrowserWindow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0),
+      NavigateWebContents(kFirstTab, GURL(chrome::kChromeUISettingsURL)),
+      FocusWebContents(kFirstTab),
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
+      FocusWebContents(kNewTab),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      FocusWebContents(kSecondTab),
+      CheckResult([this]() { return tab_strip_model()->count(); }, 3u),
+      EnterSplitView(2, 0), CheckTabIsActive(2),
+      PressButton(kTabSearchButtonElementId),
+      WaitForShow(kTabSearchBubbleElementId),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      WaitForHide(kTabSearchBubbleElementId), CheckTabIsActive(1),
+      CheckActiveContentsHasFocus());
+}
+
+// Switch to the not last used tab inside a split view from a not split tab
+// while the browser is inactive. This is used to simulate tab switching
+// scenarios using Tab Search
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       SwitchToSplitViewWithInactiveBrowserWindow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0),
+      NavigateWebContents(kFirstTab, GURL(chrome::kChromeUISettingsURL)),
+      FocusWebContents(kFirstTab),
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
+      FocusWebContents(kNewTab),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      FocusWebContents(kSecondTab),
+      CheckResult([this]() { return tab_strip_model()->count(); }, 3u),
+      EnterSplitView(2, 0), CheckTabIsActive(2),
+      // Switch from the split view to a regular tab
+      SelectTab(kTabStripElementId, 0, InputType::kMouse), CheckTabIsActive(0),
+      FocusWebContents(kNewTab),
+      // Launch the tab search bubble using the tab search button
+      PressButton(kTabSearchButtonElementId),
+      WaitForShow(kTabSearchBubbleElementId),
+      // Switch from a regular tab directly to an inactive tab, which is on
+      // the left side of a split with the TabSearch bubble dialog opened.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      WaitForHide(kTabSearchBubbleElementId), CheckTabIsActive(1),
+      CheckActiveContentsHasFocus(),
+      // Switch out of the split view back to the regular tab
+      SelectTab(kTabStripElementId, 0, InputType::kMouse), CheckTabIsActive(0),
+      FocusWebContents(kNewTab),
+      // Launch the tab search bubble using the tab search button
+      PressButton(kTabSearchButtonElementId),
+      WaitForShow(kTabSearchBubbleElementId),
+      // Switch from a regular tab directly to an inactive tab, which is on
+      // the right side of a split with the TabSearch bubble dialog opened.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(2); }),
+      WaitForHide(kTabSearchBubbleElementId), CheckTabIsActive(2),
+      CheckActiveContentsHasFocus());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesToMinWidth) {

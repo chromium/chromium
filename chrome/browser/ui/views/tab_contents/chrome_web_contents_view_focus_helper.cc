@@ -80,6 +80,10 @@ views::View* ChromeWebContentsViewFocusHelper::GetStoredFocus() {
   return nullptr;
 }
 
+void ChromeWebContentsViewFocusHelper::SetStoredFocusView(views::View* view) {
+  last_focused_view_tracker_.SetView(view);
+}
+
 gfx::NativeView ChromeWebContentsViewFocusHelper::GetActiveNativeView() {
   return GetWebContents().GetNativeView();
 }

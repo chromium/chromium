@@ -435,22 +435,6 @@ void CheckFocusListForCycles(views::View* const start_view) {
 
 #endif  // DCHECK_IS_ON()
 
-void MaybeResetStoredFocusForWebContents(content::WebContents* web_contents) {
-  // In the case that the last focused view of the WebContents is a
-  // ContentsWebView, but not the ContentsWebView hosting the WebContents
-  // itself, we must reset the stored focus to prevent incorrect split-tab
-  // activation behavior when the split-view is swapped in during a tab switch.
-  ChromeWebContentsViewFocusHelper* focus_helper =
-      ChromeWebContentsViewFocusHelper::FromWebContents(web_contents);
-  if (focus_helper) {
-    ContentsWebView* focused_view =
-        views::AsViewClass<ContentsWebView>(focus_helper->GetStoredFocus());
-    if (focused_view && focused_view->web_contents() != web_contents) {
-      focus_helper->ResetStoredFocus();
-    }
-  }
-}
-
 bool GetGestureCommand(ui::GestureEvent* event, int* command) {
   DCHECK(command);
   *command = 0;
@@ -1667,6 +1651,25 @@ void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
   }
 }
 
+void BrowserView::MaybeUpdateStoredFocusForWebContents(
+    content::WebContents* web_contents) {
+  ChromeWebContentsViewFocusHelper* focus_helper =
+      ChromeWebContentsViewFocusHelper::FromWebContents(web_contents);
+  if (!focus_helper) {
+    return;
+  }
+
+  // In the case that the last focused view of the WebContents is a
+  // ContentsWebView, but not the ContentsWebView hosting the WebContents
+  // itself, we must reset the stored focus to prevent incorrect tab
+  // activation behavior when the split view is swapped in during a tab switch.
+  ContentsWebView* focused_view =
+      views::AsViewClass<ContentsWebView>(focus_helper->GetStoredFocus());
+  if (focused_view && focused_view->web_contents() != web_contents) {
+    focus_helper->SetStoredFocusView(GetContentsView());
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, BrowserWindow implementation:
 
@@ -2196,7 +2199,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
         multi_contents_view_->GetActiveContentsView()->SetWebContents(
             new_contents);
       }
-      MaybeResetStoredFocusForWebContents(new_contents);
     } else {
       active_contents_view->SetWebContents(new_contents);
     }
@@ -2213,10 +2215,17 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     UpdateActiveTabInSplitView();
   }
 
+  MaybeUpdateStoredFocusForWebContents(new_contents);
+
   if (will_restore_focus) {
     // We only restore focus if our window is visible, to avoid invoking blur
     // handlers when we are eventually shown.
     new_contents->RestoreFocus();
+  } else if (!GetWidget()->IsActive()) {
+    // When the window is inactive during tab switch, restore focus for the
+    // active web content on activation.
+    GetFocusManager()->SetStoredFocusView(nullptr);
+    restore_focus_on_activation_ = true;
   }
 
   // Update all the UI bits.

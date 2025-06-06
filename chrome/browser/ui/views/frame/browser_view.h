@@ -516,6 +516,9 @@ class BrowserView : public BrowserWindow,
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
 
+  // Updates stored focus for web contents that is being activated.
+  void MaybeUpdateStoredFocusForWebContents(content::WebContents*);
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;

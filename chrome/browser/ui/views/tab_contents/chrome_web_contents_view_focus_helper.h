@@ -35,6 +35,7 @@ class ChromeWebContentsViewFocusHelper
   bool TakeFocus(bool reverse);
   // Returns the View that will be focused if RestoreFocus() is called.
   views::View* GetStoredFocus();
+  void SetStoredFocusView(views::View* view);
 
  private:
   explicit ChromeWebContentsViewFocusHelper(content::WebContents* web_contents);
