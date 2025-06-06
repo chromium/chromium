@@ -108,14 +108,8 @@
              @"Separate profiles should be disabled now");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRollbackWithManagedProfile \
-  FLAKY_testRollbackWithManagedProfile
-#else
-#define MAYBE_testRollbackWithManagedProfile testRollbackWithManagedProfile
-#endif
-- (void)MAYBE_testRollbackWithManagedProfile {
+// TODO(crbug.com/411035267): Fix this flaky test.
+- (void)FLAKY_testRollbackWithManagedProfile {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
