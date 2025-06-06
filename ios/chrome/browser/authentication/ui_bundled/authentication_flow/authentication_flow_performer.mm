@@ -324,8 +324,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 - (void)checkNoDialog {
   [super checkNoDialog];
-  CHECK(!_managedConfirmationScreenCoordinator, base::NotFatalUntil::M136);
-  CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_managedConfirmationScreenCoordinator);
+  CHECK(!_managedConfirmationAlertCoordinator);
 }
 
 #pragma mark - Private
@@ -338,8 +338,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 // Called when `_managedConfirmationAlertCoordinator` is finished.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
 - (void)managedConfirmationAlertAccepted:(BOOL)accepted {
-  CHECK(_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
-  CHECK(!_managedConfirmationScreenCoordinator, base::NotFatalUntil::M136);
+  CHECK(_managedConfirmationAlertCoordinator);
+  CHECK(!_managedConfirmationScreenCoordinator);
   Browser* browser = _managedConfirmationAlertCoordinator.browser;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
@@ -450,7 +450,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
             (ManagedProfileCreationCoordinator*)coordinator
                                 didAccept:(BOOL)accepted
                      browsingDataSeparate:(BOOL)browsingDataSeparate {
-  CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
+  CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
   Browser* browser = _managedConfirmationScreenCoordinator.browser;
   [_managedConfirmationScreenCoordinator stop];
