@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_READ_WRITE_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_READ_WRITE_PERMISSION_CONTEXT_H_
 
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/contexts/clipboard_permission_context_delegate.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 
 namespace permissions {
 
@@ -14,7 +17,8 @@ namespace permissions {
 class ClipboardReadWritePermissionContext : public PermissionContextBase {
  public:
   explicit ClipboardReadWritePermissionContext(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClipboardPermissionContextDelegate> delegate);
   ~ClipboardReadWritePermissionContext() override;
 
   ClipboardReadWritePermissionContext(
@@ -24,9 +28,21 @@ class ClipboardReadWritePermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
+  void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
+                        BrowserPermissionCallback callback) override;
+
+  // PermissionContextBase:
+  ContentSetting GetPermissionStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
+
+  // PermissionContextBase:
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
+
+  std::unique_ptr<ClipboardPermissionContextDelegate> delegate_;
 };
 
 }  // namespace permissions

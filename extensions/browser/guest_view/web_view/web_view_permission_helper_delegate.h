@@ -77,6 +77,15 @@ class WebViewPermissionHelperDelegate {
       const url::Origin& requesting_origin,
       WebViewPermissionHelper::PermissionResponseCallback callback) {}
 
+  virtual void RequestClipboardReadWritePermission(
+      const GURL& requesting_frame_url,
+      bool user_gesture,
+      base::OnceCallback<void(bool)> callback) {}
+
+  virtual void RequestClipboardSanitizedWritePermission(
+      const GURL& requesting_frame_url,
+      base::OnceCallback<void(bool)> callback) {}
+
   // Called when file system access is requested by the guest content using the
   // asynchronous HTML5 file system API. The request is plumbed through the
   // <webview> permission request API. The request will be:

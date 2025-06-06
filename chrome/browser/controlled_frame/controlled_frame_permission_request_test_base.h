@@ -38,6 +38,11 @@ struct PermissionRequestTestCase {
   std::set<network::mojom::PermissionsPolicyFeature> policy_features;
   // Corresponding ContentSettingsType(s) of the permission.
   std::set<ContentSettingsType> content_settings_type;
+
+  // Wait for js 'document.hasFocus()';
+  // Default is false to not make tests longer
+  // where it is not necessary.
+  bool must_wait_for_document_focus = false;
 };
 
 enum class EmbedderPolicy {
@@ -71,6 +76,11 @@ struct DisabledPermissionTestCase {
   std::set<network::mojom::PermissionsPolicyFeature> policy_features;
   std::string success_result;
   std::string failure_result;
+
+  // Wait for js 'document.hasFocus()';
+  // Default is false to not make tests longer
+  // where it is not necessary.
+  bool must_wait_for_document_focus = false;
 };
 
 struct DisabledPermissionTestParam {

@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,9 +23,11 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,11 +129,55 @@ ContentSetting ContentSettingFromState(ContentSettingsState state) {
   return ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
-void FocusControlledFrame(content::RenderFrameHost* controlled_frame) {
-  // Focus <controlledframe> with a fake click.
-  content::SimulateMouseClick(
-      content::WebContents::FromRenderFrameHost(controlled_frame),
-      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
+void FocusControlledFrame(content::RenderFrameHost* app_frame,
+                          content::RenderFrameHost* controlled_frame,
+                          bool must_wait_document_focus) {
+  // Focus when the frame is loaded.
+  EXPECT_THAT(content::EvalJs(app_frame,
+                              R"(
+      (function() {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame) {
+          throw new Error('FAIL: Could not find a controlledframe element.');
+        }
+        frame.addEventListener('loadstop', () => {
+          frame.focus();
+        });
+        return 'SUCCESS';
+      })();
+    )"),
+              content::EvalJsResult::IsOk());
+
+  WaitForHitTestData(controlled_frame);
+
+  // Make user activation on <controlledframe> with a fake click.
+  content::SimulateMouseClickAt(
+      content::WebContents::FromRenderFrameHost(app_frame),
+      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
+      controlled_frame->GetView()->TransformPointToRootCoordSpace(
+          gfx::Point(20, 20)));
+
+  if (must_wait_document_focus) {
+    // Wait for the focus.
+    // Couldn't get FocusChangedObserver to work, it resulted in
+    // timeouts, probably because webContents already was focused,
+    // and there are internal race conditions.
+    base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE,
+                                                     base::Seconds(5));
+    base::test::RunUntil([&]() -> bool {
+      auto* web_contents = content::WebContents::FromRenderFrameHost(app_frame);
+      return web_contents->GetFocusedFrame() == controlled_frame;
+    });
+
+    // Verify document focused.
+    EXPECT_TRUE(
+        content::EvalJs(controlled_frame, "document.hasFocus()").ExtractBool());
+
+    // Verify that mouse click gave user activation.
+    EXPECT_TRUE(
+        content::EvalJs(controlled_frame, "navigator.userActivation.isActive")
+            .ExtractBool());
+  }
 }
 
 }  // namespace
@@ -228,7 +276,8 @@ void ControlledFramePermissionRequestTestBase::VerifyEnabledPermission(
           /*controlled_frame_src_relative_url=*/"/index.html",
           manifest_builder);
 
-  FocusControlledFrame(controlled_frame);
+  FocusControlledFrame(app_frame, controlled_frame,
+                       test_case.must_wait_for_document_focus);
 
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
@@ -312,7 +361,8 @@ void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
   EXPECT_THAT(content::EvalJs(app_frame, test_case.request_script),
               expected_iwa_result);
 
-  FocusControlledFrame(controlled_frame);
+  FocusControlledFrame(app_frame, controlled_frame,
+                       /*must_wait_document_focus=*/false);
 
   ASSERT_EQ("SUCCESS", content::EvalJs(app_frame,
                                        R"(

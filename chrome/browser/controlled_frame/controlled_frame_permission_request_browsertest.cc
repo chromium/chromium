@@ -239,6 +239,98 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Download) {
   profile()->GetDownloadManager()->RemoveObserver(&download_observer);
 }
 
+// TODO(crbug.com/422421852): These tests require document focus,
+// and waiting for focus is flaky on mac.
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_ClipboardReadWrite DISABLED_ClipboardReadWrite
+#define MAYBE_ClipboardSanitizedWrite DISABLED_ClipboardSanitizedWrite
+#else
+#define MAYBE_ClipboardReadWrite ClipboardReadWrite
+#define MAYBE_ClipboardSanitizedWrite ClipboardSanitizedWrite
+#endif
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
+                       MAYBE_ClipboardReadWrite) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        return await new Promise((resolve, reject) => {
+          if (!document.hasFocus()) {
+            resolve('Document must have focus');
+            return;
+          }
+          if (!navigator.userActivation.isActive) {
+            resolve('User activation must be true');
+            return;
+          }
+          navigator.clipboard.readText().then(
+            (text) => {
+              resolve('SUCCESS');
+            },
+            (error) => {
+              const errorMessage = 'FAIL: ' + error.code + error.message;
+              resolve(errorMessage);
+            }
+          );
+        });
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+  test_case.permission_name = "clipboardReadWrite";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kClipboardRead});
+  test_case.content_settings_type.insert(
+      {ContentSettingsType::CLIPBOARD_READ_WRITE});
+  test_case.must_wait_for_document_focus = true;
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
+}
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
+                       MAYBE_ClipboardSanitizedWrite) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      try {
+        return await new Promise((resolve, reject) => {
+          if (!document.hasFocus()) {
+            resolve('Document must have focus');
+            return;
+          }
+          if (!navigator.userActivation.isActive) {
+            resolve('User activation must be true');
+            return;
+          }
+          navigator.clipboard.writeText('test text').then(
+            () => {
+              resolve('SUCCESS');
+            },
+            (error) => {
+              const errorMessage = 'FAIL: ' + error.code + error.message;
+              resolve(errorMessage);
+            }
+          );
+        });
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+
+  // Don't add ContentSettingType because
+  // the embedder has hardcoded ContentSetting::CONTENT_SETTING_ALLOW.
+  test_case.permission_name = "clipboardSanitizedWrite";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kClipboardWrite});
+  test_case.must_wait_for_document_focus = true;
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
+}
+
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFramePermissionRequestTest,

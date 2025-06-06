@@ -61,6 +61,8 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case WEB_VIEW_PERMISSION_TYPE_MEDIA:
       case WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW:
       case WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK:
+      case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_READ_WRITE:
+      case WEB_VIEW_PERMISSION_TYPE_CLIPBOARD_SANITIZED_WRITE:
         break;
       default:
         web_view_permissions.push_back(i);

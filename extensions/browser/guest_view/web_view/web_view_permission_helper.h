@@ -110,6 +110,15 @@ class WebViewPermissionHelper {
   void RequestFullscreenPermission(const url::Origin& requesting_origin,
                                    PermissionResponseCallback callback);
 
+  void RequestClipboardReadWritePermission(
+      const GURL& requesting_frame_url,
+      bool user_gesture,
+      base::OnceCallback<void(bool)> callback);
+
+  void RequestClipboardSanitizedWritePermission(
+      const GURL& requesting_frame_url,
+      base::OnceCallback<void(bool)> callback);
+
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type);
 
