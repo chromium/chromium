@@ -40,6 +40,15 @@ int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
   if (resource_it != std::end(kSearchEnginesScaledResources)) {
     return resource_it->id;
   }
+
+  if (resource_name == "IDR_SEARCH_ENGINE_GOOGLE_IMAGE") {
+    // Unlike the other logos which are in `kSearchEnginesScaledResources`,
+    // the Google logo is included via
+    // `components/resources/search_engine_choice_scaled_resources.grdp`
+    // TODO(crbug.com/422992330): Fix this discrepancy now that all OSE assets
+    // are restricted to branded builds.
+    return IDR_SEARCH_ENGINE_GOOGLE_IMAGE;
+  }
 #endif
 
   return IDR_DEFAULT_FAVICON;
