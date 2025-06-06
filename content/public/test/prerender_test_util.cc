@@ -299,7 +299,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
       std::move(waiting_for_activation_).Run();
   }
 
-  void OnHeadersReceived() override {
+  void OnHeadersReceived(NavigationHandle& navigation_handle) override {
     received_headers_ = true;
     if (waiting_for_headers_) {
       std::move(waiting_for_headers_).Run();

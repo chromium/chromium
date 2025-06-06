@@ -1881,6 +1881,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="NoVarySearchHeaderReceivedAndMatched"/>
   <int value="7" label="NoVarySearchHeaderReceivedButNotMatched"/>
   <int value="8" label="NoVarySearchHeaderReceivedButDefaultValue"/>
+  <int value="9" label="UnknownFailure"/>
+  <int value="10" label="PrerenderNavigationFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->

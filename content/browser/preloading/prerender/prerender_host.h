@@ -119,7 +119,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kNoVarySearchHeaderReceivedButNotMatched = 7,
     kNoVarySearchHeaderReceivedButDefaultValue = 8,
 
-    kMaxValue = kNoVarySearchHeaderReceivedButDefaultValue,
+    kUnknownFailure = 9,
+    kPrerenderNavigationFailed = 10,
+
+    kMaxValue = kPrerenderNavigationFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderWaitingForHeadersFinishedReason)
 
@@ -132,7 +135,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
     // Called from PrerenderHost::ReadyToCommitNavigation when headers are
     // received for the initial navigation.
-    virtual void OnHeadersReceived() {}
+    virtual void OnHeadersReceived(NavigationHandle& navigation_handle) {}
 
     // Called from PrerenderHost::OnWaitingForHeadersStarted when we start
     // blocking navigation waiting for headers.
