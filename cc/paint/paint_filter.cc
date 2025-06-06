@@ -54,7 +54,7 @@ bool AreEqualForTesting(const PaintFilter& a, const PaintFilter& b) {
 }
 
 bool HasDiscardableImages(const sk_sp<PaintFilter>& filter) {
-  return filter ? filter->has_discardable_images() : false;
+  return filter && filter->has_discardable_images();
 }
 
 bool HasDiscardableImages(base::span<const sk_sp<PaintFilter>> filters) {

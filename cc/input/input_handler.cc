@@ -736,7 +736,7 @@ void InputHandler::PinchGestureBegin(const gfx::Point& anchor,
 
   TRACE_EVENT_INSTANT1("cc", "SetCurrentlyScrollingNode PinchGestureBegin",
                        TRACE_EVENT_SCOPE_THREAD, "isNull",
-                       OuterViewportScrollNode() ? false : true);
+                       !OuterViewportScrollNode());
 
   // Some unit tests don't setup viewport scroll nodes but do initiate a pinch
   // zoom gesture. Ideally, those tests should either create the viewport
