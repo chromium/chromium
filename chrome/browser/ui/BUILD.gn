@@ -5281,7 +5281,10 @@ static_library("ui") {
       "webui/plural_string_handler.cc",
       "webui/plural_string_handler.h",
     ]
-    deps += [ "//chrome/browser/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
+    ]
     allow_circular_includes_from += [ "//chrome/browser/extensions" ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {

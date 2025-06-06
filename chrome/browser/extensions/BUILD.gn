@@ -481,6 +481,7 @@ source_set("extensions") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/safety_hub",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
