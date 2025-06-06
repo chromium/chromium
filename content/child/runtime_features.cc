@@ -472,8 +472,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableSharedWorker, switches::kDisableSharedWorkers, false},
       {wrf::EnableStandardizedBrowserZoom,
        blink::switches::kDisableStandardizedBrowserZoom, false},
-      {wrf::EnableSelectParserRelaxation,
-       blink::switches::kDisableSelectParserRelaxation, false},
       {wrf::EnableTextFragmentIdentifiers,
        switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,
