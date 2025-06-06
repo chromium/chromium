@@ -37,7 +37,7 @@ public class NumberRollView extends FrameLayout {
      * NumberRollView#setNumberRoll(float)} and {@link NumberRollView#getNumberRoll()} methods.
      */
     public static final FloatProperty<NumberRollView> NUMBER_PROPERTY =
-            new FloatProperty<NumberRollView>("") {
+            new FloatProperty<>("") {
                 @Override
                 public void setValue(NumberRollView view, float value) {
                     view.setNumberRoll(value);

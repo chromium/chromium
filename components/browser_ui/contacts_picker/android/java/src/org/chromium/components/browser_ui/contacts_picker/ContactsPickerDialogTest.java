@@ -56,7 +56,6 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -423,7 +422,7 @@ public class ContactsPickerDialogTest
      * @param ownerEmail If not null, includes a few contact entries representing owners.
      */
     private void setTestContacts(String ownerEmail) {
-        mTestContacts = new ArrayList<ContactDetails>();
+        mTestContacts = new ArrayList<>();
         PaymentAddress address = new PaymentAddress();
         address.city = "city";
         address.country = "country";
@@ -699,7 +698,7 @@ public class ContactsPickerDialogTest
 
         Assert.assertEquals(ContactsPickerAction.CONTACTS_SELECTED, mLastActionRecorded);
         Assert.assertEquals(1, mLastSelectedContacts.size());
-        Assert.assertEquals(new ArrayList<String>(), mLastSelectedContacts.get(0).names);
+        Assert.assertEquals(new ArrayList<>(), mLastSelectedContacts.get(0).names);
         Assert.assertEquals(
                 mTestContacts.get(0).getEmails().get(0),
                 mLastSelectedContacts.get(0).emails.get(0));
@@ -738,7 +737,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(1, mLastSelectedContacts.size());
         Assert.assertEquals(
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
-        Assert.assertEquals(new ArrayList<String>(), mLastSelectedContacts.get(0).emails);
+        Assert.assertEquals(new ArrayList<>(), mLastSelectedContacts.get(0).emails);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
         Assert.assertEquals(ContactsPickerProperties.PROPERTIES_EMAILS, mLastPropertiesRejected);
@@ -761,7 +760,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(1, mLastSelectedContacts.size());
         Assert.assertEquals(
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
-        Assert.assertEquals(new ArrayList<String>(), mLastSelectedContacts.get(0).tel);
+        Assert.assertEquals(new ArrayList<>(), mLastSelectedContacts.get(0).tel);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
         Assert.assertEquals(ContactsPickerProperties.PROPERTIES_TELS, mLastPropertiesRejected);
@@ -784,8 +783,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(1, mLastSelectedContacts.size());
         Assert.assertEquals(
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
-        Assert.assertEquals(
-                new ArrayList<ByteBuffer>(), mLastSelectedContacts.get(0).serializedAddresses);
+        Assert.assertEquals(new ArrayList<>(), mLastSelectedContacts.get(0).serializedAddresses);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
         Assert.assertEquals(ContactsPickerProperties.PROPERTIES_ADDRESSES, mLastPropertiesRejected);
@@ -808,8 +806,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(1, mLastSelectedContacts.size());
         Assert.assertEquals(
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
-        Assert.assertEquals(
-                new ArrayList<ByteBuffer>(), mLastSelectedContacts.get(0).serializedIcons);
+        Assert.assertEquals(new ArrayList<>(), mLastSelectedContacts.get(0).serializedIcons);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
         Assert.assertEquals(ContactsPickerProperties.PROPERTIES_ICONS, mLastPropertiesRejected);
@@ -971,7 +968,7 @@ public class ContactsPickerDialogTest
     @Test
     @LargeTest
     public void testEmptyContactListCrash() throws Throwable {
-        PickerAdapter.setTestContactsAndOwner(new ArrayList<ContactDetails>(), null);
+        PickerAdapter.setTestContactsAndOwner(new ArrayList<>(), null);
 
         createDialog(/* multiselect= */ true);
         Assert.assertTrue(mDialog.isShowing());

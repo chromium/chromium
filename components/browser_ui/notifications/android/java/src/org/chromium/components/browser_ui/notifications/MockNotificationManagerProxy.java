@@ -147,7 +147,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public List<NotificationChannel> getNotificationChannels() {
-        return new ArrayList<NotificationChannel>(mChannels.values());
+        return new ArrayList<>(mChannels.values());
     }
 
     @Override

@@ -95,7 +95,7 @@ public class FocusAnimator {
         }
 
         // Animate each child moving and changing size to match their final locations.
-        ArrayList<Animator> animators = new ArrayList<Animator>();
+        ArrayList<Animator> animators = new ArrayList<>();
         ValueAnimator childAnimator = ValueAnimator.ofFloat(0f, 1f);
         animators.add(childAnimator);
         for (int i = 0; i < mLayout.getChildCount(); i++) {
@@ -196,12 +196,12 @@ public class FocusAnimator {
     /**
      * Calculates where the top of each child view should be.
      *
-     * @return Array containing the values of {@link View#getTop} for each child of the layout.
-     *         An additional value at the end indicates the total height of the layout and points at
-     *         the bottom of the last child.
+     * @return Array containing the values of {@link View#getTop} for each child of the layout. An
+     *     additional value at the end indicates the total height of the layout and points at the
+     *     bottom of the last child.
      */
     private ArrayList<Integer> calculateChildTops() {
-        ArrayList<Integer> tops = new ArrayList<Integer>();
+        ArrayList<Integer> tops = new ArrayList<>();
 
         int runningTotal = 0;
         for (int i = 0; i < mLayout.getChildCount(); i++) {

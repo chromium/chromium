@@ -33,7 +33,7 @@ public class ThrottlingNotificationScheduler {
 
     // Priority queue hold all the pending notifications.
     private final PriorityQueue<PendingNotificationTask> mPendingNotificationTasks =
-            new PriorityQueue<PendingNotificationTask>(5, PendingNotificationTask::compare);
+            new PriorityQueue<>(5, PendingNotificationTask::compare);
 
     private final Handler mHandler;
     private boolean mScheduled;

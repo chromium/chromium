@@ -219,7 +219,7 @@ public class PickerCategoryView extends RelativeLayout
         mDecoderServiceHost = new DecoderServiceHost(this, context);
         mDecoderServiceHost.bind();
 
-        mSelectionDelegate = new SelectionDelegate<PickerBitmap>();
+        mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
         if (!multiSelectionAllowed) mSelectionDelegate.setSingleSelectionMode();
 

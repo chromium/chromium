@@ -66,7 +66,7 @@ public class ChromeTransitionDrawable extends LayerDrawable {
     }
 
     private final IntProperty<ChromeTransitionDrawable> mTransitionProgressProperty =
-            new IntProperty<ChromeTransitionDrawable>("ChromeTransitionDrawableProgress") {
+            new IntProperty<>("ChromeTransitionDrawableProgress") {
                 @Override
                 public Integer get(ChromeTransitionDrawable target) {
                     return target.mProgress;

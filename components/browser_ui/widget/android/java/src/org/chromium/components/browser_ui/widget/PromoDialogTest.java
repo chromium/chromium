@@ -62,7 +62,7 @@ public class PromoDialogTest {
             mDialogParams = dialogParams;
             dialog =
                     ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<PromoDialog>() {
+                            new Callable<>() {
                                 @Override
                                 public PromoDialog call() {
                                     PromoDialog dialog =
@@ -91,7 +91,7 @@ public class PromoDialogTest {
                             });
             dialogLayout =
                     ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<PromoDialogLayout>() {
+                            new Callable<>() {
                                 @Override
                                 public PromoDialogLayout call() {
                                     PromoDialogLayout promoDialogLayout =

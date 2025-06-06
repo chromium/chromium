@@ -116,9 +116,11 @@ public class SelectionDelegate<E> {
         return mSelectedItems;
     }
 
-    /** @return The list of selected items. */
+    /**
+     * @return The list of selected items.
+     */
     public List<E> getSelectedItemsAsList() {
-        return new ArrayList<E>(mSelectedItems);
+        return new ArrayList<>(mSelectedItems);
     }
 
     /**

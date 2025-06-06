@@ -484,7 +484,7 @@ public class AccessibilitySettingsTest {
     // Helper methods.
 
     private static final BaseMatcher<View> sDisabled =
-            new BaseMatcher<View>() {
+            new BaseMatcher<>() {
                 @Override
                 public boolean matches(Object o) {
                     return !((ChromeImageButton) o).isEnabled();

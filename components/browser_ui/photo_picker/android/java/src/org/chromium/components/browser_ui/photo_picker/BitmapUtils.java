@@ -115,7 +115,7 @@ class BitmapUtils {
             int frames,
             boolean fullWidth,
             long intervalMs) {
-        List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+        List<Bitmap> bitmaps = new ArrayList<>();
         Bitmap bitmap = null;
         Float ratio = null;
         for (int frame = 0; frame < frames; ++frame) {

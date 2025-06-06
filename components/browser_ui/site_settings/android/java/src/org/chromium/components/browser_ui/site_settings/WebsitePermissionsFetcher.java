@@ -545,7 +545,7 @@ public class WebsitePermissionsFetcher {
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchLocalStorageInfo(
                         mBrowserContextHandle,
-                        new Callback<HashMap>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(HashMap result) {
                                 for (Object o : result.entrySet()) {
@@ -599,7 +599,7 @@ public class WebsitePermissionsFetcher {
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchStorageInfo(
                         mBrowserContextHandle,
-                        new Callback<ArrayList>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(ArrayList result) {
                                 @SuppressWarnings("unchecked")
@@ -628,7 +628,7 @@ public class WebsitePermissionsFetcher {
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchSharedDictionaryInfo(
                         mBrowserContextHandle,
-                        new Callback<ArrayList>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(ArrayList result) {
                                 @SuppressWarnings("unchecked")

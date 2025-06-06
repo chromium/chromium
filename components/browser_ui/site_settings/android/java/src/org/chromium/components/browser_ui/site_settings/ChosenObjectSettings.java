@@ -219,7 +219,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
             String exampleObject = mObjectInfos.get(0).getObject();
 
             mObjectInfos.clear();
-            mSites = new ArrayList<Website>();
+            mSites = new ArrayList<>();
             for (Website site : sites) {
                 for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
                     if (info.getObject().equals(exampleObject)) {

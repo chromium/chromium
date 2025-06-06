@@ -1117,10 +1117,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                     Pair<ArrayList<ChosenObjectInfo>, ArrayList<Website>> entry =
                             objects.get(info.getObject());
                     if (entry == null) {
-                        entry =
-                                Pair.create(
-                                        new ArrayList<ChosenObjectInfo>(),
-                                        new ArrayList<Website>());
+                        entry = Pair.create(new ArrayList<>(), new ArrayList<>());
                         objects.put(info.getObject(), entry);
                     }
                     entry.first.add(info);

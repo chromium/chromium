@@ -114,7 +114,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
         Map<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
 
         Cursor cursor = mContentResolver.query(source, null, null, null, sortOrder);
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         String key = "";
         String value;
         assumeNonNull(cursor);
@@ -130,7 +130,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
                     list.add(value);
                 } else {
                     map.put(key, list);
-                    list = new ArrayList<String>();
+                    list = new ArrayList<>();
                     list.add(value);
                     key = id;
                 }
@@ -277,10 +277,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
         assumeNonNull(cursor);
         if (!cursor.moveToFirst()) {
             cursor.close();
-            return new ArrayList<ContactDetails>();
+            return new ArrayList<>();
         }
 
-        ArrayList<ContactDetails> contacts = new ArrayList<ContactDetails>(cursor.getCount());
+        ArrayList<ContactDetails> contacts = new ArrayList<>(cursor.getCount());
         do {
             String id =
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));

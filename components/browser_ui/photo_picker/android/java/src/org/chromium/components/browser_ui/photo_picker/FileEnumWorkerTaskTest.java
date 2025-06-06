@@ -82,7 +82,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                 String whereClause,
                 String[] whereArgs,
                 String orderBy) {
-            ArrayList<TestData> list = new ArrayList<TestData>();
+            ArrayList<TestData> list = new ArrayList<>();
             list.add(new TestData("file0", "text/html", 0));
             list.add(new TestData("file1", "image/jpeg", 1));
             list.add(new TestData("file2", "image/jpeg", 2));

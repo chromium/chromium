@@ -20,7 +20,7 @@ public class MediaNotificationManager {
     private static final SparseArray<MediaNotificationController> sControllers;
 
     static {
-        sControllers = new SparseArray<MediaNotificationController>();
+        sControllers = new SparseArray<>();
     }
 
     private MediaNotificationManager() {}

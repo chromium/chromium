@@ -41,7 +41,7 @@ public class FileEditingInfo implements Serializable {
     }
 
     private void fetchGrants(SiteSettingsDelegate delegate) {
-        mGrants = new ArrayList<Grant>();
+        mGrants = new ArrayList<>();
         String[][] pathsAndDisplayNames = delegate.getFileSystemAccessGrants(mOrigin);
         assert pathsAndDisplayNames != null;
         assert pathsAndDisplayNames.length == 2;

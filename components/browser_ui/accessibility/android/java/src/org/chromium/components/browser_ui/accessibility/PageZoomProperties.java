@@ -35,7 +35,7 @@ class PageZoomProperties {
     static final WritableIntPropertyKey CURRENT_SEEK_VALUE = new WritableIntPropertyKey();
 
     static final WritableObjectPropertyKey<Double> DEFAULT_ZOOM_FACTOR =
-            new WritableObjectPropertyKey<Double>();
+            new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
         DECREASE_ZOOM_CALLBACK,

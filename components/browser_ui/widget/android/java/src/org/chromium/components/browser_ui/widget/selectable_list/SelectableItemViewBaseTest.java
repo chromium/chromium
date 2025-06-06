@@ -52,7 +52,7 @@ public class SelectableItemViewBaseTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mHandleNonSelectionClickHelper = new CallbackHelper();
         mSelectableItemViewBase =
-                new SelectableItemViewBaseTestImpl<Integer>(
+                new SelectableItemViewBaseTestImpl<>(
                         activity, /* attrs= */ null, mHandleNonSelectionClickHelper);
     }
 

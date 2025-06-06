@@ -85,7 +85,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     private @Nullable DecoderServiceParams mProcessingRequest;
 
     // The callbacks used to notify the clients when the service is ready.
-    private final List<DecoderStatusCallback> mCallbacks = new ArrayList<DecoderStatusCallback>();
+    private final List<DecoderStatusCallback> mCallbacks = new ArrayList<>();
 
     // Keeps track of the last decoding ordinal issued.
     static int sLastDecodingOrdinal = 0;

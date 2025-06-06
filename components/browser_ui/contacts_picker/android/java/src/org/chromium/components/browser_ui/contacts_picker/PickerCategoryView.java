@@ -168,7 +168,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mSiteWantsAddresses = shouldIncludeAddresses;
         mSiteWantsIcons = shouldIncludeIcons;
 
-        mSelectionDelegate = new SelectionDelegate<ContactDetails>();
+        mSelectionDelegate = new SelectionDelegate<>();
         if (!multiSelectionAllowed) mSelectionDelegate.setSingleSelectionMode();
         mSelectionDelegate.addObserver(this);
 
@@ -275,7 +275,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
 
         // Showing the search clears current selection. Save it, so we can restore it after the
         // search has completed.
-        mPreviousSelection = new HashSet<ContactDetails>(mSelectionDelegate.getSelectedItems());
+        mPreviousSelection = new HashSet<>(mSelectionDelegate.getSelectedItems());
         mSearchButton.setVisibility(GONE);
         mPickerAdapter.setSearchMode(true);
         mToolbar.showSearchView(true);
@@ -343,8 +343,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
     public void onSelectAllToggled(boolean allSelected) {
         if (allSelected) {
             mPreviousSelection = mSelectionDelegate.getSelectedItems();
-            mSelectionDelegate.setSelectedItems(
-                    new HashSet<ContactDetails>(mPickerAdapter.getAllContacts()));
+            mSelectionDelegate.setSelectedItems(new HashSet<>(mPickerAdapter.getAllContacts()));
             mListener.onContactsPickerUserAction(
                     ContactsPickerListener.ContactsPickerAction.SELECT_ALL,
                     /* contacts= */ null,
@@ -352,7 +351,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
                     /* propertiesSiteRequested= */ 0,
                     /* propertiesUserRejected= */ 0);
         } else {
-            mSelectionDelegate.setSelectedItems(new HashSet<ContactDetails>());
+            mSelectionDelegate.setSelectedItems(new HashSet<>());
             mPreviousSelection = null;
             mListener.onContactsPickerUserAction(
                     ContactsPickerListener.ContactsPickerAction.UNDO_SELECT_ALL,
@@ -445,7 +444,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
 
         if (!isEnabled) {
             // The user doesn't want to share this property, so return an empty array.
-            return new ArrayList<T>();
+            return new ArrayList<>();
         }
 
         // Share whatever was selected.

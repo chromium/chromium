@@ -940,7 +940,7 @@ public class ModalDialogViewTest {
     }
 
     private static Matcher<View> touchFilterEnabled() {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(Description description) {
                 description.appendText("Touch filtering enabled");

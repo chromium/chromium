@@ -337,7 +337,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
             Collections.sort(
                     mItems,
-                    new Comparator<TimedItem>() {
+                    new Comparator<>() {
                         @Override
                         public int compare(TimedItem lhs, TimedItem rhs) {
                             return compareItem(lhs, rhs);
@@ -445,7 +445,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     private final SortedSet<ItemGroup> mGroups =
             new TreeSet<>(
-                    new Comparator<ItemGroup>() {
+                    new Comparator<>() {
                         @Override
                         public int compare(ItemGroup lhs, ItemGroup rhs) {
                             if (lhs == rhs) return 0;

@@ -195,7 +195,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             mSearchResults.clear();
             mSearchResults = null;
         } else {
-            mSearchResults = new ArrayList<Integer>();
+            mSearchResults = new ArrayList<>();
             Integer count = 0;
             String query_lower = query.toLowerCase(Locale.getDefault());
             assumeNonNull(mContactDetails);
@@ -425,7 +425,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
             return true;
         }
 
-        ArrayList<Integer> matches = new ArrayList<Integer>();
+        ArrayList<Integer> matches = new ArrayList<>();
         for (int i = 0; i < contacts.size(); ++i) {
             List<String> emails = contacts.get(i).getEmails();
             for (int y = 0; y < emails.size(); ++y) {

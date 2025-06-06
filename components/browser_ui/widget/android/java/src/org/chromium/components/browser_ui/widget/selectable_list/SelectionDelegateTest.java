@@ -22,7 +22,7 @@ public class SelectionDelegateTest {
 
     @Test
     public void testSelectionDelegateSingle() {
-        SelectionDelegate<Object> delegate = new SelectionDelegate<Object>();
+        SelectionDelegate<Object> delegate = new SelectionDelegate<>();
         delegate.setSingleSelectionMode();
 
         // Starting state, nothing is selected.
@@ -54,7 +54,7 @@ public class SelectionDelegateTest {
 
     @Test
     public void testSelectionDelegateMulti() {
-        SelectionDelegate<Object> delegate = new SelectionDelegate<Object>();
+        SelectionDelegate<Object> delegate = new SelectionDelegate<>();
 
         // Starting state, nothing is selected.
         assertFalse(delegate.isItemSelected(mData1));

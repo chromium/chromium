@@ -18,7 +18,7 @@ public class Matchers {
      * android:drawableStart}.
      */
     public static Matcher<View> hasDrawableStart() {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(View view) {
                 return ((TextView) view).getCompoundDrawablesRelative()[0] != null;
