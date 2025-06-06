@@ -1411,15 +1411,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="82" label="zu - Zulu"/>
 </enum>
 
-<enum name="DevToolsLighthouseCategoryUsed">
-  <int value="0" label="Performance"/>
-  <int value="1" label="Accessibility"/>
-  <int value="2" label="BestPractices"/>
-  <int value="3" label="SEO"/>
-  <int value="4" label="PWA"/>
-  <int value="5" label="PubAds"/>
-</enum>
-
 <enum name="DevToolsLighthouseModeRun">
   <int value="0" label="Navigation"/>
   <int value="1" label="Timespan"/>
