@@ -36,8 +36,6 @@ using data_sharing::GroupMember;
 using data_sharing::GroupToken;
 using data_sharing::MemberRole;
 using Flow = CollaborationController::Flow;
-using metrics::CollaborationServiceJoinEvent;
-using metrics::CollaborationServiceShareOrManageEvent;
 using Outcome = signin::AccountManagedStatusFinder::Outcome;
 using ParseUrlResult = data_sharing::ParseUrlResult;
 using ParseUrlStatus = data_sharing::ParseUrlStatus;
@@ -109,9 +107,6 @@ void CollaborationServiceImpl::StartJoinFlow(
   CancelAllFlows(base::BindOnce(
       &CollaborationServiceImpl::StartJoinFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), token));
-
-  RecordJoinEvent(data_sharing_service_->GetLogger(),
-                  CollaborationServiceJoinEvent::kStarted);
 }
 
 void CollaborationServiceImpl::StartShareOrManageFlow(
@@ -126,9 +121,6 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
       base::BindOnce(&CollaborationServiceImpl::StartCollaborationFlowInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(delegate),
                      either_id, FlowType::kShareOrManage));
-
-  RecordShareOrManageEvent(data_sharing_service_->GetLogger(),
-                           CollaborationServiceShareOrManageEvent::kStarted);
 }
 
 void CollaborationServiceImpl::StartLeaveOrDeleteFlow(

@@ -97,6 +97,30 @@ enum class CollaborationServiceShareOrManageEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEvent)
 
+// Types of collaboration flow events that occur in the collaboration service.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(CollaborationServiceFlowEvent)
+enum class CollaborationServiceFlowEvent {
+  kUnknown = 0,
+  kStarted = 1,
+  kNotSignedIn = 2,
+  kCanceledNotSignedIn = 3,
+  kFlowRequirementsMet = 4,
+  kSigninVerificationFailed = 5,
+  kSigninVerified = 6,
+  kSigninVerifiedInObserver = 7,
+  kDataSharingReadyWhenStarted = 8,
+  kDataSharingServiceReadyObserved = 9,
+  kTabGroupServiceReady = 10,
+  kAllServicesReadyForFlow = 11,
+  kDevicePolicyDisableSignin = 12,
+  kManagedAccountSignin = 13,
+  kAccountInfoNotReadyOnSignin = 14,
+  kMaxValue = kAccountInfoNotReadyOnSignin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceFlowEvent)
+
 enum class CollaborationServiceStep {
   kUnknown = 0,
   kAuthenticationInitToSuccess = 1,
@@ -110,14 +134,14 @@ void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event);
 void RecordShareOrManageEvent(data_sharing::Logger* logger,
                               CollaborationServiceShareOrManageEvent event);
-void RecordLeaveOrDeleteEntryPoint(
-    data_sharing::Logger* logger,
-    CollaborationServiceLeaveOrDeleteEntryPoint event);
 void RecordJoinOrShareOrManageEvent(
     data_sharing::Logger* logger,
     FlowType type,
     CollaborationServiceJoinEvent join_event,
     CollaborationServiceShareOrManageEvent share_or_manage_event);
+void RecordLeaveOrDeleteEntryPoint(
+    data_sharing::Logger* logger,
+    CollaborationServiceLeaveOrDeleteEntryPoint event);
 void RecordJoinEntryPoint(data_sharing::Logger* logger,
                           CollaborationServiceJoinEntryPoint entry);
 void RecordShareOrManageEntryPoint(
@@ -126,6 +150,9 @@ void RecordShareOrManageEntryPoint(
 void RecordLatency(data_sharing::Logger* logger,
                    CollaborationServiceStep step,
                    base::TimeDelta duration);
+void RecordCollaborationFlowEvent(data_sharing::Logger* logger,
+                                  FlowType type,
+                                  CollaborationServiceFlowEvent event);
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_

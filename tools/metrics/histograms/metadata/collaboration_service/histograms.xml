@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CollaborationServiceFlow">
+  <variant name="JoinFlow" summary="Collaboration join flow"/>
+  <variant name="LeaveOrDeleteFlow"
+      summary="Collaboration leave or delete flow"/>
+  <variant name="ShareOrManageFlow"
+      summary="Collaboration share or manage flow"/>
+</variants>
+
 <variants name="CollaborationServiceStep">
   <variant name="AuthenticationInitToSuccess"
       summary="Authentication initiated to successful completion"/>
@@ -109,6 +117,20 @@ chromium-metrics-reviews@google.com.
     Recorded when a share or manage event is started by the
     CollaborationService.
   </summary>
+</histogram>
+
+<histogram name="CollaborationService.{CollaborationServiceFlow}.Events"
+    enum="CollaborationServiceFlowEvent" expires_after="2025-10-11">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the type of collaboration flow event that can
+    happen when going through a collaboration flow.
+
+    Recorded when a collaboration event is triggered by the
+    CollaborationService.
+  </summary>
+  <token key="CollaborationServiceFlow" variants="CollaborationServiceFlow"/>
 </histogram>
 
 </histograms>

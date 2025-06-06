@@ -283,6 +283,53 @@ std::string_view CollaborationServiceStepToString(
   }
 }
 
+std::string_view CollaborationServiceFlowEventToString(
+    CollaborationServiceFlowEvent event) {
+  switch (event) {
+    case CollaborationServiceFlowEvent::kUnknown:
+      return "Unknown";
+    case CollaborationServiceFlowEvent::kStarted:
+      return "Started";
+    case CollaborationServiceFlowEvent::kNotSignedIn:
+      return "NotSignedIn";
+    case CollaborationServiceFlowEvent::kCanceledNotSignedIn:
+      return "CanceledNotSignedIn";
+    case CollaborationServiceFlowEvent::kFlowRequirementsMet:
+      return "FlowRequirementsMet";
+    case CollaborationServiceFlowEvent::kSigninVerificationFailed:
+      return "SigninVerificationFailed";
+    case CollaborationServiceFlowEvent::kSigninVerified:
+      return "SigninVerified";
+    case CollaborationServiceFlowEvent::kSigninVerifiedInObserver:
+      return "SigninVerifiedInObserver";
+    case CollaborationServiceFlowEvent::kDataSharingReadyWhenStarted:
+      return "DataSharingReadyWhenStarted";
+    case CollaborationServiceFlowEvent::kDataSharingServiceReadyObserved:
+      return "DataSharingServiceReadyObserved";
+    case CollaborationServiceFlowEvent::kTabGroupServiceReady:
+      return "TabGroupServiceReady";
+    case CollaborationServiceFlowEvent::kAllServicesReadyForFlow:
+      return "AllServicesReadyForFlow";
+    case CollaborationServiceFlowEvent::kDevicePolicyDisableSignin:
+      return "DevicePolicyDisableSignin";
+    case CollaborationServiceFlowEvent::kManagedAccountSignin:
+      return "ManagedAccountSignin";
+    case CollaborationServiceFlowEvent::kAccountInfoNotReadyOnSignin:
+      return "AccountInfoNotReadyOnSignin";
+  }
+}
+
+std::string_view CreateFlowTypeToString(FlowType type) {
+  switch (type) {
+    case FlowType::kJoin:
+      return "JoinFlow";
+    case FlowType::kShareOrManage:
+      return "ShareOrManageFlow";
+    case FlowType::kLeaveOrDelete:
+      return "LeaveOrDeleteFlow";
+  }
+}
+
 std::string CreateJoinEventLogString(CollaborationServiceJoinEvent event) {
   return base::StringPrintf("Join Flow Event: %s",
                             CollaborationServiceJoinEventToString(event));
@@ -314,6 +361,7 @@ std::string CreateLeaveOrDeleteEntryLogToString(
       "Leave or Delete Flow Started\n  From: %s\n",
       CollaborationServiceLeaveOrDeleteEntryPointToString(entry));
 }
+
 std::string CreateLatencyLogToString(CollaborationServiceStep step,
                                      base::TimeDelta duration) {
   return base::StringPrintf("Step %s took %dms to complete.",
@@ -321,11 +369,15 @@ std::string CreateLatencyLogToString(CollaborationServiceStep step,
                             duration.InMillisecondsRoundedUp());
 }
 
+std::string CreateFlowEventLogString(CollaborationServiceFlowEvent event) {
+  return base::StringPrintf("Flow Event: %s",
+                            CollaborationServiceFlowEventToString(event));
+}
+
 }  // namespace
 
 void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event) {
-  VLOG(1) << "RecordJoinEvent:" << (CreateJoinEventLogString(event));
   base::UmaHistogramEnumeration("CollaborationService.JoinFlow", event);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateJoinEventLogString(event));
@@ -333,8 +385,6 @@ void RecordJoinEvent(data_sharing::Logger* logger,
 
 void RecordShareOrManageEvent(data_sharing::Logger* logger,
                               CollaborationServiceShareOrManageEvent event) {
-  VLOG(1) << "RecordShareOrManageEvent:"
-          << (CreateShareOrManageEventLogString(event));
   base::UmaHistogramEnumeration("CollaborationService.ShareOrManageFlow",
                                 event);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
@@ -348,7 +398,7 @@ void RecordJoinOrShareOrManageEvent(
     CollaborationServiceShareOrManageEvent share_or_manage_event) {
   if (type == FlowType::kJoin) {
     RecordJoinEvent(logger, join_event);
-  } else {
+  } else if (type == FlowType::kShareOrManage) {
     RecordShareOrManageEvent(logger, share_or_manage_event);
   }
 }
@@ -389,6 +439,17 @@ void RecordLatency(data_sharing::Logger* logger,
   base::UmaHistogramMediumTimes(histogram_name, duration);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateLatencyLogToString(step, duration));
+}
+
+void RecordCollaborationFlowEvent(data_sharing::Logger* logger,
+                                  FlowType type,
+                                  CollaborationServiceFlowEvent event) {
+  std::string histogram_name = base::StrCat(
+      {"CollaborationService.", CreateFlowTypeToString(type), ".Events"});
+
+  base::UmaHistogramEnumeration(histogram_name, event);
+  DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
+                   logger, CreateFlowEventLogString(event));
 }
 
 }  // namespace collaboration::metrics

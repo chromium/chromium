@@ -266,8 +266,8 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   run_loop.Run();
 
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.JoinFlow",
-      metrics::CollaborationServiceJoinEvent::kFlowRequirementsMet, 1);
+      "CollaborationService.JoinFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kFlowRequirementsMet, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kAccepted, 1);
@@ -580,14 +580,14 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledBeforeSignIn) {
 
   // Verify the not signed in metrics are recorded properly.
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.JoinFlow",
-      metrics::CollaborationServiceJoinEvent::kNotSignedIn, 1);
+      "CollaborationService.JoinFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kNotSignedIn, 1);
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.JoinFlow",
-      metrics::CollaborationServiceJoinEvent::kCanceledNotSignedIn, 1);
+      "CollaborationService.JoinFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kCanceledNotSignedIn, 1);
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.JoinFlow",
-      metrics::CollaborationServiceJoinEvent::kFlowRequirementsMet, 0);
+      "CollaborationService.JoinFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kFlowRequirementsMet, 0);
 }
 
 TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
@@ -801,8 +801,8 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
 
   // Verify the manage flow metrics are recorded properly.
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.ShareOrManageFlow",
-      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 1);
+      "CollaborationService.ShareOrManageFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kFlowRequirementsMet, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kShareDialogShown, 1);
@@ -852,8 +852,8 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
 
   // Verify the manage flow metrics are recorded properly.
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.ShareOrManageFlow",
-      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 1);
+      "CollaborationService.ShareOrManageFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kFlowRequirementsMet, 1);
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kManageDialogShown, 1);
@@ -909,14 +909,14 @@ TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
 
   // Verify the not signed in metrics are recorded properly.
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.ShareOrManageFlow",
-      metrics::CollaborationServiceShareOrManageEvent::kNotSignedIn, 1);
+      "CollaborationService.ShareOrManageFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kNotSignedIn, 1);
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.ShareOrManageFlow",
-      metrics::CollaborationServiceShareOrManageEvent::kCanceledNotSignedIn, 1);
+      "CollaborationService.ShareOrManageFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kCanceledNotSignedIn, 1);
   histogram_tester.ExpectBucketCount(
-      "CollaborationService.ShareOrManageFlow",
-      metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 0);
+      "CollaborationService.ShareOrManageFlow.Events",
+      metrics::CollaborationServiceFlowEvent::kFlowRequirementsMet, 0);
 }
 
 TEST_F(CollaborationControllerTest, LeaveFlow) {

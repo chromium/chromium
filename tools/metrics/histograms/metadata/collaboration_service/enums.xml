@@ -26,6 +26,28 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CollaborationServiceFlowEvent) -->
+
+<enum name="CollaborationServiceFlowEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Not signed in on a collaboration flow attempt"/>
+  <int value="3" label="Canceled: due to sign in requirement"/>
+  <int value="4" label="Signin and sync requirements met"/>
+  <int value="5" label="Signin not verified when finished"/>
+  <int value="6" label="Signin verified when finished"/>
+  <int value="7" label="Signin verified in observer"/>
+  <int value="8" label="Data sharing service ready when started"/>
+  <int value="9" label="Data sharing service ready observed"/>
+  <int value="10" label="Tab group sync service ready"/>
+  <int value="11" label="All services ready for flow"/>
+  <int value="12" label="Failure: Device policy disables signin"/>
+  <int value="13" label="Managed account signed in"/>
+  <int value="14" label="Account info is not ready upon signin"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceFlowEvent) -->
+
 <!-- LINT.IfChange(CollaborationServiceJoinEntryPoint) -->
 
 <enum name="CollaborationServiceJoinEntryPoint">
@@ -44,7 +66,7 @@ chromium-metrics-reviews@google.com.
 <enum name="CollaborationServiceJoinEvent">
   <int value="0" label="Unknown"/>
   <int value="1" label="Started"/>
-  <int value="2" label="Canceled - after sign in requirement"/>
+  <int value="2" label="Canceled - While on join screen"/>
   <int value="3" label="Canceled - due to sign in requirement"/>
   <int value="4" label="Not signed in on join attempt"/>
   <int value="5" label="Accepted - the join invitation"/>
@@ -131,8 +153,8 @@ chromium-metrics-reviews@google.com.
 <enum name="CollaborationServiceShareOrManageEvent">
   <int value="0" label="Unknown"/>
   <int value="1" label="Started"/>
-  <int value="2" label="Canceled - due to sign in requirement"/>
-  <int value="3" label="Not signed in on share or manage attempt"/>
+  <int value="2" label="Not signed in on share or manage attempt"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
   <int value="4" label="Share dialog shown"/>
   <int value="5" label="Manage dialog shown"/>
   <int value="6" label="Collaboration group created"/>
