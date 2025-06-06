@@ -1609,8 +1609,7 @@ void EventRouter::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   // Remove any active listeners since they are no longer guaranteed to be ready
   // to receive events.
-  listeners_.RemoveActiveServiceWorkerListenersForExtension(
-      worker_id.extension_id);
+  listeners_.RemoveActiveServiceWorkerListenersForExtension(worker_id);
 }
 
 void EventRouter::AddLazyEventListenerImpl(

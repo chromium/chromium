@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "ipc/ipc_message.h"
@@ -302,13 +303,17 @@ void EventListenerMap::RemoveListenersForExtension(
 }
 
 void EventListenerMap::RemoveActiveServiceWorkerListenersForExtension(
-    const ExtensionId& extension_id) {
+    const WorkerId& worker_id) {
   RemoveListenersForExtensionImpl(
-      extension_id, /*removal_predicate=*/base::BindRepeating(
-          [](const ExtensionId& extension_id, EventListener* listener) {
-            return listener->extension_id() == extension_id &&
-                   listener->is_for_service_worker() && !listener->IsLazy();
-          }));
+      worker_id.extension_id, /*removal_predicate=*/base::BindRepeating(
+          [](const WorkerId& worker_id, const ExtensionId& extension_id,
+             EventListener* listener) {
+            return listener->extension_id() == worker_id.extension_id &&
+                   listener->is_for_service_worker() && !listener->IsLazy() &&
+                   listener->process()->GetDeprecatedID() ==
+                       worker_id.render_process_id;
+          },
+          worker_id));
 }
 
 void EventListenerMap::LoadUnfilteredLazyListeners(

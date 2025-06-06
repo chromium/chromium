@@ -28,6 +28,7 @@ class RenderProcessHost;
 
 namespace extensions {
 struct Event;
+struct WorkerId;
 
 // A listener for an extension event. A listener is essentially an endpoint
 // that an event can be dispatched to.
@@ -233,7 +234,7 @@ class EventListenerMap {
 
   // Removes any active listeners that `extension_id` has added.
   void RemoveActiveServiceWorkerListenersForExtension(
-      const ExtensionId& extension_id);
+      const WorkerId& worker_id);
 
   // Adds unfiltered lazy listeners as described their serialised descriptions.
   // `event_names` the names of the lazy events.
