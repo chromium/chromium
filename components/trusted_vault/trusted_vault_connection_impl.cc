@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -31,6 +30,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace trusted_vault {
 
@@ -142,7 +142,7 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
   member.set_public_key(public_key_string);
 
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&member](const LocalPhysicalDevice&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_PHYSICAL_DEVICE);
@@ -185,7 +185,7 @@ void AddSharedMemberKeysFromSource(
     const SecureBoxPublicKey& public_key,
     const MemberKeysSource& member_keys_source) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [request, &public_key](
               const std::vector<TrustedVaultKeyAndVersion>& key_and_versions) {
             for (const TrustedVaultKeyAndVersion&
@@ -541,7 +541,7 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
     AuthenticationFactorTypeAndRegistrationParams
         authentication_factor_type_and_registration_params) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const LocalPhysicalDevice&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;
           },
