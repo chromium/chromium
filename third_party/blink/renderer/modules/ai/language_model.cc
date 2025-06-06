@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
@@ -59,6 +60,77 @@ using AILanguageModelPromptContentOrError =
 void RejectResolver(ScriptPromiseResolverBase* resolver,
                     const ScriptValue& value) {
   resolver->Reject(value);
+}
+
+// Logs (mojo converted) prompt message metrics.
+void LogPromptMessageMetrics(
+    const WTF::Vector<mojom::blink::AILanguageModelPromptPtr>& prompts) {
+  for (const auto& prompt : prompts) {
+    std::string prefix =
+        base::StrCat({AIMetrics::GetAIAPIUsageMetricName(
+                          AIMetrics::AISessionType::kLanguageModel),
+                      ".Messages"});
+    base::UmaHistogramEnumeration(
+        base::StrCat({prefix, ".Role"}),
+        AIMetrics::ToLanguageModelInputRole(prompt->role));
+    for (const auto& content : prompt->content) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({prefix, ".Type"}),
+          AIMetrics::ToLanguageModelInputType(content->which()));
+      if (content->is_text()) {
+        base::UmaHistogramCounts1M(
+            base::StrCat({prefix, ".Text.Length"}),
+            static_cast<int>(content->get_text().length()));
+      }
+    }
+  }
+}
+
+// Logs create option metrics.
+void LogCreateOptionMetrics(
+    const LanguageModelCreateCoreOptions& create_options,
+    const std::string& function_name) {
+  std::string prefix =
+      base::StrCat({AIMetrics::GetAIAPIUsageMetricName(
+                        AIMetrics::AISessionType::kLanguageModel),
+                    ".", function_name});
+  if (create_options.hasTopK()) {
+    base::UmaHistogramCounts1000(base::StrCat({prefix, ".TopK"}),
+                                 static_cast<int>(create_options.topK()));
+  }
+  if (create_options.hasTemperature()) {
+    // Temperature is generally in the range of [0.0,2.0].
+    base::UmaHistogramCustomCounts(
+        base::StrCat({prefix, ".TemperatureX1000"}),
+        static_cast<int>(create_options.temperature() * 1000.0f), 1, 2000, 200);
+  }
+  // Logs metrics for a list of expected inputs or outputs.
+  auto log_expected_metrics =
+      [&](const std::string& expected_type,
+          const HeapVector<Member<LanguageModelExpected>>& expected_inputs) {
+        for (const auto& input : expected_inputs) {
+          if (input->hasType()) {
+            base::UmaHistogramEnumeration(
+                base::StrCat({prefix, ".", expected_type, ".Type"}),
+                AIMetrics::ToLanguageModelInputType(input->type().AsEnum()));
+          }
+          for (const auto& lang : input->getLanguagesOr(Vector<String>())) {
+            base::UmaHistogramSparse(
+                base::StrCat({prefix, ".", expected_type, ".Language"}),
+                static_cast<base::HistogramBase::Sample32>(
+                    base::HashMetricName(lang.Ascii())));
+          }
+        }
+      };
+
+  // LINT.IfChange(LanguageModelExpectedInputOrOutput)
+  if (create_options.hasExpectedInputs()) {
+    log_expected_metrics("ExpectedInputs", create_options.expectedInputs());
+  }
+  if (create_options.hasExpectedOutputs()) {
+    log_expected_metrics("ExpectedOutputs", create_options.expectedOutputs());
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/histograms.xml:LanguageModelExpectedInputOrOutput)
 }
 
 class CloneLanguageModelClient
@@ -168,6 +240,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
           complete_callback,
       base::RepeatingClosure overflow_callback,
       WTF::Vector<mojom::blink::AILanguageModelPromptPtr> input) {
+    LogPromptMessageMetrics(input);
     MakeGarbageCollected<AppendClient>(
         std::move(script_state), std::move(language_model), std::move(resolver),
         std::move(input), std::move(signal), std::move(complete_callback),
@@ -334,6 +407,7 @@ ScriptPromise<LanguageModel> LanguageModel::create(
       MakeGarbageCollected<ScriptPromiseResolver<LanguageModel>>(script_state);
   auto promise = resolver->Promise();
 
+  LogCreateOptionMetrics(*options, "create");
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCreateSession);
@@ -370,6 +444,7 @@ ScriptPromise<V8Availability> LanguageModel::availability(
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   auto promise = resolver->Promise();
 
+  LogCreateOptionMetrics(*options, "availability");
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
@@ -535,6 +610,7 @@ void LanguageModel::ExecutePrompt(
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
         pending_responder,
     WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
+  LogPromptMessageMetrics(prompts);
   if (!language_model_remote_) {
     if (std::holds_alternative<ScriptPromiseResolverBase*>(
             resolver_or_stream)) {

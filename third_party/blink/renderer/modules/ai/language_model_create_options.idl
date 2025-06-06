@@ -23,9 +23,13 @@ dictionary LanguageModelMessageContent {
   required LanguageModelMessageValue value;
 };
 
+// LINT.IfChange
 enum LanguageModelMessageRole { "system", "user", "assistant" };
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputRole)
 
+// LINT.IfChange
 enum LanguageModelMessageType { "text", "image", "audio" };
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType)
 
 typedef (
   ImageBitmapSource

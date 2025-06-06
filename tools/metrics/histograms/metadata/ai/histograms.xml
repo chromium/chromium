@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(LanguageModelExpectedInputOrOutput) -->
+
+<variants name="LanguageModelExpectedInputOrOutput">
+  <variant name="ExpectedInputs" summary="Expected inputs."/>
+  <variant name="ExpectedOutputs" summary="Expected outputs."/>
+</variants>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/language_model.cc:LanguageModelExpectedInputOrOutput) -->
+
+<variants name="LanguageModelFunctionName">
+  <variant name="availability" summary="Check availability of the model."/>
+  <variant name="create" summary="Create a session."/>
+</variants>
+
 <!-- LINT.IfChange(SessionType) -->
 
 <variants name="SessionType">
@@ -46,6 +60,104 @@ chromium-metrics-reviews@google.com.
   <variant name="Summarizer" summary="AI summarizer session"/>
   <variant name="Writer" summary="AI writer session"/>
 </variants>
+
+<histogram name="AI.LanguageModel.APIUsage.Messages.Role"
+    enum="LanguageModelInputRole" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded for each message provided to a LanguageModel `prompt` or
+    `append` invocation. It can be used to measure the usage of the `role` of
+    individual messages.
+  </summary>
+</histogram>
+
+<histogram name="AI.LanguageModel.APIUsage.Messages.Text.Length"
+    units="characters" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded for each message content provided to a LanguageModel
+    `prompt` or `append` invocation. It can be used to measure the usage of the
+    text length of individual messages.
+  </summary>
+</histogram>
+
+<histogram name="AI.LanguageModel.APIUsage.Messages.Type"
+    enum="LanguageModelInputType" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded for each message content provided to a LanguageModel
+    `prompt` or `append` invocation. It can be used to measure the usage of the
+    `type` of individual messages.
+  </summary>
+</histogram>
+
+<histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TemperatureX1000"
+    units="tempX1000" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked. It can be used to measure the usage of the
+    `temperature` option. It is only recorded when the option is set. The value
+    is multiplied by 1000 to support floating point metrics. The value is in the
+    range 0 to ~2000.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+</histogram>
+
+<histogram name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TopK"
+    units="tokens" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked. It can be used to measure the usage of the `topK`
+    option. It is only recorded when the option is set.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.{LanguageModelExpectedInputOrOutput}.Language"
+    enum="LocaleCodeBCP47" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked. It can be used to measure the usage of specified
+    expected input or output languages. option. It is only recorded when the
+    language(s) are specified.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+  <token key="LanguageModelExpectedInputOrOutput"
+      variants="LanguageModelExpectedInputOrOutput"/>
+</histogram>
+
+<histogram
+    name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.{LanguageModelExpectedInputOrOutput}.Type"
+    enum="LanguageModelInputType" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the LanguageModel `create` or `availability`
+    function is invoked. It can be used to measure the usage of the
+    `temperature` option. It is only recorded when the option is set.
+  </summary>
+  <token key="LanguageModelFunctionName" variants="LanguageModelFunctionName"/>
+  <token key="LanguageModelExpectedInputOrOutput"
+      variants="LanguageModelExpectedInputOrOutput"/>
+</histogram>
 
 <histogram name="AI.Session.{SessionType}.ContextTime" units="ms"
     expires_after="2026-05-19">

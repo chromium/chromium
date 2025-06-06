@@ -116,6 +116,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/availability.h:Availability) -->
 
+<!-- LINT.IfChange(LanguageModelInputRole) -->
+
+<enum name="LanguageModelInputRole">
+  <int value="0" label="System"/>
+  <int value="1" label="User"/>
+  <int value="2" label="Assistant"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputRole) -->
+
+<!-- LINT.IfChange(LanguageModelInputType) -->
+
+<enum name="LanguageModelInputType">
+  <int value="0" label="Text"/>
+  <int value="1" label="Image"/>
+  <int value="2" label="Audio"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType) -->
+
 <!-- LINT.IfChange(LoadTranslateKitResult) -->
 
 <enum name="LoadTranslateKitResult">

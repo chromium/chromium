@@ -72,4 +72,52 @@ std::string AIMetrics::GetAISessionResponseCallbackCountMetricName(
   return base::StrCat({"AI.Session.", GetAISessionTypeName(session_type),
                        ".PromptResponseCallbackCount"});
 }
+
+// static
+AIMetrics::LanguageModelInputType AIMetrics::ToLanguageModelInputType(
+    mojom::blink::AILanguageModelPromptContent::Tag type) {
+  using MojoEnum = mojom::blink::AILanguageModelPromptContent::Tag;
+  using MetricsEnum = AIMetrics::LanguageModelInputType;
+  switch (type) {
+    case MojoEnum::kText:
+      return MetricsEnum::kText;
+    case MojoEnum::kBitmap:
+      return MetricsEnum::kImage;
+    case MojoEnum::kAudio:
+      return MetricsEnum::kAudio;
+  }
+  NOTREACHED();
+}
+
+// static
+AIMetrics::LanguageModelInputType AIMetrics::ToLanguageModelInputType(
+    V8LanguageModelMessageType::Enum type) {
+  using V8Enum = V8LanguageModelMessageType::Enum;
+  using MetricsEnum = AIMetrics::LanguageModelInputType;
+  switch (type) {
+    case V8Enum::kText:
+      return MetricsEnum::kText;
+    case V8Enum::kImage:
+      return MetricsEnum::kImage;
+    case V8Enum::kAudio:
+      return MetricsEnum::kAudio;
+  }
+  NOTREACHED();
+}
+
+// static
+AIMetrics::LanguageModelInputRole AIMetrics::ToLanguageModelInputRole(
+    mojom::blink::AILanguageModelPromptRole role) {
+  using MojoEnum = mojom::blink::AILanguageModelPromptRole;
+  using MetricsEnum = AIMetrics::LanguageModelInputRole;
+  switch (role) {
+    case MojoEnum::kSystem:
+      return MetricsEnum::kSystem;
+    case MojoEnum::kUser:
+      return MetricsEnum::kUser;
+    case MojoEnum::kAssistant:
+      return MetricsEnum::kAssistant;
+  }
+  NOTREACHED();
+}
 }  // namespace blink
