@@ -23,12 +23,10 @@ import '../os_reset_page/os_powerwash_dialog.js';
 import './eol_offer_section.js';
 import './update_warning_dialog.js';
 import '../crostini_page/crostini_settings_card.js';
-import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -93,11 +91,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Whether users may initiate firmware updates
-       */
-      canChangeFirmware_: Boolean,
 
       currentUpdateStatusEvent_: {
         type: Object,
@@ -295,7 +288,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   ]);
 
   private isDarkModeActive_: boolean;
-  private canChangeFirmware_: boolean;
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent;
   private isManaged_: boolean;
   private deviceManager_: string;
@@ -423,12 +415,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
         this.onExtendedUpdatesSettingChanged_.bind(this));
   }
 
-  private updateFirmwareInfo_(): void {
-    this.aboutBrowserProxy_.canChangeFirmware().then(canChangeFirmware => {
-      this.canChangeFirmware_ = canChangeFirmware;
-    });
-  }
-
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
     if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
@@ -501,10 +487,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
 
     this.showUpdateStatus_ =
         this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
-  }
-
-  private getFirmwareDisabledIndicatorType_(): string {
-    return CrPolicyIndicatorType.DEVICE_POLICY;
   }
 
   /**
@@ -773,7 +755,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private onTpmFirmwareUpdateStatusChanged_(
       event: TpmFirmwareUpdateStatusChangedEvent): void {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
-    this.updateFirmwareInfo_();
   }
 
   private onTpmFirmwareUpdateClick_(): void {
@@ -806,13 +787,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
   // </if>
 
   private getFirmwareSublabel_(): string|null {
-    if (!this.canChangeFirmware_) {
-      return this.i18n('aboutFirmwareUpdatesDisabledDescription');
-    }
-    if (this.firmwareUpdateCount_ > 0) {
-      return this.i18n('aboutFirmwareUpdateAvailableDescription');
-    }
-    return this.i18n('aboutFirmwareUpToDateDescription');
+    return this.firmwareUpdateCount_ > 0 ?
+        this.i18n('aboutFirmwareUpdateAvailableDescription') :
+        this.i18n('aboutFirmwareUpToDateDescription');
   }
 
   private computeShowExtendedUpdatesOption_(): boolean {
