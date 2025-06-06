@@ -2908,6 +2908,10 @@
       status: "stable",
     },
     {
+      name: "LayoutMinSizeAutoIndefinite",
+      status: "stable",
+    },
+    {
       name: "LayoutMinSizeIndefinite",
       status: "stable",
     },
