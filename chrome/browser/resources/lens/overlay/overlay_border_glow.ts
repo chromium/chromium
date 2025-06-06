@@ -54,6 +54,10 @@ export class OverlayBorderGlowElement extends CrLitElement {
     this.isFadingOut = true;
   }
 
+  handlePostSelectionUpdated() {
+    this.isFadingOut = true;
+  }
+
   /* TODO(crbug.com/419035304): Trigger this when the CSB thumbnail is removed.
    */
   handleRemoveSearchboxThumbnail() {

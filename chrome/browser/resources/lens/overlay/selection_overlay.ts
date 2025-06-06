@@ -487,6 +487,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
+    if (this.enableBorderGlow) {
+      this.eventTracker_.add(document, 'post-selection-updated', () => {
+        this.getOverlayBorderGlow().handlePostSelectionUpdated();
+      });
+    }
 
     this.updateSelectionOverlayRect();
     this.updateDevicePixelRatioListener();
