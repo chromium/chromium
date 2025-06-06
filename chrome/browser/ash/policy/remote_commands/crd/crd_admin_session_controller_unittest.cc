@@ -39,9 +39,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
-#include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,12 +56,12 @@ using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
 
 using base::test::TestFuture;
+using remoting::ErrorCode;
 using remoting::SessionId;
 using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
 using remoting::mojom::SupportSessionParamsPtr;
-using remoting::protocol::ErrorCode;
 using ::testing::Eq;
 
 constexpr char kTestUserName[] = "test-username";
@@ -955,8 +955,8 @@ TEST_F(
   InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-  observer.OnHostStateError(static_cast<int64_t>(
-      remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY));
+  observer.OnHostStateError(
+      static_cast<int64_t>(remoting::ErrorCode::DISALLOWED_BY_POLICY));
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
@@ -1280,8 +1280,8 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
       InitWithReconnectableSession(session_controller());
   ASSERT_TRUE(curtain_controller().IsEnabled());
 
-  observer.OnHostStateError(static_cast<int64_t>(
-      remoting::protocol::ErrorCode::AUTHENTICATION_FAILED));
+  observer.OnHostStateError(
+      static_cast<int64_t>(remoting::ErrorCode::AUTHENTICATION_FAILED));
   FlushForTesting(observer);
 
   EXPECT_FALSE(curtain_controller().IsEnabled());

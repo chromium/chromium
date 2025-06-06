@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 
 #include "base/notreached.h"
-#include "remoting/protocol/errors.h"
+#include "remoting/base/errors.h"
 
 namespace policy {
 
 namespace {
-using remoting::protocol::ErrorCode;
+using remoting::ErrorCode;
 }  // namespace
 
 ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(

@@ -8,10 +8,10 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
-#include "remoting/protocol/errors.h"
+#include "remoting/base/errors.h"
 
-using remoting::protocol::ErrorCode;
-using remoting::protocol::ErrorCodeToString;
+using remoting::ErrorCode;
+using remoting::ErrorCodeToString;
 
 namespace policy {
 

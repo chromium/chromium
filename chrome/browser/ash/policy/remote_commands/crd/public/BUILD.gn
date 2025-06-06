@@ -30,6 +30,6 @@ static_library("interface") {
   deps = [
     "//base",
     "//components/policy/proto:",
-    "//remoting/protocol:errors",
+    "//remoting/base:errors",
   ]
 }

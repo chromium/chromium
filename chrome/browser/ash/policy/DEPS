@@ -26,7 +26,7 @@ include_rules = [
   "+remoting/host/curtain_mode_chromeos.h",
 
   # Allow includes for error codes.
-  "+remoting/protocol/errors.h",
+  "+remoting/base/errors.h",
 ]
 
 specific_include_rules = {

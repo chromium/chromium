@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_PUBLIC_CRD_SESSION_RESULT_CODES_H_
 
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "remoting/protocol/errors.h"
+#include "remoting/base/errors.h"
 
 namespace policy {
 
@@ -155,7 +155,7 @@ enum class ExtendedStartCrdSessionResultCode {
 
 // Translates the error code.
 ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
-    remoting::protocol::ErrorCode error_code);
+    remoting::ErrorCode error_code);
 
 StartCrdSessionResultCode ToStartCrdSessionResultCode(
     ExtendedStartCrdSessionResultCode error_code);
