@@ -16,7 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
@@ -72,6 +72,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   filter->add_platform(Study::PLATFORM_MAC);
   filter->add_platform(Study::PLATFORM_LINUX);
   filter->add_platform(Study::PLATFORM_CHROMEOS);
+  filter->add_platform(Study::PLATFORM_ANDROID);
   auto* layer_member_reference = base_study.mutable_layer();
   layer_member_reference->set_layer_id(123);
   layer_member_reference->add_layer_member_ids(1);
@@ -102,9 +103,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   return seed;
 }
 
-// TODO(crbug.com/421413499): Expand this to PlatformBrowserTest for Android
-// coverage.
-class LimitedEntropyRandomizationBrowserTest : public InProcessBrowserTest {
+class LimitedEntropyRandomizationBrowserTest : public PlatformBrowserTest {
  public:
   LimitedEntropyRandomizationBrowserTest() = default;
   ~LimitedEntropyRandomizationBrowserTest() override = default;
@@ -116,7 +115,7 @@ class LimitedEntropyRandomizationBrowserTest : public InProcessBrowserTest {
     DisableTestingConfig();
   }
 
-  // InProcessBrowserTest:
+  // PlatformBrowserTest:
   bool SetUpUserDataDirectory() override {
     const base::FilePath user_data_dir =
         base::PathService::CheckedGet(chrome::DIR_USER_DATA);
