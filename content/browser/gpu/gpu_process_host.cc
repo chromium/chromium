@@ -812,7 +812,8 @@ GpuProcessHost::~GpuProcessHost() {
         message += "was killed by you! Why?";
         break;
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
-        message += "crashed!";
+        message +=
+            base::StringPrintf("crashed! Exit code: %d.", info.exit_code);
         unexpected_exit = true;
         break;
       case base::TERMINATION_STATUS_STILL_RUNNING:
