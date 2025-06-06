@@ -1,3 +1,7 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # v8 depends on temporal_capi, which may occasionally update in ways that
 # change its API. Since temporal_capi lives in the chromium repo, v8 cannot
 # be atomically upgraded alongside temporal_capi changes. Instead, we have some
