@@ -5217,9 +5217,6 @@ crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.ht
 
 crbug.com/365615740 fast/events/wheel/mouse-wheel-scroll-latching.html [ Failure Pass Timeout ]
 
-# Sheriff 2020-02-28
-crbug.com/40675392 http/tests/devtools/network/network-initiator-chain.js [ Failure Pass ]
-
 crbug.com/1057822 http/tests/misc/synthetic-gesture-initiated-in-cross-origin-frame.html [ Crash Failure Pass ]
 
 # Ecosystem-Infra Sheriff 2020-04-15
