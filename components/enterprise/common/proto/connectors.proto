@@ -98,6 +98,10 @@ message ContentMetaData {
   // for Workspace sites.
   optional string content_area_account_email = 15;
 
+  // The email of the active user in the content area of the copy source. Only
+  // populated for paste events when the copy source is Workspace sites.
+  optional string source_content_area_account_email = 17;
+
   // The parent URL chain of the frame from which the action was triggered,
   // ordered from current frame URL to tab URL, inclusive.
   repeated string frame_url_chain = 16;
