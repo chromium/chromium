@@ -303,8 +303,6 @@ TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
 
 // Tests the logging of type-specific field-wise correctness.
 TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillRecordCorrectionOfSelectElements};
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",
       .fields = {{.role = NAME_FULL,
