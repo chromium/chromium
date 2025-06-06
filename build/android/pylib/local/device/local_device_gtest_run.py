@@ -164,28 +164,44 @@ def _GetLLVMProfilePath(device_coverage_dir, suite, coverage_index):
 
 
 def _GroupPreTests(tests):
-  pre_tests = dict()
+  """Separate a list of tests to two groups, depending on if having PRE_ tests.
+
+  PRE_ tests will be put in the same subgroup, in the order like
+  [PRE_PRE_foo, PRE_foo, foo].
+  """
+  pre_tests = []
   other_tests = []
-  for test in tests:
-    test_name_start = max(test.find('.') + 1, 0)
-    test_name = test[test_name_start:]
-    if test_name_start > 0 and test_name.startswith(_GTEST_PRETEST_PREFIX):
-      test_suite = test[:test_name_start - 1]
-      trim_test = test
-      trim_tests = [test]
 
-      while test_name.startswith(_GTEST_PRETEST_PREFIX):
-        test_name = test_name[len(_GTEST_PRETEST_PREFIX):]
-        trim_test = '%s.%s' % (test_suite, test_name)
-        trim_tests.append(trim_test)
+  pre_test_dict = {}
+  tests = set(tests)
+  # Preprocess pre tests. The key is the full test name without any disabled
+  # prefixes, and the value is the original full test name.
+  for t in tests:
+    if gtest_test_instance.IsPreTest(t):
+      pre_test_dict[gtest_test_instance.TestNameWithoutDisabledPrefix(t)] = t
 
-      # The trim test should exist at first place. For example, if a test has
-      # been disabled, there is no need to run PRE_ test with this test.
-      if trim_test in tests and (not trim_test in pre_tests or len(
-          pre_tests[trim_test]) < len(trim_tests)):
-        pre_tests[trim_test] = trim_tests
+  for t in tests:
+    # Skip PRE tests as they will be processed below.
+    if gtest_test_instance.IsPreTest(t):
+      continue
+
+    t_group = [t]
+    while True:
+      test_with_pre = gtest_test_instance.TestNameWithPrePrefix(t_group[0])
+      if test_with_pre in pre_test_dict:
+        # Remove pre test from dict, and add its original full test name to
+        # test group, in the order like PRE_PRE_foo, PRE_foo, foo.
+        t_group.insert(0, pre_test_dict.pop(test_with_pre))
+      else:
+        break
+
+    if len(t_group) > 1:
+      pre_tests.append(t_group)
     else:
-      other_tests.append(test)
+      other_tests.append(t_group[0])
+
+  for pre_test in pre_test_dict.values():
+    logging.error('%s is an orphaned pre test', pre_test)
   return pre_tests, other_tests
 
 
@@ -615,31 +631,52 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     """Create shards of tests to run on devices.
 
     Args:
-      tests: List containing tests or test batches.
+      tests: List containing tests or test groups.
 
     Returns:
-      List of test batches.
+      List of test groups.
     """
     # _crashes are tests that might crash and make the tests in the same shard
     # following the crashed testcase not run.
     # Thus we need to create separate shards for each crashed testcase,
     # so that other tests can be run.
     device_count = len(self._env.devices)
+    batch_size = self._test_instance.test_launcher_batch_limit
     shards = []
 
-    # Add shards with only one suspect testcase.
-    shards += [[crash] for crash in self._crashes if crash in tests]
+    for i in range(device_count):
+      tests_on_device = tests[i::device_count]
+      single_tests = []
+      for test in tests_on_device:
+        if isinstance(test, list):
+          # Any existing list from "tests" shall be a PRE test group.
+          assert self._IsPreTestGroup(test), (
+              f'Expecting a PRE test group, got {test}')
+          # A test subgroup will run together even if it has a crashed test
+          shards.append(test)
+        elif test in self._crashes:
+          # Put a crashed test in its own group.
+          shards.append([test])
+        else:
+          single_tests.append(test)
+          if len(single_tests) == batch_size:
+            shards.append(list(single_tests))
+            single_tests.clear()
 
-    # Delete suspect testcase from tests.
-    tests = [test for test in tests if not test in self._crashes]
+      if single_tests:
+        shards.append(list(single_tests))
 
-    max_shard_size = self._test_instance.test_launcher_batch_limit
-
-    shards.extend(self._PartitionTests(tests, device_count, max_shard_size))
     return shards
 
   #override
   def _GetTests(self):
+    """Get the tests to run on the current shard.
+
+    It either:
+     - gets the tests from the given filters.
+     - or retrieves the full tests, applies filters and sharding, and return
+       the tests to run on the current shard.
+    """
     if self._test_instance.extract_test_list_from_filter:
       # When the exact list of tests to run is given via command-line (e.g. when
       # locally iterating on a specific test), skip querying the device (which
@@ -706,52 +743,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     return tests
 
   #override
-  def _AppendPreTestsForRetry(self, failed_tests, tests):
-    if not self._test_instance.run_pre_tests:
-      return failed_tests
-
-    pre_tests, _ = _GroupPreTests(tests)
-    trim_failed_tests = set()
-    for failed_test in failed_tests:
-      failed_test_name_start = max(failed_test.find('.') + 1, 0)
-      failed_test_name = failed_test[failed_test_name_start:]
-
-      if failed_test_name_start > 0 and failed_test_name.startswith(
-          _GTEST_PRETEST_PREFIX):
-        failed_test_suite = failed_test[:failed_test_name_start - 1]
-        while failed_test_name.startswith(_GTEST_PRETEST_PREFIX):
-          failed_test_name = failed_test_name[len(_GTEST_PRETEST_PREFIX):]
-        failed_test = '%s.%s' % (failed_test_suite, failed_test_name)
-      trim_failed_tests.add(failed_test)
-
-    all_tests = []
-    for trim_failed_test in trim_failed_tests:
-      if trim_failed_test in tests:
-        if trim_failed_test in pre_tests:
-          all_tests.extend(pre_tests[trim_failed_test])
-        else:
-          all_tests.append(trim_failed_test)
-    return all_tests
-
-  #override
   def _GroupTests(self, tests):
     pre_tests, other_tests = _GroupPreTests(tests)
-
-    all_tests = []
-    for other_test in other_tests:
-      if not other_test in pre_tests:
-        all_tests.append(other_test)
-
-    # TODO(crbug.com/40200835): Add logic to support grouping tests.
-    # Once grouping logic is added, switch to 'append' from 'extend'.
-    for _, test_list in pre_tests.items():
-      all_tests.extend(test_list)
-
-    return all_tests
-
-  #override
-  def _GroupTestsAfterSharding(self, tests):
-    return self._GroupTests(tests)
+    all_tests = pre_tests + other_tests
+    return self._SortTests(all_tests)
 
   def _UploadTestArtifacts(self, device, test_artifacts_device_dir):
     # TODO(jbudorick): Reconcile this with the output manager once
@@ -836,7 +831,29 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
   #override
   def _GetUniqueTestName(self, test):
+    if isinstance(test, list):
+      # Pick the last test which doesn't have PRE_ prefix.
+      test = test[-1]
     return gtest_test_instance.TestNameWithoutDisabledPrefix(test)
+
+  def _IsPreTestGroup(self, test_group):
+    """Check if a test group has one and only one PRE test group."""
+    # pylint: disable=no-self-use
+    test_set = set()
+    has_pre_test = False
+    for test in test_group:
+      if not has_pre_test and gtest_test_instance.IsPreTest(test):
+        has_pre_test = True
+      test_set.add(gtest_test_instance.TestNameWithoutPrefixes(test))
+    return has_pre_test and len(test_set) == 1
+
+  #override
+  def _ShouldRetryFullGroup(self, test_group):
+    """A group in gtest shall be a PRE test group and retry in full."""
+    # Ensure the given test group is a PRE test group
+    assert self._IsPreTestGroup(test_group), (
+        f'Expecting a PRE test group, got {test_group}')
+    return True
 
   #override
   def _RunTest(self, device, test):

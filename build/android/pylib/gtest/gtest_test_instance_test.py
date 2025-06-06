@@ -4,7 +4,13 @@
 # found in the LICENSE file.
 
 
+import os
 import unittest
+
+import sys
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from pylib.base import base_test_result
 from pylib.gtest import gtest_test_instance
@@ -352,8 +358,7 @@ class GtestTestInstanceTests(unittest.TestCase):
       'DISABLED_A.DISABLED_B',
     ]
     for test_name in test_name_list:
-      actual = gtest_test_instance \
-          .TestNameWithoutDisabledPrefix(test_name)
+      actual = gtest_test_instance.TestNameWithoutDisabledPrefix(test_name)
       expected = 'A.B'
       self.assertEqual(expected, actual)
 
@@ -364,17 +369,59 @@ class GtestTestInstanceTests(unittest.TestCase):
       'FLAKY_A.FLAKY_B',
     ]
     for test_name in test_name_list:
-      actual = gtest_test_instance \
-          .TestNameWithoutDisabledPrefix(test_name)
+      actual = gtest_test_instance.TestNameWithoutDisabledPrefix(test_name)
       expected = 'A.B'
       self.assertEqual(expected, actual)
 
   def testTestNameWithoutDisabledPrefix_notDisabledOrFlaky(self):
     test_name = 'A.B'
-    actual = gtest_test_instance \
-        .TestNameWithoutDisabledPrefix(test_name)
+    actual = gtest_test_instance.TestNameWithoutDisabledPrefix(test_name)
     expected = 'A.B'
     self.assertEqual(expected, actual)
+
+  def testTestNameWithoutPrefix(self):
+    test_name_list = [
+        'A.DISABLED_B',
+        'DISABLED_A.B',
+        'DISABLED_A.DISABLED_B',
+        'A.FLAKY_B',
+        'FLAKY_A.B',
+        'FLAKY_A.FLAKY_B',
+        'A.PRE_B',
+        'A.PRE_PRE_B',
+        'A.DISABLED_PRE_B',
+        'A.DISABLED_PRE_PRE_B',
+        'DISABLED_A.DISABLED_PRE_B',
+        'DISABLED_A.DISABLED_PRE_PRE_B',
+    ]
+    for test_name in test_name_list:
+      actual = gtest_test_instance.TestNameWithoutPrefixes(test_name)
+      expected = 'A.B'
+      self.assertEqual(expected, actual)
+
+  def testTestNameWithPrePrefix(self):
+    test_data = [
+        ('A.B', 'A.PRE_B'),
+        ('A.PRE_B', 'A.PRE_PRE_B'),
+        ('A.DISABLED_B', 'A.PRE_B'),
+        ('A.DISABLED_PRE_B', 'A.PRE_PRE_B'),
+    ]
+    for test_name, expected in test_data:
+      actual = gtest_test_instance.TestNameWithPrePrefix(test_name)
+      self.assertEqual(expected, actual)
+
+  def testIsPreTest(self):
+    test_data = [
+        ('A.PRE_B', True),
+        ('A.PRE_PRE_B', True),
+        ('A.DISABLED_PRE_B', True),
+        ('A.DISABLED_PRE_PRE_B', True),
+        ('A.B', False),
+        ('A.DISABLED_B', False),
+    ]
+    for test_name, expected in test_data:
+      actual = gtest_test_instance.IsPreTest(test_name)
+      self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

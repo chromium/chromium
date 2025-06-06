@@ -67,8 +67,10 @@ class LocalDeviceTestRunTest(unittest.TestCase):
 
   def testSortTests(self):
     test_run = TestLocalDeviceTestRun()
+    # Note that the expected result purely depends on the implementation of
+    # the function "_DeterministicHash" and "_GetUniqueTestName".
     self.assertEqual(test_run._SortTests(['a', 'b', 'c', 'd', 'e', 'f', 'g']),
-                     ['d', 'f', 'c', 'b', 'e', 'a', 'g'])
+                     ['e', 'c', 'g', 'b', 'f', 'a', 'd'])
 
   def testGetTestsToRetry_allTestsPassed(self):
     results = [

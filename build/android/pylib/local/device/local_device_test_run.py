@@ -142,7 +142,7 @@ class LocalDeviceTestRun(test_run.TestRun):
   #override
   def RunTests(self, results, raw_logs_fh=None):
     tests = self._GetTests()
-    total_test_count = len(tests)
+    total_test_count = len(FlattenTestList(tests))
 
     exit_now = threading.Event()
 
@@ -156,12 +156,11 @@ class LocalDeviceTestRun(test_run.TestRun):
         self._env.ResetCurrentTry()
         while self._env.current_try < self._env.max_tries and tests:
           tries = self._env.current_try
-          tests = self._SortTests(tests)
-          grouped_tests = self._GroupTestsAfterSharding(tests)
+          flatten_tests = FlattenTestList(tests)
           logging.info('STARTING TRY #%d/%d', tries + 1, self._env.max_tries)
           if tries > 0 and self._env.recover_devices:
             # The variable "tests" is reused to store the failed tests.
-            failed_test_pct = 100 * len(tests) // total_test_count
+            failed_test_pct = 100 * len(flatten_tests) // total_test_count
             if failed_test_pct > FAILED_TEST_PCT_MAX:
               logging.info(
                   'Attempting to recover devices as the percentage of failed '
@@ -174,13 +173,13 @@ class LocalDeviceTestRun(test_run.TestRun):
               self._RecoverDevices()
           logging.info(
               'Will run %d tests, grouped into %d groups, on %d devices: %s',
-              len(tests), len(grouped_tests), len(self._env.devices),
+              len(flatten_tests), len(tests), len(self._env.devices),
               ', '.join(str(d) for d in self._env.devices))
           for t in tests:
             logging.debug('  %s', t)
 
           try_results = base_test_result.TestRunResults()
-          test_names = (self._GetUniqueTestName(t) for t in tests)
+          test_names = (self._GetUniqueTestName(t) for t in flatten_tests)
           try_results.AddResults(
               base_test_result.BaseTestResult(
                   t, base_test_result.ResultType.NOTRUN)
@@ -194,15 +193,13 @@ class LocalDeviceTestRun(test_run.TestRun):
           try:
             if self._ShouldShardTestsForDevices():
               tc = test_collection.TestCollection(
-                  self._CreateShardsForDevices(grouped_tests))
+                  self._CreateShardsForDevices(tests))
               self._env.parallel_devices.pMap(
                   self._RunTestsOnDevice,
                   tc, try_results, exit_now).pGet(None)
             else:
-              self._env.parallel_devices.pMap(self._RunTestsOnDevice,
-                                              grouped_tests,
-                                              try_results,
-                                              exit_now).pGet(None)
+              self._env.parallel_devices.pMap(self._RunTestsOnDevice, tests,
+                                              try_results, exit_now).pGet(None)
           except TestsTerminated:
             for unknown_result in try_results.GetUnknown():
               try_results.AddResult(
@@ -227,6 +224,12 @@ class LocalDeviceTestRun(test_run.TestRun):
     self._env.parallel_devices.pMap(device_recovery.RecoverDevice, None)
 
   def _GetTestsToRetry(self, tests, try_results):
+    """Get the tests to retry.
+
+    Note "tests" can have groups of test. For gtest, we would like to add
+    the entire group to retry as they are PRE test group. For instrumentation,
+    we only keep the failed tests in that group.
+    """
 
     def is_failure_result(test_result):
       if isinstance(test_result, list):
@@ -237,27 +240,32 @@ class LocalDeviceTestRun(test_run.TestRun):
               base_test_result.ResultType.PASS,
               base_test_result.ResultType.SKIP))
 
+    def get_tests_to_retry(test_list, all_test_results):
+      failed_tests = []
+      for test in test_list:
+        if isinstance(test, list):
+          failed_test = get_tests_to_retry(test, all_test_results)
+          if failed_test:
+            failed_tests.append(
+                test if self._ShouldRetryFullGroup(test) else failed_test)
+        else:
+          name = self._GetUniqueTestName(test)
+          # When specifying a test filter, names can contain trailing wildcards.
+          # See local_device_gtest_run._ExtractTestsFromFilters()
+          if name.endswith('*'):
+            result = [
+                r for n, r in all_test_results.items()
+                if fnmatch.fnmatch(n, name)
+            ]
+          else:
+            result = all_test_results.get(name)
+          if is_failure_result(result) and self._ShouldRetry(test, result):
+            failed_tests.append(test)
+      return failed_tests
+
     all_test_results = {r.GetName(): r for r in try_results.GetAll()}
+    return get_tests_to_retry(tests, all_test_results)
 
-    tests_and_names = ((t, self._GetUniqueTestName(t)) for t in tests)
-
-    tests_and_results = {}
-    for test, name in tests_and_names:
-      if name.endswith('*'):
-        tests_and_results[name] = (test, [
-            r for n, r in all_test_results.items() if fnmatch.fnmatch(n, name)
-        ])
-      else:
-        tests_and_results[name] = (test, all_test_results.get(name))
-
-    failed_tests_and_results = ((test, result)
-                                for test, result in tests_and_results.values()
-                                if is_failure_result(result))
-
-    failed_tests = [
-        t for t, r in failed_tests_and_results if self._ShouldRetry(t, r)
-    ]
-    return self._AppendPreTestsForRetry(failed_tests, tests)
 
   def _ApplyExternalSharding(self, tests, shard_index, total_shards):
     logging.info('Using external sharding settings. This is shard %d/%d',
@@ -268,103 +276,27 @@ class LocalDeviceTestRun(test_run.TestRun):
 
     sharded_tests = []
 
-    # Sort tests by hash.
-    # TODO(crbug.com/40200835): Add sorting logic back to _PartitionTests.
-    tests = self._SortTests(tests)
-
-    # Group tests by tests that should run in the same test invocation - either
-    # unit tests or batched tests.
     grouped_tests = self._GroupTests(tests)
+    for test in grouped_tests:
+      test_name = self._GetUniqueTestName(test)
+      if self._DeterministicHash(test_name) % total_shards == shard_index:
+        sharded_tests.append(test)
 
-    # Partition grouped tests approximately evenly across shards.
-    partitioned_tests = self._PartitionTests(grouped_tests, total_shards,
-                                             float('inf'))
-    if len(partitioned_tests) <= shard_index:
-      return []
-    for t in partitioned_tests[shard_index]:
-      if isinstance(t, list):
-        sharded_tests.extend(t)
-      else:
-        sharded_tests.append(t)
     return sharded_tests
 
-  # Sort by hash so we don't put all tests in a slow suite in the same
-  # partition.
+  def _DeterministicHash(self, test_name):
+    """Return the deterministic hash for a test name, as an integer."""
+    # pylint: disable=no-self-use
+    assert isinstance(test_name, str), 'Expecting a string.'
+    hash_bytes = hashlib.sha256(test_name.encode('utf-8')).digest()
+    # To speed thing up, only take the last 3 bytes
+    return int.from_bytes(hash_bytes[-3:])
+
+  # Sort by hash so we don't put all tests in a slow suite in the same shard.
   def _SortTests(self, tests):
-    return sorted(tests,
-                  key=lambda t: hashlib.sha256(
-                      self._GetUniqueTestName(t[0] if isinstance(t, list) else t
-                                              ).encode()).hexdigest())
-
-  # Partition tests evenly into |num_desired_partitions| partitions where
-  # possible. However, many constraints make partitioning perfectly impossible.
-  # If the max_partition_size isn't large enough, extra partitions may be
-  # created (infinite max size should always return precisely the desired
-  # number of partitions). Even if the |max_partition_size| is technically large
-  # enough to hold all of the tests in |num_desired_partitions|, we attempt to
-  # keep test order relatively stable to minimize flakes, so when tests are
-  # grouped (eg. batched tests), we cannot perfectly fill all paritions as that
-  # would require breaking up groups.
-  def _PartitionTests(self, tests, num_desired_partitions, max_partition_size):
-    # pylint: disable=no-self-use
-    partitions = []
-
-
-    num_not_yet_allocated = sum(
-        [len(test) - 1 for test in tests if self._CountTestsIndividually(test)])
-    num_not_yet_allocated += len(tests)
-
-    # Fast linear partition approximation capped by max_partition_size. We
-    # cannot round-robin or otherwise re-order tests dynamically because we want
-    # test order to remain stable.
-    partition_size = min(num_not_yet_allocated // num_desired_partitions,
-                         max_partition_size)
-    partitions.append([])
-    last_partition_size = 0
-    for test in tests:
-      test_count = len(test) if self._CountTestsIndividually(test) else 1
-      # Make a new shard whenever we would overfill the previous one. However,
-      # if the size of the test group is larger than the max partition size on
-      # its own, just put the group in its own shard instead of splitting up the
-      # group.
-      # TODO(crbug.com/40200835): Add logic to support PRE_ test recognition but
-      # it may hurt performance in most scenarios. Currently all PRE_ tests are
-      # partitioned into the last shard. Unless the number of PRE_ tests are
-      # larger than the partition size, the PRE_ test may get assigned into a
-      # different shard and cause test failure.
-      if (last_partition_size + test_count > partition_size
-          and last_partition_size > 0):
-        num_desired_partitions -= 1
-        if num_desired_partitions <= 0:
-          # Too many tests for number of partitions, just fill all partitions
-          # beyond num_desired_partitions.
-          partition_size = max_partition_size
-        else:
-          # Re-balance remaining partitions.
-          partition_size = min(num_not_yet_allocated // num_desired_partitions,
-                               max_partition_size)
-        partitions.append([])
-        partitions[-1].append(test)
-        last_partition_size = test_count
-      else:
-        partitions[-1].append(test)
-        last_partition_size += test_count
-
-      num_not_yet_allocated -= test_count
-
-    if not partitions[-1]:
-      partitions.pop()
-    return partitions
-
-  def _CountTestsIndividually(self, test):
-    # pylint: disable=no-self-use
-    if not isinstance(test, list):
-      return False
-    annotations = test[0]['annotations']
-    # UnitTests tests are really fast, so to balance shards better, count
-    # UnitTests Batches as single tests.
-    return ('Batch' not in annotations
-            or annotations['Batch']['value'] != 'UnitTests')
+    return sorted(
+        tests,
+        key=lambda t: self._DeterministicHash(self._GetUniqueTestName(t)))
 
   def _CreateShardsForDevices(self, tests):
     raise NotImplementedError
@@ -376,6 +308,11 @@ class LocalDeviceTestRun(test_run.TestRun):
   def _ShouldRetry(self, test, result):
     # pylint: disable=no-self-use,unused-argument
     return True
+
+  def _ShouldRetryFullGroup(self, test_group):
+    """Whether should retry the full group if the group has test failure."""
+    # pylint: disable=no-self-use,unused-argument
+    return False
 
   #override
   def GetTestsForListing(self):
@@ -395,19 +332,27 @@ class LocalDeviceTestRun(test_run.TestRun):
     return sorted(f'{d} <- {os.path.relpath(h)}' for h, d in host_device_tuples)
 
   def _GetTests(self):
+    """Get the tests to run on the assigned shard index.
+
+    Shall be implemented by the subclasses.
+    """
     raise NotImplementedError
 
   def _GroupTests(self, tests):
+    """Group tests by tests that should run in the same test invocation.
+
+    Can be override by subclasses if needed. Examples are:
+      - gtest: PRE_ tests
+      - instrumentation test: unit tests and batched tests.
+
+    Args:
+      tests: a flatten list of tests. The element can be a string for gtest,
+        or a dict for instrumentation tests.
+
+    Return a list whose element can be a test, or a list of tests.
+    """
     # pylint: disable=no-self-use
     return tests
-
-  def _GroupTestsAfterSharding(self, tests):
-    # pylint: disable=no-self-use
-    return tests
-
-  def _AppendPreTestsForRetry(self, failed_tests, tests):
-    # pylint: disable=no-self-use,unused-argument
-    return failed_tests
 
   def _RunTest(self, device, test):
     raise NotImplementedError
