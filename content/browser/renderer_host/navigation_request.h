@@ -32,6 +32,7 @@
 #include "content/browser/renderer_host/cookie_access_observers.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
+#include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -111,7 +112,6 @@ class SubframeHistoryNavigationThrottle;
 class CONTENT_EXPORT NavigationRequest
     : public NavigationHandle,
       public NavigationURLLoaderDelegate,
-      public NavigationThrottleRunner::Delegate,
       public CommitDeferringConditionRunner::Delegate,
       public FencedFrameURLMapping::MappingResultObserver,
       public mojom::NavigationRendererCancellationListener,
@@ -754,6 +754,11 @@ class CONTENT_EXPORT NavigationRequest
   // Returns the underlying NavigationThrottleRunner for tests to manipulate.
   NavigationThrottleRunner* GetNavigationThrottleRunnerForTesting() {
     return throttle_runner_.get();
+  }
+
+  // Returns the underlying NavigationThrottleRegistry for tests to manipulate.
+  NavigationThrottleRegistry* GetNavigationThrottleRegistryForTesting() {
+    return throttle_registry_.get();
   }
 
   // Simulates renderer cancelling the navigation.
@@ -1720,6 +1725,13 @@ class CONTENT_EXPORT NavigationRequest
   std::optional<ukm::builders::NavigationTimeline>
   GetNavigationTimelineUkmBuilder();
 
+  // Called when the NavigationThrottleRunner is done processing the navigation
+  // event of type `event`. `result` is the final
+  // NavigationThrottle::ThrottleCheckResult for this event.
+  void OnNavigationEventProcessed(
+      NavigationThrottleEvent event,
+      NavigationThrottle::ThrottleCheckResult result);
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -2052,11 +2064,6 @@ class CONTENT_EXPORT NavigationRequest
   // Record download related UseCounters when navigation is a download after
   // filtered by download_policy.
   void RecordDownloadUseCountersPostPolicyCheck();
-
-  // NavigationThrottleRunner::Delegate:
-  void OnNavigationEventProcessed(
-      NavigationThrottleRunner::Event event,
-      NavigationThrottle::ThrottleCheckResult result) override;
 
   void OnWillStartRequestProcessed(
       NavigationThrottle::ThrottleCheckResult result);
@@ -2652,6 +2659,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // The offset of the new document in the history.
   const int navigation_entry_offset_ = 0;
+
+  // Owns the NavigationThrottleRegistry associated with this navigation.
+  // This should outlive `throttle_runner_`.
+  std::unique_ptr<NavigationThrottleRegistryImpl> throttle_registry_;
 
   // Owns the NavigationThrottles associated with this navigation, and is
   // responsible for notifying them about the various navigation events.

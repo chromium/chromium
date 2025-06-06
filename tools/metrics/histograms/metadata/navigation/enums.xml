@@ -464,7 +464,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="WillCommitWithoutUrlLoader"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_registry_impl.h:NavigationThrottleEvent)-->
 
 <!-- LINT.IfChange(NavigationTransitionCacheHitOrMissReason) -->
 

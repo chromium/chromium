@@ -3178,8 +3178,9 @@ void NavigationRequest::StartNavigation() {
   modified_request_headers_.Clear();
   removed_request_headers_.clear();
 
+  throttle_registry_ = std::make_unique<NavigationThrottleRegistryImpl>(this);
   throttle_runner_ = std::make_unique<NavigationThrottleRunner>(
-      this, navigation_id_, IsInPrimaryMainFrame());
+      throttle_registry_.get(), navigation_id_, IsInPrimaryMainFrame());
 
   // For prerendered page activation, CommitDeferringConditions have already run
   // at the beginning of the navigation, so we won't run them again.
@@ -3257,6 +3258,11 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
           common_params_->url.spec(), "Net Error Code", net_error_);
     }
   }
+
+  // Reset `throttle_runner_` and `throttle_registry_` in the reversed order of
+  // their creation as `throttle_runner_` has a pointer to `throttle_registry_`.
+  throttle_runner_.reset();
+  throttle_registry_.reset();
 
   // Reset the state of the NavigationRequest, and the navigation_handle_id.
   StopCommitTimeout();
@@ -5374,9 +5380,8 @@ void NavigationRequest::OnStartChecksComplete(
 #if DCHECK_IS_ON()
     if (result.action() == NavigationThrottle::BLOCK_REQUEST) {
       DCHECK(net::IsRequestBlockedError(result.net_error_code()));
-    }
-    // TODO(clamy): distinguish between CANCEL and CANCEL_AND_IGNORE.
-    else if (result.action() == NavigationThrottle::CANCEL_AND_IGNORE) {
+    } else if (result.action() == NavigationThrottle::CANCEL_AND_IGNORE) {
+      // TODO(clamy): distinguish between CANCEL and CANCEL_AND_IGNORE.
       DCHECK_EQ(result.net_error_code(), net::ERR_ABORTED);
     }
 #endif
@@ -5667,7 +5672,6 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
 }
 
 void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
-
   // Some navigation are cancelled even before requesting and receiving a
   // response. Those cases are not supported and the ResourceTiming is not
   // reported to the parent.
@@ -6121,7 +6125,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
     // DO NOT ADD CODE after this. The previous call to CommitNavigation
     // destroyed the NavigationRequest.
     return;
-  };
+  }
 
   RunCommitDeferringConditions();
   // DO NOT ADD CODE after this. The previous call to
@@ -7698,26 +7702,26 @@ void NavigationRequest::RecordDownloadUseCountersPostPolicyCheck() {
 }
 
 void NavigationRequest::OnNavigationEventProcessed(
-    NavigationThrottleRunner::Event event,
+    NavigationThrottleEvent event,
     NavigationThrottle::ThrottleCheckResult result) {
   DCHECK_NE(NavigationThrottle::DEFER, result.action());
   switch (event) {
-    case NavigationThrottleRunner::Event::kNoEvent:
+    case NavigationThrottleEvent::kNoEvent:
       DUMP_WILL_BE_NOTREACHED();
       return;
-    case NavigationThrottleRunner::Event::kWillStartRequest:
+    case NavigationThrottleEvent::kWillStartRequest:
       OnWillStartRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::kWillRedirectRequest:
+    case NavigationThrottleEvent::kWillRedirectRequest:
       OnWillRedirectRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::kWillFailRequest:
+    case NavigationThrottleEvent::kWillFailRequest:
       OnWillFailRequestProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::kWillProcessResponse:
+    case NavigationThrottleEvent::kWillProcessResponse:
       OnWillProcessResponseProcessed(result);
       return;
-    case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
+    case NavigationThrottleEvent::kWillCommitWithoutUrlLoader:
       OnWillCommitWithoutUrlLoaderProcessed(result);
       return;
   }
@@ -7906,7 +7910,7 @@ void NavigationRequest::RegisterThrottleForTesting(
   DCHECK(!IsPageActivation())
       << "Attempted to register a NavigationThrottle for an activating "
          "navigation which will not work.";
-  throttle_runner_->AddThrottle(std::move(navigation_throttle));
+  throttle_registry_->AddThrottle(std::move(navigation_throttle));
 }
 bool NavigationRequest::IsDeferredForTesting() {
   return IsDeferred();
@@ -7997,7 +8001,7 @@ void NavigationRequest::WillStartRequest() {
   // won't run them again on activation.
   if (!IsPageActivation()) {
     base::ElapsedTimer duration;
-    throttle_runner_->RegisterNavigationThrottles();
+    throttle_registry_->RegisterNavigationThrottles();
     base::UmaHistogramTimes(
         base::StrCat({"Navigation.RegisterNavigationThrottlesTime.",
                       IsInMainFrame() ? "MainFrame" : "Subframe"}),
@@ -8017,7 +8021,7 @@ void NavigationRequest::WillStartRequest() {
        IsInMainFrame() ? "MainFrame" : "SubFrame"}));
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::kWillStartRequest);
+      NavigationThrottleEvent::kWillStartRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -8050,7 +8054,7 @@ void NavigationRequest::WillRedirectRequest(
 
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::kWillRedirectRequest);
+      NavigationThrottleEvent::kWillRedirectRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -8063,7 +8067,7 @@ void NavigationRequest::WillFailRequest() {
 
   // Notify each throttle of the request.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::kWillFailRequest);
+      NavigationThrottleEvent::kWillFailRequest);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
 }
@@ -8082,7 +8086,7 @@ void NavigationRequest::WillProcessResponse() {
 
   // Notify each throttle of the response.
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::kWillProcessResponse);
+      NavigationThrottleEvent::kWillProcessResponse);
 
   // `this` may have been deleted by the previous call.
   if (!this_ptr) {
@@ -8101,7 +8105,7 @@ void NavigationRequest::WillCommitWithoutUrlLoader() {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   EnterChildTraceEvent("WillCommitWithoutUrlLoader", this);
 
-  throttle_runner_->RegisterNavigationThrottlesForCommitWithoutUrlLoader();
+  throttle_registry_->RegisterNavigationThrottlesForCommitWithoutUrlLoader();
 
   // `CommitNavigation()` expects to be called once the request has reached
   // at least `WILL_PROCESS_REPSONSE`. `WILL_COMMIT_WITHOUT_URL_LOADER` meets
@@ -8111,7 +8115,7 @@ void NavigationRequest::WillCommitWithoutUrlLoader() {
   processing_navigation_throttle_ = true;
 
   throttle_runner_->ProcessNavigationEvent(
-      NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader);
+      NavigationThrottleEvent::kWillCommitWithoutUrlLoader);
 }
 
 bool NavigationRequest::IsSelfReferentialURL() {
@@ -9889,9 +9893,10 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     //
     // 2. By a document in the <fencedframe> frame tree. In this case the
     //    initiator policies are properly plumbed and should be used.
-    //    TODO(crbug.com/40258851): Use the initiator policies. On can
-    //    use `is_embedder_initiated_fenced_frame_navigation_` to discriminate
-    //    (1) from (2).
+    //
+    // TODO(crbug.com/40258851): Use the initiator policies. On can use
+    // `is_embedder_initiated_fenced_frame_navigation_` to discriminate (1) from
+    // (2).
     //
     // NOTE: For an embedder initiated fenced frame navigation that is subject
     // to private network access checks:

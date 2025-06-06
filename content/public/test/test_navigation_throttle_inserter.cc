@@ -22,7 +22,7 @@ void TestNavigationThrottleInserter::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   if (callback_) {
     callback_.Run(*NavigationRequest::From(navigation_handle)
-                           ->GetNavigationThrottleRunnerForTesting());
+                           ->GetNavigationThrottleRegistryForTesting());
   }
 }
 

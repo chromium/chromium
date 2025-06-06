@@ -165,7 +165,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
     TestNavigationThrottle* test_throttle = new TestNavigationThrottle(
-        *GetNavigationRequest()->GetNavigationThrottleRunnerForTesting());
+        *GetNavigationRequest()->GetNavigationThrottleRegistryForTesting());
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
     GetNavigationRequest()->RegisterThrottleForTesting(
@@ -1225,7 +1225,6 @@ class PersistentOriginTrialNavigationRequestTest
  public:
   PersistentOriginTrialNavigationRequestTest()
       : delegate_mock_(std::make_unique<OriginTrialsControllerDelegateMock>()) {
-
   }
   ~PersistentOriginTrialNavigationRequestTest() override = default;
 

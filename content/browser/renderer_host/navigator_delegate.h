@@ -35,6 +35,7 @@ class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottleRegistry;
 class RenderFrameHostImpl;
+class WebContents;
 struct LoadCommittedDetails;
 struct OpenURLParams;
 

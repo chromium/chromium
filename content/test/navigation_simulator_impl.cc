@@ -1135,7 +1135,7 @@ NavigationRequest* NavigationSimulatorImpl::GetNavigationHandle() {
 
 NavigationThrottleRegistry&
 NavigationSimulatorImpl::GetNavigationThrottleRegistry() {
-  return *GetNavigationHandle()->GetNavigationThrottleRunnerForTesting();
+  return *GetNavigationHandle()->GetNavigationThrottleRegistryForTesting();
 }
 
 content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {

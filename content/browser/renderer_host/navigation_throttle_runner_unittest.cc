@@ -9,10 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -63,10 +63,11 @@ class DeletingNavigationThrottle : public NavigationThrottle {
 };
 
 class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
-                                     public NavigationThrottleRunner::Delegate {
+                                     public NavigationThrottleRegistryBase {
  public:
   NavigationThrottleRunnerTest()
       : delegate_result_(NavigationThrottle::DEFER) {}
+  ~NavigationThrottleRunnerTest() override = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -75,10 +76,10 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
   void Resume() { runner_->CallResumeForTesting(); }
 
-  void SimulateEvent(NavigationThrottleRunner::Event event) {
+  void SimulateEvent(NavigationThrottleEvent event) {
     was_delegate_notified_ = false;
     delegate_result_ = NavigationThrottle::DEFER;
-    observer_last_event_ = NavigationThrottleRunner::Event::kNoEvent;
+    observer_last_event_ = NavigationThrottleEvent::kNoEvent;
     runner_->ProcessNavigationEvent(event);
   }
 
@@ -90,7 +91,7 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
     return delegate_result_;
   }
 
-  NavigationThrottleRunner::Event observer_last_event() const {
+  NavigationThrottleEvent observer_last_event() const {
     return observer_last_event_;
   }
 
@@ -110,36 +111,36 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   }
 
   void CheckNotifiedOfEvent(TestNavigationThrottle* throttle,
-                            NavigationThrottleRunner::Event event) {
-    if (event == NavigationThrottleRunner::Event::kWillStartRequest) {
+                            NavigationThrottleEvent event) {
+    if (event == NavigationThrottleEvent::kWillStartRequest) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_START_REQUEST));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_START_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::kWillRedirectRequest) {
+    if (event == NavigationThrottleEvent::kWillRedirectRequest) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_REDIRECT_REQUEST));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_REDIRECT_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::kWillFailRequest) {
+    if (event == NavigationThrottleEvent::kWillFailRequest) {
       CHECK_EQ(
           1, throttle->GetCallCount(TestNavigationThrottle::WILL_FAIL_REQUEST));
     } else {
       CHECK_EQ(
           0, throttle->GetCallCount(TestNavigationThrottle::WILL_FAIL_REQUEST));
     }
-    if (event == NavigationThrottleRunner::Event::kWillProcessResponse) {
+    if (event == NavigationThrottleEvent::kWillProcessResponse) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_PROCESS_RESPONSE));
     } else {
       CHECK_EQ(0, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_PROCESS_RESPONSE));
     }
-    if (event == NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader) {
+    if (event == NavigationThrottleEvent::kWillCommitWithoutUrlLoader) {
       CHECK_EQ(1, throttle->GetCallCount(
                       TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER));
     } else {
@@ -152,12 +153,10 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   // synchronously return |result| on checks by default.
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
-    TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(registry_);
+    TestNavigationThrottle* test_throttle = new TestNavigationThrottle(*this);
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
-    runner_->AddThrottle(
-        std::unique_ptr<TestNavigationThrottle>(test_throttle));
+    AddThrottle(std::unique_ptr<TestNavigationThrottle>(test_throttle));
     return test_throttle;
   }
 
@@ -177,39 +176,51 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
   // Creates and register a NavigationThrottle that will delete the
   // NavigationHandle in checks.
   void AddDeletingNavigationThrottle() {
-    runner_->AddThrottle(std::make_unique<DeletingNavigationThrottle>(
-        registry_,
-        base::BindRepeating(
-            &NavigationThrottleRunnerTest::ResetNavigationThrottleRunner,
-            base::Unretained(this))));
+    AddThrottle(std::make_unique<DeletingNavigationThrottle>(
+        *this, base::BindRepeating(
+                   &NavigationThrottleRunnerTest::ResetNavigationThrottleRunner,
+                   base::Unretained(this))));
   }
 
   ukm::TestUkmRecorder& test_ukm_recorder() { return test_ukm_recorder_; }
 
  private:
-  // NavigationThrottleRunner::Delegate:
-  void OnNavigationEventProcessed(
-      NavigationThrottleRunner::Event event,
+  // NavigationThrottleRegistry:
+  NavigationHandle& GetNavigationHandle() override { return handle_; }
+  void AddThrottle(
+      std::unique_ptr<NavigationThrottle> navigation_throttle) override {
+    throttles_.push_back(std::move(navigation_throttle));
+  }
+  void MaybeAddThrottle(
+      std::unique_ptr<NavigationThrottle> navigation_throttle) override {
+    if (navigation_throttle) {
+      AddThrottle(std::move(navigation_throttle));
+    }
+  }
+  // NavigationThrottleRegistryBase:
+  void OnEventProcessed(
+      NavigationThrottleEvent event,
       NavigationThrottle::ThrottleCheckResult result) override {
     DCHECK(!was_delegate_notified_);
     delegate_result_ = result;
     was_delegate_notified_ = true;
     observer_last_event_ = event;
   }
+  std::vector<std::unique_ptr<NavigationThrottle>>& GetThrottles() override {
+    return throttles_;
+  }
+  NavigationThrottle& GetThrottleAtIndex(size_t index) override {
+    EXPECT_LT(index, throttles_.size());
+    return *throttles_[index];
+  }
 
   void ResetNavigationThrottleRunner() { runner_.reset(); }
 
   MockNavigationHandle handle_;
-  // Used to construct NavigationThrottle inheritances as the `runner` instance
-  // created in this test doesn't handle GetNavigationHandle() correctly for an
-  // unexpected downcast.
-  // TODO(https://crbug.com/412524375) Should be fixed together with the
-  // `Delegate` issue, tried at https://crrev.com/c/6508568.
-  MockNavigationThrottleRegistry registry_ =
-      MockNavigationThrottleRegistry(&handle_);
+  std::vector<std::unique_ptr<NavigationThrottle>> throttles_;
   std::unique_ptr<NavigationThrottleRunner> runner_;
-  NavigationThrottleRunner::Event observer_last_event_ =
-      NavigationThrottleRunner::Event::kNoEvent;
+  NavigationThrottleEvent observer_last_event_ =
+      NavigationThrottleEvent::kNoEvent;
   bool was_delegate_notified_ = false;
   NavigationThrottle::ThrottleCheckResult delegate_result_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
@@ -217,23 +228,23 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
 
 class NavigationThrottleRunnerTestWithEvent
     : public NavigationThrottleRunnerTest,
-      public testing::WithParamInterface<NavigationThrottleRunner::Event> {
+      public testing::WithParamInterface<NavigationThrottleEvent> {
  public:
-  NavigationThrottleRunnerTestWithEvent() : NavigationThrottleRunnerTest() {}
-  ~NavigationThrottleRunnerTestWithEvent() override {}
+  NavigationThrottleRunnerTestWithEvent() = default;
+  ~NavigationThrottleRunnerTestWithEvent() override = default;
   void SetUp() override {
     NavigationThrottleRunnerTest::SetUp();
     event_ = GetParam();
   }
 
-  NavigationThrottleRunner::Event event() const { return event_; }
+  NavigationThrottleEvent event() const { return event_; }
 
   void CheckNotified(TestNavigationThrottle* throttle) {
     CheckNotifiedOfEvent(throttle, event());
   }
 
  private:
-  NavigationThrottleRunner::Event event_;
+  NavigationThrottleEvent event_;
 };
 
 // Checks that a navigation deferred by a NavigationThrottle can be properly
@@ -286,27 +297,25 @@ TEST_P(NavigationThrottleRunnerTestWithEvent,
 INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEvent,
-    ::testing::Values(
-        NavigationThrottleRunner::Event::kWillStartRequest,
-        NavigationThrottleRunner::Event::kWillRedirectRequest,
-        NavigationThrottleRunner::Event::kWillFailRequest,
-        NavigationThrottleRunner::Event::kWillProcessResponse,
-        NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader));
+    ::testing::Values(NavigationThrottleEvent::kWillStartRequest,
+                      NavigationThrottleEvent::kWillRedirectRequest,
+                      NavigationThrottleEvent::kWillFailRequest,
+                      NavigationThrottleEvent::kWillProcessResponse,
+                      NavigationThrottleEvent::kWillCommitWithoutUrlLoader));
 
 class NavigationThrottleRunnerTestWithEventAndAction
     : public NavigationThrottleRunnerTest,
       public testing::WithParamInterface<
-          std::tuple<NavigationThrottleRunner::Event,
+          std::tuple<NavigationThrottleEvent,
                      NavigationThrottle::ThrottleAction>> {
  public:
-  NavigationThrottleRunnerTestWithEventAndAction()
-      : NavigationThrottleRunnerTest() {}
-  ~NavigationThrottleRunnerTestWithEventAndAction() override {}
+  NavigationThrottleRunnerTestWithEventAndAction() = default;
+  ~NavigationThrottleRunnerTestWithEventAndAction() override = default;
   void SetUp() override {
     NavigationThrottleRunnerTest::SetUp();
     std::tie(event_, action_) = GetParam();
   }
-  NavigationThrottleRunner::Event event() const { return event_; }
+  NavigationThrottleEvent event() const { return event_; }
   NavigationThrottle::ThrottleAction action() const { return action_; }
 
   void CheckNotified(TestNavigationThrottle* throttle) {
@@ -314,7 +323,7 @@ class NavigationThrottleRunnerTestWithEventAndAction
   }
 
  private:
-  NavigationThrottleRunner::Event event_;
+  NavigationThrottleEvent event_;
   NavigationThrottle::ThrottleAction action_;
 };
 
@@ -437,12 +446,11 @@ INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEventAndAction,
     ::testing::Combine(
-        ::testing::Values(
-            NavigationThrottleRunner::Event::kWillStartRequest,
-            NavigationThrottleRunner::Event::kWillRedirectRequest,
-            NavigationThrottleRunner::Event::kWillFailRequest,
-            NavigationThrottleRunner::Event::kWillProcessResponse,
-            NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader),
+        ::testing::Values(NavigationThrottleEvent::kWillStartRequest,
+                          NavigationThrottleEvent::kWillRedirectRequest,
+                          NavigationThrottleEvent::kWillFailRequest,
+                          NavigationThrottleEvent::kWillProcessResponse,
+                          NavigationThrottleEvent::kWillCommitWithoutUrlLoader),
         ::testing::Values(NavigationThrottle::PROCEED,
                           NavigationThrottle::CANCEL,
                           NavigationThrottle::CANCEL_AND_IGNORE,
@@ -453,18 +461,17 @@ INSTANTIATE_TEST_SUITE_P(
 class NavigationThrottleRunnerTestWithEventAndError
     : public NavigationThrottleRunnerTest,
       public testing::WithParamInterface<
-          std::tuple<NavigationThrottleRunner::Event,
+          std::tuple<NavigationThrottleEvent,
                      net::Error,
                      std::optional<std::string>>> {
  public:
-  NavigationThrottleRunnerTestWithEventAndError()
-      : NavigationThrottleRunnerTest() {}
-  ~NavigationThrottleRunnerTestWithEventAndError() override {}
+  NavigationThrottleRunnerTestWithEventAndError() = default;
+  ~NavigationThrottleRunnerTestWithEventAndError() override = default;
   void SetUp() override {
     NavigationThrottleRunnerTest::SetUp();
     std::tie(event_, error_, custom_error_page_) = GetParam();
   }
-  NavigationThrottleRunner::Event event() const { return event_; }
+  NavigationThrottleEvent event() const { return event_; }
   net::Error error() const { return error_; }
   const std::optional<std::string>& custom_error_page() const {
     return custom_error_page_;
@@ -475,7 +482,7 @@ class NavigationThrottleRunnerTestWithEventAndError
   }
 
  private:
-  NavigationThrottleRunner::Event event_;
+  NavigationThrottleEvent event_;
   net::Error error_;
   std::optional<std::string> custom_error_page_ = std::nullopt;
 };
@@ -518,12 +525,11 @@ INSTANTIATE_TEST_SUITE_P(
     AllEvents,
     NavigationThrottleRunnerTestWithEventAndError,
     ::testing::Combine(
-        ::testing::Values(
-            NavigationThrottleRunner::Event::kWillStartRequest,
-            NavigationThrottleRunner::Event::kWillRedirectRequest,
-            NavigationThrottleRunner::Event::kWillFailRequest,
-            NavigationThrottleRunner::Event::kWillProcessResponse,
-            NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader),
+        ::testing::Values(NavigationThrottleEvent::kWillStartRequest,
+                          NavigationThrottleEvent::kWillRedirectRequest,
+                          NavigationThrottleEvent::kWillFailRequest,
+                          NavigationThrottleEvent::kWillProcessResponse,
+                          NavigationThrottleEvent::kWillCommitWithoutUrlLoader),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
         ::testing::Values(std::nullopt, "<html><body>test</body></html>")));
 
