@@ -55,19 +55,10 @@
 
 {{namespace_begin(namespaces_as_array, variant)}}
 
-{#--- Constants #}
-{%- for constant in module.constants %}
-{%-   if constant.kind|is_string_kind %}
-const char {{constant.name}}[] = {{constant|constant_value}};
-{%-   endif %}
-{%- endfor %}
-
 {#--- Struct Constants #}
 {%- for struct in structs %}
 {%-   for constant in struct.constants %}
-{%-     if constant.kind|is_string_kind %}
-const char {{struct.name}}::{{constant.name}}[] = {{constant|constant_value}};
-{%-     else %}
+{%-     if not constant.kind|is_string_kind %}
 constexpr {{constant.kind|cpp_pod_type}} {{struct.name}}::{{constant.name}};
 {%-     endif %}
 {%-   endfor %}
