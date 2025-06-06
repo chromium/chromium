@@ -4,6 +4,12 @@
 
 #include "chromeos/ash/components/file_manager/indexing/file_index.h"
 
+#include <algorithm>
+#include <iterator>
+#include <set>
+#include <utility>
+#include <vector>
+
 #include "base/time/time.h"
 
 namespace ash::file_manager {
@@ -144,19 +150,19 @@ SearchResults FileIndex::Search(const Query& query) {
     if (term_id == -1) {
       return results;
     }
-    const std::set<int64_t> url_ids = storage_->GetUrlIdsForTermId(term_id);
+    std::set<int64_t> url_ids = storage_->GetUrlIdsForTermId(term_id);
     if (url_ids.empty()) {
       return results;
     }
     if (first) {
-      matched_url_ids = url_ids;
+      matched_url_ids = std::move(url_ids);
       first = false;
     } else {
       std::set<int64_t> intersection;
-      std::set_intersection(matched_url_ids.begin(), matched_url_ids.end(),
-                            url_ids.begin(), url_ids.end(),
-                            std::inserter(intersection, intersection.begin()));
-      matched_url_ids = intersection;
+      std::ranges::set_intersection(
+          matched_url_ids, url_ids,
+          std::inserter(intersection, intersection.begin()));
+      matched_url_ids = std::move(intersection);
     }
     if (matched_url_ids.empty()) {
       break;
