@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
@@ -40,6 +41,8 @@
   raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
+  /// The omnbibox text model, holding the text state.
+  raw_ptr<OmniboxTextModel> _omniboxTextModel;
   /// Whether it's the lens overlay omnibox.
   BOOL _inLensOverlay;
 }
@@ -48,12 +51,14 @@
                     (OmniboxControllerIOS*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
+                         omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
     _omniboxEditModel = omniboxEditModel;
     _omniboxViewIOS = omniboxViewIOS;
+    _omniboxTextModel = omniboxTextModel;
     _inLensOverlay = inLensOverlay;
   }
   return self;
@@ -155,6 +160,18 @@
                                   self.textField);
 }
 
+// Notifies the client about input changes.
+- (void)notifyClientOnUserInputInProgressChange:(BOOL)changedToUserInProgress {
+  if (changedToUserInProgress && self.client) {
+    self.client->OnInputInProgress(true);
+
+    if (_omniboxTextModel->user_input_in_progress ||
+        !_omniboxTextModel->in_revert) {
+      self.client->OnInputStateChanged();
+    }
+  }
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {
@@ -171,8 +188,7 @@
 - (void)onUserRemoveAdditionalText {
   [self setAdditionalText:u""];
   if (_omniboxEditModel) {
-    _omniboxEditModel->UpdateInput(/*has_selected_text=*/false,
-                                   /*prevent_inline_autocomplete=*/true);
+    [self updateInput];
   }
 }
 
@@ -192,8 +208,7 @@
   if (self.textField.userText.length) {
     // If the omnibox is not empty, start autocomplete.
     if (_omniboxEditModel) {
-      _omniboxEditModel->UpdateInput(/*has_selected_text=*/false,
-                                     /*prevent_inline_autocomplete=*/true);
+      [self updateInput];
     }
   } else {
     [self.omniboxAutocompleteController closeOmniboxPopup];
@@ -581,6 +596,42 @@
 /// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
+}
+
+/// Notifes the client and asks the autocomplete controller to start with a new
+/// updated input on user input in progress change.
+- (void)updateInput {
+  BOOL changeToUserInputInProgress =
+      _omniboxTextModel->SetInputInProgressNoNotify(true);
+
+  if (changeToUserInputInProgress &&
+      _omniboxTextModel->user_input_in_progress) {
+    _omniboxController->autocomplete_controller()->ResetSession();
+  }
+
+  if (!(_omniboxTextModel->HasFocus())) {
+    [self notifyClientOnUserInputInProgressChange:changeToUserInputInProgress];
+    return;
+  }
+
+  if (changeToUserInputInProgress && _omniboxTextModel->user_text.empty()) {
+    // In the case the user enters user-input-in-progress mode by clearing
+    // everything (i.e. via Backspace), ask for ZeroSuggestions instead of the
+    // normal prefix (as-you-type) autocomplete.
+    //
+    // The difference between a ZeroSuggest request and a normal
+    // prefix autocomplete request is getting fuzzier, and should be fully
+    // encapsulated by the AutocompleteInput::focus_type() member. We should
+    // merge these two calls soon, lest we confuse future developers.
+    _omniboxEditModel->StartZeroSuggestRequest(
+        /*user_clobbered_permanent_text=*/true);
+  } else {
+    // Otherwise run the normal prefix (as-you-type) autocomplete.
+    _omniboxEditModel->StartAutocomplete(/* has_selected_text*/ false,
+                                         /*prevent_inline_autocomplete*/ true);
+  }
+
+  [self notifyClientOnUserInputInProgressChange:changeToUserInputInProgress];
 }
 
 @end

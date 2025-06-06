@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -74,8 +75,10 @@ class MockAutocompleteController : public AutocompleteController {
 /// A mock class for OmniboxEditModel.
 class MockOmniboxEditModel : public OmniboxEditModelIOS {
  public:
-  MockOmniboxEditModel(OmniboxControllerIOS* controller)
-      : OmniboxEditModelIOS(controller, nullptr),
+  MockOmniboxEditModel(OmniboxControllerIOS* controller,
+                       OmniboxViewIOS* view,
+                       OmniboxTextModel* text_model)
+      : OmniboxEditModelIOS(controller, view, text_model),
         last_opened_selection(OmniboxPopupSelection(UINT_MAX)) {}
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
   MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
@@ -117,8 +120,10 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_controller_->SetAutocompleteControllerForTesting(
         std::move(autocomplete));
 
-    omnibox_edit_model_ =
-        std::make_unique<MockOmniboxEditModel>(omnibox_controller_.get());
+    omnibox_text_model_ = std::make_unique<OmniboxTextModel>();
+
+    omnibox_edit_model_ = std::make_unique<MockOmniboxEditModel>(
+        omnibox_controller_.get(), nullptr, omnibox_text_model_.get());
 
     controller_delegate_ =
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
@@ -136,6 +141,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
     omnibox_client_ = nullptr;
+    omnibox_text_model_ = nullptr;
     controller_delegate_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
@@ -166,6 +172,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
+  std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
   id controller_delegate_;
 };
 

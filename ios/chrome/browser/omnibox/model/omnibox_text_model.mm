@@ -29,3 +29,7 @@ bool OmniboxTextModel::SetInputInProgressNoNotify(bool in_progress) {
   }
   return true;
 }
+
+bool OmniboxTextModel::HasFocus() {
+  return focus_state != OMNIBOX_FOCUS_NONE;
+}

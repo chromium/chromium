@@ -31,10 +31,13 @@
 
 class OmniboxControllerIOS;
 class OmniboxPopupViewIOS;
+@class OmniboxTextController;
 
 class OmniboxEditModelIOS {
  public:
-  OmniboxEditModelIOS(OmniboxControllerIOS* controller, OmniboxViewIOS* view);
+  OmniboxEditModelIOS(OmniboxControllerIOS* controller,
+                      OmniboxViewIOS* view,
+                      OmniboxTextModel* text_model);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
   OmniboxEditModelIOS& operator=(const OmniboxEditModelIOS&) = delete;
@@ -88,11 +91,6 @@ class OmniboxEditModelIOS {
   // Sets the state of user_input_in_progress_, and notifies the observer if
   // that state has changed.
   void SetInputInProgress(bool in_progress);
-
-  // Calls SetInputInProgress, via SetInputInProgressNoNotify and
-  // NotifyObserversInputInProgress, calling the latter after
-  // StartAutocomplete, so that the result is only updated once.
-  void UpdateInput(bool has_selected_text, bool prevent_inline_autocomplete);
 
   // Resets the permanent display texts `url_for_editing_` to those provided by
   // the controller. Returns true if the display text shave changed and the
@@ -207,6 +205,8 @@ class OmniboxEditModelIOS {
 
   void SetAutocompleteInput(AutocompleteInput input);
 
+  void set_text_controller(OmniboxTextController* text_controller);
+
   // This calls `OpenMatch` directly for the few remaining `OmniboxEditModelIOS`
   // test cases that require explicit control over match content. For new
   // tests, and for non-test code, use `OpenSelection`.
@@ -286,9 +286,6 @@ class OmniboxEditModelIOS {
   void GetInfoForCurrentText(AutocompleteMatch* match,
                              GURL* alternate_nav_url) const;
 
-  // Notifies the observers that the state has changed.
-  void NotifyObserversInputInProgress(bool in_progress);
-
   // If focus_state_ does not match `state`, we update it and notify the
   // InstantController about the change (passing along the `reason` for the
   // change).
@@ -304,11 +301,14 @@ class OmniboxEditModelIOS {
   // Owns `OmniboxControllerIOS` which owns this.
   raw_ptr<OmniboxViewIOS> view_;
 
+  // The omnibox text model containing the text state.
+  raw_ptr<OmniboxTextModel> text_model_;
+
+  // The text controller.
+  __weak OmniboxTextController* text_controller_ = nil;
+
   // The initial text representing the current URL suitable for editing.
   std::u16string url_for_editing_;
-
-  // The omnibox text model containing the text state.
-  std::unique_ptr<OmniboxTextModel> text_model_;
 
   // Used to know what should be displayed. Updated when e.g. the popup
   // selection changes, the results change, on navigation, on tab switch etc; it

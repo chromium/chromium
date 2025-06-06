@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service_factory.h"
@@ -97,6 +98,7 @@
   std::unique_ptr<OmniboxViewIOS> _omniboxView;
   std::unique_ptr<OmniboxControllerIOS> _omniboxController;
   std::unique_ptr<OmniboxEditModelIOS> _omniboxEditModel;
+  std::unique_ptr<OmniboxTextModel> _omniboxTextModel;
 
   /// Controller for the omnibox autocomplete.
   OmniboxAutocompleteController* _omniboxAutocompleteController;
@@ -179,11 +181,12 @@
 
   DCHECK(_client.get());
 
+  _omniboxTextModel = std::make_unique<OmniboxTextModel>();
   OmniboxTextFieldIOS* textField = viewController.textField;
   _omniboxController = std::make_unique<OmniboxControllerIOS>(_client.get());
   _omniboxView = std::make_unique<OmniboxViewIOS>(textField);
   _omniboxEditModel = std::make_unique<OmniboxEditModelIOS>(
-      _omniboxController.get(), _omniboxView.get());
+      _omniboxController.get(), _omniboxView.get(), _omniboxTextModel.get());
   _omniboxView->SetOmniboxEditModel(_omniboxEditModel.get());
   _omniboxView->SetOmniboxController(_omniboxController.get());
 
@@ -218,6 +221,7 @@
       initWithOmniboxController:_omniboxController.get()
                  omniboxViewIOS:_omniboxView.get()
                omniboxEditModel:_omniboxEditModel.get()
+               omniboxTextModel:_omniboxTextModel.get()
                   inLensOverlay:_isLensOverlay];
   _omniboxTextController.delegate = mediator;
   _omniboxTextController.focusDelegate = self.focusDelegate;
@@ -225,6 +229,8 @@
       _omniboxAutocompleteController;
   _omniboxTextController.textField = textField;
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
+
+  _omniboxEditModel->set_text_controller(_omniboxTextController);
 
   mediator.omniboxTextController = _omniboxTextController;
   _omniboxView->SetOmniboxTextController(_omniboxTextController);
@@ -266,6 +272,7 @@
   _omniboxView.reset();
   _omniboxController.reset();
   _client.reset();
+  _omniboxTextModel.reset();
 
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.

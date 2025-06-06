@@ -25,7 +25,7 @@ struct OmniboxTextState {
 };
 
 // Manages the Omnibox text state.
-class OmniboxTextModel {
+struct OmniboxTextModel {
  public:
   OmniboxTextModel();
   ~OmniboxTextModel();
@@ -33,6 +33,9 @@ class OmniboxTextModel {
   // Sets the state of user_input_in_progress_. Returns whether said state
   // changed, so that the caller can evoke NotifyObserversInputInProgress().
   bool SetInputInProgressNoNotify(bool in_progress);
+
+  // Checks if a focus state is active.
+  bool HasFocus();
 
   // The Omnibox focus state.
   OmniboxFocusState focus_state;

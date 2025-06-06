@@ -68,6 +68,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/icu/source/common/unicode/ubidi.h"
@@ -92,15 +93,19 @@ const char kOmniboxfocus_resulted_in_navigation[] =
 // -----------------------------------------------------------
 
 OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
-                                         OmniboxViewIOS* view)
-    : controller_(controller),
-      view_(view),
-      text_model_(std::make_unique<OmniboxTextModel>()) {}
+                                         OmniboxViewIOS* view,
+                                         OmniboxTextModel* text_model)
+    : controller_(controller), view_(view), text_model_(text_model) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
 void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewIOS* popup_view) {
   popup_view_ = popup_view;
+}
+
+void OmniboxEditModelIOS::set_text_controller(
+    OmniboxTextController* text_controller) {
+  text_controller_ = text_controller;
 }
 
 metrics::OmniboxEventProto::PageClassification
@@ -186,49 +191,12 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
       controller_->client(), url_from_text, write_url);
 }
 
-void OmniboxEditModelIOS::UpdateInput(bool has_selected_text,
-                                      bool prevent_inline_autocomplete) {
-  bool changed_to_user_input_in_progress =
-      text_model_->SetInputInProgressNoNotify(true);
-
-  if (changed_to_user_input_in_progress &&
-      text_model_->user_input_in_progress) {
-    autocomplete_controller()->ResetSession();
-  }
-
-  if (!has_focus()) {
-    if (changed_to_user_input_in_progress) {
-      NotifyObserversInputInProgress(true);
-    }
-    return;
-  }
-
-  if (changed_to_user_input_in_progress && text_model_->user_text.empty()) {
-    // In the case the user enters user-input-in-progress mode by clearing
-    // everything (i.e. via Backspace), ask for ZeroSuggestions instead of the
-    // normal prefix (as-you-type) autocomplete.
-    //
-    // The difference between a ZeroSuggest request and a normal
-    // prefix autocomplete request is getting fuzzier, and should be fully
-    // encapsulated by the AutocompleteInput::focus_type() member. We should
-    // merge these two calls soon, lest we confuse future developers.
-    StartZeroSuggestRequest(/*user_clobbered_permanent_text=*/true);
-  } else {
-    // Otherwise run the normal prefix (as-you-type) autocomplete.
-    StartAutocomplete(has_selected_text, prevent_inline_autocomplete);
-  }
-
-  if (changed_to_user_input_in_progress) {
-    NotifyObserversInputInProgress(true);
-  }
-}
-
 void OmniboxEditModelIOS::SetInputInProgress(bool in_progress) {
   if (text_model_->SetInputInProgressNoNotify(in_progress)) {
     if (text_model_->user_input_in_progress) {
       autocomplete_controller()->ResetSession();
     }
-    NotifyObserversInputInProgress(in_progress);
+    [text_controller_ notifyClientOnUserInputInProgressChange:in_progress];
   }
 }
 
@@ -830,14 +798,6 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
               autocomplete_controller()->autocomplete_provider_client(),
               alternate_input, alternate_nav_url, false));
     }
-  }
-}
-
-void OmniboxEditModelIOS::NotifyObserversInputInProgress(bool in_progress) {
-  controller_->client()->OnInputInProgress(in_progress);
-
-  if (text_model_->user_input_in_progress || !text_model_->in_revert) {
-    controller_->client()->OnInputStateChanged();
   }
 }
 

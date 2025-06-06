@@ -7,12 +7,14 @@
 #import <memory>
 
 #import "components/omnibox/browser/test_omnibox_client.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 
 TestOmniboxEditModelIOS::TestOmniboxEditModelIOS(
     OmniboxControllerIOS* omnibox_controller,
     OmniboxViewIOS* view,
-    PrefService* pref_service)
-    : OmniboxEditModelIOS(omnibox_controller, view),
+    PrefService* pref_service,
+    OmniboxTextModel* text_model)
+    : OmniboxEditModelIOS(omnibox_controller, view, text_model),
       popup_is_open_(false),
       pref_service_(pref_service) {}
 

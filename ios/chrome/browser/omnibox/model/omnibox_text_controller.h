@@ -16,6 +16,7 @@ class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
+struct OmniboxTextModel;
 class OmniboxViewIOS;
 
 /// Controller of the omnibox text.
@@ -39,6 +40,7 @@ class OmniboxViewIOS;
                     (OmniboxControllerIOS*)omniboxController
                            omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
+                         omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -60,6 +62,9 @@ class OmniboxViewIOS;
 
 /// Inserts text into the omnibox without triggering autocomplete.
 - (void)insertTextToOmnibox:(NSString*)text;
+
+// Notifies the client about input changes.
+- (void)notifyClientOnUserInputInProgressChange:(BOOL)changedToUserInProgress;
 
 #pragma mark - Autocomplete event
 
