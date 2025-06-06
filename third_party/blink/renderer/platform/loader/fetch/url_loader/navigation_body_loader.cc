@@ -634,13 +634,21 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       is_main_frame ? net::HIGHEST : net::LOWEST, is_ad_frame);
   size_t redirect_count = commit_params->redirect_response.size();
 
-  if (redirect_count != commit_params->redirects.size()) {
-    // We currently incorrectly send empty redirect_response and redirect_infos
-    // on frame reloads and some cases involving throttles. There are also other
-    // reports of non-empty cases, so further investigation is still needed.
-    // TODO(https://crbug.com/1171225): Fix this.
-    redirect_count = std::min(redirect_count, commit_params->redirects.size());
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemoveCommitRedirectUrlsArray)) {
+    if (redirect_count != commit_params->redirects.size()) {
+      // We currently incorrectly send empty redirect_response and
+      // redirect_infos on frame reloads and some cases involving throttles.
+      // There are also other reports of non-empty cases, so further
+      // investigation is still needed.
+      // TODO(https://crbug.com/1171225): Fix this.
+      // TODO(https://crbug.com/422803238): Remove this entire statement as it
+      // should not be necessary.
+      redirect_count =
+          std::min(redirect_count, commit_params->redirects.size());
+    }
   }
+
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);
   for (size_t i = 0; i < redirect_count; ++i) {

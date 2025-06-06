@@ -2764,6 +2764,13 @@ void RenderFrameImpl::CommitNavigation(
   LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
                       common_params->url);
 
+  // Clear the `redirects` array to ensure it is not accidentally used somewhere
+  // downstream of this code.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRemoveCommitRedirectUrlsArray)) {
+    commit_params->redirects.clear();
+  }
+
   bool is_new_navigation_in_outermost_main_frame_with_http_or_https = false;
   if (frame_->IsOutermostMainFrame() &&
       common_params->url.SchemeIsHTTPOrHTTPS()) {
@@ -3128,6 +3135,13 @@ void RenderFrameImpl::CommitFailedNavigation(
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
+  // Clear the `redirects` array to ensure it is not accidentally used somewhere
+  // downstream of this code.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRemoveCommitRedirectUrlsArray)) {
+    commit_params->redirects.clear();
+  }
+
   GetWebView()->SetHistoryListFromNavigation(
       commit_params->current_history_list_index,
       commit_params->current_history_list_length);
@@ -3247,11 +3261,21 @@ void RenderFrameImpl::CommitFailedNavigation(
   // message to the browser.
   // TODO(crbug.com/40150370): Stop sending the URL back with DidCommit.
   navigation_params->unreachable_url = error.url();
-  if (commit_params->redirects.size()) {
-    navigation_params->pre_redirect_url_for_failed_navigations =
-        commit_params->redirects[0];
+  if (base::FeatureList::IsEnabled(
+          blink::features::kRemoveCommitRedirectUrlsArray)) {
+    if (commit_params->redirect_infos.size()) {
+      navigation_params->pre_redirect_url_for_failed_navigations =
+          common_params->url;
+    } else {
+      navigation_params->pre_redirect_url_for_failed_navigations = error.url();
+    }
   } else {
-    navigation_params->pre_redirect_url_for_failed_navigations = error.url();
+   if (commit_params->redirects.size()) {
+     navigation_params->pre_redirect_url_for_failed_navigations =
+         commit_params->redirects[0];
+   } else {
+     navigation_params->pre_redirect_url_for_failed_navigations = error.url();
+   }
   }
 
   navigation_params->policy_container =

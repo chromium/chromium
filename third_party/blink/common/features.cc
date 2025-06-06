@@ -2289,6 +2289,12 @@ BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
              "ReleaseResourceDecodedDataOnMemoryPressure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Flag guard for removing usage of the CommitNavigationParams.redirects
+// array of URLs in the renderer process.
+BASE_FEATURE(kRemoveCommitRedirectUrlsArray,
+             "RemoveCommitRedirectUrlsArray",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Disables sending the Purpose: "prefetch" header for prefetches and
 // prerenders.
 BASE_FEATURE(kRemovePurposeHeaderForPrefetch,
