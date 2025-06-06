@@ -83,7 +83,8 @@ void LanguageModelCreateClient::Create() {
     expected_in = ToMojoExpectations(options_->expectedInputs());
     for (const auto& expected : expected_in) {
       if (expected->type != mojom::blink::AILanguageModelPromptType::kText &&
-          !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
+          !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled(
+              GetExecutionContext())) {
         GetResolver()->Reject(DOMException::Create(
             kExceptionMessageUnableToCreateSession,
             DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
