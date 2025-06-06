@@ -615,6 +615,8 @@ void TabletModeController::OnLoginStatusChanged(LoginStatus login_status) {
     // switch to the clamshell UI mode.
     forced_ui_mode_ = UiMode::kClamshell;
     UpdateUiTabletState();
+
+    Shell::Get()->cursor_manager()->HideCursor();
   }
 }
 
