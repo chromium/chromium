@@ -3759,4 +3759,115 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
       OptimizationGuideAccessTokenResult::kUserNotSignedIn, 1);
 }
 
+class HintsManagerProactivePersonalizedFetchingTest : public HintsManagerTest {
+ public:
+  HintsManagerProactivePersonalizedFetchingTest() {
+    scoped_list_.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kRemoteOptimizationGuideFetching,
+                {{"batch_update_hints_for_top_hosts", "true"},
+                 {"max_concurrent_page_navigation_fetches", "2"},
+                 {"max_concurrent_batch_update_fetches",
+                  base::NumberToString(batch_concurrency_limit_)}},
+            },
+            {
+                features::kOptimizationGuideProactivePersonalizedHintsFetching,
+                {{"allowed_optimization_types", "SHOPPING_DISCOUNTS"}},
+            },
+        },
+        {features::kRemoteOptimizationGuideFetchingAnonymousDataConsent});
+  }
+
+  void SetUp() override {
+    HintsManagerTest::SetUp();
+    CreateHintsManager(/*top_host_provider=*/nullptr,
+                       identity_test_env()->identity_manager());
+  }
+
+  size_t batch_concurrency_limit() const { return batch_concurrency_limit_; }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
+
+ private:
+  size_t batch_concurrency_limit_ = 2;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList scoped_list_;
+};
+
+TEST_F(HintsManagerProactivePersonalizedFetchingTest,
+       NotAnAllowedOptimizationTypeHintsFetchedAtNavigationTime) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+  hints_manager()->RegisterOptimizationTypes({proto::DEFER_ALL_SCRIPT});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  auto navigation_data =
+      CreateTestNavigationData(url_without_hints(), {proto::DEFER_ALL_SCRIPT});
+  base::HistogramTester histogram_tester;
+  CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+      RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
+}
+
+TEST_F(HintsManagerProactivePersonalizedFetchingTest,
+       AllowedOptimizationTypeHintsFetchedAtNavigationTime) {
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+  hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  auto navigation_data = CreateTestNavigationData(url_without_hints(),
+                                                  {proto::SHOPPING_DISCOUNTS});
+  base::HistogramTester histogram_tester;
+  CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+      RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
+}
+
+TEST_F(HintsManagerProactivePersonalizedFetchingTest, TokenFailure) {
+  ASSERT_TRUE(identity_test_env()->identity_manager());
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableCheckingUserPermissionsForTesting);
+  hints_manager()->RegisterOptimizationTypes({proto::SHOPPING_DISCOUNTS});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  auto navigation_data = CreateTestNavigationData(url_without_hints(),
+                                                  {proto::SHOPPING_DISCOUNTS});
+  base::HistogramTester histogram_tester;
+  CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.AccessTokenHelper.Result",
+      OptimizationGuideAccessTokenResult::kTransientError, 1);
+}
+
 }  // namespace optimization_guide

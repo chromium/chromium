@@ -374,7 +374,9 @@ HintsManager::HintsManager(
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       allowed_contexts_for_personalized_metadata_(
-          features::GetAllowedContextsForPersonalizedMetadata()) {
+          features::GetAllowedContextsForPersonalizedMetadata()),
+      allowed_optimization_types_for_proactive_personalization_(
+          features::GetAllowedOptimizationTypesForProactivePersonalization()) {
   if (push_notification_manager_) {
     push_notification_manager_->SetDelegate(this);
   }
@@ -675,7 +677,7 @@ void HintsManager::OnComponentHintsUpdated(base::OnceClosure update_closure,
                           hints_updated);
 
   // Initiate the hints fetch scheduling if deferred startup handling is not
-  // enabled. Otherwise OnDeferredStartup() will iniitate it.
+  // enabled. Otherwise OnDeferredStartup() will initiate it.
   if (!features::ShouldDeferStartupActiveTabsHintsFetch()) {
     InitiateHintsFetchScheduling();
   }
@@ -1167,7 +1169,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
     }
   }
   if (allowed_contexts_for_personalized_metadata_.Has(request_context)) {
-    // Request the token before fetching the hints.
+    // Request access token before fetching hints.
     RequestAccessToken(
         identity_manager_,
         {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
@@ -1695,17 +1697,35 @@ void HintsManager::OnNavigationStartOrRedirect(
     return;
   }
 
-  MaybeFetchHintsForNavigation(navigation_data);
+  if (std::any_of(
+          registered_optimization_types_.begin(),
+          registered_optimization_types_.end(), [&](auto opt_type) {
+            return allowed_optimization_types_for_proactive_personalization_
+                .Has(opt_type);
+          })) {
+    // Request access token before fetching hints.
+    RequestAccessToken(
+        identity_manager_,
+        {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+        base::BindOnce(&HintsManager::MaybeFetchHintsForNavigation,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       navigation_data->GetWeakPtr()));
+  } else {
+    MaybeFetchHintsForNavigation(navigation_data->GetWeakPtr(),
+                                 /*access_token=*/std::string());
+  }
 }
 
 void HintsManager::MaybeFetchHintsForNavigation(
-    OptimizationGuideNavigationData* navigation_data) {
+    base::WeakPtr<OptimizationGuideNavigationData> navigation_data_weak_ptr,
+    const std::string& access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (registered_optimization_types_.empty()) {
+  if (registered_optimization_types_.empty() || !navigation_data_weak_ptr) {
     return;
   }
-
+  OptimizationGuideNavigationData* navigation_data =
+      navigation_data_weak_ptr.get();
   const GURL url = navigation_data->navigation_url();
   if (!IsAllowedToFetchNavigationHints(url)) {
     return;
@@ -1760,8 +1780,7 @@ void HintsManager::MaybeFetchHintsForNavigation(
                              optimization_guide_logger_);
   bool fetch_attempted = it->second->FetchOptimizationGuideServiceHints(
       hosts, urls, registered_optimization_types_,
-      proto::CONTEXT_PAGE_NAVIGATION, application_locale_,
-      /*access_token=*/std::string(),
+      proto::CONTEXT_PAGE_NAVIGATION, application_locale_, access_token,
       /*skip_cache=*/false,
       base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),

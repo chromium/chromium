@@ -1809,3 +1809,106 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Journeys",
       optimization_guide::FetcherRequestStatus::kSuccess, 1);
 }
+
+class ProactivePersonalizationHintsFetcherBrowserTest
+    : public HintsFetcherBrowserTest {
+ public:
+  ProactivePersonalizationHintsFetcherBrowserTest() = default;
+
+  ProactivePersonalizationHintsFetcherBrowserTest(
+      const ProactivePersonalizationHintsFetcherBrowserTest&) = delete;
+  ProactivePersonalizationHintsFetcherBrowserTest& operator=(
+      const ProactivePersonalizationHintsFetcherBrowserTest&) = delete;
+
+  ~ProactivePersonalizationHintsFetcherBrowserTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    HintsFetcherBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    HintsFetcherBrowserTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+  }
+
+  void PopulateEnabledFeatures(
+      std::vector<base::test::FeatureRefAndParams>* enabled_features) override {
+    base::FieldTrialParams personalized_fetching_params = GetFieldTrialParams();
+    enabled_features->emplace_back(
+        optimization_guide::features::
+            kOptimizationGuideProactivePersonalizedHintsFetching,
+        personalized_fetching_params);
+  }
+
+  virtual base::FieldTrialParams GetFieldTrialParams() {
+    return {
+        {"allowed_optimization_types", "NOSCRIPT"},
+    };
+  }
+
+  void EnableSignin() {
+    identity_test_env_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+ private:
+  // Identity test support.
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
+                       HintsFetcherFetchesWithAccessToken) {
+  SetNetworkConnectionOnline();
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  ResetCountHintsRequestsReceived();
+  EnableSignin();
+  SetExpectedBearerAccessToken("Bearer access_token");
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+
+  base::flat_set<std::string> srp_request;
+  srp_request.insert(GURL(search_results_page_url()).host());
+  srp_request.insert(GURL(search_results_page_url()).spec());
+  SetExpectedHintsRequestForHostsAndUrls(srp_request);
+  EXPECT_EQ(1u, count_hints_requests_received());
+}
+
+class ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest
+    : public ProactivePersonalizationHintsFetcherBrowserTest {
+  base::FieldTrialParams GetFieldTrialParams() override {
+    return {
+        {"allowed_optimization_types", "PERFORMANCE_HINTS"},
+    };
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest,
+    HintsFetcherDoesNotFetchAccessToken) {
+  SetNetworkConnectionOnline();
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  ResetCountHintsRequestsReceived();
+  EnableSignin();
+  SetExpectedBearerAccessToken(std::string());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+
+  base::flat_set<std::string> srp_request;
+  srp_request.insert(GURL(search_results_page_url()).host());
+  srp_request.insert(GURL(search_results_page_url()).spec());
+  SetExpectedHintsRequestForHostsAndUrls(srp_request);
+  EXPECT_EQ(1u, count_hints_requests_received());
+}

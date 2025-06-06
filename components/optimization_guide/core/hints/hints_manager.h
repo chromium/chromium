@@ -430,7 +430,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // |navigation_data| if the associated hints for each are not already in the
   // cache.
   void MaybeFetchHintsForNavigation(
-      OptimizationGuideNavigationData* navigation_data);
+      base::WeakPtr<OptimizationGuideNavigationData> navigation_data_weak_ptr,
+      const std::string& access_token);
 
   // If an entry for |navigation_url| is contained in |registered_callbacks_|,
   // it will load the hint for |navigation_url|'s host and upon completion, will
@@ -582,6 +583,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   // Requests contexts for which personalized metadata should be enabled.
   const features::RequestContextSet allowed_contexts_for_personalized_metadata_;
+
+  // Optimization types for which proactive personalization is enabled.
+  const features::OptimizationTypeSet
+      allowed_optimization_types_for_proactive_personalization_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
