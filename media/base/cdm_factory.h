@@ -49,8 +49,8 @@ enum class CreateCdmStatus : StatusCodeType {
   kDisconnectionError = 13,
   // EME use is not allowed on unique origins.
   kNotAllowedOnUniqueOrigin = 14,
-  // Android: MediaDrmBridge creation failed.
-  kMediaDrmBridgeCreationFailed = 15,
+  // 15 was kMediaDrmBridgeCreationFailed; no longer used as we now use more
+  // detailed statuses.
   // Android: MediaCrypto not available.
   kMediaCryptoNotAvailable = 16,
   // CrOs: Only one instance allowed.

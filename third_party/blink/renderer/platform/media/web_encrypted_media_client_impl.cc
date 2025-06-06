@@ -62,8 +62,6 @@ std::string ConvertCreateCdmStatusToString(media::CreateCdmStatus status) {
     case media::CreateCdmStatus::kNotAllowedOnUniqueOrigin:
       return "EME use is not allowed on unique origins.";
 #if BUILDFLAG(IS_ANDROID)
-    case media::CreateCdmStatus::kMediaDrmBridgeCreationFailed:
-      return "MediaDrmBridge creation failed.";
     case media::CreateCdmStatus::kMediaCryptoNotAvailable:
       return "MediaCrypto not available.";
     case media::CreateCdmStatus::kAndroidMediaDrmIllegalArgument:

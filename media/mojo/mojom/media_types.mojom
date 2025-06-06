@@ -675,7 +675,7 @@ enum CreateCdmStatus {
   kUnsupportedKeySystem = 12,
   kDisconnectionError = 13,
   kNotAllowedOnUniqueOrigin = 14,
-  kMediaDrmBridgeCreationFailed = 15,
+  //kMediaDrmBridgeCreationFailed = 15,     // Deprecated
   kMediaCryptoNotAvailable = 16,
   kNoMoreInstances = 17,
   kInsufficientGpuResources = 18,
