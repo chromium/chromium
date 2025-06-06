@@ -19,9 +19,9 @@ namespace net {
 
 class CookieBase;
 
-// RefUniqueCookieKey is similar to a UniqueCookieKey, but it cannot be copied
-// or moved. It MUST NOT outlive the CookieBase used to create it, because it
-// contains string_views to strings in the CookieBase.
+// RefUniqueCookieKey is similar to a UniqueCookieKey, but it does not own the
+// underlying data. It MUST NOT outlive the CookieBase used to create it,
+// because it contains references to data in the CookieBase.
 class NET_EXPORT RefUniqueCookieKey {
  public:
   // Conditionally populates the source scheme and source port depending on the
@@ -45,17 +45,17 @@ class NET_EXPORT RefUniqueCookieKey {
       std::string_view path,
       std::optional<CookieSourceScheme> source_scheme);
 
-  RefUniqueCookieKey(RefUniqueCookieKey&& other);
-  RefUniqueCookieKey(const RefUniqueCookieKey& other) = delete;
-  RefUniqueCookieKey& operator=(RefUniqueCookieKey&& other) = delete;
-  RefUniqueCookieKey& operator=(const RefUniqueCookieKey& other) = delete;
+  RefUniqueCookieKey(RefUniqueCookieKey&&);
+  RefUniqueCookieKey(const RefUniqueCookieKey&) = delete;
+  RefUniqueCookieKey& operator=(RefUniqueCookieKey&&) = delete;
+  RefUniqueCookieKey& operator=(const RefUniqueCookieKey&) = delete;
 
   ~RefUniqueCookieKey();
 
-  friend bool operator==(const RefUniqueCookieKey& left,
-                         const RefUniqueCookieKey& right) = default;
-  friend auto operator<=>(const RefUniqueCookieKey& left,
-                          const RefUniqueCookieKey& right) = default;
+  friend bool operator==(const RefUniqueCookieKey&,
+                         const RefUniqueCookieKey&) = default;
+  friend auto operator<=>(const RefUniqueCookieKey&,
+                          const RefUniqueCookieKey&) = default;
 
  private:
   enum class KeyType {

@@ -41,7 +41,7 @@ RefUniqueCookieKey RefUniqueCookieKey::Domain(
                             source_scheme, /*port=*/std::nullopt);
 }
 
-RefUniqueCookieKey::RefUniqueCookieKey(RefUniqueCookieKey&& other) = default;
+RefUniqueCookieKey::RefUniqueCookieKey(RefUniqueCookieKey&&) = default;
 
 RefUniqueCookieKey::~RefUniqueCookieKey() = default;
 

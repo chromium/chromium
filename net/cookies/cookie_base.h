@@ -145,15 +145,14 @@ class NET_EXPORT CookieBase {
   // associated features are enabled.
   UniqueCookieKey UniqueKey() const;
 
-  // Returns a non-copyable and non-movable key such that two cookies with the
-  // same RefUniqueKey() are guaranteed to be equivalent in the sense of
-  // IsEquivalent().
+  // Returns a non-owning key such that two cookies with the same RefUniqueKey()
+  // are guaranteed to be equivalent in the sense of IsEquivalent().
   // The `partition_key_` field will always be nullopt when partitioned cookies
   // are not enabled.
   // The source_scheme and source_port fields depend on whether or not their
   // associated features are enabled.
-  // A RefUniqueKey keeps string_views that point to the original strings in the
-  // CookieBase, so it must not be stored beyond the lifetime of the CookieBase.
+  // A RefUniqueKey keeps references that point to data in the CookieBase, so it
+  // must not be stored beyond the lifetime of the CookieBase.
   RefUniqueCookieKey RefUniqueKey() const;
 
   // Same as UniqueKey() except it does not contain a source_port or
