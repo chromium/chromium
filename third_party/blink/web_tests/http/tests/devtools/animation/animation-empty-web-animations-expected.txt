@@ -1,4 +1,0 @@
-Tests the empty web animations do not show up in animation timeline.
-
-0
-

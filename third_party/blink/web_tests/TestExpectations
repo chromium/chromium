@@ -8564,14 +8564,6 @@ crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failur
 # Flaky output
 crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Failure ]
 
-# Temporarily skipped to land crrev.com/c/5718130
-crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-animations.js [ Failure Skip ]
-crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-transitions.js [ Failure Skip ]
-crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ Failure Skip ]
-
-# Skipped to land crrev.com/c/5961996
-crbug.com/375562183 http/tests/devtools/animation/animation-empty-web-animations.js [ Failure Skip ]
-
 crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect-cross-site.https.js [ Failure ]
 
 # The overlapping navigation behavior is flaky.
