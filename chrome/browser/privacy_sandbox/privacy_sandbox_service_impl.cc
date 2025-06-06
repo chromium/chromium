@@ -1497,6 +1497,41 @@ void PrivacySandboxServiceImpl::OnAdMeasurementPrefChanged() {
   }
 }
 
+// We are intentionally not setting the old pref
+// `kPrivacySandboxM1ConsentDecisionMade` here. This means that when switching
+// to the new implementation, GetRequiredPromptType as part of the old PSService
+// will no longer return the correct value due to its reliance on the old prefs.
+// See go/notice-framework-migration-plan-onepager for more details on how we
+// plan on doing a safe migration with this constraint.
+void PrivacySandboxServiceImpl::UpdateTopicsApiResult(bool value) {
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, value);
+}
+
+// We are intentionally not setting the old prefs
+// `PrivacySandboxM1EEANoticeAcknowledged` or
+// `PrivacySandboxM1RowNoticeAcknowledged` here. This means that when switching
+// to the new implementation, GetRequiredPromptType as part of the old
+// PSService will no longer return the correct value due to its reliance on the
+// old prefs. See go/notice-framework-migration-plan-onepager for more
+// details on how we plan on doing a safe migration with this constraint
+void PrivacySandboxServiceImpl::UpdateProtectedAudienceApiResult(bool value) {
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, value);
+}
+
+// We are intentionally not setting the old pref
+// `PrivacySandboxM1EEANoticeAcknowledged`,
+// `PrivacySandboxM1RowNoticeAcknowledged`,
+// `PrivacySandboxM1RestrictedNoticeAcknowledged` here.
+// This means that when switching to the new implementation,
+// the GetRequiredPromptType as part of the old PSService will no longer return
+// the correct value due to its reliance on the old prefs. See
+// go/notice-framework-migration-plan-onepager for more details on the migration
+// plan.
+void PrivacySandboxServiceImpl::UpdateMeasurementApiResult(bool value) {
+  pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                            value);
+}
+
 // static
 bool PrivacySandboxServiceImpl::IsM1PrivacySandboxEffectivelyManaged(
     PrefService* pref_service) {

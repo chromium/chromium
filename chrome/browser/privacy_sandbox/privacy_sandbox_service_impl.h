@@ -117,6 +117,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   base::Time TopicsConsentLastUpdateTime() const override;
   std::string TopicsConsentLastUpdateText() const override;
+  void UpdateTopicsApiResult(bool value) override;
+  void UpdateProtectedAudienceApiResult(bool value) override;
+  void UpdateMeasurementApiResult(bool value) override;
 
  protected:
   friend class PrivacySandboxServiceTest;

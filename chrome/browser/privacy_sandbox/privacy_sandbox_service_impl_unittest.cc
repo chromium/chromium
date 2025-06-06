@@ -3509,3 +3509,32 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest,
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
 }
+
+class PrivacySandboxNoticeFrameworkResultCallbackUnitTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
+       UpdateTopicsApiResult_UpdatesCorrectly) {
+  privacy_sandbox_service()->UpdateTopicsApiResult(GetParam());
+  EXPECT_EQ(GetParam(),
+            prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+}
+
+TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
+       UpdateProtectedAudienceApiResult_UpdatesCorrectly) {
+  privacy_sandbox_service()->UpdateProtectedAudienceApiResult(GetParam());
+  EXPECT_EQ(GetParam(),
+            prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+}
+
+TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
+       UpdateMeasurementApiResult_UpdatesCorrectly) {
+  privacy_sandbox_service()->UpdateMeasurementApiResult(GetParam());
+  EXPECT_EQ(GetParam(),
+            prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
+                         PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
+                         testing::Bool());
