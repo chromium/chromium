@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -95,6 +96,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
 // Tests that the `ValuablesDataManager` correctly generates loyalty cards to
 // suggest ordered by merchant name.
 TEST_F(ValuablesDataManagerTest, GetLoyaltyCardsToSuggest) {
+  base::HistogramTester histogram_tester;
   const LoyaltyCard card1 = LoyaltyCard(
       /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
       /*merchant_name=*/"CVS Pharmacy",
@@ -126,11 +128,16 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCardsToSuggest) {
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCardsToSuggest(),
               ElementsAre(card1, card3, card2));
+  // Validate the basic count metrics.
+  histogram_tester.ExpectTotalCount("Autofill.LoyaltyCard.StoredCardsCount", 1);
+  histogram_tester.ExpectBucketCount("Autofill.LoyaltyCard.StoredCardsCount", 3,
+                                     1);
 }
 
 // Verify that the `ValuablesDataManager` correctly updates the list of loyalty
 // cards when the Chrome Sync writes them to the database.
 TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
+  base::HistogramTester histogram_tester;
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
   {
@@ -179,6 +186,13 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
               UnorderedElementsAre(card1, card2));
+
+  // Validate the basic count metrics.
+  histogram_tester.ExpectTotalCount("Autofill.LoyaltyCard.StoredCardsCount", 2);
+  histogram_tester.ExpectBucketCount("Autofill.LoyaltyCard.StoredCardsCount", 1,
+                                     1);
+  histogram_tester.ExpectBucketCount("Autofill.LoyaltyCard.StoredCardsCount", 2,
+                                     1);
 }
 
 TEST_F(ValuablesDataManagerTest, GetCachedValuableImageForUrl) {

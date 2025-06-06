@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -95,6 +96,10 @@ void ValuablesDataManager::OnLoyaltyCardsLoaded(
   // for caching loyalty card icons.
   ProcessLoyaltyCardIconUrlChanges();
   NotifyObservers();
+
+  // Log the overall counts.
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.LoyaltyCard.StoredCardsCount",
+                            loyalty_cards_.size());
 }
 
 void ValuablesDataManager::ProcessLoyaltyCardIconUrlChanges() {
