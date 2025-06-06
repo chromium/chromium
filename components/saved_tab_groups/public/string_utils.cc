@@ -17,11 +17,38 @@ std::u16string LocalizedElapsedTimeSinceCreation(
     return l10n_util::GetStringUTF16(IDS_SAVED_TAB_GROUPS_CREATION_JUST_NOW);
   }
 
-  std::u16string elapsed_time_str = ui::TimeFormat::SimpleWithMonthAndYear(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-      elapsed_time_since_creation, true);
-  return l10n_util::GetStringFUTF16(IDS_SAVED_TAB_GROUPS_CREATION_FORMAT,
-                                    elapsed_time_str);
+  if (elapsed_time_since_creation < base::Hours(1)) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_SAVED_TAB_GROUPS_CREATION_MINUTES_AGO_FORMAT,
+        elapsed_time_since_creation.InMinutes());
+  }
+
+  constexpr base::TimeDelta kDay = base::Days(1);
+
+  if (elapsed_time_since_creation < kDay) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_SAVED_TAB_GROUPS_CREATION_HOURS_AGO_FORMAT,
+        elapsed_time_since_creation.InHours());
+  }
+
+  // An average month is a twelfth of an average year.
+  const float average_month_in_days = 365.25 / 12;
+
+  if (elapsed_time_since_creation < average_month_in_days * kDay) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_SAVED_TAB_GROUPS_CREATION_DAYS_AGO_FORMAT,
+        elapsed_time_since_creation.InDays());
+  }
+
+  if (elapsed_time_since_creation < 365 * kDay) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_SAVED_TAB_GROUPS_CREATION_MONTHS_AGO_FORMAT,
+        elapsed_time_since_creation.InDays() / average_month_in_days);
+  }
+
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_SAVED_TAB_GROUPS_CREATION_YEARS_AGO_FORMAT,
+      elapsed_time_since_creation.InDays() / 365);
 }
 
 }  // namespace tab_groups

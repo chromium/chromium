@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <message name="IDS_SAVED_TAB_GROUPS_CREATION_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation.">
-    Created <ph name="DATE"><ex>2 days ago</ex>$1</ph>
-  </message>
   <message name="IDS_SAVED_TAB_GROUPS_CREATION_JUST_NOW" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid that just got created.">
     Created just now
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_MINUTES_AGO_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation, when the time is counted in minutes.">
+    {NUM_MINS, plural,
+       =1 {Created 1 minute ago}
+       other {Created {NUM_MINS} minutes ago}}
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_HOURS_AGO_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation, when the time is counted in hours.">
+    {NUM_HOURS, plural,
+       =1 {Created 1 hour ago}
+       other {Created {NUM_HOURS} hours ago}}
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_DAYS_AGO_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation, when the time is counted in days.">
+    {NUM_DAYS, plural,
+       =1 {Created 1 day ago}
+       other {Created {NUM_DAYS} days ago}}
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_MONTHS_AGO_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation, when the time is counted in months.">
+    {NUM_MONTHS, plural,
+       =1 {Created 1 month ago}
+       other {Created {NUM_MONTHS} months ago}}
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_YEARS_AGO_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation, when the time is counted in years.">
+    {NUM_YEARS, plural,
+       =1 {Created 1 year ago}
+       other {Created {NUM_YEARS} years ago}}
   </message>
 </grit-part>
