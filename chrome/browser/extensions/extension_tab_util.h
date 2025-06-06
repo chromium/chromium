@@ -281,13 +281,13 @@ class ExtensionTabUtil {
       content::BrowserContext* browser_context,
       bool include_incognito);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Determines if the `web_contents` is in `browser_context` or it's OTR
   // BrowserContext if `include_incognito` is true.
   static bool IsWebContentsInContext(content::WebContents* web_contents,
                                      content::BrowserContext* browser_context,
                                      bool include_incognito);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Takes `url_string` and returns a GURL which is either valid and absolute
   // or invalid. If `url_string` is not directly interpretable as a valid (it is
   // likely a relative URL) an attempt is made to resolve it. When `extension`

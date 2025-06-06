@@ -1110,7 +1110,6 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
   return active_contents;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::IsWebContentsInContext(
     content::WebContents* web_contents,
@@ -1129,6 +1128,7 @@ bool ExtensionTabUtil::IsWebContentsInContext(
                                       web_contents_browser_context));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
                                                   const Extension* extension) {
   GURL url = GURL(url_string);

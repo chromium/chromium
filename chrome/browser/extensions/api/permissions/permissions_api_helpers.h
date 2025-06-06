@@ -8,8 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
