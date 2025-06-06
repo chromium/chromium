@@ -125,8 +125,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
 
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
-    auto controller = std::make_unique<PageActionController>(
-        pinned_actions_model_.get());
+    auto controller =
+        std::make_unique<PageActionControllerImpl>(pinned_actions_model_.get());
     controller->Initialize(tab, {action_item_->GetActionId().value()},
                            TestPageActionPropertiesProvider(kTestProperties));
     return controller;

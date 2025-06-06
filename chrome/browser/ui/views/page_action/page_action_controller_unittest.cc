@@ -103,7 +103,7 @@ class PageActionTestObserver : public PageActionModelObserver {
   int model_change_count_ = 0;
 };
 
-class PageActionControllerTest : public ::testing::Test {
+class PageActionControllerTest : public testing::Test {
  public:
   PageActionControllerTest()
       : properties_provider_(
@@ -126,7 +126,7 @@ class PageActionControllerTest : public ::testing::Test {
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(&profile_);
     controller_ =
-        std::make_unique<PageActionController>(pinned_actions_model_.get());
+        std::make_unique<PageActionControllerImpl>(pinned_actions_model_.get());
     tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
     tab_interface_->Activate();
   }
@@ -138,7 +138,7 @@ class PageActionControllerTest : public ::testing::Test {
     tab_interface_.reset();
   }
 
-  PageActionController* controller() { return controller_.get(); }
+  PageActionControllerImpl* controller() { return controller_.get(); }
 
   PinnedToolbarActionsModel* pinned_actions_model() {
     return pinned_actions_model_.get();
@@ -163,7 +163,7 @@ class PageActionControllerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
-  std::unique_ptr<PageActionController> controller_;
+  std::unique_ptr<PageActionControllerImpl> controller_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<ActionItem> action_item_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
@@ -427,7 +427,7 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
                                      PageActionCTREvent::kClicked, 2);
 }
 
-class PageActionControllerMockModelTest : public ::testing::Test {
+class PageActionControllerMockModelTest : public testing::Test {
  public:
   PageActionControllerMockModelTest()
       : properties_provider_(kTestProperties),
@@ -436,7 +436,7 @@ class PageActionControllerMockModelTest : public ::testing::Test {
             &model_factory_),
         tab_interface_(&profile_) {}
 
-  PageActionController& controller() { return controller_; }
+  PageActionControllerImpl& controller() { return controller_; }
   MockPageActionModelFactory& models() { return model_factory_; }
   FakeTabInterface& tab_interface() { return tab_interface_; }
 
@@ -447,7 +447,7 @@ class PageActionControllerMockModelTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   MockPageActionModelFactory model_factory_;
-  PageActionController controller_;
+  PageActionControllerImpl controller_;
   FakeTabInterface tab_interface_;
 };
 
@@ -469,7 +469,8 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
   controller().ClearOverrideText(0);
 }
 
-TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideAccessibleName) {
+TEST_F(PageActionControllerMockModelTest,
+       SetAndClearOverrideAccessibleName) {
   controller().Initialize(tab_interface(), {kFirstActionItemId},
                           properties_provider_);
 

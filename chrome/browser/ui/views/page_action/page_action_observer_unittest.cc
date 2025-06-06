@@ -116,7 +116,7 @@ class PageActionObserverTest : public ::testing::Test {
   PageActionObserverTest() : tab_(nullptr) {}
 
   void SetUp() override {
-    controller_ = std::make_unique<PageActionController>(
+    controller_ = std::make_unique<PageActionControllerImpl>(
         nullptr, &model_factory_, &metrics_factory_);
     controller_->Initialize(tab_, {kTestPageActionId},
                             TestPageActionPropertiesProvider(kTestProperties));
@@ -135,7 +135,7 @@ class PageActionObserverTest : public ::testing::Test {
   FakeTabInterface tab_;
   MockPageActionModelFactory model_factory_;
   NoopPageActionMetricsRecorderFactory metrics_factory_;
-  std::unique_ptr<PageActionController> controller_;
+  std::unique_ptr<PageActionControllerImpl> controller_;
 };
 
 TEST_F(PageActionObserverTest, OnPageActionIconShown) {

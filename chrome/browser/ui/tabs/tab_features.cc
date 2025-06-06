@@ -156,14 +156,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
     CHECK(pinned_actions_model);
-    page_action_controller_ =
-        std::make_unique<page_actions::PageActionController>(
+    auto page_action_controller =
+        std::make_unique<page_actions::PageActionControllerImpl>(
             pinned_actions_model);
-    page_action_controller_->Initialize(
+    page_action_controller->Initialize(
         tab,
         std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
                                        page_actions::kActionIds.end()),
         page_actions::PageActionPropertiesProvider());
+    page_action_controller_ = std::move(page_action_controller);
 
     if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
       translate_page_action_controller_ =
@@ -173,7 +174,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
       memory_saver_chip_controller_ =
           std::make_unique<memory_saver::MemorySaverChipController>(
-              *page_action_controller());
+              *page_action_controller_);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {

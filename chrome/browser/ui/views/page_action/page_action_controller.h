@@ -60,91 +60,134 @@ std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config);
 // `PageActionController` controls the state of all page actions, scoped to a
 // single tab. Each page action has a corresponding `PageActionModel` that will
 // receive updates from this controller.
-class PageActionController : public PinnedToolbarActionsModel::Observer {
+class PageActionController {
  public:
-  explicit PageActionController(
+  virtual ~PageActionController() = default;
+
+  // Requests that the page action be shown or hidden.
+  virtual void Show(actions::ActionId action_id) = 0;
+  virtual void Hide(actions::ActionId action_id) = 0;
+
+  // Request that the page action's chip state shown or hidden. Note that a
+  // request to show the chip does not guarantee it will be shown (for example,
+  // the framework may choose to display only one chip at a time, despite
+  // requests from multiple features).
+  virtual void ShowSuggestionChip(actions::ActionId action_id,
+                                  SuggestionChipConfig config) = 0;
+  virtual void ShowSuggestionChip(actions::ActionId action_id) = 0;
+  virtual void HideSuggestionChip(actions::ActionId action_id) = 0;
+
+  // By default, in suggestion chip mode, the ActionItem text will be used as
+  // the control label. However, features can provide a custom text to use
+  // as the label. In that case, the custom text will take precedence over
+  // the ActionItem text.
+  virtual void OverrideText(actions::ActionId action_id,
+                            const std::u16string& override_text) = 0;
+  virtual void ClearOverrideText(actions::ActionId action_id) = 0;
+
+  // By default, the text is used as the accessible name. However, features may
+  // need a different text.
+  virtual void OverrideAccessibleName(
+      actions::ActionId action_id,
+      const std::u16string& override_accessible_name) = 0;
+  virtual void ClearOverrideAccessibleName(actions::ActionId action_id) = 0;
+
+  // By default, the page action will have an image which can be shared in the
+  // other places that rely on the same action item. However, features can
+  // provide a custom image to use for the page action for a specific context
+  // (tab).
+  virtual void OverrideImage(actions::ActionId action_id,
+                             const ui::ImageModel& override_image) = 0;
+  virtual void ClearOverrideImage(actions::ActionId action_id) = 0;
+
+  // By default, the page action will have an tooltip which can be shared in the
+  // other places that rely on the same action item. However, features can
+  // provide a custom tooltip to use for the page action for a specific context
+  // (tab).
+  virtual void OverrideTooltip(actions::ActionId action_id,
+                               const std::u16string& override_tooltip) = 0;
+  virtual void ClearOverrideTooltip(actions::ActionId action_id) = 0;
+
+  // Adds an observer for the page action's underlying `PageActionModel`.
+  virtual void AddObserver(
+      actions::ActionId action_id,
+      base::ScopedObservation<PageActionModelInterface,
+                              PageActionModelObserver>& observation) = 0;
+
+  // Subscribes this controller to updates in the supplied ActionItem, and
+  // returns the created subscription. This allows the subscription to be
+  // managed by something other than the controller (eg. a view).
+  virtual base::CallbackListSubscription CreateActionItemSubscription(
+      actions::ActionItem* action_item) = 0;
+
+  // Forces all page actions managed by this controller to be hidden, regardless
+  // of whether they would otherwise be visible. Setting it to `false` reverts
+  // back to each page action's normal visibility logic.
+  virtual void SetShouldHidePageActions(bool should_hide_page_actions) = 0;
+
+  // Provides a metric recording callback to the caller. The callback won't run
+  // if the page action controller is destroyed.
+  virtual base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      actions::ActionId action_id) = 0;
+
+  static base::PassKey<PageActionController> PassKeyForTesting() {
+    return base::PassKey<PageActionController>();
+  }
+
+ protected:
+  static base::PassKey<PageActionController> PassKey() {
+    return base::PassKey<PageActionController>();
+  }
+};
+
+class PageActionControllerImpl : public PageActionController,
+                                 public PinnedToolbarActionsModel::Observer {
+ public:
+  explicit PageActionControllerImpl(
       PinnedToolbarActionsModel* pinned_actions_model,
       PageActionModelFactory* page_action_model_factory = nullptr,
       PageActionMetricsRecorderFactory* page_action_metrics_factory = nullptr);
-  PageActionController(const PageActionController&) = delete;
-  PageActionController& operator=(const PageActionController&) = delete;
-  ~PageActionController() override;
+  PageActionControllerImpl(const PageActionControllerImpl&) = delete;
+  PageActionControllerImpl& operator=(const PageActionControllerImpl&) = delete;
+  ~PageActionControllerImpl() override;
 
   void Initialize(
       tabs::TabInterface& tab_interface,
       const std::vector<actions::ActionId>& action_ids,
       const PageActionPropertiesProviderInterface& properties_provider);
 
-  // Request that the page action be shown or hidden.
-  void Show(actions::ActionId action_id);
-  void Hide(actions::ActionId action_id);
-
-  // Request that the page action's chip state shown or hidden. Note that a
-  // request to show the chip does not guarantee it will be shown (for example,
-  // the framework may choose to display only one chip at a time, despite
-  // requests from multiple features).
+  // PageActionController:
+  void Show(actions::ActionId action_id) override;
+  void Hide(actions::ActionId action_id) override;
+  void ShowSuggestionChip(actions::ActionId action_id) override;
   void ShowSuggestionChip(actions::ActionId action_id,
-                          SuggestionChipConfig config = SuggestionChipConfig());
-  void HideSuggestionChip(actions::ActionId action_id);
-
-  // By default, in suggestion chip mode, the ActionItem text will be used as
-  // the control label. However, features can provide a custom text to use
-  // as the label. In that case, the custom text will take precedence over
-  // the ActionItem text.
+                          SuggestionChipConfig config) override;
+  void HideSuggestionChip(actions::ActionId action_id) override;
   void OverrideText(actions::ActionId action_id,
-                    const std::u16string& override_text);
-  void ClearOverrideText(actions::ActionId action_id);
-
-  // By default, the text is used as the accessible name. However, features may
-  // need a different text.
-  void OverrideAccessibleName(actions::ActionId action_id,
-                              const std::u16string& override_accessible_name);
-  void ClearOverrideAccessibleName(actions::ActionId action_id);
-
-  // By default, the page action will have an image which can be shared in the
-  // other places that rely on the same action item. However, features can
-  // provide a custom image to use for the page action for a specific context
-  // (tab).
+                    const std::u16string& override_text) override;
+  void ClearOverrideText(actions::ActionId action_id) override;
+  void OverrideAccessibleName(
+      actions::ActionId action_id,
+      const std::u16string& override_accessible_name) override;
+  void ClearOverrideAccessibleName(actions::ActionId action_id) override;
   void OverrideImage(actions::ActionId action_id,
-                     const ui::ImageModel& override_image);
-  void ClearOverrideImage(actions::ActionId action_id);
-
-  // By default, the page action will have an tooltip which can be shared in the
-  // other places that rely on the same action item. However, features can
-  // provide a custom tooltip to use for the page action for a specific context
-  // (tab).
+                     const ui::ImageModel& override_image) override;
+  void ClearOverrideImage(actions::ActionId action_id) override;
   void OverrideTooltip(actions::ActionId action_id,
-                       const std::u16string& override_tooltip);
-  void ClearOverrideTooltip(actions::ActionId action_id);
-
-  // Manages observers for the page action's underlying `PageActionModel`.
+                       const std::u16string& override_tooltip) override;
+  void ClearOverrideTooltip(actions::ActionId action_id) override;
   void AddObserver(
       actions::ActionId action_id,
       base::ScopedObservation<PageActionModelInterface,
-                              PageActionModelObserver>& observation);
-
-  // Subscribes this controller to updates in the supplied ActionItem, and
-  // returns the created subscription. This allows the subscription to be
-  // managed by something other than the controller (eg. a view).
+                              PageActionModelObserver>& observation) override;
   base::CallbackListSubscription CreateActionItemSubscription(
-      actions::ActionItem* action_item);
-
-  // Forces all page actions managed by this controller to be hidden, regardless
-  // of whether they would otherwise be visible. Setting it to `false` reverts
-  // back to each page action's normal visibility logic.
-  void SetShouldHidePageActions(bool should_hide_page_actions);
+      actions::ActionItem* action_item) override;
+  void SetShouldHidePageActions(bool should_hide_page_actions) override;
+  base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      actions::ActionId action_id) override;
 
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;
-
-  static base::PassKey<PageActionController> PassKeyForTesting() {
-    return base::PassKey<PageActionController>();
-  }
-
-  // Provides a metric recording callback to the caller. The callback won't run
-  // if the page action controller is destroyed.
-  base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
-      actions::ActionId action_id);
 
  private:
   using PageActionModelsMap =
@@ -217,7 +260,7 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   base::CallbackListSubscription tab_activated_callback_subscription_;
   base::CallbackListSubscription tab_deactivated_callback_subscription_;
 
-  base::WeakPtrFactory<PageActionController> weak_factory_{this};
+  base::WeakPtrFactory<PageActionControllerImpl> weak_factory_{this};
 };
 
 }  // namespace page_actions
