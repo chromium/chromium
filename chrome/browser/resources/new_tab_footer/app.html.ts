@@ -23,7 +23,7 @@ separated from each other by a divider.
           ${this.managementNotice_.text}
         </p>
       </div>` : ''}
-    ${this.extensionName_ ? html`
+    ${this.showExtension_ ? html`
       <div id="extensionNameContainer" title="${this.extensionName_}"
           class="notice-item">
         <button @click="${this.onExtensionNameClick_}" role="link"
@@ -33,12 +33,13 @@ separated from each other by a divider.
         </button>
       </div>` : ''}
   </div>
-  <ntp-customize-buttons id="customizeButtons"
-      ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
-      ?show-customize="${this.showCustomize_}"
-      ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
-      @customize-click="${this.onCustomizeClick_}">
-  </ntp-customize-buttons>
+  ${this.showCustomizeButtons_ ? html`
+    <ntp-customize-buttons id="customizeButtons"
+        ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
+        ?show-customize="${this.isCustomizeActive_}"
+        ?show-customize-chrome-text="${this.showCustomizeText_}"
+        @customize-click="${this.onCustomizeClick_}">
+    </ntp-customize-buttons>` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format off

@@ -8,6 +8,7 @@ import 'chrome://newtab-footer/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -79,17 +80,20 @@ export class NewTabFooterAppElement extends CrLitElement {
   static override get properties() {
     return {
       extensionName_: {type: String},
+      isCustomizeActive_: {type: Boolean},
       managementNotice_: {type: Object},
-      showCustomize_: {type: Boolean},
-      showCustomizeChromeText_: {type: Boolean},
+      showCustomizeText_: {type: Boolean},
+      showExtension_: {type: Boolean},
     };
   }
 
   protected accessor extensionName_: string|null = null;
+  protected accessor isCustomizeActive_: boolean = false;
   protected accessor managementNotice_: ManagementNotice|null = null;
+  protected showCustomizeButtons_: boolean = false;
+  protected accessor showCustomizeText_: boolean = true;
+  protected accessor showExtension_: boolean = false;
   private selectedCustomizeDialogPage_: string|null;
-  protected accessor showCustomize_: boolean = false;
-  protected accessor showCustomizeChromeText_: boolean = true;
 
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private handler_: NewTabFooterHandlerInterface;
@@ -108,7 +112,7 @@ export class NewTabFooterAppElement extends CrLitElement {
         CustomizeButtonsProxy.getInstance().callbackRouter;
     this.customizeHandler_ = CustomizeButtonsProxy.getInstance().handler;
 
-    this.showCustomize_ =
+    this.isCustomizeActive_ =
         WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM);
     this.selectedCustomizeDialogPage_ =
         WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM);
@@ -134,11 +138,11 @@ export class NewTabFooterAppElement extends CrLitElement {
     this.setCustomizeChromeSidePanelVisibilityListener_ =
         this.customizeCallbackRouter_.setCustomizeChromeSidePanelVisibility
             .addListener((visible: boolean) => {
-              this.showCustomize_ = visible;
+              this.isCustomizeActive_ = visible;
             });
     // Open Customize Chrome if there are Customize Chrome URL params.
-    if (this.showCustomize_) {
-      this.setCustomizeChromeSidePanelVisible(this.showCustomize_);
+    if (this.isCustomizeActive_) {
+      this.setCustomizeChromeSidePanelVisible(this.isCustomizeActive_);
       recordCustomizeChromeOpen(FooterCustomizeChromeEntryPoint.URL);
     }
   }
@@ -154,6 +158,27 @@ export class NewTabFooterAppElement extends CrLitElement {
         this.setCustomizeChromeSidePanelVisibilityListener_);
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    this.showCustomizeButtons_ = this.computeShowCustomizeButtons_();
+
+    if (changedPrivateProperties.has('extensionName_')) {
+      this.showExtension_ = this.computeShowExtension_();
+    }
+  }
+
+  private computeShowCustomizeButtons_(): boolean {
+    return true;
+  }
+
+  private computeShowExtension_(): boolean {
+    return !!this.extensionName_;
+  }
+
   protected onExtensionNameClick_(e: Event) {
     e.preventDefault();
     recordClick(FooterElement.EXTENSION_NAME);
@@ -164,8 +189,8 @@ export class NewTabFooterAppElement extends CrLitElement {
     recordClick(FooterElement.CUSTOMIZE_BUTTON);
     // Let side panel decide what page or section to show.
     this.selectedCustomizeDialogPage_ = null;
-    this.setCustomizeChromeSidePanelVisible(!this.showCustomize_);
-    if (!this.showCustomize_) {
+    this.setCustomizeChromeSidePanelVisible(!this.isCustomizeActive_);
+    if (!this.isCustomizeActive_) {
       this.customizeHandler_.incrementCustomizeChromeButtonOpenCount();
       recordCustomizeChromeOpen(
           FooterCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
