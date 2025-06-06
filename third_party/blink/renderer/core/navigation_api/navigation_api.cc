@@ -811,16 +811,13 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   init->setUserInitiated(params->involvement !=
                          UserNavigationInvolvement::kNone);
   if (params->source_element) {
+    auto* control =
+        DynamicTo<HTMLFormControlElement>(params->source_element.Get());
     HTMLFormElement* form =
-        DynamicTo<HTMLFormElement>(params->source_element.Get());
-    if (!form) {
-      if (auto* control =
-              DynamicTo<HTMLFormControlElement>(params->source_element.Get())) {
-        form = control->formOwner();
-      }
-    }
+        control ? control->formOwner()
+                : DynamicTo<HTMLFormElement>(params->source_element.Get());
     if (form && form->Method() == FormSubmission::kPostMethod) {
-      init->setFormData(FormData::Create(form, ASSERT_NO_EXCEPTION));
+      init->setFormData(FormData::Create(form, control, ASSERT_NO_EXCEPTION));
     }
   }
   if (ongoing_api_method_tracker_) {
