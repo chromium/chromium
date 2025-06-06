@@ -140,6 +140,11 @@
     white-space: normal;
   }
 
+  :host([enable-csb-motion-tweaks_][is-lens-searchbox_]) #text-container {
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
+  }
+
   :host([has-action]) #text-container {
     padding-inline-end: 4px;
   }

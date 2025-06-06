@@ -178,6 +178,14 @@ export class RegionSelectionElement extends PolymerElement {
     return true;
   }
 
+  // Fade out scrim after drag to resize selection in post selection renderer
+  // TODO(crbug.com/420998632): Move scrim out to a central component so that
+  // post selection drag handling is not dependent on the region selection scrim
+  handlePostSelectionDragGestureEnd(): void {
+    this.hasSelected = true;
+    this.isSelecting = false;
+  }
+
   cancelGesture() {
     this.clearCanvas();
 

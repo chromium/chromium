@@ -801,6 +801,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().onSelectionStart();
     if (this.enableBorderGlow) {
       this.getOverlayBorderGlow().handleGestureStart();
+      // TODO(crbug.com/421002691): follow the convention where the layer
+      // should return true if its handling the gesture, and draggingRespondent
+      // should be updated
       this.$.regionSelectionLayer.handleGestureStart();
     }
 
@@ -854,6 +857,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.getTextSelectionLayer().handleGestureEnd();
         } else if (this.draggingRespondent === DragFeature.POST_SELECTION) {
           this.$.postSelectionRenderer.handleGestureEnd();
+          // Fade out scrim which is currently being managed by region selection
+          // TODO(crbug.com/420998632): move scrim out to its own component
+          this.$.regionSelectionLayer.handlePostSelectionDragGestureEnd();
         }
         break;
       case GestureState.STARTING:
