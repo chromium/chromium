@@ -45,6 +45,9 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Eq;
+using ::testing::Matcher;
+using ::testing::Pointer;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
@@ -588,12 +591,16 @@ class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
         kWebDataServiceHandle, std::move(result));
   }
 
-  void FakeImageDownloaded(GURL image_url, bool succeeded = true) {
+  // The height can be set here, and expected in a test using
+  // IsSkBitmapWithHeight().
+  void FakeImageDownloaded(GURL image_url,
+                           bool succeeded = true,
+                           int height = 32) {
     std::vector<gfx::Size> icon_sizes({{32, 32}});
     std::vector<SkBitmap> icon_bitmaps;
     if (succeeded) {
       icon_bitmaps.emplace_back();
-      icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+      icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/height);
     }
 
     ASSERT_TRUE(static_cast<content::TestWebContents*>(web_contents_.get())
@@ -606,6 +613,10 @@ class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
   scoped_refptr<MockPaymentManifestWebDataService> mock_service_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+Matcher<const SkBitmap*> IsSkBitmapWithHeight(int height) {
+  return Pointer(Property(&SkBitmap::height, height));
+}
 
 // Tests that when neither the network nor issuer icons are specified, they are
 // not present on the final PaymentApp.
@@ -765,8 +776,130 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
 }
 
-// TODO(crbug.com/417683819): Add tests verifying that paymentEntitiesLogos is
-// correctly converted into icons to be downloaded.
+// Class wrapping tests relating to payment entity logos support in
+// SecurePaymentConfirmationAppFactory.
+class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
+    : public SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest {
+ public:
+  const GURL kPaymentEntity1LogoUrl =
+      GURL("https://payment-entity-1.example/icon.png");
+  const GURL kPaymentEntity2LogoUrl =
+      GURL("https://payment-entity-2.example/icon.png");
+  const GURL kPaymentEntity3LogoUrl =
+      GURL("https://payment-entity-3.example/icon.png");
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kSecurePaymentConfirmationUxRefresh};
+};
+
+// Tests that when the feature flag is on, logos specified in
+// payment_entities_logos are downloaded and placed in the network and issuer
+// logo fields in the created PaymentApp. The first logo is placed in the
+// network logo field and the second logo is placed in the issuer field.
+TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
+       ConvertedToNetworkAndIssuerIcons) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity1LogoUrl, "Payment Entity 1"));
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity2LogoUrl, "Payment Entity 2"));
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+
+  std::unique_ptr<PaymentApp> created_payment_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&created_payment_app));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+
+  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
+  FakeImageDownloaded(kInstrumentIconUrl);
+  FakeImageDownloaded(kPaymentEntity1LogoUrl, /*succeeded=*/true,
+                      /*height=*/50);
+  FakeImageDownloaded(kPaymentEntity2LogoUrl, /*succeeded=*/true,
+                      /*height=*/60);
+
+  // The payment entity logos should have been placed into the network_bitmap
+  // and issuer_bitmap.
+  ASSERT_TRUE(created_payment_app);
+  EXPECT_THAT(created_payment_app->network_bitmap(), IsSkBitmapWithHeight(50));
+  EXPECT_THAT(created_payment_app->issuer_bitmap(), IsSkBitmapWithHeight(60));
+}
+
+// Tests that the first entry in payment_entities_logos maps to the network
+// bitmap (and thus that implicitly the second entry will map to the issuer
+// bitmap).
+TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
+       SinglePaymentEntityLogoConvertsToNetworkIcon) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity1LogoUrl, "Payment Entity 1"));
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+
+  std::unique_ptr<PaymentApp> created_payment_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&created_payment_app));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+
+  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
+  FakeImageDownloaded(kInstrumentIconUrl);
+  FakeImageDownloaded(kPaymentEntity1LogoUrl);
+
+  // The payment entity logo should have been placed into the network_bitmap.
+  ASSERT_TRUE(created_payment_app);
+  EXPECT_TRUE(created_payment_app->network_bitmap());
+  EXPECT_FALSE(created_payment_app->issuer_bitmap());
+}
+
+// Tests that at most two PaymentEntityLogos are accepted by
+// SecurePaymentConfirmationAppFactory, and that additional logos are just
+// silently dropped.
+TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
+       MoreThanTwoPaymentEntityLogos) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity1LogoUrl, "Payment Entity 1"));
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity2LogoUrl, "Payment Entity 2"));
+  spc_request->payment_entities_logos.push_back(mojom::PaymentEntityLogo::New(
+      kPaymentEntity3LogoUrl, "Payment Entity 3"));
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+
+  std::unique_ptr<PaymentApp> created_payment_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&created_payment_app));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+
+  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
+  FakeImageDownloaded(kInstrumentIconUrl);
+  FakeImageDownloaded(kPaymentEntity1LogoUrl);
+  FakeImageDownloaded(kPaymentEntity2LogoUrl);
+
+  // Even though the third entity logo was not downloaded (and was not attempted
+  // to be downloaded), the first two should be sufficient and the payment app
+  // should be created.
+  ASSERT_TRUE(created_payment_app);
+}
 
 class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
     : public SecurePaymentConfirmationAppFactoryTest {
