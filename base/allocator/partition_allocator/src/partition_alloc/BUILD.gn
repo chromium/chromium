@@ -678,6 +678,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/types/strong_alias.h",
       "partition_alloc_base/win/win_handle_types.h",
       "partition_alloc_base/win/win_handle_types_list.inc",
+      "partition_alloc_base/win/windows_handle_util.h",
       "partition_alloc_base/win/windows_types.h",
     ]
     libs = []

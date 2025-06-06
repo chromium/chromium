@@ -3861,6 +3861,7 @@ if (!is_android) {
     if (is_win) {
       sources += [
         "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",
+        "../browser/performance_manager/mechanisms/termination_target_setter_browsertest.cc",
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
         "../browser/ui/views/tab_search_bubble_ui_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",

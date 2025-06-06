@@ -48,37 +48,43 @@ void* VirtualAllocWithRetry(void* address,
                             size_t size,
                             DWORD type_flags,
                             DWORD access_flags) {
-  void* ret = nullptr;
-  // Failure to commit memory can be temporary, in at least two cases:
-  // - The page file is getting extended.
-  // - Another process terminates (most likely because of OOM)
+  // In case of commit failure, this function may repeatedly:
+  // 1. Terminate a less important process, if one was provided.
+  // 2. Wait 50ms. Local experiments on Win11 show that a process' commit charge
+  //    is not immediately relinquished on termination, but it is after 50ms
+  //    (this is on 1 machine without CPU contention, we don't know what
+  //    conditions can affect this result).
+  // 3. Retry the commit.
   //
-  // Wait and retry, since the alternative is crashing. Note that if we
-  // selectively apply this... hum... beautiful hack to some process types only,
-  // "some process crashing" may very well be one of ours, which may be
-  // desirable (e.g. some processes like the browser are more important than
-  // others).
+  // Even if this function cannot terminate a less important process (step 1),
+  // the commit may eventually succeed after:
+  // - The page file is extended.
+  // - Another process terminates (possibly because of OOM).
   //
-  // This approach has been shown to be effective for Firefox, see
-  // crbug.com/1392738 for context. Constants below are accordingly taken from
-  // Firefox as well.
-  constexpr int kMaxTries = 10;
+  // The wait+retry loop (steps 2 and 3, not step 1) has been shown to be
+  // effective for Firefox, see crbug.com/1392738 for context. `kDelayMs` is
+  // taken from Firefox, and supported by our experiments showing that commit
+  // charge is relinquished within 50ms after process termination. `kMaxTries`
+  // is based on our observation that Windows perform memory management every 1s
+  // (we want to retry for a little bit more than 1s) - Firefox used 10 retries.
+  constexpr int kMaxTries = 25;
   constexpr int kDelayMs = 50;
 
   bool should_retry = GetRetryOnCommitFailure() && (type_flags & MEM_COMMIT) &&
                       (access_flags != PAGE_NOACCESS);
   for (int tries = 0; tries < kMaxTries; tries++) {
-    ret = VirtualAlloc(address, size, type_flags, access_flags);
-    // Only retry for commit failures. If this is an address space problem
-    // (e.g. caller asked for an address which is not available), this is
-    // unlikely to be resolved by waiting.
+    void* ret = VirtualAlloc(address, size, type_flags, access_flags);
+    // Only retry for commit failures. If this is an address space problem (e.g.
+    // caller asked for an address which is not available), this is unlikely to
+    // be resolved by waiting.
     if (ret || !should_retry || !IsOutOfMemory(GetLastError())) {
-      break;
+      return ret;
     }
 
-    Sleep(kDelayMs);
+    TerminateAnotherProcessOnCommitFailure();
+    ::Sleep(kDelayMs);
   }
-  return ret;
+  return nullptr;
 }
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {

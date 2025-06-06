@@ -1026,6 +1026,8 @@ static_library("browser") {
     "performance_manager/chrome_content_browser_client_performance_manager_part.cc",
     "performance_manager/decorators/helpers/page_live_state_decorator_helper.cc",
     "performance_manager/decorators/helpers/page_live_state_decorator_helper.h",
+    "performance_manager/mechanisms/termination_target_setter.cc",
+    "performance_manager/mechanisms/termination_target_setter.h",
     "performance_manager/mechanisms/working_set_trimmer.cc",
     "performance_manager/mechanisms/working_set_trimmer.h",
     "performance_manager/metrics/metrics_provider_common.cc",
