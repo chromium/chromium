@@ -111,6 +111,9 @@ public class SegmentationPlatformServiceFactoryTest {
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
                                 ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
                         inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 
                         segmentationPlatformService.getClassificationResult(
@@ -121,7 +124,9 @@ public class SegmentationPlatformServiceFactoryTest {
                                     @Override
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
-                                                PredictionStatus.SUCCEEDED, result.status);
+                                                "Prediction status should be SUCCEEDED",
+                                                PredictionStatus.SUCCEEDED,
+                                                result.status);
                                         assertThat(result.orderedLabels, hasSize(1));
                                         assertThat(
                                                 result.orderedLabels, contains("price_tracking"));

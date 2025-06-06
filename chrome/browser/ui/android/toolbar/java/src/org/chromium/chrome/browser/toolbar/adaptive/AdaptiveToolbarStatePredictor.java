@@ -187,6 +187,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.TAB_GROUPING:
                 return false;
             default:
                 assert false : "Invalid adaptive toolbar button variant: " + variant;

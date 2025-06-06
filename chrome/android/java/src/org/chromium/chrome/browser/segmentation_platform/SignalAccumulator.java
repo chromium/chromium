@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Convenient wrapper to keep track of the feature backend results and trigger the next step after
@@ -41,7 +42,7 @@ public class SignalAccumulator {
     private @Nullable Runnable mCompletionCallback;
     private long mGetSignalsStartMs;
 
-    private final HashMap<Integer, ActionProvider> mActionProviders;
+    private final Map<Integer, ActionProvider> mActionProviders;
     private final Tab mTab;
     private final Handler mHandler;
     private final long mActionProviderTimeout;
@@ -54,7 +55,7 @@ public class SignalAccumulator {
      * @param actionProviders List of action providers to get signals from.
      */
     public SignalAccumulator(
-            Handler handler, Tab tab, HashMap<Integer, ActionProvider> actionProviders) {
+            Handler handler, Tab tab, Map<Integer, ActionProvider> actionProviders) {
         mHandler = handler;
         mTab = tab;
         mActionProviders = actionProviders;

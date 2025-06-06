@@ -15,4 +15,6 @@ public final class Constants {
     public static final String CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT = "has_reader_mode";
     public static final String CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT = "has_price_insights";
     public static final String CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT = "has_discounts";
+    public static final String CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT =
+            "has_tab_grouping_suggestion";
 }

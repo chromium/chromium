@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
@@ -75,6 +76,12 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                         trackerSupplier,
                         mBookmarkModelSupplier);
         controller.addButtonVariant(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS, addToBookmarks);
+        var tabGrouping =
+                new GroupSuggestionsButtonController(
+                        mActivityTabProvider,
+                        mContext,
+                        AppCompatResources.getDrawable(mContext, R.drawable.ic_widgets));
+        controller.addButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING, tabGrouping);
 
         mRegisterVoiceSearchRunnable.run();
     }

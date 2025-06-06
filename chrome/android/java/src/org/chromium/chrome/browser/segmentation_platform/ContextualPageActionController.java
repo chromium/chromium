@@ -151,6 +151,10 @@ public class ContextualPageActionController {
                     AdaptiveToolbarButtonVariant.DISCOUNTS,
                     new DiscountsActionProvider(shoppingServiceSupplier));
         }
+        if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
+            mActionProviders.put(
+                    AdaptiveToolbarButtonVariant.TAB_GROUPING, new TabGroupingActionProvider());
+        }
     }
 
     /** Called on destroy. */
@@ -230,6 +234,12 @@ public class ContextualPageActionController {
                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
                 ProcessedValue.fromFloat(
                         mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS)
+                                ? 1.0f
+                                : 0.0f));
+        inputContext.addEntry(
+                Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
+                ProcessedValue.fromFloat(
+                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.TAB_GROUPING)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));

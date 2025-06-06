@@ -18,7 +18,7 @@ namespace {
 using proto::SegmentId;
 
 // Label input size
-constexpr int kLabelInputSize = 4;
+constexpr int kLabelInputSize = 5;
 // Default parameters for contextual page actions model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
@@ -50,7 +50,8 @@ constexpr std::array<const char*, kLabelInputSize>
         kContextualPageActionModelLabelDiscounts,
         kContextualPageActionModelLabelPriceInsights,
         kContextualPageActionModelLabelPriceTracking,
-        kContextualPageActionModelLabelReaderMode};
+        kContextualPageActionModelLabelReaderMode,
+        kContextualPageActionModelLabelTabGrouping};
 
 MetadataWriter::CustomInput CreateCustomInput(std::string name) {
   return MetadataWriter::CustomInput{
@@ -97,6 +98,12 @@ ContextualPageActionsModel::GetModelConfig() {
       writer.AddCustomInput(CreateCustomInput("reader_mode_input"));
   (*reader_mode_input->mutable_additional_args())["name"] =
       kContextualPageActionModelInputReaderMode;
+
+  // Add tab grouping cusotm input.
+  proto::CustomInput* tab_grouping_input =
+      writer.AddCustomInput(CreateCustomInput("tab_grouping_input"));
+  (*tab_grouping_input->mutable_additional_args())["name"] =
+      kContextualPageActionModelInputTabGrouping;
 
   if (base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)) {
     // Add share related input features.
@@ -145,6 +152,7 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   bool has_price_insights = inputs[1];
   bool can_track_price = inputs[2];
   bool has_reader_mode = inputs[3];
+  bool has_tab_grouping_suggestions = inputs[4];
 
   // Create response.
   ModelProvider::Response response(kLabelInputSize, 0);
@@ -152,6 +160,7 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   response[1] = has_price_insights;
   response[2] = can_track_price;
   response[3] = has_reader_mode;
+  response[4] = has_tab_grouping_suggestions;
   // TODO(crbug.com/40249852): Set a classifier threshold.
 
   // TODO(shaktisahu): This class needs some rethinking to correctly associate

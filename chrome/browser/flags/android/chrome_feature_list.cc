@@ -441,6 +441,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kAndroidAppIntegrationModule,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionShareModel,
+    &segmentation_platform::features::kContextualPageActionTabGrouping,
     &segmentation_platform::features::kEducationalTipModule,
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,
     &segmentation_platform::features::

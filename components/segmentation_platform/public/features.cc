@@ -76,6 +76,10 @@ BASE_FEATURE(kContextualPageActionShareModel,
              "ContextualPageActionShareModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualPageActionTabGrouping,
+             "ContextualPageActionTabGrouping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationDefaultReportingSegments,
              "SegmentationDefaultReportingSegments",
              base::FEATURE_ENABLED_BY_DEFAULT);
