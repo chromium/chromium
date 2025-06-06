@@ -468,8 +468,7 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
   if (!access_token.empty()) {
     LogAuthenticatedCookieResets(
         *resource_request, SafeBrowsingAuthenticatedEndpoint::kThreatDetails);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token);
+    SetAccessToken(resource_request.get(), access_token);
   }
   base::UmaHistogramBoolean(
       "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",

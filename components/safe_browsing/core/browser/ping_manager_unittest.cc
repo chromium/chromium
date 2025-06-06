@@ -68,8 +68,7 @@ class PingManagerTest : public testing::Test {
   void RunReportThreatDetailsTest(
       bool expect_access_token,
       std::optional<ChromeUserPopulation> expected_user_population,
-      std::optional<std::string> expected_page_load_token_value,
-      bool expect_cookies_removed);
+      std::optional<std::string> expected_page_load_token_value);
   PingManager* ping_manager();
   void SetNewPingManager(
       std::optional<base::RepeatingCallback<bool()>>
@@ -81,7 +80,6 @@ class PingManagerTest : public testing::Test {
           get_page_load_token_callback,
       std::optional<base::RepeatingCallback<bool()>>
           get_should_send_persisted_report);
-  void SetUpFeatureList(bool should_enable_remove_cookies);
   // Returns a copy of the serialized persisted report that can be used to
   // verify the data sent through URL loader.
   std::string CallPersistThreatDetails(const std::string& url);
@@ -144,17 +142,6 @@ void PingManagerTest::SetNewPingManager(
           base::BindRepeating([]() { return false; }))));
 }
 
-void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-  if (should_enable_remove_cookies) {
-    enabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
-  } else {
-    disabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
-  }
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
-}
-
 std::string PingManagerTest::CallPersistThreatDetails(const std::string& url) {
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
       std::make_unique<ClientSafeBrowsingReportRequest>();
@@ -190,8 +177,7 @@ FakeSafeBrowsingHatsDelegate* PingManagerTest::SetUpHatsDelegate() {
 void PingManagerTest::RunReportThreatDetailsTest(
     bool expect_access_token,
     std::optional<ChromeUserPopulation> expected_user_population,
-    std::optional<std::string> expected_page_load_token_value,
-    bool expect_cookies_removed) {
+    std::optional<std::string> expected_page_load_token_value) {
   base::HistogramTester histogram_tester;
   TestSafeBrowsingTokenFetcher* raw_token_fetcher = SetUpTokenFetcher();
   std::string input_report_content;
@@ -230,9 +216,7 @@ void PingManagerTest::RunReportThreatDetailsTest(
                                  testing::Optional("Bearer " + access_token),
                                  std::nullopt));
         EXPECT_EQ(request.credentials_mode,
-                  expect_cookies_removed
-                      ? network::mojom::CredentialsMode::kOmit
-                      : network::mojom::CredentialsMode::kInclude);
+                  network::mojom::CredentialsMode::kInclude);
         histogram_tester.ExpectUniqueSample(
             "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
             /*sample=*/expect_access_token,
@@ -539,11 +523,9 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
       /*get_user_population_callback=*/std::nullopt,
       /*get_page_load_token_callback=*/std::nullopt,
       /*get_should_send_persisted_report=*/std::nullopt);
-  SetUpFeatureList(/*should_enable_remove_cookies=*/true);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
                              /*expected_user_population=*/std::nullopt,
-                             /*expected_page_load_token_value=*/std::nullopt,
-                             /*expect_cookies_removed=*/true);
+                             /*expected_page_load_token_value=*/std::nullopt);
 }
 TEST_F(PingManagerTest,
        ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
@@ -553,11 +535,9 @@ TEST_F(PingManagerTest,
       /*get_user_population_callback=*/std::nullopt,
       /*get_page_load_token_callback=*/std::nullopt,
       /*get_should_send_persisted_report=*/std::nullopt);
-  SetUpFeatureList(/*should_enable_remove_cookies=*/false);
   RunReportThreatDetailsTest(/*expect_access_token=*/true,
                              /*expected_user_population=*/std::nullopt,
-                             /*expected_page_load_token_value=*/std::nullopt,
-                             /*expect_cookies_removed=*/false);
+                             /*expected_page_load_token_value=*/std::nullopt);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
   SetNewPingManager(
@@ -573,8 +553,7 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
   population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
   RunReportThreatDetailsTest(/*expect_access_token=*/false,
                              /*expected_user_population=*/population,
-                             /*expected_page_load_token_value=*/std::nullopt,
-                             /*expect_cookies_removed=*/false);
+                             /*expected_page_load_token_value=*/std::nullopt);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
   base::HistogramTester histogram_tester;
@@ -590,8 +569,7 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
   RunReportThreatDetailsTest(
       /*expect_access_token=*/false,
       /*expected_user_population=*/std::nullopt,
-      /*expected_page_load_token_value=*/"testing_page_load_token",
-      /*expect_cookies_removed=*/false);
+      /*expected_page_load_token_value=*/"testing_page_load_token");
 }
 
 TEST_F(PingManagerTest, PersistThreatDetailsAtShutdown) {

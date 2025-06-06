@@ -392,8 +392,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
     LogAuthenticatedCookieResets(
         *resource_request,
         SafeBrowsingAuthenticatedEndpoint::kClientSideDetection);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token);
+    SetAccessToken(resource_request.get(), access_token);
   }
 
   resource_request->url = GetClientReportUrl(kClientReportPhishingUrl);

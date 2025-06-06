@@ -63,7 +63,7 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name);
 bool CanGetReputationOfUrl(const GURL& url);
 
 // List of callers of
-// `SetAccessTokenAndClearCookieInResourceRequest`. This is used for
+// `SetAccessToken`. This is used for
 // logging the histogram SafeBrowsing.AuthenticatedCookieResetEndpoint.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -84,11 +84,9 @@ enum class SafeBrowsingAuthenticatedEndpoint {
 void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
                                   SafeBrowsingAuthenticatedEndpoint endpoint);
 
-// Set |access_token| in |resource_request|. Remove cookies in the request
-// since we only need one identifier.
-void SetAccessTokenAndClearCookieInResourceRequest(
-    network::ResourceRequest* resource_request,
-    const std::string& access_token);
+// Set |access_token| in |resource_request|.
+void SetAccessToken(network::ResourceRequest* resource_request,
+                    const std::string& access_token);
 
 // Record HTTP response code when there's no error in fetching an HTTP
 // request, and the error code, when there is.

@@ -48,7 +48,6 @@ source_set("unit_tests") {
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
     "scheme_logger_unittest.cc",
-    "utils_unittest.cc",
   ]
 
   deps = [

@@ -122,8 +122,7 @@ class ClientSideDetectionServiceTest
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kSafeBrowsingRemoveCookiesInAuthRequests, {}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     if (ShouldEnableESBDailyPhishingLimit()) {
       base::FieldTrialParams params;
       params["kMaxReportsPerIntervalESB"] = "10";
@@ -482,9 +481,9 @@ TEST_P(ClientSideDetectionServiceTest,
         EXPECT_THAT(
             request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
             testing::Optional("Bearer " + access_token));
-        // Cookies should be removed when token is set.
+        // Cookies should still be included when token is set.
         EXPECT_EQ(request.credentials_mode,
-                  network::mojom::CredentialsMode::kOmit);
+                  network::mojom::CredentialsMode::kInclude);
       }));
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));

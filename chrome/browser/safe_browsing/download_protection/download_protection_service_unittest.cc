@@ -919,12 +919,9 @@ class DownloadProtectionServiceMockTimeTest
 class EnhancedProtectionDownloadTest : public DownloadProtectionServiceTest {
  public:
   EnhancedProtectionDownloadTest() {
-    EnableFeatures({
-        kSafeBrowsingRemoveCookiesInAuthRequests,
 #if BUILDFLAG(IS_ANDROID)
-        kMaliciousApkDownloadCheck,
+    EnableFeatures({kMaliciousApkDownloadCheck});
 #endif
-    });
   }
 };
 
@@ -4425,9 +4422,9 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
               EXPECT_EQ(*request.headers.GetHeader(
                             net::HttpRequestHeaders::kAuthorization),
                         "Bearer access_token");
-              // Cookies should be removed when token is set.
+              // Cookies should be included even when token is set.
               EXPECT_EQ(request.credentials_mode,
-                        network::mojom::CredentialsMode::kOmit);
+                        network::mojom::CredentialsMode::kInclude);
             }));
 
     RunLoop run_loop;
@@ -4586,9 +4583,9 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
               EXPECT_EQ(*request.headers.GetHeader(
                             net::HttpRequestHeaders::kAuthorization),
                         "Bearer access_token");
-              // Cookies should be removed when token is set.
+              // Cookies should be included even when token is set.
               EXPECT_EQ(request.credentials_mode,
-                        network::mojom::CredentialsMode::kOmit);
+                        network::mojom::CredentialsMode::kInclude);
             }));
 
     RunLoop run_loop;

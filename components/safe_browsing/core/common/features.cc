@@ -296,10 +296,6 @@ constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
     /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/10};
 
-BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
-             "SafeBrowsingRemoveCookiesInAuthRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist,
              "SafeBrowsingSyncCheckerCheckAllowlist",
@@ -379,7 +375,6 @@ base::Value::List GetFeatureStatusList() {
       &kLocalListsUseSBv5,
       &kOnDeviceNotificationContentDetectionModel,
       &kReportNotificationContentDetectionData,
-      &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
       &kShowWarningsForSuspiciousNotifications,
       &kSuspiciousSiteTriggerQuotaFeature,

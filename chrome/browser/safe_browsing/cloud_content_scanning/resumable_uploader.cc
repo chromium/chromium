@@ -140,7 +140,7 @@ void ResumableUploadRequest::SetMetadataRequestHeaders(
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
         *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
-    SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
+    SetAccessToken(request, access_token_);
   }
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 }

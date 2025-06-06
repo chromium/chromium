@@ -288,9 +288,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);
 // Specifies the CSD-Phishing daily reports limit for ESB users
 extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
 
-// Controls whether cookies are removed when the access token is present.
-BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables sync checker to check allowlist first on Chrome on Android. This is
 // an optimization to improve the speed of Safe Browsing checks.

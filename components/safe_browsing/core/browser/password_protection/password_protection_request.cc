@@ -362,8 +362,7 @@ void PasswordProtectionRequest::SendRequestWithToken(
     LogAuthenticatedCookieResets(
         *resource_request,
         SafeBrowsingAuthenticatedEndpoint::kPasswordProtection);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token);
+    SetAccessToken(resource_request.get(), access_token);
   }
   resource_request->url =
       PasswordProtectionServiceBase::GetPasswordProtectionRequestUrl();

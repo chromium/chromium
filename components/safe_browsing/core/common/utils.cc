@@ -160,15 +160,11 @@ void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
                                   .InitWithNewPipeAndPassReceiver());
 }
 
-void SetAccessTokenAndClearCookieInResourceRequest(
-    network::ResourceRequest* resource_request,
-    const std::string& access_token) {
+void SetAccessToken(network::ResourceRequest* resource_request,
+                    const std::string& access_token) {
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({kAuthHeaderBearer, access_token}));
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookiesInAuthRequests)) {
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  }
 }
 
 void RecordHttpResponseOrErrorCode(const char* metric_name,

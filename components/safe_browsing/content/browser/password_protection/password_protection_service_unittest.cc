@@ -1050,18 +1050,15 @@ TEST_P(PasswordProtectionServiceBaseTest,
        TestPasswordOnFocusRequestEnhancedProtectionShouldHaveToken) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestWithTokenHistogram, 0);
   SetEnhancedProtectionPrefForTests(&test_pref_service_, true);
-  SetFeatures(
-      /*enable_features*/ {kSafeBrowsingRemoveCookiesInAuthRequests},
-      /*disable_features*/ {});
   std::string access_token = "fake access token";
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         EXPECT_THAT(
             request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
             testing::Optional("Bearer " + access_token));
-        // Cookies should be removed when token is set.
+        // Cookies should still be included when token is set.
         EXPECT_EQ(request.credentials_mode,
-                  network::mojom::CredentialsMode::kOmit);
+                  network::mojom::CredentialsMode::kInclude);
       }));
   // Set up mock call to token fetcher.
   SafeBrowsingTokenFetcher::Callback cb;

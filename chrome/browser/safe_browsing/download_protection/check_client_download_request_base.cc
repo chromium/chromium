@@ -475,8 +475,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
     LogAuthenticatedCookieResets(
         *resource_request,
         SafeBrowsingAuthenticatedEndpoint::kDownloadProtection);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token_);
+    SetAccessToken(resource_request.get(), access_token_);
   }
 #endif
 

@@ -26,10 +26,7 @@ constexpr std::string_view kRealtimeEndpoint = "/realtime_endpoint";
 
 class SafeBrowsingUrlLookupServiceTest : public InProcessBrowserTest {
  public:
-  SafeBrowsingUrlLookupServiceTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        kSafeBrowsingRemoveCookiesInAuthRequests);
-  }
+  SafeBrowsingUrlLookupServiceTest() = default;
   SafeBrowsingUrlLookupServiceTest(const SafeBrowsingUrlLookupServiceTest&) =
       delete;
   SafeBrowsingUrlLookupServiceTest& operator=(
@@ -92,7 +89,6 @@ class SafeBrowsingUrlLookupServiceTest : public InProcessBrowserTest {
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> secure_embedded_test_server_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
