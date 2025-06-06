@@ -33,6 +33,12 @@ CustomizeButtonsHandler::CustomizeButtonsHandler(
       receiver_{this, std::move(pending_handler)} {
   CHECK(web_ui_);
   CHECK(feature_promo_helper_);
+
+  if (tab_interface_) {
+    tab_subscriptions_.push_back(tab_interface_->RegisterWillDetach(
+        base::BindRepeating(&CustomizeButtonsHandler::OnTabWillDetach,
+                            weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
 CustomizeButtonsHandler::~CustomizeButtonsHandler() = default;
@@ -155,4 +161,10 @@ void CustomizeButtonsHandler::IncrementWallpaperSearchButtonShownCount() {
       prefs::kNtpWallpaperSearchButtonShownCount);
   profile_->GetPrefs()->SetInteger(prefs::kNtpWallpaperSearchButtonShownCount,
                                    shown_count + 1);
+}
+
+void CustomizeButtonsHandler::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  tab_interface_ = nullptr;
 }
