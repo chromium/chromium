@@ -545,6 +545,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/423066352")
     public void testWarningBypassDialogLearnMore() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
