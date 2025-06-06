@@ -307,7 +307,8 @@ void TabStripPageHandler::OnTabStripModelChanged(
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
       for (const auto& contents : change.GetInsert()->contents) {
-        page_->TabCreated(GetTabData(contents.contents, contents.index));
+        page_->TabCreated(
+            GetTabData(contents.contents, contents.tab, contents.index));
       }
       break;
     }
@@ -350,18 +351,23 @@ void TabStripPageHandler::TabChangedAt(content::WebContents* contents,
                                        int index,
                                        TabChangeType change_type) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabChangedAt");
-  page_->TabUpdated(GetTabData(contents, index));
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  page_->TabUpdated(
+      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
 }
 
 void TabStripPageHandler::TabPinnedStateChanged(TabStripModel* tab_strip_model,
                                                 content::WebContents* contents,
                                                 int index) {
-  page_->TabUpdated(GetTabData(contents, index));
+  page_->TabUpdated(
+      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
 }
 
 void TabStripPageHandler::TabBlockedStateChanged(content::WebContents* contents,
                                                  int index) {
-  page_->TabUpdated(GetTabData(contents, index));
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  page_->TabUpdated(
+      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
 }
 
 bool TabStripPageHandler::PreHandleGestureEvent(
@@ -490,6 +496,7 @@ void TabStripPageHandler::OnLongPressTimer() {
 
 tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
     content::WebContents* contents,
+    const tabs::TabInterface* tab,
     int index) {
   DCHECK(index >= 0);
   auto tab_data = tab_strip::mojom::Tab::New();
@@ -544,7 +551,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->crashed = tab_renderer_data.IsCrashed();
   // TODO(johntlee): Add the rest of TabRendererData
 
-  for (const auto alert_state : GetTabAlertStatesForContents(contents)) {
+  for (const auto alert_state : GetTabAlertStatesForTab(tab)) {
     tab_data->alert_states.push_back(alert_state);
   }
 
@@ -576,7 +583,8 @@ void TabStripPageHandler::GetTabs(GetTabsCallback callback) {
   std::vector<tab_strip::mojom::TabPtr> tabs;
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    tabs.push_back(GetTabData(tab_strip_model->GetWebContentsAt(i), i));
+    tabs.push_back(GetTabData(tab_strip_model->GetWebContentsAt(i),
+                              tab_strip_model->GetTabAtIndex(i), i));
   }
   std::move(callback).Run(std::move(tabs));
 }

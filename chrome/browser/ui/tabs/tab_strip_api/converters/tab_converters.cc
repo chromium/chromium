@@ -22,8 +22,7 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
   result->url = data.visible_url;
   result->network_state = data.network_state;
   if (handle.Get() != nullptr) {
-    for (const auto alert_state :
-         GetTabAlertStatesForContents(handle.Get()->GetContents())) {
+    for (const auto alert_state : GetTabAlertStatesForTab(handle.Get())) {
       result->alert_states.push_back(alert_state);
     }
   }

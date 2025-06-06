@@ -351,6 +351,12 @@ class CastMirroringServiceHostBrowserTest
   // InProcessBrowserTest override.
   void SetUp() override { InProcessBrowserTest::SetUp(); }
 
+  std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
+      content::WebContents* web_contents) {
+    return GetTabAlertStatesForTab(
+        tabs::TabInterface::GetFromContents(web_contents));
+  }
+
  private:
   // mojom::SessionObserver mocks.
   MOCK_METHOD(void, OnError, (mojom::SessionError));

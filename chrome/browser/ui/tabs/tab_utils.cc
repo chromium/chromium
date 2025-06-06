@@ -30,9 +30,13 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
-std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
-    content::WebContents* contents) {
+std::vector<tabs::TabAlert> GetTabAlertStatesForTab(
+    const tabs::TabInterface* tab) {
   std::vector<tabs::TabAlert> states;
+  if (!tab) {
+    return states;
+  }
+  content::WebContents* contents = tab->GetContents();
   if (!contents) {
     return states;
   }

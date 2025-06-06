@@ -68,6 +68,12 @@ class TabCaptureApiTest : public ExtensionApiTest {
   }
 
  protected:
+  std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
+      content::WebContents* web_contents) {
+    return GetTabAlertStatesForTab(
+        tabs::TabInterface::GetFromContents(web_contents));
+  }
+
   void SimulateMouseClickInCurrentTab() {
     content::SimulateMouseClick(
         browser()->tab_strip_model()->GetActiveWebContents(), 0,

@@ -1447,8 +1447,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           ? custom_last_active_text
           : GetLastActiveElapsedText(last_active_time_ticks);
 
-  std::vector<tabs::TabAlert> alert_states =
-      GetTabAlertStatesForContents(contents);
+  std::vector<tabs::TabAlert> alert_states = GetTabAlertStatesForTab(tab);
   // Currently, we only report media alert states.
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
                        std::back_inserter(tab_data->alert_states),

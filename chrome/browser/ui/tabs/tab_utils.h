@@ -21,6 +21,7 @@ class WebContents;
 
 namespace tabs {
 enum class TabAlert;
+class TabInterface;
 }  // namespace tabs
 
 struct LastMuteMetadata
@@ -39,8 +40,8 @@ struct LastMuteMetadata
 // privacy, i.e. if only one is to be shown, it should be the first.
 // TabAlertState::NONE will never be present in the list; an empty list
 // is returned instead.
-std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
-    content::WebContents* contents);
+std::vector<tabs::TabAlert> GetTabAlertStatesForTab(
+    const tabs::TabInterface* tab);
 
 // Returns a localized string describing the |alert_state|.
 std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state);
