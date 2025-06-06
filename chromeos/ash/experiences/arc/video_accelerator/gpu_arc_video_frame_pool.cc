@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/decoder_status.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_types.h"
