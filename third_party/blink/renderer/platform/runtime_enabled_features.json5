@@ -2438,10 +2438,6 @@
       name: "ForceReduceMotion",
     },
     {
-      name: "ForceTallerSelectPopup",
-      status: {"ChromeOS": "stable"},
-    },
-    {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
       // for a few weeks or more. This is a kill switch that, when enabled, goes
       // back to the old behavior, which was to restore the state for <input>
@@ -4430,13 +4426,6 @@
       // This should ship in M135, and it can be removed after M137.
       // http://crbug.com/396611142
       name: "SelectNoMouseUpForKeyboardSelection",
-      status: "stable",
-    },
-    {
-      // Sets the minimum target size of <option> in <select> to 24x24 CSS
-      // pixels to meet Accessibility standards.
-      // https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
-      name: "SelectOptionAccessibilityTargetSize",
       status: "stable",
     },
     {

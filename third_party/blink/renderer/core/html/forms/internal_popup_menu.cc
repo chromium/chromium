@@ -345,35 +345,31 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
 
   data.Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data.Append(ChooserResourceLoader::GetListPickerStyleSheet());
-  if (taller_options_) {
-    int padding = static_cast<int>(roundf(4 * scale_factor));
-    int min_height = static_cast<int>(roundf(24 * scale_factor));
-    PagePopupClient::AddString(String::Format("option, optgroup {"
-                                              "padding-top: %dpx;"
-                                              "}\n"
-                                              "option {"
-                                              "padding-bottom: %dpx;"
-                                              "min-block-size: %dpx;"
-                                              "display: flex;"
-                                              "align-items: center;"
-                                              "}\n",
-                                              padding, padding, min_height),
-                               data);
-    // Sets the min target size of <option> to 24x24 CSS pixels to meet
-    // Accessibility standards.
-    if (RuntimeEnabledFeatures::SelectOptionAccessibilityTargetSizeEnabled()) {
-      PagePopupClient::AddString(
-          String::Format("option {"
-                         "display: block;"
-                         "align-content: center;"
-                         "min-inline-size: %dpx;"
-                         "min-block-size: %dpx;"
-                         "box-sizing: border-box;"
-                         "}\n",
-                         min_height, std::max(24, min_height)),
-          data);
-    }
-  }
+  int padding = static_cast<int>(roundf(4 * scale_factor));
+  int min_height = static_cast<int>(roundf(24 * scale_factor));
+  PagePopupClient::AddString(String::Format("option, optgroup {"
+                                            "padding-top: %dpx;"
+                                            "}\n"
+                                            "option {"
+                                            "padding-bottom: %dpx;"
+                                            "min-block-size: %dpx;"
+                                            "display: flex;"
+                                            "align-items: center;"
+                                            "}\n",
+                                            padding, padding, min_height),
+                             data);
+  // Sets the min target size of <option> to 24x24 CSS pixels to meet
+  // Accessibility standards.
+  PagePopupClient::AddString(
+      String::Format("option {"
+                     "display: block;"
+                     "align-content: center;"
+                     "min-inline-size: %dpx;"
+                     "min-block-size: %dpx;"
+                     "box-sizing: border-box;"
+                     "}\n",
+                     min_height, std::max(24, min_height)),
+      data);
 
   PagePopupClient::AddString(
       "</style></head><body><div id=main>Loading...</div><script>\n"
@@ -669,10 +665,6 @@ void InternalPopupMenu::Dispose() {
 
 void InternalPopupMenu::Show(PopupMenu::ShowEventType type) {
   DCHECK(!popup_);
-  taller_options_ =
-      type == PopupMenu::kTouch ||
-      RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled() ||
-      RuntimeEnabledFeatures::SelectOptionAccessibilityTargetSizeEnabled();
   popup_ = chrome_client_->OpenPagePopup(this);
 }
 

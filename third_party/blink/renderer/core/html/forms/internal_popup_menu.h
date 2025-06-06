@@ -77,7 +77,6 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   Member<HTMLSelectElement> owner_element_;
   PagePopup* popup_;
   bool needs_update_;
-  bool taller_options_ = false;
 };
 
 }  // namespace blink
