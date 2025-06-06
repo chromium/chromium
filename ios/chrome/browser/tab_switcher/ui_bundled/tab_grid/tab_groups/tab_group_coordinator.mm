@@ -478,16 +478,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   [defaults setBool:YES forKey:kSharedTabGroupUserEducationShownOnceKey];
 }
 
-// Removes the shared tab group.
-- (void)deleteSharedGroup {
-  [_mediator deleteSharedTabGroup:_tabGroup];
-}
-
-// Leaves the shared tab group.
-- (void)leaveSharedGroup {
-  [_mediator leaveSharedTabGroup:_tabGroup];
-}
-
 // Closes the given tab and replace it with a new tab.
 - (void)addNewTabInsteadOfTab:(web::WebStateID)identifier {
   GURL URL(kChromeUINewTabURL);

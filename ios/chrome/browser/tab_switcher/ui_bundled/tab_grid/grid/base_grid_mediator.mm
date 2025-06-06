@@ -506,16 +506,6 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   groupWebStateList->DeleteGroup(group);
 }
 
-- (void)leaveSharedTabGroup:(const TabGroup*)group {
-  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
-                 sharedTabGroup:group];
-}
-
-- (void)deleteSharedTabGroup:(const TabGroup*)group {
-  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
-                 sharedTabGroup:group];
-}
-
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
   return self.profile->IsOffTheRecord() == tabGroupInfo.incognito;
 }
@@ -1728,56 +1718,6 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
       [GridItemIdentifier groupIdentifier:group];
   [self.consumer replaceItem:groupIdentifier
          withReplacementItem:groupIdentifier];
-}
-
-// Takes the corresponded action to `actionType` for the shared `group`.
-// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
-- (void)takeActionForActionType:(TabGroupActionType)actionType
-                 sharedTabGroup:(const TabGroup*)group {
-  [self.tabGridIdleStatusHandler
-      tabGridDidPerformAction:TabGridActionType::kInPageAction];
-
-  collaboration::CollaborationService* collaborationService =
-      collaboration::CollaborationServiceFactory::GetForProfile(_profile);
-  tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
-  CHECK(collaborationService);
-  CHECK(tabGroupSyncService);
-
-  const tab_groups::CollaborationId collabId =
-      tab_groups::utils::GetTabGroupCollabID(group, tabGroupSyncService);
-  CHECK(!collabId->empty());
-  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
-
-  __weak BaseGridMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(bool success) {
-    [weakSelf handleTakeActionForActionTypeOutcome:success];
-  });
-
-  // TODO(crbug.com/393073658): Block the screen.
-
-  // Asynchronously call on the server.
-  switch (actionType) {
-    case TabGroupActionType::kLeaveSharedTabGroup:
-      collaborationService->LeaveGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kDeleteSharedTabGroup:
-      collaborationService->DeleteGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kUngroupTabGroup:
-    case TabGroupActionType::kDeleteTabGroup:
-    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-      NOTREACHED();
-  }
-}
-
-// Called when `takeActionForActionType:forSharedTabGroup:` server's call
-// returned.
-- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
-  // TODO(crbug.com/393073658):
-  // - Unblock the screen.
-  // - Show an error if needed.
 }
 
 // Exits Tab grid of `itemBrowser`'s window.
