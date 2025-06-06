@@ -96,6 +96,7 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
                                     height:kFullDetentHeight]
   ];
 
+  self.modalInPresentation = YES;
   self.modalPresentationStyle = UIModalPresentationPageSheet;
 
   self.sheetPresentationController.preferredCornerRadius =
