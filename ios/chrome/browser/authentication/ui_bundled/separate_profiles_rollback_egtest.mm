@@ -302,15 +302,8 @@
              @"Separate profiles should still be enabled");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRollbackWithManagedProfile_KillSwitch \
-  FLAKY_testRollbackWithManagedProfile_KillSwitch
-#else
-#define MAYBE_testRollbackWithManagedProfile_KillSwitch \
-  testRollbackWithManagedProfile_KillSwitch
-#endif
-- (void)MAYBE_testRollbackWithManagedProfile_KillSwitch {
+// TODO(crbug.com/411035267): Fix this flaky test.
+- (void)FLAKY_testRollbackWithManagedProfile_KillSwitch {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
