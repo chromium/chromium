@@ -275,14 +275,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   if (!tabGroup) {
     return;
   }
-  if (confirmation) {
-    [_delegate startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
-                                   forAction:TabGroupActionType::
-                                                 kDeleteSharedTabGroup];
-    return;
-  }
-  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
-                 sharedTabGroup:tabGroup];
+  [_delegate
+      startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kDeleteSharedTabGroup
+                   withConfirmation:confirmation];
 }
 
 - (void)leaveSharedGroupWithConfirmation:(BOOL)confirmation {
@@ -290,14 +286,10 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   if (!tabGroup) {
     return;
   }
-  if (confirmation) {
-    [_delegate
-        startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
-                            forAction:TabGroupActionType::kLeaveSharedTabGroup];
-    return;
-  }
-  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
-                 sharedTabGroup:tabGroup];
+  [_delegate
+      startLeaveOrDeleteSharedGroup:tabGroup->GetWeakPtr()
+                          forAction:TabGroupActionType::kLeaveSharedTabGroup
+                   withConfirmation:confirmation];
 }
 
 #pragma mark - SceneStateObserver
@@ -390,48 +382,6 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
   [self updateTabGroupSharingState:tabGroup];
   [self updateFacePileUI];
-}
-
-// Takes the corresponded action to `actionType` for the shared `group`.
-// TabGroupActionType must be kLeaveSharedTabGroup or kDeleteSharedTabGroup.
-- (void)takeActionForActionType:(TabGroupActionType)actionType
-                 sharedTabGroup:(const TabGroup*)group {
-  CHECK(_collaborationService);
-
-  const tab_groups::CollaborationId collabId =
-      tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
-  CHECK(!collabId->empty());
-  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
-
-  __weak TabGroupIndicatorMediator* weakSelf = self;
-  auto callback = base::BindOnce(^(bool success) {
-    [weakSelf handleTakeActionForActionTypeOutcome:success];
-  });
-
-  // TODO(crbug.com/393073658): Block the screen.
-
-  // Asynchronously call on the server.
-  switch (actionType) {
-    case TabGroupActionType::kLeaveSharedTabGroup:
-      _collaborationService->LeaveGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kDeleteSharedTabGroup:
-      _collaborationService->DeleteGroup(groupId, std::move(callback));
-      break;
-    case TabGroupActionType::kUngroupTabGroup:
-    case TabGroupActionType::kDeleteTabGroup:
-    case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
-    case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
-      NOTREACHED();
-  }
-}
-
-// Called when `takeActionForActionType:forSharedTabGroup:` server's call
-// returned.
-- (void)handleTakeActionForActionTypeOutcome:(BOOL)success {
-  // TODO(crbug.com/393073658):
-  // - Unblock the screen.
-  // - Show an error if needed.
 }
 
 // Tries to present the IPH to be presented when the app is foregrounded with a

@@ -182,7 +182,8 @@ using collaboration::IOSCollaborationControllerDelegate;
 }
 
 - (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)tabGroup
-                            forAction:(TabGroupActionType)actionType {
+                            forAction:(TabGroupActionType)actionType
+                     withConfirmation:(BOOL)confirmation {
   [self stopTabGroupConfirmationCoordinator];
 
   __weak __typeof(self) weakSelf = self;
@@ -192,6 +193,11 @@ using collaboration::IOSCollaborationControllerDelegate;
         if (!strongSelf) {
           std::move(resultCallback)
               .Run(CollaborationControllerDelegate::Outcome::kCancel);
+          return;
+        }
+        if (!confirmation) {
+          std::move(resultCallback)
+              .Run(CollaborationControllerDelegate::Outcome::kSuccess);
           return;
         }
         auto completionBlock = base::CallbackToBlock(std::move(resultCallback));
