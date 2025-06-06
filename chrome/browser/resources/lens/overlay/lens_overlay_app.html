@@ -385,16 +385,6 @@
   }
 
   /**
-   * Fade out the ghost loader bars when the searchbox dropdown is showing
-   * (results available).
-   */
-  :host([enable-csb-motion-tweaks][show-ghost-loader])
-    #searchboxContainer:has(cr-searchbox[dropdown-is-visible])
-    cr-searchbox-ghost-loader .ghost-loader-item {
-    animation: 400ms ghost-loader-exit-animation cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-
-  /**
    * Slide in the ghost loader when the searchbox is not already manually
    * focused (e.g., on initial invocation). Once it has been manually focused,
    * subsequent focus events will not trigger the slide in animation.
@@ -409,16 +399,6 @@
     }
     100% {
       transform: translateY(0px);
-    }
-  }
-
-  @keyframes ghost-loader-exit-animation {
-    0% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0;
     }
   }
 
@@ -495,7 +475,8 @@
       id="searchboxGhostLoader"
       tabindex="-1"
       show-error-state="{{showErrorState}}"
-      page-content-type="[[pageContentType]]">
+      page-content-type="[[pageContentType]]"
+      suggestion-count="[[searchboxSuggestionCount]]"
     </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">

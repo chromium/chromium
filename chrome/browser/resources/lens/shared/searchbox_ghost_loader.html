@@ -102,6 +102,13 @@
   height: 48px;
 }
 
+
+/* Fade out animation for the ghost loader items when real suggestions are shown. */
+:host([enable-csb-motion-tweaks][should-fade-out])
+  .ghost-loader-item {
+  animation: 400ms ghost-loader-exit-animation cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 .searchbox-icon {
   --cr-searchbox-icon-border-radius: 12px;
   margin-right: 10px;
@@ -215,7 +222,8 @@
       </span>
     </div>
     <div class="suggestion-loader-container">
-      <template is="dom-repeat" items="[0, 1, 2, 3, 4]" as="item">
+      <template is="dom-repeat"
+          items="[[getSuggestionItems(suggestionCount)]]" as="item">
         <div class="ghost-loader-item">
           <cr-searchbox-icon
             class="searchbox-icon"
