@@ -502,21 +502,24 @@ def process(messages_file, template_prefix, output, check):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="""
-Parses ipcz message definition files (*_messages_generator.h) and generates
-.cc and .h files for use by the IPCZ build. Determines the interface type from
-the provided IPCZ_MSG_BEGIN_INTERFACE(name) and supports both Node and Test.
-
-node_messages.py --dir=.\third_party\ipcz\src\ipcz
-
-Writes node_messages.h and node_messages.cc in the same directory `messages`.
-Files are only touched if the contents have changed.
-
-Can be run in a check-only mode which does not write the output files, but
-instead validates that the checked-in file matches the expected output.
-
-node_messages.py --dir=.\third_party\ipcz\src\ipcz --check
-                                     """)
+    parser = argparse.ArgumentParser(description=(
+        "Parses ipcz message definition files (*_messages_generator.h) and\n"
+        "generates .cc and .h files for use by the IPCZ build. Determines the\n"
+        "interface type from the provided IPCZ_MSG_BEGIN_INTERFACE(name) and\n"
+        "supports both Node and Test.\n"
+        "\n"
+        r"  node_messages.py --dir=.\third_party\ipcz\src\ipcz"
+        "\n\n"
+        "Writes node_messages.h and node_messages.cc in the same directory\n"
+        "`messages`. Files are only touched if the contents have changed.\n"
+        "\n"
+        "Can be run in a check-only mode which does not write the output\n"
+        "files, but instead validates that the checked-in file matches the\n"
+        "expected output.\n"
+        "\n"
+        r"  node_messages.py --dir=.\third_party\ipcz\src\ipcz --check"),
+                                     formatter_class=argparse.
+                                     RawDescriptionHelpFormatter)
     parser.add_argument('--template',
                         default='node_messages',
                         help='template prefix')
