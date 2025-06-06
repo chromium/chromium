@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.Capt
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -195,8 +196,12 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private void startAndroidCapturePrompt() {
         var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
         fragment.startAndroidCapturePrompt(
-                result -> {
-                    switch (result) {
+                (action, result) -> {
+                    if (action != CaptureAction.CAPTURE_CANCELLED) {
+                        ScreenCapture.onPick(result);
+                    }
+
+                    switch (action) {
                         case CaptureAction.CAPTURE_CANCELLED:
                             mDelegate.onCancel();
                             break;
