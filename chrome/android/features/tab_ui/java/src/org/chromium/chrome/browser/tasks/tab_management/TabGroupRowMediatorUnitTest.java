@@ -260,15 +260,6 @@ public class TabGroupRowMediatorUnitTest {
     }
 
     @Test
-    public void testCollaborationButOnlyOneUser() {
-        mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1);
-        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-
-        assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
-        assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
-    }
-
-    @Test
     public void testShared() {
         mSharedGroupTestHelper.mockGetGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);

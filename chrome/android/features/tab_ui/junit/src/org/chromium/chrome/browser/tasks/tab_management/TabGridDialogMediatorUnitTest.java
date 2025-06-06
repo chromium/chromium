@@ -1860,12 +1860,9 @@ public class TabGridDialogMediatorUnitTest {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
         verify(mDialogController)
                 .addMessageCardItem(/* position= */ eq(0), mMessageCardModelCaptor.capture());
-        assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_SEND_FEEDBACK));
-        assertEquals(
-                R.string.tab_grid_manage_button_text,
-                mModel.get(TabGridDialogProperties.SHARE_BUTTON_STRING_RES));
-        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+        assertTrue(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
         String text = mMessageCardModelCaptor.getValue().get(DESCRIPTION_TEXT).toString();
         assertTrue(text, text.contains("4"));
 

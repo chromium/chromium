@@ -103,12 +103,4 @@ public class TabShareUtils {
             return members.isEmpty() ? null : members;
         }
     }
-
-    /**
-     * @param groupData The shared group data.
-     * @return Whether the group has multiple collaborators.
-     */
-    public static boolean hasMultipleCollaborators(@Nullable GroupData groupData) {
-        return discernSharedGroupState(groupData) == GroupSharedState.HAS_OTHER_USERS;
-    }
 }

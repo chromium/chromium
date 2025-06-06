@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
-@interface GroupSharedState {
+public @interface GroupSharedState {
     int NOT_SHARED = 0;
     int COLLABORATION_ONLY = 1;
     int HAS_OTHER_USERS = 2;

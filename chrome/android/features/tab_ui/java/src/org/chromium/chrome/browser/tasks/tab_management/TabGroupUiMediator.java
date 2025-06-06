@@ -511,9 +511,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {
-        if (groupSharedState == null
-                || groupSharedState == GroupSharedState.NOT_SHARED
-                || groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
+        if (groupSharedState == null || groupSharedState == GroupSharedState.NOT_SHARED) {
             mModel.set(SHOW_GROUP_DIALOG_BUTTON_VISIBLE, true);
             mModel.set(IMAGE_TILES_CONTAINER_VISIBLE, false);
         } else {

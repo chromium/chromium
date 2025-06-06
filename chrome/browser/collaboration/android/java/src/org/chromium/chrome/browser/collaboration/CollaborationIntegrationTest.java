@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -321,7 +322,8 @@ public class CollaborationIntegrationTest {
         prepareToShareTabGroup(/* owner= */ true, getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
-        onViewWaiting(withText(R.string.tab_grid_manage_button_text)).check(matches(isDisplayed()));
+        onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
+                .check(matches(isDisplayed()));
     }
 
     @Test

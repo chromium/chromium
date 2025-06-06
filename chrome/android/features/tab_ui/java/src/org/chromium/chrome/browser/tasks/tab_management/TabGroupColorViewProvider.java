@@ -292,9 +292,7 @@ public class TabGroupColorViewProvider implements Destroyable {
 
     private static boolean shouldShowSharedImageTiles(
             @GroupSharedState @Nullable Integer groupSharedState) {
-        return groupSharedState != null
-                && groupSharedState != GroupSharedState.NOT_SHARED
-                && groupSharedState != GroupSharedState.COLLABORATION_ONLY;
+        return groupSharedState != null && groupSharedState != GroupSharedState.NOT_SHARED;
     }
 
     @TabGroupColorId

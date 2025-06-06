@@ -1137,19 +1137,6 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void testImageTiles_1Member() {
-        setupSyncedGroup(/* isShared= */ true);
-        when(mCollaborationService.getGroupData(COLLABORATION_ID1))
-                .thenReturn(SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1));
-        initAndAssertProperties(mTab2);
-
-        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
-        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
-        verify(mSharedImageTilesCoordinator)
-                .onGroupMembersChanged(COLLABORATION_ID1, List.of(GROUP_MEMBER1));
-    }
-
-    @Test
     public void testImageTiles_NoCollaborationId() {
         setupSyncedGroup(/* isShared= */ false);
 

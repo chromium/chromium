@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.GroupSharedState;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
@@ -2263,10 +2264,11 @@ public class StripLayoutHelper
      */
     private void updateOrClearSharedState(GroupData groupData, StripLayoutGroupTitle groupTitle) {
         if (groupTitle == null) return;
-        if (TabShareUtils.hasMultipleCollaborators(groupData)) {
-            updateSharedTabGroup(groupData.groupToken.collaborationId, groupTitle);
-        } else {
+        @GroupSharedState int groupSharedState = TabShareUtils.discernSharedGroupState(groupData);
+        if (groupSharedState == GroupSharedState.NOT_SHARED) {
             clearSharedTabGroup(groupTitle);
+        } else {
+            updateSharedTabGroup(groupData.groupToken.collaborationId, groupTitle);
         }
     }
 
@@ -2283,10 +2285,7 @@ public class StripLayoutHelper
             if (savedTabGroup == null || savedTabGroup.collaborationId == null) return;
 
             GroupData groupData = mCollaborationService.getGroupData(savedTabGroup.collaborationId);
-
-            if (TabShareUtils.hasMultipleCollaborators(groupData)) {
-                updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
-            }
+            updateOrClearSharedState(groupData, groupTitle);
         }
     }
 

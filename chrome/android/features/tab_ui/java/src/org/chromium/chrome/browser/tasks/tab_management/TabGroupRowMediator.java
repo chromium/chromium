@@ -180,10 +180,8 @@ class TabGroupRowMediator {
             mPropertyModel.set(LEAVE_RUNNABLE, () -> processLeaveOrDeleteShareGroup(savedTabGroup));
         }
 
-        if (sharedState == GroupSharedState.COLLABORATION_ONLY) {
-            mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
-            mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
-        } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
+        if (sharedState == GroupSharedState.HAS_OTHER_USERS
+                || sharedState == GroupSharedState.COLLABORATION_ONLY) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
             if (mSharedImageTilesCoordinator == null) {
                 final @ColorInt int backgroundColor;

@@ -1191,13 +1191,6 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
             mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, false);
-        } else if (groupSharedState == GroupSharedState.COLLABORATION_ONLY) {
-            mModel.set(
-                    TabGridDialogProperties.SHARE_BUTTON_STRING_RES,
-                    R.string.tab_grid_manage_button_text);
-            mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, shouldShowShareButton());
-            mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, false);
-            mModel.set(TabGridDialogProperties.SHOW_SEND_FEEDBACK, shouldShowSendFeedback());
         } else {
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
