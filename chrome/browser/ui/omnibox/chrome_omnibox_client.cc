@@ -800,7 +800,8 @@ void ChromeOmniboxClient::OnPopupVisibilityChanged(bool popup_is_open) {
     auto* const helper =
         OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents());
     CHECK(helper);
-    helper->OnPopupVisibilityChanged(popup_is_open);
+    helper->OnPopupVisibilityChanged(
+        popup_is_open, GetPageClassification(/*is_prefetch=*/false));
   }
 }
 

@@ -1825,6 +1825,136 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.NavigationToPopupShown.DomContentLoaded" units="ms"
+    expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a DOMContentLoaded event and the suggest popup
+    being shown to the user.
+
+    Recorded the first time the the omnibox popup is opened after a
+    DOMContentLoaded loaded. Only recorded on the first omnibox popup shown
+    after a navigation. Subsequent omnibox openings are ignored. If the user
+    focused the omnibox before the main document element was available, this
+    metric will not be recorded. Each tab keeps track of its own page change
+    events and omnibox popup open events, meaning if the user opens multiple
+    tabs and opens the omnibox popup on each one, this metric will be recorded
+    multiple times.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.NavigationToPopupShown.DomContentLoaded.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a DOMContentLoaded event and the suggest popup
+    being shown to the user.
+
+    Recorded the first time the the omnibox popup is opened after a
+    DOMContentLoaded event. Only recorded on the first omnibox popup shown after
+    a navigation. Subsequent omnibox openings are ignored. If the user focused
+    the omnibox before the main document element was available, this metric will
+    not be recorded. Each tab keeps track of its own DOMContentLoaded events and
+    omnibox popup open events, meaning if the user opens multiple tabs and opens
+    the omnibox popup on each one, this metric will be recorded multiple times.
+
+    Sliced by page context to help better understand the latency budget for
+    different page types.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="Omnibox.NavigationToPopupShown.MainDocumentElementAvailable"
+    units="ms" expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a the main document element being available and
+    the suggest popup being shown to the user. The main document element is
+    available when the HTML has finished parsing and window.document is
+    available.
+
+    Recorded the first time the the omnibox popup is opened after a main
+    document element available event. Only recorded on the first omnibox popup
+    shown after a navigation. Subsequent omnibox openings are ignored. If the
+    user focused the omnibox before the main document element was available,
+    this metric will not be recorded. Each tab keeps track of its own main
+    document element available events and omnibox popup open events, meaning if
+    the user opens multiple tabs and opens the omnibox popup on each one, this
+    metric will be recorded multiple times.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.NavigationToPopupShown.MainDocumentElementAvailable.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a the main document element being available and
+    the suggest popup being shown to the user. The main document element is
+    available when the HTML has finished parsing and window.document is
+    available.
+
+    Recorded the first time the the omnibox popup is opened after a main
+    document element available event. Only recorded on the first omnibox popup
+    shown after a navigation. Subsequent omnibox openings are ignored. If the
+    user focused the omnibox before the main document element was available,
+    this metric will not be recorded. Each tab keeps track of its own main
+    document element available events and omnibox popup open events, meaning if
+    the user opens multiple tabs and opens the omnibox popup on each one, this
+    metric will be recorded multiple times.
+
+    Sliced by page context to help better understand the latency budget for
+    different page types.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="Omnibox.NavigationToPopupShown.PrimaryPageChanged" units="ms"
+    expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a page change event and the suggest popup being
+    shown to the user.
+
+    Recorded the first time the the omnibox popup is opened after a page change
+    event. Only recorded on the first omnibox popup shown after a navigation.
+    Subsequent omnibox openings are ignored. If the user focused the omnibox
+    before the main document element was available, this metric will not be
+    recorded. Each tab keeps track of its own page change events and omnibox
+    popup open events, meaning if the user opens multiple tabs and opens the
+    omnibox popup on each one, this metric will be recorded multiple times.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.NavigationToPopupShown.PrimaryPageChanged.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-11-16">
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between a page change event and the suggest popup being
+    shown to the user.
+
+    Recorded the first time the the omnibox popup is opened after a page change
+    event. Only recorded on the first omnibox popup shown after a navigation.
+    Subsequent omnibox openings are ignored. If the user focused the omnibox
+    before the main document element was available, this metric will not be
+    recorded. Each tab keeps track of its own page change events and omnibox
+    popup open events, meaning if the user opens multiple tabs and opens the
+    omnibox popup on each one, this metric will be recorded multiple times.
+
+    Sliced by page context to help better understand the latency budget for
+    different page types.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
 <histogram name="Omnibox.NumberOfVisibleCharacters" units="characters"
     expires_after="2025-09-07">
   <owner>peilinwang@google.com</owner>

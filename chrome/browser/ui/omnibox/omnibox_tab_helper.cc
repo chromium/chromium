@@ -4,7 +4,15 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,8 +21,35 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "content/public/browser/render_frame_host.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper);
+
+namespace {
+
+constexpr char kNavigationToPopupShownHistogramPrefix[] =
+    "Omnibox.NavigationToPopupShown";
+constexpr char kMainDocumentElementAvailableHistogramSuffix[] =
+    "MainDocumentElementAvailable";
+constexpr char kPrimaryPageChangedHistogramSuffix[] = "PrimaryPageChanged";
+constexpr char kDomContentLoadedHistogramSuffix[] = "DomContentLoaded";
+constexpr char kByPageContextHistogramPrefix[] = "ByPageContext";
+
+void LogNavigationToPopupUma(std::string_view event_name,
+                             std::string_view page_context,
+                             base::TimeDelta time_to_log) {
+  // Custom buckets from 1 millisecond to 1 minute, with 60 buckets in total.
+  // Meaning each bucket is 1 second wide.
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kNavigationToPopupShownHistogramPrefix, ".", event_name}),
+      time_to_log, base::Milliseconds(0), base::Seconds(60), 60);
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kNavigationToPopupShownHistogramPrefix, ".", event_name,
+                    ".", kByPageContextHistogramPrefix, ".", page_context}),
+      time_to_log, base::Milliseconds(0), base::Seconds(60), 60);
+}
+}  // namespace
 
 OmniboxTabHelper::~OmniboxTabHelper() = default;
 OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents,
@@ -57,9 +92,15 @@ void OmniboxTabHelper::OnFocusChanged(OmniboxFocusState state,
   }
 }
 
-void OmniboxTabHelper::OnPopupVisibilityChanged(bool popup_is_open) {
+void OmniboxTabHelper::OnPopupVisibilityChanged(
+    bool popup_is_open,
+    metrics::OmniboxEventProto::PageClassification page_classification) {
   for (auto& observer : observers_) {
     observer.OnOmniboxPopupVisibilityChanged(popup_is_open);
+  }
+
+  if (popup_is_open) {
+    MaybeLogNavigationToPopupShownTimings(page_classification);
   }
 }
 
@@ -85,4 +126,55 @@ void OmniboxTabHelper::OnPageContentExtracted(
 
 void OmniboxTabHelper::PrimaryPageChanged(content::Page& page) {
   page_has_apc_paywall_signal_.reset();
+
+  // Reset old times to avoid logging them incorrectly.
+  primary_main_document_element_available_time_.reset();
+  dom_content_loaded_time_.reset();
+  logged_current_navigation_timings_ = false;
+
+  primary_page_changed_time_ = base::ElapsedTimer();
+}
+
+void OmniboxTabHelper::PrimaryMainDocumentElementAvailable() {
+  primary_main_document_element_available_time_ = base::ElapsedTimer();
+}
+
+void OmniboxTabHelper::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  // Ignore events from subframes.
+  if (render_frame_host->GetParent()) {
+    return;
+  }
+  dom_content_loaded_time_ = base::ElapsedTimer();
+}
+
+void OmniboxTabHelper::MaybeLogNavigationToPopupShownTimings(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  if (logged_current_navigation_timings_) {
+    return;
+  }
+  logged_current_navigation_timings_ = true;
+
+  // If the primary page hasn't changed, then there is nothing to log, and this
+  // tab is probably on the NTP, so exit early to avoid skewing metrics.
+  if (!primary_page_changed_time_.has_value()) {
+    return;
+  }
+
+  const std::string page_context =
+      metrics::OmniboxEventProto::PageClassification_Name(page_classification);
+
+  LogNavigationToPopupUma(kPrimaryPageChangedHistogramSuffix, page_context,
+                          primary_page_changed_time_->Elapsed());
+
+  if (primary_main_document_element_available_time_.has_value()) {
+    LogNavigationToPopupUma(
+        kMainDocumentElementAvailableHistogramSuffix, page_context,
+        primary_main_document_element_available_time_->Elapsed());
+  }
+
+  if (dom_content_loaded_time_.has_value()) {
+    LogNavigationToPopupUma(kDomContentLoadedHistogramSuffix, page_context,
+                            dom_content_loaded_time_->Elapsed());
+  }
 }
