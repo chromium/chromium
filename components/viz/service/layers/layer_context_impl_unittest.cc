@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -29,9 +30,21 @@
 namespace viz {
 namespace {
 
+// Default layer tree property values
 const float kDefaultPageScaleFactor = 1.0f;
 const float kDefaultMinPageScaleFactor = 0.5f;
 const float kDefaultMaxPageScaleFactor = 2.0f;
+const gfx::Rect kDefaultDeviceViewportRect(100, 100);
+const SkColor4f kDefaultBackgroundColor = SkColors::kTransparent;
+const float kDefaultExternalPageScaleFactor = 1.0f;
+const float kDefaultDeviceScaleFactor = 1.0f;
+const float kDefaultPaintedDeviceScaleFactor = 1.0f;
+
+// Default TextureLayer property values
+const bool kDefaultBlendBackgroundColor = false;
+const bool kDefaultForceTextureToOpaque = false;
+const gfx::PointF kDefaultUVTopLeft = gfx::PointF();
+const gfx::PointF kDefaultUVBottomRight = gfx::PointF(1.f, 1.f);
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -72,16 +85,16 @@ class LayerContextImplTest : public testing::Test {
     update->source_frame_number = 1;
     update->trace_id = 1;
     update->primary_main_frame_item_sequence_number = 1;
-    update->device_viewport = gfx::Rect(100, 100);
-    update->background_color = SkColors::kTransparent;
+    update->device_viewport = kDefaultDeviceViewportRect;
+    update->background_color = kDefaultBackgroundColor;
 
     // Valid scale factors by default
     update->page_scale_factor = kDefaultPageScaleFactor;
     update->min_page_scale_factor = kDefaultMinPageScaleFactor;
     update->max_page_scale_factor = kDefaultMaxPageScaleFactor;
-    update->external_page_scale_factor = 1.0f;
-    update->device_scale_factor = 1.0f;
-    update->painted_device_scale_factor = 1.0f;
+    update->external_page_scale_factor = kDefaultExternalPageScaleFactor;
+    update->device_scale_factor = kDefaultDeviceScaleFactor;
+    update->painted_device_scale_factor = kDefaultPaintedDeviceScaleFactor;
 
     update->num_transform_nodes = next_transform_id_;
     update->num_clip_nodes = next_clip_id_;
@@ -193,6 +206,23 @@ class LayerContextImplTest : public testing::Test {
     return id;
   }
 
+  mojom::LayerExtraPtr CreateDefaultLayerExtra(cc::mojom::LayerType type) {
+    switch (type) {
+      case cc::mojom::LayerType::kTexture: {
+        auto extra = mojom::TextureLayerExtra::New();
+        extra->blend_background_color = kDefaultBlendBackgroundColor;
+        extra->force_texture_to_opaque = kDefaultForceTextureToOpaque;
+        extra->uv_top_left = kDefaultUVTopLeft;
+        extra->uv_bottom_right = kDefaultUVBottomRight;
+        return mojom::LayerExtra::NewTextureLayerExtra(std::move(extra));
+      }
+
+      default:
+        // TODO(vmiura): Add each layer type's initialization.
+        return nullptr;
+    }
+  }
+
   // Helper to add a default layer to the update.
   // Returns the ID of the added layer.
   int AddDefaultLayerToUpdate(
@@ -208,6 +238,7 @@ class LayerContextImplTest : public testing::Test {
     layer->transform_tree_index = cc::kSecondaryRootPropertyNodeId;
     layer->clip_tree_index = cc::kRootPropertyNodeId;
     layer->effect_tree_index = cc::kSecondaryRootPropertyNodeId;
+    layer->layer_extra = CreateDefaultLayerExtra(type);
 
     update->layers.push_back(std::move(layer));
 
@@ -1627,6 +1658,7 @@ class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
     layer->clip_tree_index = clip_idx;
     layer->effect_tree_index = effect_idx;
     layer->scroll_tree_index = scroll_idx;
+    layer->layer_extra = CreateDefaultLayerExtra(type);
     return layer;
   }
 };
@@ -2288,6 +2320,198 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   EXPECT_EQ(layer_impl_after_invalid->clip_tree_index(), kValidIndex);
   EXPECT_EQ(layer_impl_after_invalid->effect_tree_index(), kValidIndex);
   EXPECT_EQ(layer_impl_after_invalid->scroll_tree_index(), kValidIndex);
+}
+
+class LayerContextImplUpdateDisplayTreeTextureLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::TextureLayerImpl* GetTextureLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (layer && layer->GetLayerType() == cc::mojom::LayerType::kTexture) {
+      return static_cast<cc::TextureLayerImpl*>(layer);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest, UpdateUVRect) {
+  constexpr int kTextureLayerId = 2;
+  const gfx::PointF kUpdatedUVTopLeft(0.1f, 0.2f);
+  const gfx::PointF kUpdatedUVBottomRight(0.8f, 0.9f);
+
+  // Initial update: Create TextureLayer.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTexture,
+                          kTextureLayerId);
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kTextureLayerId, true);
+
+  cc::TextureLayerImpl* texture_layer_impl =
+      GetTextureLayerFromActiveTree(kTextureLayerId);
+  ASSERT_NE(nullptr, texture_layer_impl);
+
+  EXPECT_EQ(texture_layer_impl->uv_top_left(), kDefaultUVTopLeft);
+  EXPECT_EQ(texture_layer_impl->uv_bottom_right(), kDefaultUVBottomRight);
+
+  // Second update: Update UV rect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto& texture_extra = layer_props->layer_extra->get_texture_layer_extra();
+  texture_extra->uv_top_left = kUpdatedUVTopLeft;
+  texture_extra->uv_bottom_right = kUpdatedUVBottomRight;
+  update2->layers.push_back(std::move(layer_props));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_EQ(texture_layer_impl->uv_top_left(), kUpdatedUVTopLeft);
+  EXPECT_EQ(texture_layer_impl->uv_bottom_right(), kUpdatedUVBottomRight);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
+       UpdateBlendBackgroundColor) {
+  constexpr int kTextureLayerId = 2;
+  constexpr bool kUpdatedBlendBackgroundColor = true;
+
+  // Initial update: Create TextureLayer with default blend_background_color.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTexture,
+                          kTextureLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kTextureLayerId, true);
+
+  cc::TextureLayerImpl* texture_layer_impl =
+      GetTextureLayerFromActiveTree(kTextureLayerId);
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_EQ(texture_layer_impl->blend_background_color(),
+            kDefaultBlendBackgroundColor);
+
+  // Second update: Update blend_background_color to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
+  texture_extra2->blend_background_color = kUpdatedBlendBackgroundColor;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_EQ(texture_layer_impl->blend_background_color(),
+            kUpdatedBlendBackgroundColor);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
+       UpdateForceTextureToOpaque) {
+  constexpr int kTextureLayerId = 2;
+  constexpr bool kUpdatedForceTextureToOpaque = true;
+
+  // Initial update: Create TextureLayer with default
+  // kDefaultForceTextureToOpaque.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTexture,
+                          kTextureLayerId);
+  // Default is false.
+  // No need to explicitly set texture_extra1->force_texture_to_opaque = false;
+  // as it's the default from CreateDefaultLayerExtra.
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kTextureLayerId, true);
+
+  cc::TextureLayerImpl* texture_layer_impl =
+      GetTextureLayerFromActiveTree(kTextureLayerId);
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_EQ(texture_layer_impl->force_texture_to_opaque(),
+            kDefaultForceTextureToOpaque);
+
+  // Second update: Update force_texture_to_opaque to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, gfx::Size(10, 10));
+  auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
+  texture_extra2->force_texture_to_opaque = kUpdatedForceTextureToOpaque;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_EQ(texture_layer_impl->force_texture_to_opaque(),
+            kUpdatedForceTextureToOpaque);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTextureLayerTest,
+       UpdateTransferableResource) {
+  constexpr int kTextureLayerId = 2;
+  const gpu::Mailbox kMailbox1 = gpu::Mailbox::Generate();
+  const gpu::Mailbox kMailbox2 = gpu::Mailbox::Generate();
+  const gpu::SyncToken kSyncToken1(
+      gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(0x123), 42);
+  const gpu::SyncToken kSyncToken2(
+      gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(0x123), 43);
+  const gfx::Size kResourceSize1(10, 10);
+  const gfx::Size kResourceSize2(12, 12);
+
+  // Initial update: Create TextureLayer without a resource.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTexture,
+                          kTextureLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  VerifyLayerExists(kTextureLayerId, true);
+
+  cc::TextureLayerImpl* texture_layer_impl =
+      GetTextureLayerFromActiveTree(kTextureLayerId);
+  ASSERT_NE(nullptr, texture_layer_impl);
+  EXPECT_TRUE(texture_layer_impl->transferable_resource().is_empty());
+
+  // Second update: Set transferable_resource1.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, kResourceSize1);
+  auto& texture_extra2 = layer_props2->layer_extra->get_texture_layer_extra();
+  TransferableResource resource1 = TransferableResource::MakeGpu(
+      kMailbox1, GL_TEXTURE_2D, kSyncToken1, kResourceSize1,
+      SinglePlaneFormat::kRGBA_8888, false);
+  texture_extra2->transferable_resource = resource1;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  // The TransferableResource matches what we sent.
+  EXPECT_EQ(texture_layer_impl->transferable_resource(), resource1);
+
+  // Third update: Set transferable_resource2 (different resource).
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, kResourceSize2);
+  auto& texture_extra3 = layer_props3->layer_extra->get_texture_layer_extra();
+  TransferableResource resource2 = TransferableResource::MakeGpu(
+      kMailbox2, GL_TEXTURE_RECTANGLE_ARB, kSyncToken2, kResourceSize2,
+      SinglePlaneFormat::kRGBA_8888, false);
+  texture_extra3->transferable_resource = resource2;
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(texture_layer_impl->transferable_resource(), resource2);
+
+  // Fourth update: Clear the resource.
+  auto update4 = CreateDefaultUpdate();
+  auto layer_props4 = CreateManualLayer(
+      kTextureLayerId, cc::mojom::LayerType::kTexture, kResourceSize1);
+  // Clearing has to be via an explicit empty resource.
+  auto& texture_extra4 = layer_props4->layer_extra->get_texture_layer_extra();
+  texture_extra4->transferable_resource = TransferableResource();
+  update4->layers.push_back(std::move(layer_props4));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_TRUE(texture_layer_impl->transferable_resource().is_empty());
 }
 
 }  // namespace viz
