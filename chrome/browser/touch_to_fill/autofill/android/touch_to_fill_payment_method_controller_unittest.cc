@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -99,12 +99,12 @@ class TestContentAutofillClientWithTouchToFillPaymentMethodController
  public:
   using TestContentAutofillClient::TestContentAutofillClient;
 
-  TouchToFillPaymentMethodController& payment_method_controller() {
+  TouchToFillPaymentMethodControllerImpl& payment_method_controller() {
     return payment_method_controller_;
   }
 
  private:
-  TouchToFillPaymentMethodController payment_method_controller_{this};
+  TouchToFillPaymentMethodControllerImpl payment_method_controller_{this};
 };
 
 class TouchToFillPaymentMethodControllerTest
@@ -148,7 +148,7 @@ class TouchToFillPaymentMethodControllerTest
     return *autofill_manager_injector_[web_contents()];
   }
 
-  TouchToFillPaymentMethodController& payment_method_controller() {
+  TouchToFillPaymentMethodControllerImpl& payment_method_controller() {
     return autofill_client().payment_method_controller();
   }
 

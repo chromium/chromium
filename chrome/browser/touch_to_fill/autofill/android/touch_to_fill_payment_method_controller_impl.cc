@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 
 #include <memory>
 #include <string>
@@ -35,7 +35,7 @@ TouchToFillDelegateAndroidImpl* GetDelegate(AutofillManager& manager) {
 }
 }  // namespace
 
-TouchToFillPaymentMethodController::TouchToFillPaymentMethodController(
+TouchToFillPaymentMethodControllerImpl::TouchToFillPaymentMethodControllerImpl(
     ContentAutofillClient* autofill_client)
     : content::WebContentsObserver(&autofill_client->GetWebContents()),
       keyboard_suppressor_(
@@ -57,40 +57,12 @@ TouchToFillPaymentMethodController::TouchToFillPaymentMethodController(
       &autofill_client->GetAutofillDriverFactory());
 }
 
-TouchToFillPaymentMethodController::~TouchToFillPaymentMethodController() {
+TouchToFillPaymentMethodControllerImpl::
+    ~TouchToFillPaymentMethodControllerImpl() {
   ResetJavaObject();
 }
 
-void TouchToFillPaymentMethodController::WebContentsDestroyed() {
-  Hide();
-}
-
-void TouchToFillPaymentMethodController::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsInPrerenderedMainFrame() ||
-      (!navigation_handle->IsInMainFrame() &&
-       !navigation_handle->HasSubframeNavigationEntryCommitted())) {
-    return;
-  }
-  Hide();
-}
-
-void TouchToFillPaymentMethodController::OnContentAutofillDriverFactoryDestroyed(
-    ContentAutofillDriverFactory& factory) {
-  driver_factory_observation_.Reset();
-}
-
-void TouchToFillPaymentMethodController::OnContentAutofillDriverCreated(
-    ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver) {
-  auto& manager =
-      static_cast<BrowserAutofillManager&>(driver.GetAutofillManager());
-  manager.set_touch_to_fill_delegate(
-      std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
-}
-
-bool TouchToFillPaymentMethodController::ShowCreditCards(
+bool TouchToFillPaymentMethodControllerImpl::ShowCreditCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const Suggestion> suggestions) {
@@ -99,8 +71,9 @@ bool TouchToFillPaymentMethodController::ShowCreditCards(
   }
 
   // Abort if TTF surface is already shown.
-  if (view_)
+  if (view_) {
     return false;
+  }
 
   if (!view->ShowCreditCards(this, suggestions,
                              delegate->ShouldShowScanCreditCard())) {
@@ -113,7 +86,7 @@ bool TouchToFillPaymentMethodController::ShowCreditCards(
   return true;
 }
 
-bool TouchToFillPaymentMethodController::ShowIbans(
+bool TouchToFillPaymentMethodControllerImpl::ShowIbans(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const Iban> ibans_to_suggest) {
@@ -136,7 +109,7 @@ bool TouchToFillPaymentMethodController::ShowIbans(
   return true;
 }
 
-bool TouchToFillPaymentMethodController::ShowLoyaltyCards(
+bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
@@ -163,13 +136,45 @@ bool TouchToFillPaymentMethodController::ShowLoyaltyCards(
   return true;
 }
 
-void TouchToFillPaymentMethodController::Hide() {
-  if (view_)
+void TouchToFillPaymentMethodControllerImpl::Hide() {
+  if (view_) {
     view_->Hide();
+  }
 }
 
-void TouchToFillPaymentMethodController::OnDismissed(JNIEnv* env,
-                                                  bool dismissed_by_user) {
+void TouchToFillPaymentMethodControllerImpl::WebContentsDestroyed() {
+  Hide();
+}
+
+void TouchToFillPaymentMethodControllerImpl::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsInPrerenderedMainFrame() ||
+      (!navigation_handle->IsInMainFrame() &&
+       !navigation_handle->HasSubframeNavigationEntryCommitted())) {
+    return;
+  }
+  Hide();
+}
+
+void TouchToFillPaymentMethodControllerImpl::
+    OnContentAutofillDriverFactoryDestroyed(
+        ContentAutofillDriverFactory& factory) {
+  driver_factory_observation_.Reset();
+}
+
+void TouchToFillPaymentMethodControllerImpl::OnContentAutofillDriverCreated(
+    ContentAutofillDriverFactory& factory,
+    ContentAutofillDriver& driver) {
+  auto& manager =
+      static_cast<BrowserAutofillManager&>(driver.GetAutofillManager());
+  manager.set_touch_to_fill_delegate(
+      std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
+}
+
+void TouchToFillPaymentMethodControllerImpl::OnDismissed(
+    JNIEnv* env,
+    bool dismissed_by_user) {
   if (delegate_) {
     delegate_->OnDismissed(dismissed_by_user);
   }
@@ -179,19 +184,20 @@ void TouchToFillPaymentMethodController::OnDismissed(JNIEnv* env,
   keyboard_suppressor_.Unsuppress();
 }
 
-void TouchToFillPaymentMethodController::ScanCreditCard(JNIEnv* env) {
+void TouchToFillPaymentMethodControllerImpl::ScanCreditCard(JNIEnv* env) {
   if (delegate_) {
     delegate_->ScanCreditCard();
   }
 }
 
-void TouchToFillPaymentMethodController::ShowPaymentMethodSettings(JNIEnv* env) {
+void TouchToFillPaymentMethodControllerImpl::ShowPaymentMethodSettings(
+    JNIEnv* env) {
   if (delegate_) {
     delegate_->ShowPaymentMethodSettings();
   }
 }
 
-void TouchToFillPaymentMethodController::CreditCardSuggestionSelected(
+void TouchToFillPaymentMethodControllerImpl::CreditCardSuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> unique_id,
     bool is_virtual) {
@@ -201,7 +207,7 @@ void TouchToFillPaymentMethodController::CreditCardSuggestionSelected(
   }
 }
 
-void TouchToFillPaymentMethodController::LocalIbanSuggestionSelected(
+void TouchToFillPaymentMethodControllerImpl::LocalIbanSuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> guid) {
   if (delegate_) {
@@ -210,7 +216,7 @@ void TouchToFillPaymentMethodController::LocalIbanSuggestionSelected(
   }
 }
 
-void TouchToFillPaymentMethodController::ServerIbanSuggestionSelected(
+void TouchToFillPaymentMethodControllerImpl::ServerIbanSuggestionSelected(
     JNIEnv* env,
     long instrument_id) {
   if (delegate_) {
@@ -218,7 +224,7 @@ void TouchToFillPaymentMethodController::ServerIbanSuggestionSelected(
   }
 }
 
-void TouchToFillPaymentMethodController::LoyaltyCardSuggestionSelected(
+void TouchToFillPaymentMethodControllerImpl::LoyaltyCardSuggestionSelected(
     JNIEnv* env,
     const std::string& loyalty_card_number) {
   if (delegate_) {
@@ -226,13 +232,13 @@ void TouchToFillPaymentMethodController::LoyaltyCardSuggestionSelected(
   }
 }
 
-int TouchToFillPaymentMethodController::GetJavaResourceId(
+int TouchToFillPaymentMethodControllerImpl::GetJavaResourceId(
     int native_resource_id) {
   return ResourceMapper::MapToJavaDrawableId(native_resource_id);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-TouchToFillPaymentMethodController::GetJavaObject() {
+TouchToFillPaymentMethodControllerImpl::GetJavaObject() {
   if (!java_object_) {
     java_object_ = Java_TouchToFillPaymentMethodControllerBridge_create(
         base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
@@ -241,7 +247,7 @@ TouchToFillPaymentMethodController::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }
 
-void TouchToFillPaymentMethodController::ResetJavaObject() {
+void TouchToFillPaymentMethodControllerImpl::ResetJavaObject() {
   if (java_object_) {
     Java_TouchToFillPaymentMethodControllerBridge_onNativeDestroyed(
         base::android::AttachCurrentThread(), java_object_);

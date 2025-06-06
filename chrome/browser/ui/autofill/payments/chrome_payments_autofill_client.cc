@@ -895,7 +895,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
           !suggestions.empty());
 
-  return touch_to_fill_payment_method_controller_.ShowCreditCards(
+  return GetTouchToFillPaymentMethodController()->ShowCreditCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(suggestions));
 #else
@@ -908,7 +908,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  return touch_to_fill_payment_method_controller_.ShowIbans(
+  return GetTouchToFillPaymentMethodController()->ShowIbans(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(ibans_to_suggest));
 #else
@@ -930,7 +930,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
                          return card.HasMatchingMerchantDomain(current_domain);
                        });
 
-  return touch_to_fill_payment_method_controller_.ShowLoyaltyCards(
+  return GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
       delegate, std::move(affiliated_loyalty_cards),
       std::move(loyalty_cards_to_suggest));
@@ -942,7 +942,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 
 void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #if BUILDFLAG(IS_ANDROID)
-  touch_to_fill_payment_method_controller_.Hide();
+  GetTouchToFillPaymentMethodController()->Hide();
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -1051,9 +1051,9 @@ ChromePaymentsAutofillClient::GetAutofillMessageController() {
   return *autofill_message_controller_;
 }
 
-TouchToFillPaymentMethodController&
+TouchToFillPaymentMethodController*
 ChromePaymentsAutofillClient::GetTouchToFillPaymentMethodController() {
-  return touch_to_fill_payment_method_controller_;
+  return touch_to_fill_payment_method_controller_.get();
 }
 
 void ChromePaymentsAutofillClient::

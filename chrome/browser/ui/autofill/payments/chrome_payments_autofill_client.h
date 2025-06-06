@@ -21,7 +21,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -227,7 +227,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // on Android.
   AutofillMessageController& GetAutofillMessageController();
 
-  TouchToFillPaymentMethodController& GetTouchToFillPaymentMethodController();
+  TouchToFillPaymentMethodController* GetTouchToFillPaymentMethodController();
 #endif
 
   AutofillProgressDialogControllerImpl*
@@ -290,8 +290,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
 
-  TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
-      &client_.get()};
+  std::unique_ptr<TouchToFillPaymentMethodController>
+      touch_to_fill_payment_method_controller_ =
+          std::make_unique<TouchToFillPaymentMethodControllerImpl>(
+              &client_.get());
 #endif
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
