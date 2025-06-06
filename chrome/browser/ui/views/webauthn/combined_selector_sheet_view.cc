@@ -29,45 +29,11 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
-std::unique_ptr<views::Label> BuildTitleView(std::u16string title) {
-  auto title_label =
-      std::make_unique<views::Label>(title, views::style::CONTEXT_DIALOG_TITLE,
-                                     views::style::STYLE_HEADLINE_4);
-  title_label->SetMultiLine(true);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
-  title_label->SetAllowCharacterBreak(true);
-  return title_label;
-}
-
-}  // namespace
-
 CombinedSelectorSheetView::CombinedSelectorSheetView(
     std::unique_ptr<CombinedSelectorSheetModel> model)
     : AuthenticatorRequestSheetView(std::move(model)) {}
 
 CombinedSelectorSheetView::~CombinedSelectorSheetView() = default;
-
-std::unique_ptr<views::View>
-CombinedSelectorSheetView::BuildStepSpecificHeader() {
-  std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
-      base::UTF8ToUTF16(static_cast<CombinedSelectorSheetModel*>(model())
-                            ->dialog_model()
-                            ->relying_party_id));
-
-  auto view = std::make_unique<views::TableLayoutView>();
-  view->AddPaddingRow(0, kTopPadding);
-  view->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kCenter, 1.0f,
-                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  view->AddRows(1, 0);
-  view->AddChildView(BuildTitleView(title));
-
-  return view;
-}
 
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
