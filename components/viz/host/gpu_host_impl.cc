@@ -157,6 +157,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
+      gpu_logging_receiver_.BindNewPipeAndPassRemote(task_runner),
       std::move(discardable_manager_remote),
       use_shader_cache_shm_count_.CloneRegion(), std::move(gpu_service_params));
   MaybeSendFontRenderParams();
@@ -640,12 +641,6 @@ void GpuHostImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
   cache->Cache(key, blob);
 }
 
-void GpuHostImpl::RecordLogMessage(int32_t severity,
-                                   const std::string& header,
-                                   const std::string& message) {
-  delegate_->RecordLogMessage(severity, header, message);
-}
-
 void GpuHostImpl::ClearGrShaderDiskCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -660,6 +655,12 @@ void GpuHostImpl::ClearGrShaderDiskCache() {
           cache, base::Time(), base::Time::Max(), base::DoNothing());
     }
   }
+}
+
+void GpuHostImpl::RecordLogMessage(int32_t severity,
+                                   const std::string& header,
+                                   const std::string& message) {
+  delegate_->RecordLogMessage(severity, header, message);
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

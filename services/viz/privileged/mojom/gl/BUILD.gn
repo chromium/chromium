@@ -10,6 +10,7 @@ mojom("gl") {
   sources = [
     "context_lost_reason.mojom",
     "gpu_host.mojom",
+    "gpu_logging.mojom",
     "gpu_service.mojom",
   ]
 

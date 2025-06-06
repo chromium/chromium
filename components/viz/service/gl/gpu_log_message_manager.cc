@@ -4,7 +4,8 @@
 
 #include "components/viz/service/gl/gpu_log_message_manager.h"
 
-#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "base/process/process.h"
+#include "base/synchronization/waitable_event.h"
 
 namespace viz {
 
@@ -43,55 +44,113 @@ void GpuLogMessageManager::AddDeferredMessage(int severity,
                                               const std::string& header,
                                               const std::string& message) {
   base::AutoLock lock(message_lock_);
-  // During InstallPostInitializeLogHandler() there's a brief window where a
-  // call into this function may be waiting on |message_lock_|, so we need to
-  // check if |log_callback_| was set once we get the lock.
-  if (log_callback_) {
-    RouteMessage(severity, std::move(header), std::move(message));
-    return;
-  }
-
-  // Otherwise just queue the message for InstallPostInitializeLogHandler() to
-  // forward later.
-  deferred_messages_.emplace_back(severity, std::move(header),
-                                  std::move(message));
+  deferred_messages_.emplace_back(severity, header, message);
 }
 
 void GpuLogMessageManager::RouteMessage(int severity,
                                         const std::string& header,
                                         const std::string& message) {
-  log_callback_.Run(severity, std::move(header), std::move(message));
+  // This can be run from any thread, but mojo messages are sent on the IO
+  // thread.
+  if (io_task_runner_->BelongsToCurrentThread()) {
+    if (!gpu_logging_.is_bound()) {
+      // |InstallPostInitializeLogHandler| set a new log message handler, which
+      // will call |RouteMessage|. When |RouteMessage| handling log message
+      // GPULogging may not yet be bound. Cache those log messages until the
+      // Remote is bound.
+      base::AutoLock lock(message_lock_);
+      deferred_messages_.emplace_back(severity, header, message);
+      return;
+    }
+
+    gpu_logging_->RecordLogMessage(severity, header, message);
+  } else {
+    // Unretained is safe because |this| is valid until the process exits.
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuLogMessageManager::RouteMessage,
+                                  base::Unretained(this), severity,
+                                  std::move(header), std::move(message)));
+  }
 }
 
-void GpuLogMessageManager::FlushMessages(mojom::GpuHost* gpu_host) {
+void GpuLogMessageManager::FlushMessages(mojom::GpuLogging* gpu_logging) {
   base::AutoLock lock(message_lock_);
   for (auto& log : deferred_messages_) {
-    gpu_host->RecordLogMessage(log.severity, std::move(log.header),
-                               std::move(log.message));
+    gpu_logging->RecordLogMessage(log.severity, std::move(log.header),
+                                  std::move(log.message));
   }
   deferred_messages_.clear();
 }
 
 void GpuLogMessageManager::InstallPreInitializeLogHandler() {
-  DCHECK(!log_callback_);
   logging::SetLogMessageHandler(PreInitializeLogHandler);
 }
 
 void GpuLogMessageManager::InstallPostInitializeLogHandler(
-    LogCallback log_callback) {
-  base::AutoLock lock(message_lock_);
-  DCHECK(!log_callback_);
-  log_callback_ = std::move(log_callback);
-  for (auto& log : deferred_messages_) {
-    RouteMessage(log.severity, std::move(log.header), std::move(log.message));
-  }
-  deferred_messages_.clear();
+    mojo::PendingRemote<mojom::GpuLogging> pending_remote,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  Bind(std::move(pending_remote), std::move(io_task_runner));
+
   logging::SetLogMessageHandler(PostInitializeLogHandler);
 }
 
 void GpuLogMessageManager::ShutdownLogging() {
   logging::SetLogMessageHandler(nullptr);
-  log_callback_.Reset();
+
+  // |io_task_runner_| may be null if GPULogMessageManager hasn't been bound.
+  // Destroy the remote on the IO thread.
+  // base::Unretained is safe because this is a singleton.
+  if (io_task_runner_) {
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuLogMessageManager::ResetLoggingOnIOThread,
+                                  base::Unretained(this)));
+  }
+}
+
+void GpuLogMessageManager::Bind(
+    mojo::PendingRemote<mojom::GpuLogging> pending_remote,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  DCHECK(!io_task_runner->BelongsToCurrentThread());
+  io_task_runner_ = std::move(io_task_runner);
+
+  // base::Unretained is safe because this is a singleton.
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuLogMessageManager::BindOnIOThread,
+                     base::Unretained(this), std::move(pending_remote)));
+}
+
+void GpuLogMessageManager::BindOnIOThread(
+    mojo::PendingRemote<mojom::GpuLogging> pending_remote) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  DCHECK(!gpu_logging_.is_bound());
+  gpu_logging_.Bind(std::move(pending_remote));
+
+  FlushMessages(gpu_logging_.get());
+}
+
+void GpuLogMessageManager::ResetLoggingOnIOThread() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  gpu_logging_.reset();
+}
+
+void GpuLogMessageManager::TerminateProcess(int exit_code) {
+  // Block the calling thread so it doesn't execute any more code before the
+  // process exits. This function cannot be called from the IO thread.
+  CHECK(!io_task_runner_->BelongsToCurrentThread());
+  base::WaitableEvent wait;
+
+  // base::Unretained is safe because this is a singleton.
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GpuLogMessageManager::TerminateProcessOnIO,
+                                base::Unretained(this), exit_code));
+
+  wait.Wait();
+}
+
+void GpuLogMessageManager::TerminateProcessOnIO(int exit_code) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  base::Process::TerminateCurrentProcessImmediately(exit_code);
 }
 
 }  // namespace viz

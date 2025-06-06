@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -123,6 +124,7 @@ class VizMainImpl : public mojom::VizMain {
   void CreateGpuService(
       mojo::PendingReceiver<mojom::GpuService> pending_receiver,
       mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+      mojo::PendingRemote<mojom::GpuLogging> pending_gpu_loggging,
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,

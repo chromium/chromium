@@ -158,6 +158,10 @@ VizMainImpl::~VizMainImpl() {
   if (dependencies_.ukm_recorder)
     ukm::DelegatingUkmRecorder::Get()->RemoveDelegate(
         dependencies_.ukm_recorder.get());
+
+  if (!gpu_init_->gpu_info().in_process_gpu) {
+    GpuLogMessageManager::GetInstance()->ShutdownLogging();
+  }
 }
 
 void VizMainImpl::Bind(mojo::PendingReceiver<mojom::VizMain> receiver) {
@@ -167,6 +171,7 @@ void VizMainImpl::Bind(mojo::PendingReceiver<mojom::VizMain> receiver) {
 void VizMainImpl::CreateGpuService(
     mojo::PendingReceiver<mojom::GpuService> pending_receiver,
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    mojo::PendingRemote<mojom::GpuLogging> pending_gpu_logging,
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
@@ -182,7 +187,9 @@ void VizMainImpl::CreateGpuService(
 
   if (!gpu_init_->init_successful()) {
     LOG(ERROR) << "Exiting GPU process due to errors during initialization";
-    GpuLogMessageManager::GetInstance()->FlushMessages(gpu_host.get());
+    mojo::Remote<mojom::GpuLogging> gpu_logging(std::move(pending_gpu_logging));
+    GpuLogMessageManager::GetInstance()->FlushMessages(gpu_logging.get());
+
     gpu_service_.reset();
     gpu_host->DidFailInitialize();
     if (delegate_)
@@ -198,6 +205,10 @@ void VizMainImpl::CreateGpuService(
         std::move(discardable_memory_manager), io_task_runner());
     base::DiscardableMemoryAllocator::SetInstance(
         discardable_shared_memory_manager_.get());
+
+    // Setup GPU Log message hook and bind the GPU logging interface.
+    GpuLogMessageManager::GetInstance()->InstallPostInitializeLogHandler(
+        std::move(pending_gpu_logging), io_task_runner());
   }
 
 #if BUILDFLAG(IS_ANDROID)

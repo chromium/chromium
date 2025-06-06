@@ -12,6 +12,7 @@ import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/privileged/mojom/gl/gpu_host.mojom";
+import "services/viz/privileged/mojom/gl/gpu_logging.mojom";
 [EnableIf=is_win]
 import "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom";
 import "services/viz/privileged/mojom/gl/gpu_service.mojom";
@@ -52,6 +53,7 @@ interface VizMain {
   CreateGpuService(
       pending_receiver<GpuService> gpu_service,
       pending_remote<GpuHost> gpu_host,
+      pending_remote<GpuLogging> gpu_logging,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
       mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count,

@@ -38,6 +38,7 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "services/viz/privileged/mojom/gl/gpu_logging.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "ui/gfx/gpu_extra_info.h"
@@ -59,7 +60,8 @@ class GpuDiskCache;
 
 namespace viz {
 
-class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
+class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
+                                    public mojom::GpuLogging
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
     ,
                                     public mojom::VizDebugOutput
@@ -276,10 +278,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
                        const std::string& key,
                        const std::string& blob) override;
+  void ClearGrShaderDiskCache() override;
+
+  // mojom::GpuLogging:
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
-  void ClearGrShaderDiskCache() override;
 
   // Implements mojom::VizDebugOutput and is called by VizDebugger.
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -298,6 +302,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
       info_collection_gpu_service_remote_;
 #endif
   mojo::Receiver<mojom::GpuHost> gpu_host_receiver_{this};
+  mojo::Receiver<mojom::GpuLogging> gpu_logging_receiver_{this};
+
   gpu::GpuProcessHostShmCount use_shader_cache_shm_count_;
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

@@ -428,9 +428,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);
-  void RecordLogMessage(int severity,
-                        const std::string& header,
-                        const std::string& message);
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   void CreateArcVideoDecodeAcceleratorOnMainThread(
