@@ -159,6 +159,10 @@ void VirtualCardEnrollmentManager::Enroll(
   LogUpdateVirtualCardEnrollmentRequestAttempt(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
       VirtualCardEnrollmentRequestType::kEnroll);
+
+  RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(base::NumberToString(
+      state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
+
   payments::UpdateVirtualCardEnrollmentRequestDetails request_details;
   request_details.virtual_card_enrollment_source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
@@ -193,9 +197,6 @@ void VirtualCardEnrollmentManager::Enroll(
                        weak_ptr_factory_.GetWeakPtr(),
                        VirtualCardEnrollmentRequestType::kEnroll));
   }
-
-  RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(base::NumberToString(
-      state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
 }
 
 void VirtualCardEnrollmentManager::Unenroll(
