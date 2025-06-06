@@ -252,6 +252,13 @@ Browser* AuthSessionRequest::CreateBrowser(
     return nullptr;
   }
 
+  // Check if browser creation is possible before attempting to create it.
+  // This prevents crashes when the profile is in an unsuitable state.
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return nullptr;
+  }
+
   // Note that this creates a popup-style window to do the signin. This is a
   // specific choice motivated by security concerns, and must *not* be changed
   // without consultation with the security team.
