@@ -51,6 +51,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -98,7 +99,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO
 })
-// TODO(crbug.com/344661357): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
