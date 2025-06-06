@@ -340,9 +340,9 @@ void ZwpTextInputV3Impl::ResetCommittedImeData() {
 }
 
 void ZwpTextInputV3Impl::ResetInputEventsState() {
-  pending_input_events_.preedit = std::nullopt;
-  pending_input_events_.commit = std::nullopt;
-  pending_input_events_.delete_surrounding_text = std::nullopt;
+  pending_input_events_.preedit = {};
+  pending_input_events_.commit = {};
+  pending_input_events_.delete_surrounding_text = {};
 }
 
 void ZwpTextInputV3Impl::Commit() {
@@ -417,21 +417,21 @@ void ZwpTextInputV3Impl::OnDone(void* data,
     // preedit range. So deletion of surrounding text implicitly clears
     // preedit in that case.
     int32_t index = surrounding_text->delete_around_range.start() -
-                    delete_surrounding_text->before_length;
+                    delete_surrounding_text.before_length;
     DVLOG_IF(1, index < 0)
-        << "got before_length=" << delete_surrounding_text->before_length
+        << "got before_length=" << delete_surrounding_text.before_length
         << " which results in negative index for deletion around range="
         << surrounding_text->delete_around_range;
     uint32_t length =
         (index < 0 ? surrounding_text->delete_around_range.end()
-                   : delete_surrounding_text->before_length +
+                   : delete_surrounding_text.before_length +
                          surrounding_text->delete_around_range.length()) +
-        delete_surrounding_text->after_length;
+        delete_surrounding_text.after_length;
     // Force minimum index of 0.
     index = std::max(0, index);
     if (index + length > surrounding_text->full_length) {
-      DVLOG(1) << "got before_length=" << delete_surrounding_text->before_length
-               << " after_length=" << delete_surrounding_text->after_length
+      DVLOG(1) << "got before_length=" << delete_surrounding_text.before_length
+               << " after_length=" << delete_surrounding_text.after_length
                << " which makes the deletion around range="
                << surrounding_text->delete_around_range
                << " extend beyond text length="
@@ -447,33 +447,31 @@ void ZwpTextInputV3Impl::OnDone(void* data,
     size_t delete_start = base::checked_cast<size_t>(index);
     size_t delete_end = delete_start;
     surrounding_text->full_length -= length;
-    if (commit_string) {
-      // Update full length in case SetSurroundingText is not called before the
-      // next delete_surrounding_text + done.
-      surrounding_text->full_length += commit_string->length();
-    }
-    if (preedit_data) {
-      // Add incoming preedit to deletion range and update full length in case
-      // SetSurroundingText is not called before the next
-      // delete_surrounding_text + done.
-      delete_end += preedit_data->text.length();
-      surrounding_text->full_length += preedit_data->text.length();
-    }
+
+    // Update full length in case SetSurroundingText is not called before the
+    // next delete_surrounding_text + done.
+    surrounding_text->full_length += commit_string.length();
+
+    // Add incoming preedit to deletion range and update full length in case
+    // SetSurroundingText is not called before the next
+    // delete_surrounding_text + done.
+    delete_end += preedit_data.text.length();
+    surrounding_text->full_length += preedit_data.text.length();
     surrounding_text->delete_around_range =
         gfx::Range(delete_start, delete_end);
   }
-  if (commit_string) {
+
+  if (!commit_string.empty()) {
     // Replace the existing preedit with the commit string.
-    self->client_->OnCommitString(commit_string->c_str());
+    self->client_->OnCommitString(commit_string);
   }
-  if (preedit_data) {
-    // Finally process any new preedit string.
-    gfx::Range preedit_cursor =
-        (preedit_data->cursor_begin < 0 || preedit_data->cursor_end < 0)
-            ? gfx::Range::InvalidRange()
-            : gfx::Range(preedit_data->cursor_begin, preedit_data->cursor_end);
-    self->client_->OnPreeditString(preedit_data->text, {}, preedit_cursor);
-  }
+
+  // Finally process any new preedit string.
+  gfx::Range preedit_cursor =
+      (preedit_data.cursor_begin < 0 || preedit_data.cursor_end < 0)
+          ? gfx::Range::InvalidRange()
+          : gfx::Range(preedit_data.cursor_begin, preedit_data.cursor_end);
+  self->client_->OnPreeditString(preedit_data.text, {}, preedit_cursor);
 
   self->ResetInputEventsState();
   self->SendPendingImeData();

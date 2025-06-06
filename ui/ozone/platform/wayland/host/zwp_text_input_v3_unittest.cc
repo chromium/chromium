@@ -745,7 +745,8 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingAndCommit) {
   InSequence s;
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(10, 29));
   EXPECT_CALL(test_client_, OnCommitString(kCommitString));
-  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  EXPECT_CALL(test_client_,
+              OnPreeditString("", std::vector<SpanStyle>{}, gfx::Range()));
   PostToServerAndWait([kCommitString](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
     zwp_text_input_v3_send_delete_surrounding_text(text_input->resource(), 1,
@@ -814,7 +815,7 @@ TEST_F(ZwpTextInputV3Test, OnDoneWithDeleteSurroundingCommitAndPreedit) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsEmptiedOnEnable) {
   constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
@@ -840,10 +841,11 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
   text_input_v3_->Enable();
   VerifyAndClearExpectations();
 
-  // Sending done should have no effect.
+  // Sending done should only report empty preedit.
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(_, _)).Times(0);
   EXPECT_CALL(test_client_, OnCommitString(_)).Times(0);
-  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  EXPECT_CALL(test_client_,
+              OnPreeditString("", std::vector<SpanStyle>{}, gfx::Range()));
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
     zwp_text_input_v3_send_done(text_input->resource(), 1);
@@ -851,7 +853,7 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnEnable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsEmptiedOnDisable) {
   constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
@@ -867,7 +869,7 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
                                                    1);
   });
 
-  // Disable should clear pending requests.
+  // Disable should reset input events state to default.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
@@ -877,10 +879,11 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
   text_input_v3_->Disable();
   VerifyAndClearExpectations();
 
-  // Sending done should have no effect.
+  // Sending done should report empty preedit.
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(_, _)).Times(0);
   EXPECT_CALL(test_client_, OnCommitString(_)).Times(0);
-  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  EXPECT_CALL(test_client_,
+              OnPreeditString("", std::vector<SpanStyle>{}, gfx::Range()));
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
     zwp_text_input_v3_send_done(text_input->resource(), 1);
@@ -888,7 +891,7 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnDisable) {
   VerifyAndClearExpectations();
 }
 
-TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnReset) {
+TEST_F(ZwpTextInputV3Test, PendingInputEventsEmptiedOnReset) {
   constexpr std::string kCommitString("CommitString");
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kPreeditCursor{0, 13};
@@ -915,10 +918,12 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnReset) {
   text_input_v3_->Reset();
   VerifyAndClearExpectations();
 
-  // Sending done should have no effect.
+  // Sending done should only report empty preedit.
   EXPECT_CALL(test_client_, OnDeleteSurroundingText(_, _)).Times(0);
   EXPECT_CALL(test_client_, OnCommitString(_)).Times(0);
-  EXPECT_CALL(test_client_, OnPreeditString(_, _, _)).Times(0);
+  EXPECT_CALL(test_client_,
+              OnPreeditString("", std::vector<SpanStyle>{}, gfx::Range()))
+      .Times(2);
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* text_input = server->text_input_manager_v3()->text_input();
     zwp_text_input_v3_send_done(text_input->resource(), 1);

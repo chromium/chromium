@@ -121,6 +121,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
     int32_t cursor_end = 0;
   };
   struct DeleteSurroundingText {
+    explicit operator bool() const { return before_length || after_length; }
     uint32_t before_length = 0;
     uint32_t after_length = 0;
   };
@@ -129,9 +130,9 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   struct InputEvents {
     InputEvents();
     ~InputEvents();
-    std::optional<PreeditData> preedit;
-    std::optional<std::string> commit;
-    std::optional<DeleteSurroundingText> delete_surrounding_text;
+    PreeditData preedit;
+    std::string commit;
+    DeleteSurroundingText delete_surrounding_text;
     uint32_t last_done_serial = 0;
   };
 
