@@ -55,6 +55,18 @@ class BookmarkMergedSurfaceServiceObserver : public base::CheckedObserver {
   // Invoked when all non-permanent bookmark nodes that are editable by the
   // user have been removed.
   virtual void BookmarkAllUserNodesRemoved() = 0;
+
+  // Invoked before an extensive set of model changes is about to begin.
+  // This tells UI intensive observers to wait until the updates finish to
+  // update themselves.
+  // Observers should still respond to BookmarkNodeRemoved immediately,
+  // to avoid holding onto stale node pointers.
+  virtual void ExtensiveBookmarkChangesBeginning() {}
+
+  // Invoked after an extensive set of model changes has ended.
+  // This tells observers to update themselves if they were waiting for the
+  // update to finish.
+  virtual void ExtensiveBookmarkChangesEnded() {}
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_OBSERVER_H_

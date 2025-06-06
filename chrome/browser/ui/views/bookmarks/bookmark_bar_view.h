@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
-#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -221,6 +220,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void BookmarkParentFolderChildrenReordered(
       const BookmarkParentFolder& folder) override;
   void BookmarkAllUserNodesRemoved() override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
 
   // views::DragController:
   void WriteDragDataForView(views::View* sender,
@@ -412,6 +413,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // either by manually checking `bookmark_service_->loaded()` or by
   // notification via BookmarkMergedSurfaceServiceObserver.
   bool bookmark_service_loaded_signal_processed_ = false;
+
+  // Used to delay some layout updates when extensive changes are on going.
+  bool extensive_bookmarks_changes_ongoing_ = false;
+  bool needs_layout_update_after_extensive_changes_ = false;
 
   // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;

@@ -609,3 +609,15 @@ void BookmarkMergedSurfaceService::BookmarkAllUserNodesRemoved(
     observer.BookmarkAllUserNodesRemoved();
   }
 }
+
+void BookmarkMergedSurfaceService::ExtensiveBookmarkChangesBeginning() {
+  for (auto& observer : observers_) {
+    observer.ExtensiveBookmarkChangesBeginning();
+  }
+}
+
+void BookmarkMergedSurfaceService::ExtensiveBookmarkChangesEnded() {
+  for (auto& observer : observers_) {
+    observer.ExtensiveBookmarkChangesEnded();
+  }
+}

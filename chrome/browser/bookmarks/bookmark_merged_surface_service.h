@@ -187,6 +187,8 @@ class BookmarkMergedSurfaceService
       const bookmarks::BookmarkNode* node) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
 
   // PermanentFolderOrderingTracker::Delegate:
   void TrackedOrderingChanged() override;

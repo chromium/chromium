@@ -812,4 +812,74 @@ TEST_F(BookmarkBarViewTest, MAYBE_AccessibleRoleDescription) {
       l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARK_BUTTON_ROLE_DESCRIPTION));
 }
 
+// This mock is used for method call counting. It redirects the call to the real
+// implementation.
+class BookmarkBarViewWithCounter : public BookmarkBarView {
+ public:
+  explicit BookmarkBarViewWithCounter(Browser* browser)
+      : BookmarkBarView(browser, nullptr) {}
+
+  size_t GetSchedulePaintCount() const { return schedule_paint_count_; }
+
+ protected:
+  void OnDidSchedulePaint(const gfx::Rect& r) override {
+    BookmarkBarView::OnDidSchedulePaint(r);
+    ++schedule_paint_count_;
+  }
+
+  size_t schedule_paint_count_ = 0;
+};
+
+// Test implementation using `BookmarkBarViewWithCounter`.
+class BookmarkBarViewWithCounterTest : public BookmarkBarViewBaseTest {
+ public:
+  // BookmarkBarViewBaseTest
+  void SetUp() override {
+    BookmarkBarViewBaseTest::SetUp();
+
+    WaitForBookmarkModelToLoad();
+    bookmark_bar_view_with_counter_ =
+        std::make_unique<BookmarkBarViewWithCounter>(browser());
+  }
+
+  BookmarkBarView* bookmark_bar_view() override {
+    return bookmark_bar_view_with_counter_.get();
+  }
+  BookmarkBarViewWithCounter* bookmark_bar_view_with_counter() {
+    return static_cast<BookmarkBarViewWithCounter*>(bookmark_bar_view());
+  }
+
+ private:
+  std::unique_ptr<BookmarkBarViewWithCounter> bookmark_bar_view_with_counter_;
+};
+
+TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithIndividualAddition) {
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  model()->AddFolder(bookmark_bar, 0, u"f1");
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 1u);
+
+  model()->AddFolder(bookmark_bar, 0, u"f2");
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 2u);
+
+  model()->AddFolder(bookmark_bar, 0, u"f3");
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 3u);
+}
+
+TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithExtensiveChangesAddition) {
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
+
+  model()->BeginExtensiveChanges();
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  model()->AddFolder(bookmark_bar, 0, u"f1");
+  model()->AddFolder(bookmark_bar, 0, u"f2");
+  model()->AddFolder(bookmark_bar, 0, u"f3");
+
+  EXPECT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
+
+  model()->EndExtensiveChanges();
+  EXPECT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 1u);
+}
+
 }  // namespace
