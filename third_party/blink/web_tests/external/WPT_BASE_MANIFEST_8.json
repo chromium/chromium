@@ -188473,7 +188473,7 @@
       ]
      ],
      "host-defined.html": [
-      "9e9776754a3f360537e899e064a0d3b36dbe14c3",
+      "563bc52e527927030270658c4c965d51045edcbb",
       [
        null,
        [
@@ -379318,7 +379318,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "c805a680ffa67ef11734df0a4020b593b29e0aaa",
+      "d61ee6abf857f9b0d4ae3e2f5a748dba93b8c822",
       []
      ],
      "iframe.html": [
@@ -382151,10 +382151,6 @@
      ],
      "define-expected.txt": [
       "5fa6248617c90049e42ebbd8c7d7dc77edb056af",
-      []
-     ],
-     "idlharness.window-expected.txt": [
-      "73b50e7884b31d31be24e60058480c17750b9fbe",
       []
      ],
      "initial-about-blank.window-expected.txt": [
@@ -412963,7 +412959,7 @@
      []
     ],
     "crash-reporting.idl": [
-     "6eaee138a828f7749026458265e7db598822330f",
+     "ba21afcf39718207fe8f56308adc18f9287b9e88",
      []
     ],
     "credential-management.idl": [
@@ -413115,7 +413111,7 @@
      []
     ],
     "cssom-view.idl": [
-     "88abb078485fc2159c15b5401dc9944d47a47940",
+     "160c27ca05046cf543ecb575019826f2e9379a78",
      []
     ],
     "cssom.idl": [
@@ -413167,7 +413163,7 @@
      []
     ],
     "element-timing.idl": [
-     "ef73ca6c0f610ff8cdb14a8bd0859efb8eca743b",
+     "4f42823704a42d9c40beed4cce8ec9824cfcd65e",
      []
     ],
     "encoding.idl": [
@@ -413275,7 +413271,7 @@
      []
     ],
     "html.idl": [
-     "9c84e6a67efa4f7ffe6f9638c582af4424c473db",
+     "3a7dce9693ef3ecaaf1ea274029663b8068c4222",
      []
     ],
     "idle-detection.idl": [
@@ -413539,7 +413535,7 @@
      []
     ],
     "privacy-preserving-attribution.idl": [
-     "0ab5d0fc21e49d2140ee014819debc26998473ef",
+     "02a3579820469e72913220ce4e6086d486c33d28",
      []
     ],
     "private-aggregation-api.idl": [
@@ -413595,7 +413591,7 @@
      []
     ],
     "resource-timing.idl": [
-     "66f2841d744af3a39a55c907c739a9f1bb92aff0",
+     "499d27b6ee69b984ad57c66c929352be1eb17ab7",
      []
     ],
     "saa-non-cookie-storage.idl": [
@@ -413614,12 +413610,8 @@
      "6f93db15a74e052913a277e5130226280a3f9311",
      []
     ],
-    "scoped-custom-elements-registry.idl": [
-     "46ca2d6b9c45805d8aa684af7fe91af6dd5d7919",
-     []
-    ],
     "screen-capture.idl": [
-     "db9282ce0a57bb3b84ea45f5ed2d7e69bc3a8a32",
+     "eb5685eee4117d03d2b6dbad15edf430c1c2cac4",
      []
     ],
     "screen-orientation.idl": [
@@ -413639,7 +413631,7 @@
      []
     ],
     "secure-payment-confirmation.idl": [
-     "5b67ca6267839c4c54ba75c55a9da03231642303",
+     "0a2207684ec71074ffea786bf459b6073799e8d3",
      []
     ],
     "selection-api.idl": [
@@ -413667,7 +413659,7 @@
      []
     ],
     "speech-api.idl": [
-     "94a416f262b361e326c5b3c89fa8d160c1118b48",
+     "9620e60dc5057b5f48100bc4563d01aaf174d303",
      []
     ],
     "sri.idl": [
@@ -413763,7 +413755,7 @@
      []
     ],
     "wai-aria.idl": [
-     "deebc5626e2a925c4b7c7bad92c8492ebb4dcb08",
+     "3364bc9a76936b1eed3873af339e5c11feb10458",
      []
     ],
     "wasm-js-api.idl": [
@@ -413775,7 +413767,7 @@
      []
     ],
     "web-animations-2.idl": [
-     "c4a0c2532d97806eeead38d1e1924c485d775491",
+     "f18cdd4f4583d959119a07e4248e94210fad1036",
      []
     ],
     "web-animations.idl": [
@@ -413871,7 +413863,7 @@
      []
     ],
     "webgpu.idl": [
-     "4fec46a2557033a941b5da7a7481aa8125696ed2",
+     "1fc896c6b1625f13c6ed00ce14a34ce1dfa4db88",
      []
     ],
     "webhid.idl": [
@@ -413987,7 +413979,7 @@
      []
     ],
     "writing-assistance-apis.idl": [
-     "916daee754e3ef992ad8fa282882c88dd9aa0734",
+     "82acfdb48e2d3a051ae0e43d6d34355cf8259ae3",
      []
     ],
     "xhr.idl": [
@@ -428157,7 +428149,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "26510427d7d3e25db33805729267b6919345ed3c",
+     "18443119282ecb0b3055145065963199613ee71b",
      []
     ],
     "webspeech.js": [
@@ -433577,7 +433569,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "25a1596d55e853bc810555d3e2ebadeee959921b",
+     "6ef6b07ba91515289811863993ab1bb1c4a0f832",
      []
     ],
     "interfaces": {
@@ -540573,24 +540565,6 @@
       [
        null,
        {}
-      ]
-     ],
-     "idlharness.window.js": [
-      "b2727e3a8742a791ba51fabf0de02c744ae0d732",
-      [
-       "custom-elements/registries/idlharness.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/resources/WebIDLParser.js"
-         ],
-         [
-          "script",
-          "/resources/idlharness.js"
-         ]
-        ]
-       }
       ]
      ],
      "initial-about-blank.window.js": [

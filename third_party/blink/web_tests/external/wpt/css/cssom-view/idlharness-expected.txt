@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Screen interface: existence and properties of interface object
   assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 [FAIL] Screen interface: existence and properties of interface prototype object
@@ -12,6 +12,10 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 [FAIL] CSSPseudoElement interface: operation convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions)
   assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+[FAIL] HTMLElement interface: attribute scrollParent
+  assert_true: The prototype object must have a property "scrollParent" expected true got false
+[FAIL] HTMLElement interface: document.createElement("div") must inherit property "scrollParent" with the proper type
+  assert_inherits: property "scrollParent" not found in prototype chain
 [FAIL] Element interface: document.createElement("div") must inherit property "getBoxQuads(optional BoxQuadOptions)" with the proper type
   assert_inherits: property "getBoxQuads" not found in prototype chain
 [FAIL] Element interface: calling getBoxQuads(optional BoxQuadOptions) on document.createElement("div") with too few arguments must throw TypeError
@@ -28,6 +32,8 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "convertPointFromNode" not found in prototype chain
 [FAIL] Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document.createElement("div") with too few arguments must throw TypeError
   assert_inherits: property "convertPointFromNode" not found in prototype chain
+[FAIL] HTMLElement interface: document.createElement("img") must inherit property "scrollParent" with the proper type
+  assert_inherits: property "scrollParent" not found in prototype chain
 [FAIL] Element interface: document.createElement("img") must inherit property "getBoxQuads(optional BoxQuadOptions)" with the proper type
   assert_inherits: property "getBoxQuads" not found in prototype chain
 [FAIL] Element interface: calling getBoxQuads(optional BoxQuadOptions) on document.createElement("img") with too few arguments must throw TypeError
