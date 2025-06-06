@@ -8,10 +8,10 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_package {
 
@@ -140,7 +140,7 @@ void AttributeMapParser::ReadAttributeValueCborHeader(
 
   RETURN_IF_ERROR(
       std::visit(
-          base::Overloaded{
+          absl::Overload{
               [&](bool value) -> base::expected<void, std::string> {
                 attributes_map_.emplace(std::move(attribute_name), value);
                 ReadNextAttributeEntry();

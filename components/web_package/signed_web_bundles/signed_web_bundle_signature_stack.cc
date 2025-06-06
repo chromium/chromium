@@ -9,10 +9,10 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/functional/overloaded.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_package {
 
@@ -89,12 +89,12 @@ std::vector<PublicKey> SignedWebBundleSignatureStack::public_keys() const {
   std::vector<PublicKey> public_keys;
   for (const auto& signature : entries()) {
     std::visit(
-        base::Overloaded{[&](const auto& signature_info) {
-                           public_keys.push_back(signature_info.public_key());
-                         },
-                         [](const SignedWebBundleSignatureInfoUnknown&) {
-                           // Unknown signatures cannot provide a public key.
-                         }},
+        absl::Overload{[&](const auto& signature_info) {
+                         public_keys.push_back(signature_info.public_key());
+                       },
+                       [](const SignedWebBundleSignatureInfoUnknown&) {
+                         // Unknown signatures cannot provide a public key.
+                       }},
         signature.signature_info());
   }
   return public_keys;
