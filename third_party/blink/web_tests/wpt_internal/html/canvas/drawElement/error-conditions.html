@@ -16,13 +16,13 @@
 }
 </style>
 
-<canvas id=canvas width="200" height="200" layoutsubtree=true>
+<canvas id=canvas width="200" height="200" layoutsubtree>
   <div id=child>
     <div id=grandchild></div>
   </div>
   <canvas id=childcanvas></canvas>
 </canvas>
-<canvas id=canvaswithoutlayout>
+<canvas id=canvaswithoutlayout layoutsubtree>
   <div id=child2></div>
 </div>
 
@@ -38,6 +38,7 @@ promise_test(async () => {
     () => canvas.getContext("2d").drawElement(childcanvas, 20, 30),
     "Can't draw <canvas> children.");
 
+  canvaswithoutlayout.removeAttribute("layoutsubtree");
   assert_throws_js(TypeError,
     () => canvaswithoutlayout.getContext("2d").drawElement(
       child2, 20, 30),

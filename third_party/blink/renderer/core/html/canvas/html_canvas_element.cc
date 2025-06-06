@@ -482,10 +482,16 @@ void HTMLCanvasElement::ParseAttribute(
       params.name == html_names::kHeightAttr) {
     Reset();
   }
-  if (params.name == html_names::kLayoutsubtreeAttr) {
-    setLayoutSubtree(EqualIgnoringASCIICase(params.new_value, "true"));
-  }
   HTMLElement::ParseAttribute(params);
+}
+
+void HTMLCanvasElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  HTMLElement::AttributeChanged(params);
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      params.name == html_names::kLayoutsubtreeAttr) {
+    setLayoutSubtree(!params.new_value.IsNull());
+  }
 }
 
 LayoutObject* HTMLCanvasElement::CreateLayoutObject(
