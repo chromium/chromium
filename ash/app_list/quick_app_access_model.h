@@ -12,10 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-
-namespace base {
-class TimeTicks;
-}  // namespace base
+#include "base/time/time.h"
 
 namespace gfx {
 class ImageSkia;
@@ -43,11 +40,10 @@ class QuickAppAccessModel : public AppListItemObserver,
     // Called when the default icon for the quick app icon changes.
     virtual void OnQuickAppIconChanged() = 0;
   };
-  QuickAppAccessModel();
 
+  QuickAppAccessModel();
   QuickAppAccessModel(const QuickAppAccessModel&) = delete;
   QuickAppAccessModel& operator=(const QuickAppAccessModel&) = delete;
-
   ~QuickAppAccessModel() override;
 
   void AddObserver(Observer* observer);
@@ -67,8 +63,10 @@ class QuickAppAccessModel : public AppListItemObserver,
   // Returns the quick app's display name.
   const std::u16string GetAppName() const;
 
-  const std::string& quick_app_id() { return quick_app_id_; }
-  bool quick_app_should_show_state() { return quick_app_should_show_state_; }
+  const std::string& quick_app_id() const { return quick_app_id_; }
+  bool quick_app_should_show_state() const {
+    return quick_app_should_show_state_;
+  }
 
  private:
   // AppListItemObserver:
