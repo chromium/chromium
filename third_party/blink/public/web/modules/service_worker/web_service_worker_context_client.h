@@ -113,6 +113,9 @@ class WebServiceWorkerContextClient {
       WebServiceWorkerContextProxy*,
       scoped_refptr<base::SequencedTaskRunner> worker_task_runner) {}
 
+  // Called before preparing v8 script engine for evaluation.
+  virtual void WillPrepareForEvaluation(v8::Local<v8::Context> v8_context) {}
+
   // Called immediately before V8 script evaluation starts for the main script.
   // This means all setup is finally complete: the script has been loaded, the
   // worker thread has started, the script has been passed to the worker thread,

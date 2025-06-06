@@ -511,6 +511,9 @@ void ServiceWorkerGlobalScope::Initialize(
 
   OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
 
+  // Allows `ContextFeatureSettings` to update before preparing script engine.
+  ReportingProxy().WillPrepareForEvaluation();
+
   // TODO(nhiroki): Clarify mappings between the steps 4.8-4.11 and
   // implementation.
 

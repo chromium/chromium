@@ -313,6 +313,14 @@ void ServiceWorkerContextClient::WorkerContextStarted(
           proxy_, service_worker_scope_, script_url_);
 }
 
+void ServiceWorkerContextClient::WillPrepareForEvaluation(
+    v8::Local<v8::Context> v8_context) {
+  DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
+  GetContentClient()->renderer()->WillPrepareForEvaluationOnWorkerThread(
+      proxy_, v8_context, service_worker_version_id_, service_worker_scope_,
+      script_url_, service_worker_token_);
+}
+
 void ServiceWorkerContextClient::WillEvaluateScript(
     v8::Local<v8::Context> v8_context) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
@@ -331,9 +339,7 @@ void ServiceWorkerContextClient::WillEvaluateScript(
   instance_host_->OnScriptEvaluationStart();
 
   DCHECK(proxy_);
-  GetContentClient()->renderer()->WillEvaluateServiceWorkerOnWorkerThread(
-      proxy_, v8_context, service_worker_version_id_, service_worker_scope_,
-      script_url_, service_worker_token_);
+  GetContentClient()->renderer()->WillEvaluateServiceWorkerOnWorkerThread();
 }
 
 void ServiceWorkerContextClient::DidEvaluateScript(bool success) {

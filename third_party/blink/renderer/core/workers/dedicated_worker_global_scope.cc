@@ -276,6 +276,9 @@ void DedicatedWorkerGlobalScope::Initialize(
   InitContentSecurityPolicyFromVector(std::move(csp_list));
   BindContentSecurityPolicyToExecutionContext();
 
+  // Allows `ContextFeatureSettings` to update before preparing script engine.
+  ReportingProxy().WillPrepareForEvaluation();
+
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
   // DedicatedWorkerGlobalScope inherits the outside's OriginTrialTokens in the
