@@ -1,7 +1,7 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++Button text:"InnerText0" viewIdResName:"c0" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
 ++Button text:"InnerText1" tooltipText:"Title1" viewIdResName:"c1" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
-++Button tooltipText:"Title2" contentDescription:"AriaLabel2" viewIdResName:"c2" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++Button text:"AriaLabel2" tooltipText:"Title2" viewIdResName:"c2" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
 ++Button text:"LabelledBy3" tooltipText:"Title3" viewIdResName:"c3" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
 ++Button text:"LabelledBy4" hint:"DescribedBy4" tooltipText:"Title4" viewIdResName:"c4" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hint="DescribedBy4", roleDescription="button"]
 ++Button text:"InnerText5" hint:"DescribedBy5" viewIdResName:"c5" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", hint="DescribedBy5", roleDescription="button"]

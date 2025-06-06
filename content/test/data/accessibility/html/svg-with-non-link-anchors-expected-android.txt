@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' supplemental_description='Text descendants'
+++++android.widget.Image role_description='graphic' name='Text descendants'
 ++++++android.view.View
 ++++++++android.widget.TextView focusable interesting name='focusable'
 ++++++android.widget.TextView interesting name='not focusable'
-++++android.widget.Image role_description='graphic' supplemental_description='Not text descendants'
+++++android.widget.Image role_description='graphic' name='Not text descendants'
 ++++++android.view.View focusable interesting

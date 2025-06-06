@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.widget.TextView interesting name='Before.'
-++android.view.View role_description='splitter' interesting supplemental_description='Dividing line'
+++android.view.View role_description='splitter' interesting name='Dividing line'
 ++android.widget.TextView interesting name='Middle.'
 ++android.view.View role_description='splitter'
 ++android.widget.TextView interesting name='After.'

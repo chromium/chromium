@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.view.View supplemental_description='ComboBoxGrouping'
+++android.view.View hint='ComboBoxGrouping'
 ++++android.widget.EditText clickable editable_text focusable interesting input_type=1
-++android.widget.EditText clickable editable_text focusable interesting supplemental_description='TextFieldWithComboBox' input_type=1
-++android.widget.Spinner clickable focusable interesting name='Select' supplemental_description='ComboBoxMenuButton'
+++android.widget.EditText clickable editable_text focusable interesting hint='TextFieldWithComboBox' input_type=1
+++android.widget.Spinner clickable focusable interesting name='Select' hint='ComboBoxMenuButton'

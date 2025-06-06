@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++View text:"null" contentDescription:"link" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/contenteditable-descendants.html#"]
 ++++++++TextView text:"link" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++TextView text:" and an " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
-++++++Image supplementalDescription:"Image" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", clickableScore="100", hasImage="true", roleDescription="graphic"]
+++++++Image text:"Image" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", clickableScore="100", hasImage="true", roleDescription="graphic"]
 ++++++TextView text:" and a " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++++Button text:"Button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
 ++++++TextView text:"." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]

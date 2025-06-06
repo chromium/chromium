@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.widget.TextView focusable interesting supplemental_description='Done'
+++android.widget.TextView focusable interesting name='Done'
 ++android.view.View role_description='link' clickable link name='link with no href but onclick'
 ++++android.widget.TextView name='link with no href but onclick'
 ++android.view.View role_description='link' clickable link interesting name='link with no href and click handler added via script'

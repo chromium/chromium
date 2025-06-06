@@ -1,6 +1,6 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"The nav element defines a set of navigation links:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
-++NavigationView containerTitle:"programming languages" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="navigation", roleDescription="navigation"]
+++NavigationView text:"programming languages" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="navigation", roleDescription="navigation"]
 ++++View text:"null" contentDescription:"HTML" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///html/"]
 ++++++TextView text:"HTML" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText", clickableScore="100"]
 ++++TextView text:" | " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

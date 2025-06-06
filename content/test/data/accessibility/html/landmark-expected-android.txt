@@ -10,7 +10,7 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='banner' interesting name='This is an ARIA banner landmark.'
 ++android.view.View role_description='complementary' interesting name='This is an ARIA complementary landmark.'
 ++android.view.View role_description='content information' interesting name='This is an ARIA contentinfo landmark.'
-++android.view.View interesting name='This is an ARIA form landmark.' container_title='Named form'
+++android.view.View interesting name='Named form'
 ++android.view.View role_description='main' interesting name='This is an ARIA main landmark.'
 ++com.google.android.material.navigation.NavigationView role_description='navigation' interesting name='This is an ARIA navigation landmark.'
 ++android.widget.SearchView role_description='search' interesting name='This is an ARIA search landmark.'

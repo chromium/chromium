@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
-++android.widget.TextView interesting hint='Text-description' supplemental_description='description'
-++android.widget.TextView interesting hint='Description from describedby' supplemental_description='both'
+++android.widget.TextView interesting name='description' hint='Text-description'
+++android.widget.TextView interesting name='both' hint='Description from describedby'
 ++android.view.View role_description='tooltip' interesting name='Description from describedby'

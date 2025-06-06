@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='focusable: oklink name: <newline>' supplemental_description='not editable' text_change_added_count=25
+++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='focusable: oklink name: <newline>' hint='not editable' text_change_added_count=25
 ++++android.widget.TextView name='focusable: '
 ++++android.widget.Button role_description='button' clickable focusable interesting name='ok'
 ++++android.view.View role_description='link' clickable focusable link interesting name='link'
@@ -8,7 +8,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView name='name: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='name:' input_type=1
-++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='focusable: oklink name: <newline>' supplemental_description='editable' text_change_added_count=25
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='focusable: oklink name: <newline>' hint='editable' text_change_added_count=25
 ++++android.widget.TextView name='focusable: '
 ++++android.widget.Button role_description='button' clickable focusable interesting name='ok'
 ++++android.view.View role_description='link' clickable link name='link'
@@ -17,7 +17,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView name='name: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='name:' input_type=1
-++android.widget.EditText clickable editable_text has_non_empty_value interesting name='focusable: oklink name: <newline>' supplemental_description='not editable or focusable' text_change_added_count=25
+++android.widget.EditText clickable editable_text has_non_empty_value interesting name='focusable: oklink name: <newline>' hint='not editable or focusable' text_change_added_count=25
 ++++android.widget.TextView name='focusable: '
 ++++android.widget.Button role_description='button' clickable focusable interesting name='ok'
 ++++android.view.View role_description='link' clickable focusable link interesting name='link'
@@ -26,5 +26,5 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView name='name: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='name:' input_type=1
-++android.widget.EditText clickable editable_text interesting supplemental_description='not editable, img child'
+++android.widget.EditText clickable editable_text interesting hint='not editable, img child'
 ++++android.widget.Image role_description='graphic'

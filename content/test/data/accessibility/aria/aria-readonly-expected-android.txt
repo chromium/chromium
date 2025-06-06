@@ -3,26 +3,26 @@ android.webkit.WebView focusable focused
 ++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='Readonly-false input' input_type=1 text_change_added_count=20
 ++android.view.View
 ++++android.widget.EditText clickable disabled editable_text focusable has_non_empty_value interesting name='Readonly-true input' input_type=1 text_change_added_count=19
-++android.widget.TextView focusable interesting supplemental_description='Readonly-false plain div'
-++android.widget.TextView focusable interesting supplemental_description='Readonly-true plain div'
-++android.widget.EditText clickable editable_text focusable multiline interesting supplemental_description='Readonly-false contenteditable div'
-++android.widget.EditText clickable editable_text focusable multiline interesting supplemental_description='Readonly-true contenteditable div'
-++android.widget.EditText clickable editable_text focusable interesting supplemental_description='Readonly-false role unimplemented textbox'
-++android.widget.EditText clickable disabled editable_text focusable interesting supplemental_description='Readonly-true role unimplemented textbox'
-++android.widget.EditText clickable editable_text focusable interesting supplemental_description='Readonly-false contenteditable textbox'
-++android.widget.EditText clickable disabled editable_text focusable interesting supplemental_description='Readonly-true contenteditable textbox'
+++android.widget.TextView focusable interesting name='Readonly-false plain div'
+++android.widget.TextView focusable interesting name='Readonly-true plain div'
+++android.widget.EditText clickable editable_text focusable multiline interesting hint='Readonly-false contenteditable div'
+++android.widget.EditText clickable editable_text focusable multiline interesting hint='Readonly-true contenteditable div'
+++android.widget.EditText clickable editable_text focusable interesting hint='Readonly-false role unimplemented textbox'
+++android.widget.EditText clickable disabled editable_text focusable interesting hint='Readonly-true role unimplemented textbox'
+++android.widget.EditText clickable editable_text focusable interesting hint='Readonly-false contenteditable textbox'
+++android.widget.EditText clickable disabled editable_text focusable interesting hint='Readonly-true contenteditable textbox'
 ++android.widget.GridView role_description='table' collection row_count=1 column_count=3
 ++++android.view.View name='Readonly-false gridcell Readonly-true gridcell Readonly not specified gridcell'
-++++++android.view.View collection_item focusable interesting content_description='Readonly-false gridcell' row_span=1 column_span=1
-++++++android.view.View collection_item disabled focusable interesting content_description='Readonly-true gridcell' row_span=1 column_index=1 column_span=1
-++++++android.view.View collection_item focusable interesting content_description='Readonly not specified gridcell' row_span=1 column_index=2 column_span=1
-++android.widget.CheckBox role_description='checkbox' checkable clickable disabled interesting content_description='Readonly checkbox'
-++android.widget.EditText clickable disabled editable_text focusable interesting supplemental_description='Readonly combobox' input_type=1
-++android.widget.ListView role_description='list box' clickable collection disabled interesting supplemental_description='Readonly listbox' column_count=1
-++android.widget.RadioGroup role_description='radio group' disabled interesting supplemental_description='Readonly radiogroup'
-++android.widget.SeekBar role_description='slider' clickable disabled range interesting name='50' supplemental_description='Readonly slider' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.EditText role_description='spin button' clickable disabled range interesting name='0' supplemental_description='Readonly spinbutton' item_count=100
-++android.view.MenuItem role_description='checkbox' checkable clickable collection_item disabled interesting content_description='Readonly menuitemcheckbox'
-++android.view.MenuItem role_description='radio button' checkable clickable collection_item disabled interesting content_description='Readonly menuitemradio'
-++android.widget.EditText role_description='search text field' clickable disabled editable_text interesting supplemental_description='Readonly searchbox'
-++android.widget.ToggleButton role_description='switch' checkable clickable disabled interesting state_description='Off' content_description='Readonly switch'
+++++++android.view.View collection_item focusable interesting name='Readonly-false gridcell' row_span=1 column_span=1
+++++++android.view.View collection_item disabled focusable interesting name='Readonly-true gridcell' row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item focusable interesting name='Readonly not specified gridcell' row_span=1 column_index=2 column_span=1
+++android.widget.CheckBox role_description='checkbox' checkable clickable disabled interesting name='Readonly checkbox'
+++android.widget.EditText clickable disabled editable_text focusable interesting hint='Readonly combobox' input_type=1
+++android.widget.ListView role_description='list box' clickable collection disabled interesting name='Readonly listbox' column_count=1
+++android.widget.RadioGroup role_description='radio group' disabled interesting name='Readonly radiogroup'
+++android.widget.SeekBar role_description='slider' clickable disabled range interesting name='50, Readonly slider' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.EditText role_description='spin button' clickable disabled range interesting name='0, Readonly spinbutton' item_count=100
+++android.view.MenuItem role_description='checkbox' checkable clickable collection_item disabled interesting name='Readonly menuitemcheckbox'
+++android.view.MenuItem role_description='radio button' checkable clickable collection_item disabled interesting name='Readonly menuitemradio'
+++android.widget.EditText role_description='search text field' clickable disabled editable_text interesting hint='Readonly searchbox'
+++android.widget.ToggleButton role_description='switch' checkable clickable disabled interesting name='Readonly switch' state_description='Off'

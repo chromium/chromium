@@ -1,23 +1,23 @@
 android.webkit.WebView focusable focused
-++android.view.View supplemental_description='Group 1'
+++android.view.View name='Group 1'
 ++++android.view.View
 ++++++android.widget.Button role_description='button' clickable focusable interesting name='Before'
 ++++android.widget.TextView interesting name='After'
-++android.view.View supplemental_description='Group 2'
+++android.view.View name='Group 2'
 ++++android.widget.TextView interesting name='Before'
 ++++android.widget.TextView interesting name='After'
-++android.view.View supplemental_description='Group 3'
+++android.view.View name='Group 3'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Before'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Ever '
 ++++++android.view.View role_description='link' clickable focusable link interesting name='After'
 ++++++++android.widget.TextView name='After'
-++android.view.View supplemental_description='Group 4'
+++android.view.View name='Group 4'
 ++++android.widget.TextView interesting name='Before'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='After'
-++android.view.View supplemental_description='Group 5'
+++android.view.View name='Group 5'
 ++++android.widget.TextView interesting name='Italic only '
 ++++android.widget.TextView interesting name='italic and bold'
 ++++android.widget.TextView interesting name='Wow, a block!'

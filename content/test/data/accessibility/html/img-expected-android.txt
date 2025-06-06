@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused has_image
 ++android.view.View has_image
-++++android.widget.Image role_description='graphic' has_image interesting name='pipe' supplemental_description='pipe'
+++++android.widget.Image role_description='graphic' has_image interesting name='pipe'
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' has_image interesting name='pipe' supplemental_description='  '
+++++android.widget.Image role_description='graphic' has_image name='  '
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' has_image interesting name='svg-face' supplemental_description='SVG face'
+++++android.widget.Image role_description='graphic' has_image interesting name='SVG face'

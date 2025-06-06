@@ -2,5 +2,5 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View
 ++++++android.view.View
-++++++++android.view.View interesting supplemental_description='iframe_onscreen'
-++++++++android.view.View interesting supplemental_description='iframe_offscreen'
+++++++++android.view.View interesting name='iframe_onscreen'
+++++++++android.view.View interesting name='iframe_offscreen'

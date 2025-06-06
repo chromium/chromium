@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused
 ++android.widget.GridView role_description='table' collection row_count=2 column_count=3
 ++++android.view.View name='Browser ChromeSafari'
-++++++android.view.View role_description='row header' collection_item interesting table_header content_description='Browser' row_span=1 column_span=1
+++++++android.view.View role_description='row header' collection_item interesting table_header name='Browser' row_span=1 column_span=1
 ++++++android.view.View collection_item interesting name='Chrome' row_span=1 column_index=1 column_span=1
 ++++++android.view.View collection_item interesting name='Safari' row_span=1 column_index=2 column_span=1
 ++++android.view.View name='Rendering Engine BlinkWebKit' row_index=1
-++++++android.view.View role_description='row header' collection_item interesting table_header content_description='Rendering Engine' row_index=1 row_span=1 column_span=1
+++++++android.view.View role_description='row header' collection_item interesting table_header name='Rendering Engine' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item interesting name='Blink' row_index=1 row_span=1 column_index=1 column_span=1
 ++++++android.view.View collection_item interesting name='WebKit' row_index=1 row_span=1 column_index=2 column_span=1

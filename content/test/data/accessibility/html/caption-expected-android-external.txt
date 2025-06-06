@@ -10,7 +10,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
 ++++++View text:"Safari" CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
 ++++++View text:"WebKit" CollectionItemInfo:[rowIndex=2, colIndex=1] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]
-++GridView hint:"Description" supplementalDescription:"Name" CollectionInfo:[rows=1, cols=2] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="table", hint="Description", roleDescription="table"]
+++GridView text:"Name" hint:"Description" CollectionInfo:[rows=1, cols=2] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="table", hint="Description", roleDescription="table"]
 ++++View text:"Description" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="caption"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
 ++++++View text:"A" CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="cell"]

@@ -4,7 +4,7 @@ android.webkit.WebView focusable focused has_character_locations interesting nam
 ++android.widget.Button role_description='button' clickable focusable has_character_locations interesting name='Button'
 ++android.widget.EditText clickable editable_text focusable has_character_locations has_non_empty_value interesting name='Input' input_type=1 text_change_added_count=5
 ++android.widget.EditText clickable editable_text focusable has_character_locations has_non_empty_value multiline interesting name='Textarea' text_change_added_count=8
-++android.widget.Image role_description='graphic' interesting supplemental_description='Image with alt text'
+++android.widget.Image role_description='graphic' interesting name='Image with alt text'
 ++android.widget.TextView has_character_locations name=' '
 ++android.view.View role_description='link' clickable focusable link interesting name='Image inside link'
-++++android.widget.Image role_description='graphic' supplemental_description='Image inside link'
+++++android.widget.Image role_description='graphic' name='Image inside link'

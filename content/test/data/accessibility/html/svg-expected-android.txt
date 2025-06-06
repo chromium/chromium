@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' tooltip_text='SVG Title Tag' supplemental_description='svg'
+++++android.widget.Image role_description='graphic' name='svg' tooltip_text='SVG Title Tag'
 ++++++android.widget.TextView interesting name='Test'

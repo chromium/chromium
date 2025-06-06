@@ -1,4 +1,4 @@
 android.webkit.WebView focusable
 ++android.view.View
-++++android.widget.EditText clickable editable_text focusable interesting supplemental_description='input 1' input_type=1
-++++android.widget.EditText clickable editable_text focusable focused interesting supplemental_description='input 2' input_type=1
+++++android.widget.EditText clickable editable_text focusable interesting hint='input 1' input_type=1
+++++android.widget.EditText clickable editable_text focusable focused interesting hint='input 2' input_type=1

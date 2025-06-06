@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.Image role_description='graphic' supplemental_description='svg'
+++++android.widget.Image role_description='graphic' name='svg'
 ++++++android.view.View role_description='link' clickable focusable link interesting name='svg-with-link-to-document'

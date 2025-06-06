@@ -1,7 +1,7 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++CheckBox text:"Title0" viewIdResName:"c0" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++CheckBox text:"Label1" tooltipText:"Title1" viewIdResName:"c1" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
-++CheckBox tooltipText:"Title2" contentDescription:"AriaLabel2" viewIdResName:"c2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
+++CheckBox text:"AriaLabel2" tooltipText:"Title2" viewIdResName:"c2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++CheckBox text:"LabelledBy3" tooltipText:"Title3" viewIdResName:"c3" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++CheckBox text:"LabelledBy4" hint:"DescribedBy4" tooltipText:"Title4" viewIdResName:"c4" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", hint="DescribedBy4", roleDescription="checkbox"]
 ++CheckBox hint:"DescribedBy5" viewIdResName:"c5" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300", hint="DescribedBy5", roleDescription="checkbox"]

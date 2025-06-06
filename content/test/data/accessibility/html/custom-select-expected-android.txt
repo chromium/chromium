@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='USD' supplemental_description='Currency for purchase' expanded_state=1
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='USD' hint='Currency for purchase' expanded_state=1
 ++++++android.view.View collection invisible item_count=5 row_count=5 column_count=1
 ++++++++android.view.View invisible
 ++++++++++android.view.View invisible selection_mode=1

@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused
 ++android.view.View interesting name='Unnamed ARIA region: must fall back to the native role.'
 ++android.widget.TextView interesting name='Unnamed ARIA region on plain div uses generic container role.'
-++android.view.View role_description='region' interesting name='Named ARIA region#1 gets the region role.' container_title='Named region'
+++android.view.View role_description='region' interesting name='Named region'
 ++android.view.View role_description='region' name='Named ARIA region#2 gets the region role.'
 ++++android.widget.TextView interesting name='Named ARIA region#2 gets the region role.'
 ++android.view.View role_description='region' interesting name='Named region'

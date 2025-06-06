@@ -2,4 +2,4 @@ android.webkit.WebView focusable focused
 ++android.view.View interesting name='role'
 ++android.view.View interesting name='element (no name)'
 ++android.widget.TextView name=' '
-++android.view.View interesting name='element (with name)' supplemental_description='include me'
+++android.view.View interesting name='include me'
