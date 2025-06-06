@@ -139,6 +139,10 @@ target(tracing_lib_type, "cpp") {
       "//third_party/snappy:snappy",
     ]
 
+    if (is_win) {
+      deps += [ "//components/tracing:tracing_etw" ]
+    }
+
     if (!(is_chromeos && target_cpu == "arm64" && current_cpu == "arm")) {
       deps += [ "//components/variations" ]
     }

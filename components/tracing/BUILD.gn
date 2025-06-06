@@ -34,8 +34,19 @@ component("tracing_config") {
     "tracing_export.h",
   ]
 
-  if (is_win) {
-    sources += [
+  defines = [ "TRACING_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//third_party/perfetto:libperfetto",
+    "//third_party/snappy:snappy",
+  ]
+}
+
+if (is_win) {
+  component("tracing_etw") {
+    sources = [
       "common/active_processes_win.cc",
       "common/active_processes_win.h",
       "common/etw_consumer_win.cc",
@@ -48,17 +59,16 @@ component("tracing_config") {
       "common/inclusion_policy_win.h",
       "common/system_log_event_utils_win.cc",
       "common/system_log_event_utils_win.h",
+      "tracing_export.h",
+    ]
+
+    defines = [ "TRACING_IMPLEMENTATION" ]
+
+    deps = [
+      "//base",
+      "//third_party/perfetto:libperfetto",
     ]
   }
-
-  defines = [ "TRACING_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//third_party/perfetto:libperfetto",
-    "//third_party/snappy:snappy",
-  ]
 }
 
 component("background_tracing_metrics_provider") {
@@ -125,6 +135,7 @@ source_set("unit_tests") {
       "common/system_log_event_utils_win_unittest.cc",
     ]
     deps += [
+      ":tracing_etw",
       "//base/version_info:generate_version_info",
       "//third_party/perfetto:libperfetto",
     ]
