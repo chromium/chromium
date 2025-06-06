@@ -21,10 +21,10 @@ found in the LICENSE file.
 
     <style name="DialogShareButton">
         <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
-        <item name="android:drawableTint">@macro/default_icon_color_accent1</item>
+        <item name="android:drawableTint">@macro/default_icon_color_on_accent1_container</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
-        <item name="buttonTextColor">@macro/default_text_color_accent1</item>
+        <item name="buttonTextColor">@macro/default_text_color_on_accent1_container</item>
         <item name="buttonColor">?attr/colorPrimaryContainer</item>
         <item name="rippleColor">@android:color/transparent</item>
         <item name="verticalInset">0dp</item>
