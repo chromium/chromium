@@ -94,6 +94,8 @@ std::string CdmMetricsNameToUmaPrefix(const std::string& metrics_name) {
     return uma_prefix + "CdmServiceBroker.";
   } else if (metrics_name == "media.mojom.MediaFoundationServiceBroker") {
     return uma_prefix + "MediaFoundationServiceBroker.";
+  } else if (metrics_name == "media.mojom.MediaDrmSupport") {
+    return uma_prefix + "MediaDrmSupport.";
   }
 
   NOTREACHED();

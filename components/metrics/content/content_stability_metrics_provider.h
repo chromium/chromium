@@ -76,6 +76,10 @@ class ContentStabilityMetricsProvider
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            MediaFoundationServiceProcessObserverUtility);
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           MediaDrmSupportProcessObserverUtility);
+#endif  // BUILDFLAG(IS_ANDROID)
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            UnknownCdmServiceProcessObserverUtility);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,

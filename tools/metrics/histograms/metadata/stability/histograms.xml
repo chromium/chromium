@@ -24,6 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="CdmUtilityProcessType">
   <variant name="CdmServiceBroker"/>
+  <variant name="MediaDrmSupport"/>
   <variant name="MediaFoundationServiceBroker"/>
 </variants>
 

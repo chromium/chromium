@@ -81,6 +81,9 @@ bool IsCdmUtilityProcess(const content::ChildProcessData& data) {
 #if BUILDFLAG(IS_WIN)
            || data.sandbox_type == sandbox::mojom::Sandbox::kMediaFoundationCdm
 #endif
+#if BUILDFLAG(IS_ANDROID)
+           || data.metrics_name == "media.mojom.MediaDrmSupport"
+#endif
            ));
 }
 
