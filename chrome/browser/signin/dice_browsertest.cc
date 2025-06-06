@@ -1301,8 +1301,14 @@ class DiceBrowserTestWithSyncOptinScreen : public DiceBrowserTest {
 // after Sync an ENABLE_SYNC response and the user is not syncing
 // history. Accepting the dialog results in enabling the history
 // sync preference.
+// TODO(crbug.com/422982233): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EnableHistorySyncOptin DISABLED_EnableHistorySyncOptin
+#else
+#define MAYBE_EnableHistorySyncOptin EnableHistorySyncOptin
+#endif
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
-                       EnableHistorySyncOptin) {
+                       MAYBE_EnableHistorySyncOptin) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
