@@ -56,6 +56,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    browser()->GetUnownedUserDataHost().MarkKeyForTesting(
+        commerce::ProductSpecificationsEntryPointController::kDataKey);
     controller_ =
         std::make_unique<MockProductSpecificationsEntryPointController>(
             browser());
@@ -63,6 +65,11 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
         controller_.get());
     ON_CALL(*controller(), ShouldExecuteEntryPointShow)
         .WillByDefault(testing::Return(true));
+  }
+
+  void TearDownOnMainThread() override {
+    controller_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetTestingFactory(content::BrowserContext* context) {
