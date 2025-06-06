@@ -107,8 +107,6 @@
   IncognitoReauthView* blockingView = [[IncognitoReauthView alloc] init];
   blockingView.translatesAutoresizingMaskIntoConstraints = NO;
   blockingView.layer.zPosition = FLT_MAX;
-  // Hide the logo.
-  blockingView.logoView.hidden = YES;
 
   [blockingView.authenticateButton
              addTarget:self.reauthHandler
@@ -133,6 +131,8 @@
   } else {
     // No need to show tab switcher button when already in the tab switcher.
     blockingView.secondaryButton.hidden = YES;
+    // Hide the logo.
+    blockingView.logoView.hidden = YES;
   }
 
   return blockingView;

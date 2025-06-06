@@ -24,6 +24,8 @@ const CGFloat kButtonPaddingH = 38.0f;
 const CGFloat kAuthenticateButtonBagroundMaxCornerRadius = 30.0f;
 // Distance from top and bottom to content (buttons/logos).
 const CGFloat kVerticalContentPadding = 70.0f;
+// Distance from the Logo to the primary button.
+const CGFloat kLogoToPrimaryButtonMargin = 54.0f;
 }  // namespace
 
 @interface IncognitoReauthView () <IncognitoReauthViewLabelOwner>
@@ -62,16 +64,14 @@ const CGFloat kVerticalContentPadding = 70.0f;
     blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self, blurBackgroundView);
 
-    UIImage* incognitoLogo = CustomSymbolWithPointSize(kIncognitoSymbol, 28);
+    CGFloat imageSize = IsIOSSoftLockEnabled() ? 50 : 28;
+    UIImage* incognitoLogo =
+        CustomSymbolWithPointSize(kIncognitoSymbol, imageSize);
     _logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
     _logoView.tintColor = UIColor.whiteColor;
     _logoView.translatesAutoresizingMaskIntoConstraints = NO;
     [blurBackgroundView.contentView addSubview:_logoView];
     AddSameCenterXConstraint(_logoView, blurBackgroundView);
-    [_logoView.topAnchor
-        constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide.topAnchor
-                       constant:kVerticalContentPadding]
-        .active = YES;
 
     _secondaryButton = [self buildSecondaryButton];
     [blurBackgroundView.contentView addSubview:_secondaryButton];
@@ -95,17 +95,25 @@ const CGFloat kVerticalContentPadding = 70.0f;
         ]];
 
     if (IsIOSSoftLockEnabled()) {
-      [constraints
-          addObject:[_secondaryButton.topAnchor
-                        constraintEqualToAnchor:authButtonContainer.bottomAnchor
-                                       constant:kButtonPaddingV]];
+      [constraints addObjectsFromArray:@[
+        [_secondaryButton.topAnchor
+            constraintEqualToAnchor:authButtonContainer.bottomAnchor
+                           constant:kButtonPaddingV],
+        [_logoView.bottomAnchor
+            constraintEqualToAnchor:_authenticateButton.topAnchor
+                           constant:-kLogoToPrimaryButtonMargin]
+      ]];
     } else {
-      [constraints
-          addObject:[_secondaryButton.topAnchor
-                        constraintEqualToAnchor:blurBackgroundView
-                                                    .safeAreaLayoutGuide
-                                                    .bottomAnchor
-                                       constant:-kVerticalContentPadding]];
+      [constraints addObjectsFromArray:@[
+        [_secondaryButton.topAnchor
+            constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide
+                                        .bottomAnchor
+                           constant:-kVerticalContentPadding],
+        [_logoView.topAnchor
+            constraintEqualToAnchor:blurBackgroundView.safeAreaLayoutGuide
+                                        .topAnchor
+                           constant:kVerticalContentPadding]
+      ]];
     }
 
     [NSLayoutConstraint activateConstraints:constraints];
