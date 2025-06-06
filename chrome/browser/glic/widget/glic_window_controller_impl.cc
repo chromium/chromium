@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
+#include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -293,7 +294,11 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
       enabling_(enabling) {
-  previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
+  if (window_config_.ShouldResetOnStart()) {
+    previous_position_.reset();
+  } else {
+    previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
+  }
   application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
   host_observation_.Observe(&glic_service_->host());
 }
@@ -456,6 +461,18 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
     return;
   }
 
+  if (state_ == State::kOpen && window_config_.ShouldResetOnClose()) {
+    previous_position_.reset();
+    gfx::Rect new_bounds = GetInitialBounds(new_attached_browser);
+    MaybeAdjustSizeForDisplay(window_config_.ShouldAnimate());
+    base::TimeDelta duration = window_config_.ShouldAnimate()
+                                   ? kAnimationDuration
+                                   : base::Milliseconds(0);
+    glic_window_animator_->AnimatePosition(new_bounds.origin(), duration,
+                                           base::DoNothing());
+    return;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // Clicking status tray on Windows makes floaty not active so always close.
   if (source == mojom::InvocationSource::kOsButton) {
@@ -590,6 +607,14 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   // unset.
   CHECK(!attached_browser_);
   opening_source_ = source;
+  if (source == mojom::InvocationSource::kTopChromeButton &&
+      window_config_.ShouldResetOnOpen()) {
+    previous_position_.reset();
+  }
+  if (window_config_.ShouldResetOnNewSession()) {
+    previous_position_.reset();
+  }
+  window_config_.SetLastOpenTime();
   if (!glic_service_->GetAuthController().CheckAuthBeforeShowSync(
           base::BindOnce(&GlicWindowControllerImpl::ShowAfterSignIn,
                          weak_ptr_factory_.GetWeakPtr(),
@@ -1013,7 +1038,8 @@ void GlicWindowControllerImpl::Close() {
   }
 
   // Save the widge position on close so we can restore in the same position.
-  SaveWidgetPosition();
+  SaveWidgetPosition(/*is_drag=*/false);
+  window_config_.SetLastCloseTime();
 
   glic_window_animator_.reset();
   std::optional<display::Display> display =
@@ -1049,15 +1075,21 @@ void GlicWindowControllerImpl::Close() {
   }
 }
 
-void GlicWindowControllerImpl::SaveWidgetPosition() {
-  if (GetGlicWidget() && GetGlicWidget()->IsVisible()) {
-    previous_position_ =
-        GetGlicWidget()->GetClientAreaBoundsInScreen().origin();
-    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                     previous_position_->x());
-    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                     previous_position_->y());
+void GlicWindowControllerImpl::SaveWidgetPosition(bool is_drag) {
+  if (!GetGlicWidget() || !GetGlicWidget()->IsVisible()) {
+    return;
   }
+  if (!is_drag && window_config_.ShouldSetPostionOnDrag() &&
+      !previous_position_.has_value()) {
+    profile_->GetPrefs()->ClearPref(prefs::kGlicPreviousPositionX);
+    profile_->GetPrefs()->ClearPref(prefs::kGlicPreviousPositionY);
+    return;
+  }
+  previous_position_ = GetGlicWidget()->GetClientAreaBoundsInScreen().origin();
+  profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                   previous_position_->x());
+  profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                   previous_position_->y());
 }
 
 void GlicWindowControllerImpl::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
@@ -1112,7 +1144,7 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
     glic_window_animator_->MaybeAnimateToTargetSize();
 
     AdjustPositionIfNeeded();
-    SaveWidgetPosition();
+    SaveWidgetPosition(/*is_drag=*/true);
 
     if (!AlwaysDetached()) {
       // set glic z-order back to normal after drag is done.

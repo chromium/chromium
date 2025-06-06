@@ -1305,6 +1305,22 @@ const char kGlicZeroStateSuggestionsDescription[] =
     "Enables zero state suggestions in Glic.";
 const char kGlicActorName[] = "Glic actor";
 const char kGlicActorDescription[] = "Enables the Glic actor.";
+const char kGlicPanelResetTopChromeButtonName[] =
+    "Glic Panel Reset With Top Chrome Button";
+const char kGlicPanelResetTopChromeButtonDescription[] =
+    "Configure how the tab strip button can be used to reset the glic panel "
+    "location.";
+const char kGlicPanelResetOnStartName[] = "Glic Panel Reset On Start";
+const char kGlicPanelResetOnStartDescription[] =
+    "Enables resetting the glic panel position on startup.";
+const char kGlicPanelSetPositionOnDragName[] =
+    "Glic Panel Set Position On Drag";
+const char kGlicPanelSetPositionOnDragDescription[] =
+    "Enables only saving the glic panel position after a drag.";
+const char kGlicPanelResetOnSessionTimeoutName[] =
+    "Glic Panel Reset On Session Timeout";
+const char kGlicPanelResetOnSessionTimeoutDescription[] =
+    "Enables resetting the panel position after a session timeout.";
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

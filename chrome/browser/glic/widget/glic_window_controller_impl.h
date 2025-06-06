@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
+#include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -185,7 +186,7 @@ class GlicWindowControllerImpl
   void DetachFinished();
 
   // Save the top-right corner position for re-opening.
-  void SaveWidgetPosition();
+  void SaveWidgetPosition(bool is_drag);
 
   // Clear the previous position if the widget would not be on an existing
   // display when shown.
@@ -328,6 +329,8 @@ class GlicWindowControllerImpl
 
   // Whether the user is currently drag-resizing the widget.
   bool user_resizing_ = false;
+
+  GlicWindowConfig window_config_;
 
   // The invocation source requesting the opening of the web client. Note that
   // this value is retained until it is consumed by the web client. Because

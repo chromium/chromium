@@ -5351,6 +5351,38 @@
     "expiry_milestone": 150
   },
   {
+    "name":"glic-panel-reset-on-session-timeout" ,
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
+    "name":"glic-panel-reset-on-start" ,
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
+    "name":"glic-panel-reset-top-chrome-button" ,
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
+    "name":"glic-panel-set-position-on-drag" ,
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "glic-user-resize",
     "owners": [
       "iwells@chromium.org",
@@ -5364,7 +5396,7 @@
       "andreaxg@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 139
+    "expiry_milestone": 140
   },
   {
     "name": "glic-zero-state-suggestions",

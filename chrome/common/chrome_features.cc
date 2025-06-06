@@ -587,6 +587,30 @@ BASE_FEATURE(kGlicGetUserProfileInfoApiActivationGating,
 BASE_FEATURE(kGlicExplicitBackgroundColor,
              "GlicExplicitBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Features to experiment with resetting the panel default location.
+BASE_FEATURE(kGlicPanelResetTopChromeButton,
+             "GlicPanelResetTopChromeButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicPanelResetTopChromeButtonOnOpen{
+    &kGlicPanelResetTopChromeButton, "glic-panel-reset-on-open", true};
+const base::FeatureParam<bool> kGlicPanelResetTopChromeButtonAnimate{
+    &kGlicPanelResetTopChromeButton, "glic-panel-reset-animate", false};
+const base::FeatureParam<int> kGlicPanelResetTopChromeButtonDelayMs{
+    &kGlicPanelResetTopChromeButton, "glic-panel-reset-delay-ms", 2000};
+BASE_FEATURE(kGlicPanelResetOnStart,
+             "GlicPanelResetOnStart",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicPanelSetPositionOnDrag,
+             "GlicPanelSetPositionOnDrag",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicPanelResetOnSessionTimeout,
+             "GlicPanelResetOnSessionTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGlicPanelResetOnSessionTimeoutDelayH{
+    &kGlicPanelResetOnSessionTimeout,
+    "glic-panel-reset-session-timeout-delay-h", 0};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

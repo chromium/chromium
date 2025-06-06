@@ -10521,6 +10521,7 @@ from previous Chrome versions.
   <int value="-1271563519" label="enable-appcontainer"/>
   <int value="-1271562638" label="EnableShortcutCustomizationLogging:enabled"/>
   <int value="-1271441871" label="AmbientColor:enabled"/>
+  <int value="-1271200945" label="GlicPanelSetPositionOnDrag:enabled"/>
   <int value="-1270634957" label="PhoneHubUseBle:enabled"/>
   <int value="-1270241570" label="TerminalDev:disabled"/>
   <int value="-1270163583" label="AccessibilityPageZoomEnhancements:enabled"/>
@@ -10827,6 +10828,7 @@ from previous Chrome versions.
   <int value="-1158993534" label="PrintScaling:enabled"/>
   <int value="-1158929245"
       label="BrowserInitiatedAutomaticPictureInPicture:enabled"/>
+  <int value="-1158762291" label="GlicPanelResetTopChromeButton:enabled"/>
   <int value="-1157129504"
       label="AutofillRequireCvcForPossibleCardUpdate:disabled"/>
   <int value="-1156950420"
@@ -12455,6 +12457,7 @@ from previous Chrome versions.
       label="ViewTransitionOnNavigationForIframes:disabled"/>
   <int value="-543611786" label="disable-search-engine-choice-screen"/>
   <int value="-541989470" label="AccessCodeCastRememberDevices:enabled"/>
+  <int value="-541937666" label="GlicPanelResetTopChromeButton:disabled"/>
   <int value="-541764089" label="AudioPlayerJsModules:disabled"/>
   <int value="-541611402" label="OfflinePagesPrefetching:enabled"/>
   <int value="-540972085" label="ManagedConfiguration:enabled"/>
@@ -15535,6 +15538,7 @@ from previous Chrome versions.
   <int value="620189062" label="TabFreeze:enabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
+  <int value="621827872" label="GlicPanelResetOnSessionTimeout:disabled"/>
   <int value="622027416" label="HoldingSpaceSuggestions:disabled"/>
   <int value="623112705"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:disabled"/>
@@ -15740,6 +15744,7 @@ from previous Chrome versions.
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="690901353" label="WindowsSystemTracing:enabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
+  <int value="691523087" label="GlicPanelResetOnStart:disabled"/>
   <int value="691913191" label="ReduceAcceptLanguageHTTP:enabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
@@ -16691,6 +16696,7 @@ from previous Chrome versions.
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
+  <int value="1059595064" label="GlicPanelResetOnStart:enabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
   <int value="1060127537" label="TabSwitcherFullNewTabButton:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
@@ -19216,6 +19222,7 @@ from previous Chrome versions.
       label="CrOSLateBootAudioAPNoiseCancellation:disabled"/>
   <int value="1965534355" label="conversions-debug-mode"/>
   <int value="1965976546" label="NewOverviewAnimations:disabled"/>
+  <int value="1966006631" label="GlicPanelSetPositionOnDrag:disabled"/>
   <int value="1966730288" label="disable-threaded-compositing"/>
   <int value="1967267147" label="SwapBackquoteKeysInISOKeyboard:enabled"/>
   <int value="1968199744" label="PrintJobManagementApp:disabled"/>
@@ -19344,6 +19351,7 @@ from previous Chrome versions.
   <int value="2009362691" label="AllowStartingServiceManagerOnly:enabled"/>
   <int value="2009697597"
       label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
+  <int value="2009995411" label="GlicPanelResetOnSessionTimeout:enabled"/>
   <int value="2011785323" label="EnableSchemeBoundCookies:enabled"/>
   <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
   <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>

@@ -681,6 +681,14 @@ extern const char kGlicZeroStateSuggestionsName[];
 extern const char kGlicZeroStateSuggestionsDescription[];
 extern const char kGlicActorName[];
 extern const char kGlicActorDescription[];
+extern const char kGlicPanelResetTopChromeButtonName[];
+extern const char kGlicPanelResetTopChromeButtonDescription[];
+extern const char kGlicPanelResetOnStartName[];
+extern const char kGlicPanelResetOnStartDescription[];
+extern const char kGlicPanelSetPositionOnDragName[];
+extern const char kGlicPanelSetPositionOnDragDescription[];
+extern const char kGlicPanelResetOnSessionTimeoutName[];
+extern const char kGlicPanelResetOnSessionTimeoutDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
