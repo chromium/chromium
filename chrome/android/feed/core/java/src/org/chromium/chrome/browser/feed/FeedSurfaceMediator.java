@@ -1031,8 +1031,9 @@ public class FeedSurfaceMediator
                 mTabToStreamMap.clear();
             }
         } else {
-            if (mCurrentStream != null) {
-                mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
+            if (mStreamHolder != null) {
+                mStreamHolder.removeOnContentChangedListener(mStreamContentChangedListener);
+                mStreamHolder = null;
             }
         }
         mStreamContentChangedListener = null;
@@ -1599,7 +1600,7 @@ public class FeedSurfaceMediator
         }
     }
 
-    private boolean isSuggestionsVisible() {
+    public boolean isSuggestionsVisible() {
         return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
