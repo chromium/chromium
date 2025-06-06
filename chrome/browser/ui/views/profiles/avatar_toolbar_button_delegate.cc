@@ -607,7 +607,7 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& /*event*/) override {
-    if (!IsSyncPromoEligible()) {
+    if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
       // Needed to prevent the promo from showing when it is already triggered
       // and the user sign out or turns on sync without dismissing the promo.
       Collapse();
@@ -645,7 +645,7 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
     if (!sync_promo_identity_pill_manager_.ShouldShowPromo()) {
       return;
     }
-    if (!IsSyncPromoEligible()) {
+    if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
       return;
     }
     access_point_ = access_point;
@@ -705,35 +705,6 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
     }
     Trigger(signin_metrics::AccessPoint::
                 kHistorySyncOptinExpansionPillOnInactivity);
-  }
-
-  bool IsSyncPromoEligible() const {
-    if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
-            &profile_.get())) != signin_util::SignedInState::kSignedIn) {
-      return false;
-    }
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(&profile_.get());
-    if (!sync_service) {
-      return false;
-    }
-    if (sync_service->HasDisableReason(
-            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-      return false;
-    }
-    if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-            syncer::UserSelectableType::kHistory) ||
-        sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-            syncer::UserSelectableType::kTabs)) {
-      return false;
-    }
-    if (sync_service->GetUserSettings()->IsTypeManagedByCustodian(
-            syncer::UserSelectableType::kHistory) ||
-        sync_service->GetUserSettings()->IsTypeManagedByCustodian(
-            syncer::UserSelectableType::kTabs)) {
-      return false;
-    }
-    return true;
   }
 
   signin_metrics::AccessPoint access_point_ =

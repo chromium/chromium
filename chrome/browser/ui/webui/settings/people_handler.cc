@@ -658,15 +658,11 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
   DCHECK(IsChangePrimaryAccountAllowed(profile_, email.GetString()))
       << "Changing the primary account is not allowed!";
 
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
   // TODO(crbug.com/419203245): Update the UI for this button and the conditions
   // under which it appears when it triggers the History Sync Optin, instead of
   // the Sync Consent screen.
   if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
-    if (sync_service &&
-        !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kHistory)) {
+    if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
       const signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile_);
       CHECK(identity_manager);

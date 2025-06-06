@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/chrome_switches.h"
@@ -194,27 +195,14 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
 }
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
-  /* TODO(crbug.com/419741847): Unify necessary conditions for triggering the
-   * dialog. */
   if (!base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin) ||
       !base::FeatureList::IsEnabled(
           switches::kEnableHistorySyncOptinFromTabHelper)) {
     return false;
   }
-  if (!IdentityManagerFactory::GetForProfile(&profile_.get())
-           ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    VLOG(1) << "Do not start history sync when there is no signed in user.";
-    return false;
-  }
-  auto* sync_service = SyncServiceFactory::GetForProfile(&profile_.get());
-  if (!sync_service) {
-    VLOG(1) << "Do not start history sync if there is no sync service.";
-    return false;
-  }
-  if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
+  if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
     VLOG(1)
-        << "Do not start history sync if the user is already syncing history.";
+        << "Do not start history sync if the necessary conditions are not met.";
     return false;
   }
   if (!is_sync_signin_tab_) {
@@ -285,7 +273,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
     tab_helper->OnSyncSigninFlowComplete();
   }
 
-  if (ShouldEnableSync() || ShouldEnableHistorySync()) {
+  if (ShouldEnableHistorySync() || ShouldEnableSync()) {
     Redirect();
   }
 

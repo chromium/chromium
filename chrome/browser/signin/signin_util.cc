@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +35,9 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -339,5 +343,46 @@ SignedInState GetSignedInState(
 
   return SignedInState::kSignedOut;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
+  if (GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) !=
+      signin_util::SignedInState::kSignedIn) {
+    return false;
+  }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+  if (!sync_service) {
+    return false;
+  }
+  if (sync_service->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    return false;
+  }
+
+  syncer::UserSelectableTypeSet synced_data_types(
+      {syncer::UserSelectableType::kHistory, syncer::UserSelectableType::kTabs,
+       syncer::UserSelectableType::kSavedTabGroups});
+  for (auto type : synced_data_types) {
+    if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(type) ||
+        sync_service->GetUserSettings()->IsTypeManagedByCustodian(type)) {
+      return false;
+    }
+  }
+
+  // Note: Post migration these preferences will be set by a single
+  // settings toggle and are expected to have the same value.
+  if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory) &&
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kTabs) &&
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kSavedTabGroups)) {
+    return false;
+  }
+  return true;
+}
+#endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
 }  // namespace signin_util

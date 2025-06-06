@@ -66,20 +66,11 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
     CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
     CHECK(base::FeatureList::IsEnabled(
         switches::kEnableHistorySyncOptinFromTabHelper));
-
     CHECK(profile);
+
     Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
                                     : chrome::FindBrowserWithProfile(profile);
-    if (!browser) {
-      return;
-    }
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile);
-    if (!sync_service) {
-      return;
-    }
-    if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kHistory)) {
+    if (!browser || !signin_util::ShouldShowHistorySyncOptinScreen(*profile)) {
       return;
     }
 

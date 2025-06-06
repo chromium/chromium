@@ -282,6 +282,7 @@ class AvatarToolbarButtonBaseBrowserTest {
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
 
     GetTestSyncService()->SetSignedIn(consent_level, account_info);
+    SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
 
     return account_info;
   }
@@ -355,6 +356,16 @@ class AvatarToolbarButtonBaseBrowserTest {
       avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
     }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  }
+
+  void SetHistoryAndTabsSyncingPreference(bool enable_sync) {
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, /*is_type_on=*/enable_sync);
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kTabs, /*is_type_on=*/enable_sync);
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kSavedTabGroups,
+        /*is_type_on=*/enable_sync);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1466,6 +1477,10 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
                        MAYBE_ShowsOnBrowserRestart) {
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The greeting is shown after the restart.
   ASSERT_EQ(
@@ -2474,6 +2489,10 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
     MAYBE_SignedInWithNewSessionKeepWorkBadge) {
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The greetings are shown due to the management service override (unaware of
   // the management acceptance after restart).
