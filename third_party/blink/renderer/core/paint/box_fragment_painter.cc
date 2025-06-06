@@ -1378,8 +1378,6 @@ void BoxFragmentPainter::PaintGapDecorations(
         paint_info, paint_offset, layout_box, box_fragment_.GetFragmentData());
     paint_rect.Move(contents_paint_state_for_hidden->PaintOffset());
 
-    background_client = &layout_box.GetScrollableArea()
-                             ->GetScrollingBackgroundDisplayItemClient();
     visual_rect = layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
         paint_offset);
   } else {
