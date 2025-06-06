@@ -74,8 +74,6 @@ NSString* const kBackgroundCellIdentifier = @"kBackgroundCellIdentifier";
 NSString* const kBackgroundPickerCellIdentifier =
     @"kBackgroundPickerCellIdentifier";
 
-NSString* const kBackgroundCustomizationDeleteIcon = @"trash";
-
 const char kDiscoverFollowingURL[] =
     "https://google.com/preferences/interests/yourinterests";
 const char kDiscoverHiddenURL[] =

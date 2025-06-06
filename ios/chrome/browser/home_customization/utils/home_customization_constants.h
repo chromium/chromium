@@ -67,10 +67,6 @@ extern NSString* const kBackgroundCellIdentifier;
 // The identifier for the background picker cell.
 extern NSString* const kBackgroundPickerCellIdentifier;
 
-// The name of the system icon used for the "Delete Background" action in the
-// background customization context menu.
-extern NSString* const kBackgroundCustomizationDeleteIcon;
-
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];
@@ -113,6 +109,15 @@ enum class CustomizationLinkType : NSInteger {
   kHidden,
   kActivity,
   kLearnMore,
+};
+
+// The type of background customization picker to present.
+enum class HomeCustomizationBackgroundPickerType : NSInteger {
+  // Background color picker.
+  HomeCustomizationPickerTypeColor,
+
+  // Preset gallery picker.
+  HomeCustomizationPickerTypePresetGallery,
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

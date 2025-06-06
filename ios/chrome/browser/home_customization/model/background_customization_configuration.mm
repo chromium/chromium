@@ -5,12 +5,8 @@
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "url/gurl.h"
-
-namespace {
-// Configuration ID prefix for image configurations.
-NSString* kConfigurationImageType = @"image";
-}  // namespace
 
 @implementation BackgroundCustomizationConfiguration {
   NSString* _configurationID;
@@ -23,11 +19,26 @@ NSString* kConfigurationImageType = @"image";
   self = [super init];
   if (self) {
     _configurationID = [NSString
-        stringWithFormat:@"%@_%@", kConfigurationImageType,
+        stringWithFormat:@"%ld_%@",
+                         HomeCustomizationBackgroundPickerType::
+                             HomeCustomizationPickerTypePresetGallery,
                          base::SysUTF8ToNSString(
                              base::NumberToString(collectionImage.asset_id))];
     _thumbnailURL = collectionImage.thumbnail_image_url;
     _highResURL = collectionImage.image_url;
+  }
+  return self;
+}
+
+- (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor {
+  self = [super init];
+  if (self) {
+    _configurationID =
+        [NSString stringWithFormat:@"%ld_%@",
+                                   HomeCustomizationBackgroundPickerType::
+                                       HomeCustomizationPickerTypeColor,
+                                   backgroundColor.description];
+    _backgroundColor = backgroundColor;
   }
   return self;
 }

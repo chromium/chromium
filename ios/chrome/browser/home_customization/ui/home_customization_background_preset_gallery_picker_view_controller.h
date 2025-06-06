@@ -13,6 +13,8 @@
 
 @protocol HomeCustomizationBackgroundPresetGalleryPickerMutator;
 
+@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+
 // View controller for displaying a preset gallery of background images in the
 // Home customization flow. Uses a collection view to showcase selectable preset
 // backgrounds.
@@ -28,6 +30,11 @@
 @property(nonatomic, weak)
     id<HomeCustomizationBackgroundPresetGalleryPickerMutator>
         mutator;
+
+// Presentation delegate for the action sheet.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+        presentationDelegate;
 
 @end
 

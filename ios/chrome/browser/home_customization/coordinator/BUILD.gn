@@ -10,6 +10,8 @@ source_set("coordinator") {
     "home_customization_background_photo_picker_coordinator.mm",
     "home_customization_background_picker_action_sheet_coordinator.h",
     "home_customization_background_picker_action_sheet_coordinator.mm",
+    "home_customization_background_picker_action_sheet_mediator.h",
+    "home_customization_background_picker_action_sheet_mediator.mm",
     "home_customization_background_preset_gallery_picker_mediator.h",
     "home_customization_background_preset_gallery_picker_mediator.mm",
     "home_customization_coordinator+Testing.h",

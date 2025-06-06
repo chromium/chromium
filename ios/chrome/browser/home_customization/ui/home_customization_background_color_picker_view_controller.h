@@ -11,17 +11,25 @@
 
 @protocol HomeCustomizationBackgroundColorPickerMutator;
 
+@protocol HomeCustomizationBackgroundPickerActionSheetPresentationDelegate;
+
 // View controller responsible for displaying and managing the background color
 // picker in the Home customization flow. Implements collection view delegate
 // and data source to handle color options.
 @interface HomeCustomizationBackgroundColorPickerViewController
     : UIViewController <HomeCustomizationBackgroundColorPickerConsumer,
+                        UICollectionViewDelegate,
                         UICollectionViewDataSource>
 
 // Mutator for communicating with the
 // `HomeCustomizationBackgroundColorPickerMediator`.
 @property(nonatomic, weak) id<HomeCustomizationBackgroundColorPickerMutator>
     mutator;
+
+// Presentation delegate for the action sheet.
+@property(nonatomic, weak)
+    id<HomeCustomizationBackgroundPickerActionSheetPresentationDelegate>
+        presentationDelegate;
 
 @end
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
@@ -53,18 +55,6 @@ const CGFloat kSectionInsetBottom = 20.0;
 
   self.view.backgroundColor = [UIColor systemBackgroundColor];
 
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                           target:self
-                           action:@selector(dismissCustomizationMenuPage)];
-
-  dismissButton.accessibilityIdentifier = kNavigationBarDismissButtonIdentifier;
-
-  self.navigationItem.rightBarButtonItem = dismissButton;
-  self.navigationItem.backBarButtonItem.accessibilityIdentifier =
-      kNavigationBarBackButtonIdentifier;
-  [self.navigationItem setHidesBackButton:YES];
-
   UICollectionViewFlowLayout* layout =
       [[UICollectionViewFlowLayout alloc] init];
 
@@ -87,6 +77,7 @@ const CGFloat kSectionInsetBottom = 20.0;
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:layout];
   collectionView.dataSource = self;
+  collectionView.delegate = self;
 
   collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:collectionView];
@@ -116,6 +107,17 @@ const CGFloat kSectionInsetBottom = 20.0;
   return _colorPaletteConfigurations.count;
 }
 
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  // TODO(crbug.com/408243803): implement background color UI selection.
+  BackgroundCustomizationConfiguration* backgroundConfiguration =
+      [[BackgroundCustomizationConfiguration alloc]
+          initWithBackgroundColor:_colorPaletteConfigurations[indexPath.item]
+                                      .seedColor];
+  [self.presentationDelegate
+      applyBackgroundForConfiguration:backgroundConfiguration];
+}
+
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
   HomeCustomizationColorPaletteConfiguration* configuration =
@@ -132,12 +134,6 @@ const CGFloat kSectionInsetBottom = 20.0;
   }
 
   return nil;
-}
-
-#pragma mark - Private
-
-- (void)dismissCustomizationMenuPage {
-  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

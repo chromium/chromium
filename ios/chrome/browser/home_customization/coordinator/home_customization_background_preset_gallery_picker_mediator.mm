@@ -54,11 +54,6 @@
 
 #pragma mark - HomeCustomizationBackgroundPresetGalleryPickerMutator
 
-- (void)applyBackgroundForConfiguration:
-    (BackgroundCustomizationConfiguration*)backgroundConfiguration {
-  // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
-}
-
 - (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL
                                            completion:
                                                (void (^)(UIImage*))completion {

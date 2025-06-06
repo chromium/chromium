@@ -21,6 +21,10 @@ class GURL;
 // with the provided collection image.
 - (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage;
 
+// Initializes a new instance of the background customization configuration
+// with the provided background color.
+- (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor;
+
 // A unique identifier for the background configuration.
 @property(readonly, nonatomic, copy) NSString* configurationID;
 

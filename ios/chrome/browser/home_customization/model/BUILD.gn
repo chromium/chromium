@@ -27,6 +27,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/sync/protocol",
     "//components/themes",
+    "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/home_customization/model/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_header_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
@@ -73,18 +74,6 @@ const CGFloat kHeaderInsetSides = 7.5;
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE);
 
   self.view.backgroundColor = [UIColor systemBackgroundColor];
-
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                           target:self
-                           action:@selector(dismissCustomizationMenuPage)];
-
-  dismissButton.accessibilityIdentifier = kNavigationBarDismissButtonIdentifier;
-
-  self.navigationItem.rightBarButtonItem = dismissButton;
-  self.navigationItem.backBarButtonItem.accessibilityIdentifier =
-      kNavigationBarBackButtonIdentifier;
-  [self.navigationItem setHidesBackButton:YES];
 
   UICollectionViewCompositionalLayout* layout =
       [[UICollectionViewCompositionalLayout alloc]
@@ -178,10 +167,9 @@ const CGFloat kHeaderInsetSides = 7.5;
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-  BackgroundCustomizationConfiguration* backgroundConfiguration =
-      _backgroundCustomizationConfigurationMap[itemIdentifier];
-
-  [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
+  [self.presentationDelegate
+      applyBackgroundForConfiguration:_backgroundCustomizationConfigurationMap
+                                          [itemIdentifier]];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView

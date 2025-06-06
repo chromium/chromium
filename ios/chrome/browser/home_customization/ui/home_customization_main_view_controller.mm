@@ -228,7 +228,7 @@
                              l10n_util::GetNSString(
                                  IDS_IOS_HOME_CUSTOMIZATION_CONTEXT_MENU_DELETE_RECENT_BACKGROUND_TITLE)
                                    image:DefaultSymbolWithPointSize(
-                                             kBackgroundCustomizationDeleteIcon,
+                                             kTrashSymbol,
                                              [[UIFont preferredFontForTextStyle:
                                                           UIFontTextStyleBody]
                                                  pointSize])
@@ -394,15 +394,17 @@
 // updates the collection view by removing the associated item from the
 // diffable data source.
 - (void)handleDeleteBackgroundActionAtIndexPath:(NSIndexPath*)indexPath {
-  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
   NSString* identifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
-  if (identifier) {
-    [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
-    [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
-    [_backgroundCustomizationConfigurationMap removeObjectForKey:identifier];
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+  if (!identifier) {
+    return;
   }
+
+  NSDiffableDataSourceSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [self.mutator deleteBackgroundFromRecentlyUsedAtIndex:indexPath.item];
+  [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
+  [_backgroundCustomizationConfigurationMap removeObjectForKey:identifier];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 @end
