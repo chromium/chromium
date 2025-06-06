@@ -385,7 +385,7 @@ mod test {
 
     #[test]
     fn print_size_of() {
-        use std::mem::size_of;
+        use core::mem::size_of;
         dbg!(size_of::<Effects>());
         dbg!(size_of::<EffectsDisplay>());
     }

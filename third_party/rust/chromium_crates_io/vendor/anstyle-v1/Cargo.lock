@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "anstyle"
-version = "1.0.10"
+version = "1.0.11"
 dependencies = [
  "lexopt",
 ]
