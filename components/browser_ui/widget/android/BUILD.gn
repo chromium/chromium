@@ -241,7 +241,6 @@ android_resources("java_resources") {
     "java/res/drawable/default_icon_background_selector.xml",
     "java/res/drawable/default_icon_background_selector_baseline.xml",
     "java/res/drawable/drag_handlebar.xml",
-    "java/res/drawable/home_surface_composeplate_button_background.xml",
     "java/res/drawable/home_surface_ui_background.xml",
     "java/res/drawable/ic_arrow_back_24dp.xml",
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",
