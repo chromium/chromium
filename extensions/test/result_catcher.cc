@@ -4,12 +4,13 @@
 
 #include "extensions/test/result_catcher.h"
 
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "content/public/test/test_utils.h"
 
 namespace extensions {
 
-ResultCatcher::ResultCatcher() : browser_context_restriction_(nullptr) {
+ResultCatcher::ResultCatcher() {
   test_api_observation_.Observe(TestApiObserverRegistry::GetInstance());
 }
 
@@ -38,30 +39,36 @@ bool ResultCatcher::GetNextResult() {
 }
 
 void ResultCatcher::OnTestPassed(content::BrowserContext* browser_context) {
-  if (browser_context_restriction_ &&
-      browser_context != browser_context_restriction_) {
+  if (IsRelevantBrowserContext(browser_context)) {
     return;
   }
 
   VLOG(1) << "Got chrome.test.notifyPass notification.";
   results_.push_back(true);
   messages_.push_back(std::string());
-  if (!quit_closure_.is_null())
+  if (quit_closure_) {
     std::move(quit_closure_).Run();
+  }
 }
 
 void ResultCatcher::OnTestFailed(content::BrowserContext* browser_context,
                                  const std::string& message) {
-  if (browser_context_restriction_ &&
-      browser_context != browser_context_restriction_) {
+  if (IsRelevantBrowserContext(browser_context)) {
     return;
   }
 
   VLOG(1) << "Got chrome.test.notifyFail notification.";
   results_.push_back(false);
   messages_.push_back(message);
-  if (!quit_closure_.is_null())
+  if (quit_closure_) {
     std::move(quit_closure_).Run();
+  }
+}
+
+bool ResultCatcher::IsRelevantBrowserContext(
+    content::BrowserContext* browser_context) const {
+  return browser_context_restriction_ &&
+         browser_context != browser_context_restriction_;
 }
 
 }  // namespace extensions

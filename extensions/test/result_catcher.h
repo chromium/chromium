@@ -38,13 +38,15 @@ class ResultCatcher : public TestApiObserver {
     browser_context_restriction_ = context;
   }
 
-  const std::string& message() { return message_; }
+  const std::string& message() const { return message_; }
 
  private:
   // TestApiObserver:
   void OnTestPassed(content::BrowserContext* browser_context) override;
   void OnTestFailed(content::BrowserContext* browser_context,
                     const std::string& message) override;
+
+  bool IsRelevantBrowserContext(content::BrowserContext* browser_context) const;
 
   // A sequential list of pass/fail notifications from the test extension(s).
   base::circular_deque<bool> results_;
@@ -54,7 +56,7 @@ class ResultCatcher : public TestApiObserver {
   std::string message_;
 
   // If non-NULL, we will listen to events from this BrowserContext only.
-  raw_ptr<content::BrowserContext> browser_context_restriction_;
+  raw_ptr<content::BrowserContext> browser_context_restriction_ = nullptr;
 
   // Only set if we're in a nested run loop waiting for results from
   // the extension.
