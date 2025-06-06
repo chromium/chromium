@@ -61,10 +61,7 @@ if (use_libcxx_modules) {
   template("sysroot_modules") {
     source_set(target_name) {
       use_libcxx_modules = false
-      deps = []
-      if (is_linux) {
-        sources = [ "//build/linux/amd64/module.modulemap" ]
-      }
+      sources = [ "//build/linux/amd64/module.modulemap" ]
       deps = [
         ":copy_custom_headers",
         ":copy_libcxx_headers",

@@ -54,6 +54,9 @@ template("nacl_toolchain") {
       use_clang_coverage = false
       coverage_instrumentation_input_file = ""
 
+      # NaCl doesn't work with Clang modules.
+      use_libcxx_modules = false
+
       if (use_reclient) {
         if (is_win) {
           reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
