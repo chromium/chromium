@@ -239,6 +239,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
@@ -260,6 +261,7 @@ generate_jni("jni_headers") {
   if (enable_extensions_core) {
     sources += [
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionAction.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
     ]
   }
