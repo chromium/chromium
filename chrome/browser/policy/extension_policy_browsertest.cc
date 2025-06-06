@@ -1561,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
         kGoodCrxId, kResourcePath,
         extensions::TestContentVerifyJobObserver::Result::FAILURE);
 
-    GURL resource_url = extension->GetResourceURL("script1.js");
+    GURL resource_url = extension->ResolveExtensionURL("script1.js");
     FetchSubresource(chrome_test_utils::GetActiveWebContents(this),
                      resource_url);
 
@@ -1642,7 +1642,7 @@ IN_PROC_BROWSER_TEST_F(
         kGoodCrxId, kResourcePath,
         extensions::TestContentVerifyJobObserver::Result::FAILURE);
 
-    GURL resource_url = extension->GetResourceURL("script1.js");
+    GURL resource_url = extension->ResolveExtensionURL("script1.js");
     FetchSubresource(chrome_test_utils::GetActiveWebContents(this),
                      resource_url);
 
@@ -1717,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
         kGoodCrxId, kResourcePath,
         extensions::TestContentVerifyJobObserver::Result::FAILURE);
 
-    GURL resource_url = extension->GetResourceURL("script1.js");
+    GURL resource_url = extension->ResolveExtensionURL("script1.js");
     FetchSubresource(chrome_test_utils::GetActiveWebContents(this),
                      resource_url);
 

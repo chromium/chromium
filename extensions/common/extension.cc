@@ -307,8 +307,8 @@ Manifest::Type Extension::GetType() const {
 }
 
 // static
-GURL Extension::GetResourceURL(const GURL& extension_url,
-                               std::string_view relative_url) {
+GURL Extension::ResolveExtensionURL(const GURL& extension_url,
+                                    std::string_view relative_url) {
   DCHECK(extension_url.SchemeIs(kExtensionScheme));
   GURL resolved = extension_url.Resolve(relative_url);
   if (!url::IsSameOriginWith(resolved, extension_url)) {

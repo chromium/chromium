@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ServerRedirectToAppFromExtension) {
 
   // Load the launcher extension, which should launch the app.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), launcher->GetResourceURL("server_redirect.html")));
+      browser(), launcher->ResolveExtensionURL("server_redirect.html")));
 
   // Wait for app tab to be created and loaded.
   test_navigation_observer.Wait();
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ClientRedirectToAppFromExtension) {
 
   // Load the launcher extension, which should launch the app.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), launcher->GetResourceURL("client_redirect.html")));
+      browser(), launcher->ResolveExtensionURL("client_redirect.html")));
 
   // Wait for app tab to be created and loaded.
   test_navigation_observer.Wait();

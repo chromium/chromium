@@ -163,7 +163,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
     }
 
     if (!url_str->empty()) {
-      GURL popup_url = extension->GetResourceURL(*url_str);
+      GURL popup_url = extension->ResolveExtensionURL(*url_str);
       if (!popup_url.is_valid()) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;

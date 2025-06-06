@@ -541,7 +541,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), extension_url));
 
   // Test access to iframed content.
-  GURL within_extension_url = extension->GetResourceURL("page.html");
+  GURL within_extension_url = extension->ResolveExtensionURL("page.html");
   // Note: this uses IsAllowedScript() (instead of GetExtensionAccess()) because
   // they are theoretically testing iframed content, and capturing (just)
   // iframed content doesn't make sense. It might be nice to more completely
@@ -664,7 +664,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), extension_url));
 
   // Test access to iframed content.
-  GURL within_extension_url = extension->GetResourceURL("page.html");
+  GURL within_extension_url = extension->ResolveExtensionURL("page.html");
   EXPECT_TRUE(IsAllowedScript(extension.get(), http_url));
   EXPECT_TRUE(IsAllowedScript(extension.get(), http_url_with_path));
   EXPECT_TRUE(IsAllowedScript(extension.get(), https_url));
@@ -1161,7 +1161,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), extension_url));
 
   // Test access to iframed content.
-  GURL within_extension_url = extension->GetResourceURL("page.html");
+  GURL within_extension_url = extension->ResolveExtensionURL("page.html");
   EXPECT_TRUE(IsAllowedScript(extension.get(), http_url));
   EXPECT_TRUE(IsAllowedScript(extension.get(), http_url_with_path));
   EXPECT_FALSE(IsAllowedScript(extension.get(), example_com));
@@ -1643,7 +1643,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
 
   {
     EXPECT_TRUE(
-        CanCapture(all_urls(), all_urls().GetResourceURL("foo.html"),
+        CanCapture(all_urls(), all_urls().ResolveExtensionURL("foo.html"),
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
     EXPECT_TRUE(
         CanCapture(all_urls(), get_filesystem_url_for_extension(all_urls()),
@@ -1652,7 +1652,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
         CanCapture(all_urls(), get_blob_url_for_extension(all_urls()),
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
     EXPECT_TRUE(CanCapture(page_capture(),
-                           page_capture().GetResourceURL("foo.html"),
+                           page_capture().ResolveExtensionURL("foo.html"),
                            extensions::CaptureRequirement::kPageCapture));
     EXPECT_TRUE(CanCapture(page_capture(),
                            get_filesystem_url_for_extension(page_capture()),
@@ -1663,7 +1663,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
   }
 
   const GURL active_tab_extension_urls[] = {
-      active_tab().GetResourceURL("foo.html"),
+      active_tab().ResolveExtensionURL("foo.html"),
       // https://crbug.com/853392: filesystem: URLs don't work with activeTab.
       // get_filesystem_url_for_extension(active_tab()),
       // https://crbug.com/853392: blob: URLs don't work with activeTab.
@@ -1686,7 +1686,7 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
                    extensions::CaptureRequirement::kActiveTabOrAllUrls));
   }
   const GURL page_capture_extension_urls[] = {
-      page_capture().GetResourceURL("foo.html"),
+      page_capture().ResolveExtensionURL("foo.html"),
   };
 
   for (const GURL& url : page_capture_extension_urls) {

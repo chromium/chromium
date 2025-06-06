@@ -74,7 +74,7 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
 
   GURL url(params->parameters.url);
   if (!url.is_valid()) {
-    url = extension()->GetResourceURL(params->parameters.url);
+    url = extension()->ResolveExtensionURL(params->parameters.url);
   }
 
   if (!url.is_valid() || url::Origin::Create(url) != extension()->origin()) {

@@ -301,8 +301,8 @@ TEST_F(ActiveTabTest, CapturingPagesWithActiveTab) {
       GURL("http://[2607:f8b0:4005:805::200e]"),
       ExtensionsClient::Get()->GetWebstoreBaseURL(),
       ExtensionsClient::Get()->GetNewWebstoreBaseURL(),
-      extension->GetResourceURL("test.html"),
-      another_extension->GetResourceURL("test.html"),
+      extension->ResolveExtensionURL("test.html"),
+      another_extension->ResolveExtensionURL("test.html"),
   };
 
   const GURL kAboutBlank("about:blank");

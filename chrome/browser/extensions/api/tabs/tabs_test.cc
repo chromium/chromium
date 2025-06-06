@@ -2508,7 +2508,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_WithOpener) {
   ASSERT_TRUE(extension);
 
   // Navigate a tab to an extension page.
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* old_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2580,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
   ASSERT_TRUE(extension);
 
   // Navigate a tab to an extension page.
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* old_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2620,7 +2620,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
   ASSERT_TRUE(extension);
 
   // Navigate a tab to an extension page.
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2701,7 +2701,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   url::Origin extension_origin = url::Origin::Create(extension_url);
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   url::Origin web_origin = url::Origin::Create(web_url);
@@ -2761,7 +2761,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   url::Origin extension_origin = url::Origin::Create(extension_url);
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   url::Origin web_origin = url::Origin::Create(web_url);
@@ -2821,7 +2821,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
   ASSERT_TRUE(extension);
-  GURL extension_url = extension->GetResourceURL("file.html");
+  GURL extension_url = extension->ResolveExtensionURL("file.html");
   url::Origin extension_origin = url::Origin::Create(extension_url);
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   url::Origin web_origin = url::Origin::Create(web_url);

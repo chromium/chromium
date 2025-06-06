@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->GetResourceURL("update.html"))));
+        browser(), GURL(extension->ResolveExtensionURL("update.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->GetResourceURL("update2.html"))));
+        browser(), GURL(extension->ResolveExtensionURL("update2.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
   {
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
+        browser(), GURL(extension->ResolveExtensionURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
   {
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
+        browser(), GURL(extension->ResolveExtensionURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
 
   ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(extension->GetResourceURL("update.html"))));
+      browser(), GURL(extension->ResolveExtensionURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 

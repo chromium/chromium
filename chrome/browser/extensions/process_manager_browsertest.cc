@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, NoBackgroundPage) {
   NavigateToURL(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
-  const GURL extension_url = extension->GetResourceURL("manifest.json");
+  const GURL extension_url = extension->ResolveExtensionURL("manifest.json");
   NavigateToURL(extension_url);
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
@@ -531,10 +531,12 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   embedded_test_server()->ServeFilesFromDirectory(extension1->path());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  const GURL kExt1TwoFramesUrl(extension1->GetResourceURL("two_iframes.html"));
-  const GURL kExt1EmptyUrl(extension1->GetResourceURL("empty.html"));
-  const GURL kExt2TwoFramesUrl(extension2->GetResourceURL("two_iframes.html"));
-  const GURL kExt2EmptyUrl(extension2->GetResourceURL("empty.html"));
+  const GURL kExt1TwoFramesUrl(
+      extension1->ResolveExtensionURL("two_iframes.html"));
+  const GURL kExt1EmptyUrl(extension1->ResolveExtensionURL("empty.html"));
+  const GURL kExt2TwoFramesUrl(
+      extension2->ResolveExtensionURL("two_iframes.html"));
+  const GURL kExt2EmptyUrl(extension2->ResolveExtensionURL("empty.html"));
 
   ProcessManager* pm = ProcessManager::Get(profile());
 
@@ -594,30 +596,30 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
   // Destroy all existing frames by navigating to another extension.
-  NavigateToURL(extension2->GetResourceURL("empty.html"));
+  NavigateToURL(extension2->ResolveExtensionURL("empty.html"));
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension1->id()).size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
   // Test about:blank and about:srcdoc child frames.
-  NavigateToURL(extension2->GetResourceURL("srcdoc_iframe.html"));
+  NavigateToURL(extension2->ResolveExtensionURL("srcdoc_iframe.html"));
   // 1 top-level frame + 1 child frame from Extension 2.
   EXPECT_EQ(2u, pm->GetAllFrames().size());
   EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
-  NavigateToURL(extension2->GetResourceURL("blank_iframe.html"));
+  NavigateToURL(extension2->ResolveExtensionURL("blank_iframe.html"));
   // 1 top-level frame + 1 child frame from Extension 2.
   EXPECT_EQ(2u, pm->GetAllFrames().size());
   EXPECT_EQ(2u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
   // Sandboxed frames are not viewed as extension frames.
   EXPECT_TRUE(content::NavigateIframeToURL(
-      tab, "frame0", extension2->GetResourceURL("sandboxed.html")));
+      tab, "frame0", extension2->ResolveExtensionURL("sandboxed.html")));
   // 1 top-level frame from Extension 2.
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
-  NavigateToURL(extension2->GetResourceURL("sandboxed.html"));
+  NavigateToURL(extension2->ResolveExtensionURL("sandboxed.html"));
   EXPECT_EQ(0u, pm->GetAllFrames().size());
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 
@@ -807,7 +809,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate first subframe to an extension URL. This will go into a new
   // extension process.
-  const GURL extension_empty_resource(extension->GetResourceURL("empty.html"));
+  const GURL extension_empty_resource(
+      extension->ResolveExtensionURL("empty.html"));
   EXPECT_TRUE(
       content::NavigateIframeToURL(tab, "frame1", extension_empty_resource));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
@@ -935,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate iframe to an extension URL.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", extension_url));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -1009,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate first subframe to an extension URL. This will go into a new
   // extension process.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame1", extension_url));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -1057,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate main tab to an extension URL with a blank subframe.
-  const GURL extension_url(extension->GetResourceURL("blank_iframe.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("blank_iframe.html"));
   NavigateToURL(extension_url);
   ProcessManager* pm = ProcessManager::Get(profile());
   EXPECT_EQ(2u, pm->GetAllFrames().size());
@@ -1228,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Have the web page navigate the popup to each nested URL with extension
   // origin via the window reference it obtained earlier from window.open.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   for (auto create_function : {&CreateBlobURL, &CreateFileSystemURL}) {
     // Setup the test by navigating popup to an extension page. This is allowed
     // because it's web accessible.
@@ -1288,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetAllFrames().size());
 
   // Navigate popup to an extension page.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   content::TestNavigationObserver observer(popup);
   EXPECT_TRUE(ExecJs(popup, "location.href = '" + extension_url.spec() + "';"));
   observer.Wait();
@@ -1345,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // "manifest.json" doesn't match that pattern, so it shouldn't be possible for
   // a webpage to initiate such a navigation.
   const GURL inaccessible_extension_resource(
-      extension->GetResourceURL("manifest.json"));
+      extension->ResolveExtensionURL("manifest.json"));
   // This is an HTTP request that redirects to a non-webaccessible resource.
   const GURL redirect_to_inaccessible(embedded_test_server()->GetURL(
       "/server-redirect?" + inaccessible_extension_resource.spec()));
@@ -1379,7 +1382,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to the "extension 1" page with two iframes.
-  auto url = extension1->GetResourceURL("two_iframes.html");
+  auto url = extension1->ResolveExtensionURL("two_iframes.html");
   NavigateToURL(url);
   const auto initiator_origin = url::Origin::Create(url);
 
@@ -1390,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate the first iframe to a webaccessible resource of extension 2. This
   // should work.
-  GURL extension2_empty = extension2->GetResourceURL("empty.html");
+  GURL extension2_empty = extension2->ResolveExtensionURL("empty.html");
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
       extension2, extension2_empty.path(), &initiator_origin));
   {
@@ -1407,7 +1410,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Manifest.json is not a webaccessible resource. extension1 should not be
   // able to navigate to extension2's manifest.json.
-  GURL extension2_manifest = extension2->GetResourceURL("manifest.json");
+  GURL extension2_manifest = extension2->ResolveExtensionURL("manifest.json");
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
       extension2, extension2_manifest.path(), &initiator_origin));
   {
@@ -1480,7 +1483,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate main tab to an extension page.
-  NavigateToURL(extension->GetResourceURL("empty.html"));
+  NavigateToURL(extension->ResolveExtensionURL("empty.html"));
   ProcessManager* pm = ProcessManager::Get(profile());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
@@ -1527,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate first subframe to an extension URL.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", extension_url));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -1579,7 +1582,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Navigate subframe to an extension URL.  This should go into a new
   // extension process.
-  const GURL extension_url(extension->GetResourceURL("empty.html"));
+  const GURL extension_url(extension->ResolveExtensionURL("empty.html"));
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame0", extension_url));
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -1677,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppFilesAccess) {
   // Navigating to the manifest should be blocked with an error page.
   {
     content::TestNavigationObserver observer(tab);
-    NavigateToURL(extension->GetResourceURL("manifest.json"));
+    NavigateToURL(extension->ResolveExtensionURL("manifest.json"));
     EXPECT_FALSE(observer.last_navigation_succeeded());
     EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
               content::PAGE_TYPE_ERROR);
@@ -1686,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppFilesAccess) {
   // Navigation to the icon file should succeed.
   {
     content::TestNavigationObserver observer(tab);
-    NavigateToURL(extension->GetResourceURL("icon.png"));
+    NavigateToURL(extension->ResolveExtensionURL("icon.png"));
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
               content::PAGE_TYPE_NORMAL);

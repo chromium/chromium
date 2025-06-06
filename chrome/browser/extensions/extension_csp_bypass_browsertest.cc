@@ -106,7 +106,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
         }
         canLoadScript();
         )",
-        extension->GetResourceURL("script.js").spec().c_str());
+        extension->ResolveExtensionURL("script.js").spec().c_str());
     return EvalJs(render_frame_host, code).ExtractBool();
   }
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
   console_observer.SetPattern(
       "Refused to frame * because an ancestor violates *");
 
-  GURL popup_url = extension->GetResourceURL("popup.html");
+  GURL popup_url = extension->ResolveExtensionURL("popup.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), popup_url));
 
   // The iframe must be blocked because of CSP.

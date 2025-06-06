@@ -116,9 +116,9 @@ std::vector<mojom::JSSourcePtr> FileSourcesToJSSources(
   std::vector<mojom::JSSourcePtr> js_sources;
   js_sources.reserve(file_sources.size());
   for (auto& file_source : file_sources) {
-    js_sources.push_back(
-        mojom::JSSource::New(std::move(*file_source.data),
-                             extension.GetResourceURL(file_source.file_name)));
+    js_sources.push_back(mojom::JSSource::New(
+        std::move(*file_source.data),
+        extension.ResolveExtensionURL(file_source.file_name)));
   }
 
   return js_sources;
@@ -134,8 +134,8 @@ std::vector<mojom::CSSSourcePtr> FileSourcesToCSSSources(
   for (auto& file_source : file_sources) {
     css_sources.push_back(mojom::CSSSource::New(
         std::move(*file_source.data),
-        InjectionKeyForFile(host_id,
-                            extension.GetResourceURL(file_source.file_name))));
+        InjectionKeyForFile(
+            host_id, extension.ResolveExtensionURL(file_source.file_name))));
   }
 
   return css_sources;
@@ -574,8 +574,8 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
 
     for (const auto& file : *injection.files) {
       sources.push_back(mojom::CSSSource::New(
-          empty_code,
-          InjectionKeyForFile(host_id, extension()->GetResourceURL(file))));
+          empty_code, InjectionKeyForFile(
+                          host_id, extension()->ResolveExtensionURL(file))));
     }
   } else {
     DCHECK(injection.css);

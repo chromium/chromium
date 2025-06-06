@@ -249,15 +249,15 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   const Extension* another_extension = LoadExtension(path);
   ASSERT_TRUE(another_extension);
 
-  GURL other_ext_url = another_extension->GetResourceURL("popup.html");
+  GURL other_ext_url = another_extension->ResolveExtensionURL("popup.html");
 
   // This extension should not be able to access another extension.
   EXPECT_TRUE(RunAttachFunction(
       other_ext_url, manifest_errors::kCannotAccessExtensionUrl));
 
   // This extension *should* be able to debug itself.
-  EXPECT_TRUE(RunAttachFunction(extension()->GetResourceURL("test_file.html"),
-                                std::string()));
+  EXPECT_TRUE(RunAttachFunction(
+      extension()->ResolveExtensionURL("test_file.html"), std::string()));
 
   // Append extensions on chrome urls switch. The extension should now be able
   // to debug any extension.

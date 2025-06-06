@@ -91,7 +91,7 @@ TEST_F(PageActionManifestTest, LoadPageActionHelper) {
   const ActionInfo* extension_action =
       GetActionInfoOfType(*extension, ActionInfo::Type::kPage);
   ASSERT_TRUE(extension_action);
-  EXPECT_EQ(extension->GetResourceURL(kPopupHtmlFile),
+  EXPECT_EQ(extension->ResolveExtensionURL(kPopupHtmlFile),
             extension_action->default_popup_url);
 
   // Setting default_popup to "" is the same as having no popup.

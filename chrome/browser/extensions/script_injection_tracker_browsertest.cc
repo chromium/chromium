@@ -1424,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   // Navigate to an extension page (so that later we can call
   // `chrome.scripting.registerContentScripts`).
   content::RenderFrameHost* extension_frame = ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html"));
+      browser(), extension->ResolveExtensionURL("page.html"));
   ASSERT_TRUE(extension_frame);
 
   // Step 1: Navigate to a test page that *will later* be covered by the dynamic

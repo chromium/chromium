@@ -168,7 +168,7 @@ bool AboutPageHandler::Parse(Extension* extension, std::u16string* error) {
     *error = errors::kInvalidAboutPageExpectRelativePath;
     return false;
   }
-  manifest_url->url_ = extension->GetResourceURL(*about_str);
+  manifest_url->url_ = extension->ResolveExtensionURL(*about_str);
   if (!manifest_url->url_.is_valid()) {
     *error = errors::kInvalidAboutPage;
     return false;

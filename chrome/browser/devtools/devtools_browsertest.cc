@@ -1229,11 +1229,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(extension->GetResourceURL("panel_devtools_page.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("panel_devtools_page.html"),
             devtools_extension_devtools_page_rfh->GetLastCommittedURL());
-  EXPECT_EQ(extension->GetResourceURL("panel.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("panel.html"),
             devtools_extension_panel_rfh->GetLastCommittedURL());
-  EXPECT_EQ(extension->GetResourceURL("multi_frame_page.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("multi_frame_page.html"),
             panel_frame_rfh->GetLastCommittedURL());
   EXPECT_EQ(about_blank_url, about_blank_frame_rfh->GetLastCommittedURL());
   EXPECT_EQ(data_url, data_frame_rfh->GetLastCommittedURL());
@@ -1293,7 +1293,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // Check that if the web IFrame is navigated back to a devtools extension
   // page, it gets put back in the devtools process.
   GURL extension_simple_url =
-      extension->GetResourceURL("simple_test_page.html");
+      extension->ResolveExtensionURL("simple_test_page.html");
   std::string renavigation_javascript =
       "location.href='" + extension_simple_url.spec() + "';";
 
@@ -1366,9 +1366,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(extension->GetResourceURL("sidebarpane_devtools_page.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("sidebarpane_devtools_page.html"),
             devtools_extension_devtools_page_rfh->GetLastCommittedURL());
-  EXPECT_EQ(extension->GetResourceURL("panel.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("panel.html"),
             devtools_sidebar_pane_extension_rfh->GetLastCommittedURL());
   EXPECT_EQ(web_url, http_iframe_rfh->GetLastCommittedURL());
 
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(extension->GetResourceURL("web_devtools_page.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("web_devtools_page.html"),
             devtools_extension_devtools_page_rfh->GetLastCommittedURL());
   EXPECT_EQ(web_url, http_iframe_rfh->GetLastCommittedURL());
 
@@ -1477,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   ASSERT_TRUE(non_devtools_extension);
 
   GURL non_dt_extension_test_url =
-      non_devtools_extension->GetResourceURL("simple_test_page.html");
+      non_devtools_extension->ResolveExtensionURL("simple_test_page.html");
 
   // Install the dynamically-generated devtools extension.
   const Extension* devtools_extension =
@@ -1512,9 +1512,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(devtools_extension->GetResourceURL("panel_devtools_page.html"),
+  EXPECT_EQ(devtools_extension->ResolveExtensionURL("panel_devtools_page.html"),
             devtools_extension_devtools_page_rfh->GetLastCommittedURL());
-  EXPECT_EQ(devtools_extension->GetResourceURL("panel.html"),
+  EXPECT_EQ(devtools_extension->ResolveExtensionURL("panel.html"),
             devtools_extension_panel_rfh->GetLastCommittedURL());
   EXPECT_EQ(non_dt_extension_test_url,
             non_devtools_extension_rfh->GetLastCommittedURL());
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   ASSERT_TRUE(devtools_b_extension);
 
   GURL extension_b_page_url =
-      devtools_b_extension->GetResourceURL("simple_test_page.html");
+      devtools_b_extension->ResolveExtensionURL("simple_test_page.html");
 
   // Install another dynamically-generated extension.  This extension's
   // panel.html's iframe will point to an extension b URL.
@@ -1588,14 +1588,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       content::FrameMatchingPredicate(
           main_web_contents()->GetPrimaryPage(),
           base::BindRepeating(&content::FrameHasSourceUrl,
-                              devtools_a_extension->GetResourceURL(
+                              devtools_a_extension->ResolveExtensionURL(
                                   "panel_devtools_page.html")));
   EXPECT_TRUE(devtools_extension_a_devtools_rfh);
   RenderFrameHost* devtools_extension_b_devtools_rfh =
       content::FrameMatchingPredicate(
           main_web_contents()->GetPrimaryPage(),
           base::BindRepeating(&content::FrameHasSourceUrl,
-                              devtools_b_extension->GetResourceURL(
+                              devtools_b_extension->ResolveExtensionURL(
                                   "simple_devtools_page.html")));
   EXPECT_TRUE(devtools_extension_b_devtools_rfh);
 
@@ -1606,11 +1606,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(devtools_a_extension->GetResourceURL("panel_devtools_page.html"),
-            devtools_extension_a_devtools_rfh->GetLastCommittedURL());
-  EXPECT_EQ(devtools_b_extension->GetResourceURL("simple_devtools_page.html"),
-            devtools_extension_b_devtools_rfh->GetLastCommittedURL());
-  EXPECT_EQ(devtools_a_extension->GetResourceURL("panel.html"),
+  EXPECT_EQ(
+      devtools_a_extension->ResolveExtensionURL("panel_devtools_page.html"),
+      devtools_extension_a_devtools_rfh->GetLastCommittedURL());
+  EXPECT_EQ(
+      devtools_b_extension->ResolveExtensionURL("simple_devtools_page.html"),
+      devtools_extension_b_devtools_rfh->GetLastCommittedURL());
+  EXPECT_EQ(devtools_a_extension->ResolveExtensionURL("panel.html"),
             devtools_extension_a_panel_rfh->GetLastCommittedURL());
   EXPECT_EQ(extension_b_page_url,
             devtools_extension_b_frame_rfh->GetLastCommittedURL());
@@ -1652,7 +1654,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
   RunTestFunction(window_, "waitForTestResultsInConsole");
 
   // Now that we know the panel is loaded, switch to it.
-  GURL extension_test_url = extension->GetResourceURL("simple_test_page.html");
+  GURL extension_test_url =
+      extension->ResolveExtensionURL("simple_test_page.html");
   content::TestNavigationManager test_page_manager(main_web_contents(),
                                                    extension_test_url);
   SwitchToExtensionPanel(window_, extension, "iframe-panel");
@@ -1675,9 +1678,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
   // simple_test_page.html
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
       content::kChromeDevToolsScheme));
-  EXPECT_EQ(extension->GetResourceURL("panel_devtools_page.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("panel_devtools_page.html"),
             devtools_extension_devtools_page_rfh->GetLastCommittedURL());
-  EXPECT_EQ(extension->GetResourceURL("panel.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("panel.html"),
             devtools_extension_panel_rfh->GetLastCommittedURL());
   EXPECT_EQ(extension_test_url,
             devtools_extension_panel_frame_rfh->GetLastCommittedURL());
@@ -2079,7 +2082,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       LoadExtensionFromPath(test_dir.UnpackedPath());
 
   // Create an offscreen document and wait for it to load.
-  GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  GURL offscreen_url = extension->ResolveExtensionURL("offscreen.html");
   std::unique_ptr<extensions::OffscreenDocumentHost> offscreen_document =
       std::make_unique<extensions::OffscreenDocumentHost>(
           *extension,

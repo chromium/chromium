@@ -256,7 +256,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
   CHECK(extension);
   return IsResourceWebAccessibleImpl(
       *extension,
-      /*target_url=*/extension->GetResourceURL(relative_path),
+      /*target_url=*/extension->ResolveExtensionURL(relative_path),
       base::OptionalFromPtr(initiator_origin),
       /*upstream_url=*/GURL());
 }

@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyApp()));
 
   // Open a new tab to the app's launch URL and make sure we notice that.
-  GURL url(extension->GetResourceURL("main.html"));
+  GURL url(extension->ResolveExtensionURL("main.html"));
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   // There should be 1 "App: " tab and the original new tab page.
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTab) {
           last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
 
   // Open a new tab to the app's launch URL and make sure we notice that.
-  GURL url(extension->GetResourceURL("main.html"));
+  GURL url(extension->ResolveExtensionURL("main.html"));
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   ShowTaskManager();

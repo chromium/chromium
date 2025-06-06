@@ -172,10 +172,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // `extension_url`.
   //
   // NOTE: Static so that it can be used from multiple threads.
-  static GURL GetResourceURL(const GURL& extension_url,
-                             std::string_view relative_url);
-  GURL GetResourceURL(std::string_view relative_url) const {
-    return GetResourceURL(url(), relative_url);
+  static GURL ResolveExtensionURL(const GURL& extension_url,
+                                  std::string_view relative_url);
+  GURL ResolveExtensionURL(std::string_view relative_url) const {
+    return ResolveExtensionURL(url(), relative_url);
   }
 
   // Returns true if the resource matches a pattern in the pattern_set.

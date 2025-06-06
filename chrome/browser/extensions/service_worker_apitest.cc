@@ -1049,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
   ExtensionTestMessageListener listener1("Pong from version 1");
   listener1.set_failure_message("FAILURE");
   content::WebContents* web_contents = browsertest_util::AddTab(
-      browser(), extension->GetResourceURL("page.html"));
+      browser(), extension->ResolveExtensionURL("page.html"));
   EXPECT_TRUE(listener1.WaitUntilSatisfied());
 
   // Update to version 2.0.
@@ -1064,7 +1064,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
   ExtensionTestMessageListener listener2("Pong from version 1");
   listener2.set_failure_message("FAILURE");
   web_contents = browsertest_util::AddTab(
-      browser(), extension_after_update->GetResourceURL("page.html"));
+      browser(), extension_after_update->ResolveExtensionURL("page.html"));
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
 
   // Navigate the tab away from the extension page so that no clients are
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
   ExtensionTestMessageListener listener3("Pong from version 2");
   listener3.set_failure_message("FAILURE");
   web_contents = browsertest_util::AddTab(
-      browser(), extension_after_update->GetResourceURL("page.html"));
+      browser(), extension_after_update->ResolveExtensionURL("page.html"));
   EXPECT_TRUE(listener3.WaitUntilSatisfied());
 }
 
@@ -1129,18 +1129,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, FetchArbitraryPaths) {
 
   // Open some arbitrary paths. Their contents should be what the service worker
   // responds with, which in this case is the path of the fetch.
-  EXPECT_EQ(
-      "Caught a fetch for /index.html",
-      NavigateAndExtractInnerText(extension->GetResourceURL("index.html")));
+  EXPECT_EQ("Caught a fetch for /index.html",
+            NavigateAndExtractInnerText(
+                extension->ResolveExtensionURL("index.html")));
   EXPECT_EQ("Caught a fetch for /path/to/other.html",
             NavigateAndExtractInnerText(
-                extension->GetResourceURL("path/to/other.html")));
+                extension->ResolveExtensionURL("path/to/other.html")));
   EXPECT_EQ("Caught a fetch for /some/text/file.txt",
             NavigateAndExtractInnerText(
-                extension->GetResourceURL("some/text/file.txt")));
+                extension->ResolveExtensionURL("some/text/file.txt")));
   EXPECT_EQ("Caught a fetch for /no/file/extension",
             NavigateAndExtractInnerText(
-                extension->GetResourceURL("no/file/extension")));
+                extension->ResolveExtensionURL("no/file/extension")));
   EXPECT_EQ("Caught a fetch for /",
             NavigateAndExtractInnerText(extension->url()));
 }
@@ -1223,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, SWServedBackgroundPageReceivesEvent) {
   ExtensionTestMessageListener listener("onMessage/SW BG.");
   listener.set_failure_message("onMessage/original BG.");
   content::WebContents* web_contents = browsertest_util::AddTab(
-      browser(), extension->GetResourceURL("page.html"));
+      browser(), extension->ResolveExtensionURL("page.html"));
   ASSERT_TRUE(web_contents);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 }
@@ -1310,7 +1310,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
     extension_url = extension->url();
   }
   auto get_resource_url = [&extension_url](const std::string& path) {
-    return Extension::GetResourceURL(extension_url, path);
+    return Extension::ResolveExtensionURL(extension_url, path);
   };
 
   // Fetch should route to the service worker.
@@ -1833,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, VerifyNoApiBindings) {
       test_data_dir_.AppendASCII("service_worker/verify_no_api_bindings"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1857,7 +1857,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBackgroundSyncTest, Sync) {
       LoadExtension(test_data_dir_.AppendASCII("service_worker/sync"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1901,7 +1901,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
 
   GrantNotificationPermissionForTest(extension_url);
 
-  GURL url = extension->GetResourceURL("page.html");
+  GURL url = extension->ResolveExtensionURL("page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -1965,7 +1965,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Navigate to a URL, which should wake up the service worker.
   ExtensionTestMessageListener finished_listener("finished");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
   EXPECT_TRUE(finished_listener.WaitUntilSatisfied());
 }
 
@@ -2483,7 +2483,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
   ASSERT_TRUE(worker_start_listener.WaitUntilSatisfied());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -2926,7 +2926,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
   ExtensionTestMessageListener csp_modified_listener(kDefaultCSP);
   csp_modified_listener.set_extension_id(extension_id);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("extension_page.html")));
+      browser(), extension->ResolveExtensionURL("extension_page.html")));
   EXPECT_TRUE(csp_modified_listener.WaitUntilSatisfied());
 
   // Ensure the inline script is not executed because we ensure that the

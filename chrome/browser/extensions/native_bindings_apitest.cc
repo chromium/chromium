@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ResultCatcher extension_resource_catcher;
   ASSERT_TRUE(content::NavigateToURL(
       GetActiveWebContents(),
-      GURL(extension->GetResourceURL("extension_resource_page.html"))));
+      GURL(extension->ResolveExtensionURL("extension_resource_page.html"))));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_P(DeveloperModeNativeBindingsApiTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  const GURL extension_url = extension->GetResourceURL("page.html");
+  const GURL extension_url = extension->ResolveExtensionURL("page.html");
 
   // Navigate to the extension page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_P(DeveloperModeNativeBindingsApiTest,
       LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
 
-  const GURL extension_url = extension->GetResourceURL("page.html");
+  const GURL extension_url = extension->ResolveExtensionURL("page.html");
 
   Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_url);
   content::WebContents* incognito_tab =

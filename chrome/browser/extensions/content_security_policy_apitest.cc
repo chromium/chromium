@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
   console_observer.SetPattern("Refused to load the script '*");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   EXPECT_EQ(2u, console_observer.messages().size());

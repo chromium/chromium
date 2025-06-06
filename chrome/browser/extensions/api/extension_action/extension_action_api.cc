@@ -265,7 +265,7 @@ ExtensionActionSetPopupFunction::RunExtensionAction() {
   // back to an empty string (URL) will cause it to fall back to the default set
   // in the manifest.
   if (!popup_string->empty()) {
-    popup_url = extension()->GetResourceURL(*popup_string);
+    popup_url = extension()->ResolveExtensionURL(*popup_string);
     if (!popup_url.is_valid()) {
       return RespondNow(Error(manifest_errors::kInvalidExtensionPopupPath));
     }

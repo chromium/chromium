@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   scoped_refptr<const Extension> extension = LoadOffscreenDocumentExtension();
   ASSERT_TRUE(extension);
 
-  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  const GURL offscreen_url = extension->ResolveExtensionURL("offscreen.html");
   std::unique_ptr<OffscreenDocumentHost> offscreen_document =
       CreateOffscreenDocument(*extension, offscreen_url);
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   scoped_refptr<const Extension> extension = LoadOffscreenDocumentExtension();
   ASSERT_TRUE(extension);
 
-  const GURL offscreen_url = extension->GetResourceURL("offscreen.html");
+  const GURL offscreen_url = extension->ResolveExtensionURL("offscreen.html");
   std::unique_ptr<OffscreenDocumentHost> offscreen_document =
       CreateOffscreenDocument(*extension, offscreen_url);
 

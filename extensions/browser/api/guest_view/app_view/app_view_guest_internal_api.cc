@@ -22,7 +22,7 @@ AppViewGuestInternalAttachFrameFunction::Run() {
       appview::AttachFrame::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  GURL url = extension()->GetResourceURL(params->url);
+  GURL url = extension()->ResolveExtensionURL(params->url);
   EXTENSION_FUNCTION_VALIDATE(url.is_valid());
 
   if (AppViewGuest::CompletePendingRequest(

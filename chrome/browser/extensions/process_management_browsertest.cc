@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   ASSERT_TRUE(extension);
 
   // Navigate a tab to an extension page.
-  GURL extension_url = extension->GetResourceURL("popup.html");
+  GURL extension_url = extension->ResolveExtensionURL("popup.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  GURL blocked_url(extension->GetResourceURL("blocked.html"));
+  GURL blocked_url(extension->ResolveExtensionURL("blocked.html"));
 
   // Navigating to the blocked extension URL should be done through a redirect,
   // otherwise it will result in an OpenURL IPC from the renderer process, which
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   // Navigate the current tab to the test page in the extension, which will
   // create the extension process and register the webRequest blocking listener.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("test.html")));
+      browser(), extension->ResolveExtensionURL("test.html")));
 
   // Open a new tab to about:blank, which will result in a new SiteInstance
   // without an explicit site URL set.

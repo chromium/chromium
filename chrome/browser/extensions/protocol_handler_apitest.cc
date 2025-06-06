@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
       test_data_dir_.AppendASCII("protocol_handler");
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
-  GURL url = extension->GetResourceURL("test_registration.html");
+  GURL url = extension->ResolveExtensionURL("test_registration.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Bypass permission dialogs for registering new protocol handlers.

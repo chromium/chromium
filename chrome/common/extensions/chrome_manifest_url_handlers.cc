@@ -65,7 +65,7 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
     *error = errors::kInvalidDevToolsPage;
     return false;
   }
-  GURL url = extension->GetResourceURL(*devtools_str);
+  GURL url = extension->ResolveExtensionURL(*devtools_str);
   // SharedModuleInfo::IsImportedPath() does not require knowledge of data from
   // extension, so we can call it right here in Parse() and not Validate() and
   // do not need to specify DevToolsPageHandler::PrerequisiteKeys()
@@ -136,7 +136,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 
     // Replace the entry with a fully qualified chrome-extension:// URL.
     url_overrides->chrome_url_overrides_[property.first] =
-        extension->GetResourceURL(*property.second.get());
+        extension->ResolveExtensionURL(*property.second.get());
 
     // For component extensions, add override URL to extent patterns.
     if (extension->is_legacy_packaged_app() &&

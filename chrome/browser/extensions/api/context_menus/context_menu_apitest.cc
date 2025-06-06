@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("popup.html")));
+        browser(), extension->ResolveExtensionURL("popup.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("popup2.html")));
+        browser(), extension->ResolveExtensionURL("popup2.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 }

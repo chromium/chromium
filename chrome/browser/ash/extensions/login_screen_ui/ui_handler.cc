@@ -120,7 +120,7 @@ bool UiHandler::Show(const extensions::Extension* extension,
     return false;
   }
 
-  const GURL resource_url = extension->GetResourceURL(resource_path);
+  const GURL resource_url = extension->ResolveExtensionURL(resource_path);
   if (!resource_url.is_valid()) {
     *error = kErrorInvalidURL;
     return false;

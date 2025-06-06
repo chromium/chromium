@@ -174,14 +174,15 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   } test_cases[] = {
       {
           "Static",
-          extension->GetResourceURL("static.html"),
-          extension->GetResourceURL("static.html"),
+          extension->ResolveExtensionURL("static.html"),
+          extension->ResolveExtensionURL("static.html"),
           "static resource",
       },
       {
           "Dynamic",
-          Extension::GetResourceURL(extension->dynamic_url(), "dynamic.html"),
-          extension->GetResourceURL("dynamic.html"),
+          Extension::ResolveExtensionURL(extension->dynamic_url(),
+                                         "dynamic.html"),
+          extension->ResolveExtensionURL("dynamic.html"),
           "dynamic resource",
       },
   };
@@ -220,14 +221,14 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  const GURL dynamic_accessible_url =
-      Extension::GetResourceURL(extension->dynamic_url(), "accessible.html");
+  const GURL dynamic_accessible_url = Extension::ResolveExtensionURL(
+      extension->dynamic_url(), "accessible.html");
   const GURL static_accessible_url =
-      extension->GetResourceURL("accessible.html");
-  const GURL dynamic_inaccessible_url =
-      Extension::GetResourceURL(extension->dynamic_url(), "inaccessible.html");
+      extension->ResolveExtensionURL("accessible.html");
+  const GURL dynamic_inaccessible_url = Extension::ResolveExtensionURL(
+      extension->dynamic_url(), "inaccessible.html");
   const GURL static_inaccessible_url =
-      extension->GetResourceURL("inaccessible.html");
+      extension->ResolveExtensionURL("inaccessible.html");
 
   const GURL trusted_site =
       embedded_test_server()->GetURL("trusted.example", "/simple.html");
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
       run().then(response => true);
     )";
-    GURL resource_url = extension->GetResourceURL(test_case.filename);
+    GURL resource_url = extension->ResolveExtensionURL(test_case.filename);
     std::string script =
         base::StringPrintf(kScriptTemplate,
                            embedded_test_server()
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 
     run().then(response => true);
   )";
-  GURL resource_url = extension->GetResourceURL(filename);
+  GURL resource_url = extension->ResolveExtensionURL(filename);
   std::string script =
       base::StringPrintf(kScriptTemplate,
                          embedded_test_server()
@@ -457,9 +458,9 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
   const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  std::string url =
-      base::StringPrintf("/server-redirect?%s",
-                         extension->GetResourceURL("accessible.html").spec());
+  std::string url = base::StringPrintf(
+      "/server-redirect?%s",
+      extension->ResolveExtensionURL("accessible.html").spec());
   GURL gurl(embedded_test_server()->GetURL("an.example.org", url));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -639,12 +640,12 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
           "example.com",
           base::StringPrintf(
               "/server-redirect?%s",
-              extension->GetResourceURL(resource).spec().c_str()));
+              extension->ResolveExtensionURL(resource).spec().c_str()));
       auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
       content::TestNavigationObserver observer(web_contents);
       EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
       observer.WaitForNavigationFinished();
-      EXPECT_EQ(extension->GetResourceURL(resource),
+      EXPECT_EQ(extension->ResolveExtensionURL(resource),
                 observer.last_navigation_url());
       EXPECT_EQ(expect_net_error == net::OK,
                 observer.last_navigation_succeeded());
@@ -789,7 +790,7 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
       EXPECT_EQ(expect_net_error == net::OK,
                 observer.last_navigation_succeeded());
       EXPECT_EQ(expect_net_error, observer.last_net_error_code());
-      EXPECT_EQ(extension->GetResourceURL(resource),
+      EXPECT_EQ(extension->ResolveExtensionURL(resource),
                 observer.last_navigation_url());
     };
 
@@ -902,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, DynamicUrl) {
   // Resource and extension origin should match.
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("ok.html")));
+        browser(), extension->ResolveExtensionURL("ok.html")));
     ASSERT_EQ(extension->origin(),
               GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }

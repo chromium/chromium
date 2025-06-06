@@ -37,7 +37,7 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
   }
 
   // Return the dynamic url.
-  return Extension::GetResourceURL(extension->dynamic_url(), url.path());
+  return Extension::ResolveExtensionURL(extension->dynamic_url(), url.path());
 }
 
 }  // namespace extensions

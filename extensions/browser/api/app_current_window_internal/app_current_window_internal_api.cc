@@ -319,7 +319,7 @@ AppCurrentWindowInternalSetIconFunction::Run() {
   // XMLHttpRequest) or a resource url.
   GURL url(params->icon_url);
   if (!url.is_valid()) {
-    url = extension()->GetResourceURL(params->icon_url);
+    url = extension()->ResolveExtensionURL(params->icon_url);
     if (!url.is_valid()) {
       return RespondNow(Error(kInvalidIconURL));
     }

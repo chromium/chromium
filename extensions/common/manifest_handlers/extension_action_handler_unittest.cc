@@ -235,7 +235,7 @@ TEST_P(ExtensionActionManifestTest, Basic) {
   const ActionInfo* action_info = GetActionInfoOfType(*extension, GetParam());
   ASSERT_TRUE(action_info);
 
-  EXPECT_EQ(extension->GetResourceURL("popup.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("popup.html"),
             action_info->default_popup_url);
   EXPECT_EQ("Title", action_info->default_title);
   // Make a copy of the map since [] is more readable than find() for comparing
@@ -350,7 +350,7 @@ TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
   const ActionInfo* action_info =
       GetActionInfoOfType(*test_extension, GetParam());
   ASSERT_TRUE(action_info);
-  EXPECT_EQ(test_extension->GetResourceURL("popup.html"),
+  EXPECT_EQ(test_extension->ResolveExtensionURL("popup.html"),
             action_info->default_popup_url);
 }
 
@@ -418,7 +418,7 @@ TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
   const ActionInfo* action_info =
       GetActionInfoOfType(*test_extension, GetParam());
   ASSERT_TRUE(action_info);
-  EXPECT_EQ(test_extension->GetResourceURL("nonexistent_popup.html"),
+  EXPECT_EQ(test_extension->ResolveExtensionURL("nonexistent_popup.html"),
             action_info->default_popup_url);
 }
 

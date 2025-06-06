@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   extensions::ExtensionRegistrar::Get(browser()->profile())
       ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
-  const GURL url = extension->GetResourceURL(kPageFile);
+  const GURL url = extension->ResolveExtensionURL(kPageFile);
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(

@@ -82,7 +82,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
                   *extension,
                   ExtensionTabUtil::GetTabId(tab_interface_->GetContents()));
     if (IsSidePanelEnabled(options)) {
-      side_panel_url_ = extension->GetResourceURL(*options.path);
+      side_panel_url_ = extension->ResolveExtensionURL(*options.path);
       CreateAndRegisterEntry();
     }
   }
@@ -144,7 +144,7 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
   // Update the URL if the path was specified.
   GURL previous_url = side_panel_url_;
   if (updated_options.path.has_value()) {
-    side_panel_url_ = extension_->GetResourceURL(*updated_options.path);
+    side_panel_url_ = extension_->ResolveExtensionURL(*updated_options.path);
   }
 
   // Deregister the SidePanelEntry if `enabled` is false.

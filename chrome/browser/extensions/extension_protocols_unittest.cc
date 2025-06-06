@@ -314,7 +314,7 @@ class ExtensionProtocolsTestBase : public testing::Test,
                    /*incognito_enabled=*/false,
                    /*notifications_disabled=*/false);
     }
-    return RequestOrLoad(extension->GetResourceURL(relative_path),
+    return RequestOrLoad(extension->ResolveExtensionURL(relative_path),
                          network::mojom::RequestDestination::kDocument);
   }
 
@@ -432,7 +432,7 @@ TEST_P(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
     // is blocked, we should see BLOCKED_BY_CLIENT. Otherwise, the request
     // should just fail because the file doesn't exist.
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("404.html"),
+        RequestOrLoad(extension->ResolveExtensionURL("404.html"),
                       network::mojom::RequestDestination::kDocument);
 
     if (test_case.should_allow_main_frame_load) {
@@ -458,7 +458,7 @@ TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
   // First test it with the extension enabled.
   {
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
+        RequestOrLoad(extension->ResolveExtensionURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::OK, get_result.result());
     EXPECT_TRUE(get_result.HasContentLengthHeader());
@@ -473,7 +473,7 @@ TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
   RemoveExtension(extension, UnloadedExtensionReason::DISABLE);
   {
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
+        RequestOrLoad(extension->ResolveExtensionURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::OK, get_result.result());
     EXPECT_TRUE(get_result.HasContentLengthHeader());
@@ -490,7 +490,7 @@ TEST_P(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
   AddExtension(extension, false, false);
 
   {
-    auto get_result = RequestOrLoad(extension->GetResourceURL("test.dat"),
+    auto get_result = RequestOrLoad(extension->ResolveExtensionURL("test.dat"),
                                     network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::OK, get_result.result());
 
@@ -537,7 +537,7 @@ TEST_P(ExtensionProtocolsTest, BackgroundScriptRequestResponseHeaders) {
 
   {
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("background.js"),
+        RequestOrLoad(extension->ResolveExtensionURL("background.js"),
                       network::mojom::RequestDestination::kServiceWorker);
     EXPECT_EQ(net::OK, get_result.result());
 
@@ -594,7 +594,7 @@ TEST_P(ExtensionProtocolsMV3Test, BackgroundScriptRequestResponseHeaders) {
 
   {
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("background.js"),
+        RequestOrLoad(extension->ResolveExtensionURL("background.js"),
                       network::mojom::RequestDestination::kServiceWorker);
     EXPECT_EQ(net::OK, get_result.result());
 
@@ -618,7 +618,7 @@ TEST_P(ExtensionProtocolsTest, BackgroundPageRequestResponseHeaders) {
 
   {
     auto get_result = RequestOrLoad(
-        extension->GetResourceURL(kGeneratedBackgroundPageFilename),
+        extension->ResolveExtensionURL(kGeneratedBackgroundPageFilename),
         network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
 
@@ -669,14 +669,14 @@ TEST_P(ExtensionProtocolsTest, ModuleRequestResponseHeaders) {
   // Not imported id will fail.
   {
     auto get_result =
-        RequestOrLoad(importer_extension->GetResourceURL(
+        RequestOrLoad(importer_extension->ResolveExtensionURL(
                           "_modules/modaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
   {
     auto get_result =
-        RequestOrLoad(importer_extension->GetResourceURL(
+        RequestOrLoad(importer_extension->ResolveExtensionURL(
                           "_modules/modaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/test.dat"),
                       network::mojom::RequestDestination::kServiceWorker);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
@@ -686,7 +686,7 @@ TEST_P(ExtensionProtocolsTest, ModuleRequestResponseHeaders) {
   // importer).
   {
     auto get_result =
-        RequestOrLoad(importer_extension->GetResourceURL(
+        RequestOrLoad(importer_extension->ResolveExtensionURL(
                           "_modules/" + module_extension->id() + "/test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
@@ -739,7 +739,7 @@ TEST_P(ExtensionProtocolsMV3Test, ModuleRequestResponseHeaders) {
   // importer).
   {
     auto get_result =
-        RequestOrLoad(importer_extension->GetResourceURL(
+        RequestOrLoad(importer_extension->ResolveExtensionURL(
                           "_modules/" + module_extension->id() + "/test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
@@ -767,8 +767,8 @@ TEST_P(ExtensionProtocolsTest, InvalidBackgroundScriptRequest) {
       network::mojom::RequestDestination::kVideo,
   };
   for (network::mojom::RequestDestination destination : destinations) {
-    auto get_result =
-        RequestOrLoad(extension->GetResourceURL("background.js"), destination);
+    auto get_result = RequestOrLoad(
+        extension->ResolveExtensionURL("background.js"), destination);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result()) << destination;
   }
 }
@@ -785,7 +785,7 @@ TEST_P(ExtensionProtocolsTest, AllowFrameRequests) {
   // should not succeed.
   {
     auto get_result =
-        RequestOrLoad(extension->GetResourceURL("test.dat"),
+        RequestOrLoad(extension->ResolveExtensionURL("test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
   }
@@ -796,7 +796,7 @@ TEST_P(ExtensionProtocolsTest, AllowFrameRequests) {
 
   // And subresource types, such as media, should fail.
   {
-    auto get_result = RequestOrLoad(extension->GetResourceURL("test.dat"),
+    auto get_result = RequestOrLoad(extension->ResolveExtensionURL("test.dat"),
                                     network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
@@ -838,8 +838,9 @@ TEST_P(ExtensionProtocolsTest, PathsWithTrailingDotSpaceAreNotAllowed) {
 
   // Loading "/file.html." and "/file.html " should fail.
   for (const std::string suffix : {".", "%20"}) {
-    // Add the suffix manually, as `GetResourceURL` strips trailing spaces.
-    GURL url = GURL(extension->GetResourceURL("file.html").spec() + suffix);
+    // Add the suffix manually, as `ResolveExtensionURL` strips trailing spaces.
+    GURL url =
+        GURL(extension->ResolveExtensionURL("file.html").spec() + suffix);
     EXPECT_EQ(net::ERR_FILE_NOT_FOUND,
               RequestOrLoad(url, network::mojom::RequestDestination::kDocument)
                   .result());
@@ -1090,7 +1091,7 @@ TEST_P(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
     SCOPED_TRACE(test_case.file_name);
     EXPECT_EQ(
         test_case.expected_mime_type,
-        RequestOrLoad(extension->GetResourceURL(test_case.file_name),
+        RequestOrLoad(extension->ResolveExtensionURL(test_case.file_name),
                       network::mojom::RequestDestination::kEmpty)
             .GetResponseHeaderByName(net::HttpRequestHeaders::kContentType));
   }
@@ -1126,9 +1127,9 @@ TEST_P(ExtensionProtocolsTest, MimeTypeSniffingNotPerformed) {
       CreateTestResponseHeaderExtension(GetParam());
   AddExtension(extension, false, false);
 
-  auto get_result =
-      RequestOrLoad(extension->GetResourceURL("mime_type_sniffer_test.gif1"),
-                    network::mojom::RequestDestination::kDocument);
+  auto get_result = RequestOrLoad(
+      extension->ResolveExtensionURL("mime_type_sniffer_test.gif1"),
+      network::mojom::RequestDestination::kDocument);
   EXPECT_EQ(net::OK, get_result.result());
 
   // With mime sniffing, the content type would be image/gif.

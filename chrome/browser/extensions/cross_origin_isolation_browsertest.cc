@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   ASSERT_TRUE(coi_background_render_frame_host);
   EXPECT_TRUE(IsCrossOriginIsolated(coi_background_render_frame_host));
 
-  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  GURL extension_test_url = coi_extension->ResolveExtensionURL("test.html");
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), extension_test_url));
   content::WebContents* web_contents = GetActiveWebContents();
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   ASSERT_TRUE(coi_extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  GURL extension_test_url = coi_extension->ResolveExtensionURL("test.html");
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), extension_test_url));
   content::RenderFrameHost* extension_tab =
@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
       GetBackgroundRenderFrameHost(*coi_extension);
   ASSERT_TRUE(coi_background_render_frame_host);
 
-  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  GURL extension_test_url = coi_extension->ResolveExtensionURL("test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
   content::WebContents* web_contents =
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  GURL extension_test_url = coi_extension->ResolveExtensionURL("test.html");
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
   content::RenderFrameHost* extension_iframe =
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(coi_extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  GURL extension_test_url = coi_extension->ResolveExtensionURL("test.html");
   content::RenderFrameHost* extension_tab =
       ui_test_utils::NavigateToURL(browser(), extension_test_url);
   ASSERT_TRUE(extension_tab);
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
 
     // Navigate the iframe with a renderer initiated navigation to a web
     // accessible resource. This should succeed.
-    GURL target = extension->GetResourceURL("accessible_resource.html");
+    GURL target = extension->ResolveExtensionURL("accessible_resource.html");
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
     nav_observer.Wait();
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
 
     // Navigate the iframe with a renderer initiated navigation to an extension
     // resource that isn't a web accessible resource. This should be blocked.
-    GURL target = extension->GetResourceURL("inaccessible_resource.html");
+    GURL target = extension->ResolveExtensionURL("inaccessible_resource.html");
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
     nav_observer.Wait();

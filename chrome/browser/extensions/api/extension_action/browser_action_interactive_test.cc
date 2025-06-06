@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
 
   // Navigate to one of the extension's pages in a tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("popup.html")));
+      browser(), extension->ResolveExtensionURL("popup.html")));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   }
 
   ASSERT_TRUE(frame_host);
-  EXPECT_EQ(extension->GetResourceURL("frame.html"),
+  EXPECT_EQ(extension->ResolveExtensionURL("frame.html"),
             frame_host->GetLastCommittedURL());
   EXPECT_TRUE(frame_host->GetParent());
 
@@ -1007,7 +1007,7 @@ class NavigatingExtensionPopupInteractiveTest
     // Verify popup is visible.
     ASSERT_TRUE(action_controller->GetPopupNativeView());
 
-    GURL popup_url = popup_extension().GetResourceURL("popup.html");
+    GURL popup_url = popup_extension().ResolveExtensionURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
 
     // Note that the |setTimeout| call below is needed to make sure EvalJs
@@ -1090,14 +1090,14 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest, Webpage_Post) {
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        PageInSameExtension_Get) {
   GURL other_page_in_same_extension =
-      popup_extension().GetResourceURL("other_page.html");
+      popup_extension().ResolveExtensionURL("other_page.html");
   TestPopupNavigationViaGet(other_page_in_same_extension,
                             EXPECTING_NAVIGATION_SUCCESS);
 }
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        PageInSameExtension_Post) {
   GURL other_page_in_same_extension =
-      popup_extension().GetResourceURL("other_page.html");
+      popup_extension().ResolveExtensionURL("other_page.html");
   TestPopupNavigationViaPost(other_page_in_same_extension,
                              EXPECTING_NAVIGATION_SUCCESS);
 }
@@ -1106,13 +1106,15 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
 // in another extension.
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        PageInOtherExtension_Get) {
-  GURL other_extension_url = other_extension().GetResourceURL("other.html");
+  GURL other_extension_url =
+      other_extension().ResolveExtensionURL("other.html");
   TestPopupNavigationViaGet(other_extension_url, EXPECTING_NAVIGATION_FAILURE);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
                        PageInOtherExtension_Post) {
-  GURL other_extension_url = other_extension().GetResourceURL("other.html");
+  GURL other_extension_url =
+      other_extension().ResolveExtensionURL("other.html");
   TestPopupNavigationViaPost(other_extension_url, EXPECTING_NAVIGATION_FAILURE);
 }
 

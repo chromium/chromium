@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to the extension page that registers the events.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+      browser(), extension->ResolveExtensionURL("page.html")));
 
   content::WebContents* extension_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

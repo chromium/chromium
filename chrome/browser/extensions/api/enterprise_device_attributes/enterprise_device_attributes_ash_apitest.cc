@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
 
   const Extension* extension =
       ForceInstallExtension(kExtensionPath, kExtensionPemPath);
-  const GURL test_url = extension->GetResourceURL("basic.html");
+  const GURL test_url = extension->ResolveExtensionURL("basic.html");
 
   // Device attributes are available only for affiliated user.
   std::string expected_directory_device_id = is_affiliated ? kDeviceId : "";

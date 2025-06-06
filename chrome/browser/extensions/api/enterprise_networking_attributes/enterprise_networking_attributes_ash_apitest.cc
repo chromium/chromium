@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
   const Extension* extension =
       ForceInstallExtension(kExtensionPath, kExtensionPemPath);
   SetupDisconnectedNetwork();
-  const GURL test_url = extension->GetResourceURL("test.html");
+  const GURL test_url = extension->ResolveExtensionURL("test.html");
 
   // Run test without connected network.
   base::Value::Dict custom_arg_disconnected =

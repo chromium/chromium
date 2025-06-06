@@ -3045,7 +3045,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadPdfFromExtension) {
       GetTestResourcesParentDir().AppendASCII("pdf/extension_with_pdf"));
   ASSERT_TRUE(test_extension);
 
-  EXPECT_TRUE(LoadPdf(test_extension->GetResourceURL("test.pdf")));
+  EXPECT_TRUE(LoadPdf(test_extension->ResolveExtensionURL("test.pdf")));
 }
 
 // Tests that the PDF extension loads in the presence of an extension that, on

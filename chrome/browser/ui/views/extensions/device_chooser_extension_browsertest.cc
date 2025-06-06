@@ -60,7 +60,7 @@ class DeviceChooserExtensionBrowserTest
     ASSERT_TRUE(extensions_container()->GetViewForId(extension_->id()));
 
     // Navigate to the extension page.
-    auto url = extension_->GetResourceURL("page.html");
+    auto url = extension_->ResolveExtensionURL("page.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_EQ(url, web_contents()->GetLastCommittedURL());
   }

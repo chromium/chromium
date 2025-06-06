@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
       ACTION_NAVIGATE, &extension);
 
   std::string script_url =
-      extension->GetResourceURL("content_script.js").spec();
+      extension->ResolveExtensionURL("content_script.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
       2u, ACTION_BROWSER_ACTION, &extension);
 
   std::string script_url =
-      extension->GetResourceURL("browser_action.js").spec();
+      extension->ResolveExtensionURL("browser_action.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not incognito
                     message, logging::LOGGING_ERROR,
-                    extension->GetResourceURL(kBackgroundPageName), 1u);
+                    extension->ResolveExtensionURL(kBackgroundPageName), 1u);
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   // Note: This test used to have a stack trace of length 6 that contains stack
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
   CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
 
-  std::string source = extension->GetResourceURL("background.js").spec();
+  std::string source = extension->ResolveExtensionURL("background.js").spec();
   std::string message =
       "Uncaught TypeError: Error in invocation of alarms.getAll"
       "(function callback): No matching signature.";
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   CheckRuntimeError(errors[1].get(), extension->id(), source,
                     false,  // not incognito
                     message, logging::LOGGING_ERROR,
-                    extension->GetResourceURL(kBackgroundPageName), 1u);
+                    extension->ResolveExtensionURL(kBackgroundPageName), 1u);
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
@@ -507,7 +507,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
       // which results in a TypeError.
       2, ACTION_NONE, &extension);
 
-  std::string script_url = extension->GetResourceURL("background.js").spec();
+  std::string script_url =
+      extension->ResolveExtensionURL("background.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
@@ -519,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
                     "Uncaught TypeError: Cannot read properties of undefined "
                     "(reading 'addUrl')",
                     logging::LOGGING_ERROR,
-                    extension->GetResourceURL(kBackgroundPageName), 1u);
+                    extension->ResolveExtensionURL(kBackgroundPageName), 1u);
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
@@ -559,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, DISABLED_CatchesLastError) {
   // be expanded; blink::SourceLocation knows how to capture an inspector
   // stack trace.
   std::string source =
-      extension->GetResourceURL(kGeneratedBackgroundPageFilename).spec();
+      extension->ResolveExtensionURL(kGeneratedBackgroundPageFilename).spec();
   // Line number '0' comes from errors that are logged to the render frame
   // directly (e.g. background_age.html (0)).
   size_t line_number = 0;
@@ -571,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, DISABLED_CatchesLastError) {
   CheckRuntimeError(errors[0].get(), extension->id(), source,
                     false,  // not incognito
                     message, logging::LOGGING_ERROR,
-                    extension->GetResourceURL(kBackgroundPageName), 1u);
+                    extension->ResolveExtensionURL(kBackgroundPageName), 1u);
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
   ASSERT_EQ(1u, stack_trace.size());

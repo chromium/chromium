@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, TestUnload) {
   GURL initial_tab_url =
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL();
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->GetResourceURL("page.html"),
+      browser(), extension->ResolveExtensionURL("page.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   scoped_refptr<const Extension> extension(
       LoadExtension(test_dir.UnpackedPath()));
   ASSERT_TRUE(extension);
-  const GURL page_url = extension->GetResourceURL("page.html");
+  const GURL page_url = extension->ResolveExtensionURL("page.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);

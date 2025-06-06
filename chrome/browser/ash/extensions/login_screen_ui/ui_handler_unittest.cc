@@ -162,7 +162,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
     EXPECT_TRUE(fake_window_factory_->create_was_called());
     EXPECT_EQ(extension->short_name(),
               fake_window_factory_->last_extension_name());
-    EXPECT_EQ(extension->GetResourceURL(resource_path),
+    EXPECT_EQ(extension->ResolveExtensionURL(resource_path),
               fake_window_factory_->last_content_url());
     EXPECT_EQ(can_be_closed_by_user,
               fake_window_factory_->last_can_be_closed_by_user());

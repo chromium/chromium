@@ -59,7 +59,7 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
     // Get nacl_modules[i].path.
     const std::string* path = dict->FindString(keys::kNaClModulesPath);
-    GURL url = path ? extension->GetResourceURL(*path) : GURL();
+    GURL url = path ? extension->ResolveExtensionURL(*path) : GURL();
     if (!url.is_valid()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidNaClModulesPath, base::NumberToString(i));

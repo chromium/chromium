@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithoutAutomationController,
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   auto* tab = chrome::AddSelectedTabWithURL(
-      browser(), extension->GetResourceURL("page.html"),
+      browser(), extension->ResolveExtensionURL("page.html"),
       ui::PAGE_TRANSITION_LINK);
   content::TestNavigationObserver observer(tab);
   observer.Wait();

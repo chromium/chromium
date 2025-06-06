@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // the options page, and we don't want to arbitrarily close extension content.
   // Regression test for crbug.com/587581.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), options_in_tab->GetResourceURL("other.html")));
+      browser(), options_in_tab->ResolveExtensionURL("other.html")));
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
   EXPECT_EQ(3, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(

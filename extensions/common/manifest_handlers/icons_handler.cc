@@ -66,7 +66,7 @@ GURL IconsInfo::GetIconURL(const Extension* extension,
                            ExtensionIconVariant::ColorScheme color_scheme) {
   const std::string& path =
       GetIcons(*extension, color_scheme).Get(size_in_px, match_type);
-  return path.empty() ? GURL() : extension->GetResourceURL(path);
+  return path.empty() ? GURL() : extension->ResolveExtensionURL(path);
 }
 
 bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
