@@ -10,6 +10,8 @@ import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 declare_args() {
+  # Note that even when set to false, there still exists minimal trace events
+  # for sync calls. See https://crrev.com/952184
   enable_mojo_tracing = extended_tracing_enabled
 
   # enable_random_mojo_delays starts a task runner that periodically pauses
