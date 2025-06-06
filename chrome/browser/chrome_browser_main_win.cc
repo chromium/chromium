@@ -331,7 +331,7 @@ bool TryGetModuleTimeDateStamp(void* module_load_address,
 }
 
 void ShowCloseBrowserFirstMessageBox() {
-  chrome::ShowWarningMessageBox(
+  chrome::ShowWarningMessageBoxAsync(
       nullptr, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       l10n_util::GetStringUTF16(IDS_UNINSTALL_CLOSE_APP));
 }

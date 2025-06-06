@@ -244,7 +244,7 @@ std::string ChromeFeedbackPrivateDelegate::GetSignedInUserEmail(
 void ChromeFeedbackPrivateDelegate::NotifyFeedbackDelayed() const {
   // Show a message box to indicate that sending the feedback has been delayed
   // because the user is offline.
-  chrome::ShowWarningMessageBox(
+  chrome::ShowWarningMessageBoxAsync(
       gfx::NativeWindow(),
       l10n_util::GetStringUTF16(IDS_FEEDBACK_OFFLINE_DIALOG_TITLE),
       l10n_util::GetStringUTF16(IDS_FEEDBACK_OFFLINE_DIALOG_TEXT));

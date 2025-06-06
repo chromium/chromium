@@ -116,8 +116,8 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
       NOTREACHED();
   }
 
-  chrome::ShowWarningMessageBox(nullptr, std::move(title),
-                                l10n_util::GetStringUTF16(message_id));
+  chrome::ShowWarningMessageBoxAsync(nullptr, std::move(title),
+                                     l10n_util::GetStringUTF16(message_id));
 }
 
 }  // namespace

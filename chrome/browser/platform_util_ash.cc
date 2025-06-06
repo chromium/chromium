@@ -57,10 +57,9 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
   }
 
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
-  chrome::ShowWarningMessageBox(
+  chrome::ShowWarningMessageBoxAsync(
       browser ? browser->window()->GetNativeWindow() : nullptr,
-      path.BaseName().AsUTF16Unsafe(),
-      l10n_util::GetStringUTF16(message_id));
+      path.BaseName().AsUTF16Unsafe(), l10n_util::GetStringUTF16(message_id));
 }
 
 }  // namespace

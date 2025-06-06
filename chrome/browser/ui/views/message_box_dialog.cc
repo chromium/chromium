@@ -341,12 +341,26 @@ const views::Widget* MessageBoxDialog::GetWidget() const {
 
 namespace chrome {
 
-MessageBoxResult ShowWarningMessageBox(gfx::NativeWindow parent,
-                                       const std::u16string& title,
-                                       const std::u16string& message) {
-  return MessageBoxDialog::Show(
+void ShowWarningMessageBoxAsync(
+    gfx::NativeWindow parent,
+    const std::u16string& title,
+    const std::u16string& message,
+    base::OnceCallback<void(MessageBoxResult)> callback) {
+  MessageBoxDialog::Show(
       parent, title, message, chrome::MESSAGE_BOX_TYPE_WARNING,
-      std::u16string(), std::u16string(), std::u16string());
+      /*yes_text=*/std::u16string(),
+      /*no_text=*/std::u16string(),
+      /*checkbox_text=*/std::u16string(), std::move(callback));
+}
+
+MessageBoxResult ShowWarningMessageBoxSync(gfx::NativeWindow parent,
+                                           const std::u16string& title,
+                                           const std::u16string& message) {
+  return MessageBoxDialog::Show(parent, title, message,
+                                chrome::MESSAGE_BOX_TYPE_WARNING,
+                                /*yes_text=*/std::u16string(),
+                                /*no_text=*/std::u16string(),
+                                /*checkbox_text=*/std::u16string());
 }
 
 void ShowWarningMessageBoxWithCheckbox(

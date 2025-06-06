@@ -72,7 +72,7 @@ void LoadErrorReporter::ReportError(const std::u16string& message,
   LOG(WARNING) << "Extension error: " << message;
 
   if (enable_noisy_errors_ && be_noisy) {
-    chrome::ShowWarningMessageBox(
+    chrome::ShowWarningMessageBoxAsync(
         gfx::NativeWindow(),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING),
         message);

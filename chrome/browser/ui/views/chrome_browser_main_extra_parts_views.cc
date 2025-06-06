@@ -170,7 +170,7 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   std::u16string message = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT_2, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
-  chrome::ShowWarningMessageBox(nullptr, title, message);
+  chrome::ShowWarningMessageBoxAsync(nullptr, title, message);
 
   // Avoids gpu_process_transport_factory.cc(153)] Check failed:
   // per_compositor_data_.empty() when quit is chosen.

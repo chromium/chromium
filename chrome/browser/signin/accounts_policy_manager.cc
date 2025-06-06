@@ -141,7 +141,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
 
     // Show the dialog.
     DCHECK(active_browser_->window()->GetNativeWindow());
-    chrome::MessageBoxResult result = chrome::ShowWarningMessageBox(
+    chrome::MessageBoxResult result = chrome::ShowWarningMessageBoxSync(
         active_browser_->window()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
