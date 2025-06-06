@@ -1733,9 +1733,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   if (@available(iOS 17, *)) {
     XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
     BOOL hostStringPresent = [currentApplication.otherElements[hostString]
-        waitForExistenceWithTimeout:2];
+        waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
     BOOL pageTitlePresent = [currentApplication.otherElements[pageTitle]
-        waitForExistenceWithTimeout:2];
+        waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
     GREYAssert(hostStringPresent || pageTitlePresent,
                @"Either hostString %d or pageTitle %d was not present",
                hostStringPresent, pageTitlePresent);
