@@ -65,15 +65,6 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/actor_coordinator.h"
-#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
-#include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/action_result.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -687,19 +678,6 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
       .Done(base::BindOnce(&OnDataCollectionsComplete, std::move(callback),
                            std::move(data)));
 }
-#if BUILDFLAG(ENABLE_GLIC)
-glic::mojom::GetTabContextOptions DefaultOptions() {
-  glic::mojom::GetTabContextOptions options;
-  options.include_annotated_page_content = true;
-  options.include_viewport_screenshot = true;
-  return options;
-}
-
-void RunLater(base::OnceClosure task) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                              std::move(task));
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Feature to add allow listed extensions remotely for data collection.
 BASE_FEATURE(kAllowlistedAiDataExtensions,
@@ -855,92 +833,3 @@ bool AiDataKeyedService::IsExtensionAllowlistedForStable(
       kStableChannelAllowlistedIds({});
   return base::Contains(*kStableChannelAllowlistedIds, extension_id);
 }
-
-#if BUILDFLAG(ENABLE_GLIC)
-void AiDataKeyedService::ExecuteAction(
-    optimization_guide::proto::BrowserAction action,
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback) {
-  auto* actor_service = actor::ActorKeyedService::Get(browser_context_);
-  auto* task = actor_service->GetTask(actor::TaskId(action.task_id()));
-  if (!task) {
-    VLOG(1) << "Execute Action failed: Task not found.";
-    optimization_guide::proto::BrowserActionResult result;
-    result.set_action_result(0);
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  task->GetActorCoordinator()->Act(
-      std::move(action), base::BindOnce(&AiDataKeyedService::OnActionFinished,
-                                        weak_factory_.GetWeakPtr(),
-                                        std::move(callback), action.task_id()));
-}
-
-void AiDataKeyedService::OnActionFinished(
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback,
-    int task_id,
-    actor::mojom::ActionResultPtr action_result) {
-  auto* actor_service = actor::ActorKeyedService::Get(browser_context_);
-  auto* task = actor_service->GetTask(actor::TaskId(task_id));
-  CHECK(task);
-  tabs::TabInterface* tab = task->GetActorCoordinator()->GetTabOfCurrentTask();
-  if (!tab) {
-    VLOG(1) << "Execute Action failed: Tab not found.";
-    optimization_guide::proto::BrowserActionResult result;
-    result.set_action_result(0);
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  // TODO(https://crbug.com/398271171): Remove when the actor coordinator
-  // handles getting a new observation.
-  int32_t tab_id = tab->GetHandle().raw_value();
-  glic::FetchPageContext(
-      tab, DefaultOptions(), /*include_actionable_data=*/true,
-      base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback), task_id,
-                     tab_id, std::move(action_result)));
-}
-
-void AiDataKeyedService::ConvertToBrowserActionResult(
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback,
-    int task_id,
-    int32_t tab_id,
-    actor::mojom::ActionResultPtr action_result,
-    glic::mojom::GetContextResultPtr context_result) {
-  optimization_guide::proto::BrowserActionResult browser_action_result;
-  if (context_result->is_error_reason()) {
-    VLOG(1) << "Execute Action failed: Error fetching context.";
-    browser_action_result.set_action_result(0);
-    RunLater(
-        base::BindOnce(std::move(callback), std::move(browser_action_result)));
-    return;
-  }
-  if (context_result->get_tab_context() &&
-      context_result->get_tab_context()->annotated_page_data &&
-      context_result->get_tab_context()
-          ->annotated_page_data->annotated_page_content) {
-    auto apc = context_result->get_tab_context()
-                   ->annotated_page_data->annotated_page_content.value()
-                   .As<optimization_guide::proto::AnnotatedPageContent>();
-    if (apc.has_value()) {
-      auto apc_value = *std::move(apc);
-      browser_action_result.mutable_annotated_page_content()->Swap(&apc_value);
-    }
-  }
-  if (context_result->get_tab_context()->viewport_screenshot &&
-      context_result->get_tab_context()->viewport_screenshot->data.size() !=
-          0) {
-    auto& data = context_result->get_tab_context()->viewport_screenshot->data;
-    browser_action_result.set_screenshot(data.data(), data.size());
-    browser_action_result.set_screenshot_mime_type(
-        context_result->get_tab_context()->viewport_screenshot->mime_type);
-  }
-  browser_action_result.set_task_id(task_id);
-  browser_action_result.set_tab_id(tab_id);
-  browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
-  RunLater(
-      base::BindOnce(std::move(callback), std::move(browser_action_result)));
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)

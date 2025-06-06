@@ -72,36 +72,11 @@ class AiDataKeyedService : public KeyedService {
                               AiDataSpecifier specifier,
                               AiDataCallback callback);
 
-  // Executes an actor action. The first action in a task must be navigate.
-#if BUILDFLAG(ENABLE_GLIC)
-  void ExecuteAction(
-      optimization_guide::proto::BrowserAction action,
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback);
-#endif
-
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
   static const base::Feature&
   GetAllowlistedActionsExtensionsFeatureForTesting();
 
  private:
-#if BUILDFLAG(ENABLE_GLIC)
-  void ConvertToBrowserActionResult(
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback,
-      int task_id,
-      int32_t tab_id,
-      actor::mojom::ActionResultPtr action_result,
-      glic::mojom::GetContextResultPtr result);
-  // Called when the actor coordinator has finished an action which required
-  // task creation.
-  void OnActionFinished(
-      base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-          callback,
-      int task_id,
-      actor::mojom::ActionResultPtr action_result);
-#endif
-
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 

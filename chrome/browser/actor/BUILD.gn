@@ -31,6 +31,9 @@ source_set("actor") {
     "//components/tabs:public",
     "//content/public/browser",
   ]
+  if (enable_glic) {
+    public_deps += [ "//chrome/browser/glic:glic" ]
+  }
 }
 
 source_set("impl") {
@@ -79,6 +82,9 @@ source_set("impl") {
     "//net",
     "//url",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
 }
 
 # This target contains only type definitions that may be depended on by other

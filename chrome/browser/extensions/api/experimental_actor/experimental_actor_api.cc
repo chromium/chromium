@@ -15,7 +15,6 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
-#include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -171,9 +170,9 @@ ExperimentalActorExecuteActionFunction::Run() {
       ConvertSessionTabIdToTabHandle(action.tab_id(), browser_context());
   action.set_tab_id(tab_handle);
 
-  auto* ai_data_service =
-      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-  ai_data_service->ExecuteAction(
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(browser_context());
+  actor_service->ExecuteAction(
       std::move(action),
       base::BindOnce(
           &ExperimentalActorExecuteActionFunction::OnResponseReceived, this));

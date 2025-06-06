@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   action_request.set_tab_id(tab_id);
   action_request.add_action_information()->mutable_navigate()->set_url(
       "https://www.google.com");
-  ai_data_service().ExecuteAction(
+  actor_service().ExecuteAction(
       std::move(action_request),
       base::BindLambdaForTesting(std::move(navigate_callback)));
   run_loop->Run();
@@ -642,8 +642,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   action_request.set_tab_id(tab_id);
   action_request.add_action_information()->mutable_navigate()->set_url(
       url.spec());
-  ai_data_service().ExecuteAction(std::move(action_request),
-                                  navigate_result.GetCallback());
+  actor_service().ExecuteAction(std::move(action_request),
+                                navigate_result.GetCallback());
   auto& navigate_response = navigate_result.Get();
   EXPECT_EQ(navigate_response.task_id(), id);
   EXPECT_EQ(navigate_response.tab_id(), tab_id);
@@ -667,8 +667,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   // Check specifically that it's the existing frame that navigates.
   content::TestFrameNavigationObserver frame_nav_observer(
       web_contents()->GetPrimaryMainFrame());
-  ai_data_service().ExecuteAction(std::move(click_request),
-                                  click_result.GetCallback());
+  actor_service().ExecuteAction(std::move(click_request),
+                                click_result.GetCallback());
   auto& click_response = click_result.Get();
   EXPECT_EQ(click_response.task_id(), id);
   EXPECT_EQ(click_response.tab_id(), id);
