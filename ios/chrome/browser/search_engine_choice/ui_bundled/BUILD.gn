@@ -113,14 +113,20 @@ source_set("earl_grey_ui_test_util") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "search_engine_choice_coordinator_unittest.mm" ]
+  sources = [
+    "search_engine_choice_coordinator_unittest.mm",
+    "search_engine_choice_ui_util_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":ui_bundled",
+    ":ui_util",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/policy/core/common:test_support",
     "//components/regional_capabilities",
+    "//components/resources:components_scaled_resources_grit",
     "//components/search_engines",
     "//components/search_engines:search_engines_switches",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
@@ -135,7 +141,13 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/resources:ui_resources_grd_grit",
   ]
+  if (enable_builtin_search_provider_assets) {
+    deps += [
+      "//third_party/search_engines_data:search_engines_scaled_resources_grit",
+    ]
+  }
 }
 
 source_set("eg2_tests") {

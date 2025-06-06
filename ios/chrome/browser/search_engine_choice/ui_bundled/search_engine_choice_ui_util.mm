@@ -26,6 +26,8 @@ namespace {
 
 const CGFloat kSearchEngineMinFaviconSizePt = 8;
 
+}  // namespace
+
 int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
   // This would be better served by ResourcesUtil::GetThemeResourceId(), but
@@ -53,7 +55,6 @@ int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
 
   return IDR_DEFAULT_FAVICON;
 }
-}  // namespace
 
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   // Only works for prepopulated search engines.

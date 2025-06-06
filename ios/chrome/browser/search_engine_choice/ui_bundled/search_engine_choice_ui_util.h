@@ -19,6 +19,9 @@ class RegionalCapabilitiesService;
 
 // UI Util containing helper methods for the choice screen UI.
 
+// Returns the resource id for a search engine based on a template URL.
+int GetResourceIdFromTemplateURL(const TemplateURL& template_url);
+
 // Returns embedded favicon for search engine from `template_url`. The search
 // engine has to be prepopulated. Returns `nil` if the icon is not embedded
 // in Chrome.
