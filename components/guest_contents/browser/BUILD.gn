@@ -10,10 +10,13 @@ static_library("browser") {
   sources = [
     "guest_contents_handle.cc",
     "guest_contents_handle.h",
+    "guest_contents_host_impl.cc",
+    "guest_contents_host_impl.h",
   ]
 
   deps = [
     "//base",
+    "//components/guest_contents/common:mojom",
     "//content/public/browser",
     "//content/public/common",
   ]
@@ -22,7 +25,10 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "guest_contents_handle_unittest.cc" ]
+  sources = [
+    "guest_contents_handle_unittest.cc",
+    "guest_contents_host_impl_unittest.cc",
+  ]
 
   public_deps = [ "//content/test:test_support" ]
 
