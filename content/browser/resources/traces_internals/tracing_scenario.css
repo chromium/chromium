@@ -12,7 +12,7 @@
 
 :host {
   display: grid;
-  grid-template-columns: auto auto repeat(2, 1fr);
+  grid-template-columns: auto auto 1fr 5fr;
   grid-auto-flow: column;
   gap: 0 12px;
   padding: 4px 4px;
@@ -28,8 +28,6 @@
   overflow: hidden;
   font-size: 13px;
   color: var(--cr-primary-text-color);
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
