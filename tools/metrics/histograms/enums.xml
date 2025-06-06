@@ -1391,6 +1391,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Has user activation"/>
 </enum>
 
+<enum name="BooleanHasWebAuthnAssertion">
+  <int value="0" label="Does not have a web authn assertion"/>
+  <int value="1" label="Has a web authn assertion"/>
+</enum>
+
 <enum name="BooleanHit">
   <int value="0" label="Not_reached"/>
   <int value="1" label="Hit"/>

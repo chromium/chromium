@@ -5932,6 +5932,16 @@ be describing additional metrics about the same event.
       took place.
     </summary>
   </metric>
+  <metric name="SiteHadUserActivation" enum="BooleanHasUserActivation">
+    <summary>
+      Whether the site has previously had a user activation.
+    </summary>
+  </metric>
+  <metric name="SiteHadWebAuthnAssertion" enum="BooleanHasWebAuthnAssertion">
+    <summary>
+      Whether the site has previously had a WebAuthn assertion.
+    </summary>
+  </metric>
   <metric name="WebAuthnAssertionRequestSucceeded"
       enum="BooleanWebAuthnAssertionRequestSucceeded">
     <summary>
@@ -8103,6 +8113,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
     <summary>
+      Deprecated as of M139.
+
       The site engagement level of the redirect URL, at the time the redirect
       took place.
     </summary>

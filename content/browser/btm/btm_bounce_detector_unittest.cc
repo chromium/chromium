@@ -99,6 +99,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
     for (auto& redirect : redirects) {
       redirect->site_had_user_activation =
           GetSiteHasUserActivation(redirect->redirecting_url.url);
+      redirect->site_had_webauthn_assertion =
+          GetSiteHasWebAuthnAssertion(redirect->redirecting_url.url);
       redirect->chain_id = chain->chain_id;
       redirect->chain_index = redirect_index;
       redirect->has_3pc_exception = false;
@@ -140,11 +142,19 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   }
 
   bool GetSiteHasUserActivation(const GURL& url) {
-    return site_has_user_activation_[GetSiteForBtm(url)];
+    return sites_with_user_activation_.contains(GetSiteForBtm(url));
   }
 
   void SetSiteHasUserActivation(const GURL& url) {
-    site_has_user_activation_[GetSiteForBtm(url)] = true;
+    sites_with_user_activation_.insert(GetSiteForBtm(url));
+  }
+
+  bool GetSiteHasWebAuthnAssertion(const GURL& url) {
+    return sites_with_webauthn_assertion_.contains(GetSiteForBtm(url));
+  }
+
+  void SetSiteHasWebAuthnAssertion(const GURL& url) {
+    sites_with_webauthn_assertion_.insert(GetSiteForBtm(url));
   }
 
   void SetCommittedURL(PassKey<FakeNavigation>,
@@ -182,7 +192,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   GURL committed_url_;
   ukm::SourceId source_id_;
   std::map<ukm::SourceId, std::string> url_by_source_id_;
-  std::map<std::string, bool> site_has_user_activation_;
+  std::set<std::string> sites_with_user_activation_;
+  std::set<std::string> sites_with_webauthn_assertion_;
   std::vector<std::string> redirects_;
   std::set<BounceTuple> recorded_bounces_;
   std::vector<std::string> reported_sites_;
@@ -909,6 +920,8 @@ const std::vector<std::string>& GetAllRedirectMetrics() {
       "RedirectType",
       "SiteEngagementLevel",
       "WebAuthnAssertionRequestSucceeded",
+      "SiteHadUserActivation",
+      "SiteHadWebAuthnAssertion",
       // clang-format on
   };
   return kAllRedirectMetrics;
@@ -988,7 +1001,8 @@ TEST_F(BtmBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)BtmRedirectType::kClient),
-                  Pair("SiteEngagementLevel", 0),
+                  Pair("SiteHadUserActivation", false),
+                  Pair("SiteHadWebAuthnAssertion", false),
                   Pair("WebAuthnAssertionRequestSucceeded", true)));
 
   EXPECT_THAT(URLForRedirectSourceId(&ukm_recorder, ukm_entries[1].source_id),
@@ -1003,7 +1017,8 @@ TEST_F(BtmBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 1), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)BtmRedirectType::kServer),
-                  Pair("SiteEngagementLevel", 1),
+                  Pair("SiteHadUserActivation", true),
+                  Pair("SiteHadWebAuthnAssertion", false),
                   Pair("WebAuthnAssertionRequestSucceeded", false)));
 }
 

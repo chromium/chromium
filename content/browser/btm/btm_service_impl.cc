@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -411,16 +412,17 @@ void BtmServiceImpl::HandleRedirects(
     StatefulBounceCallback stateful_bounce_callback,
     std::pair<std::set<std::string>, std::set<std::string>>
         sites_with_protective_events) {
-  const std::set<std::string>& sites_with_user_activation =
-      sites_with_protective_events.first;
+  const auto& [sites_with_user_activation, sites_with_webauthn_assertion] =
+      sites_with_protective_events;
   for (size_t index = 0; index < redirects.size(); index++) {
     auto& redirect = *redirects[index];
 
-    // If there's any user activation recorded in the BTM database, that's
-    // engagement.
     DCHECK(!redirect.site_had_user_activation.has_value());
-    redirect.site_had_user_activation = sites_with_user_activation.contains(
-        GetSiteForBtm(redirect.redirecting_url.url));
+    redirect.site_had_user_activation =
+        sites_with_user_activation.contains(redirect.site);
+    DCHECK(!redirect.site_had_webauthn_assertion.has_value());
+    redirect.site_had_webauthn_assertion =
+        sites_with_webauthn_assertion.contains(redirect.site);
     DCHECK(!redirect.chain_id.has_value());
     redirect.chain_id = chain->chain_id;
     // If the chain was too long, some redirects may have been trimmed already,
@@ -520,14 +522,20 @@ void BtmServiceImpl::RecordBounce(
 void BtmServiceImpl::HandleRedirect(const BtmRedirectInfo& redirect,
                                     const BtmRedirectChainInfo& chain,
                                     RecordBounceCallback record_bounce) {
+  DCHECK(redirect.site_had_user_activation.has_value());
+  DCHECK(redirect.site_had_webauthn_assertion.has_value());
+  DCHECK(redirect.chain_id.has_value());
+  DCHECK(redirect.chain_index.has_value());
+  DCHECK_LT(redirect.chain_index.value(), chain.length);
+
   bool initial_site_same = (redirect.site == chain.initial_site);
   bool final_site_same = (redirect.site == chain.final_site);
-  DCHECK_LT(redirect.chain_index.value(), chain.length);
 
   if (!chain.are_3pcs_generally_enabled) {
     ukm::builders::BTM_Redirect(redirect.redirecting_url.source_id)
-        .SetSiteEngagementLevel(redirect.site_had_user_activation.value() ? 1
-                                                                          : 0)
+        .SetSiteHadUserActivation(redirect.site_had_user_activation.value())
+        .SetSiteHadWebAuthnAssertion(
+            redirect.site_had_webauthn_assertion.value())
         .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
         .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
         .SetRedirectAndInitialSiteSame(initial_site_same)
