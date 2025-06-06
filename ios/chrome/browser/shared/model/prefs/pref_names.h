@@ -298,6 +298,10 @@ inline constexpr char
     kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness[] =
         "ios.magic_stack_segmentation.tab_resumption_freshness";
 
+// Whether to show Google links to GoogleMaps in a native view.
+inline constexpr char kIosMiniMapShowNativeMap[] =
+    "ios.mini_map.show_native_map";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.

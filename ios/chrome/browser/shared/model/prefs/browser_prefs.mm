@@ -842,6 +842,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kDetectAddressesEnabled, true);
   registry->RegisterBooleanPref(prefs::kDetectAddressesAccepted, false);
 
+  // Register MiniMap setting pref.
+  registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
+
   // Preferences related to Save to Photos settings.
   registry->RegisterStringPref(prefs::kIosSaveToPhotosDefaultGaiaId,
                                std::string());
