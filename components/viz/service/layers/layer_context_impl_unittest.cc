@@ -694,6 +694,264 @@ TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
   EXPECT_EQ(result.error(), "Invalid transform_id for clip node");
 }
 
+class LayerContextImplUpdateDisplayTreeEffectNodeTest
+    : public LayerContextImplTest {
+ protected:
+  cc::EffectNode* GetEffectNodeFromActiveTree(int node_id) {
+    if (node_id < static_cast<int>(layer_context_impl_->host_impl()
+                                       ->active_tree()
+                                       ->property_trees()
+                                       ->effect_tree()
+                                       .size())) {
+      return layer_context_impl_->host_impl()
+          ->active_tree()
+          ->property_trees()
+          ->effect_tree_mutable()
+          .Node(node_id);
+    }
+    return nullptr;
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       UpdateExistingEffectNodeProperties) {
+  // Apply a default valid update, with a new effect node.
+  auto update1 = CreateDefaultUpdate();
+  int effect_node_id =
+      AddEffectNode(update1.get(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto update2 = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = effect_node_id;
+  // Keep parent_id same as default.
+  node_update->parent_id = cc::kSecondaryRootPropertyNodeId;
+  node_update->opacity = 0.5f;
+  node_update->filters.Append(cc::FilterOperation::CreateBlurFilter(2.f));
+  node_update->backdrop_filters.Append(
+      cc::FilterOperation::CreateGrayscaleFilter(0.8f));
+  node_update->blend_mode = static_cast<uint32_t>(SkBlendMode::kMultiply);
+  node_update->render_surface_reason = cc::RenderSurfaceReason::kTest;
+
+  // TODO(vmiura): If we have a render_surface_reason, without a valid
+  // element_id, we can trigger crashes during property tree update. Fix that.
+  node_update->element_id = cc::ElementId(42);
+
+  node_update->cache_render_surface = true;
+
+  const auto view_transition_token = blink::ViewTransitionToken();
+  node_update->view_transition_element_resource_id =
+      ViewTransitionElementResourceId(view_transition_token, 1, false);
+  // Use valid existing transform and clip node IDs.
+  node_update->transform_id = cc::kSecondaryRootPropertyNodeId;
+  node_update->clip_id = cc::kSecondaryRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+
+  update2->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_TRUE(result.has_value());
+
+  cc::EffectNode* node_impl = GetEffectNodeFromActiveTree(effect_node_id);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->opacity, 0.5f);
+  EXPECT_EQ(node_impl->filters.size(), 1u);
+  EXPECT_EQ(node_impl->filters.at(0).type(),
+            cc::FilterOperation::FilterType::BLUR);
+  EXPECT_EQ(node_impl->backdrop_filters.size(), 1u);
+  EXPECT_EQ(node_impl->backdrop_filters.at(0).type(),
+            cc::FilterOperation::FilterType::GRAYSCALE);
+  EXPECT_EQ(node_impl->blend_mode, SkBlendMode::kMultiply);
+  EXPECT_EQ(node_impl->render_surface_reason, cc::RenderSurfaceReason::kTest);
+  EXPECT_TRUE(node_impl->cache_render_surface);
+  EXPECT_EQ(node_impl->view_transition_element_resource_id,
+            ViewTransitionElementResourceId(view_transition_token, 1, false));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, AddRemoveEffectNodes) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  uint32_t initial_node_count = layer_context_impl_->host_impl()
+                                    ->active_tree()
+                                    ->property_trees()
+                                    ->effect_tree()
+                                    .nodes()
+                                    .size();
+
+  // Add a new node.
+  auto update_add = CreateDefaultUpdate();
+  int new_node_id =
+      AddEffectNode(update_add.get(), cc::kSecondaryRootPropertyNodeId);
+  EXPECT_EQ(update_add->num_effect_nodes, initial_node_count + 1);
+
+  auto result_add =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add));
+  ASSERT_TRUE(result_add.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->effect_tree()
+                .nodes()
+                .size(),
+            initial_node_count + 1);
+  cc::EffectNode* added_node_impl = GetEffectNodeFromActiveTree(new_node_id);
+  ASSERT_TRUE(added_node_impl);
+  EXPECT_EQ(added_node_impl->parent_id, cc::kSecondaryRootPropertyNodeId);
+
+  // Remove the added node.
+  auto update_remove = CreateDefaultUpdate();
+  update_remove->num_effect_nodes = initial_node_count;
+  update_remove->effect_nodes.clear();
+
+  auto result_remove =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_remove));
+  ASSERT_TRUE(result_remove.has_value());
+  EXPECT_EQ(layer_context_impl_->host_impl()
+                ->active_tree()
+                ->property_trees()
+                ->effect_tree()
+                .nodes()
+                .size(),
+            initial_node_count);
+  EXPECT_FALSE(GetEffectNodeFromActiveTree(new_node_id));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       AddRemoveCopyOutputRequests) {
+  // Apply a default valid update first.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Add a copy request.
+  auto update_add_request = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kSecondaryRootPropertyNodeId;
+  node_update->clip_id = cc::kSecondaryRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->copy_output_requests.push_back(
+      CopyOutputRequest::CreateStubForTesting());
+  update_add_request->effect_nodes.push_back(std::move(node_update));
+
+  auto result_add =
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_add_request));
+  ASSERT_TRUE(result_add.has_value());
+  auto copy_requests = layer_context_impl_->host_impl()
+                           ->active_tree()
+                           ->property_trees()
+                           ->effect_tree_mutable()
+                           .TakeCopyRequests();
+  EXPECT_EQ(copy_requests.count(cc::kSecondaryRootPropertyNodeId), 1u);
+
+  // Remove the copy request (by not sending it).
+  auto update_remove_request = CreateDefaultUpdate();
+  auto node_update_no_request = mojom::EffectNode::New();
+  node_update_no_request->id = cc::kSecondaryRootPropertyNodeId;
+  node_update_no_request->parent_id = cc::kRootPropertyNodeId;
+  node_update_no_request->transform_id = cc::kSecondaryRootPropertyNodeId;
+  node_update_no_request->clip_id = cc::kSecondaryRootPropertyNodeId;
+  node_update_no_request->target_id = cc::kRootPropertyNodeId;
+  update_remove_request->effect_nodes.push_back(
+      std::move(node_update_no_request));
+
+  auto result_remove = layer_context_impl_->DoUpdateDisplayTree(
+      std::move(update_remove_request));
+  ASSERT_TRUE(result_remove.has_value());
+  auto copy_requests_after_remove = layer_context_impl_->host_impl()
+                                        ->active_tree()
+                                        ->property_trees()
+                                        ->effect_tree_mutable()
+                                        .TakeCopyRequests();
+  EXPECT_EQ(copy_requests_after_remove.count(cc::kSecondaryRootPropertyNodeId),
+            0u);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidEffectNodeParentId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = next_effect_id_++;  // New node
+  node_update->parent_id = 99;          // Invalid parent ID
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+  update->num_effect_nodes = next_effect_id_;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid property tree node parent_id");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidEffectNodeTransformId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = 99;  // Invalid transform ID
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid transform_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidEffectNodeClipId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = 99;  // Invalid clip ID
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid clip_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidEffectNodeTargetId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = 99;  // Invalid target ID
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid target_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, InvalidBlendMode) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;  // Existing node
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->blend_mode = 999;  // Invalid blend mode
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid blend_mode for effect node");
+}
+
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
     : public LayerContextImplTest,
       public ::testing::WithParamInterface<std::tuple<float, bool>> {};
