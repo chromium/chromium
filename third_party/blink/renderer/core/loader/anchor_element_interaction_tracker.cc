@@ -291,14 +291,6 @@ void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
   AnchorElementViewportPositionTracker::Observer::Trace(visitor);
 }
 
-// static
-base::TimeDelta AnchorElementInteractionTracker::GetHoverDwellTime() {
-  static base::FeatureParam<base::TimeDelta> hover_dwell_time{
-      &blink::features::kSpeculationRulesPointerHoverHeuristics,
-      "HoverDwellTime", base::Milliseconds(200)};
-  return hover_dwell_time.Get();
-}
-
 void AnchorElementInteractionTracker::OnMouseMoveEvent(
     const WebMouseEvent& mouse_event) {
   mouse_motion_estimator_->OnMouseMoveEvent(mouse_event.PositionInScreen());
@@ -367,9 +359,9 @@ void AnchorElementInteractionTracker::OnPointerEvent(
                  .is_mouse =
                      pointer_event.pointerType() == pointer_type_names::kMouse,
                  .anchor_id = AnchorElementId(*anchor),
-                 .timestamp = clock_->NowTicks() + GetHoverDwellTime()});
+                 .timestamp = clock_->NowTicks() + kModerateHoverDwellTime});
     if (!hover_timer_.IsActive()) {
-      hover_timer_.StartOneShot(GetHoverDwellTime(), FROM_HERE);
+      hover_timer_.StartOneShot(kModerateHoverDwellTime, FROM_HERE);
     }
   } else if (event_type == event_type_names::kPointerout) {
     // Since the pointer is no longer hovering on the link, there is no need to

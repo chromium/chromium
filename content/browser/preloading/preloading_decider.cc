@@ -103,11 +103,8 @@ class PreloadingDecider::BehaviorConfig {
         EagernessSet{blink::mojom::SpeculationEagerness::kConservative,
                      blink::mojom::SpeculationEagerness::kModerate};
 
-    static const base::FeatureParam<std::string> kPointerHoverEagerness{
-        &blink::features::kSpeculationRulesPointerHoverHeuristics,
-        "pointer_hover_eagerness", "moderate"};
     pointer_hover_eagerness_ =
-        EagernessSetFromFeatureParam(kPointerHoverEagerness.Get());
+        EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
 
     static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
         &blink::features::kPreloadingViewportHeuristics,

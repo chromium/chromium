@@ -1030,7 +1030,7 @@ TEST_F(AnchorElementMetricsSenderTest,
   constexpr gfx::Vector2dF velocity{20, 20};
   constexpr base::TimeDelta timestep = base::Milliseconds(20);
   for (base::TimeDelta t;
-       t <= 2 * AnchorElementInteractionTracker::GetHoverDwellTime();
+       t <= 2 * AnchorElementInteractionTracker::kModerateHoverDwellTime;
        t += timestep) {
     gfx::PointF coordinates =
         origin + gfx::ScaleVector2d(velocity, t.InSecondsF());
