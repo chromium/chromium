@@ -229,7 +229,7 @@ void ServiceWorkerTestHelper::RegisterVersionCreatedObserver(
       static_cast<ServiceWorkerContextWrapper*>(context));
   version_created_watcher_ =
       std::make_unique<ServiceWorkerVersionCreatedWatcher>(
-          context_wrapper->GetContextCoreForTest(), this);
+          context_wrapper->context(), this);
 }
 
 void ServiceWorkerTestHelper::RegisterStateObserver(

@@ -443,10 +443,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Sets a callback to bind ServiceWorkerStorageControl for testing.
   void SetStorageControlBinderForTest(StorageControlBinder binder);
 
-  ServiceWorkerContextCore* GetContextCoreForTest() {
-    return context_core_.get();
-  }
-
   void SetForceUpdateOnPageLoadForTesting(
       bool force_update_on_page_load) override;
 
