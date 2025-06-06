@@ -1,0 +1,7 @@
+AXWebArea
+++AXPopUpButton AXLinkedUIElements=[:3] AXTitle='Actions'
+++AXMenu AXTitle='Actions'
+++++AXMenuItem AXTitle='New'
+++++AXMenuItem AXTitle='Open'
+++++AXMenuItem AXTitle='Save'
+++++AXMenuItem AXTitle='Quit'

@@ -1,0 +1,7 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++Button text:"Actions" viewIdResName:"filebutton" canOpenPopUp clickable focusable expandedState:3 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="popUpButton", clickableScore="300", roleDescription="menu pop up button"]
+++View text:"Actions" viewIdResName:"filemenu" focusable CollectionInfo:[rows=4, cols=1] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menu", roleDescription="menu"]
+++++MenuItem text:"New" viewIdResName:"action-new" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]
+++++MenuItem text:"Open" viewIdResName:"action-open" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]
+++++MenuItem text:"Save" viewIdResName:"action-save" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=2, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]
+++++MenuItem text:"Quit" viewIdResName:"action-quit" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=3, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]

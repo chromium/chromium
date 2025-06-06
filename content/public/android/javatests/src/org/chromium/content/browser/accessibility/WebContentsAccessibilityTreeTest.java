@@ -749,6 +749,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaFocusableMenu() {
+        performAriaTest("aria-focusable-menu.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaMenuitemcheckbox() {
         performAriaTest("aria-menuitemcheckbox.html");
     }
