@@ -76,38 +76,12 @@ CSSPropertyID kPropertiesToCapture[] = {
     CSSPropertyID::kWritingMode,
 };
 
-CSSPropertyID kLayeredCaptureProperties[] = {
-    CSSPropertyID::kBackground,
-    CSSPropertyID::kBorderBottom,
-    CSSPropertyID::kBorderImage,
-    CSSPropertyID::kBorderLeft,
-    CSSPropertyID::kBorderRadius,
-    CSSPropertyID::kBorderRight,
-    CSSPropertyID::kBorderTop,
-    CSSPropertyID::kBoxShadow,
-    CSSPropertyID::kBoxSizing,
-    CSSPropertyID::kClipPath,
-    CSSPropertyID::kContain,
-    CSSPropertyID::kFilter,
-    // Deliberately capturing the shorthand, to include all the mask-related
-    // properties.
-    CSSPropertyID::kMask,
-    CSSPropertyID::kOpacity,
-    CSSPropertyID::kOutline,
-    CSSPropertyID::kOverflow,
-    CSSPropertyID::kOverflowClipMargin,
-    CSSPropertyID::kPadding,
+CSSPropertyID kPropertiesToCaptureOnGroupChildren[] = {
+    CSSPropertyID::kBorderWidth,
 };
 
 CSSPropertyID kPropertiesToAnimate[] = {
-    CSSPropertyID::kBackdropFilter, CSSPropertyID::kOpacity,
-    CSSPropertyID::kBorderLeft,     CSSPropertyID::kBackground,
-    CSSPropertyID::kBorderRadius,   CSSPropertyID::kBoxShadow,
-    CSSPropertyID::kBorderRight,    CSSPropertyID::kBorderBottom,
-    CSSPropertyID::kClipPath,       CSSPropertyID::kFilter,
-    CSSPropertyID::kMask,           CSSPropertyID::kBorderTop,
-    CSSPropertyID::kOutline,        CSSPropertyID::kBorderImage,
-    CSSPropertyID::kPadding,
+    CSSPropertyID::kBackdropFilter,
 };
 
 template <typename K, typename V>
@@ -131,26 +105,9 @@ class FlatMapBuilder {
 
 #define FOR_EACH_CSS_PROPERTY(OP) \
   OP(BackdropFilter)              \
-  OP(Background)                  \
-  OP(BorderBottom)                \
-  OP(BorderImage)                 \
-  OP(BorderLeft)                  \
-  OP(BorderRadius)                \
-  OP(BorderRight)                 \
-  OP(BorderTop)                   \
-  OP(BoxShadow)                   \
-  OP(BoxSizing)                   \
-  OP(ClipPath)                    \
+  OP(BorderWidth)                 \
   OP(ColorScheme)                 \
-  OP(Contain)                     \
-  OP(Filter)                      \
-  OP(Mask)                        \
   OP(MixBlendMode)                \
-  OP(Opacity)                     \
-  OP(Outline)                     \
-  OP(Overflow)                    \
-  OP(OverflowClipMargin)          \
-  OP(Padding)                     \
   OP(TextOrientation)             \
   OP(WritingMode)
 
@@ -540,19 +497,30 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->captured_rect_in_layout_space =
         transition_state_element.captured_rect_in_layout_space;
 
-    CHECK_LE(
-        transition_state_element.captured_css_properties.size(),
-        std::size(kPropertiesToCapture) + std::size(kLayeredCaptureProperties));
+    auto build_css_properties =
+        [](const base::flat_map<mojom::blink::ViewTransitionPropertyId,
+                                std::string>& source,
+           base::flat_map<CSSPropertyID, String>& destination) {
+          FlatMapBuilder<CSSPropertyID, String> builder(source.size());
 
-    FlatMapBuilder<CSSPropertyID, String> css_property_builder(
-        transition_state_element.captured_css_properties.size());
-    for (const auto& [id, value] :
-         transition_state_element.captured_css_properties) {
-      css_property_builder.Insert(FromTransitionPropertyId(id),
-                                  String::FromUTF8(value));
-    }
-    element_data->captured_css_properties =
-        std::move(css_property_builder).Finish();
+          for (const auto& [id, value] : source) {
+            builder.Insert(FromTransitionPropertyId(id),
+                           String::FromUTF8(value));
+          }
+          destination = std::move(builder).Finish();
+        };
+
+    CHECK_LE(transition_state_element.captured_css_properties.size(),
+             std::size(kPropertiesToCapture));
+    build_css_properties(transition_state_element.captured_css_properties,
+                         element_data->captured_css_properties);
+
+    CHECK_LE(transition_state_element.group_children_css_properties.size(),
+             std::size(kPropertiesToCaptureOnGroupChildren));
+    build_css_properties(transition_state_element.group_children_css_properties,
+                         element_data->group_children_css_properties);
+
+    element_data->border_offset = transition_state_element.border_offset;
 
     for (const auto& class_name : transition_state_element.class_list) {
       element_data->class_list.push_back(
@@ -1553,29 +1521,45 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
 
   FlatMapBuilder<CSSPropertyID, String> css_property_builder(
       std::size(kPropertiesToCapture));
+  FlatMapBuilder<CSSPropertyID, String> group_children_css_property_builder(
+      std::size(kPropertiesToCapture));
 
-  auto capture_property = [&](CSSPropertyID id) {
+  auto capture_property = [&](CSSPropertyID id,
+                              FlatMapBuilder<CSSPropertyID, String>& builder) {
     if (const CSSValue* css_value =
             CSSProperty::Get(id).CSSValueFromComputedStyle(
                 layout_object->StyleRef(),
                 /*layout_object=*/nullptr,
                 /*allow_visited_style=*/false, CSSValuePhase::kComputedValue)) {
-      css_property_builder.Insert(id, css_value->CssText());
+      builder.Insert(id, css_value->CssText());
     }
   };
 
   for (CSSPropertyID id : kPropertiesToCapture) {
-    capture_property(id);
+    capture_property(id, css_property_builder);
+  }
+
+  for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
+    capture_property(id, group_children_css_property_builder);
   }
 
   auto css_properties = std::move(css_property_builder).Finish();
+  auto group_children_css_properties =
+      std::move(group_children_css_property_builder).Finish();
+
+  gfx::Vector2d border_offset(layout_object->StyleRef().BorderLeftWidth(),
+                              layout_object->StyleRef().BorderTopWidth());
 
   if (element_data->container_properties == container_properties &&
       visual_overflow_rect_in_layout_space ==
           element_data->visual_overflow_rect_in_layout_space &&
       captured_rect_in_layout_space ==
           element_data->captured_rect_in_layout_space &&
-      css_properties == element_data->captured_css_properties) {
+      css_properties == element_data->captured_css_properties &&
+      (state_ != State::kCapturing ||
+       (group_children_css_properties ==
+            element_data->group_children_css_properties &&
+        border_offset == element_data->border_offset))) {
     return true;
   }
 
@@ -1583,7 +1567,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
 
   element_data->visual_overflow_rect_in_layout_space =
       visual_overflow_rect_in_layout_space;
-  element_data->captured_css_properties = css_properties;
+  element_data->captured_css_properties = std::move(css_properties);
   element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
 
   PseudoId live_content_element = HasLiveNewContent()
@@ -1607,6 +1591,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   // Ensure that the cached state stays in sync with the current state while
   // we're capturing.
   if (state_ == State::kCapturing) {
+    element_data->group_children_css_properties =
+        std::move(group_children_css_properties);
+    element_data->border_offset = border_offset;
     element_data->CacheStateForOldSnapshot();
   }
 
@@ -2025,12 +2012,25 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.captured_rect_in_layout_space =
         element_data->captured_rect_in_layout_space;
 
-    FlatMapBuilder<mojom::blink::ViewTransitionPropertyId, std::string>
-        css_property_builder(element_data->captured_css_properties.size());
-    for (const auto& [id, value] : element_data->captured_css_properties) {
-      css_property_builder.Insert(ToTranstionPropertyId(id), value.Utf8());
-    }
-    element.captured_css_properties = std::move(css_property_builder).Finish();
+    auto build_css_properties =
+        [](const base::flat_map<CSSPropertyID, String>& source,
+           base::flat_map<mojom::blink::ViewTransitionPropertyId, std::string>&
+               destination) {
+          FlatMapBuilder<mojom::blink::ViewTransitionPropertyId, std::string>
+              builder(source.size());
+          for (const auto& [id, value] : source) {
+            builder.Insert(ToTranstionPropertyId(id), value.Utf8());
+          }
+          destination = std::move(builder).Finish();
+        };
+
+    build_css_properties(element_data->captured_css_properties,
+                         element.captured_css_properties);
+    build_css_properties(element_data->group_children_css_properties,
+                         element.group_children_css_properties);
+
+    element.border_offset = element_data->border_offset;
+
     for (const auto& class_name : element_data->class_list) {
       element.class_list.push_back(class_name.Utf8());
     }
@@ -2203,15 +2203,23 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
         CHECK(element_data_map_.Contains(element_data->containing_group_name));
         const auto& containing_group_data =
             element_data_map_.at(element_data->containing_group_name);
-        old_parent_inverse_transform =
-            containing_group_data->cached_container_properties.snapshot_matrix
-                .InverseOrIdentity();
+
+        auto compute_parent_inverse = [](gfx::Transform matrix,
+                                         const gfx::Vector2d& border_offset) {
+          matrix.Translate(border_offset);
+          return matrix.InverseOrIdentity();
+        };
+
+        old_parent_inverse_transform = compute_parent_inverse(
+            containing_group_data->cached_container_properties.snapshot_matrix,
+            containing_group_data->border_offset);
 
         if (containing_group_data->container_properties) {
           const auto& new_container_properties =
               *containing_group_data->container_properties;
           new_parent_inverse_transform =
-              new_container_properties.snapshot_matrix.InverseOrIdentity();
+              compute_parent_inverse(new_container_properties.snapshot_matrix,
+                                     containing_group_data->border_offset);
         }
       }
 
@@ -2220,6 +2228,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
       builder.AddContainerStyles(
           view_transition_name, *element_data->container_properties,
           element_data->captured_css_properties, new_parent_inverse_transform);
+
+      builder.AddGroupChildrenStyles(
+          view_transition_name, element_data->group_children_css_properties);
 
       // This sets up the styles to animate the pseudo-elements as described in
       // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.

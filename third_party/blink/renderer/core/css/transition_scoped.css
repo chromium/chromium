@@ -31,6 +31,11 @@
   inset: 0;
 }
 
+::view-transition-group-children(*) {
+  border-style: solid;
+  border-color: transparent;
+}
+
 ::view-transition-new(*),
 ::view-transition-old(*) {
   position: absolute;

@@ -14,12 +14,14 @@ namespace blink {
 namespace {
 
 const char* kGroupTagName = "html::view-transition-group";
+const char* kGroupChildrenTagName = "html::view-transition-group-children";
 const char* kImagePairTagName = "html::view-transition-image-pair";
 const char* kNewImageTagName = "html::view-transition-new";
 const char* kOldImageTagName = "html::view-transition-old";
 const char* kKeyframeNamePrefix = "-ua-view-transition-group-anim-";
 
 const char* kGroupTagNameScoped = "::view-transition-group";
+const char* kGroupChildrenTagNameScoped = "::view-transition-group-children";
 const char* kImagePairTagNameScoped = "::view-transition-image-pair";
 const char* kNewImageTagNameScoped = "::view-transition-new";
 const char* kOldImageTagNameScoped = "::view-transition-old";
@@ -46,6 +48,12 @@ const char* OldImageTagName() {
   return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
              ? kOldImageTagNameScoped
              : kOldImageTagName;
+}
+
+const char* GroupChildrenTagName() {
+  return RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
+             ? kGroupChildrenTagNameScoped
+             : kGroupChildrenTagName;
 }
 
 }  // namespace
@@ -189,6 +197,19 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
   }
 
   AddRules(GroupTagName(), tag, group_rule_builder.ReleaseString());
+}
+
+void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
+    const String& name,
+    const CapturedCssProperties& captured_css_properties) {
+  StringBuilder builder;
+  for (const auto& [id, value] : captured_css_properties) {
+    builder.Append(CSSProperty::Get(id).GetPropertyNameAtomicString());
+    builder.Append(": ");
+    builder.Append(value);
+    builder.Append(";\n");
+  }
+  AddRules(GroupChildrenTagName(), name, builder.ReleaseString());
 }
 
 }  // namespace blink

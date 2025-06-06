@@ -11,28 +11,11 @@ import "ui/gfx/mojom/transform.mojom";
 
 enum ViewTransitionPropertyId {
   kBackdropFilter,
+  kBorderWidth,
   kColorScheme,
   kMixBlendMode,
   kTextOrientation,
   kWritingMode,
-  kOpacity,
-  kClipPath,
-  kFilter,
-  kMask,
-  kBorderTop,
-  kBorderRight,
-  kBorderBottom,
-  kBorderLeft,
-  kBackground,
-  kBorderRadius,
-  kBoxShadow,
-  kBoxSizing,
-  kOutline,
-  kBorderImage,
-  kPadding,
-  kOverflow,
-  kOverflowClipMargin,
-  kContain,
 };
 
 enum ViewTransitionElementBoxSizing {
@@ -72,6 +55,13 @@ struct ViewTransitionElement {
   // shared element. The map is from (a subset of) CSSPropertyIDs to the css
   // computed value (as string).
   map<ViewTransitionPropertyId, string> captured_css_properties;
+
+  // CSS property values needed for group children visual representation in
+  // nested View Transitions.
+  map<ViewTransitionPropertyId, string> group_children_css_properties;
+
+  // Offset of this element's content area relative to its border box.
+  gfx.mojom.Vector2d border_offset;
 
   // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
   // The class-list needs to be serialized between documents, because exit

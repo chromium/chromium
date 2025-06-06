@@ -40,6 +40,10 @@ class ViewTransitionStyleBuilder {
                           const CapturedCssProperties& captured_css_properites,
                           const gfx::Transform& parent_inverse_transform);
 
+  void AddGroupChildrenStyles(
+      const String& name,
+      const CapturedCssProperties& captured_css_properites);
+
   String Build();
 
  private:

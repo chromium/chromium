@@ -312,6 +312,12 @@ class ViewTransitionStyleTracker
     // exists.
     base::flat_map<CSSPropertyID, String> captured_css_properties;
 
+    // The set of properties to set on the view-transition-group-children
+    // pseudo. Only updated during the capture phase. This also includes the
+    // border offset from the border box to the content area.
+    base::flat_map<CSSPropertyID, String> group_children_css_properties;
+    gfx::Vector2d border_offset;
+
     // This only contains properties that need to be animated, which is a
     // subset of `captured_css_properties`.
     base::flat_map<CSSPropertyID, String> cached_animated_css_properties;

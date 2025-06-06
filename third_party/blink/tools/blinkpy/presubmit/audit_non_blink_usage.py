@@ -1297,6 +1297,7 @@ _CONFIG = [
             'gfx::RectF',
             'gfx::Size',
             'gfx::SizeF',
+            'gfx::Vector2d',
             'gfx::Vector2dF',
 
             # The Blink public API is shared between non-Blink and Blink code

@@ -34,6 +34,9 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
       !data.ReadCapturedRectInLayoutSpace(
           &out->captured_rect_in_layout_space) ||
       !data.ReadCapturedCssProperties(&out->captured_css_properties) ||
+      !data.ReadGroupChildrenCssProperties(
+          &out->group_children_css_properties) ||
+      !data.ReadBorderOffset(&out->border_offset) ||
       !data.ReadClassList(&out->class_list) ||
       !data.ReadContainingGroupName(&out->containing_group_name) ||
       !data.ReadLayeredBoxProperties(&out->layered_box_properties)) {

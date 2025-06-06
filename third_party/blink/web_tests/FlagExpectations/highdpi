@@ -71,6 +71,9 @@ crbug.com/1414855 virtual/threaded/external/wpt/css/css-view-transitions/new-con
 virtual/threaded/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/group-children-sizing.html [ Skip ]
+virtual/threaded/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/group-children-sizing-with-border.html [ Skip ]
 
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]
