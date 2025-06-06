@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

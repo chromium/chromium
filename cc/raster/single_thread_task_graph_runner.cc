@@ -12,8 +12,6 @@
 #include <utility>
 
 #include "base/threading/simple_thread.h"
-#include "base/trace_event/base_tracing.h"
-#include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 
 namespace cc {

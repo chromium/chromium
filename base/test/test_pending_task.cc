@@ -7,7 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 
 namespace base {
 

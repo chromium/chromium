@@ -199,7 +199,7 @@ int main(int argc, const char* argv[]) {
       include_added_to.insert(r.getFilePath().str());
       // Add also copyright so that |test-expected.cc| passes presubmit.
       llvm::outs() << "include-user-header:::" << r.getFilePath()
-                   << ":::-1:::-1:::base/trace_event/base_tracing.h"
+                   << ":::-1:::-1:::base/trace_event/trace_event.h"
                    << "\n";
     }
     // Add the actual replacement.

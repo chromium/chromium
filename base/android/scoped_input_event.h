@@ -9,7 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/typed_macros.h"
 
 namespace base::android {
 

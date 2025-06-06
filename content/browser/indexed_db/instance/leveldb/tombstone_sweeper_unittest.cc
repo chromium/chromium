@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/leveldb/mock_level_db.h"

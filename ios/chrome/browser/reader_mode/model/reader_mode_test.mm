@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"

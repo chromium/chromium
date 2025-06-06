@@ -6,7 +6,8 @@
 
 #include "base/check.h"
 #include "base/threading/hang_watcher.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/interned_args_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 
 namespace base {

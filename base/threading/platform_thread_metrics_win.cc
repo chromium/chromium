@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 

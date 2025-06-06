@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/pending_task.h"
 #include "base/time/tick_clock.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 
 namespace base {

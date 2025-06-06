@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

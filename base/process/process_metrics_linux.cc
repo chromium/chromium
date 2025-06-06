@@ -38,7 +38,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"

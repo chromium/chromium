@@ -41,7 +41,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "partition_alloc/allocation_guard.h"
 #include "partition_alloc/buildflags.h"

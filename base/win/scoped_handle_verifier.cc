@@ -18,7 +18,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock_impl.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/base_win_buildflags.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"

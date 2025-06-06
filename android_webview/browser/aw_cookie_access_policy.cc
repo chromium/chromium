@@ -9,7 +9,7 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"

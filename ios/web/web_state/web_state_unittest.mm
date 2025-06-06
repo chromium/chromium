@@ -10,6 +10,7 @@
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/values.h"

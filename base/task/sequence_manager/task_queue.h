@@ -20,8 +20,8 @@
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/base_tracing_forward.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace perfetto {
 class EventContext;

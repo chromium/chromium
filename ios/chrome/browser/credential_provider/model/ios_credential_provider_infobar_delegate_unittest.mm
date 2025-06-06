@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_provider/model/ios_credential_provider_infobar_delegate.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "ios/chrome/grit/ios_strings.h"

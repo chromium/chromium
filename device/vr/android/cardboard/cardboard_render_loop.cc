@@ -5,9 +5,11 @@
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
 
 #include <time.h>
+
 #include <memory>
 
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_sdk.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"

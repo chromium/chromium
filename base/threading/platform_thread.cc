@@ -6,7 +6,7 @@
 
 #include "base/task/current_thread.h"
 #include "base/threading/thread_id_name_manager.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scheduler.h"

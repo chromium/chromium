@@ -7,6 +7,7 @@
 #include "android_webview/browser/gfx/overlay_processor_webview.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"

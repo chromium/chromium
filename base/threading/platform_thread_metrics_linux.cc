@@ -16,7 +16,7 @@
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 

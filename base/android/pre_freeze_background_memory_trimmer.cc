@@ -27,8 +27,8 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/named_trigger.h"  // no-presubmit-check
+#include "base/trace_event/trace_event.h"
 
 namespace base::android {
 BASE_FEATURE(kShouldFreezeSelf, "ShouldFreezeSelf", FEATURE_ENABLED_BY_DEFAULT);

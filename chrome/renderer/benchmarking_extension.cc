@@ -12,7 +12,7 @@
 #include "base/profiler/module_cache.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
 #include "v8-local-handle.h"

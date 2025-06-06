@@ -14,7 +14,7 @@
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/task_features.h"
 #include "base/threading/thread_checker.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base::sequence_manager::internal {
 

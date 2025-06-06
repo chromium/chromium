@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/trace_event/base_tracing.h"
 
 namespace base::trace_event {
 

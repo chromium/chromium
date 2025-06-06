@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace memory_pressure {
 

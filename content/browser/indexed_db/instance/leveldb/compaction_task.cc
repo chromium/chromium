@@ -4,7 +4,7 @@
 
 #include "content/browser/indexed_db/instance/leveldb/compaction_task.h"
 
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
 namespace content::indexed_db::level_db {

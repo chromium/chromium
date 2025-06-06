@@ -11,10 +11,10 @@
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/trace_event/base_tracing.h"
-#include "base/tracing_buildflags.h"
-
 #include "base/trace_event/trace_event_impl.h"  // no-presubmit-check
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing_buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"  // no-presubmit-check nogncheck
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"

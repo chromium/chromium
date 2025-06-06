@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include "base/files/file.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 

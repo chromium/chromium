@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 
 #include "base/strings/pattern.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"

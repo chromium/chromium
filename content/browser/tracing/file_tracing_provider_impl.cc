@@ -5,7 +5,7 @@
 #include "content/browser/tracing/file_tracing_provider_impl.h"
 
 #include "base/files/file_path.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace content {
 

@@ -8,7 +8,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/task/current_thread.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"

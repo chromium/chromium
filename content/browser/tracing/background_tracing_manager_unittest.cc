@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/token.h"
 #include "base/values.h"
 #include "build/build_config.h"

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"

@@ -25,7 +25,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_cftyperef.h"

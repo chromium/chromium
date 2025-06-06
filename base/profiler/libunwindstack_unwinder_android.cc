@@ -15,7 +15,7 @@
 #include "base/profiler/module_cache.h"
 #include "base/profiler/native_unwinder_android.h"
 #include "base/profiler/profile_builder.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Error.h"

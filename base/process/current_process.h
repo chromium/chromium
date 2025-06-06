@@ -13,8 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
-#include "base/trace_event/base_tracing.h"
 #include "build/buildflag.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
 
 namespace tracing {
 class TraceEventDataSource;

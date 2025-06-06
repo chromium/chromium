@@ -9,6 +9,8 @@
 #include "base/logging.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace ui {

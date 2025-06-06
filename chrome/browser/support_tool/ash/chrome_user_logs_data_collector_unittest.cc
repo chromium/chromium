@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/test/base/fake_profile_manager.h"

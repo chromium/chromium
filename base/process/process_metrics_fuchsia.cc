@@ -9,7 +9,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 

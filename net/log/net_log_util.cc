@@ -17,7 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
+#include "base/trace_event/trace_event.h"  // IWYU pragma: export
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/load_states.h"

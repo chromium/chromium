@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"

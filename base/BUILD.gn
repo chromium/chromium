@@ -885,7 +885,6 @@ component("base") {
     "timer/wall_clock_timer.h",
     "token.cc",
     "token.h",
-    "trace_event/base_tracing.h",
     "trace_event/base_tracing_forward.h",
     "trace_event/common/trace_event_common.h",
     "trace_event/heap_profiler_allocation_context.cc",

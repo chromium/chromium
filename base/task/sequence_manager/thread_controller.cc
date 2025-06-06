@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base::sequence_manager::internal {
 

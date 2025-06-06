@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "jank_metric_uma_recorder.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

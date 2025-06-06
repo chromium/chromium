@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/sys_utils_jni/SysUtils_jni.h"

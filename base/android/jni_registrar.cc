@@ -11,7 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/logging.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace base {
 namespace android {

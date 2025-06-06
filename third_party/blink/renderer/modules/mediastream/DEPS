@@ -4,6 +4,7 @@ include_rules = [
     "+base/strings/utf_string_conversions.h",
     "+base/strings/stringprintf.h",
     "+base/containers/flat_map.h",
+    "+base/memory/singleton.h",
 
     # TODO(crbug.com/923394): Remove these dependencies once per-frame
     # task runners are used in all cases.

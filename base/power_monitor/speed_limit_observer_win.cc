@@ -18,7 +18,7 @@
 #include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
 namespace {

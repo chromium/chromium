@@ -16,7 +16,8 @@
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
 namespace base {

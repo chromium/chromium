@@ -19,9 +19,13 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/heap_profiler.h"
+#include "base/trace_event/interned_args_helper.h"
+#include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/tracing_buildflags.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"
 
 namespace base {
 

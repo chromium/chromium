@@ -17,7 +17,7 @@
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time_override.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base::internal {

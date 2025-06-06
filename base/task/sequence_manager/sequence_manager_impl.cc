@@ -43,7 +43,7 @@
 #include "base/threading/thread_id_name_manager.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 

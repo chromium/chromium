@@ -9,7 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/sqlite/sqlite_entry_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"

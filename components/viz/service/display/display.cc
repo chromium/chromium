@@ -29,6 +29,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"

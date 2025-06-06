@@ -11,7 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/trace_event/application_state_proto_android.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/tasks_jni/ApplicationStatus_jni.h"

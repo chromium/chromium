@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/command_line.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/template_url_data_util.h"

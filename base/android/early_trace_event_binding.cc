@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/trace_event_binding.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

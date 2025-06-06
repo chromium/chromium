@@ -27,11 +27,11 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
+#include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "base/types/pass_key.h"
 #include "base/types/to_address.h"
-#include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
 
 namespace base {
 

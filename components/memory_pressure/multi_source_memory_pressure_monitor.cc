@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 

@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"

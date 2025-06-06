@@ -5,7 +5,7 @@
 #ifndef NET_BASE_TRACE_CONSTANTS_H_
 #define NET_BASE_TRACE_CONSTANTS_H_
 
-#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 
 namespace net {
 

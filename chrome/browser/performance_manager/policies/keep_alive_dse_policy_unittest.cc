@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/performance_manager.h"

@@ -47,11 +47,13 @@
 #include "base/task/common/task_annotator.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/threading/platform_thread.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/interned_args_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/vlog.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "base/auto_reset.h"

@@ -24,7 +24,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"

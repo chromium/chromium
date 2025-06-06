@@ -25,7 +25,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_features.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/interned_args_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/tracing_buildflags.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_message_pump.pbzero.h"
 

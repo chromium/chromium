@@ -8,9 +8,9 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 
 namespace base {

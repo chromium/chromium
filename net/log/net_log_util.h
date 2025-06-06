@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "base/trace_event/base_tracing.h"  // IWYU pragma: export
+#include "base/trace_event/trace_event.h"  // IWYU pragma: export
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 

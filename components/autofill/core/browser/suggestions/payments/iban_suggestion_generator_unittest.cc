@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

@@ -20,7 +20,7 @@
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/mach_port_rendezvous_mac.h"
