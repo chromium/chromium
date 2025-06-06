@@ -35,6 +35,7 @@ div {
   bottom: 48px;
   border-radius: 8px;
   left: 50%;
+  margin-bottom: 4px;
   padding: 0 8px;
   position: absolute;
   transform: translateX(-50%);
