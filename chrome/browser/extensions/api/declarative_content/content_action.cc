@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
@@ -331,13 +332,13 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
                 kMatchForAboutSchemeAndClimbTree
           : mojom::MatchOriginAsFallbackBehavior::kNever);
   for (const auto& css_file_name : script_data.css_file_names) {
-    GURL url = extension->ResolveExtensionURL(css_file_name);
+    GURL url = extension->ResolveExtensionURL(base::EscapePath(css_file_name));
     ExtensionResource resource = extension->GetResource(css_file_name);
     script_.css_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));
   }
   for (const auto& js_file_name : script_data.js_file_names) {
-    GURL url = extension->ResolveExtensionURL(js_file_name);
+    GURL url = extension->ResolveExtensionURL(base::EscapePath(js_file_name));
     ExtensionResource resource = extension->GetResource(js_file_name);
     script_.js_scripts().push_back(UserScript::Content::CreateFile(
         resource.extension_root(), resource.relative_path(), url));

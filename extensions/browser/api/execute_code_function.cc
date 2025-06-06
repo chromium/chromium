@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -211,7 +212,7 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
     return false;
   }
 
-  script_url_ = extension()->ResolveExtensionURL(file);
+  script_url_ = extension()->ResolveExtensionURL(base::EscapePath(file));
 
   bool might_require_localization = is_css_injection;
 

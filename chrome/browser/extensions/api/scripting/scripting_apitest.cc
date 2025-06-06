@@ -380,6 +380,11 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptSizeLimit) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptSpecialCharacters) {
+  ASSERT_TRUE(RunExtensionTest("scripting/execute_script_special_characters"))
+      << message_;
+}
+
 // Tests that calling scripting.executeScript works on a newly created tab
 // before the initial commit has happened. Regression for crbug.com/1191971.
 // TODO(crbug.com/391921606): Port to desktop Android when we have test

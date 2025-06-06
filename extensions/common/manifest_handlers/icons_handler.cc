@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -66,7 +67,8 @@ GURL IconsInfo::GetIconURL(const Extension* extension,
                            ExtensionIconVariant::ColorScheme color_scheme) {
   const std::string& path =
       GetIcons(*extension, color_scheme).Get(size_in_px, match_type);
-  return path.empty() ? GURL() : extension->ResolveExtensionURL(path);
+  return path.empty() ? GURL()
+                      : extension->ResolveExtensionURL(base::EscapePath(path));
 }
 
 bool IconsHandler::Parse(Extension* extension, std::u16string* error) {

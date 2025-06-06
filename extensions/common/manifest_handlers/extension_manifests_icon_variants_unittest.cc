@@ -341,4 +341,44 @@ TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
   ASSERT_TRUE(extension->install_warnings().empty());
 }
 
+TEST_F(IconVariantsManifestTest, GetIconUrlWithSpecialChars) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "test",
+        "version": "1",
+        "manifest_version": 3,
+        "icons": {
+          "16": "#icons.16.png"
+        },
+        "icon_variants": [
+          {
+            "16": "#icon_variants.16.png"
+          },
+          {
+            "16": "#icon_variants.16.dark.png",
+            "color_schemes": ["dark"]
+          }
+        ]
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+
+  const GURL& icon_url = IconsInfo::GetIconURL(
+      extension.get(), extension_misc::EXTENSION_ICON_BITTY,
+      ExtensionIconSet::Match::kExactly);
+  EXPECT_EQ("%23icon_variants.16.png", icon_url.path().substr(1));
+
+  const GURL& icon_url_light = IconsInfo::GetIconURL(
+      extension.get(), extension_misc::EXTENSION_ICON_BITTY,
+      ExtensionIconSet::Match::kExactly,
+      ExtensionIconVariant::ColorScheme::kLight);
+  EXPECT_EQ("%23icon_variants.16.png", icon_url_light.path().substr(1));
+
+  const GURL& icon_url_dark = IconsInfo::GetIconURL(
+      extension.get(), extension_misc::EXTENSION_ICON_BITTY,
+      ExtensionIconSet::Match::kExactly,
+      ExtensionIconVariant::ColorScheme::kDark);
+  EXPECT_EQ("%23icon_variants.16.dark.png", icon_url_dark.path().substr(1));
+}
+
 }  // namespace extensions
