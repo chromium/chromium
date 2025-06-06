@@ -9,9 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -73,6 +76,7 @@ public class SearchEngineUtilsUnitTest {
     @Mock LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock Resources mResources;
     @Mock Profile mProfile;
+    @Mock SearchEngineUtils.SearchBoxHintTextObserver mHintTextObserver;
 
     private Context mContext;
     private Bitmap mBitmap;
@@ -111,6 +115,8 @@ public class SearchEngineUtilsUnitTest {
     @Test
     public void testDefaultEnabledBehavior() {
         var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+
         // Show DSE logo when using regular profile.
         doReturn(false).when(mProfile).isOffTheRecord();
         searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
@@ -122,9 +128,8 @@ public class SearchEngineUtilsUnitTest {
         assertFalse(searchEngineUtils.shouldShowSearchEngineLogo());
 
         // Verify default placeholder text.
-        assertEquals(
-                mContext.getString(R.string.omnibox_empty_hint),
-                searchEngineUtils.getSearchBoxHintText());
+        verify(mHintTextObserver)
+                .onSearchBoxHintTextChanged(mContext.getString(R.string.omnibox_empty_hint));
     }
 
     @Test
@@ -275,6 +280,7 @@ public class SearchEngineUtilsUnitTest {
             // Google to Google
             configureSearchEngine("google", "Google");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -282,15 +288,17 @@ public class SearchEngineUtilsUnitTest {
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver)
+                    .onSearchBoxHintTextChanged(mContext.getString(R.string.omnibox_empty_hint));
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google to same non-Google.
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -298,15 +306,17 @@ public class SearchEngineUtilsUnitTest {
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver)
+                    .onSearchBoxHintTextChanged(mContext.getString(R.string.omnibox_empty_hint));
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -314,24 +324,25 @@ public class SearchEngineUtilsUnitTest {
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver)
+                    .onSearchBoxHintTextChanged(mContext.getString(R.string.omnibox_empty_hint));
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update to no engine
             doReturn(null).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver)
+                    .onSearchBoxHintTextChanged(mContext.getString(R.string.omnibox_empty_hint));
         }
     }
 
@@ -341,6 +352,11 @@ public class SearchEngineUtilsUnitTest {
             // Google to Google
             configureSearchEngine("google", "Google");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+
+            // Verify updated placeholder text.
+            verify(mHintTextObserver).onSearchBoxHintTextChanged("Search Google or type URL");
+            reset(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -350,13 +366,16 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify updated placeholder text.
-            assertEquals("Search Google or type URL", searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver, never()).onSearchBoxHintTextChanged(anyString());
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google to same non-Google.
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -366,14 +385,17 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify updated placeholder text.
-            assertEquals(
-                    "Search Another Engine or type URL", searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver)
+                    .onSearchBoxHintTextChanged("Search Another Engine or type URL");
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update
             saveSearchEngineSpecificDataToCache();
@@ -383,20 +405,23 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify default placeholder text.
-            assertEquals("Search or type URL", searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver).onSearchBoxHintTextChanged("Search or type URL");
         }
+
+        reset(mHintTextObserver);
 
         {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
 
             // Make an update to no engine
             doReturn(null).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals("Search or type URL", searchEngineUtils.getSearchBoxHintText());
+            verify(mHintTextObserver).onSearchBoxHintTextChanged("Search or type URL");
         }
     }
 

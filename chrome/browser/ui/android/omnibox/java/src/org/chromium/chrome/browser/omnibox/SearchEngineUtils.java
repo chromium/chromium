@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
@@ -13,10 +15,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -59,6 +63,8 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private final FaviconHelper mFaviconHelper;
     private final ImageFetcher mImageFetcher;
     private final int mSearchEngineLogoTargetSizePixels;
+    private final ObserverList<SearchBoxHintTextObserver> mSearchBoxHintTextObservers =
+            new ObserverList<>();
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
@@ -91,6 +97,16 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         int MAX = 6;
     }
 
+    @FunctionalInterface
+    public interface SearchBoxHintTextObserver {
+        /**
+         * Invoked when the Search Box hint text changes.
+         *
+         * @param newHintText the new hint text to apply
+         */
+        void onSearchBoxHintTextChanged(String newHintText);
+    }
+
     @VisibleForTesting
     SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
         mProfile = profile;
@@ -110,8 +126,8 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_favicon_size);
 
         // Apply safe fallback values.
-        mSearchBoxHintText =
-                OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
+        setSearchBoxHintText(
+                OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
         resetFavicon();
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -139,27 +155,31 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         mTemplateUrlService.removeObserver(this);
         mFaviconHelper.destroy();
         mImageFetcher.destroy();
+        mSearchBoxHintTextObservers.clear();
     }
 
     @Override
     public void onTemplateURLServiceChanged() {
         mDoesDefaultSearchEngineHaveLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
-        mSearchBoxHintText =
-                OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
 
         var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl == null) {
             recordEvent(Events.FETCH_FAILED_NULL_URL);
+            setSearchBoxHintText(
+                    OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
             return;
         }
 
         if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
                 && !TextUtils.isEmpty(templateUrl.getShortName())) {
-            mSearchBoxHintText =
+            setSearchBoxHintText(
                     OmniboxResourceProvider.getString(
                             mContext,
                             R.string.omnibox_empty_hint_with_dse_name,
-                            templateUrl.getShortName());
+                            templateUrl.getShortName()));
+        } else {
+            setSearchBoxHintText(
+                    OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
         }
 
         if (mDefaultSearchEngineMetadata == null
@@ -171,6 +191,29 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         }
 
         retrieveFavicon(templateUrl);
+    }
+
+    /** Add observer to be notified whenever the Omnibox hint text changes. */
+    public void addSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
+        mSearchBoxHintTextObservers.addObserver(observer);
+        observer.onSearchBoxHintTextChanged(mSearchBoxHintText);
+    }
+
+    /** Remove previously registered Omnibox hint text observer. */
+    public void removeSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
+        mSearchBoxHintTextObservers.removeObserver(observer);
+    }
+
+    @Initializer
+    private void setSearchBoxHintText(String newHint) {
+        // mSearchBoxHintText may be null when this method is invoked from constructor.
+        // This may generate a warning that this field is null. This is fine.
+        if (TextUtils.equals(assumeNonNull(mSearchBoxHintText), newHint)) return;
+
+        mSearchBoxHintText = newHint;
+        for (var observer : mSearchBoxHintTextObservers) {
+            observer.onSearchBoxHintTextChanged(newHint);
+        }
     }
 
     @VisibleForTesting
@@ -329,10 +372,5 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
      */
     public boolean doesDefaultSearchEngineHaveLogo() {
         return mDoesDefaultSearchEngineHaveLogo;
-    }
-
-    /** Returns the standardized Omnibox hint text for the current Search Engine. */
-    public String getSearchBoxHintText() {
-        return mSearchBoxHintText;
     }
 }

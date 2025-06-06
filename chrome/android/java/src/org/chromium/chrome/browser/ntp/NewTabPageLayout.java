@@ -66,7 +66,8 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
  * There are no separate phone and tablet UIs; this layout adapts based on the available space.
  */
-public class NewTabPageLayout extends LinearLayout {
+public class NewTabPageLayout extends LinearLayout
+        implements SearchEngineUtils.SearchBoxHintTextObserver {
     private static final String TAG = "NewTabPageLayout";
 
     private int mSearchBoxTwoSideMargin;
@@ -270,6 +271,9 @@ public class NewTabPageLayout extends LinearLayout {
         initializeVoiceSearchButton();
         initializeLensButton();
         initializeLayoutChangeListener();
+
+        // Initialize Searchbox observers
+        SearchEngineUtils.getForProfile(mProfile).addSearchBoxHintTextObserver(this);
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
         mInitialized = true;
@@ -888,6 +892,8 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     private void onDestroy() {
+        SearchEngineUtils.getForProfile(mProfile).removeSearchBoxHintTextObserver(this);
+
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -1029,9 +1035,8 @@ public class NewTabPageLayout extends LinearLayout {
                 && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
     }
 
-    /** Update text hint to capture the Search Engine name. */
-    /* package */ void updateSearchBoxHintText() {
-        mFakeSearchBoxEditText.setHint(
-                SearchEngineUtils.getForProfile(mProfile).getSearchBoxHintText());
+    @Override
+    public void onSearchBoxHintTextChanged(String newHint) {
+        mFakeSearchBoxEditText.setHint(newHint);
     }
 }

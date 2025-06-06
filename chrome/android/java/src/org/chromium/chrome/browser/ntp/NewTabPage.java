@@ -41,8 +41,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
@@ -659,7 +657,6 @@ public class NewTabPage
                 mIsTablet,
                 mTabStripHeightSupplier);
 
-        mNewTabPageLayout.updateSearchBoxHintText();
         initializeHomeModules();
 
         TraceEvent.end(TAG);
@@ -850,7 +847,6 @@ public class NewTabPage
     private void onSearchEngineUpdated() {
         updateSearchProviderHasLogo();
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, mNewTabPageLayout::updateSearchBoxHintText);
         setSearchProviderInfoOnView(
                 mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle());
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
