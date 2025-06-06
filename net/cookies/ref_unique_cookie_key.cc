@@ -6,9 +6,9 @@
 
 #include <compare>
 #include <optional>
-#include <string>
-#include <utility>
+#include <string_view>
 
+#include "base/types/optional_ref.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
 
@@ -19,12 +19,12 @@ class CookieBase;
 // static
 RefUniqueCookieKey RefUniqueCookieKey::Host(
     base::PassKey<CookieBase>,
-    const std::optional<CookiePartitionKey>& partition_key,
-    const std::string& name,
-    const std::string& domain,
-    const std::string& path,
-    const std::optional<CookieSourceScheme>& source_scheme,
-    const std::optional<int>& source_port) {
+    base::optional_ref<const CookiePartitionKey> partition_key,
+    std::string_view name,
+    std::string_view domain,
+    std::string_view path,
+    std::optional<CookieSourceScheme> source_scheme,
+    std::optional<int> source_port) {
   return RefUniqueCookieKey(KeyType::kHost, partition_key, name, domain, path,
                             source_scheme, source_port);
 }
@@ -32,11 +32,11 @@ RefUniqueCookieKey RefUniqueCookieKey::Host(
 // static
 RefUniqueCookieKey RefUniqueCookieKey::Domain(
     base::PassKey<CookieBase>,
-    const std::optional<CookiePartitionKey>& partition_key,
-    const std::string& name,
-    const std::string& domain,
-    const std::string& path,
-    const std::optional<CookieSourceScheme>& source_scheme) {
+    base::optional_ref<const CookiePartitionKey> partition_key,
+    std::string_view name,
+    std::string_view domain,
+    std::string_view path,
+    std::optional<CookieSourceScheme> source_scheme) {
   return RefUniqueCookieKey(KeyType::kDomain, partition_key, name, domain, path,
                             source_scheme, /*port=*/std::nullopt);
 }
@@ -47,17 +47,17 @@ RefUniqueCookieKey::~RefUniqueCookieKey() = default;
 
 RefUniqueCookieKey::RefUniqueCookieKey(
     KeyType key_type,
-    const std::optional<CookiePartitionKey>& partition_key,
-    const std::string& name,
-    const std::string& domain,
-    const std::string& path,
-    const std::optional<CookieSourceScheme>& source_scheme,
-    const std::optional<int>& port)
+    base::optional_ref<const CookiePartitionKey> partition_key,
+    std::string_view name,
+    std::string_view domain,
+    std::string_view path,
+    std::optional<CookieSourceScheme> source_scheme,
+    std::optional<int> port)
     : key_type_(key_type),
-      partition_key_(std::move(partition_key)),
-      name_(std::move(name)),
-      domain_(std::move(domain)),
-      path_(std::move(path)),
+      partition_key_(partition_key),
+      name_(name),
+      domain_(domain),
+      path_(path),
       source_scheme_(source_scheme),
       port_(port) {}
 

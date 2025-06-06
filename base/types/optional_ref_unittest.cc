@@ -4,6 +4,7 @@
 
 #include "base/types/optional_ref.h"
 
+#include <compare>
 #include <concepts>
 #include <cstddef>
 #include <optional>
@@ -410,23 +411,26 @@ TEST(OptionalRefTest, EqualityComparisonWithNullOpt) {
 
 class Comparable {
  public:
-  explicit Comparable(bool b) : b_(b) {}
+  explicit Comparable(bool b, int i) : b_(b), i_(i) {}
 
   Comparable(const Comparable&) = delete;
   Comparable(Comparable&&) = delete;
   Comparable& operator=(const Comparable&) = delete;
   Comparable& operator=(Comparable&&) = delete;
 
-  friend bool operator==(const Comparable&, const Comparable&) = default;
+  friend auto operator<=>(const Comparable&, const Comparable&) = default;
 
  private:
   bool b_;
+  int i_;
 };
 
 static_assert(!std::is_copy_assignable<Comparable>());
 static_assert(!std::is_copy_constructible<Comparable>());
 static_assert(std::equality_comparable<optional_ref<Comparable>>);
 static_assert(std::equality_comparable<optional_ref<const Comparable>>);
+static_assert(std::three_way_comparable<optional_ref<Comparable>>);
+static_assert(std::three_way_comparable<optional_ref<const Comparable>>);
 
 TEST(OptionalRefTest, EqualityComparison) {
   int value = 5;
@@ -479,7 +483,7 @@ TEST(OptionalRefTest, EqualityComparison) {
 
   {
     // Use with references.
-    Comparable comp(true);
+    Comparable comp(true, 5);
     optional_ref<Comparable> r(comp);
     optional_ref<const Comparable> s(comp);
 
@@ -493,10 +497,41 @@ TEST(OptionalRefTest, EqualityComparison) {
     EXPECT_EQ(r, r);
     EXPECT_EQ(s, s);
 
-    EXPECT_NE(Comparable(false), r);
-    EXPECT_NE(r, Comparable(false));
-    EXPECT_NE(Comparable(false), s);
-    EXPECT_NE(s, Comparable(false));
+    EXPECT_NE(Comparable(false, 5), r);
+    EXPECT_NE(r, Comparable(false, 5));
+    EXPECT_NE(Comparable(false, 5), s);
+    EXPECT_NE(s, Comparable(false, 5));
+  }
+}
+
+TEST(OptionalRefTest, ThreeWayComparison) {
+  int value = 5;
+  int other_value = 7;
+
+  {
+    // Nulls.
+    optional_ref<int> r;
+    optional_ref<int> s;
+    EXPECT_EQ(r <=> s, std::strong_ordering::equal);
+
+    optional_ref<int> t(value);
+    EXPECT_LT(r, t);
+    EXPECT_GT(t, r);
+  }
+
+  {
+    // Populated values.
+    optional_ref<int> r(value);
+    optional_ref<int> s(other_value);
+    EXPECT_LT(r, s);
+    EXPECT_GT(s, r);
+  }
+
+  {
+    // Mismatched const-qualification.
+    optional_ref<int> r(value);
+    optional_ref<const int> s(other_value);
+    EXPECT_LT(r, s);
   }
 }
 
@@ -504,6 +539,8 @@ class Noncomparable {};
 
 static_assert(!std::equality_comparable<Noncomparable>);
 static_assert(!std::equality_comparable<optional_ref<Noncomparable>>);
+static_assert(!std::three_way_comparable<Noncomparable>);
+static_assert(!std::three_way_comparable<optional_ref<Noncomparable>>);
 
 TEST(OptionalRefTest, CompatibilityWithOptionalMatcher) {
   using ::testing::Optional;
