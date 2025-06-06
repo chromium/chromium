@@ -6,6 +6,7 @@ frontend: {"id":<number>,"method":"DOM.disable","params":{},"sessionId":<string>
 frontend: {"id":<number>,"method":"CSS.disable","params":{},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":0},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.disable","params":{},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Animation.disable","params":{},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":false,"flatten":true},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridNodeHighlightConfigs":[]},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]},"sessionId":<string>}
@@ -23,6 +24,7 @@ frontend: {"id":<number>,"method":"Debugger.setPauseOnExceptions","params":{"sta
 frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":32},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.enable","params":{},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.setShowViewportSizeOnResize","params":{"show":true},"sessionId":<string>}
+frontend: {"id":<number>,"method":"Animation.enable","params":{},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":true,"flatten":true},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridNodeHighlightConfigs":[]},"sessionId":<string>}
 frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]},"sessionId":<string>}
