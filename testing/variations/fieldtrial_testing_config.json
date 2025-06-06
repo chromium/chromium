@@ -10324,6 +10324,21 @@
             ]
         }
     ],
+    "GlicExplicitBackgroundColor": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "GlicExplicitBackgroundColor"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicRolloutDogfood": [
         {
             "platforms": [
