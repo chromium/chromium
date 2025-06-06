@@ -6220,6 +6220,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5589" label="ClipboardChangeEventTypesAttribute"/>
   <int value="5590" label="SchedulerYieldNonTrivialInherit"/>
   <int value="5591" label="SchedulerYieldNonTrivialInheritCrossFrameIgnored"/>
+  <int value="5592" label="LocalNetworkAccessPrivateAliasUse"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
