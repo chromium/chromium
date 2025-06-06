@@ -2249,16 +2249,17 @@ index ceb43f440de62..0000000000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
-index 084d3cc0cd7c8..e7478d5bc9d95 100644
+index 084d3cc0cd7c8..7e34eacdac9b2 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
-@@ -1,74 +1,57 @@
+@@ -1,74 +1,58 @@
  #include <zxcvbn/util.hpp>
  
  #include <algorithm>
 -#include <codecvt>
 -#include <locale>
  #include <string>
++#include <string_view>
  #include <utility>
  
  #include <cassert>
@@ -2273,7 +2274,7 @@ index 084d3cc0cd7c8..e7478d5bc9d95 100644
  
 +bool utf8_valid(std::string::const_iterator start,
 +                std::string::const_iterator end) {
-+  return base::IsStringUTF8(base::MakeStringPiece(start, end));
++  return base::IsStringUTF8(std::string_view(start, end));
 +}
 +
 +bool utf8_valid(const std::string & str) {
@@ -2356,7 +2357,7 @@ index 084d3cc0cd7c8..e7478d5bc9d95 100644
  }
  
  std::string::iterator utf8_iter(std::string::iterator start,
-@@ -99,38 +82,6 @@ std::string::size_type character_len(const std::string & str) {
+@@ -99,38 +83,6 @@ std::string::size_type character_len(const std::string & str) {
    return character_len(str, 0, str.size());
  }
  
