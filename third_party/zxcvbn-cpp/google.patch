@@ -1,7 +1,7 @@
-diff --git a/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp b/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
 deleted file mode 100644
-index 7e1ae34..0000000
---- a/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
+index 7e1ae349a8e0f..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
 +++ /dev/null
 @@ -1,49 +0,0 @@
 -#include <zxcvbn/common_js.hpp>
@@ -53,10 +53,10 @@ index 7e1ae34..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/common.hpp b/native-src/zxcvbn/common.hpp
-index cba756c..1f66367 100644
---- a/native-src/zxcvbn/common.hpp
-+++ b/native-src/zxcvbn/common.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+index cba756c449a63..1f66367112aa8 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
 @@ -1,7 +1,6 @@
  #ifndef __ZXCVBN__COMMON_HPP
  #define __ZXCVBN__COMMON_HPP
@@ -97,10 +97,10 @@ index cba756c..1f66367 100644
    std::string matched_word;
    rank_t rank;
    bool l33t;
-diff --git a/native-src/zxcvbn/common_js.hpp b/native-src/zxcvbn/common_js.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
 deleted file mode 100644
-index 729cbad..0000000
---- a/native-src/zxcvbn/common_js.hpp
+index 729cbad18709c..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common_js.hpp
 +++ /dev/null
 @@ -1,515 +0,0 @@
 -#ifndef __ZXCVBN__COMMON_JS_HPP
@@ -618,10 +618,10 @@ index 729cbad..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/feedback.cpp b/native-src/zxcvbn/feedback.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
 deleted file mode 100644
-index d22c296..0000000
---- a/native-src/zxcvbn/feedback.cpp
+index d22c296188973..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
 +++ /dev/null
 @@ -1,174 +0,0 @@
 -#include <zxcvbn/feedback.hpp>
@@ -798,10 +798,10 @@ index d22c296..0000000
 -
 -}
 -
-diff --git a/native-src/zxcvbn/feedback.hpp b/native-src/zxcvbn/feedback.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
 deleted file mode 100644
-index 6f6b62b..0000000
---- a/native-src/zxcvbn/feedback.hpp
+index 6f6b62b9da054..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
 +++ /dev/null
 @@ -1,20 +0,0 @@
 -#ifndef __ZXCVBN__FEEDBACK_HPP
@@ -824,11 +824,11 @@ index 6f6b62b..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/frequency_lists.cpp b/native-src/zxcvbn/frequency_lists.cpp
-index 4e4b727..2eb003f 100644
---- a/native-src/zxcvbn/frequency_lists.cpp
-+++ b/native-src/zxcvbn/frequency_lists.cpp
-@@ -1,24 +1,249 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+index a4d65612d8a25..67a2aff5542f3 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+@@ -1,24 +1,245 @@
  #include <zxcvbn/frequency_lists.hpp>
  
 -#include <zxcvbn/_frequency_lists.hpp>
@@ -993,8 +993,10 @@ index 4e4b727..2eb003f 100644
 +  CHECK_EQ(vec.size(), dict_size);
 +  vec.push_back(MarkedBigEndianU15::MARKER_BIT);
 +  data_ = Datawrapper(std::move(vec));
-+}
-+
+ }
+ 
+-RankedDicts default_ranked_dicts() {
+-  return convert_to_ranked_dicts(_frequency_lists::get_default_ranked_dicts());
 +RankedDicts::RankedDicts(std::unique_ptr<base::MemoryMappedFile> map)
 +    : data_(std::move(map)) {}
 +
@@ -1045,8 +1047,8 @@ index 4e4b727..2eb003f 100644
 +        range_last--;
 +    }
 +  }
-+}
-+
+ }
+ 
 +// Determine whether an entry starts at the given offset; in other words,
 +// determine whether a MarkedBigEndianU15 starts there.
 +bool RankedDicts::IsRealMarker(size_t offset) const {
@@ -1060,14 +1062,12 @@ index 4e4b727..2eb003f 100644
 +    }
 +  }
 +  return false;
- }
- 
--RankedDicts default_ranked_dicts() {
--  return convert_to_ranked_dicts(_frequency_lists::get_default_ranked_dicts());
++}
++
 +void SetRankedDictsImplementation(RankedDicts dicts) {
 +  default_ranked_dicts() = std::move(dicts);
- }
- 
++}
++
 +void SetRankedDicts(RankedDicts dicts) {
 +  // Destroying a `RankedDict` may block if it is based on a `MemoryMappedFile`.
 +  // Therefore this helper moves the task of doing it to a thread pool.
@@ -1076,17 +1076,17 @@ index 4e4b727..2eb003f 100644
 +      base::BindOnce(&DoNothing, std::move(default_ranked_dicts())));
 +  default_ranked_dicts() = std::move(dicts);
 +}
- 
++
 +RankedDicts& default_ranked_dicts() {
 +  static base::NoDestructor<RankedDicts> default_dicts;
 +  return *default_dicts;
  }
 +
 +}  // namespace zxcvbn
-diff --git a/native-src/zxcvbn/frequency_lists.hpp b/native-src/zxcvbn/frequency_lists.hpp
-index c75ea30..fed3aaa 100644
---- a/native-src/zxcvbn/frequency_lists.hpp
-+++ b/native-src/zxcvbn/frequency_lists.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
+index c75ea30d5a911..fed3aaa2ca6a3 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
 @@ -1,37 +1,85 @@
  #ifndef __ZXCVBN__FREQUENCY_LISTS_HPP
  #define __ZXCVBN__FREQUENCY_LISTS_HPP
@@ -1192,10 +1192,10 @@ index c75ea30..fed3aaa 100644
 +} // namespace zxcvbn
  
  #endif
-diff --git a/native-src/zxcvbn/frequency_lists_common.hpp b/native-src/zxcvbn/frequency_lists_common.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
 deleted file mode 100644
-index 40eee25..0000000
---- a/native-src/zxcvbn/frequency_lists_common.hpp
+index 40eee250f244a..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
 +++ /dev/null
 @@ -1,28 +0,0 @@
 -#ifndef __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
@@ -1226,10 +1226,10 @@ index 40eee25..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/js_frequency_lists.cpp b/native-src/zxcvbn/js_frequency_lists.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp
 deleted file mode 100644
-index 510ba3f..0000000
---- a/native-src/zxcvbn/js_frequency_lists.cpp
+index 510ba3f4307b8..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/js_frequency_lists.cpp
 +++ /dev/null
 @@ -1,65 +0,0 @@
 -#include <zxcvbn/_frequency_lists.hpp>
@@ -1297,10 +1297,10 @@ index 510ba3f..0000000
 -}
 -
 -}
-diff --git a/native-src/zxcvbn/matching.cpp b/native-src/zxcvbn/matching.cpp
-index 6d53664..e247818 100644
---- a/native-src/zxcvbn/matching.cpp
-+++ b/native-src/zxcvbn/matching.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index 6d53664f884c0..e247818214d50 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
 @@ -19,28 +19,44 @@
  #include <utility>
  #include <unordered_set>
@@ -1642,10 +1642,10 @@ index 6d53664..e247818 100644
            sequence_space = 26;
          }
          result.push_back(Match(i, j, token,
-diff --git a/native-src/zxcvbn/matching.hpp b/native-src/zxcvbn/matching.hpp
-index 7ded5d8..4486038 100644
---- a/native-src/zxcvbn/matching.hpp
-+++ b/native-src/zxcvbn/matching.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
+index 7ded5d89573fc..448603892a5e3 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
 @@ -10,8 +10,8 @@
  
  namespace zxcvbn {
@@ -1667,10 +1667,10 @@ index 7ded5d8..4486038 100644
  
  }
  
-diff --git a/native-src/zxcvbn/matching_js_bindings.cpp b/native-src/zxcvbn/matching_js_bindings.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
 deleted file mode 100644
-index 1dfcb53..0000000
---- a/native-src/zxcvbn/matching_js_bindings.cpp
+index 1dfcb53bc42d4..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
 +++ /dev/null
 @@ -1,262 +0,0 @@
 -#include <zxcvbn/matching.hpp>
@@ -1935,10 +1935,10 @@ index 1dfcb53..0000000
 -  emscripten::function("omnimatch", &zxcvbn_js::omnimatch);
 -}
 -
-diff --git a/native-src/zxcvbn/optional.hpp b/native-src/zxcvbn/optional.hpp
-index 68b77e0..b3fb257 100644
---- a/native-src/zxcvbn/optional.hpp
-+++ b/native-src/zxcvbn/optional.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
+index 68b77e0e9b487..b3fb2577e169f 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
 @@ -7,6 +7,7 @@
  #include <new>
  #include <stdexcept>
@@ -1947,10 +1947,10 @@ index 68b77e0..b3fb257 100644
  
  #include <cstdint>
  #include <cassert>
-diff --git a/native-src/zxcvbn/scoring.cpp b/native-src/zxcvbn/scoring.cpp
-index c652e2d..e5c120a 100644
---- a/native-src/zxcvbn/scoring.cpp
-+++ b/native-src/zxcvbn/scoring.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+index c652e2d2d9dea..e5c120a86a5c4 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
 @@ -9,6 +9,8 @@
  
  #include <cmath>
@@ -2033,10 +2033,10 @@ index c652e2d..e5c120a 100644
      if (std::regex_match(word, regex)) return 2;
    }
    // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
-diff --git a/native-src/zxcvbn/scoring.hpp b/native-src/zxcvbn/scoring.hpp
-index 901c71f..1038ee3 100644
---- a/native-src/zxcvbn/scoring.hpp
-+++ b/native-src/zxcvbn/scoring.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
+index 901c71f15e3bc..1038ee34587cc 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
 @@ -11,10 +11,10 @@
  
  namespace zxcvbn {
@@ -2061,10 +2061,10 @@ index 901c71f..1038ee3 100644
  #undef MATCH_FN
  
  guesses_t uppercase_variations(const Match & match);
-diff --git a/native-src/zxcvbn/scoring_js_bindings.cpp b/native-src/zxcvbn/scoring_js_bindings.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp
 deleted file mode 100644
-index ceb43f4..0000000
---- a/native-src/zxcvbn/scoring_js_bindings.cpp
+index ceb43f440de62..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring_js_bindings.cpp
 +++ /dev/null
 @@ -1,181 +0,0 @@
 -#include <zxcvbn/common_js.hpp>
@@ -2248,10 +2248,10 @@ index ceb43f4..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/util.cpp b/native-src/zxcvbn/util.cpp
-index 084d3cc..e7478d5 100644
---- a/native-src/zxcvbn/util.cpp
-+++ b/native-src/zxcvbn/util.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+index 084d3cc0cd7c8..e7478d5bc9d95 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
 @@ -1,74 +1,57 @@
  #include <zxcvbn/util.hpp>
  
@@ -2395,10 +2395,10 @@ index 084d3cc..e7478d5 100644
  char32_t utf8_decode(const std::string & start,
                       std::string::size_type & idx) {
    auto ret = _utf8_decode(start.begin() + idx, start.end());
-diff --git a/native-src/zxcvbn/util.hpp b/native-src/zxcvbn/util.hpp
-index b784c1f..90fa998 100644
---- a/native-src/zxcvbn/util.hpp
-+++ b/native-src/zxcvbn/util.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
+index b784c1f6c1d28..90fa99816c92f 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
 @@ -29,8 +29,6 @@ std::string::size_type character_len(const std::string &,
                                       std::string::size_type end) __attribute__((pure));
  std::string::size_type character_len(const std::string &)  __attribute__((pure));
@@ -2408,10 +2408,10 @@ index b784c1f..90fa998 100644
  char32_t utf8_decode(const std::string & start,
                       std::string::size_type & idx);
  
-diff --git a/native-src/zxcvbn/zxcvbn.cpp b/native-src/zxcvbn/zxcvbn.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp
 deleted file mode 100644
-index d9b5291..0000000
---- a/native-src/zxcvbn/zxcvbn.cpp
+index d9b52916680f1..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.cpp
 +++ /dev/null
 @@ -1,50 +0,0 @@
 -#include <zxcvbn/zxcvbn.h>
@@ -2464,10 +2464,10 @@ index d9b5291..0000000
 -}
 -
 -}
-diff --git a/native-src/zxcvbn/zxcvbn.h b/native-src/zxcvbn/zxcvbn.h
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h
 deleted file mode 100644
-index 67a6d03..0000000
---- a/native-src/zxcvbn/zxcvbn.h
+index 67a6d03798a56..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.h
 +++ /dev/null
 @@ -1,26 +0,0 @@
 -#ifndef __ZXCVBN_H
@@ -2496,10 +2496,10 @@ index 67a6d03..0000000
 -#endif
 -
 -#endif
-diff --git a/native-src/zxcvbn/zxcvbn.hpp b/native-src/zxcvbn/zxcvbn.hpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp
 deleted file mode 100644
-index a48bcd8..0000000
---- a/native-src/zxcvbn/zxcvbn.hpp
+index a48bcd8c11961..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn.hpp
 +++ /dev/null
 @@ -1,23 +0,0 @@
 -#ifndef __ZXCVBN__ZXCVBN_HPP
@@ -2525,10 +2525,10 @@ index a48bcd8..0000000
 -}
 -
 -#endif
-diff --git a/native-src/zxcvbn/zxcvbn_js_bindings.cpp b/native-src/zxcvbn/zxcvbn_js_bindings.cpp
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp
 deleted file mode 100644
-index f0ba44c..0000000
---- a/native-src/zxcvbn/zxcvbn_js_bindings.cpp
+index f0ba44c3539d8..0000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/zxcvbn_js_bindings.cpp
 +++ /dev/null
 @@ -1,104 +0,0 @@
 -#include <zxcvbn/common_js.hpp>
