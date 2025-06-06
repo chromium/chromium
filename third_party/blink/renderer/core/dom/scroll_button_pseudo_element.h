@@ -35,6 +35,8 @@ class ScrollButtonPseudoElement : public PseudoElement,
  private:
   bool UpdateSnapshotInternal();
 
+  void HandleButtonActivation();
+
   bool enabled_ = true;
 };
 
