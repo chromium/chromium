@@ -513,7 +513,8 @@ public abstract class CronetEngine {
          * established by a {@link CronetEngine} as a consequence of {@link UrlRequest} being
          * started. For more details, see the documentation of {@link ProxyOptions}.
          *
-         * <p>This is currently a no-op, setting this will have no effects on Cronet.
+         * <p>This has not been implemented yet, calling this will always throw {@code
+         * UnsupportedOperationException}.
          *
          * <p>Warning: DO NOT USE without reaching out to Cronet maintainers first. This is
          * experimental and subject to change.

@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "I4f1f32c01b708c3802e685412bac27a1d6af5258",
+      "good_change_id": "I8b928ed0807bff1b545da2da503388af7a602dd7",
+      "bugs": ["b/421181925"],
+      "comment": "setProxyOptions silently succeeds if the Cronet implementation does not support it (e.g., is too old)."
+    },
+    {
       "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
       "good_change_id": "Iac5a6430580e1d83aeac11bb84766027819d2895",
       "bugs": [

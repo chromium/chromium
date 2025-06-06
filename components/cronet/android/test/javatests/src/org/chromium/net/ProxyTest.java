@@ -22,10 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
-import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.base.test.util.DisabledTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,11 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Test Cronet proxy support. */
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
-@IgnoreFor(
-        implementations = {CronetImplementation.AOSP_PLATFORM, CronetImplementation.FALLBACK},
-        reason =
-                "This feature flag has not reached platform Cronet yet. Fallback provides no proxy"
-                        + " support.")
 public class ProxyTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
@@ -70,7 +65,7 @@ public class ProxyTest {
 
     @Test
     @SmallTest
-    public void testSetProxyOptions_nullCallback_throws() {
+    public void testProxy_nullCallback_throws() {
         assertThrows(
                 NullPointerException.class,
                 () ->
@@ -83,7 +78,7 @@ public class ProxyTest {
 
     @Test
     @SmallTest
-    public void testSetProxyOptions_nullHost_throws() {
+    public void testProxy_nullHost_throws() {
         TestProxyCallback proxyCallback = new TestProxyCallback();
         assertThrows(
                 NullPointerException.class,
@@ -97,6 +92,60 @@ public class ProxyTest {
 
     @Test
     @SmallTest
+    public void testSetProxyOptions_nullProxyOptions_throws() {
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThrows(NullPointerException.class, () -> builder.setProxyOptions(null));
+    }
+
+    @Test
+    @SmallTest
+    // TODO(https://crbug.com/422429341): Drop this once setProxyOptions impl lands.
+    public void testSetProxyOptions_emptyList_throws() {
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> builder.setProxyOptions(new ProxyOptions(Collections.emptyList())));
+    }
+
+    @Test
+    @SmallTest
+    // TODO(https://crbug.com/422429341): Drop this once setProxyOptions impl lands.
+    public void testSetProxyOptions_nonEmptyList_throws() {
+        TestProxyCallback proxyCallback = new TestProxyCallback();
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThrows(
+                UnsupportedOperationException.class,
+                () ->
+                        builder.setProxyOptions(
+                                new ProxyOptions(
+                                        Arrays.asList(
+                                                new Proxy(
+                                                        /* scheme= */ Proxy.HTTPS,
+                                                        /* host= */ "this-hostname-does-not-exist.com",
+                                                        /* port= */ 8080,
+                                                        /* callback= */ proxyCallback)))));
+    }
+
+    @Test
+    @SmallTest
+    // TODO(https://crbug.com/422429341): Drop this once setProxyOptions impl lands.
+    public void testSetProxyOptions_listWithDirectProxy_throws() {
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> builder.setProxyOptions(new ProxyOptions(Arrays.asList((Proxy) null))));
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(
+            message =
+                    "https://crbug.com/422429341: Now that setProxyOptions throws UOE, this"
+                            + " requires setProxyOptions being implemented")
     public void testSetProxyOptions_direct_requestSucceeds() {
         TestProxyCallback proxyCallback = new TestProxyCallback();
         mTestRule
@@ -118,6 +167,10 @@ public class ProxyTest {
 
     @Test
     @SmallTest
+    @DisabledTest(
+            message =
+                    "https://crbug.com/422429341: Now that setProxyOptions throws UOE, this"
+                            + " requires setProxyOptions being implemented")
     public void testSetProxyOptions_notExistingProxyWithDirectFallback_requestSucceeds() {
         TestProxyCallback proxyCallback = new TestProxyCallback();
         mTestRule
@@ -146,6 +199,10 @@ public class ProxyTest {
 
     @Test
     @SmallTest
+    @DisabledTest(
+            message =
+                    "https://crbug.com/422429341: Now that setProxyOptions throws UOE, this"
+                            + " requires setProxyOptions being implemented")
     public void testSetProxyOptionsIsANoop_notExistingProxy_requestSucceeds() {
         TestProxyCallback proxyCallback = new TestProxyCallback();
         mTestRule
