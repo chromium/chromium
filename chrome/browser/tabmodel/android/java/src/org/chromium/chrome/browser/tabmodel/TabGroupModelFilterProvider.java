@@ -37,26 +37,13 @@ public class TabGroupModelFilterProvider {
     /*package*/ TabGroupModelFilterProvider() {}
 
     /*package*/ void init(
-            TabGroupModelFilterFactory tabGroupModelFilterFactory,
-            TabUngrouperFactory tabUngrouperFactory,
-            TabModelSelector tabModelSelector,
-            List<TabModelInternal> tabModels) {
+            TabModelSelector tabModelSelector, List<TabGroupModelFilterInternal> filters) {
         assert mTabGroupModelFilterInternalList.isEmpty();
-        assert tabModels.size() > 0;
+        assert filters.size() > 0;
 
         mTabModelSelector = tabModelSelector;
-
-        List<TabGroupModelFilterInternal> filters = new ArrayList<>(tabModels.size());
-        for (TabModelInternal tabModel : tabModels) {
-            boolean isIncognitoBranded = tabModel.isIncognitoBranded();
-            TabUngrouper tabUngrouper =
-                    tabUngrouperFactory.create(
-                            isIncognitoBranded, () -> getTabGroupModelFilter(isIncognitoBranded));
-            filters.add(
-                    tabGroupModelFilterFactory.createTabGroupModelFilter(tabModel, tabUngrouper));
-        }
-
         mTabGroupModelFilterInternalList = Collections.unmodifiableList(filters);
+
         // Registers the pending observers.
         for (TabModelObserver observer : mPendingTabModelObserver) {
             for (TabGroupModelFilter tabGroupModelFilter : mTabGroupModelFilterInternalList) {

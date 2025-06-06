@@ -86,6 +86,21 @@ public abstract class TabModelSelectorBase
                         mTabModelSupplier, tabModel -> tabModel.getTabCountSupplier());
     }
 
+    private static List<TabGroupModelFilterInternal> createTabGroupModelFilters(
+            List<TabModelInternal> tabModels, TabUngrouperFactory tabUngrouperFactory) {
+        List<TabGroupModelFilterInternal> filters = new ArrayList<>(tabModels.size());
+        for (TabModelInternal tabModel : tabModels) {
+            boolean isIncognitoBranded = tabModel.isIncognitoBranded();
+            TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
+            TabUngrouper tabUngrouper =
+                    tabUngrouperFactory.create(isIncognitoBranded, () -> filterHolder[0]);
+            TabGroupModelFilterInternal filter = new TabGroupModelFilterImpl(tabModel, tabUngrouper);
+            filterHolder[0] = filter;
+            filters.add(filter);
+        }
+        return filters;
+    }
+
     @Initializer
     protected final void initialize(
             TabModelInternal normalModel,
@@ -101,7 +116,7 @@ public abstract class TabModelSelectorBase
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
         mTabGroupModelFilterProvider.init(
-                TabGroupModelFilterImpl::new, tabUngrouperFactory, this, mTabModelInternals);
+                this, createTabGroupModelFilters(mTabModelInternals, tabUngrouperFactory));
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
