@@ -1370,10 +1370,18 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Whether the image should be repositioned when exiting.
 - (BOOL)shouldResetSelectionToInitialPositionOnExit {
-  BOOL isLVFEntrypoint =
+  // LVF camera capture always resets to initial position.
+  BOOL isCameraCapture =
+      _entrypoint == LensOverlayEntrypoint::kLVFCameraCapture;
+  if (isCameraCapture) {
+    return YES;
+  }
+
+  // User provided images should not cause a reset.
+  BOOL isUserProvidedLVFImage =
       _entrypoint == LensOverlayEntrypoint::kSearchImageContextMenu ||
       _entrypoint == LensOverlayEntrypoint::kLVFImagePicker;
-  if (isLVFEntrypoint) {
+  if (isUserProvidedLVFImage) {
     return NO;
   }
 
