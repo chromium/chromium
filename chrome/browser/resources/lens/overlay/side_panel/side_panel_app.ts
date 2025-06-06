@@ -399,13 +399,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   // Called when the searchbox requests autocomplete suggestions.
   private handleQueryAutocomplete(e: CustomEvent) {
-    this.autocompleteRequestStarted = true;
-    if (!e.detail.inputValue.trim()) {
-      // If there is an input of only whitespace, don't show ghost loader since
-      // no results will ever be returned for these inputs.
-      this.suppressGhostLoader = e.detail.inputValue;
-      this.showErrorState = false;
-    }
+    // A request is only started for zero suggest, which is when the input value
+    // is empty.
+    this.autocompleteRequestStarted = !e.detail.inputValue;
+    this.showErrorState = false;
   }
 
   private setShowErrorPage(
