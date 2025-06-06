@@ -3017,12 +3017,20 @@ enum class ToolbarKind {
 
 - (void)showBWGPromo {
   if (IsPageActionMenuEnabled()) {
-    _BWGCoordinator = [[BWGCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                    fromEntryPoint:bwg::EntryPointPromo];
-    _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
-    [_BWGCoordinator start];
+    web::WebState* activeWebState = self.activeWebState;
+    DCHECK(activeWebState);
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(activeWebState);
+    BOOL isNTP = NTPHelper && NTPHelper->IsActive();
+
+    if (!isNTP) {
+      _BWGCoordinator = [[BWGCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                      fromEntryPoint:bwg::EntryPointPromo];
+      _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
+      [_BWGCoordinator start];
+    }
   }
 }
 

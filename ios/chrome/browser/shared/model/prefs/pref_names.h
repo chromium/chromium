@@ -770,6 +770,9 @@ inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
 // A boolean specifying whether the bwg consent form has been accepted.
 inline constexpr char kIOSBwgConsent[] = "ios.bwg.consent";
 
+// A boolean specifying whether the AI Hub was shown.
+inline constexpr char kIOSAIHubShown[] = "ios.ai_hub.shown";
+
 // A time object storing the first browser startup with a managed primary
 // identity in the personal profile after multi-profile becomes supported. Used
 // to trigger forced migration after some grace period.

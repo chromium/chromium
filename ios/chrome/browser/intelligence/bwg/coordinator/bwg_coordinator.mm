@@ -34,6 +34,12 @@
 
   // Returns the `_entryPoint` the coordinator was intialized from.
   bwg::EntryPoint _entryPoint;
+
+  // Pref service.
+  raw_ptr<PrefService> _prefService;
+
+  // FET(Feature engagement tracker) for promo updates.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -49,22 +55,15 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  PrefService* pref_service = self.profile->GetPrefs();
-  CHECK(pref_service);
+  _prefService = self.profile->GetPrefs();
+  CHECK(_prefService);
 
-  // If the user sees the GLIC feature, we can consider this feature as
-  // discovered. Therefore, we can mark the GLIC feature as used.
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
-  if (engagementTracker) {
-    engagementTracker->NotifyUsedEvent(
-        feature_engagement::kIPHIOSBWGPromoFeature);
-  }
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
   _handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
 
-  _mediator = [[BWGMediator alloc] initWithPrefService:pref_service
+  _mediator = [[BWGMediator alloc] initWithPrefService:_prefService
                                                browser:self.browser
                                     baseViewController:self.baseViewController];
   _mediator.delegate = self;
@@ -79,17 +78,26 @@
   _navigationController = nil;
   _handler = nil;
   _mediator = nil;
+  _prefService = nil;
   [super stop];
 }
 
 #pragma mark - BWGMediatorDelegate
 
 - (BOOL)maybePresentBWGFRE {
-  BOOL showPromo = _entryPoint == bwg::EntryPointPromo;
+  BOOL showPromo = [self shouldShowBWGPromo];
   BOOL showConsent = [self shouldShowBWGConsent];
 
   if (!showPromo && !showConsent) {
     return NO;
+  }
+
+  // If promo was shown outside the promos manager, ensure the promo doesn't
+  // show through the promos manager.
+  if (_entryPoint != bwg::EntryPointPromo) {
+    _prefService->SetBoolean(prefs::kIOSAIHubShown, YES);
+    _tracker->UnregisterPriorityNotificationHandler(
+        feature_engagement::kIPHIOSBWGPromoFeature);
   }
 
   _navigationController =
@@ -110,9 +118,7 @@
 }
 
 - (BOOL)shouldShowBWGConsent {
-  PrefService* prefService = self.profile->GetPrefs();
-  CHECK(prefService);
-  return !prefService->GetBoolean(prefs::kIOSBwgConsent);
+  return !_prefService->GetBoolean(prefs::kIOSBwgConsent);
 }
 
 - (void)dismissBWGFlow {
@@ -144,6 +150,16 @@
     [self.baseViewController dismissViewControllerAnimated:YES
                                                 completion:completion];
   }
+}
+
+// If YES, BWG Promo should be shown.
+- (BOOL)shouldShowBWGPromo {
+  BOOL AIHubShown = _prefService->GetBoolean(prefs::kIOSAIHubShown);
+  BOOL promoShown = _tracker->HasEverTriggered(
+      feature_engagement::kIPHIOSBWGPromoFeature, true);
+  BOOL isPromo = _entryPoint == bwg::EntryPointPromo;
+
+  return isPromo || (!promoShown && !AIHubShown);
 }
 
 @end

@@ -1032,6 +1032,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kIOSBwgConsent, false);
 
+  registry->RegisterBooleanPref(prefs::kIOSAIHubShown, false);
+
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());
 
