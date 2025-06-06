@@ -1191,14 +1191,11 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // This is a "magic" value so we can test if a root pointer is valid.
     inverted_self = ~reinterpret_cast<uintptr_t>(this);
 
-    const bool use_small_single_slot_spans =
-        opts.use_small_single_slot_spans == PartitionOptions::kEnabled;
-
     // Set up the actual usable buckets first.
     for (size_t bucket_index = 0; bucket_index < BucketIndexLookup::kNumBuckets;
          ++bucket_index) {
       const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      buckets[bucket_index].Init(slot_size, use_small_single_slot_spans);
+      buckets[bucket_index].Init(slot_size);
     }
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)

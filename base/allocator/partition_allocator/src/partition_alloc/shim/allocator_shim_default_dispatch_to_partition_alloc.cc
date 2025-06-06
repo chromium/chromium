@@ -639,8 +639,7 @@ void ConfigurePartitions(
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_thread_local_config,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
-    FewerMemoryRegions fewer_memory_regions,
-    UseSmallSingleSlotSpans use_small_single_slot_spans) {
+    FewerMemoryRegions fewer_memory_regions) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
@@ -680,10 +679,6 @@ void ConfigurePartitions(
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
-        opts.use_small_single_slot_spans =
-            use_small_single_slot_spans
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
         return opts;
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();

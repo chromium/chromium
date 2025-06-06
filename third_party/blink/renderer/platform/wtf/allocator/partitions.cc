@@ -106,11 +106,6 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   PartitionOptions opts;
   opts.backup_ref_ptr = brp_setting;
   opts.memory_tagging = {.enabled = memory_tagging};
-  opts.use_small_single_slot_spans =
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseSmallSingleSlotSpans)
-          ? partition_alloc::PartitionOptions::kEnabled
-          : partition_alloc::PartitionOptions::kDisabled;
   return opts;
 }
 

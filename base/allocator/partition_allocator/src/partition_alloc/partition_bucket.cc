@@ -605,8 +605,7 @@ uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
   return ComputeSystemPagesPerSlotSpanInternal(slot_size);
 }
 
-void PartitionBucket::Init(uint32_t new_slot_size,
-                           bool use_small_single_slot_spans) {
+void PartitionBucket::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
   active_slot_spans_head = SlotSpanMetadata<
@@ -625,7 +624,7 @@ void PartitionBucket::Init(uint32_t new_slot_size,
       ComputeSystemPagesPerSlotSpan(slot_size, prefer_smaller_slot_spans);
   PA_CHECK(num_system_pages_per_slot_span > 0);
 
-  InitCanStoreRawSize(use_small_single_slot_spans);
+  InitCanStoreRawSize();
 }
 
 PA_ALWAYS_INLINE SlotSpanMetadata<MetadataKind::kReadOnly>*
@@ -710,7 +709,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
   return slot_span;
 }
 
-void PartitionBucket::InitCanStoreRawSize(bool use_small_single_slot_spans) {
+void PartitionBucket::InitCanStoreRawSize() {
   // By definition, direct map buckets can store the raw size. The value
   // of `can_store_raw_size` is set explicitly in that code path (see
   // `PartitionDirectMap()`), bypassing this method.
@@ -726,8 +725,7 @@ void PartitionBucket::InitCanStoreRawSize(bool use_small_single_slot_spans) {
   if (slot_size <= MaxRegularSlotSpanSize()) [[likely]] {
     // Even when the slot size is below the standard floor for single
     // slot spans, there exist spans that happen to have exactly one
-    // slot per. If `use_small_single_slot_spans` is true, we use more
-    // nuanced criteria for determining if a span is "single-slot."
+    // slot per.
     //
     // The conditions are all of:
     // *  Don't deal with slots trafficked by the thread cache [1].
@@ -744,9 +742,9 @@ void PartitionBucket::InitCanStoreRawSize(bool use_small_single_slot_spans) {
     // [2] ../../PartitionAlloc.md#layout-in-memory
     const bool not_handled_by_thread_cache =
         slot_size > kThreadCacheLargeSizeThreshold;
-    can_store_raw_size =
-        use_small_single_slot_spans && not_handled_by_thread_cache &&
-        get_slots_per_span() == 1u && get_pages_per_slot_span() > 1u;
+    can_store_raw_size = not_handled_by_thread_cache &&
+                         get_slots_per_span() == 1u &&
+                         get_pages_per_slot_span() > 1u;
     return;
   }
 

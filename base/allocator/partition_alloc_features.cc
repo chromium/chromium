@@ -480,10 +480,6 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans,
-             "PartitionAllocUseSmallSingleSlotSpans",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 BASE_FEATURE(kPartitionAllocShadowMetadata,
              "PartitionAllocShadowMetadata",

@@ -1183,10 +1183,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) &&
         // PA_BUILDFLAG(IS_ANDROID)
 
-  allocator_shim::UseSmallSingleSlotSpans use_small_single_slot_spans(
-      base::FeatureList::IsEnabled(
-          features::kPartitionAllocUseSmallSingleSlotSpans));
-
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       brp_config.extra_extras_size,
@@ -1195,8 +1191,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scheduler_loop_quarantine_global_config,
       scheduler_loop_quarantine_thread_local_config,
       allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
-      allocator_shim::FewerMemoryRegions(fewer_memory_regions),
-      use_small_single_slot_spans);
+      allocator_shim::FewerMemoryRegions(fewer_memory_regions));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

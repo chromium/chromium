@@ -30,11 +30,6 @@ void ThreadIsolatedAllocator::Initialize(int pkey) {
   partition_alloc::PartitionOptions opts;
   opts.thread_isolation = partition_alloc::ThreadIsolationOption(pkey_);
 
-  // TODO(crbug.com/333443437): Remove this user-configurable toggle and
-  // default all buckets to "small" single-slot spans.
-  opts.use_small_single_slot_spans =
-      partition_alloc::PartitionOptions::kEnabled;
-
   allocator_.init(opts);
 }
 

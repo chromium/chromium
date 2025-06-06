@@ -198,8 +198,6 @@ struct PartitionOptions {
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
-
-  EnableToggle use_small_single_slot_spans = kDisabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
