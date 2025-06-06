@@ -207,7 +207,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                     imageFetcher,
                     suggestion.getCustomIconUrl(),
                     ImageSize.SMALL,
-                    suggestion.getLabel());
+                    suggestion.getSublabel());
         }
         // TODO: crbug.com/404437211 - Figure out all suggestion types that have icons on Android
         // and return icons in a switch.
