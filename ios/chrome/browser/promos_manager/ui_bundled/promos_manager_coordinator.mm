@@ -636,8 +636,8 @@
   // BWG promo handler.
   if (IsPageActionMenuEnabled()) {
     PrefService* prefService = self.profile->GetPrefs();
-    BOOL AIHubShown = prefService->GetBoolean(prefs::kIOSAIHubShown);
-    if (!AIHubShown) {
+    BOOL manualPromoShown = prefService->GetBoolean(prefs::kIOSBWGManualPromo);
+    if (!manualPromoShown) {
       _displayHandlerPromos[promos_manager::Promo::BWGPromo] =
           [[BWGPromoDisplayHandler alloc] init];
     }

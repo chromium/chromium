@@ -79,6 +79,7 @@
   _handler = nil;
   _mediator = nil;
   _prefService = nil;
+  _tracker = nil;
   [super stop];
 }
 
@@ -95,7 +96,7 @@
   // If promo was shown outside the promos manager, ensure the promo doesn't
   // show through the promos manager.
   if (_entryPoint != bwg::EntryPointPromo) {
-    _prefService->SetBoolean(prefs::kIOSAIHubShown, YES);
+    _prefService->SetBoolean(prefs::kIOSBWGManualPromo, true);
     _tracker->UnregisterPriorityNotificationHandler(
         feature_engagement::kIPHIOSBWGPromoFeature);
   }
@@ -154,12 +155,12 @@
 
 // If YES, BWG Promo should be shown.
 - (BOOL)shouldShowBWGPromo {
-  BOOL AIHubShown = _prefService->GetBoolean(prefs::kIOSAIHubShown);
-  BOOL promoShown = _tracker->HasEverTriggered(
+  BOOL promoShownManually = _prefService->GetBoolean(prefs::kIOSBWGManualPromo);
+  BOOL promoTriggered = _tracker->HasEverTriggered(
       feature_engagement::kIPHIOSBWGPromoFeature, true);
-  BOOL isPromo = _entryPoint == bwg::EntryPointPromo;
+  BOOL isPromoEntry = _entryPoint == bwg::EntryPointPromo;
 
-  return isPromo || (!promoShown && !AIHubShown);
+  return isPromoEntry || (!promoTriggered && !promoShownManually);
 }
 
 @end
