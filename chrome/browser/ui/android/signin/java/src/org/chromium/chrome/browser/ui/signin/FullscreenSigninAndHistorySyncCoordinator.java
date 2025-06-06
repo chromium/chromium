@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
@@ -77,7 +76,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
          * use {@link Promise#isFulfilled()} to check whether the native has already been
          * initialized.
          */
-        Promise<Void> getNativeInitializationPromise();
+        Promise<@Nullable Void> getNativeInitializationPromise();
 
         void onFlowComplete(@SigninAndHistorySyncCoordinator.Result int result);
     }
@@ -184,7 +183,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
-    public void onAccountAdded(@NonNull String accountName) {
+    public void onAccountAdded(String accountName) {
         assertNonNull(mSigninCoordinator);
         mSigninCoordinator.onAccountAdded(accountName);
     }
@@ -334,7 +333,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     }
 
     @Override
-    public Promise<Void> getNativeInitializationPromise() {
+    public Promise<@Nullable Void> getNativeInitializationPromise() {
         return mDelegate.getNativeInitializationPromise();
     }
 

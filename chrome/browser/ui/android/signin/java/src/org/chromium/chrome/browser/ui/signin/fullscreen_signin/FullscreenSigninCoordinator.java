@@ -8,7 +8,6 @@ import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Promise;
@@ -94,7 +93,7 @@ public class FullscreenSigninCoordinator {
          * use {@link Promise#isFulfilled()} to check whether the native has already been
          * initialized.
          */
-        Promise<Void> getNativeInitializationPromise();
+        Promise<@Nullable Void> getNativeInitializationPromise();
 
         /** Returns {@code true} if the management notice should be shown on managed devices. */
         boolean shouldDisplayManagementNoticeOnManagedDevices();
@@ -169,7 +168,7 @@ public class FullscreenSigninCoordinator {
         }
     }
 
-    public void onAccountAdded(@NonNull String accountName) {
+    public void onAccountAdded(String accountName) {
         mMediator.onAccountAdded(accountName);
     }
 

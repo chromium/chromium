@@ -10,6 +10,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
@@ -29,19 +31,20 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.List;
 
 /** Implements tabbed browser-specific behavior of adaptive toolbar button. */
+@NullMarked
 public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
+    private final Supplier<@Nullable TabCreatorManager> mTabCreatorManagerSupplier;
     private final Runnable mRegisterVoiceSearchRunnable;
 
     public TabbedAdaptiveToolbarBehavior(
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
+            Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             ActivityTabProvider activityTabProvider,
