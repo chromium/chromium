@@ -60,7 +60,7 @@ suite('nearby-onboarding-one-page', function() {
     const buttonContent =
         element.shadowRoot.querySelector('#visibilityModeLabel')
             .textContent.trim();
-    assertEquals('All contacts', buttonContent);
+    assertEquals('Contacts', buttonContent);
   });
 
   test('Device name is focused', async () => {

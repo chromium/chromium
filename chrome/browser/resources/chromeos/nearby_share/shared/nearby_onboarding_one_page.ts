@@ -18,6 +18,7 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -63,12 +64,20 @@ export class NearbyOnboardingOnePageElement extends
         value: NearbyShareOnboardingEntryPoint.MAX,
       },
 
+      /**
+       * Determines whether the QuickShareV2 flag is enabled.
+       */
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+      },
     };
   }
 
   errorMessage: string;
   settings: NearbySettings|null;
   private entryPoint_: NearbyShareOnboardingEntryPoint;
+  private isQuickShareV2Enabled_: boolean;
 
   override ready(): void {
     super.ready();
@@ -200,25 +209,61 @@ export class NearbyOnboardingOnePageElement extends
 
   private getVisibilitySelectionButtonText_(): string {
     const visibility = this.getDefaultVisibility_();
+
+    if (this.isQuickShareV2Enabled_) {
+      switch (visibility) {
+        case Visibility.kAllContacts:
+          return this.i18n('nearbyShareContactVisiblityContactsButton');
+        case Visibility
+            .kSelectedContacts:  // Selected Contacts does not exist in Quick
+        // Share v2. Your devices set instead.
+        case Visibility.kYourDevices:
+          return this.i18n('nearbyShareContactVisibilityYourDevices');
+        case Visibility.kNoOne:
+          return this.i18n('nearbyShareContactVisibilityNone');
+        default:
+          return this.i18n('nearbyShareContactVisiblityContactsButton');
+      }
+    }
+
     switch (visibility) {
       case Visibility.kAllContacts:
-        return this.i18n('nearbyShareContactVisibilityAll');
+        return this.i18n('nearbyShareContactVisiblityContactsButton');
       case Visibility.kSelectedContacts:
         return this.i18n('nearbyShareContactVisibilitySome');
+      case Visibility.kYourDevices:
+        return this.i18n('nearbyShareContactVisibilityYourDevices');
       case Visibility.kNoOne:
         return this.i18n('nearbyShareContactVisibilityNone');
       default:
-        return this.i18n('nearbyShareContactVisibilityAll');
+        return this.i18n('nearbyShareContactVisiblityContactsButton');
     }
   }
 
   private getVisibilitySelectionButtonIcon_(): string {
     const visibility = this.getDefaultVisibility_();
+    if (this.isQuickShareV2Enabled_) {
+      switch (visibility) {
+        case Visibility.kAllContacts:
+          return 'contact-all';
+        case Visibility
+            .kSelectedContacts:  // Selected Contacts does not exist in Quick
+                                 // Share v2. Your devices set instead.
+        case Visibility.kYourDevices:
+          return 'your-devices';
+        case Visibility.kNoOne:
+          return 'visibility-off';
+        default:
+          return 'contact-all';
+      }
+    }
     switch (visibility) {
       case Visibility.kAllContacts:
         return 'contact-all';
       case Visibility.kSelectedContacts:
         return 'contact-group';
+      case Visibility.kYourDevices:
+        return 'your-devices';
       case Visibility.kNoOne:
         return 'visibility-off';
       default:
