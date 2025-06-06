@@ -19,7 +19,6 @@
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
-#include "base/functional/overloaded.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -34,6 +33,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -584,26 +584,26 @@ void Derive(uint8_t* out,
 
 const char* RequestTypeToString(RequestType request_type) {
   return std::visit(
-      base::Overloaded{[](const FidoRequestType& request_type) {
-                         switch (request_type) {
-                           case FidoRequestType::kMakeCredential:
-                             return "mc";
-                           case FidoRequestType::kGetAssertion:
-                             return "ga";
-                             // If adding a value here, also update
-                             // `RequestTypeFromString`.
-                         }
-                       },
-                       [](const CredentialRequestType& request_type) {
-                         switch (request_type) {
-                           case CredentialRequestType::kPresentation:
-                             return "dcp";
-                           case CredentialRequestType::kIssuance:
-                             return "dci";
-                             // If adding a value here, also update
-                             // `RequestTypeFromString`.
-                         }
-                       }},
+      absl::Overload{[](const FidoRequestType& request_type) {
+                       switch (request_type) {
+                         case FidoRequestType::kMakeCredential:
+                           return "mc";
+                         case FidoRequestType::kGetAssertion:
+                           return "ga";
+                           // If adding a value here, also update
+                           // `RequestTypeFromString`.
+                       }
+                     },
+                     [](const CredentialRequestType& request_type) {
+                       switch (request_type) {
+                         case CredentialRequestType::kPresentation:
+                           return "dcp";
+                         case CredentialRequestType::kIssuance:
+                           return "dci";
+                           // If adding a value here, also update
+                           // `RequestTypeFromString`.
+                       }
+                     }},
       request_type);
 }
 
@@ -683,14 +683,14 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
 
 bool ShouldOfferLinking(RequestType request_type) {
   return std::visit(
-      base::Overloaded{[](const FidoRequestType&) {
-                         return base::FeatureList::IsEnabled(
-                             device::kWebAuthnHybridLinking);
-                       },
-                       [](const CredentialRequestType&) {
-                         return base::FeatureList::IsEnabled(
-                             device::kDigitalCredentialsHybridLinking);
-                       }},
+      absl::Overload{[](const FidoRequestType&) {
+                       return base::FeatureList::IsEnabled(
+                           device::kWebAuthnHybridLinking);
+                     },
+                     [](const CredentialRequestType&) {
+                       return base::FeatureList::IsEnabled(
+                           device::kDigitalCredentialsHybridLinking);
+                     }},
       request_type);
 }
 
