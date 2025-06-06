@@ -239,7 +239,8 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         mSearchEngineIconObservers.removeObserver(observer);
     }
 
-    private void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
+    @VisibleForTesting
+    public void setSearchEngineIcon(@Nullable StatusIconResource newIcon) {
         if (Objects.equals(mFavicon, newIcon)) return;
         mFavicon = newIcon;
         for (var observer : mSearchEngineIconObservers) {
