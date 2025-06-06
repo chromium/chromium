@@ -34,18 +34,20 @@ enum class Error {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
 
-// LINT.IfChange(EntryPointImpression)
-enum class EntryPointImpression {
-  kBeforeFre = 0,
-  kAfterFreBrowserOnly = 1,
-  kAfterFreOsOnly = 2,
-  kAfterFreEnabled = 3,
-  kAfterFreDisabled = 4,
-  kNotPermitted = 5,
-  kIncompleteFre = 6,
-  kMaxValue = kIncompleteFre,
+// LINT.IfChange(EntryPointStatus)
+enum class EntryPointStatus {
+  kBeforeFreNotEligible = 0,
+  kBeforeFreAndEligible = 1,
+  kIncompleteFreNotEligible = 2,
+  kIncompleteFreAndEligible = 3,
+  kAfterFreBrowserOnly = 4,
+  kAfterFreOsOnly = 5,
+  kAfterFreBrowserAndOs = 6,
+  kAfterFreThreeDotOnly = 7,
+  kAfterFreNotEligible = 8,
+  kMaxValue = kAfterFreNotEligible,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointStatus)
 
 // LINT.IfChange(ResponseSegmentation)
 enum class ResponseSegmentation {
