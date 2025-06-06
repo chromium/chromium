@@ -153,7 +153,14 @@ The following extensions are not included in
 useful for you as well:
 
 ```bash
-$ echo "ryu1kn.annotator wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
+$ echo "ryu1kn.annotator wmaurer.change-case" \
+  "shd101wyy.markdown-preview-enhanced" \
+  "Gruntfuggly.todo-tree" \
+  "alefragnani.Bookmarks" \
+  "spmeesseman.vscode-taskexplorer" \
+  "streetsidesoftware.code-spell-checker" \
+  "george-alisson.html-preview-vscode anseki.vscode-color" \
+  | xargs -n 1 code --force --install-extension
 ```
 
 *   [**Annotator**](https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator) -
@@ -193,10 +200,10 @@ other useful extensions.
 
 ### Color Scheme
 
-Press `Ctrl+Shift+P (Cmd+Shift+P `in macOS`), color, Enter`  to pick a color
-scheme for the editor. There are also tons of [color schemes available for
+Press `Ctrl+Shift+P` (`Cmd+Shift+P` in macOS), type `color`, `Enter`  to pick a
+color scheme for the editor. There are also tons of [color schemes available for
 download on the
-marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes&sortBy=Downloads).
+[marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes&sortBy=Downloads).
 
 ### Keyboard Shortcuts
 
@@ -534,8 +541,8 @@ VS Code should work remotely after following this step.
 ### Snippets
 
 There are some useful snippets provided in
-[//tools/vscode/cpp.json](/tools/vscode/cpp.json), which are already installed
-to your workspace at `.vscode/cpp.code-snippets`
+[//tools/vscode/cpp.code-snippets](/tools/vscode/cpp.code-snippets), which are
+already installed to your workspace at `.vscode/cpp.code-snippets`.
 
 ### Tips
 
