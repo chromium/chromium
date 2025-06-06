@@ -664,7 +664,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_V2, true);
 
     public static final CachedFlag sAndroidComposeplate =
-            newCachedFlag(ANDROID_COMPOSEPLATE, false);
+            newCachedFlag(ANDROID_COMPOSEPLATE, false, true);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
             newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, true);
     public static final CachedFlag sAndroidBottomToolbar =

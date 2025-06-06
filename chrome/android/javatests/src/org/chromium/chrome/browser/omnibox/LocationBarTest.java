@@ -9,6 +9,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
@@ -520,7 +521,10 @@ public class LocationBarTest {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         Mockito.reset(mVoiceRecognitionHandler);
-        ViewUtils.waitForVisibleView(withId(R.id.voice_search_button));
+        onView(
+                allOf(
+                        withId(R.id.voice_search_button),
+                        withParent(withId(R.layout.new_tab_page_layout))));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -596,6 +596,21 @@
             ]
         }
     ],
+    "AndroidComposeplate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDumpOnScrollWithoutResource": [
         {
             "platforms": [
