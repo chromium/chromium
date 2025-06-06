@@ -5870,6 +5870,13 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
 
+  // Recording the histograms is async, so need to wait for it to be recorded
+  // before continuing to prevent flakiness.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Lens.Overlay.ByPageContentType.Pdf.PageCount", 1) == 1;
+  }));
+
   histogram_tester.ExpectUniqueSample("Lens.Overlay.ByDocumentType.Pdf.Invoked",
                                       /*sample*/ true,
                                       /*expected_bucket_count=*/1);
@@ -8184,8 +8191,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
                   .last_received_should_show_contextual_searchbox_);
 }
 
+// TODO(crbug.com/422479353): This test seems to be too slow on Windows ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_PageContentTypeHistograms DISABLED_PageContentTypeHistograms
+#else
+#define MAYBE_PageContentTypeHistograms PageContentTypeHistograms
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
-                       PageContentTypeHistograms) {
+                       MAYBE_PageContentTypeHistograms) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
 
@@ -8211,6 +8224,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
 
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // This histogram is async so run until it is recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Lens.Overlay.ByPageContentType.AnnotatedPageContent."
+               "DocumentSize2",
+               0) == 1;
+  }));
 
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ByDocumentType.Html.Invoked",
