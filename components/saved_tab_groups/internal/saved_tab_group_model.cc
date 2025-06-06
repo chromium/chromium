@@ -388,6 +388,12 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
     return;
   }
 
+  // This is a locally generated navigation event. Update the navigation
+  // timestamp of the SavedTabGroupTab since we will not get the tab
+  // modification time back from sync in the standard way due to reflection
+  // blocking.
+  tab.SetNavigationTime(base::Time::Now());
+
   // Since the group has at least one synced tab now, start syncing any pending
   // NTP.
   StartSyncingPendingNtpIfAny(*group);
@@ -533,6 +539,14 @@ void SavedTabGroupModel::UpdateTabLastSeenTime(const base::Uuid& group_id,
   // which always prefers the more recent time.
   const std::optional<base::Time>& current_model_time = tab->last_seen_time();
   if (current_model_time.has_value() && current_model_time.value() >= time) {
+    return;
+  }
+
+  // Optimization: If the tab is already seen, we don't need to update the
+  // timestamp again (e.g. due to a tab selection event locally) which will save
+  // a redundant update to sync.
+  if (source == TriggerSource::LOCAL && tab->last_seen_time().has_value() &&
+      tab->last_seen_time() >= tab->navigation_time()) {
     return;
   }
 

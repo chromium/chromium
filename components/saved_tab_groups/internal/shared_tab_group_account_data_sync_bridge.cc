@@ -782,6 +782,7 @@ SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSharedTabGroup(
 
   specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
   specifics.set_collaboration_id(tab_group.collaboration_id()->value());
+  specifics.set_version(kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
 
   sync_pb::SharedTabGroupDetails* tab_group_details =
       specifics.mutable_shared_tab_group_details();

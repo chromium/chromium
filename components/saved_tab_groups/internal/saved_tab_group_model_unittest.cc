@@ -998,6 +998,34 @@ TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
                                 ->saved_tabs()
                                 .front()
                                 .last_seen_time());
+
+  // Update the last seen time again. But since it's already greater than
+  // navigaion time, the redundant update will be ignored.
+  base::Time last_seen_time2 = base::Time::Now() + base::Seconds(10);
+  saved_tab_group_model_->UpdateTabLastSeenTime(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time2,
+      TriggerSource::LOCAL);
+  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
+                                ->saved_tabs()
+                                .front()
+                                .last_seen_time());
+  SavedTabGroupTab tab =
+      saved_tab_group_model_->Get(group_id)->saved_tabs().front();
+
+  // Update navigation time and try updating last seen time again. It should
+  // succeed.
+  tab.SetNavigationTime(base::Time::Now() + base::Seconds(5));
+  saved_tab_group_model_->UpdateTabInGroup(group_id, tab,
+                                           /*notify_observers=*/true);
+  saved_tab_group_model_->UpdateTabLastSeenTime(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time2,
+      TriggerSource::LOCAL);
+  EXPECT_EQ(last_seen_time2, saved_tab_group_model_->Get(group_id)
+                                 ->saved_tabs()
+                                 .front()
+                                 .last_seen_time());
 }
 
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from

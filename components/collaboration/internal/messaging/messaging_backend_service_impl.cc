@@ -477,6 +477,10 @@ bool IsCurrentUserOwner(const signin::IdentityManager* identity_manager,
   return IsMemberOwner(group_data, account.gaia);
 }
 
+bool HasSeenTabUpdate(const tab_groups::SavedTabGroupTab& tab) {
+  return tab.last_seen_time() >= tab.navigation_time();
+}
+
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -882,6 +886,11 @@ void MessagingBackendServiceImpl::OnTabAdded(
   DirtyType dirty_type = (is_local || triggering_user_is_self)
                              ? DirtyType::kNone
                              : DirtyType::kDotAndChip;
+
+  if (HasSeenTabUpdate(added_tab)) {
+    dirty_type = DirtyType::kNone;
+  }
+
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, added_tab,
                        collaboration_pb::TAB_ADDED, dirty_type);
@@ -980,6 +989,9 @@ void MessagingBackendServiceImpl::OnTabUpdated(
       (is_local || triggering_user_is_self)
           ? DirtyType::kNone
           : (is_selected ? DirtyType::kChip : DirtyType::kDotAndChip);
+  if (HasSeenTabUpdate(updated_tab)) {
+    dirty_type = DirtyType::kNone;
+  }
 
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
@@ -1121,6 +1133,10 @@ void MessagingBackendServiceImpl::OnTabLastSeenTimeChanged(
   }
 
   if (!tab) {
+    return;
+  }
+
+  if (!HasSeenTabUpdate(*tab)) {
     return;
   }
 
