@@ -54,12 +54,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       const V8MLPowerPreference power_preference,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
-  // Constructs for MLContext(GPUDevice).
-  MLContext(
-      ExecutionContext* execution_context,
-      GPUDevice* gpu_device,
-      webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
-
   MLContext(const MLContext&) = delete;
   MLContext& operator=(const MLContext&) = delete;
 
@@ -110,6 +104,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                 ExceptionState& exception_state);
 
   ScriptPromise<GPUBuffer> exportToGPU(ScriptState* script_state,
+                                       GPUDevice* device,
                                        MLTensor* tensor,
                                        ExceptionState& exception_state);
 
@@ -152,10 +147,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   HeapHashSet<WeakMember<MLGraph>> graphs_;
   HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
   HeapHashSet<WeakMember<MLTensor>> tensors_;
-
-  // The `WebNNContext` was initialized from a WebGPU device which can be
-  // used for interop.
-  WeakMember<GPUDevice> gpu_device_;
 };
 
 }  // namespace blink
