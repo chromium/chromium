@@ -19,6 +19,7 @@
 #include <optional>
 #include <set>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"

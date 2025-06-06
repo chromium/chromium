@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_TOKEN_ENCRYPTOR_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_TOKEN_ENCRYPTOR_H_
 
+#include <stdint.h>
+
 #include <array>
 #include <memory>
 #include <string>

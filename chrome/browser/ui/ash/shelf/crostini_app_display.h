@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_CROSTINI_APP_DISPLAY_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_CROSTINI_APP_DISPLAY_H_
 
+#include <stdint.h>
+
 #include <deque>
 #include <map>
 #include <string>

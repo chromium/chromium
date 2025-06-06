@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_TEST_RESOURCE_KEY_H_
 #define COMPONENTS_EXO_WAYLAND_TEST_RESOURCE_KEY_H_
 
+#include <stdint.h>
+
 #include <string>
 
 namespace exo::wayland::test {

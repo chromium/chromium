@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_set.h"

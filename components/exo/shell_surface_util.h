@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_SHELL_SURFACE_UTIL_H_
 #define COMPONENTS_EXO_SHELL_SURFACE_UTIL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SHARED_STRUCTS_H_
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SHARED_STRUCTS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

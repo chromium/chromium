@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_UTILS_PDF_CONVERSION_H_
 #define CHROMEOS_UTILS_PDF_CONVERSION_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

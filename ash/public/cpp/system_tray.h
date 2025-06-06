@@ -6,9 +6,9 @@
 #define ASH_PUBLIC_CPP_SYSTEM_TRAY_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
-
 #include "base/memory/raw_ptr.h"
 
 namespace ash {

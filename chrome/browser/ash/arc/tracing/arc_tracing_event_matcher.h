@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_EVENT_MATCHER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>

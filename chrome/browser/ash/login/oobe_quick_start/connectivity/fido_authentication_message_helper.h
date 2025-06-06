@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FIDO_AUTHENTICATION_MESSAGE_HELPER_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FIDO_AUTHENTICATION_MESSAGE_HELPER_H_
 
+#include <stdint.h>
+
 #include <vector>
+
 namespace ash::quick_start::message_helper {
 
 inline constexpr char kCredentialIdKey[] = "id";

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_ACCOUNT_KEY_FILTER_H_
 #define CHROMEOS_ASH_SERVICES_QUICK_PAIR_PUBLIC_CPP_ACCOUNT_KEY_FILTER_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 namespace ash {

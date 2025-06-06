@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 namespace base {
 class Time;

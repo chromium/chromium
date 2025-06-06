@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_SEA_PEN_IMAGE_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_SEA_PEN_IMAGE_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"

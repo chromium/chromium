@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_CONNECTIVITY_PUBLIC_CPP_FAKE_PASSPOINT_SUBSCRIPTION_H_
 #define CHROMEOS_ASH_SERVICES_CONNECTIVITY_PUBLIC_CPP_FAKE_PASSPOINT_SUBSCRIPTION_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

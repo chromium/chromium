@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_MONOTONE_CUBIC_SPLINE_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace ash {
