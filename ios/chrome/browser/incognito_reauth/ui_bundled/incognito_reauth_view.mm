@@ -128,12 +128,15 @@ const CGFloat kLogoToPrimaryButtonMargin = 54.0f;
                           [weakSelf layoutIfNeeded];
                         }];
     }
-
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
   }
 
   return self;
+}
+
+- (void)didMoveToSuperview {
+  [super didMoveToSuperview];
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
