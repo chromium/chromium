@@ -125,11 +125,13 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
   base::MockCallback<
       collaboration::CollaborationControllerDelegate::ResultCallback>
       callback;
-  RunTestSequence(Do([&]() {
-                    delegate.ShowJoinDialog(token, preview_data,
-                                            callback.Get());
-                  }),
-                  WaitForShow(kDataSharingBubbleElementId));
+  RunTestSequence(
+      Do([&]() {
+        delegate.ShowJoinDialog(token, preview_data, callback.Get());
+      }),
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Close();
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,

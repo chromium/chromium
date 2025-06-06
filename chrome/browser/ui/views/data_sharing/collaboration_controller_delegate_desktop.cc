@@ -132,6 +132,8 @@ void CollaborationControllerDelegateDesktop::ShowError(const ErrorInfo& error,
     return;
   }
 
+  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+
   ShowErrorDialog(error);
   error_ui_callback_ = std::move(result);
 }
@@ -164,9 +166,7 @@ void CollaborationControllerDelegateDesktop::ShowJoinDialog(
   }
   auto* controller =
       DataSharingBubbleController::GetOrCreateForBrowser(browser_);
-  controller->SetOnCloseCallback(base::BindOnce(
-      &CollaborationControllerDelegateDesktop::OnJoinDialogClosing,
-      weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  controller->SetJoinCallback(std::move(result));
   controller->SetShowErrorDialogCallback(base::BindOnce(
       &CollaborationControllerDelegateDesktop::ShowErrorDialog,
       weak_ptr_factory_.GetWeakPtr(), ErrorInfo(ErrorInfo::Type::kUnknown)));
@@ -267,6 +267,9 @@ void CollaborationControllerDelegateDesktop::PromoteTabGroup(
   if (!browser_) {
     return;
   }
+
+  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+
   // Open tab group by group id.
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -324,22 +327,6 @@ void CollaborationControllerDelegateDesktop::OnBrowserClosing(
     browser_ = nullptr;
     ExitFlow();
   }
-}
-
-void CollaborationControllerDelegateDesktop::OnJoinDialogClosing(
-    ResultCallback result,
-    std::optional<data_sharing::mojom::GroupAction> action,
-    std::optional<data_sharing::mojom::GroupActionProgress> progress) {
-  // Joins flow should end when the shared tab group is open after join
-  // or cancel without joining.
-  CollaborationControllerDelegate::Outcome outcome =
-      CollaborationControllerDelegate::Outcome::kCancel;
-  if (action == data_sharing::mojom::GroupAction::kJoinGroup &&
-      progress == data_sharing::mojom::GroupActionProgress::kSuccess) {
-    outcome = CollaborationControllerDelegate::Outcome::kSuccess;
-  }
-
-  std::move(result).Run(outcome);
 }
 
 void CollaborationControllerDelegateDesktop::OnManageDialogClosing(

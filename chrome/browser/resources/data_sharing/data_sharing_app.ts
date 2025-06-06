@@ -537,6 +537,10 @@ export class DataSharingApp extends CustomElement implements Logger {
               onJoinSuccessful: () => {
                 this.successfullyJoined_ = true;
                 this.browserProxy_.handler!.openTabGroup(groupId!);
+                // No need to return this promise since we want the bubble to
+                // keep spinning until closed by the browser when new shared tab
+                // group is received.
+                return new Promise<void>(() => {});
               },
               fetchPreviewData: () => {
                 return this.browserProxy_.getTabGroupPreview(
@@ -545,14 +549,19 @@ export class DataSharingApp extends CustomElement implements Logger {
               logger: this,
             })
             .then((res) => {
-              let code: Code = res.status;
-              if (!this.successfullyJoined_ && !this.abandonJoin_) {
-                // If user neither succesfully joined nor abandon join, there
-                // must be an error.
-                code = Code.UNKNOWN;
+              if (this.successfullyJoined_) {
+                // If user successfully joined, do nothing and keep the dialog
+                // around until the tab group is delivered by sync server.
+                return;
               }
 
-              this.browserProxy_.closeUi(code);
+              if (this.abandonJoin_) {
+                this.browserProxy_.closeUi(res.status);
+              } else {
+                // If user neither successfully joined nor abandon join, there
+                // must be an error.
+                this.browserProxy_.closeUi(Code.UNKNOWN);
+              }
             });
         break;
       case FlowValues.MANAGE:

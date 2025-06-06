@@ -225,8 +225,9 @@ suite('Start flows', () => {
     const arg = testDataSharingSdk.getArgs('runJoinFlow')[0];
     assertEquals('fake_group_id', arg.groupId);
     assertEquals('fake_token', arg.tokenSecret);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    // Do not close UI if successfully joined because it's supposed to wait
+    // until the flow is complete.
+    assertEquals(0, testBrowserProxy.getCallCount('closeUi'));
   });
 
   test('Join flow error case', async () => {

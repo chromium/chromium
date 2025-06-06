@@ -176,6 +176,11 @@ void DataSharingBubbleController::SetOnShareLinkRequestedCallback(
   on_share_link_requested_callback_ = std::move(callback);
 }
 
+void DataSharingBubbleController::SetJoinCallback(
+    collaboration::CollaborationControllerDelegate::ResultCallback callback) {
+  join_callback_ = std::move(callback);
+}
+
 void DataSharingBubbleController::OnUrlReadyToShare(GURL url) {
   if (share_link_callback_) {
     std::move(share_link_callback_).Run(url);
@@ -189,6 +194,8 @@ void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
         .Run(collaboration::CollaborationControllerDelegate::Outcome::kCancel,
              std::nullopt);
   }
+
+  MaybeRunJoinCallback(/*on_close=*/true);
 
   if (on_close_callback_) {
     std::move(on_close_callback_).Run(group_action_, group_action_progress_);
@@ -233,6 +240,27 @@ void DataSharingBubbleController::OnGroupAction(
     data_sharing::mojom::GroupActionProgress progress) {
   group_action_ = action;
   group_action_progress_ = progress;
+
+  MaybeRunJoinCallback(/*on_close=*/false);
+}
+
+void DataSharingBubbleController::MaybeRunJoinCallback(bool on_close) {
+  // Joins flow should end when the shared tab group is open after join
+  // or cancel without joining.
+  if (join_callback_) {
+    if (group_action_ == data_sharing::mojom::GroupAction::kJoinGroup &&
+        group_action_progress_ ==
+            data_sharing::mojom::GroupActionProgress::kSuccess) {
+      std::move(join_callback_)
+          .Run(collaboration::CollaborationControllerDelegate::Outcome::
+                   kSuccess);
+    } else if (on_close) {
+      // Only run cancel on close if not success.
+      std::move(join_callback_)
+          .Run(
+              collaboration::CollaborationControllerDelegate::Outcome::kCancel);
+    }
+  }
 }
 
 DataSharingBubbleController::DataSharingBubbleController(Browser* browser)

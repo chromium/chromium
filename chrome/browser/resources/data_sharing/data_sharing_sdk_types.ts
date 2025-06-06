@@ -271,7 +271,7 @@ export declare interface RunJoinFlowParams extends DataSharingSdkGroupId {
   parent: HTMLElement;
   translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
-  onJoinSuccessful: () => void;
+  onJoinSuccessful: () => void | Promise<void>;
   fetchPreviewData: () => Promise<DataSharingSdkSitePreview[]>;
   logger?: Logger;
 }

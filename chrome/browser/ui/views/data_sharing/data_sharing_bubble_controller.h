@@ -47,6 +47,9 @@ class DataSharingBubbleController
       collaboration::CollaborationControllerDelegate::
           ResultWithGroupTokenCallback callback);
 
+  void SetJoinCallback(
+      collaboration::CollaborationControllerDelegate::ResultCallback callback);
+
   void OnUrlReadyToShare(GURL url);
 
   // views::WidgetObserver
@@ -78,6 +81,8 @@ class DataSharingBubbleController
   }
 
  private:
+  void MaybeRunJoinCallback(bool on_close);
+
   friend class BrowserUserData<DataSharingBubbleController>;
 
   explicit DataSharingBubbleController(Browser* browser);
@@ -99,6 +104,10 @@ class DataSharingBubbleController
   // Callback passed from mojom interface to invoke when share link is ready or
   // failed to share.
   base::OnceCallback<void(const std::optional<GURL>&)> share_link_callback_;
+
+  // Callback passed from CollaborationService to invoke after successfully join
+  // a group or cancel.
+  collaboration::CollaborationControllerDelegate::ResultCallback join_callback_;
 
   // The latest group action received from Data Sharing SDK.
   std::optional<data_sharing::mojom::GroupAction> group_action_;
