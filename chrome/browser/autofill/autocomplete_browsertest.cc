@@ -150,8 +150,8 @@ class AutocompleteTest : public InProcessBrowserTest {
 
     for (const char c : value) {
       ui::DomKey key = ui::DomKey::FromCharacter(c);
-      ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
-      ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
+      ui::DomCode code = UsLayoutDomKeyToDomCode(key);
+      ui::KeyboardCode key_code = DomCodeToUsLayoutKeyboardCode(code);
       content::SimulateKeyPress(web_contents(), key, code, key_code, false,
                                 false, false, false);
       ASSERT_TRUE(autofill_manager()->text_field_change_waiter().Wait(1));
