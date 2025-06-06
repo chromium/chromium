@@ -13,23 +13,26 @@ export function getHtml(this: NewTabFooterAppElement) {
 Container for housing the items in the center of the footer that are
 separated from each other by a divider.
 -->
-<div id="centerContainer">
-  ${this.managementNotice_ ?
-      html`<div id="managementNoticeContainer">
+<div id="container">
+  <div id="infoContainer">
+    ${this.managementNotice_ ? html`
+      <div id="managementNoticeContainer" class="notice-item">
         <img id="managementNoticeLogo" alt=""
             src="${this.managementNotice_.bitmapDataUrl.url}">
         <p title="${this.managementNotice_.text}">
           ${this.managementNotice_.text}
         </p>
       </div>` : ''}
-  ${this.extensionName_ ?
-      html`<div id="extensionName" title="${this.extensionName_}">
+    ${this.extensionName_ ? html`
+      <div id="extensionNameContainer" title="${this.extensionName_}"
+          class="notice-item">
         <button @click="${this.onExtensionNameClick_}" role="link"
             aria-roledescription="$i18n{currentTabLinkRoleDesc}"
             aria-label="$i18n{currentTabLinkLabel}">
-            ${this.extensionName_}
+          ${this.extensionName_}
         </button>
       </div>` : ''}
+  </div>
   <ntp-customize-buttons id="customizeButtons"
       ?info-shown-to-user="${this.managementNotice_ || this.extensionName_}"
       ?show-customize="${this.showCustomize_}"

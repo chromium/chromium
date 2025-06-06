@@ -7,21 +7,26 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#centerContainer {
+#container {
   display: flex;
   justify-content: center;
   margin: 12px auto;
+}
+
+#infoContainer {
+  display: flex;
+  justify-content: center;
   max-width: 400px;
 }
 
-#centerContainer > div {
+.notice-item {
   min-width: calc-size(fit-content, min(50%, size));
   padding: 0 16px;
   position: relative;
 }
 
-#centerContainer > div > p,
-#centerContainer > div > button {
+.notice-item > p,
+.notice-item > button {
   color: var(--color-new-tab-footer-text);
   font-size: 13px;
   line-height: 20px;
@@ -41,13 +46,9 @@
   text-decoration: underline;
 }
 
-[role="link"]:hover {
-  background: var(--color-new-tab-page-button-background-hovered);
-}
-
-/* Add a vertical divider after each centerContainer item in the footer
+/* Add a vertical divider after each container item in the footer
  * except the last one. */
-#centerContainer > div:not(:last-child):after {
+#infoContainer > div:not(:last-child):after {
   background-color: var(--color-new-tab-footer-text);
   content: "";
   display: inline-block;
