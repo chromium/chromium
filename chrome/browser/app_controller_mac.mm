@@ -235,6 +235,9 @@ Browser* ActivateOrCreateBrowser(Profile* profile) {
 // Attempts restoring a previous session if there is one. Otherwise, opens
 // either the profile picker or a new browser, depending on user preferences.
 void AttemptSessionRestore(Profile* profile) {
+  if (!profile) {
+    return;
+  }
   DCHECK(!profile->IsGuestSession());
   DCHECK(!IsProfileSignedOut(profile->GetPath()));
   SessionService* sessionService =
