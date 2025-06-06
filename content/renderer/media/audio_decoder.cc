@@ -12,6 +12,7 @@
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
@@ -80,7 +81,7 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
   }
 
   DVLOG(1) << "Decoded file data (unknown duration)-"
-           << " data: " << data << " data size: " << data.size()
+           << " data: " << base::ToString(data) << " data size: " << data.size()
            << ", decoded duration: " << (number_of_frames / file_sample_rate)
            << ", number of frames: " << number_of_frames
            << ", estimated frames (if available): "

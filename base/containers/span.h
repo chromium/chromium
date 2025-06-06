@@ -17,7 +17,6 @@
 #include <concepts>
 #include <functional>
 #include <initializer_list>
-#include <iosfwd>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -35,7 +34,6 @@
 #include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/to_string.h"
 #include "base/types/to_address.h"
 
 // A span is a view of contiguous elements that can be accessed like an array,
@@ -261,9 +259,6 @@
 //   instead of `std::byte` as the returned element type.
 // - For convenience, provides `as_[writable_]chars()` and `as_string_view()`
 //   to convert to other "view of bytes"-like objects.
-// - For convenience, provides an `operator<<()` overload that accepts a span
-//   and prints a byte representation. Also provides a `PrintTo()` overload to
-//   convince GoogleTest to use this operator to print.
 // - For convenience, provides `[byte_]span_from_ref()` to convert single
 //   (non-range) objects to spans.
 // - For convenience, provides `[byte_]span_[with_nul_]from_cstring()` to
@@ -1484,73 +1479,6 @@ constexpr auto as_string_view(span<const char16_t> s) {
 }
 constexpr auto as_string_view(span<const wchar_t> s) {
   return std::wstring_view(s.begin(), s.end());
-}
-
-namespace internal {
-
-template <typename T>
-concept SpanConvertsToStringView = requires {
-  { as_string_view(span<T>()) };
-};
-
-}  // namespace internal
-
-// Stream output that prints a byte representation.
-//
-// (Not in `std::`; convenient for debugging.)
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-  requires(internal::SpanConvertsToStringView<ElementType> ||
-           requires(const ElementType& t) {
-             { ToString(t) };
-           })
-constexpr std::ostream& operator<<(
-    std::ostream& l,
-    span<ElementType, Extent, InternalPtrType> r) {
-  l << '[';
-  if constexpr (internal::SpanConvertsToStringView<ElementType>) {
-    const auto sv = as_string_view(r);
-    if constexpr (requires { l << sv; }) {
-      using T = std::remove_cvref_t<ElementType>;
-      if constexpr (std::same_as<wchar_t, T>) {
-        l << 'L';
-      } else if constexpr (std::same_as<char16_t, T>) {
-        l << 'u';
-      } else if constexpr (std::same_as<char32_t, T>) {
-        l << 'U';
-      }
-      l << '\"' << sv << '\"';
-    } else {
-      // base/strings/utf_ostream_operators.h provides streaming support for
-      // wchar_t/char16_t, so branching on whether streaming is available will
-      // give different results depending on whether code has included that,
-      // which can lead to UB due to violating the ODR. We don't want to
-      // unconditionally include this header above for compile time reasons, so
-      // instead force the rare caller that wants this to do it themselves.
-      static_assert(
-          requires { l << sv; },
-          "include base/strings/utf_ostream_operators.h when streaming spans "
-          "of wide chars");
-    }
-  } else if constexpr (Extent != 0) {
-    // It would be nice to use `JoinString()` here, but making that `constexpr`
-    // is more trouble than it's worth.
-    if (!r.empty()) {
-      l << ToString(r.front());
-      for (const ElementType& e : r.template subspan<1>()) {
-        l << ", " << ToString(e);
-      }
-    }
-  }
-  return l << ']';
-}
-
-// Because `span` meets the GoogleTest "container" criteria, explicitly
-// overloading `PrintTo()` is necessary to make GoogleTest print spans using the
-// `operator<<()` overload above, and not its own container printer.
-template <typename ElementType, size_t Extent, typename InternalPtrType>
-constexpr void PrintTo(span<ElementType, Extent, InternalPtrType> s,
-                       std::ostream* os) {
-  *os << s;
 }
 
 // Converts a `T&` to a `span<T, 1>`.

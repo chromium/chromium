@@ -25,6 +25,7 @@
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -3284,44 +3285,6 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
     // Replace an unbounded pointer a span, though.
     two_byte_spans(span(array), byte_span_from_ref(val));
   }
-}
-
-TEST(SpanTest, Printing) {
-  struct S {
-    std::string ToString() const { return "S()"; }
-  };
-
-  // Gtest prints values in the spans. Chars are special.
-  EXPECT_EQ(testing::PrintToString(span<const int>({1, 2, 3})), "[1, 2, 3]");
-  EXPECT_EQ(testing::PrintToString(span<const S>({S(), S()})), "[S(), S()]");
-  EXPECT_EQ(testing::PrintToString(span<const char>({'a', 'b', 'c'})),
-            "[\"abc\"]");
-  EXPECT_EQ(testing::PrintToString(span<const char>({'a', 'b', 'c', '\0'})),
-            std::string_view("[\"abc\0\"]", 8u));
-  EXPECT_EQ(
-      testing::PrintToString(span<const char>({'a', 'b', '\0', 'c', '\0'})),
-      std::string_view("[\"ab\0c\0\"]", 9u));
-  EXPECT_EQ(testing::PrintToString(span<int>()), "[]");
-  EXPECT_EQ(testing::PrintToString(span<char>()), "[\"\"]");
-
-  EXPECT_EQ(testing::PrintToString(span<const char16_t>({u'a', u'b', u'c'})),
-            "[u\"abc\"]");
-  EXPECT_EQ(testing::PrintToString(span<const wchar_t>({L'a', L'b', L'c'})),
-            "[L\"abc\"]");
-
-  // Base prints values in spans. Chars are special.
-  EXPECT_EQ(ToString(span<const int>({1, 2, 3})), "[1, 2, 3]");
-  EXPECT_EQ(ToString(span<const S>({S(), S()})), "[S(), S()]");
-  EXPECT_EQ(ToString(span<const char>({'a', 'b', 'c'})), "[\"abc\"]");
-  EXPECT_EQ(ToString(span<const char>({'a', 'b', 'c', '\0'})),
-            std::string_view("[\"abc\0\"]", 8u));
-  EXPECT_EQ(ToString(span<const char>({'a', 'b', '\0', 'c', '\0'})),
-            std::string_view("[\"ab\0c\0\"]", 9u));
-  EXPECT_EQ(ToString(span<int>()), "[]");
-  EXPECT_EQ(ToString(span<char>()), "[\"\"]");
-
-  EXPECT_EQ(ToString(span<const char16_t>({u'a', u'b', u'c'})), "[u\"abc\"]");
-  EXPECT_EQ(ToString(span<const wchar_t>({L'a', L'b', L'c'})), "[L\"abc\"]");
 }
 
 }  // namespace base

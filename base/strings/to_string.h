@@ -9,10 +9,13 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
+#include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/types/supports_ostream_operator.h"
 #include "base/types/supports_to_string.h"
 
@@ -132,6 +135,56 @@ std::string ToString(const T& value) {
   internal::ToStringHelper<std::remove_cvref_t<decltype(value)>>::Stringify(
       value, ss);
   return ss.str();
+}
+
+BASE_EXPORT std::string ToString(std::string_view sv);
+BASE_EXPORT std::string ToString(std::u16string_view sv);
+BASE_EXPORT std::string ToString(std::wstring_view sv);
+
+namespace to_string_internal {
+
+template <typename T>
+concept SpanConvertsToStringView = requires {
+  { as_string_view(span<T>()) };
+};
+
+}  // namespace to_string_internal
+
+// Stringify base::span, hopefully in a way that's useful for tests.
+template <typename ElementType, size_t Extent, typename InternalPtrType>
+  requires(to_string_internal::SpanConvertsToStringView<ElementType> ||
+           requires(const ElementType& t) {
+             { ToString(t) };
+           })
+constexpr std::string ToString(span<ElementType, Extent, InternalPtrType> r) {
+  std::string out = "[";
+  if constexpr (to_string_internal::SpanConvertsToStringView<ElementType>) {
+    const auto sv = as_string_view(r);
+    using T = std::remove_cvref_t<ElementType>;
+    if constexpr (std::same_as<wchar_t, T>) {
+      out += "L\"";
+      out += ToString(sv);
+    } else if constexpr (std::same_as<char16_t, T>) {
+      out += "u\"";
+      out += ToString(sv);
+    } else {
+      out += "\"";
+      out += sv;
+    }
+    out += '\"';
+  } else if constexpr (Extent != 0) {
+    // It would be nice to use `JoinString()` here, but making that `constexpr`
+    // is more trouble than it's worth.
+    if (!r.empty()) {
+      out += ToString(r.front());
+      for (const ElementType& e : r.template subspan<1>()) {
+        out += ", ";
+        out += ToString(e);
+      }
+    }
+  }
+  out += "]";
+  return out;
 }
 
 }  // namespace base

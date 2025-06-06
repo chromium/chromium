@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
@@ -1084,7 +1085,7 @@ base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
     return base::unexpected(ErrorWithLabel(
         label, "The input shape is not broadcastable to the new shape."));
   }
-  CHECK_EQ(new_shape, base::span<const uint32_t>(*output_shape));
+  CHECK(new_shape == *output_shape);
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
                                    *output_shape, label);
