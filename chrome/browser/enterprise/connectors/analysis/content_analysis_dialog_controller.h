@@ -32,7 +32,6 @@ namespace views {
 class ImageView;
 class Label;
 class Link;
-class TableLayoutView;
 class Textarea;
 class Throbber;
 }  // namespace views
@@ -44,7 +43,6 @@ namespace enterprise_connectors {
 class ContentAnalysisDialogController
     : public ContentAnalysisDialogDelegate,
       public content::WebContentsObserver,
-      public views::TextfieldController,
       public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
@@ -121,22 +119,6 @@ class ContentAnalysisDialogController
 
   inline bool is_cloud() const { return is_cloud_; }
 
-  bool has_custom_message() const {
-    return delegate_base_->GetCustomMessage().has_value();
-  }
-
-  bool has_learn_more_url() const {
-    return delegate_base_->GetCustomLearnMoreUrl().has_value();
-  }
-
-  bool has_custom_message_ranges() const {
-    return delegate_base_->GetCustomRuleMessageRanges().has_value();
-  }
-
-  bool bypass_requires_justification() const {
-    return delegate_base_->BypassRequiresJustification();
-  }
-
   // Cancels the dialog an schedules it for deletion if visible, otherwise
   // simply deletes it soon.
   void CancelDialogAndDelete();
@@ -165,12 +147,6 @@ class ContentAnalysisDialogController
   // Callback function of delayed timer to make the dialog visible.
   void ShowDialogNow();
 
-  // Updates the views in the dialog to put them in the correct state for
-  // `dialog_state_`. This doesn't trigger the same events/resizes as
-  // UpdateDialog(), and doesn't require the presence of a widget. This is safe
-  // to use in the first GetContentsView() call, before the dialog is shown.
-  void UpdateViews();
-
   // Update the UI depending on `dialog_state_`. This also triggers resizes and
   // fires some events. It's meant to be called to update the entire dialog when
   // it's already showing.
@@ -186,49 +162,12 @@ class ContentAnalysisDialogController
   // Returns a newly created side icon.
   std::unique_ptr<views::View> CreateSideIcon();
 
-  // Returns the appropriate dialog message depending on `dialog_state_`.
-  std::u16string GetDialogMessage() const;
-
-  // Returns the appropriate pending message depending on `files_count_`.
-  std::u16string GetPendingMessage() const;
-
-  // Returns the appropriate failure message depending on `final_result_` and
-  // `files_count_`.
-  std::u16string GetFailureMessage() const;
-
-  // Returns the appropriate warning message depending on `files_count_`.
-  std::u16string GetWarningMessage() const;
-
-  // Returns the appropriate success message depending on `files_count_`.
-  std::u16string GetSuccessMessage() const;
-
-  std::u16string GetCustomMessage() const;
-
-  // Helper methods to add views to `contents_view_` and `contents_layout_` that
-  // are not used for every state of the dialog.
-  void AddLearnMoreLinkToDialog();
-  void AddJustificationTextLabelToDialog();
-  void AddJustificationTextAreaToDialog();
-  void AddJustificationTextLengthToDialog();
-
-  // Helper that indicates if the dialog corresponds to a print scan.
-  bool is_print_scan() const;
-
-  // Helper methods to get the admin message shown in dialog.
-  void AddLinksToDialogMessage();
-  void UpdateDialogMessage(std::u16string new_message);
-
   void AcceptButtonCallback();
   void CancelButtonCallback();
-  void LearnMoreLinkClickedCallback(const ui::Event& event);
 
   // This callback used by DialogDelegate::SetCancelCallback and is used to
   // ensure the auto-closing success dialog handles focus correctly.
   void SuccessCallback();
-
-  // views::TextfieldController:
-  void ContentsChanged(views::Textfield* sender,
-                       const std::u16string& new_contents) override;
 
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -239,37 +178,14 @@ class ContentAnalysisDialogController
   // method is shared for those different conditions to close the dialog.
   void CancelDialogWithoutCallback();
 
+  content::WebContents::Getter CreateWebContentsGetter();
+
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_base_;
-
-  // Views above the buttons. `contents_view_` owns every other view.
-  raw_ptr<ContentAnalysisTopImageView> image_ = nullptr;
-  raw_ptr<ContentAnalysisSideIconImageView> side_icon_image_ = nullptr;
-  raw_ptr<ContentAnalysisSideIconSpinnerView> side_icon_spinner_ = nullptr;
-  raw_ptr<views::StyledLabel> message_ = nullptr;
-
-  // The following views are also owned by `contents_view_`, but remain nullptr
-  // if they aren't required to be initialized.
-  raw_ptr<views::Link> learn_more_link_ = nullptr;
-  raw_ptr<views::Label> justification_text_label_ = nullptr;
-  raw_ptr<views::Textarea> bypass_justification_ = nullptr;
-  raw_ptr<views::Label> bypass_justification_text_length_ = nullptr;
-
-  // Table layout owned by `contents_view_`.
-  raw_ptr<views::TableLayoutView> contents_layout_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
 
   // Used to animate dialog height changes.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
-
-  // The access point that caused this dialog to open. This changes what text
-  // and top image are shown to the user.
-  safe_browsing::DeepScanAccessPoint access_point_;
-
-  // Indicates whether the scan being done is for files (files_count_>0) or for
-  // text (files_count_==0). This changes what text and top image are shown to
-  // the user.
-  int files_count_;
 
   // `DownloadItem` for dialogs corresponding to a download with a reviewable
   // verdict. nullptr otherwise.
@@ -279,10 +195,6 @@ class ContentAnalysisDialogController
   // This is used to decide whether the dialog should go away without user input
   // or not.
   bool accepted_or_cancelled_ = false;
-
-  // True when performing a cloud-based content analysis, false when performing
-  // a locally based content analysis.
-  bool is_cloud_ = true;
 
   // Set to true once `DeleteSoon()` is called in `CancelDialogAndDelete()`.
   // This is used by other pending tasks, such as `ShowDialogNow()` to do

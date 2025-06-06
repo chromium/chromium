@@ -8,11 +8,18 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
 class BoxLayoutView;
+class Link;
+class StyledLabel;
+class TableLayoutView;
+class Textarea;
 }  // namespace views
 
 namespace enterprise_connectors {
@@ -20,6 +27,7 @@ namespace enterprise_connectors {
 // Implementation of `views::DialogDelegate` used to show a user the state of
 // content analysis triggered by one of their action.
 class ContentAnalysisDialogDelegate : public views::DialogDelegate,
+                                      public views::TextfieldController,
                                       public ContentAnalysisBaseView::Delegate {
  public:
   // Enum used to represent what the dialog is currently showing.
@@ -44,7 +52,12 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
     WARNING,
   };
 
-  explicit ContentAnalysisDialogDelegate(ContentAnalysisDelegateBase* delegate);
+  ContentAnalysisDialogDelegate(
+      ContentAnalysisDelegateBase* delegate,
+      content::WebContents::Getter web_contents_getter,
+      bool is_cloud,
+      safe_browsing::DeepScanAccessPoint access_point,
+      int files_count);
   ~ContentAnalysisDialogDelegate() override;
 
   // views::DialogDelegate:
@@ -60,6 +73,10 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   ui::ColorId GetSideImageBackgroundColor() const override;
   bool is_result() const override;
 
+  // views::TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
   // Accessors to simplify `dialog_state_` checking.
   inline bool is_success() const { return dialog_state_ == State::SUCCESS; }
   inline bool is_failure() const { return dialog_state_ == State::FAILURE; }
@@ -68,6 +85,9 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
 
   void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
 
+  bool has_learn_more_url() const;
+  bool bypass_requires_justification() const;
+
   // TODO(crbug.com/422111748): Change this to "private" after
   // `ContentAnalysisDialogController` no longer inherits from this class.
  protected:
@@ -75,8 +95,51 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   // values of `dialog_state_` and `delegate_base_`.
   void SetupButtons();
   std::u16string GetCancelButtonText() const;
+  std::u16string GetDialogMessage() const;
+  std::u16string GetPendingMessage() const;
+  std::u16string GetFailureMessage() const;
+  std::u16string GetWarningMessage() const;
+  std::u16string GetSuccessMessage() const;
+  std::u16string GetCustomMessage() const;
+  bool is_print_scan() const;
+  bool has_custom_message() const;
+  bool has_custom_message_ranges() const;
 
+  // Updates the views in the dialog to put them in the correct state for
+  // `dialog_state_`. This doesn't trigger the same events/resizes as
+  // UpdateDialog(), and doesn't require the presence of a widget. This is safe
+  // to use in the first GetContentsView() call, before the dialog is shown.
+  void UpdateViews();
+
+  // Helper methods to get the admin message shown in dialog.
+  void AddLinksToDialogMessage();
+  void UpdateDialogMessage(std::u16string new_message);
+
+  // Helper methods to add views to `contents_view_` and `contents_layout_` that
+  // are not used for every state of the dialog.
+  void AddLearnMoreLinkToDialog();
+  void AddJustificationTextLabelToDialog();
+  void AddJustificationTextAreaToDialog();
+  void AddJustificationTextLengthToDialog();
+
+  void LearnMoreLinkClickedCallback(const ui::Event& event);
+
+  // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
+  raw_ptr<ContentAnalysisTopImageView> image_ = nullptr;
+  raw_ptr<ContentAnalysisSideIconImageView> side_icon_image_ = nullptr;
+  raw_ptr<ContentAnalysisSideIconSpinnerView> side_icon_spinner_ = nullptr;
+  raw_ptr<views::StyledLabel> message_ = nullptr;
+
+  // The following views are also owned by `contents_view_`, but remain nullptr
+  // if they aren't required to be initialized.
+  raw_ptr<views::Link> learn_more_link_ = nullptr;
+  raw_ptr<views::Label> justification_text_label_ = nullptr;
+  raw_ptr<views::Textarea> bypass_justification_ = nullptr;
+  raw_ptr<views::Label> bypass_justification_text_length_ = nullptr;
+
+  // Table layout owned by `contents_view_`.
+  raw_ptr<views::TableLayoutView> contents_layout_ = nullptr;
 
   // Used to show the appropriate message.
   FinalContentAnalysisResult final_result_;
@@ -86,6 +149,21 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
 
   // Should be owned by the parent of this class.
   raw_ptr<ContentAnalysisDelegateBase> delegate_base_;
+
+  content::WebContents::Getter web_contents_getter_;
+
+  // True when performing a cloud-based content analysis, false when performing
+  // a locally based content analysis.
+  bool is_cloud_ = true;
+
+  // The access point that caused this dialog to open. This changes what text
+  // and top image are shown to the user.
+  safe_browsing::DeepScanAccessPoint access_point_;
+
+  // Indicates whether the scan being done is for files (files_count_>0) or for
+  // text (files_count_==0). This changes what text and top image are shown to
+  // the user.
+  int files_count_;
 };
 
 }  // namespace enterprise_connectors
