@@ -429,6 +429,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
                     mToolbarButtonsCoordinator);
 
+            if (shouldEnableOmnibox) {
+                toolbar.setOmniboxParams(omniboxParams);
+            }
+
             return;
         }
 

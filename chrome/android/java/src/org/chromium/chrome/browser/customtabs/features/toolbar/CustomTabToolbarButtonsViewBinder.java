@@ -376,7 +376,7 @@ public class CustomTabToolbarButtonsViewBinder
             // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
             // The security button is static when omnibox is enabled, so offset the url bar for it.
             int buttonWidth = resources.getDimensionPixelSize(R.dimen.toolbar_button_width);
-            titleUrlLp.leftMargin += buttonWidth;
+            titleUrlLp.leftMargin = buttonWidth;
         }
         if (model.get(IS_INCOGNITO)) {
             int incognitoIconWidth =

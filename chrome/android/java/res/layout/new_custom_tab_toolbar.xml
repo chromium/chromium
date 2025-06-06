@@ -26,15 +26,22 @@ found in the LICENSE file.
             android:layout_width="@dimen/custom_tabs_incognito_icon_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"/>
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/security_button"
-            style="@style/LocationBarButton"
+        <FrameLayout
+            android:id="@+id/security_button_wrapper"
             android:layout_width="@dimen/location_bar_lock_icon_width"
-            android:layout_height="@dimen/location_bar_lock_icon_height"
-            android:layout_gravity="center_vertical"
-            android:scaleType="center"
+            android:layout_height="wrap_content"
             android:visibility="gone"
-            app:tint="@color/default_icon_color_tint_list" />
+            tools:ignore="UselessParent">
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/security_button"
+                style="@style/LocationBarButton"
+                android:layout_width="@dimen/location_bar_lock_icon_width"
+                android:layout_height="@dimen/location_bar_lock_icon_height"
+                android:layout_gravity="center_vertical"
+                android:scaleType="center"
+                android:visibility="gone"
+                app:tint="@color/default_icon_color_tint_list" />
+        </FrameLayout>
         <org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
