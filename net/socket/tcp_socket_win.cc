@@ -17,7 +17,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
@@ -105,6 +107,75 @@ bool UseTcpPortRandomization() {
          base::win::GetVersion() >=
              static_cast<base::win::Version>(
                  features::kTcpPortRandomizationWinVersionMinimum.Get());
+}
+
+// [crbug.com/40744069] This function and the two below are used to track
+// metrics on port reuse so that when SO_RANDOMIZE_PORT is enabled on windows
+// we will know if the distribution skews in a way likely to cause errors.
+std::map<std::string, base::Time>& GetLocalEndPointToLastSocketCloseTimeMap() {
+  static base::NoDestructor<std::map<std::string, base::Time>> map;
+  return *map;
+}
+
+// See comment on GetLocalEndPointToLastSocketCloseTimeMap.
+void RecordSocketConnectForReuseMetrics(TCPSocketWin* socket, bool success) {
+  if (!base::FeatureList::IsEnabled(features::kTcpPortReuseMetricsWin)) {
+    return;
+  }
+  net::IPEndPoint local_address;
+  int net_error = socket->GetLocalAddress(&local_address);
+  if (net_error != net::OK || local_address.address().IsZero() ||
+      local_address.port() == 0) {
+    return;
+  }
+  base::Time last_closed_after_successful_open;
+  if (success) {
+    // If the port was successfully opened, then we should clear the last closed
+    // time and wait for it to be closed again.
+    const auto node = GetLocalEndPointToLastSocketCloseTimeMap().extract(
+        local_address.ToString());
+    if (!node) {
+      return;
+    }
+    last_closed_after_successful_open = node.mapped();
+  } else {
+    // If the port was not successfully opened, then we should just read the
+    // last closed time without clearing it so we can measure from last success.
+    const auto it = GetLocalEndPointToLastSocketCloseTimeMap().find(
+        local_address.ToString());
+    if (it == GetLocalEndPointToLastSocketCloseTimeMap().end()) {
+      return;
+    }
+    last_closed_after_successful_open = it->second;
+  }
+  std::string ip_address_type = "Other";
+  if (local_address.address().IsLoopback()) {
+    ip_address_type = "Loopback";
+  } else if (local_address.address().IsLinkLocal()) {
+    ip_address_type = "LinkLocal";
+  }
+  base::UmaHistogramTimes(
+      base::JoinString({"Net.TCPSocket.PortReuseTimeWindows", ip_address_type,
+                        success ? "Success" : "Failure"},
+                       "."),
+      base::Time::Now() - last_closed_after_successful_open);
+}
+
+// See comment on GetLocalEndPointToLastSocketCloseTimeMap.
+void RecordSocketCloseForReuseMetrics(TCPSocketWin* socket) {
+  if (!base::FeatureList::IsEnabled(features::kTcpPortReuseMetricsWin)) {
+    return;
+  }
+  net::IPEndPoint local_address;
+  int net_error = socket->GetLocalAddress(&local_address);
+  if (net_error != net::OK || local_address.address().IsZero() ||
+      local_address.port() == 0) {
+    return;
+  }
+  // If the map already contains an entry for `local_address` then the last open
+  // was unsuccessful and we should reuse the last close time instead.
+  GetLocalEndPointToLastSocketCloseTimeMap().try_emplace(
+      local_address.ToString(), base::Time::Now());
 }
 
 }  // namespace
@@ -807,6 +878,9 @@ void TCPSocketWin::Close() {
     // Only log the close event if there's actually a socket to close.
     net_log_.AddEvent(NetLogEventType::SOCKET_CLOSED);
 
+    // [crbug.com/40744069] Log port reuse metrics.
+    RecordSocketCloseForReuseMetrics(this);
+
     // Note: don't use CancelIo to cancel pending IO because it doesn't work
     // when there is a Winsock layered service provider.
 
@@ -1014,6 +1088,9 @@ void TCPSocketWin::DoConnectComplete(int result) {
   } else {
     net_log_.EndEvent(NetLogEventType::TCP_CONNECT_ATTEMPT);
   }
+
+  // [crbug.com/40744069] Log port reuse metrics.
+  RecordSocketConnectForReuseMetrics(this, /*success=*/result == OK);
 
   if (!logging_multiple_connect_attempts_)
     LogConnectEnd(result);

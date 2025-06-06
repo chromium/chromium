@@ -325,6 +325,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortRandomizationWin);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kTcpPortRandomizationWinVersionMinimum);
 
+// Whether or not TCP port reuse timing metrics are recorded.
+// See crbug.com/40744069 for more details.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortReuseMetricsWin);
+
 // Whether to use a TCP socket implementation which uses an IO completion
 // handler to be notified of completed reads and writes, instead of an event.
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);

@@ -303,6 +303,10 @@ BASE_FEATURE_PARAM(int,
                    "TcpPortRandomizationWinVersionMinimum",
                    static_cast<int>(base::win::Version::WIN10_20H1));
 
+BASE_FEATURE(kTcpPortReuseMetricsWin,
+             "TcpPortReuseMetricsWin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTcpSocketIoCompletionPortWin,
              "TcpSocketIoCompletionPortWin",
              base::FEATURE_DISABLED_BY_DEFAULT);
