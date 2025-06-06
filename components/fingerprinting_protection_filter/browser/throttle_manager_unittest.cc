@@ -375,37 +375,40 @@ class ThrottleManagerTest
       return;
     }
 
-    // Inject the proper throttles.
-    content::MockNavigationThrottleRegistry registry(
-        navigation_handle,
-        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    // Inject the proper throttles via a mock registry to check if the target
+    // throttle is correctly registered.
+    // TODO(https://crbug.com/412524375): Do not use
+    // MockNavigationThrottleRegistry with a real NavigationHandle.
+    auto navigation_throttle_registry =
+        std::make_unique<content::MockNavigationThrottleRegistry>(
+            navigation_handle,
+            content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
             ? GetParam().notification_timing
             : WILL_PROCESS_RESPONSE;
-    registry.AddThrottle(
-        std::make_unique<MockPageActivationThrottle>(registry, state));
+    navigation_throttle_registry->AddThrottle(
+        std::make_unique<MockPageActivationThrottle>(
+            *navigation_throttle_registry, state));
 
     auto* navigation_throttle_manager =
         ThrottleManager::FromNavigationHandle(*navigation_handle);
     if (navigation_throttle_manager) {
       navigation_throttle_manager->MaybeCreateAndAddNavigationThrottles(
-          registry);
+          *navigation_throttle_registry);
     }
 
-    created_fp_throttle_for_last_navigation_ = false;
-    for (size_t i = 0; i < registry.throttles().size(); i++) {
-      if (strcmp(registry.throttles()[i]->GetNameForLogging(),
-                 kPageActivationThrottleNameForLogging) == 0) {
-        created_fp_throttle_for_last_navigation_ = true;
-        // Delete the prod activation throttle so it doesn't interfere with
-        // tests.
-        registry.throttles().erase(registry.throttles().begin() + i);
-        i--;
-        continue;
-      }
-    }
-    registry.RegisterHeldThrottles();
+    // Delete the prod activation throttle so it doesn't interfere with tests.
+    created_fp_throttle_for_last_navigation_ =
+        0 != std::erase_if(
+                 navigation_throttle_registry->throttles(),
+                 [](const auto& item) -> bool {
+                   return strcmp(item->GetNameForLogging(),
+                                 kPageActivationThrottleNameForLogging) == 0;
+                 });
+    navigation_throttle_registry->RegisterHeldThrottles();
+    navigation_throttle_registries_.push_back(
+        std::move(navigation_throttle_registry));
   }
 
   void CreateAgentForHost(content::RenderFrameHost* host) {
@@ -435,6 +438,10 @@ class ThrottleManagerTest
     return FingerprintingProtectionWebContentsHelper::FromWebContents(
         RenderViewHostTestHarness::web_contents());
   }
+
+  // Holds created registries as they should outlive the created throttles.
+  std::vector<std::unique_ptr<content::MockNavigationThrottleRegistry>>
+      navigation_throttle_registries_;
 
   subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;
   subresource_filter::testing::TestRulesetPair test_ruleset_pair_;

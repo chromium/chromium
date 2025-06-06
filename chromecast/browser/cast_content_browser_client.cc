@@ -803,7 +803,7 @@ void CastContentBrowserClient::CreateThrottlesForNavigation(
   if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
     registry.AddThrottle(
         std::make_unique<GeneralAudienceBrowsingNavigationThrottle>(
-            &registry.GetNavigationHandle(),
+            registry,
             general_audience_browsing_service_.get()));
   }
 }

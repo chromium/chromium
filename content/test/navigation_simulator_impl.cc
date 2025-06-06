@@ -45,12 +45,12 @@ namespace {
 class NavigationThrottleCallbackRunner : public NavigationThrottle {
  public:
   NavigationThrottleCallbackRunner(
-      NavigationHandle* handle,
+      NavigationThrottleRegistry& registry,
       base::OnceClosure on_will_start_request,
       const base::RepeatingClosure& on_will_redirect_request,
       base::OnceClosure on_will_fail_request,
       base::OnceClosure on_will_process_response)
-      : NavigationThrottle(handle),
+      : NavigationThrottle(registry),
         on_will_start_request_(std::move(on_will_start_request)),
         on_will_redirect_request_(on_will_redirect_request),
         on_will_fail_request_(std::move(on_will_fail_request)),
@@ -426,20 +426,22 @@ void NavigationSimulatorImpl::RegisterTestThrottle() {
 
   // Page activating navigations don't run throttles so we don't need to
   // register it in that case.
-  if (request_->IsPageActivation())
+  if (request_->IsPageActivation()) {
     return;
+  }
 
-  request_->RegisterThrottleForTesting(
-      std::make_unique<NavigationThrottleCallbackRunner>(
-          request_,
-          base::BindOnce(&NavigationSimulatorImpl::OnWillStartRequest,
-                         weak_factory_.GetWeakPtr()),
-          base::BindRepeating(&NavigationSimulatorImpl::OnWillRedirectRequest,
-                              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&NavigationSimulatorImpl::OnWillFailRequest,
-                         weak_factory_.GetWeakPtr()),
-          base::BindOnce(&NavigationSimulatorImpl::OnWillProcessResponse,
-                         weak_factory_.GetWeakPtr())));
+  NavigationThrottleRegistry& registry =
+      *request_->GetNavigationThrottleRegistryForTesting();
+  registry.AddThrottle(std::make_unique<NavigationThrottleCallbackRunner>(
+      registry,
+      base::BindOnce(&NavigationSimulatorImpl::OnWillStartRequest,
+                     weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&NavigationSimulatorImpl::OnWillRedirectRequest,
+                          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&NavigationSimulatorImpl::OnWillFailRequest,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&NavigationSimulatorImpl::OnWillProcessResponse,
+                     weak_factory_.GetWeakPtr())));
 }
 
 void NavigationSimulatorImpl::Start() {

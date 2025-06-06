@@ -18,7 +18,7 @@ class OriginTrialsControllerDelegate;
 // by providing an observable effect of setting a persistent origin trial.
 class WebTestOriginTrialThrottle : public NavigationThrottle {
  public:
-  WebTestOriginTrialThrottle(NavigationHandle* navigation_handle,
+  WebTestOriginTrialThrottle(NavigationThrottleRegistry& registry,
                              OriginTrialsControllerDelegate* delegate);
   ~WebTestOriginTrialThrottle() override = default;
 

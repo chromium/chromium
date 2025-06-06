@@ -8,10 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace chromecast {
 
 class GeneralAudienceBrowsingService;
@@ -20,7 +16,7 @@ class GeneralAudienceBrowsingNavigationThrottle
     : public content::NavigationThrottle {
  public:
   GeneralAudienceBrowsingNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       GeneralAudienceBrowsingService* general_audience_browsing_service);
 
   GeneralAudienceBrowsingNavigationThrottle(

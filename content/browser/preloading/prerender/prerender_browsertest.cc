@@ -5879,9 +5879,10 @@ class TestPrerenderCancellerSubframeNavigationThrottle
     : public NavigationThrottle {
  public:
   explicit TestPrerenderCancellerSubframeNavigationThrottle(
-      NavigationHandle* navigation_handle)
-      : NavigationThrottle(navigation_handle),
-        navigation_request_(NavigationRequest::From(navigation_handle)) {}
+      NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry),
+        navigation_request_(
+            NavigationRequest::From(&registry.GetNavigationHandle())) {}
 
   ThrottleCheckResult WillStartRequest() override {
     // Cancel prerendering if this navigation is for subframes in prerendered
@@ -5936,7 +5937,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             registry.AddThrottle(
                 std::make_unique<
                     TestPrerenderCancellerSubframeNavigationThrottle>(
-                    &registry.GetNavigationHandle()));
+                    registry));
           }));
 
   // Use ExecuteScriptAsync instead of EvalJs as inserted cross-origin iframe

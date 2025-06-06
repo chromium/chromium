@@ -142,11 +142,6 @@ class CONTENT_EXPORT NavigationThrottle {
     std::optional<std::string> error_page_content_;
   };
 
-  // Note: This legacy constructor will be removed soon. New code should use the
-  // other constructor that takes a NavigationThrottleRegistry&.
-  // TODO(https://crbug.com/412524375): Remove this constructor.
-  explicit NavigationThrottle(NavigationHandle* navigation_handle);
-
   explicit NavigationThrottle(NavigationThrottleRegistry& registry);
   virtual ~NavigationThrottle();
 
@@ -212,7 +207,9 @@ class CONTENT_EXPORT NavigationThrottle {
 
   // The NavigationHandle that is tracking the information related to this
   // navigation.
-  NavigationHandle* navigation_handle() const { return navigation_handle_; }
+  NavigationHandle* navigation_handle() const {
+    return &registry_->GetNavigationHandle();
+  }
 
   // Overrides the default Resume method and replaces it by |callback|. This
   // should only be used in tests.
@@ -244,11 +241,7 @@ class CONTENT_EXPORT NavigationThrottle {
   virtual void CancelDeferredNavigation(ThrottleCheckResult result);
 
  private:
-  // TODO(https://crbug.com/412524375): Once all subclasses are migrated to
-  // construct this instance with a NavigationThrottleRegistry*, remove
-  // `navigation_handle_` and replace it with
-  // `const raw_ref<NavigationThrottleRegistry> registry_`.
-  const raw_ptr<NavigationHandle> navigation_handle_;
+  const raw_ref<NavigationThrottleRegistry> registry_;
 
   // Used in tests.
   base::RepeatingClosure resume_callback_;

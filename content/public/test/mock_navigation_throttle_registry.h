@@ -5,12 +5,15 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_THROTTLE_REGISTRY_H_
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_THROTTLE_REGISTRY_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 
 namespace content {
+
+class MockNavigationHandle;
 
 // This class implements NavigationThrottleRegistry functionalities with
 // testing features. Tests that needs one of following functions may use
@@ -19,8 +22,13 @@ namespace content {
 //   NavigationThrottles so that the throttle can run after them all.
 // - Pass it instead of the real implementation to check if a module
 //   under testing registers a target throttle.
-// If you want to register your testing throttle to the real registry, consider
-// using content::TestNavigationThrottleInserter instead.
+//
+// WARNING: If you want to register your testing throttle to the real registry,
+// or make your throttle work with NavigationSimulator, consider using
+// content::TestNavigationThrottleInserter instead.
+//
+// This class instance needs to outlive navigation throttles that are created
+// with the instance as throttles will have a reference to it always.
 class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
  public:
   enum class RegistrationMode {
@@ -35,8 +43,15 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
     // throttles can be registered manually via RegisterHeldThrottles().
     kHold,
   };
+  // `navigation_handle` doesn't need to outlive this instance, but when any
+  // method is called, the instance should be alive.
   explicit MockNavigationThrottleRegistry(
       NavigationHandle* navigation_handle,
+      RegistrationMode registration_mode =
+          RegistrationMode::kAutoRegistrationForTesting);
+  // `mock_navigation_handle` should outlive this instance.
+  explicit MockNavigationThrottleRegistry(
+      MockNavigationHandle* mock_navigation_handle,
       RegistrationMode registration_mode =
           RegistrationMode::kAutoRegistrationForTesting);
   ~MockNavigationThrottleRegistry() override;
@@ -60,7 +75,9 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
   }
 
  private:
-  const raw_ref<NavigationHandle> navigation_handle_;
+  class NavigationHandleHolder;
+  std::unique_ptr<NavigationHandleHolder> navigation_handle_holder_;
+  raw_ptr<MockNavigationHandle> mock_navigation_handle_;
   const RegistrationMode registration_mode_;
   std::vector<std::unique_ptr<NavigationThrottle>> throttles_;
 };

@@ -573,8 +573,8 @@ class GetRenderFrameHostOnFailureNavigationThrottle
     : public NavigationThrottle {
  public:
   explicit GetRenderFrameHostOnFailureNavigationThrottle(
-      NavigationHandle* handle)
-      : NavigationThrottle(handle) {}
+      NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry) {}
 
   GetRenderFrameHostOnFailureNavigationThrottle(
       const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
@@ -598,7 +598,7 @@ class ThrottleTestContentBrowserClient : public ContentBrowserClient {
       NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(
         std::make_unique<GetRenderFrameHostOnFailureNavigationThrottle>(
-            &registry.GetNavigationHandle()));
+            registry));
   }
 };
 
@@ -1291,9 +1291,9 @@ class ResponseBodyNavigationThrottle : public NavigationThrottle {
  public:
   using ResponseBodyCallback = base::OnceCallback<void(const std::string&)>;
 
-  ResponseBodyNavigationThrottle(NavigationHandle* handle,
+  ResponseBodyNavigationThrottle(NavigationThrottleRegistry& registry,
                                  ResponseBodyCallback callback)
-      : NavigationThrottle(handle), callback_(std::move(callback)) {}
+      : NavigationThrottle(registry), callback_(std::move(callback)) {}
   ResponseBodyNavigationThrottle(const ResponseBodyNavigationThrottle&) =
       delete;
   ResponseBodyNavigationThrottle& operator=(
@@ -1334,12 +1334,12 @@ class NavigationRequestResponseBodyTest : public NavigationRequestTest {
     navigation->Start();
     // It is safe to use base::Unretained as the NavigationThrottle will not be
     // destroyed before the callback is called.
+    auto& registry = navigation->GetNavigationThrottleRegistry();
     auto throttle = std::make_unique<ResponseBodyNavigationThrottle>(
-        navigation->GetNavigationHandle(),
+        registry,
         base::BindOnce(&NavigationRequestResponseBodyTest::UpdateResponseBody,
                        base::Unretained(this)));
-    navigation->GetNavigationHandle()->RegisterThrottleForTesting(
-        std::move(throttle));
+    registry.AddThrottle(std::move(throttle));
     return navigation;
   }
 

@@ -24,7 +24,9 @@
 class GURL;
 
 namespace content {
+class NavigationThrottleRegistry;
 class RenderFrameHost;
+class TestNavigationThrottleInserter;
 }  // namespace content
 
 namespace infobars {
@@ -37,8 +39,7 @@ class RulesetService;
 class SubresourceFilterContentSettingsManager;
 
 // Unit test harness for the subresource filtering component.
-class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
-                                     public content::WebContentsObserver {
+class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness {
  public:
   // Allowlist rules must prefix a disallowed rule in order to work correctly.
   static constexpr const char kDefaultAllowedSuffix[] = "not_disallowed.html";
@@ -100,9 +101,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   }
 
  private:
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void InsertThrottle(content::NavigationThrottleRegistry& registry);
 
   base::ScopedTempDir ruleset_service_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
@@ -111,6 +110,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<RulesetService> ruleset_service_;
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 #if BUILDFLAG(IS_ANDROID)
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 #endif

@@ -77,7 +77,7 @@ class PlatformAuthNavigationThrottleTest : public testing::Test {
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
-  CreateRegistryWithThrottle(content::NavigationHandle* navigation_handle) {
+  CreateRegistryWithThrottle(content::MockNavigationHandle* navigation_handle) {
     auto registry = std::make_unique<content::MockNavigationThrottleRegistry>(
         navigation_handle,
         content::MockNavigationThrottleRegistry::RegistrationMode::kHold);

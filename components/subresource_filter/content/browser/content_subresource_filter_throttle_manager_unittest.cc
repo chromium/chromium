@@ -364,24 +364,32 @@ class ContentSubresourceFilterThrottleManagerTest
       return;
     }
 
-    // Inject the proper throttles at this time.
-    content::MockNavigationThrottleRegistry registry(
-        navigation_handle,
-        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    // Inject the proper throttles at this time. Use a mock registry to check if
+    // the target throttle is correctly registered.
+    // TODO(https://crbug.com/412524375): Do not use
+    // MockNavigationThrottleRegistry with a real NavigationHandle.
+    auto navigation_throttle_registry =
+        std::make_unique<content::MockNavigationThrottleRegistry>(
+            navigation_handle,
+            content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
             ? GetParam()
             : WILL_PROCESS_RESPONSE;
-    registry.AddThrottle(std::make_unique<MockPageStateActivationThrottle>(
-        registry, state));
+    navigation_throttle_registry->AddThrottle(
+        std::make_unique<MockPageStateActivationThrottle>(
+            *navigation_throttle_registry, state));
 
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)
-        ->MaybeCreateAndAddNavigationThrottles(registry);
+        ->MaybeCreateAndAddNavigationThrottles(*navigation_throttle_registry);
 
     created_safe_browsing_throttle_for_last_navigation_ =
-        registry.ContainsHeldThrottle("SafeBrowsingPageActivationThrottle");
-    registry.RegisterHeldThrottles();
+        navigation_throttle_registry->ContainsHeldThrottle(
+            "SafeBrowsingPageActivationThrottle");
+    navigation_throttle_registry->RegisterHeldThrottles();
+    navigation_throttle_registries_.push_back(
+        std::move(navigation_throttle_registry));
   }
 
   void CreateAgentForHost(content::RenderFrameHost* host) {
@@ -424,6 +432,10 @@ class ContentSubresourceFilterThrottleManagerTest
     return ContentSubresourceFilterWebContentsHelper::FromWebContents(
         RenderViewHostTestHarness::web_contents());
   }
+
+  // Holds created registries as they should outlive the created throttles.
+  std::vector<std::unique_ptr<content::MockNavigationThrottleRegistry>>
+      navigation_throttle_registries_;
 
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;

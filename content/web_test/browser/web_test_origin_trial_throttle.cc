@@ -31,9 +31,9 @@ const char kWebTestOriginTrialHeaderName[] = "X-Web-Test-Enabled-Origin-Trials";
 }  // namespace
 
 WebTestOriginTrialThrottle::WebTestOriginTrialThrottle(
-    NavigationHandle* navigation_handle,
+    NavigationThrottleRegistry& registry,
     OriginTrialsControllerDelegate* delegate)
-    : NavigationThrottle(navigation_handle),
+    : NavigationThrottle(registry),
       origin_trials_controller_delegate_(delegate) {}
 
 NavigationThrottle::ThrottleCheckResult

@@ -59,13 +59,8 @@ NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
 
 NavigationThrottle::ThrottleCheckResult::~ThrottleCheckResult() {}
 
-NavigationThrottle::NavigationThrottle(NavigationHandle* navigation_handle)
-    : navigation_handle_(navigation_handle) {
-  CHECK(navigation_handle_);
-}
-
 NavigationThrottle::NavigationThrottle(NavigationThrottleRegistry& registry)
-    : navigation_handle_(&registry.GetNavigationHandle()) {}
+    : registry_(registry) {}
 
 NavigationThrottle::~NavigationThrottle() {}
 
@@ -97,7 +92,7 @@ void NavigationThrottle::Resume() {
     resume_callback_.Run();
     return;
   }
-  NavigationRequest::From(navigation_handle_)->Resume(this);
+  NavigationRequest::From(&registry_->GetNavigationHandle())->Resume(this);
 }
 
 void NavigationThrottle::CancelDeferredNavigation(
@@ -106,7 +101,7 @@ void NavigationThrottle::CancelDeferredNavigation(
     cancel_deferred_navigation_callback_.Run(result);
     return;
   }
-  NavigationRequest::From(navigation_handle_)
+  NavigationRequest::From(&registry_->GetNavigationHandle())
       ->CancelDeferredNavigation(this, result);
 }
 
