@@ -2006,8 +2006,9 @@ public class ToolbarManager
     private IncognitoNewTabPage getIncognitoNewTabPageForCurrentTab() {
         if (mLocationBarModel.hasTab()) {
             NativePage nativePage = mLocationBarModel.getTab().getNativePage();
-            if (nativePage instanceof IncognitoNewTabPage incognitoNewTabPage)
+            if (nativePage instanceof IncognitoNewTabPage incognitoNewTabPage) {
                 return incognitoNewTabPage;
+            }
         }
         return null;
     }
