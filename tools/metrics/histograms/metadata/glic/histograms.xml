@@ -675,8 +675,8 @@ chromium-metrics-reviews@google.com.
   <owner>dullweber@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
-    Recorded when a session ends. The number of times the panel was attached or
-    detached.
+    The number of times the panel was attached or detached between openning and
+    closing. Recorded when the panel is closed.
   </summary>
 </histogram>
 
@@ -684,7 +684,10 @@ chromium-metrics-reviews@google.com.
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
-  <summary>Recorded when a session ends. The duration of the session.</summary>
+  <summary>
+    Time in milliseconds from when the window opens until it is closed. Recorded
+    each time the glic window is closed.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Session.InputModesUsed" enum="GlicInputModesUsed"
@@ -692,8 +695,8 @@ chromium-metrics-reviews@google.com.
   <owner>dullweber@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
-    Recorded when a session ends. The input modes that were used during the
-    session.
+    The input modes that were used during the session. Recorded when the panel
+    is closed.
   </summary>
 </histogram>
 
@@ -742,7 +745,8 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
-    Recorded when a session ends. The number of responses during that session.
+    The number of responses during the session. Recorded when the panel is
+    closed.
   </summary>
 </histogram>
 
