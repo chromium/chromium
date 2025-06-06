@@ -92,15 +92,6 @@ class AttributeInstance final {
 
   const AttributeType& type() const { return type_; }
 
-  // In the functions below, `type` refers to the type of data we want to fetch
-  // from the attribute, and not the type of the attribute itself. The two might
-  // coincide for unstructured types but they are different for structured
-  // types. See `GetNormalizedType()` below for more information about the
-  // correlation between the needed data type and the type of the attribute.
-  // Also note that `type` below is mostly interesting for structured attributes
-  // and is assumed to be just the attribute-type-equivalent field type for
-  // unstructured ones.
-
   // Returns a string that contains all information stored in this attribute
   // instance, formatted according to the given `app_locale`.
   //
@@ -109,8 +100,11 @@ class AttributeInstance final {
     return GetInfo(type_.field_type(), app_locale, std::nullopt);
   }
 
-  // Returns the value stored in this attribute instance for a specific `type`,
-  // formatted according to a given `app_locale` and `format_string`.
+  // Returns the value stored in this attribute instance.
+  //
+  // The `field_type` may be any of `type().field_subtypes()`; otherwise we fall
+  // back to `type().field_type()`. That is, the `field_type` only matters for
+  // name attributes.
   //
   // Currently, the `format_string` only matters for dates. If it is empty, it
   // defaults to u"YYYY-MM-DD". See AutofillField::format_string() for the
@@ -129,15 +123,21 @@ class AttributeInstance final {
 
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
+  //
+  // See GetInfo() for the meaning of `field_type`.
   std::u16string GetRawInfo(GetRawInfoPassKey pass_key,
                             FieldType field_type) const;
 
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
+  //
+  // See GetInfo() for the meaning of `field_type`.
   VerificationStatus GetVerificationStatus(FieldType field_type) const;
 
   // Populates the attribute with a value for a specific `type`, according to a
   // given `app_locale`.
+  //
+  // See GetInfo() for the meaning of `field_type`.
   //
   // Currently, the `format_string` only matters for dates. Dates are updated
   // incrementally, e.g., SetInfo(..., u"16", ..., u"DD", ...) only changes the
@@ -151,10 +151,9 @@ class AttributeInstance final {
                std::u16string_view format_string,
                VerificationStatus status);
 
-  // Same as `SetInfoWithVerificationStatus`, but for structured types this
-  // function does nothing but modify the information in `type`, while the other
-  // function might perform additional steps (e.g., name formatting). This
-  // function should only be used by database logic and settings page logic.
+  // Similar to SetInfo() but without canonicalization: It does not accept
+  // country names and does not format names. This function should only be used
+  // by database logic and settings page logic.
   // TODO(crbug.com/389625753): Investigate merging SetInfo* and SetRawInfo*.
   void SetRawInfo(FieldType field_type,
                   const std::u16string& value,
@@ -171,9 +170,6 @@ class AttributeInstance final {
                          const AttributeInstance& rhs) = default;
 
  private:
-  // This function checks that `info_type` is supported by the attribute and
-  // otherwise tries to convert it into one that is. Returns the supported type
-  // if found and UNKNOWN_TYPE otherwise.
   FieldType GetNormalizedFieldType(FieldType field_type) const;
 
   AttributeType type_;

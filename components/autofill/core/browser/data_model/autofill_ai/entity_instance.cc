@@ -24,25 +24,21 @@
 
 namespace autofill {
 
-AttributeInstance::AttributeInstance(AttributeType type) : type_(type) {
-  switch (type.data_type()) {
-    case AttributeType::DataType::kName:
-      info_ = NameInfo();
-      break;
-    case AttributeType::DataType::kCountry:
-      info_ = CountryInfo();
-      break;
-    case AttributeType::DataType::kDate:
-      info_ = DateInfo();
-      break;
-    case AttributeType::DataType::kState:
-      info_ = StateInfo();
-      break;
-    case AttributeType::DataType::kString:
-      info_ = u"";
-      break;
-  }
-}
+AttributeInstance::AttributeInstance(AttributeType type)
+    : type_(type), info_([&]() -> InfoStructure {
+        switch (type.data_type()) {
+          case AttributeType::DataType::kName:
+            return NameInfo();
+          case AttributeType::DataType::kCountry:
+            return CountryInfo();
+          case AttributeType::DataType::kDate:
+            return DateInfo();
+          case AttributeType::DataType::kState:
+            return StateInfo();
+          case AttributeType::DataType::kString:
+            return u"";
+        }
+      }()) {}
 
 AttributeInstance::AttributeInstance(const AttributeInstance&) = default;
 AttributeInstance& AttributeInstance::operator=(const AttributeInstance&) =
@@ -142,14 +138,13 @@ void AttributeInstance::SetInfo(FieldType field_type,
   std::visit(
       absl::Overload{
           [&](CountryInfo& country) {
-            // We assume that the given `value` is either a valid
-            // country code or a valid country name localized to the
-            // provided `app_locale`.
+            // We assume that the given `value` is either a valid country code
+            // or a valid country name localized to the provided `app_locale`.
             if (!country.SetCountryFromCountryCode(value) &&
                 !country.SetCountryFromCountryName(value, app_locale)) {
-              // In case `value` turns out to be neither of the two
-              // options mentioned above, we reset the country value to
-              // indicate failure.
+              // In case `value` turns out to be neither of the two options
+              // mentioned above, we reset the country value to indicate
+              // failure.
               country = CountryInfo();
             }
           },
@@ -177,9 +172,8 @@ void AttributeInstance::SetRawInfo(FieldType field_type,
   std::visit(absl::Overload{
                  [&](CountryInfo& country) {
                    if (!country.SetCountryFromCountryCode(value)) {
-                     // In case `value` isn't a valid country
-                     // code, we reset the country value to
-                     // indicate failure.
+                     // In case `value` isn't a valid country code, we reset the
+                     // country value to indicate failure.
                      country = CountryInfo();
                    }
                  },
