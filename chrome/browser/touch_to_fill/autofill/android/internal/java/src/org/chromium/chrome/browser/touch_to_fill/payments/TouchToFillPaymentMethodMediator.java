@@ -34,6 +34,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
@@ -319,6 +320,10 @@ class TouchToFillPaymentMethodMediator {
                                     () -> this.onSelectedLoyaltyCard(mLoyaltyCards.get(0)))));
         }
 
+        if (firstTimeUsage) {
+            sheetItems.add(new ListItem(WALLET_SETTINGS_BUTTON, createWalletSettingsButtonModel()));
+        }
+
         sheetItems.add(0, buildHeaderForLoyaltyCards(firstTimeUsage));
         sheetItems.add(buildFooterForLoyaltyCards());
 
@@ -481,6 +486,13 @@ class TouchToFillPaymentMethodMediator {
         return new PropertyModel.Builder(ButtonProperties.ALL_KEYS)
                 .with(TEXT_ID, titleId)
                 .with(ON_CLICK_ACTION, onClickAction)
+                .build();
+    }
+
+    private PropertyModel createWalletSettingsButtonModel() {
+        return new PropertyModel.Builder(ButtonProperties.ALL_KEYS)
+                .with(TEXT_ID, R.string.autofill_loyalty_card_wallet_settings_button)
+                .with(ON_CLICK_ACTION, mDelegate::showGoogleWalletSettings)
                 .build();
     }
 

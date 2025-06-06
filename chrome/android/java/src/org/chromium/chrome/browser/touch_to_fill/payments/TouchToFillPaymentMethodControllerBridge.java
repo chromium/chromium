@@ -15,6 +15,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
+import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -70,6 +71,13 @@ class TouchToFillPaymentMethodControllerBridge
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .showPaymentMethodSettings(mNativeTouchToFillPaymentMethodViewController);
+        }
+    }
+
+    @Override
+    public void showGoogleWalletSettings() {
+        if (mContext.get() != null) {
+            SettingsNavigationHelper.showGoogleWalletSettings(mContext.get());
         }
     }
 

@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
@@ -55,6 +56,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
@@ -913,7 +915,27 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
 
         assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(1));
+        assertThat(getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).size(), is(1));
+        PropertyModel walletSettingButtonModel =
+                getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).get(0);
+        assertThat(
+                walletSettingButtonModel.get(TEXT_ID),
+                is(R.string.autofill_loyalty_card_wallet_settings_button));
         assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+    }
+
+    @Test
+    public void testWalletSettingsButtonRedirectsToSettings() {
+        mCoordinator.showLoyaltyCards(
+                List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).size(), is(1));
+        PropertyModel walletSettingButtonModel =
+                getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).get(0);
+        walletSettingButtonModel.get(ON_CLICK_ACTION).run();
+
+        verify(mDelegateMock).showGoogleWalletSettings();
     }
 
     @Test
@@ -941,6 +963,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
 
         assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(1));
+        assertThat(getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).size(), is(0));
         assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
     }
 
@@ -977,6 +1000,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(loyaltyCardModel2.get(MERCHANT_NAME), is(LOYALTY_CARD_2.getMerchantName()));
 
         assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(0));
+        assertThat(getModelsOfType(itemList, WALLET_SETTINGS_BUTTON).size(), is(0));
         assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
     }
 

@@ -34,6 +34,12 @@ interface TouchToFillPaymentMethodComponent {
         void showPaymentMethodSettings();
 
         /**
+         * Causes navigation to the payment methods settings page and scrolls to the loyalty card
+         * settings preference.
+         */
+        void showGoogleWalletSettings();
+
+        /**
          * Called when the user selects a card.
          *
          * @param uniqueId A backend id of the card.

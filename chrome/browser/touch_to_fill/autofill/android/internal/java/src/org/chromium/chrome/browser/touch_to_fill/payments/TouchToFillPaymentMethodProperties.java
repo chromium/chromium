@@ -47,11 +47,14 @@ class TouchToFillPaymentMethodProperties {
         // method available.
         int FILL_BUTTON = 4;
 
+        // A button that redirects the user to the Wallet settings in Chrome.
+        int WALLET_SETTINGS_BUTTON = 5;
+
         // A footer section containing additional actions.
-        int FOOTER = 5;
+        int FOOTER = 6;
 
         // A section with a terms label is present when card benefits are available.
-        int TERMS_LABEL = 6;
+        int TERMS_LABEL = 7;
     }
 
     /** Metadata associated with a card's image. */

@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
@@ -137,7 +138,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
         adapter.registerType(
                 FILL_BUTTON,
                 TouchToFillPaymentMethodViewBinder::createFillButtonView,
-                TouchToFillPaymentMethodViewBinder::bindFillButtonView);
+                TouchToFillPaymentMethodViewBinder::bindButtonView);
+        adapter.registerType(
+                WALLET_SETTINGS_BUTTON,
+                TouchToFillPaymentMethodViewBinder::createWalletSettingsButtonView,
+                TouchToFillPaymentMethodViewBinder::bindButtonView);
         adapter.registerType(
                 FOOTER,
                 TouchToFillPaymentMethodViewBinder::createFooterItemView,

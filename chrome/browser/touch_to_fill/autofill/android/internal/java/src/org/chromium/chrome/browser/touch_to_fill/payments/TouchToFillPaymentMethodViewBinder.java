@@ -39,6 +39,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -290,20 +291,51 @@ class TouchToFillPaymentMethodViewBinder {
         }
     }
 
-    static View createFillButtonView(ViewGroup parent) {
-        View buttonView =
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.touch_to_fill_fill_button, parent, false);
+    /**
+     * Factory used to create a new "Continue" or "Autofill" button that fills in data into the
+     * focused field.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static Button createFillButtonView(ViewGroup parent) {
+        Button buttonView =
+                (Button)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.touch_to_fill_fill_button, parent, false);
         AutofillUiUtils.setFilterTouchForSecurity(buttonView);
         return buttonView;
     }
 
-    static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
+    /**
+     * Factory used to create a new "Wallet settings" button that redirects the user to the
+     * corresponding Chrome settings page.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static Button createWalletSettingsButtonView(ViewGroup parent) {
+        Button buttonView =
+                (Button)
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(
+                                        R.layout.touch_to_fill_wallet_settings_button,
+                                        parent,
+                                        false);
+        AutofillUiUtils.setFilterTouchForSecurity(buttonView);
+        return buttonView;
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param button The {@link Button} from the bottom sheet to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindButtonView(PropertyModel model, Button button, PropertyKey propertyKey) {
         if (propertyKey == TEXT_ID) {
-            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
-            buttonTitleText.setText(model.get(TEXT_ID));
+            button.setText(model.get(TEXT_ID));
         } else if (propertyKey == ON_CLICK_ACTION) {
-            view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
+            button.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
