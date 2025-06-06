@@ -182,12 +182,6 @@ _BROWSER_AND_PLATFORM_SPECIFIC_FILTER['chrome-headless-shell']['mac'] = [
     # Unable to run chrome-headless-shell with logging enabled on Mac. See
     # crbug.com/1011000.
     'ChromeLogPathCapabilityTest.testChromeLogPath',
-    # https://crbug.com/chromedriver/4631
-    # chrome-headless-shell does not set the window rect as requested.
-    'ChromeDriverTest.testWindowMinimize',
-    'ChromeDriverTest.testWindowPosition',
-    'ChromeDriverTest.testWindowRect',
-    'ChromeDriverTest.testWindowSize',
     # https://crbug.com/chromedriver/4632
     # chrome-headless-shell ignores the selected range while inserting the text
     'ChromeDriverW3cTest.testSendKeysToElementDoesNotAppend',
