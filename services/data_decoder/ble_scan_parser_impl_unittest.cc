@@ -4,6 +4,15 @@
 
 #include "services/data_decoder/ble_scan_parser_impl.h"
 
+#include <stdint.h>
+
+#include <utility>
+
+#include "base/containers/span.h"
+#include "base/containers/span_rust.h"
+#include "base/notreached.h"
+#include "services/data_decoder/ble_scan_parser/cxx.rs.h"
+#include "services/data_decoder/ble_scan_parser/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_decoder {
@@ -48,7 +57,45 @@ struct CxxParserTraits {
   }
 };
 
-using ParserImpls = ::testing::Types<CxxParserTraits>;
+struct RustParserTraits {
+  static ble_scan_parser_bridge::UuidFormat ToRust(UuidFormat format) {
+    switch (format) {
+      case UuidFormat::kFormat16Bit:
+        return ble_scan_parser_bridge::UuidFormat::With16Bits;
+      case UuidFormat::kFormat32Bit:
+        return ble_scan_parser_bridge::UuidFormat::With32Bits;
+      case UuidFormat::kFormat128Bit:
+        return ble_scan_parser_bridge::UuidFormat::With128Bits;
+      case UuidFormat::kFormatInvalid:
+        NOTREACHED();
+    }
+    NOTREACHED();
+  }
+
+  static device::BluetoothUUID ParseUuid(base::span<const uint8_t> bytes,
+                                         UuidFormat format) {
+    std::array<uint8_t, 16> uuid_bytes;
+    bool result = ble_scan_parser_bridge::parse_uuid_for_test(
+        base::SpanToRustSlice(bytes), ToRust(format), uuid_bytes);
+    return result ? device::BluetoothUUID(uuid_bytes) : device::BluetoothUUID();
+  }
+
+  static bool ParseServiceUuids(base::span<const uint8_t> bytes,
+                                UuidFormat format,
+                                std::vector<device::BluetoothUUID>& out) {
+    ble_scan_parser_bridge::UuidListBuilderForTest builder;
+    bool result = ble_scan_parser_bridge::parse_service_uuids_for_test(
+        base::SpanToRustSlice(bytes), ToRust(format), builder);
+    out = std::move(builder.uuids);
+    return result;
+  }
+
+  static mojom::ScanRecordPtr ParseBleScan(base::span<const uint8_t> bytes) {
+    return ble_scan_parser::Parse(bytes);
+  }
+};
+
+using ParserImpls = ::testing::Types<CxxParserTraits, RustParserTraits>;
 TYPED_TEST_SUITE(BleScanParserImplTest, ParserImpls);
 
 TYPED_TEST(BleScanParserImplTest, ParseBadUuidLengthReturnsEmptyString) {

@@ -29,13 +29,6 @@ source_set("lib") {
     "xml_parser.h",
   ]
 
-  if (is_chromeos) {
-    sources += [
-      "ble_scan_parser_impl.cc",
-      "ble_scan_parser_impl.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
@@ -56,6 +49,13 @@ source_set("lib") {
   ]
 
   public_deps = [ "//services/data_decoder/public/mojom" ]
+
+  if (is_chromeos) {
+    sources += [
+      "ble_scan_parser_impl.cc",
+      "ble_scan_parser_impl.h",
+    ]
+  }
 
   if (use_blink) {
     sources += [
@@ -80,10 +80,6 @@ source_set("tests") {
     "xml_parser_unittest.cc",
   ]
 
-  if (is_chromeos) {
-    sources += [ "ble_scan_parser_impl_unittest.cc" ]
-  }
-
   deps = [
     ":lib",
     "//base",
@@ -97,6 +93,15 @@ source_set("tests") {
     "//testing/gtest",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    sources += [ "ble_scan_parser_impl_unittest.cc" ]
+
+    deps += [
+      "//services/data_decoder/ble_scan_parser:lib",
+      "//services/data_decoder/ble_scan_parser:parser",
+    ]
+  }
 
   if (is_ios) {
     deps += [ "//components/test:web_package_test_bundle_data" ]

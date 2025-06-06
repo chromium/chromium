@@ -1,0 +1,56 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("lib") {
+  crate_root = "lib.rs"
+  sources = [
+    "cxx.rs",
+    "lib.rs",
+  ]
+
+  visibility = [
+    ":*",
+    "//services/data_decoder:*",
+  ]
+
+  allow_unsafe = true
+  cxx_bindings = [ "cxx.rs" ]
+  public_deps = [ ":wrapper_functions" ]
+}
+
+source_set("wrapper_functions") {
+  sources = [
+    "wrapper_functions.cc",
+    "wrapper_functions.h",
+  ]
+
+  visibility = [
+    ":*",
+    "//services/data_decoder:*",
+  ]
+
+  deps = [
+    "//base",
+    "//build/rust:cxx_cppdeps",
+  ]
+  public_deps = [ "//services/data_decoder/public/mojom" ]
+}
+
+source_set("parser") {
+  sources = [
+    "parser.cc",
+    "parser.h",
+  ]
+
+  deps = [
+    ":lib",
+    ":wrapper_functions",
+  ]
+  public_deps = [
+    "//base",
+    "//services/data_decoder/public/mojom",
+  ]
+}
