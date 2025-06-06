@@ -107,8 +107,6 @@
   IncognitoReauthView* blockingView = [[IncognitoReauthView alloc] init];
   blockingView.translatesAutoresizingMaskIntoConstraints = NO;
   blockingView.layer.zPosition = FLT_MAX;
-  // No need to show tab switcher button when already in the tab switcher.
-  blockingView.tabSwitcherButton.hidden = YES;
   // Hide the logo.
   blockingView.logoView.hidden = YES;
 
@@ -120,7 +118,7 @@
   if (IsIOSSoftLockEnabled()) {
     id<GridCommands> gridHandler = self.gridHandler;
     id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
-    [blockingView.exitIncognitoButton
+    [blockingView.secondaryButton
                addAction:[UIAction actionWithHandler:^(UIAction* action) {
                  base::UmaHistogramEnumeration(
                      kIncognitoLockOverlayInteractionHistogram,
@@ -132,6 +130,9 @@
                  [reauthHandler manualAuthenticationOverride];
                }]
         forControlEvents:UIControlEventTouchUpInside];
+  } else {
+    // No need to show tab switcher button when already in the tab switcher.
+    blockingView.secondaryButton.hidden = YES;
   }
 
   return blockingView;
