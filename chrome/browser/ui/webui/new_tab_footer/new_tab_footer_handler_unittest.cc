@@ -26,6 +26,7 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -360,7 +361,7 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_DefaultLogo) {
   const gfx::ImageSkia default_logo =
       gfx::CreateVectorIcon(gfx::IconDescription(
           vector_icons::kBusinessIcon, 20,
-          web_contents_->GetColorProvider().GetColor(ui::kColorIcon)));
+          web_contents_->GetColorProvider().GetColor(kColorNewTabFooterText)));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       default_logo.GetRepresentation(1.0f).GetBitmap(),
       handler_->GetManagementNoticeIconBitmap()));
