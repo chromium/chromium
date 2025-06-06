@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE"/>
   <int value="64" label="DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID"/>
   <int value="65" label="AUTOFILL_CC_ASSIST_INFOBAR_DELEGATE"/>
-  <int value="66" label="ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="66" label="ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="67" label="INSTANT_APPS_INFOBAR_DELEGATE_ANDROID"/>
   <int value="68"
       label="DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE (Obsolete)"/>
