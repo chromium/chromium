@@ -37,7 +37,7 @@ public class DisplayAndroidManagerTest {
     @Test
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API})
     public void testDisplayAndroidManagerMainFlowWithDisabledDisplayRegistration() {
-        final HashSet<Integer> expectedDisplayIds = new HashSet<Integer>();
+        final HashSet<Integer> expectedDisplayIds = new HashSet<>();
 
         // DisplayManager has a default display with the Display.DEFAULT_DISPLAY id.
         expectedDisplayIds.add(Display.DEFAULT_DISPLAY);
@@ -78,7 +78,7 @@ public class DisplayAndroidManagerTest {
 
     @Test
     public void testDisplayAndroidManagerMainFlow() {
-        final HashSet<Integer> expectedDisplayIds = new HashSet<Integer>();
+        final HashSet<Integer> expectedDisplayIds = new HashSet<>();
 
         // DisplayManager has a default display with the Display.DEFAULT_DISPLAY id.
         expectedDisplayIds.add(Display.DEFAULT_DISPLAY);
@@ -162,7 +162,7 @@ public class DisplayAndroidManagerTest {
             String message,
             HashSet<Integer> expectedDisplayIds,
             SparseArray<DisplayAndroid> actualDisplays) {
-        HashSet<Integer> actualDisplayIds = new HashSet<Integer>();
+        HashSet<Integer> actualDisplayIds = new HashSet<>();
         for (int i = 0; i < actualDisplays.size(); ++i) {
             actualDisplayIds.add(actualDisplays.valueAt(i).getDisplayId());
         }

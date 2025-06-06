@@ -50,9 +50,9 @@ public class ActivityWindowAndroid extends WindowAndroid
                 context,
                 listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
-                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
                 new ActivityKeyboardVisibilityDelegate(
-                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
                 /* activityTopResumedSupported= */ false,
                 intentRequestTracker,
                 insetObserver,
@@ -80,7 +80,7 @@ public class ActivityWindowAndroid extends WindowAndroid
                 context,
                 listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
-                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
                 keyboardVisibilityDelegate,
                 activityTopResumedSupported,
                 intentRequestTracker,
@@ -128,7 +128,7 @@ public class ActivityWindowAndroid extends WindowAndroid
                             if (insetObserver == null) {
                                 // An InsetObserver can no longer be created. Stub this out so
                                 // calls continue to succeed.
-                                return new ObservableSupplierImpl<Integer>();
+                                return new ObservableSupplierImpl<>();
                             }
                             return insetObserver.getSupplierForKeyboardInset();
                         }));

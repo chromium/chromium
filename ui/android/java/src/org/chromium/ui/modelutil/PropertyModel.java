@@ -467,7 +467,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         validateKey(key);
         ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
         if (container == null) {
-            container = new ObjectContainer<T>(value);
+            container = new ObjectContainer<>(value);
             mData.put(key, container);
         } else if (ObjectsCompat.equals(container.value, value)) {
             return;

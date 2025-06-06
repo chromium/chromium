@@ -71,7 +71,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         when(mRootView.isAttachedToWindow()).thenReturn(false);
         activity.setContentView(mRootView);
         mKeyboardVisibilityDelegate =
-                new ActivityKeyboardVisibilityDelegate(new WeakReference<Activity>(activity));
+                new ActivityKeyboardVisibilityDelegate(new WeakReference<>(activity));
         mKeyboardVisibilityDelegate.setContentViewForTesting(mRootView);
         setRootViewKeyboardInset(0);
     }

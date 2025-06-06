@@ -32,11 +32,11 @@ public interface SimpleList<T> extends Iterable<T> {
 
     /**
      * @return An iterator over elements in the list. The iterator is not safe for concurrent
-     * modifications and does not check whether the underlying list is being modified.
+     *     modifications and does not check whether the underlying list is being modified.
      */
     @Override
     default Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new Iterator<>() {
             private int mI;
 
             @Override

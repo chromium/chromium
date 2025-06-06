@@ -180,7 +180,7 @@ public class AccessibilityStateTest {
     public void testRunningServicesForTesting() {
         AccessibilityServiceInfo service1 = new AccessibilityServiceInfo();
         AccessibilityServiceInfo service2 = new AccessibilityServiceInfo();
-        List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<AccessibilityServiceInfo>();
+        List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<>();
         serviceInfoList.add(service1);
         serviceInfoList.add(service2);
         AccessibilityState.setEnabledServiceInfoListForTesting(serviceInfoList);
@@ -227,7 +227,7 @@ public class AccessibilityStateTest {
         Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
 
         Set<Integer> expected_test =
-                new HashSet<Integer>(
+                new HashSet<>(
                         Arrays.asList(
                                 AccessibilityEvent.TYPE_VIEW_CLICKED,
                                 AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,

@@ -36,7 +36,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
 
     public AndroidPermissionDelegateWithRequester() {
         mHandler = new Handler();
-        mOutstandingPermissionRequests = new SparseArray<PermissionRequestInfo>();
+        mOutstandingPermissionRequests = new SparseArray<>();
     }
 
     @Override

@@ -26,13 +26,13 @@ import org.chromium.ui.resources.statics.StaticResourceLoader;
 import org.chromium.ui.resources.system.SystemResourceLoader;
 
 /**
- * The Java component of a manager for all static resources to be loaded and used by CC layers.
- * This class does not hold any resource state, but passes it directly to native as they are loaded.
+ * The Java component of a manager for all static resources to be loaded and used by CC layers. This
+ * class does not hold any resource state, but passes it directly to native as they are loaded.
  */
 @JNINamespace("ui")
 @NullMarked
 public class ResourceManager implements ResourceLoaderCallback {
-    private final SparseArray<ResourceLoader> mResourceLoaders = new SparseArray<ResourceLoader>();
+    private final SparseArray<ResourceLoader> mResourceLoaders = new SparseArray<>();
     private final SparseArray<SparseArray<LayoutResource>> mLoadedResources =
             new SparseArray<SparseArray<LayoutResource>>();
 
@@ -182,7 +182,7 @@ public class ResourceManager implements ResourceLoaderCallback {
             @AndroidResourceType int resType, int resId, Resource resource) {
         SparseArray<LayoutResource> bucket = mLoadedResources.get(resType);
         if (bucket == null) {
-            bucket = new SparseArray<LayoutResource>();
+            bucket = new SparseArray<>();
             mLoadedResources.put(resType, bucket);
         }
         bucket.put(resId, new LayoutResource(mPxToDp, resource));

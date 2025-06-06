@@ -49,7 +49,7 @@ public class DisplayAndroidManager {
                 "Android.Display.IsNullDisplayRemoved";
 
         private final Handler mHandler = new Handler(Looper.getMainLooper());
-        private final HashSet<Integer> mNullDisplayIds = new HashSet<Integer>();
+        private final HashSet<Integer> mNullDisplayIds = new HashSet<>();
 
         public void startListening() {
             getDisplayManager().registerDisplayListener(this, null);

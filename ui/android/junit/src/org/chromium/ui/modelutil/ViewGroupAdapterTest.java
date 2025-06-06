@@ -30,7 +30,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class ViewGroupAdapterTest {
     private static final PropertyModel.WritableObjectPropertyKey<String> TEXT_PROPERTY =
-            new PropertyModel.WritableObjectPropertyKey<String>();
+            new PropertyModel.WritableObjectPropertyKey<>();
     private static final int VIEW_TYPE = 1;
     private static final ViewBuilder<ViewGroup> VIEW_BUILDER = parent -> parent;
     private static final ViewBinder<PropertyModel, ViewGroup, PropertyKey> VIEW_BINDER =

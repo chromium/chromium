@@ -667,7 +667,7 @@ public class SelectFileDialogTest {
         // Test the LAUNCH_GALLERY event (which normally opens the Files app). However, by default
         // the showIntent will fail on the mock WindowAndroid object, so the file selection should
         // be aborted.
-        selectFileDialog.setFileTypesForTests(new ArrayList<String>(Arrays.asList("image/jpeg")));
+        selectFileDialog.setFileTypesForTests(new ArrayList<>(Arrays.asList("image/jpeg")));
 
         callCount = mOnActionCallback.getCallCount();
         selectFileDialog.onPhotoPickerUserAction(
@@ -831,7 +831,7 @@ public class SelectFileDialogTest {
     /** Returns the determined scope for the accepted |fileTypes|. */
     private int scopeForFileTypes(String... fileTypes) {
         SelectFileDialog instance = SelectFileDialog.create(/* nativeSelectFileDialog= */ 0L);
-        instance.setFileTypesForTests(new ArrayList<String>(Arrays.asList(fileTypes)));
+        instance.setFileTypesForTests(new ArrayList<>(Arrays.asList(fileTypes)));
 
         return instance.determineSelectFileDialogScope();
     }

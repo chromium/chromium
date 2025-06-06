@@ -76,7 +76,7 @@ public class SimpleRecyclerViewAdapter
     public SimpleRecyclerViewAdapter(ModelList data) {
         mListData = data;
         mListObserver =
-                new ListObserver<Void>() {
+                new ListObserver<>() {
                     @Override
                     public void onItemRangeInserted(ListObservable source, int index, int count) {
                         notifyItemRangeInserted(index, count);

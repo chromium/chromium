@@ -83,7 +83,7 @@ public class RunOnNextLayoutDelegate implements RunOnNextLayout {
 
         // Make this re-entrancy safe.
         List<Runnable> runnables = mRunnables;
-        mRunnables = new ArrayList<Runnable>();
+        mRunnables = new ArrayList<>();
 
         for (Runnable runnable : runnables) {
             runnable.run();

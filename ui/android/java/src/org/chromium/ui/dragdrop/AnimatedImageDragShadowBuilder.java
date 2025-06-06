@@ -38,7 +38,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
      * the center of the drag shadow.
      */
     private final FloatProperty<AnimatedImageDragShadowBuilder> mProgressProperty =
-            new FloatProperty<AnimatedImageDragShadowBuilder>("progress") {
+            new FloatProperty<>("progress") {
                 @Override
                 public void setValue(
                         AnimatedImageDragShadowBuilder animatedImageDragShadowBuilder, float v) {

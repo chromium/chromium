@@ -49,7 +49,7 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
     public ModelListAdapter(ModelList data) {
         mModelList = data;
         mListObserver =
-                new ListObserver<Void>() {
+                new ListObserver<>() {
                     @Override
                     public void onItemRangeInserted(ListObservable source, int index, int count) {
                         notifyDataSetChanged();

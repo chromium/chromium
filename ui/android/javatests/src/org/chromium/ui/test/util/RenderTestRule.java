@@ -286,7 +286,7 @@ public class RenderTestRule extends TestWatcher {
         TestThreadUtils.flushNonDelayedLooperTasks();
         Bitmap testBitmap =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Bitmap>() {
+                        new Callable<>() {
                             @Override
                             public Bitmap call() {
                                 int height = view.getMeasuredHeight();

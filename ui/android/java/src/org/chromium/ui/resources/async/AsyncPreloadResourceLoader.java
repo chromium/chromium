@@ -35,7 +35,7 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
         Resource create(int resId);
     }
 
-    private final SparseArray<AsyncLoadTask> mOutstandingLoads = new SparseArray<AsyncLoadTask>();
+    private final SparseArray<AsyncLoadTask> mOutstandingLoads = new SparseArray<>();
     private final ResourceCreator mCreator;
     // USER_BLOCKING since we eventually .get() this.
     private final TaskRunner mTaskQueue =

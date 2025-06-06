@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
-import android.view.View;
 import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
@@ -124,7 +123,7 @@ public class InsetObserverTest {
 
         mInsetObserver =
                 new InsetObserver(
-                        new ImmutableWeakReference<View>(mContentView),
+                        new ImmutableWeakReference<>(mContentView),
                         /* enableKeyboardOverlayMode= */ true);
         mInsetObserver.addObserver(mObserver);
     }
@@ -394,7 +393,7 @@ public class InsetObserverTest {
         doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
         mInsetObserver =
                 new InsetObserver(
-                        new ImmutableWeakReference<View>(mContentView),
+                        new ImmutableWeakReference<>(mContentView),
                         /* enableKeyboardOverlayMode= */ true);
         assertEquals(
                 "WindowInsets is different.",
