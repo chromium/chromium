@@ -526,8 +526,7 @@ PaintTimingDetector::LatestLcpDetailsForTest() {
 }
 
 bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
-  return (WasLCPRestarted() &&
-          !(IsSoftNavigationDetected() || node.IsModifiedBySoftNavigation()));
+  return false;
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*
