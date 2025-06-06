@@ -505,41 +505,36 @@ float AudioParamHandler::AudioParamTimeline::ValueCurveAtTime(
   return c0 + (c1 - c0) * delta;
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetValueEvent(
-    float value,
-    double time) {
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateSetValueEvent(float value, double time) {
   return base::WrapUnique(
       new ParamEvent(ParamEvent::Type::kSetValue, value, time));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateLinearRampEvent(
-    float value,
-    double time,
-    float initial_value,
-    double call_time) {
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateLinearRampEvent(float value,
+                                                     double time,
+                                                     float initial_value,
+                                                     double call_time) {
   return base::WrapUnique(new ParamEvent(ParamEvent::Type::kLinearRampToValue,
                                          value, time, initial_value,
                                          call_time));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateExponentialRampEvent(
-    float value,
-    double time,
-    float initial_value,
-    double call_time) {
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateExponentialRampEvent(float value,
+                                                          double time,
+                                                          float initial_value,
+                                                          double call_time) {
   return base::WrapUnique(
       new ParamEvent(ParamEvent::Type::kExponentialRampToValue, value, time,
                      initial_value, call_time));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetTargetEvent(
-    float value,
-    double time,
-    double time_constant) {
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateSetTargetEvent(float value,
+                                                    double time,
+                                                    double time_constant) {
   // The time line code does not expect a timeConstant of 0. (IT
   // returns NaN or Infinity due to division by zero.  The caller
   // should have converted this to a SetValueEvent.
@@ -548,8 +543,8 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetTargetEvent(
       new ParamEvent(ParamEvent::Type::kSetTarget, value, time, time_constant));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetValueCurveEvent(
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateSetValueCurveEvent(
     const Vector<float>& curve,
     double time,
     double duration) {
@@ -561,16 +556,15 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetValueCurveEvent(
                                          end_value));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetValueCurveEndEvent(
-    float value,
-    double time) {
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateSetValueCurveEndEvent(float value,
+                                                           double time) {
   return base::WrapUnique(
       new ParamEvent(ParamEvent::Type::kSetValueCurveEnd, value, time));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateCancelValuesEvent(
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateCancelValuesEvent(
     double time,
     std::unique_ptr<ParamEvent> saved_event) {
   if (saved_event) {
@@ -587,8 +581,8 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::CreateCancelValuesEvent(
                                          std::move(saved_event)));
 }
 
-std::unique_ptr<AudioParamHandler::AudioParamTimeline::ParamEvent>
-AudioParamHandler::AudioParamTimeline::ParamEvent::CreateGeneralEvent(
+std::unique_ptr<AudioParamHandler::ParamEvent>
+AudioParamHandler::ParamEvent::CreateGeneralEvent(
     Type type,
     float value,
     double time,
@@ -605,27 +599,25 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::CreateGeneralEvent(
       curve, curve_points_per_second, curve_end_value, std::move(saved_event)));
 }
 
-AudioParamHandler::AudioParamTimeline::ParamEvent*
-AudioParamHandler::AudioParamTimeline::ParamEvent::SavedEvent() const {
+AudioParamHandler::ParamEvent* AudioParamHandler::ParamEvent::SavedEvent()
+    const {
   DCHECK_EQ(GetType(), ParamEvent::Type::kCancelValues);
   return saved_event_.get();
 }
 
-bool AudioParamHandler::AudioParamTimeline::ParamEvent::
-    HasDefaultCancelledValue() const {
+bool AudioParamHandler::ParamEvent::HasDefaultCancelledValue() const {
   DCHECK_EQ(GetType(), ParamEvent::Type::kCancelValues);
   return has_default_cancelled_value_;
 }
 
-void AudioParamHandler::AudioParamTimeline::ParamEvent::SetCancelledValue(
-    float value) {
+void AudioParamHandler::ParamEvent::SetCancelledValue(float value) {
   DCHECK_EQ(GetType(), ParamEvent::Type::kCancelValues);
   value_ = value;
   has_default_cancelled_value_ = true;
 }
 
 // General event
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
+AudioParamHandler::ParamEvent::ParamEvent(
     ParamEvent::Type type,
     float value,
     double time,
@@ -652,10 +644,9 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
 }
 
 // Create simplest event needing just a value and time, like setValueAtTime
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
-    ParamEvent::Type type,
-    float value,
-    double time)
+AudioParamHandler::ParamEvent::ParamEvent(ParamEvent::Type type,
+                                          float value,
+                                          double time)
     : type_(type),
       value_(value),
       time_(time),
@@ -674,12 +665,11 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
 // Create a linear or exponential ramp that requires an initial value and
 // time in case
 // there is no actual event that precedes this event.
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
-    ParamEvent::Type type,
-    float value,
-    double time,
-    float initial_value,
-    double call_time)
+AudioParamHandler::ParamEvent::ParamEvent(ParamEvent::Type type,
+                                          float value,
+                                          double time,
+                                          float initial_value,
+                                          double call_time)
     : type_(type),
       value_(value),
       time_(time),
@@ -696,11 +686,10 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
 }
 
 // Create an event needing a time constant (setTargetAtTime)
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
-    ParamEvent::Type type,
-    float value,
-    double time,
-    double time_constant)
+AudioParamHandler::ParamEvent::ParamEvent(ParamEvent::Type type,
+                                          float value,
+                                          double time,
+                                          double time_constant)
     : type_(type),
       value_(value),
       time_(time),
@@ -716,13 +705,12 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
 }
 
 // Create a setValueCurve event
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
-    ParamEvent::Type type,
-    double time,
-    double duration,
-    const Vector<float>& curve,
-    double curve_points_per_second,
-    float curve_end_value)
+AudioParamHandler::ParamEvent::ParamEvent(ParamEvent::Type type,
+                                          double time,
+                                          double duration,
+                                          const Vector<float>& curve,
+                                          double curve_points_per_second,
+                                          float curve_end_value)
     : type_(type),
       value_(0),
       time_(time),
@@ -741,7 +729,7 @@ AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
 }
 
 // Create CancelValues event
-AudioParamHandler::AudioParamTimeline::ParamEvent::ParamEvent(
+AudioParamHandler::ParamEvent::ParamEvent(
     ParamEvent::Type type,
     double time,
     std::unique_ptr<ParamEvent> saved_event)
@@ -901,10 +889,8 @@ void AudioParamHandler::AudioParamTimeline::InsertEvent(
     // setValueAtTime event to set the starting point for these
     // events.  Use a time of 0 to make sure it precedes all other
     // events.  This will get fixed when when handle new events.
-    events_.insert(
-        0,
-        AudioParamHandler::AudioParamTimeline::ParamEvent::CreateSetValueEvent(
-            event->InitialValue(), 0));
+    events_.insert(0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
+                          event->InitialValue(), 0));
     new_events_.insert(events_[0].get());
   }
 
@@ -1740,9 +1726,7 @@ void AudioParamHandler::AudioParamTimeline::ProcessSetTargetFollowedByRamp(
   }
 }
 
-std::tuple<float,
-           double,
-           AudioParamHandler::AudioParamTimeline::ParamEvent::Type>
+std::tuple<float, double, AudioParamHandler::ParamEvent::Type>
 AudioParamHandler::AudioParamTimeline::HandleCancelValues(
     const ParamEvent* current_event,
     ParamEvent* next_event,
