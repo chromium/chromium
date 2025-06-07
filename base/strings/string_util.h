@@ -668,16 +668,6 @@ BASE_EXPORT std::u16string ReplaceStringPlaceholders(
     std::u16string_view subst,
     size_t* offset);
 
-// Helper function for creating a std::string_view from a string literal that
-// preserves internal NUL characters.
-template <class CharT, size_t N>
-std::basic_string_view<CharT> MakeStringViewWithNulChars(
-    const CharT (&lit LIFETIME_BOUND)[N])
-    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
-                   "requires string literal as input") {
-  return std::basic_string_view<CharT>(lit, N - 1u);
-}
-
 }  // namespace base
 
 #if BUILDFLAG(IS_WIN)

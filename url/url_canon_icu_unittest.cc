@@ -14,7 +14,7 @@
 #include <array>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
