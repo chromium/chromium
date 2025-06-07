@@ -59,14 +59,6 @@ class ActorCoordinator {
   ActorCoordinator& operator=(const ActorCoordinator&) = delete;
   ~ActorCoordinator();
 
-  // TODO(crbug.com/409564704): This is temporary. The action_observation_delay_
-  // is a temporary solution that simply waits a static amount of time after a
-  // tool is invoked before an observation is captured. In the future, the actor
-  // framework will be smarter about when an observation should be made but for
-  // now ensure the page is given some time to react to the tool invocation.
-  static void SetActionObservationDelayForTesting(const base::TimeDelta& delay);
-  static base::TimeDelta GetActionObservationDelay();
-
   static void RegisterWithProfile(Profile* profile);
 
   // Pauses the current task, if it's active. Callbacks for in-progress actions

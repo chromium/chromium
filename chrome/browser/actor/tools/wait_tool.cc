@@ -46,8 +46,10 @@ std::string WaitTool::JournalEvent() const {
   return "Wait";
 }
 
-ObservationDelayType WaitTool::GetObservationDelayType() const {
-  return ObservationDelayType::kNone;
+std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
+    content::RenderFrameHost&) const {
+  // Wait tool shouldn't delay observation aside from its own built-in delay.
+  return nullptr;
 }
 
 void WaitTool::OnDelayFinished(InvokeCallback callback) {

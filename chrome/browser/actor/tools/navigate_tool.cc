@@ -62,10 +62,6 @@ std::string NavigateTool::JournalEvent() const {
   return "Navigate";
 }
 
-ObservationDelayType NavigateTool::GetObservationDelayType() const {
-  return ObservationDelayType::kWatchForLoad;
-}
-
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // TODO(crbug.com/411748801): We should probably handle the case where the
   // page navigates before it's done loading. Common with client-side redirects.

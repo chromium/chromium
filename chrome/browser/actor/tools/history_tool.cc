@@ -96,10 +96,6 @@ std::string HistoryTool::JournalEvent() const {
   return direction_ == kBack ? "Back" : "Forward";
 }
 
-ObservationDelayType HistoryTool::GetObservationDelayType() const {
-  return ObservationDelayType::kWatchForLoad;
-}
-
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {
   if (!IsInvokeInProgress() || !navigation_handle->IsHistory()) {
     return;

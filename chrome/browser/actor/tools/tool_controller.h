@@ -85,7 +85,7 @@ class ToolController {
 
   // Set while a tool invocation is in progress, delays invocation of the
   // completion_callback until the page is ready for observation.
-  std::optional<ObservationDelayController> observation_delayer_;
+  std::unique_ptr<ObservationDelayController> observation_delayer_;
 
   base::WeakPtrFactory<ToolController> weak_ptr_factory_{this};
 };

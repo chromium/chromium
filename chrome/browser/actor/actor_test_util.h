@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 
+#include "base/metrics/field_trial_params.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -57,7 +58,9 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();
 
-void OverrideActionObservationDelay(const base::TimeDelta& delta);
+// Use this in a ScopedFeatureList of tests to use test-appropriate parameters
+// for the actor feature.
+base::FieldTrialParams GetDefaultActorParamsForTesting();
 
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,

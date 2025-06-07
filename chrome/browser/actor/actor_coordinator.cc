@@ -59,19 +59,6 @@ void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
 
 }  // namespace
 
-std::optional<base::TimeDelta>
-    ActorCoordinator::action_observation_delay_for_testing_ = std::nullopt;
-
-void ActorCoordinator::SetActionObservationDelayForTesting(
-    const base::TimeDelta& delay) {
-  action_observation_delay_for_testing_ = delay;
-}
-
-base::TimeDelta ActorCoordinator::GetActionObservationDelay() {
-  return action_observation_delay_for_testing_.value_or(
-      features::kGlicActorActorObservationDelay.Get());
-}
-
 ActorCoordinator::Actions::Actions(const BrowserAction& actions,
                                    ActionResultCallback callback)
     : proto(actions), callback(std::move(callback)) {}

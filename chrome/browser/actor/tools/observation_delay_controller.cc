@@ -8,7 +8,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_coordinator.h"
-#include "chrome/browser/actor/tools/observation_delay_type.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -26,66 +25,34 @@ namespace {
 constexpr base::TimeDelta kCompletionTimeout = base::Seconds(10);
 }  // namespace
 
-ObservationDelayController::LoadWatcher::LoadWatcher() = default;
-ObservationDelayController::LoadWatcher::~LoadWatcher() = default;
-
 ObservationDelayController::ObservationDelayController(
-    content::RenderFrameHost& target_frame,
-    ObservationDelayType type)
+    content::RenderFrameHost& target_frame)
     : content::WebContentsObserver(
-          WebContents::FromRenderFrameHost(&target_frame)),
-      observation_type_(type) {
+          WebContents::FromRenderFrameHost(&target_frame)) {
   CHECK(web_contents());
-
-  if (observation_type_ == ObservationDelayType::kWatchForLoad) {
-    load_watcher_.emplace();
-  }
 }
 
 ObservationDelayController::~ObservationDelayController() = default;
 
 void ObservationDelayController::Wait(ReadyCallback callback) {
-  switch (observation_type_) {
-    case ObservationDelayType::kNone: {
-      PostFinishedTask(std::move(callback));
-      break;
-    }
-    case ObservationDelayType::kUseCompletionDelay: {
-      // TODO(crbug.com/409564704): Delay the callback to give the page a chance
-      // to react to the tool's effects. Temporary until we can do this more
-      // reliably in the renderer. Once that's done, the renderer will delay
-      // replying until the page is ready and PageTool should then start using
-      // kWatchForLoad so that PageTools that cause a navigation (e.g. click on
-      // a link) also make use of the browser-side load delay implemented here.
-      PostFinishedTask(std::move(callback),
-                       ActorCoordinator::GetActionObservationDelay());
-      break;
-    }
-    case ObservationDelayType::kWatchForLoad: {
-      CHECK(load_watcher_);
-      switch (load_watcher_->state) {
-        case LoadWatcher::State::kWaitingForLoadStart:
-        case LoadWatcher::State::kWaitingForLoadStop:
-        case LoadWatcher::State::kWaitingForVisualUpdate: {
-          load_watcher_->ready_callback_ = std::move(callback);
-          PostFinishedTask(base::BindOnce(&ObservationDelayController::Timeout,
-                                          weak_ptr_factory_.GetWeakPtr()),
-                           kCompletionTimeout);
+  switch (state_) {
+    case State::kWaitingForLoadStart:
+    case State::kWaitingForLoadStop:
+    case State::kWaitingForVisualUpdate: {
+      ready_callback_ = std::move(callback);
+      PostFinishedTask(base::BindOnce(&ObservationDelayController::Timeout,
+                                      weak_ptr_factory_.GetWeakPtr()),
+                       kCompletionTimeout);
 
-          // If no navigating load was started, simply force and wait for a new
-          // frame to be presented.
-          if (load_watcher_->state ==
-              LoadWatcher::State::kWaitingForLoadStart) {
-            WaitForVisualStateUpdate();
-          }
-          break;
-        }
-        case LoadWatcher::State::kDone: {
-          PostFinishedTask(std::move(callback));
-          break;
-        }
+      // If no navigating load was started, simply force and wait for a new
+      // frame to be presented.
+      if (state_ == State::kWaitingForLoadStart) {
+        WaitForVisualStateUpdate();
       }
-
+      break;
+    }
+    case State::kDone: {
+      PostFinishedTask(std::move(callback));
       break;
     }
   }
@@ -94,17 +61,15 @@ void ObservationDelayController::Wait(ReadyCallback callback) {
 }
 
 void ObservationDelayController::DidStartLoading() {
-  if (!load_watcher_ ||
-      load_watcher_->state != LoadWatcher::State::kWaitingForLoadStart) {
+  if (state_ != State::kWaitingForLoadStart) {
     return;
   }
 
-  load_watcher_->state = LoadWatcher::State::kWaitingForLoadStop;
+  state_ = State::kWaitingForLoadStop;
 }
 
 void ObservationDelayController::DidStopLoading() {
-  if (!load_watcher_ ||
-      load_watcher_->state != LoadWatcher::State::kWaitingForLoadStop) {
+  if (state_ != State::kWaitingForLoadStop) {
     return;
   }
 
@@ -112,8 +77,7 @@ void ObservationDelayController::DidStopLoading() {
 }
 
 void ObservationDelayController::WaitForVisualStateUpdate() {
-  CHECK(load_watcher_);
-  load_watcher_->state = LoadWatcher::State::kWaitingForVisualUpdate;
+  state_ = State::kWaitingForVisualUpdate;
 
   // TODO(crbug.com/414662842): This should probably ensure an update from
   // all/selected OOPIFS?
@@ -123,25 +87,23 @@ void ObservationDelayController::WaitForVisualStateUpdate() {
 }
 
 void ObservationDelayController::VisualStateUpdated(bool /*success*/) {
-  CHECK(load_watcher_);
-  if (load_watcher_->state != LoadWatcher::State::kWaitingForVisualUpdate) {
+  if (state_ != State::kWaitingForVisualUpdate) {
     return;
   }
 
-  load_watcher_->state = LoadWatcher::State::kDone;
+  state_ = State::kDone;
 
   // It's possible the ready state has been reached before Wait has been
   // called. In that case, the callback will be posted when Wait is called.
-  if (load_watcher_->ready_callback_) {
-    PostFinishedTask(std::move(load_watcher_->ready_callback_));
+  if (ready_callback_) {
+    PostFinishedTask(std::move(ready_callback_));
   }
 }
 
 void ObservationDelayController::Timeout() {
-  CHECK(load_watcher_);
-  load_watcher_->state = LoadWatcher::State::kDone;
-  if (load_watcher_->ready_callback_) {
-    PostFinishedTask(std::move(load_watcher_->ready_callback_));
+  state_ = State::kDone;
+  if (ready_callback_) {
+    PostFinishedTask(std::move(ready_callback_));
   }
 }
 

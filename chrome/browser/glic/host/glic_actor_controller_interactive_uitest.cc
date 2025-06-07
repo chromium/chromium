@@ -48,20 +48,14 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   using ActionProtoProvider = base::OnceCallback<std::string()>;
 
   GlicActorControllerUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlicActor, optimization_guide::features::
-                                   kAnnotatedPageContentWithActionableElements},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicActor, actor::GetDefaultActorParamsForTesting()},
+         {optimization_guide::features::
+              kAnnotatedPageContentWithActionableElements,
+          {}}},
         {});
   }
   ~GlicActorControllerUiTest() override = default;
-
-  void SetUpOnMainThread() override {
-    test::InteractiveGlicTest::SetUpOnMainThread();
-
-    // TODO(crbug.com/409564704): Mock the delay so that tests can run at
-    // reasonable speed. Remove once there is a more permanent approach.
-    actor::OverrideActionObservationDelay(base::Milliseconds(10));
-  }
 
   // Executes a BrowserAction and verifies it succeeds. Optionally takes an
   // error reason which, when provided, causes failure if the action is

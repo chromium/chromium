@@ -225,8 +225,10 @@ BrowserAction MakeWait() {
   return action;
 }
 
-void OverrideActionObservationDelay(const base::TimeDelta& delta) {
-  ActorCoordinator::SetActionObservationDelayForTesting(delta);
+base::FieldTrialParams GetDefaultActorParamsForTesting() {
+  // TODO(crbug.com/409564704): Mock the delay so that tests can run at
+  // reasonable speed. Remove once there is a more permanent approach.
+  return {{"glic-actor-observation-delay", "10ms"}};
 }
 
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {

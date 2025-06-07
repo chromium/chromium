@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/actor/tools/observation_delay_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -26,8 +25,7 @@ namespace actor {
 class ObservationDelayController : public content::WebContentsObserver {
  public:
   using ReadyCallback = base::OnceClosure;
-  ObservationDelayController(content::RenderFrameHost& target_frame,
-                             ObservationDelayType type);
+  explicit ObservationDelayController(content::RenderFrameHost& target_frame);
   ~ObservationDelayController() override;
 
   // Note: Callback will always be executed asynchronously. It may be run after
@@ -43,25 +41,14 @@ class ObservationDelayController : public content::WebContentsObserver {
   void VisualStateUpdated(bool success);
   void Timeout();
 
-  // Set only if using kWatchForLoad type.
-  struct LoadWatcher {
-    LoadWatcher();
-    ~LoadWatcher();
-    LoadWatcher(const LoadWatcher&) = delete;
-    LoadWatcher& operator=(const LoadWatcher&) = delete;
+  enum class State {
+    kWaitingForLoadStart,
+    kWaitingForLoadStop,
+    kWaitingForVisualUpdate,
+    kDone
+  } state_ = State::kWaitingForLoadStart;
 
-    enum class State {
-      kWaitingForLoadStart,
-      kWaitingForLoadStop,
-      kWaitingForVisualUpdate,
-      kDone
-    } state = State::kWaitingForLoadStart;
-
-    ReadyCallback ready_callback_;
-  };
-  std::optional<LoadWatcher> load_watcher_;
-
-  ObservationDelayType observation_type_;
+  ReadyCallback ready_callback_;
 
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};
 };

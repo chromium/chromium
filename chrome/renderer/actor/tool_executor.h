@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "chrome/renderer/actor/page_stability_monitor.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -37,10 +38,14 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
+  void ToolFinished(mojom::ActionResultPtr result);
+
   // Raw ref since the executor is owned by the RenderFrameObserver which has
   // the same lifetime as RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
   base::raw_ref<Journal> journal_;
+  std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
+  ToolExecutorCallback completion_callback_;
 };
 
 }  // namespace actor

@@ -35,6 +35,7 @@ ToolExecutor::~ToolExecutor() = default;
 
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
                               ToolExecutorCallback callback) {
+  CHECK(!completion_callback_);
   std::unique_ptr<ToolBase> tool;
   switch (request->action->which()) {
     case actor::mojom::ToolAction::Tag::kClick: {
@@ -86,8 +87,20 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 
   journal_->Log(request->task_id, "Renderer InvokeTool", tool->DebugString());
 
+  completion_callback_ = std::move(callback);
+
+  page_stability_monitor_ =
+      std::make_unique<PageStabilityMonitor>(frame_.get());
+
   mojom::ActionResultPtr result = tool->Execute();
-  std::move(callback).Run(std::move(result));
+
+  page_stability_monitor_->WaitForStable(base::BindOnce(
+      &ToolExecutor::ToolFinished, base::Unretained(this), std::move(result)));
+}
+
+void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
+  CHECK(completion_callback_);
+  std::move(completion_callback_).Run(std::move(result));
 }
 
 }  // namespace actor

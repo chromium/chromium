@@ -18,7 +18,6 @@ source_set("actor") {
     "actor_task.h",
     "aggregated_journal.h",
     "tools/observation_delay_controller.h",
-    "tools/observation_delay_type.h",
     "tools/tool_controller.h",
   ]
   public_deps = [

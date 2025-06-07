@@ -143,8 +143,8 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
     return;
   }
 
-  observation_delayer_.emplace(*target_frame,
-                               active_state_->tool->GetObservationDelayType());
+  observation_delayer_ =
+      active_state_->tool->GetObservationDelayer(*target_frame);
 
   active_state_->tool->Invoke(base::BindOnce(
       &ToolController::DidFinishToolInvoke, weak_ptr_factory_.GetWeakPtr()));
@@ -152,9 +152,13 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
 
 void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
   CHECK(active_state_);
-  observation_delayer_->Wait(
-      base::BindOnce(&ToolController::CompleteToolRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  if (observation_delayer_ && IsOk(*result)) {
+    observation_delayer_->Wait(
+        base::BindOnce(&ToolController::CompleteToolRequest,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  } else {
+    CompleteToolRequest(std::move(result));
+  }
 }
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {

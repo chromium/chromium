@@ -377,9 +377,11 @@ void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  frame_change_observer_.reset();
+
   std::move(invoke_callback_).Run(std::move(result));
 
-  frame_change_observer_.reset();
+  // WARNING: `this` may now be destroyed.
 }
 
 void PageTool::PostFinishInvoke(mojom::ActionResultCode result_code) {

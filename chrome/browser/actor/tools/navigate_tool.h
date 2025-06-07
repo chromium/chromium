@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/actor/tools/observation_delay_type.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -31,7 +30,6 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
-  ObservationDelayType GetObservationDelayType() const override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(

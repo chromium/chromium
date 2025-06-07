@@ -94,13 +94,12 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
   ~ActorCoordinatorTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActor,
+                               GetDefaultActorParamsForTesting()}},
+        /*disabled_features=*/{});
 
     ChromeRenderViewHostTestHarness::SetUp();
-
-    // TODO(crbug.com/409564704): Mock the delay so that tests can run at
-    // reasonable speed. Remove once there is a more permanent approach.
-    OverrideActionObservationDelay(base::TimeDelta());
 
     AssociateTabInterface();
   }
