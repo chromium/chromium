@@ -85,9 +85,6 @@ class CORE_EXPORT WorkerReportingProxy {
   // or InstalledScriptsManager).
   virtual void DidFailToFetchModuleScript() {}
 
-  // Invoked before preparing script engine for evaluation.
-  virtual void WillPrepareForEvaluation() {}
-
   // Invoked when the main classic/module script is about to be evaluated.
   virtual void WillEvaluateScript() {}
 

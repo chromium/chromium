@@ -381,20 +381,17 @@ class CONTENT_EXPORT ContentRendererClient {
       const GURL& service_worker_scope,
       const GURL& script_url) {}
 
-  // Notifies that a service work is about to prepare for script evaluation.
+  // Notifies that the main script of a service worker is about to evaluate.
   // This function is called from the worker thread.
   // |context_proxy| is valid until
   // WillDestroyServiceWorkerContextOnWorkerThread() is called.
-  virtual void WillPrepareForEvaluationOnWorkerThread(
+  virtual void WillEvaluateServiceWorkerOnWorkerThread(
       blink::WebServiceWorkerContextProxy* context_proxy,
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
       const GURL& script_url,
       const blink::ServiceWorkerToken& service_worker_token) {}
-
-  // Notifies that the main script of a service worker is about to evaluate.
-  virtual void WillEvaluateServiceWorkerOnWorkerThread() {}
 
   // Notifies that a service worker context has finished executing its top-level
   // JavaScript. This function is called from the worker thread.

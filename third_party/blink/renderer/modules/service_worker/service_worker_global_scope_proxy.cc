@@ -172,14 +172,6 @@ void ServiceWorkerGlobalScopeProxy::DidFailToFetchModuleScript() {
   Client().FailedToFetchModuleScript();
 }
 
-void ServiceWorkerGlobalScopeProxy::WillPrepareForEvaluation() {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  ScriptState::Scope scope(
-      WorkerGlobalScope()->ScriptController()->GetScriptState());
-  Client().WillPrepareForEvaluation(
-      WorkerGlobalScope()->ScriptController()->GetContext());
-}
-
 void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(

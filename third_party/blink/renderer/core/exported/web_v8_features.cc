@@ -43,8 +43,7 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
   }
   v8::Isolate* isolate = context->GetIsolate();
   ScriptState* script_state = ScriptState::From(isolate, context);
-  DCHECK(script_state->World().IsMainWorld() ||
-         script_state->World().IsWorkerOrWorkletWorld());
+  DCHECK(script_state->World().IsMainWorld());
   ContextFeatureSettings::From(
       ExecutionContext::From(script_state),
       ContextFeatureSettings::CreationMode::kCreateIfNotExists)
@@ -137,11 +136,6 @@ void WebV8Features::SetIsolatePriority(base::Process::Priority priority) {
           },
           isolate_priority));
   WorkerBackingThread::SetWorkerThreadIsolatesPriority(isolate_priority);
-}
-
-// static
-bool WebV8Features::IsSupported(v8::Local<v8::Context> context) {
-  return blink::ExecutionContext::From(context);
 }
 
 }  // namespace blink
