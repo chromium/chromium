@@ -385,6 +385,10 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
     &kSkiaGraphite, "dawn_dumpwc_d3d_errors", true};
 
+// Whether the Dawn D3D11 flush should be delayed until the end of the frame.
+const base::FeatureParam<bool> kSkiaGraphiteDawnD3D11DelayFlush{
+    &kSkiaGraphite, "dawn_d3d11_delay_flush", true};
+
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",
              base::FEATURE_DISABLED_BY_DEFAULT);

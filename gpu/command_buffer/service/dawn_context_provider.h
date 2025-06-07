@@ -86,6 +86,10 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
+
+  // Flush pending D3D11 commands. This function is a noop if
+  // kSkiaGraphiteDawnD3D11DelayFlush is disabled.
+  void FlushD3D11CommandsIfDelayed() const;
 #endif
 
   bool SupportsFeature(wgpu::FeatureName feature);
