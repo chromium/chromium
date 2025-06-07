@@ -219,17 +219,11 @@ interface FrameSinkManager {
   EnableFrameSinkManagerTestApi(
       pending_receiver<FrameSinkManagerTestApi> receiver);
 
-  // Setup the connection between the Browser (at WebContentsImpl level) and
-  // the VizCompositor thread (at InputManager level) in both directions to
-  // allow transferring information from Viz to the Browser and vice versa,
-  // when the VizCompositor thread is handling input using RenderInputRouters
-  // with InputVizard.
-  SetupRenderInputRouterDelegateConnection(
-    mojo_base.mojom.UnguessableToken grouping_id,
-    pending_remote<input.mojom.RenderInputRouterDelegateClient>
-      rir_delegate_client_remote,
-    pending_receiver<input.mojom.RenderInputRouterDelegate>
-      rir_delegate_receiver);
+  // Sets up the RendererInputRouterDelegateRegistry interface for managing
+  // RenderInputRouterDelegate connections between RenderWidgetHosts (on
+  // CrBrowserMain thread) and the InputManager (on VizCompositor thread).
+  SetupRendererInputRouterDelegateRegistry(
+    pending_receiver<RendererInputRouterDelegateRegistry> receiver);
 
   // Notifies list of RenderInputRouters of their block state changes for input
   // event handling on the VizCompositorThread.
@@ -281,4 +275,23 @@ interface FrameSinkManagerClient {
   OnScreenshotCaptured(
       blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
       CopyOutputResult copy_output_result);
+};
+
+// Implemented by the GPU process (VizCompositorThread) and called from the
+// browser process (CrBrowserMain thread). This allows the
+// RenderInputRouterDelegate[Client] interface to use the same mojo pipe to
+// send/receive information for input handling between the CrBrowserMain and the
+// VizCompositorThread.
+interface RendererInputRouterDelegateRegistry {
+  // Setup the connection between the Browser (at RenderWidgetHost level) and
+  // the VizCompositor thread (at InputManager level) in both directions to
+  // allow transferring information from Viz to the Browser and vice versa,
+  // when the VizCompositor thread is handling input using RenderInputRouters
+  // with InputVizard. This connection is per FrameSinkId.
+  SetupRenderInputRouterDelegateConnection(
+      FrameSinkId id,
+      pending_associated_remote<input.mojom.RenderInputRouterDelegateClient>
+          rir_delegate_client_remote,
+      pending_associated_receiver<input.mojom.RenderInputRouterDelegate>
+          rir_delegate_receiver);
 };

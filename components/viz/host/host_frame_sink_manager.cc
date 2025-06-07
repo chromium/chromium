@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/input/utils.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -50,6 +51,11 @@ void HostFrameSinkManager::BindAndSetManager(
 
   frame_sink_manager_remote_.set_disconnect_handler(base::BindOnce(
       &HostFrameSinkManager::OnConnectionLost, base::Unretained(this)));
+
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
+    frame_sink_manager_->SetupRendererInputRouterDelegateRegistry(
+        rir_delegate_registry_.BindNewPipeAndPassReceiver());
+  }
 
   if (connection_was_lost_) {
     RegisterAfterConnectionLoss();
@@ -309,13 +315,15 @@ void HostFrameSinkManager::RequestCopyOfOutput(
 }
 
 void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
-    base::UnguessableToken grouping_id,
-    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+    const FrameSinkId& frame_sink_id,
+    mojo::PendingAssociatedRemote<input::mojom::RenderInputRouterDelegateClient>
         rir_delegate_client_remote,
-    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+    mojo::PendingAssociatedReceiver<input::mojom::RenderInputRouterDelegate>
         rir_delegate_receiver) {
-  frame_sink_manager_->SetupRenderInputRouterDelegateConnection(
-      grouping_id, std::move(rir_delegate_client_remote),
+  CHECK(input::InputUtils::IsTransferInputToVizSupported());
+
+  rir_delegate_registry_->SetupRenderInputRouterDelegateConnection(
+      frame_sink_id, std::move(rir_delegate_client_remote),
       std::move(rir_delegate_receiver));
 }
 
@@ -387,6 +395,7 @@ void HostFrameSinkManager::OnConnectionLost() {
   // frame_sink_manager_remote_.reset() to avoid dangling ptr.
   frame_sink_manager_ = nullptr;
   frame_sink_manager_remote_.reset();
+  rir_delegate_registry_.reset();
 
   metrics_recorder_remote_.reset();
 

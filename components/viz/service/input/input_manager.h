@@ -20,7 +20,7 @@
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
 #include "components/viz/service/input/render_input_router_support_base.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/input/android/input_receiver_data.h"
@@ -62,7 +62,8 @@ class VIZ_SERVICE_EXPORT InputManager
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate,
-      public input::mojom::RenderInputRouterDelegate {
+      public input::mojom::RenderInputRouterDelegate,
+      public mojom::RendererInputRouterDelegateRegistry {
  public:
   explicit InputManager(FrameSinkManagerImpl* frame_sink_manager);
 
@@ -115,37 +116,16 @@ class VIZ_SERVICE_EXPORT InputManager
   // RenderInputRouterDelegateImpl::Delegate implementation.
   std::unique_ptr<input::RenderInputRouterIterator>
   GetEmbeddedRenderInputRouters(const FrameSinkId& id) override;
-  void NotifyObserversOfInputEvent(
-      const FrameSinkId& frame_sink_id,
-      const base::UnguessableToken& grouping_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event,
-      bool dispatched_to_renderer) override;
-  void NotifyObserversOfInputEventAcks(
-      const FrameSinkId& frame_sink_id,
-      const base::UnguessableToken& grouping_id,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
-  void OnInvalidInputEventSource(
-      const FrameSinkId& frame_sink_id,
-      const base::UnguessableToken& grouping_id) override;
-  void RendererInputResponsivenessChanged(
-      const FrameSinkId& frame_sink_id,
-      const base::UnguessableToken& grouping_id,
-      bool is_responsive,
-      std::optional<base::TimeTicks> ack_timeout_ts) override;
+  input::mojom::RenderInputRouterDelegateClient* GetRIRDelegateClientRemote(
+      const FrameSinkId& frame_sink_id) override;
   std::optional<bool> IsDelegatedInkHovering(
       const FrameSinkId& frame_sink_id) override;
-  void DidOverscroll(const FrameSinkId& frame_sink_id,
-                     const base::UnguessableToken& grouping_id,
-                     blink::mojom::DidOverscrollParamsPtr params) override;
   GpuServiceImpl* GetGpuService() override;
 
   // input::mojom::RenderInputRouterDelegate implementation.
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
-  void ForceEnableZoomStateChanged(
-      bool force_enable_zoom,
-      const std::vector<FrameSinkId>& frame_sink_ids) override;
+  void ForceEnableZoomStateChanged(bool force_enable_zoom,
+                                   const FrameSinkId& frame_sink_id) override;
   void StopFlingingOnViz(const FrameSinkId& frame_sink_id) override;
   void RestartInputEventAckTimeoutIfNecessary(
       const FrameSinkId& frame_sink_id) override;
@@ -154,12 +134,17 @@ class VIZ_SERVICE_EXPORT InputManager
   void ResetGestureDetection(
       const FrameSinkId& root_widget_frame_sink_id) override;
 
+  // mojom::RendererInputRouterDelegateRegistry implementation.
   void SetupRenderInputRouterDelegateConnection(
-      const base::UnguessableToken& grouping_id,
-      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-          rir_delegate_client_remote,
-      mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
-          rir_delegate_receiver);
+      const FrameSinkId& frame_sink_id,
+      mojo::PendingAssociatedRemote<
+          input::mojom::RenderInputRouterDelegateClient> rir_delegate_remote,
+      mojo::PendingAssociatedReceiver<input::mojom::RenderInputRouterDelegate>
+          rir_delegate_receiver) override;
+
+  void SetupRendererInputRouterDelegateRegistry(
+      mojo::PendingReceiver<mojom::RendererInputRouterDelegateRegistry>
+          receiver);
 
   void NotifyRendererBlockStateChanged(bool blocked,
                                        const std::vector<FrameSinkId>& rirs);
@@ -187,8 +172,7 @@ class VIZ_SERVICE_EXPORT InputManager
       input::RenderInputRouter* rir,
       const FrameSinkId& frame_sink_id);
 
-  void OnRIRDelegateClientDisconnected(
-      const base::UnguessableToken& grouping_id);
+  void OnRIRDelegateClientDisconnected(const FrameSinkId& frame_sink_id);
 
   void SetupRenderInputRouter(
       input::RenderInputRouter* render_input_router,
@@ -234,14 +218,19 @@ class VIZ_SERVICE_EXPORT InputManager
   base::flat_map<FrameSinkId, std::unique_ptr<input::RenderInputRouter>>
       rir_map_;
 
+  mojo::Receiver<mojom::RendererInputRouterDelegateRegistry> registry_receiver_{
+      this};
+
   // Keeps track of RIRDelegateClient connections, which are between
-  // WebContentsImpl (in the Browser) and InputManager (in Viz) using a
-  // CompositorFrameSink grouping_id sent from the browser. This interface is
-  // used by Viz to update browser's state of input event handling in Viz.
-  base::flat_map</*grouping_id=*/base::UnguessableToken,
-                 mojo::Remote<input::mojom::RenderInputRouterDelegateClient>>
+  // RenderWidgetHosts (in the Browser) and InputManager (in Viz) using the
+  // FrameSinkId associated with the RenderWidgetHost sent from the browser.
+  // This interface is used by Viz to update browser's state of input event
+  // handling in Viz.
+  base::flat_map<
+      FrameSinkId,
+      mojo::AssociatedRemote<input::mojom::RenderInputRouterDelegateClient>>
       rir_delegate_remote_map_;
-  mojo::ReceiverSet<input::mojom::RenderInputRouterDelegate>
+  mojo::AssociatedReceiverSet<input::mojom::RenderInputRouterDelegate>
       rir_delegate_receivers_;
 
   raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;

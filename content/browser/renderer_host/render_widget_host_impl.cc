@@ -1503,7 +1503,7 @@ void RenderWidgetHostImpl::RenderProcessBlockedStateChanged(bool blocked) {
 
 void RenderWidgetHostImpl::NotifyVizOfPageVisibilityUpdates() {
   if (auto* delegate_remote =
-          delegate()->GetRenderInputRouterDelegateRemote()) {
+          mojo_rir_delegate_impl_.GetRenderInputRouterDelegateRemote()) {
     delegate_remote->NotifyVisibilityChanged(frame_sink_id_, is_hidden_);
   }
 }
@@ -1514,7 +1514,8 @@ void RenderWidgetHostImpl::RestartRenderInputRouterInputEventAckTimeout() {
   }
   // Notifies RenderInputRouters on both browser and VizCompositor to restart
   // their input event ack timers.
-  if (auto* remote = delegate()->GetRenderInputRouterDelegateRemote()) {
+  if (auto* remote =
+          mojo_rir_delegate_impl_.GetRenderInputRouterDelegateRemote()) {
     remote->RestartInputEventAckTimeoutIfNecessary(GetFrameSinkId());
   }
   GetRenderInputRouter()->RestartInputEventAckTimeoutIfNecessary();
@@ -3632,6 +3633,11 @@ void RenderWidgetHostImpl::CreateFrameSink(
       std::move(compositor_frame_sink_client), std::move(viz_rir_client_remote),
       GetRenderInputRouter()->GetForceEnableZoom());
 
+  if (input::InputUtils::IsTransferInputToVizSupported()) {
+    // Handles setting up GPU mojo endpoint connections for
+    // RenderInputRouterDelegate[Client] interfaces.
+    mojo_rir_delegate_impl_.SetupRenderInputRouterDelegateConnection();
+  }
   MaybeDispatchBufferedFrameSinkRequest();
 }
 
@@ -3739,6 +3745,10 @@ void RenderWidgetHostImpl::SetupInputRouter() {
 }
 
 void RenderWidgetHostImpl::SetForceEnableZoom(bool enabled) {
+  if (auto* remote =
+          mojo_rir_delegate_impl_.GetRenderInputRouterDelegateRemote()) {
+    remote->ForceEnableZoomStateChanged(enabled, frame_sink_id_);
+  }
   GetRenderInputRouter()->SetForceEnableZoom(enabled);
 }
 

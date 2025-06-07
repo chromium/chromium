@@ -186,12 +186,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       override;
   void EnableFrameSinkManagerTestApi(
       mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override;
-  void SetupRenderInputRouterDelegateConnection(
-      const base::UnguessableToken& grouping_id,
-      mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-          rir_delegate_client_remote,
-      mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
-          rir_delegate_receiver) override;
+  void SetupRendererInputRouterDelegateRegistry(
+      mojo::PendingReceiver<mojom::RendererInputRouterDelegateRegistry>
+          receiver) override;
   void NotifyRendererBlockStateChanged(
       bool blocked,
       const std::vector<FrameSinkId>& render_input_routers) override;
