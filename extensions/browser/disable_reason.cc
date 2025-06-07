@@ -4,6 +4,9 @@
 
 #include "extensions/browser/disable_reason.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
 #include "base/types/cxx23_to_underlying.h"
 
 namespace extensions {

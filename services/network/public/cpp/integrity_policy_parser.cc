@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/integrity_policy_parser.h"
 
+#include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"

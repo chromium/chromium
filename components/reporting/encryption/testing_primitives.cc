@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "components/reporting/encryption/primitives.h"
 #include "crypto/aead.h"
 #include "testing/gmock/include/gmock/gmock.h"

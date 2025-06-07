@@ -5,6 +5,7 @@
 #include "base/allocator/dispatcher/reentry_guard.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/strings/string_number_conversions.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 
+#import <ostream>
+
 #import "base/notreached.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

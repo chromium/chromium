@@ -4,6 +4,9 @@
 
 #include "extensions/renderer/string_source_map.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "gin/converter.h"
 #include "third_party/zlib/google/compression_utils.h"

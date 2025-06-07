@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 

@@ -9,6 +9,8 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"

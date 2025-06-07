@@ -11,6 +11,8 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
+
 namespace media {
 
 ScopedD3DBuffer::ScopedD3DBuffer(base::span<uint8_t> data) : data_(data) {}

@@ -14,6 +14,8 @@
 #include <string.h>
 #include <uuid/uuid.h>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 

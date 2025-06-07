@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 
+#include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_status_code.h"

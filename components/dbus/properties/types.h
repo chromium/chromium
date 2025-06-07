@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"

@@ -4,6 +4,10 @@
 
 #include "crypto/hash.h"
 
+#include <ostream>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"

@@ -13,6 +13,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"

@@ -13,6 +13,7 @@
 #include <initializer_list>
 #include <numeric>
 #include <optional>
+#include <ostream>
 #include <ranges>
 #include <string>
 #include <string_view>

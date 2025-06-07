@@ -4,6 +4,7 @@
 
 #include "media/cdm/aes_cbc_crypto.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "crypto/openssl_util.h"

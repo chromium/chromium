@@ -4,6 +4,9 @@
 
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 
+#include <ostream>
+
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 

@@ -54,6 +54,7 @@
 #include <concepts>
 #include <cstdint>
 #include <map>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/no_destructor.h"

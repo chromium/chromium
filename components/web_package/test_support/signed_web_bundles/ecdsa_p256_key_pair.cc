@@ -11,7 +11,9 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"

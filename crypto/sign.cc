@@ -4,6 +4,8 @@
 
 #include "crypto/sign.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"

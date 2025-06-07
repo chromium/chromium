@@ -15,6 +15,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"

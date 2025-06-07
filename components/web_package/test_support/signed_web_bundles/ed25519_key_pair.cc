@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace web_package::test {

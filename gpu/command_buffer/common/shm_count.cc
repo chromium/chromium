@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/common/shm_count.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 

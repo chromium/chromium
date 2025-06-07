@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 

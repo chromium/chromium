@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"

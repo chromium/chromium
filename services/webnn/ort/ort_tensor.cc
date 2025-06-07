@@ -5,6 +5,7 @@
 #include "services/webnn/ort/ort_tensor.h"
 
 #include <numeric>
+#include <ostream>
 
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"

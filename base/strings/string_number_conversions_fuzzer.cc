@@ -11,6 +11,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+
 template <class NumberType, class StringPieceType, class StringType>
 void CheckRoundtripsT(const uint8_t* data,
                       const size_t size,

@@ -12,6 +12,8 @@
 
 #include <tuple>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/safe_sprintf.h"

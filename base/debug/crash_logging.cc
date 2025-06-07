@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "build/build_config.h"
 
 namespace base::debug {
