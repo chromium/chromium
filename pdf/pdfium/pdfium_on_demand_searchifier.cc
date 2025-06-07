@@ -51,15 +51,16 @@ void PDFiumOnDemandSearchifier::Start(
   CHECK_EQ(state_, State::kIdle);
 
   // Expected to be called only once.
+  CHECK(get_max_dimension_callback_.is_null());
   CHECK(perform_ocr_callback_.is_null());
 
   font_ = CreateFont(engine_->doc());
+  get_max_dimension_callback_ = std::move(get_max_dimension_callback);
   perform_ocr_callback_ = std::move(perform_ocr_callback);
 
-  std::move(get_max_dimension_callback)
-      .Run(base::BindOnce(&PDFiumOnDemandSearchifier::OnGotOcrMaxImageDimension,
-                          weak_factory_.GetWeakPtr()));
-  state_ = State::kWaitingForResults;
+  if (pages_queue_.size()) {
+    SearchifyNextPage();
+  }
 }
 
 void PDFiumOnDemandSearchifier::OnGotOcrMaxImageDimension(
@@ -120,8 +121,7 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
     engine_->OnSearchifyStateChange(/*busy=*/true);
   }
   pages_queue_.push_back(page_index);
-  // OCR service cannot be used before max image dimension is received.
-  if (state_ == State::kWaitingForResults || !max_image_dimension_) {
+  if (state_ == State::kWaitingForResults || perform_ocr_callback_.is_null()) {
     return;
   }
 
@@ -140,6 +140,16 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
 void PDFiumOnDemandSearchifier::SearchifyNextPage() {
   // Do not proceed if OCR got disconnected.
   if (state_ == State::kFailed) {
+    return;
+  }
+
+  // If max image dimension is not asked yet, ask it before performing OCR.
+  if (get_max_dimension_callback_) {
+    std::move(get_max_dimension_callback_)
+        .Run(base::BindOnce(
+            &PDFiumOnDemandSearchifier::OnGotOcrMaxImageDimension,
+            weak_factory_.GetWeakPtr()));
+    state_ = State::kWaitingForResults;
     return;
   }
 

@@ -508,7 +508,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   base::RepeatingClosure GetOcrDisconnectHandler();
 
   // Tells if the page is waiting to be searchified.
-  bool PageNeedsSearchify(int page_index) const;
+  bool IsPageScheduledForSearchify(int page_index) const;
 
   // Schedules searchify for the page if it has no text. `page` must be non-null
   // and in an available state.

@@ -4362,7 +4362,7 @@ void PDFiumEngine::OnOcrDisconnected() {
   }
 }
 
-bool PDFiumEngine::PageNeedsSearchify(int page_index) const {
+bool PDFiumEngine::IsPageScheduledForSearchify(int page_index) const {
   CHECK(PageIndexInBounds(page_index));
   return searchifier_ && searchifier_->IsPageScheduled(page_index);
 }
@@ -4387,7 +4387,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
   if (not_reported) {
     base::UmaHistogramBoolean("PDF.PageHasText", page_has_text);
   }
-  if (page_has_text) {
+  if (page_has_text || !page->HasImages()) {
     return;
   }
 

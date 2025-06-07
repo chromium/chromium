@@ -222,6 +222,24 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   base::WeakPtrFactory<PDFiumOnDemandSearchifierTest> weak_factory_{this};
 };
 
+TEST_P(PDFiumOnDemandSearchifierTest, Blank) {
+  base::HistogramTester histogram_tester;
+  CreateEngine(FILE_PATH_LITERAL("blank.pdf"));
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine(), 0);
+
+  // Load the page to trigger searchify checking.
+  page.GetPage();
+  ASSERT_FALSE(engine()->IsPageScheduledForSearchify(0));
+  EXPECT_FALSE(page.IsPageSearchified());
+
+  // Searchifier should not be created as the page has no image.
+  ASSERT_FALSE(engine()->GetSearchifierForTesting());
+
+  histogram_tester.ExpectUniqueSample(kPageHasTextHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
+}
+
 TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
   base::HistogramTester histogram_tester;
   CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -230,14 +248,13 @@ TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_FALSE(engine()->PageNeedsSearchify(0));
+  ASSERT_FALSE(engine()->IsPageScheduledForSearchify(0));
   EXPECT_FALSE(page.IsPageSearchified());
 
   // Searchifier should not be created as it's not needed yet.
   ASSERT_FALSE(engine()->GetSearchifierForTesting());
 
-  histogram_tester.ExpectTotalCount(kPageHasTextHistogram, 1);
-  histogram_tester.ExpectBucketCount(kPageHasTextHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample(kPageHasTextHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kSearchifyAddedTextHistogram, 0);
 }
 
@@ -248,7 +265,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImages) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -274,7 +291,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, PageWithImagesNoRecognizableText) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -319,7 +336,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithImages) {
   // Trigger page load and verify needing searchify.
   for (int page = 0; page < kPageCount; page++) {
     GetPDFiumPageForTest(*engine(), page).GetPage();
-    ASSERT_TRUE(engine()->PageNeedsSearchify(page));
+    ASSERT_TRUE(engine()->IsPageScheduledForSearchify(page));
   }
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
@@ -382,7 +399,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
 
   PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
   ASSERT_TRUE(searchifier);
@@ -504,7 +521,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImagesInPrintPreview) {
   // Load the page to trigger Searchify, but it should not do anything for Print
   // Preview.
   page.GetPage();
-  ASSERT_FALSE(engine()->PageNeedsSearchify(0));
+  ASSERT_FALSE(engine()->IsPageScheduledForSearchify(0));
   ASSERT_FALSE(engine()->GetSearchifierForTesting());
 }
 
@@ -671,7 +688,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, SelectPageBeforeSearchify) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
   engine()->SelectAll();
   ASSERT_TRUE(engine()->GetSelectedText().empty());
 
@@ -728,7 +745,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, Bug405433817) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
 
   PDFiumPrint print(engine());
 
@@ -763,7 +780,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, Bug406530484) {
 
   // Load the page to trigger searchify checking.
   page.GetPage();
-  ASSERT_TRUE(engine()->PageNeedsSearchify(0));
+  ASSERT_TRUE(engine()->IsPageScheduledForSearchify(0));
 
   PDFiumPrint print(engine());
 

@@ -82,6 +82,9 @@ class PDFiumOnDemandSearchifier {
 
   ScopedFPDFFont font_;
 
+  // Callback function to get max resolution. Should be used only once.
+  GetOcrMaxImageDimensionCallbackAsync get_max_dimension_callback_;
+
   // Callback function to perform OCR.
   PerformOcrCallbackAsync perform_ocr_callback_;
 
