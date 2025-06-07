@@ -7,7 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 
 export function getHtml(this: OverlayBorderGlowElement) {
-  return html`<div id="borderGlowContainer">
+  return html`<div id="borderGlowContainer" .style="${this.getBoundsStyles()}">
     <div .style="${
       this.getGradientColorStyles()}" id="gradientColorLayer"></div>
   </div>`;

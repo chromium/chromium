@@ -399,7 +399,7 @@
           is-deletable_="[[isThumbnailDeletable_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
           role="button" aria-label="[[i18n('searchboxThumbnailLabel')]]"
-          tabindex="1">
+          tabindex$="[[getThumbnailTabindex_(isThumbnailDeletable_)]]">
       </cr-searchbox-thumbnail>
     </div>
   </template>

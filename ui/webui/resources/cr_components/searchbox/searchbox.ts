@@ -944,6 +944,12 @@ export class SearchboxElement extends SearchboxElementBase {
         lastInputValue.startsWith(newInputValue);
     this.lastInput_ = newInput;
   }
+
+  private getThumbnailTabindex_(): string {
+    // If the thumbnail can't be deleted, returning an empty string will set the
+    // tabindex to nothing, which will make the thumbnail not focusable.
+    return this.isThumbnailDeletable_ ? '1' : '';
+  }
 }
 
 declare global {
