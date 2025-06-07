@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/visited_url_ranking/public/features.h"

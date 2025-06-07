@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/browsing_topics_site_data_storage.h"
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "sql/database.h"
 #include "sql/recovery.h"

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/features.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock_impl.h"

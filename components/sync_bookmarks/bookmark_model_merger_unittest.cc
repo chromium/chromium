@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

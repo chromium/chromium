@@ -8,6 +8,7 @@
 #include <GLES2/gl2.h>
 
 #include "base/android/build_info.h"
+#include "base/logging.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/gl/gl_context.h"

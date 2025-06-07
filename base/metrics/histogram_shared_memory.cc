@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/debug/crash_logging.h"
+#include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_macros_local.h"

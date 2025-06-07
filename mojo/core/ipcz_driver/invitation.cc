@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"

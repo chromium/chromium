@@ -20,6 +20,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"

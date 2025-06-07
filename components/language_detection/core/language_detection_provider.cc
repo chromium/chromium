@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

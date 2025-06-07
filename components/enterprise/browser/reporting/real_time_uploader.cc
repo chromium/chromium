@@ -5,6 +5,8 @@
 #include "components/enterprise/browser/reporting/real_time_uploader.h"
 
 #include <queue>
+
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"

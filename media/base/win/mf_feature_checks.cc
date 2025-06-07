@@ -4,6 +4,7 @@
 
 #include "media/base/win/mf_feature_checks.h"
 
+#include "base/logging.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"

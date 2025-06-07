@@ -9,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/shared_memory_switch.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_shared_memory.h"

@@ -6,6 +6,7 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 

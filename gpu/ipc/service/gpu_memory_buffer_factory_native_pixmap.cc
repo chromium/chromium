@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/gpu_memory_buffer_factory_native_pixmap.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "ui/gfx/buffer_format_util.h"

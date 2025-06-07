@@ -9,6 +9,7 @@
 
 #include "services/screen_ai/screen_ai_library_wrapper_impl.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/accessibility_features.h"

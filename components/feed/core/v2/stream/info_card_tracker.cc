@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"

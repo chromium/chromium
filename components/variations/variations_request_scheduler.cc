@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"

@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"

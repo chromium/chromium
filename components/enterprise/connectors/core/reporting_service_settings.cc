@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 
+#include "base/logging.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 
 namespace enterprise_connectors {

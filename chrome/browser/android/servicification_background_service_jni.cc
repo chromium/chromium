@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/system/sys_info.h"

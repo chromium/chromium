@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/features.h"

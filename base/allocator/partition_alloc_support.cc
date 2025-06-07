@@ -26,6 +26,7 @@
 #include "base/functional/callback.h"
 #include "base/immediate_crash.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/metrics/histogram_functions.h"

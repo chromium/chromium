@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
