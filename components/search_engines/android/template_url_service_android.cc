@@ -20,6 +20,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/android/template_url_android.h"

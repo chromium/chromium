@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/common/web_app_id.h"
