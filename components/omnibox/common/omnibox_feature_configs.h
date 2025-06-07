@@ -216,6 +216,7 @@ struct MiaZPS : Config<MiaZPS> {
   bool enabled;
   // Whether to use non-normalized text for local history zp suggestions.
   bool local_history_non_normalized_contents;
+  bool suppress_psuggest_backfill_with_mia;
 };
 
 // A config struct for the omnibox toolbelt.

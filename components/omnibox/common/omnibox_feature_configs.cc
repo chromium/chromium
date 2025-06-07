@@ -176,6 +176,11 @@ MiaZPS::MiaZPS() {
       base::FeatureParam<bool>(&kOmniboxMiaZPS,
                                "LocalHistoryNonNormalizedContents", true)
           .Get();
+
+  suppress_psuggest_backfill_with_mia =
+      base::FeatureParam<bool>(&kOmniboxMiaZPS,
+                               "SuppressPsuggestBackfillWithMIA", false)
+          .Get();
 }
 
 BASE_FEATURE(Toolbelt::kOmniboxToolbelt,
