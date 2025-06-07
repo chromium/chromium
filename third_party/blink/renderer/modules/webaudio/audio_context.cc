@@ -401,6 +401,8 @@ AudioContext::~AudioContext() {
   UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.AudibleTime",
                              total_audible_duration_.InSeconds(),
                              /*exclusive_max=*/8);
+  UMA_HISTOGRAM_BOOLEAN("WebAudio.AudioContext.DestroyedWithoutClose",
+                        !is_closed_);
 
   // TODO(crbug.com/945379) Disable this DCHECK for now.  It's not terrible if
   // the autoplay metrics aren't recorded in some odd situations.  haraken@ said
@@ -618,6 +620,7 @@ void AudioContext::DidClose() {
         "going away"));
   }
   set_sink_id_resolvers_.clear();
+  is_closed_ = true;
 }
 
 bool AudioContext::IsContextCleared() const {

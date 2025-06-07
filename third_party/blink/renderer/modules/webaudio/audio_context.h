@@ -471,6 +471,10 @@ class MODULES_EXPORT AudioContext final
   // Total accumulated time this audio context has been audible.
   base::TimeDelta total_audible_duration_;
 
+  // Set to true when the DidClose() method is called. Used to detect if the
+  // context is destroyed without being properly closed.
+  bool is_closed_ = false;
+
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };
 

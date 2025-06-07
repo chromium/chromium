@@ -118,6 +118,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioContext.DestroyedWithoutClose" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Records when an AudioContext is destroyed (i.e., garbage collected) without
+    the DidClose() method being explicitly called on it first. This is recorded
+    with a value of `true` in the AudioContext destructor if the context is not
+    already in a closed state. Or A value of `false` is recorded if the
+    AudioContext was already in a 'closed' state when it was destroyed.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContext.HardwareSampleRate" units="Hz"
     expires_after="2025-10-05">
   <owner>mjwilson@chromium.org</owner>
