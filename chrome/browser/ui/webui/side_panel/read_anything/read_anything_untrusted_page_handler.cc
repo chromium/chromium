@@ -676,8 +676,9 @@ void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
     bool playing) {
   // Show the tab audio icon when read aloud is playing, and hide it when it
   // stops playing.
-  content::WebContents* contents =
-      is_pdf_ ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  content::WebContents* contents = !!pdf_observer_
+                                       ? pdf_observer_->web_contents()
+                                       : main_observer_->web_contents();
   if (contents) {
     if (playing) {
       audible_closure_ = contents->MarkAudible();
