@@ -469,8 +469,7 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
   controller().ClearOverrideText(0);
 }
 
-TEST_F(PageActionControllerMockModelTest,
-       SetAndClearOverrideAccessibleName) {
+TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideAccessibleName) {
   controller().Initialize(tab_interface(), {kFirstActionItemId},
                           properties_provider_);
 
