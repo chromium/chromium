@@ -50,7 +50,6 @@
     animation-delay: 0ms;
     border-bottom-left-radius: 26px;
     border-bottom-right-radius: 26px;
-    display: none;
     height: 100%;
     overflow: clip;
     /* 26px is the width of the searchbox box shadow. Adding this prevents the
@@ -59,10 +58,6 @@
     opacity: 0;
     padding-bottom: 8px;
     transform-origin: top;
-  }
-
-  :host([is-image-rendered][enable-csb-motion-tweaks]:not([search-box-hidden])) #searchboxContainer {
-    display: block;
   }
 
   :host([enable-csb-motion-tweaks]) cr-searchbox {
@@ -171,9 +166,18 @@
     --cr-icon-button-fill-color: var(--color-primary);
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible][enable-csb-motion-tweaks]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #closeButton {
+     /* Set opacity to 0 so it can animate in with the searchbox. */
+     transition: none;
+     opacity: 0;
+  }
+
+  :host([can-animate-in-close-button][enable-csb-motion-tweaks]) #closeButton {
     animation: closeButtonEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
-    opacity: 0;
+    /* The above removes the transition so it the close button can animate in.
+     * Now that its animating, add the transition back so it can fade out when
+     * the overlay is closed. */
+    transition: inherit;
   }
 
   /* Keyframes for the close button enter animation */
@@ -349,7 +353,6 @@
   }
 
   :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
-  :host([enable-csb-motion-tweaks]:not([is-lens-overlay-contextual-searchbox-visible])) #closeButton,
   :host([search-box-hidden]) #searchboxContainer {
     display: none;
   }

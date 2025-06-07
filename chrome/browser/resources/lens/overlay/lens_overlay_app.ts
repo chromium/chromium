@@ -217,6 +217,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Number,
         value: 0,
       },
+      canAnimateInCloseButton: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -274,6 +279,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   declare private enableCloseButtonTweaks: boolean;
   // The number of suggestions currently being shown to the user.
   declare private searchboxSuggestionCount: number;
+  // Whether the close button can animate in. This is used in the new CSB
+  // animation to ensure the close button animates in with the searchbox. Cannot
+  // rely solely on isLensOverlayContextualSearchboxVisible because that might
+  // never become true, which would prevent the close button from animating in.
+  declare private canAnimateInCloseButton: boolean;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
   // Whether the ghost loader is enabled via feature flag.
@@ -628,6 +638,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private shouldShowContextualSearchBox(shouldShow: boolean) {
     this.isLensOverlayContextualSearchboxVisible =
         this.isLensOverlayContextualSearchboxEnabled && shouldShow;
+    this.canAnimateInCloseButton = true;
   }
 
   // The user started making a selection on the selection overlay.
