@@ -252,6 +252,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composeplate.Impression" enum="BooleanVisible"
+    expires_after="2025-11-30">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record whether the composeplate row is displayed on the New Tab Page. The
+    histogram is logged on New tab page and is Android-only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ConcretePage" enum="NewTabPageConcretePage"
     expires_after="2025-11-16">
   <owner>romanarora@chromium.org</owner>
@@ -516,6 +526,27 @@ chromium-metrics-reviews@google.com.
     Records the reason of why failed to show a home surface UI on the chosen
     NTP. Logged in cold or warm startup when failed to show the home surface UI.
     This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.FakeSearchBox.ComposeplateButton.Impression"
+    units="count" expires_after="2025-11-30">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total number of impressions of the fake search box composeplate
+    button on the New Tab Page. The histogram is logged on New tab page and is
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.FakeSearchBox.Impression" units="count"
+    expires_after="2025-11-30">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total number of impressions of the fake search box on the New Tab
+    Page. The histogram is logged on New tab page and is Android-only.
   </summary>
 </histogram>
 
@@ -991,7 +1022,13 @@ chromium-metrics-reviews@google.com.
     recorded when user clicks on the profile button. For doodle logo: is
     recorded every time when user clicks on the doodle and navigates to another
     website. For menu button: is recorded when user clicks on the menu button.
-    The histogram is logged on New tab page and is Android-only.
+    For composeplate button: is recorded when user clicks on the composeplate
+    button on the fake search box. For composeplate view incognito: is recorded
+    when user clicks on the incognito button in the composeplate view. For
+    composeplate view voice search: is recorded when user clicks on the voice
+    search button in the composeplate view. For composeplate view lens: is
+    recorded when user clicks on the lens button in the composeplate view. The
+    histogram is logged on New tab page and is Android-only.
   </summary>
 </histogram>
 

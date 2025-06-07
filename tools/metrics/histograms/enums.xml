@@ -20203,6 +20203,10 @@ from previous Chrome versions.
   <int value="7" label="Logo with doodle"/>
   <int value="8" label="Menu button"/>
   <int value="9" label="Magic stack"/>
+  <int value="10" label="Composeplate button"/>
+  <int value="11" label="Composeplate view incognito button"/>
+  <int value="12" label="Composeplate view voice search button"/>
+  <int value="13" label="Composeplate view lens button"/>
 </enum>
 
 <enum name="Month">

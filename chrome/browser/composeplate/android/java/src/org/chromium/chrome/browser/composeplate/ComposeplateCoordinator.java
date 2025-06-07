@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -31,8 +32,13 @@ public class ComposeplateCoordinator {
      * Sets the visibility of the composeplate.
      *
      * @param visible Whether the composeplate should be visible.
+     * @param isCurrentPage whether the New Tab Page is the current page displayed to the user.
      */
-    public void setVisibility(boolean visible) {
+    public void setVisibility(boolean visible, boolean isCurrentPage) {
+        if (isCurrentPage && visible != mModel.get(ComposeplateProperties.IS_VISIBLE)) {
+            ComposeplateMetricsUtils.recordComposeplateImpression(visible);
+        }
+
         mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
     }
 
@@ -42,7 +48,11 @@ public class ComposeplateCoordinator {
      * @param voiceSearchClickListener The click listener for the voice search button.
      */
     public void setVoiceSearchClickListener(View.OnClickListener voiceSearchClickListener) {
-        mModel.set(ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER, voiceSearchClickListener);
+        mModel.set(
+                ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER,
+                createEnhancedClickListener(
+                        voiceSearchClickListener,
+                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON));
     }
 
     /**
@@ -51,7 +61,10 @@ public class ComposeplateCoordinator {
      * @param lensClickListener The click listener for the lens button.
      */
     public void setLensClickListener(View.OnClickListener lensClickListener) {
-        mModel.set(ComposeplateProperties.LENS_CLICK_LISTENER, lensClickListener);
+        mModel.set(
+                ComposeplateProperties.LENS_CLICK_LISTENER,
+                createEnhancedClickListener(
+                        lensClickListener, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_LENS_BUTTON));
     }
 
     /**
@@ -60,6 +73,27 @@ public class ComposeplateCoordinator {
      * @param incognitoClickListener The click listener for the incognito button.
      */
     public void setIncognitoClickListener(View.OnClickListener incognitoClickListener) {
-        mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, incognitoClickListener);
+        mModel.set(
+                ComposeplateProperties.INCOGNITO_CLICK_LISTENER,
+                createEnhancedClickListener(
+                        incognitoClickListener,
+                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON));
+    }
+
+    /**
+     * Wraps the given {@link View.OnClickListener} to record the click metric before invoking the
+     * original listener.
+     *
+     * @param originalListener The original click listener to be wrapped.
+     * @param sectionType The {@link ModuleTypeOnStartAndNtp} to record for the click.
+     */
+    private View.OnClickListener createEnhancedClickListener(
+            View.OnClickListener originalListener, @ModuleTypeOnStartAndNtp int sectionType) {
+        return v -> {
+            if (originalListener != null) {
+                originalListener.onClick(v);
+            }
+            ComposeplateMetricsUtils.recordComposeplateClick(sectionType);
+        };
     }
 }

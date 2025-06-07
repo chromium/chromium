@@ -33,6 +33,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -150,6 +151,9 @@ public class NewTabPageLayout extends LinearLayout
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
+    // Previous visibility states for metrics.
+    private boolean mPreviousVoiceSearchButtonVisible;
+    private boolean mPreviousLensButtonVisible;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -364,13 +368,14 @@ public class NewTabPageLayout extends LinearLayout
     private void initializeComposeplate() {
         if (!mIsComposeplateEnabled) return;
 
+        View.OnClickListener composeplateButtonClickListener =
+                v ->
+                        mManager.getNativePageHost()
+                                .loadUrl(
+                                        new LoadUrlParams(ComposeplateUtils.getComposeplateURL()),
+                                        /* incognito= */ false);
         mSearchBoxCoordinator.setComposeplateButtonClickListener(
-                v -> {
-                    mManager.getNativePageHost()
-                            .loadUrl(
-                                    new LoadUrlParams(ComposeplateUtils.getComposeplateURL()),
-                                    /* incognito= */ false);
-                });
+                createEnhancedClickListener(composeplateButtonClickListener));
 
         ViewGroup composeplateView =
                 (ViewGroup) ((ViewStub) findViewById(R.id.composeplate_view_stub)).inflate();
@@ -383,6 +388,22 @@ public class NewTabPageLayout extends LinearLayout
                 v ->
                         mManager.getNativePageHost()
                                 .loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true));
+    }
+
+    /**
+     * Wraps the given {@link View.OnClickListener} to record the click metric before invoking the
+     * original listener.
+     *
+     * @param originalListener The original click listener to be wrapped.
+     */
+    private View.OnClickListener createEnhancedClickListener(
+            View.OnClickListener originalListener) {
+        return v -> {
+            if (originalListener != null) {
+                originalListener.onClick(v);
+            }
+            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
+        };
     }
 
     private void initializeLayoutChangeListener() {
@@ -892,21 +913,55 @@ public class NewTabPageLayout extends LinearLayout
             mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
             LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, shouldShowLensButton);
             mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
+            updatePreviousButtonVisibilityAndRecordMetrics(
+                    shouldShowVoiceSearchButton,
+                    shouldShowLensButton,
+                    /* isComposeplateButtonVisible= */ false);
             return;
         }
 
         boolean shouldShowComposeplateButton = shouldShowVoiceSearchButton && shouldShowLensButton;
-        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(
-                !shouldShowComposeplateButton && shouldShowVoiceSearchButton);
+        boolean isVoiceSearchButtonVisible =
+                !shouldShowComposeplateButton && shouldShowVoiceSearchButton;
+        boolean isLensButtonVisible = !shouldShowComposeplateButton && shouldShowLensButton;
+        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(isVoiceSearchButtonVisible);
+        mSearchBoxCoordinator.setLensButtonVisibility(isLensButtonVisible);
+        mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
+        mComposeplateCoordinator.setVisibility(
+                shouldShowComposeplateButton, mManager.isCurrentPage());
 
-        boolean showLensButton = !shouldShowComposeplateButton && shouldShowLensButton;
-        mSearchBoxCoordinator.setLensButtonVisibility(showLensButton);
         // The lens button will be shown either in the fake search box or the composeplate view.
         LensMetrics.recordShown(
-                LensEntryPoint.NEW_TAB_PAGE, showLensButton || shouldShowComposeplateButton);
+                LensEntryPoint.NEW_TAB_PAGE, isLensButtonVisible || shouldShowComposeplateButton);
+        updatePreviousButtonVisibilityAndRecordMetrics(
+                isVoiceSearchButtonVisible, isLensButtonVisible, shouldShowComposeplateButton);
+    }
 
-        mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
-        mComposeplateCoordinator.setVisibility(shouldShowComposeplateButton);
+    /**
+     * Updates the previous visibility state of the voice search and lens buttons and records
+     * metrics if their visibility has changed on the current page.
+     *
+     * @param isVoiceSearchButtonVisible The new visibility state of the voice search button.
+     * @param isLensButtonVisible The new visibility state of the lens button.
+     * @param isComposeplateButtonVisible The new visibility state of the composeplate button.
+     */
+    private void updatePreviousButtonVisibilityAndRecordMetrics(
+            boolean isVoiceSearchButtonVisible,
+            boolean isLensButtonVisible,
+            boolean isComposeplateButtonVisible) {
+        if (!mManager.isCurrentPage()
+                || (isVoiceSearchButtonVisible == mPreviousVoiceSearchButtonVisible
+                        && isLensButtonVisible == mPreviousLensButtonVisible)) {
+            return;
+        }
+
+        ComposeplateMetricsUtils.recordFakeSearchBoxImpression();
+        if (isComposeplateButtonVisible) {
+            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
+        }
+
+        mPreviousVoiceSearchButtonVisible = isVoiceSearchButtonVisible;
+        mPreviousLensButtonVisible = isLensButtonVisible;
     }
 
     @Override
