@@ -35,14 +35,19 @@ CONTENT_EXPORT void StopThrottlingAllFrameSinks();
 
 // Gets the frame sink id list from |throttle_frames|, and signals the frame
 // sink manager to throttle the frame sinks specified and all their descendant
-// sinks to send BeginFrames at an interval of |interval|. This operation clears
-// out any previous throttling operation on any frame sinks.
+// sinks, to send BeginFrames at an interval of |interval|. This operation
+// clears out any previous throttling operation on any frame sinks.
 //
-// Note that if global throttling (like StartThrottlingAllFrameSinks invoked) is
-// enabled, per-frame sink throttling with the same interval doesn't take
-// effect. Per-frame sink throttling with more aggressive interval would apply
-// on top of global throttling.
 // Should be called from the UI thread.
+//
+// Note:
+//  - This function ignores frames that are not the root of their
+//    RenderWidgetHost (as it's not possible to set a different frame rate for
+//    frames in the same RenderWidgetHost).
+//  - If global throttling (like StartThrottlingAllFrameSinks invoked) is
+//    enabled, per-frame sink throttling with the same interval doesn't take
+//    effect. Per-frame sink throttling with more aggressive interval would
+//    apply on top of global throttling.
 CONTENT_EXPORT void UpdateThrottlingFrameSinks(
     const std::set<GlobalRenderFrameHostId>& throttle_frames,
     base::TimeDelta interval);
