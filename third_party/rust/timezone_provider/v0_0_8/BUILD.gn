@@ -10,17 +10,17 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "timezone_provider"
-  epoch = "0.0"
+  epoch = "0.0.8"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/data/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/tzdb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/data/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/tzdb.rs",
   ]
   inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/data/debug/iana_normalizer.json",
-    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/src/data/iana_normalizer.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/data/debug/iana_normalizer.json",
+    "//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_8/src/data/iana_normalizer.rs.data",
   ]
 
   build_native_rust_unit_tests = false

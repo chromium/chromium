@@ -54,9 +54,12 @@ def ConvertCrateIdToCrateEpoch(crate_id: str) -> str:
     _AssertIsCrateId(crate_id)
     crate_version = ConvertCrateIdToCrateVersion(crate_id)
     v = crate_version.split('.')
-    if v[0] == '0':
+    if len(v) > 0 and v[0] != '0':
+        return f'v{v[0]}'
+    if len(v) > 1 and v[1] != '0':
         return f'v0_{v[1]}'
-    return f'v{v[0]}'
+    assert len(v) > 2
+    return f'v0_0_{v[2]}'
 
 
 def ConvertCrateIdToCrateName(crate_id: str) -> str:

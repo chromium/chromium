@@ -28,6 +28,8 @@ class CrateUtilsTests(unittest.TestCase):
         self.assertTrue(crate_ids)
 
     def testConvertCrateIdToCrateEpoch(self):
+        self.assertEqual(ConvertCrateIdToCrateEpoch("foo@0.0.0"), "v0_0_0")
+        self.assertEqual(ConvertCrateIdToCrateEpoch("foo@0.0.1"), "v0_0_1")
         self.assertEqual(ConvertCrateIdToCrateEpoch("foo@0.1.2"), "v0_1")
         self.assertEqual(ConvertCrateIdToCrateEpoch("foo@1.2.3"), "v1")
 
