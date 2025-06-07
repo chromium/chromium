@@ -480,9 +480,8 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfAccessibilityTree::OnHasSearchifyText() {
-  // TODO(crbug.com/360803943): Look into if `render_frame()` can be null, why
-  // it is assumed to be not null in `SetOcrCompleteStatus()`, and create a
-  // better distinction between `render_frame()` and `render_frame_`.
+  // TODO(crbug.com/360803943): Look into if `render_frame()` can be null, and
+  // create a better distinction between `render_frame()` and `render_frame_`.
   // TODO(accessibility): remove this dependency.
   content::RenderAccessibility* render_accessibility =
       render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
@@ -511,8 +510,12 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool first_searchified_page = page_info.is_searchified && !did_searchify_run_;
   did_searchify_run_ |= page_info.is_searchified;
-  if (!was_text_converted_from_image_) {
+  if (!was_text_converted_from_image_ && page_info.is_searchified) {
+    // `page_info.is_searchified` is true when Searchify is run on the page, but
+    // if it did not find any text, `is_searchified` will be false for all
+    // `text_run`s.
     for (const auto& text_run : text_runs) {
       if (text_run.is_searchified) {
         was_text_converted_from_image_ = true;
@@ -555,38 +558,51 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   bool has_image = !page_objects.images.empty();
   did_have_an_image_ |= has_image;
 
-  // TODO(crbug.com/408182951): Set `IDS_PDF_OCR_IN_PROGRESS` status when PDF is
-  // partially ocred.
   if (page_index == page_count_ - 1) {
+    SetFinalStatusMessage();
+    if (!had_accessible_text_) {
+      base::UmaHistogramCounts1000(
+          "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
+    }
+  } else {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    if (did_searchify_run_) {
-      SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
-                                                      : IDS_PDF_OCR_NO_RESULT);
-      UnserializeNodes();
-      return;
+    // If this is the first page with searchify results, notify the user that
+    // OCR is in progress.
+    if (first_searchified_page) {
+      SetStatusMessage(IDS_PDF_OCR_IN_PROGRESS);
     }
-    if (!had_accessible_text_ && did_have_an_image_) {
-      SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
-      UnserializeNodes();
-      return;
-    }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    if (had_accessible_text_ || !did_have_an_image_) {
-      // In this case, PDF OCR doesn't run. Thus, set the status node to notify
-      // users that the PDF content has been loaded into an accessibility tree.
-      SetStatusMessage(IDS_PDF_LOADED_TO_A11Y_TREE);
+#endif
+  }
 
-      UnserializeNodes();
-      // Reset the status node's attributes after a delay. This delay allows
-      // screen reader to deliver the user the notification message set above.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&PdfAccessibilityTree::ResetStatusNodeAttributes,
-                         GetWeakPtr()),
-          kDelayBeforeResettingStatusNode);
-    } else {
-      UnserializeNodes();
-    }
+  UnserializeNodes();
+}
+
+void PdfAccessibilityTree::SetFinalStatusMessage() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (did_searchify_run_) {
+    SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
+                                                    : IDS_PDF_OCR_NO_RESULT);
+    return;
+  }
+  // Show promotion if the PDF had images and searchify did not run. Promotion
+  // is not needed when searchify run but did not find any results.
+  if (!did_searchify_run_ && did_have_an_image_) {
+    SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (had_accessible_text_ || !did_have_an_image_) {
+    // Set the status node to notify users that the PDF content has been loaded
+    // into an accessibility tree.
+    SetStatusMessage(IDS_PDF_LOADED_TO_A11Y_TREE);
+
+    // Reset the status node's attributes after a delay. This delay allows
+    // screen reader to deliver the user the notification message set above.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PdfAccessibilityTree::ResetStatusNodeAttributes,
+                       GetWeakPtr()),
+        kDelayBeforeResettingStatusNode);
   }
 }
 
@@ -633,70 +649,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
   MarkPluginContainerDirty();
 
   nodes_.clear();
-
-  if (!sent_metrics_once_) {
-    // TODO(crbug.com/360803943): Update comment and behavior when removing PDF
-    // OCR support code.
-    // If the user turns on PDF OCR after opening a PDF, its PDF a11y tree gets
-    // created again. `sent_metrics_once_` helps to determine whether
-    // it's first time to create a PDF a11y tree. When a PDF is opened, the UMA
-    // metrics need be recorded once.
-    sent_metrics_once_ = true;
-
-    // TODO(accessibility): remove this dependency.
-    content::RenderAccessibility* render_accessibility =
-        render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
-    CHECK(render_accessibility);
-
-    if (!had_accessible_text_) {
-      base::UmaHistogramCounts1000(
-          "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
-    }
-  }
 }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void PdfAccessibilityTree::SetOcrCompleteStatus() {
-  VLOG(2) << "Performing OCR on PDF is complete.";
-
-  auto obj = GetPluginContainerAXObject();
-  if (!obj) {
-    return;
-  }
-
-  SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
-                                                  : IDS_PDF_OCR_NO_RESULT);
-
-  if (!nodes_.empty()) {
-    // `nodes_` is not empty yet as `UnserializeNodes()` hasn't been called. In
-    // this case, `status_node_` will be unserialized along with `nodes_` when
-    // `UnserializeNodes()` gets called later.
-    return;
-  }
-
-  ui::AXTreeUpdate update;
-  update.root_id = doc_node_->id;
-  update.nodes.push_back(*status_node_);
-  update.nodes.push_back(*status_node_text_);
-
-  if (!tree_.Unserialize(update)) {
-    LOG(FATAL) << tree_.error();
-  }
-  MarkPluginContainerDirty();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // `FireLayoutComplete()` will be captured by Select-to-Speak on ChromeOS for
-  // the "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened" metric.
-  // TODO(crbug/289010799): Remove `FireLayoutComplete()` when the
-  // Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened histogram expires.
-  CHECK(render_frame());
-  content::RenderAccessibility* render_accessibility =
-      render_frame()->GetRenderAccessibility();
-  CHECK(render_accessibility);
-  render_accessibility->FireLayoutComplete();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfAccessibilityTree::SetStatusMessage(int message_id) {
   CHECK(status_node_);

@@ -164,16 +164,12 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
                       int32_t* out_node_id,
                       int32_t* out_node_char_index) const;
 
-  // Called after the data for all pages in the PDF have been received.
-  // Finishes assembling a complete accessibility tree and grafts it
-  // onto the host tree.
+  // Called after the data for some pages in the PDF have been received and
+  // sends the data on the added pages to the host tree.
   void UnserializeNodes();
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Called after the OCR data for all images in the PDF have been received.
-  // Set the status node with the OCR completion message.
-  void SetOcrCompleteStatus();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // If needed sets the status message when all pages are loaded.
+  void SetFinalStatusMessage();
 
   void AddPageContent(
       const chrome_pdf::AccessibilityPageInfo& page_info,
@@ -274,7 +270,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // applying searchify.
   bool had_accessible_text_ = false;
   bool did_have_an_image_ = false;
-  bool sent_metrics_once_ = false;
+
   // Initialize `currently_in_foreground_` to be true as an associated render
   // frame would be most likely in foreground when being created. If it goes to
   // background, this value will be flipped to false in `WasHidden()`.
