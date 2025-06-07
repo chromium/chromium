@@ -16,16 +16,19 @@ separated from each other by a divider.
 <div id="container">
   <div id="infoContainer">
   ${this.managementNotice_ ?
-      html`<div id="managementNoticeContainer" class="notice-item">
+      html`<div id="managementNoticeContainer" class="notice-item"
+        title="${this.managementNotice_.text}">
         <div id="managementNoticeLogoContainer"
              class=${this.managementNotice_.isCustomLogo ?
              'custom_logo' : ''}>
           <img id="managementNoticeLogo" alt=""
                src="${this.managementNotice_.bitmapDataUrl.url}">
         </div>
-        <p title="${this.managementNotice_.text}">
-          ${this.managementNotice_.text}
-        </p>
+        <button @click="${this.onManagementNoticeClick_}" role="link"
+            aria-label="${this.managementNotice_.text}"
+            aria-description="$i18n{managementLinkDesc}">
+            ${this.managementNotice_.text}
+        </button>
       </div>` : ''}
     ${this.showExtension_ ? html`
       <div id="extensionNameContainer" title="${this.extensionName_}"

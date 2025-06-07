@@ -37,6 +37,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   void UpdateNtpExtensionName() override;
   void UpdateManagementNotice() override;
   void OpenExtensionOptionsPageWithFallback() override;
+  void OpenManagementPage() override;
 
   // Returns the bitmap representation of the management logo.
   // Exposed for testing only.

@@ -25,7 +25,6 @@
   position: relative;
 }
 
-.notice-item > p,
 .notice-item > button {
   color: var(--color-new-tab-footer-text);
   font-size: 13px;

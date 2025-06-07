@@ -91,6 +91,10 @@ void NewTabFooterHandler::OpenExtensionOptionsPageWithFallback() {
   OpenUrlInCurrentTab(options_url);
 }
 
+void NewTabFooterHandler::OpenManagementPage() {
+  OpenUrlInCurrentTab(GURL(chrome::kChromeUIManagementURL));
+}
+
 void NewTabFooterHandler::UpdateManagementNotice() {
   if (!enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_)) {
     document_->SetManagementNotice(nullptr);

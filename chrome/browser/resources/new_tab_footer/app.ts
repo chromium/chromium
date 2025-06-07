@@ -185,6 +185,11 @@ export class NewTabFooterAppElement extends CrLitElement {
     this.handler_.openExtensionOptionsPageWithFallback();
   }
 
+  protected onManagementNoticeClick_(e: Event) {
+    e.preventDefault();
+    this.handler_.openManagementPage();
+  }
+
   protected onCustomizeClick_() {
     recordClick(FooterElement.CUSTOMIZE_BUTTON);
     // Let side panel decide what page or section to show.

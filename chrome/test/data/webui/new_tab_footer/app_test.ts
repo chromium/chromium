@@ -134,10 +134,11 @@ suite('NewTabFooterAppTest', () => {
       const managementNoticeContainer =
           element.shadowRoot.querySelector('#managementNoticeContainer');
       assertTrue(!!managementNoticeContainer);
-      let managementNoticeText = $$(element, '#managementNoticeContainer p');
-      assertTrue(!!managementNoticeText);
+      let managementNoticeLink =
+          $$(element, '#managementNoticeContainer [role="link"]');
+      assertTrue(!!managementNoticeLink);
       assertEquals(
-          managementNoticeText.innerText, 'Managed by your organization');
+          managementNoticeLink.innerText, 'Managed by your organization');
       let managementNoticeLogo =
           $$<HTMLImageElement>(element, '#managementNoticeLogo');
       assertTrue(!!managementNoticeLogo);
@@ -150,9 +151,10 @@ suite('NewTabFooterAppTest', () => {
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      managementNoticeText = $$(element, '#managementNoticeContainer p');
+      managementNoticeLink =
+          $$(element, '#managementNoticeContainer [role="link"]');
       managementNoticeLogo = $$(element, '#managementNoticeLogo');
-      assertFalse(!!managementNoticeText);
+      assertFalse(!!managementNoticeLink);
       assertFalse(!!managementNoticeLogo);
     });
 
@@ -188,6 +190,24 @@ suite('NewTabFooterAppTest', () => {
       assertEquals(logoContainter.classList.length, 0);
     });
 
+    test('Click manageemnt notice link', async () => {
+      // Arrange.
+      const managementNotice: ManagementNotice = {
+        text: 'Managed by your organization',
+        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        isCustomLogo: false,
+      };
+      callbackRouter.setManagementNotice(managementNotice);
+      await callbackRouter.$.flushForTesting();
+
+      // Act.
+      const link = $$(element, '#managementNoticeContainer [role="link"]');
+      assertTrue(!!link);
+      link.click();
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('openManagementPage'));
+    });
   });
 
   suite('CustomizeChromeButton', () => {

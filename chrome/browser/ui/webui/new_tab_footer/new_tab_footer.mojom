@@ -38,6 +38,8 @@ interface NewTabFooterHandler {
   // to |GetNtpExtensionName|. If that call did not determine a valid ID,
   // this opens the extension settings page.
   OpenExtensionOptionsPageWithFallback();
+  // Opens the chrome://management page.
+  OpenManagementPage();
 };
 
 // WebUI-side handler for requests from the browser.

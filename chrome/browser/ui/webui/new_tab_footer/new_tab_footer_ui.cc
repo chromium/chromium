@@ -65,6 +65,8 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
        IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_WALLPAPER_SEARCH_LABEL},
       {"manageExtension", IDS_MANAGE_EXTENSION},
       {"wallpaperSearchButton", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
+      // TODO(crbug.com/394902303): alphabetically order the following strings.
+      {"managementLinkDesc", IDS_OPENS_MANAGEMENT_PAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }
