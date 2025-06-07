@@ -151,6 +151,15 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
+  if (!client_->IsMojoRIRDelegateConnectionSetup()) {
+    EmitTransferResultHistogramAndTraceEvent(
+        TransferInputToVizResult::kRIRDelegateConnectionNotSetup);
+    // Let browser handle this sequence since the input handling interfaces on
+    // VizCompositorThread have not been yet setup for this
+    // RenderWidgetHostViewAndroid.
+    return false;
+  }
+
   auto transfer_result = static_cast<TransferInputToVizResult>(
       jni_delegate_->MaybeTransferInputToViz(client_->GetRootSurfaceHandle()));
 

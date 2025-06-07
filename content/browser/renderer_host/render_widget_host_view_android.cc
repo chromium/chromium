@@ -1380,11 +1380,19 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
   CHECK(host());
   auto* remote =
       host()->mojo_rir_delegate()->GetRenderInputRouterDelegateRemote();
+  if (!remote) {
+    return;
+  }
+
   const float y_offset_pix =
       host()->delegate()->GetCurrentTouchSequenceYOffset();
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
       event.GetDownTime(), GetFrameSinkId(), y_offset_pix, view_.GetDipScale(),
       browser_would_have_handled));
+}
+
+bool RenderWidgetHostViewAndroid::IsMojoRIRDelegateConnectionSetup() {
+  return (host()->mojo_rir_delegate() != nullptr);
 }
 
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
@@ -1623,9 +1631,10 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
     if (!host()) {
       return;
     }
-    auto* remote =
-        host()->mojo_rir_delegate()->GetRenderInputRouterDelegateRemote();
-    remote->ResetGestureDetection(GetFrameSinkId());
+    if (auto* remote =
+            host()->mojo_rir_delegate()->GetRenderInputRouterDelegateRemote()) {
+      remote->ResetGestureDetection(GetFrameSinkId());
+    }
     return;
   }
 

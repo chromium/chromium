@@ -23,6 +23,7 @@ class InputTransferHandlerAndroidClient {
   virtual gpu::SurfaceHandle GetRootSurfaceHandle() = 0;
   virtual void SendStateOnTouchTransfer(const ui::MotionEvent& event,
                                         bool browser_would_have_handled) = 0;
+  virtual bool IsMojoRIRDelegateConnectionSetup() = 0;
 };
 
 // The class assumes transfer input to viz is supported, so instantiate only

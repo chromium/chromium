@@ -1799,6 +1799,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="DownTimeAfterEventTime"/>
   <int value="12" label="SequenceTransferredBackFromViz"/>
   <int value="13" label="WebContentsIgnoringInputEvents"/>
+  <int value="14" label="RIRDelegateConnectionNotSetup"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
