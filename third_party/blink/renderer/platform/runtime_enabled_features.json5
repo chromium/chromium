@@ -383,9 +383,9 @@
     {
       name: "AISummarizationAPI",
       status: {
-        "Win": "experimental",
-        "Mac": "experimental",
-        "Linux": "experimental",
+        "Win": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
         "default": "",
       },
       origin_trial_feature_name: "AISummarizationAPI",
