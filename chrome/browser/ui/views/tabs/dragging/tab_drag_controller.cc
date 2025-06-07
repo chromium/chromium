@@ -1485,6 +1485,8 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   // Windows. See https://crbug.com/394529650
   dragged_widget->SetBounds(
       gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+#else
+  const gfx::Size widget_size = dragged_widget->GetSize();
 #endif
 
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
@@ -1494,8 +1496,8 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #if BUILDFLAG(IS_MAC)
   // Set the window origin after making it visible, to avoid child windows (such
   // as the find bar) being misplaced on Mac. See https://crbug.com/403129048
-  dragged_widget->SetBounds(
-      gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+  dragged_widget->SetBoundsConstrained(
+      gfx::Rect(point_in_screen - drag_offset, widget_size));
 #endif
 
   // Activate may trigger a focus loss, destroying us.
