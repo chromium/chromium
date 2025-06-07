@@ -129,7 +129,7 @@ void LensSearchboxController::SetSearchboxThumbnail(
 
 void LensSearchboxController::HandleThumbnailCreatedBitmap(
     const SkBitmap& thumbnail) {
-  if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() &&
+  if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() ||
       thumbnail.drawsNothing()) {
     return;
   }
