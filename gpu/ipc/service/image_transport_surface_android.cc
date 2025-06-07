@@ -13,11 +13,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_surface_control.h"
@@ -54,21 +54,21 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
 
   scoped_refptr<gl::Presenter> presenter;
   std::visit(
-      base::Overloaded{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
-                         gl::ScopedANativeWindow window(scoped_java_surface);
-                         if (!window) {
-                           LOG(WARNING) << "Failed to acquire ANativeWindow";
-                           return;
-                         }
-                         presenter = new gl::GLSurfaceEGLSurfaceControl(
-                             std::move(window),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
-                       },
-                       [&](gl::ScopedJavaSurfaceControl&& surface_control) {
-                         presenter = new gl::GLSurfaceEGLSurfaceControl(
-                             std::move(surface_control),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
-                       }},
+      absl::Overload{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
+                       gl::ScopedANativeWindow window(scoped_java_surface);
+                       if (!window) {
+                         LOG(WARNING) << "Failed to acquire ANativeWindow";
+                         return;
+                       }
+                       presenter = new gl::GLSurfaceEGLSurfaceControl(
+                           std::move(window),
+                           base::SingleThreadTaskRunner::GetCurrentDefault());
+                     },
+                     [&](gl::ScopedJavaSurfaceControl&& surface_control) {
+                       presenter = new gl::GLSurfaceEGLSurfaceControl(
+                           std::move(surface_control),
+                           base::SingleThreadTaskRunner::GetCurrentDefault());
+                     }},
       std::move(surface_record.surface_variant));
 
   return presenter;

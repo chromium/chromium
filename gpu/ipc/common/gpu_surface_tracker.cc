@@ -9,8 +9,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gl/android/scoped_java_surface.h"
 
 namespace gpu {
@@ -56,7 +56,7 @@ SurfaceRecord GpuSurfaceTracker::AcquireJavaSurface(
                          /*can_be_used_with_surface_control=*/false);
 
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const gl::ScopedJavaSurface& surface) {
             DCHECK(surface.IsValid());
             return SurfaceRecord(surface.CopyRetainOwnership(),
