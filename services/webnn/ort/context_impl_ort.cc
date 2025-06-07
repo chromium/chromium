@@ -114,8 +114,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*gather_nd_input=*/{},
        /*gather_nd_indices=*/{},
        /*gelu_input=*/{},
-       /*gemm_a=*/{},
-       /*gemm_c=*/{},
+       /*gemm_a=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
+       /*gemm_c=*/
+       {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(2)},
        /*gru_input=*/{},
        /*gru_bias=*/{},
        /*gru_cell_input=*/{},

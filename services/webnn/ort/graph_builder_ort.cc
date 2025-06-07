@@ -45,6 +45,8 @@ constexpr base::cstring_view kOpTypeErf = "Erf";
 constexpr base::cstring_view kOpTypeReciprocal = "Reciprocal";
 constexpr base::cstring_view kOpTypeCast = "Cast";
 
+constexpr base::cstring_view kOpTypeGemm = "Gemm";
+
 constexpr std::string_view kUnderscore = "_";
 
 std::string GetOperandName(std::string_view label, OperandId id) {
@@ -269,6 +271,49 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
   }
 }
 
+void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
+  const std::string node = GenerateOperationName(gemm.label);
+  const std::string input_a = GetOperandNameById(gemm.a_operand_id);
+  const std::string input_b = GetOperandNameById(gemm.b_operand_id);
+  const std::string output = GetOperandNameById(gemm.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDescriptor& input_a_descriptor =
+      GetOperand(gemm.a_operand_id).descriptor;
+  const OperandDescriptor& input_b_descriptor =
+      GetOperand(gemm.b_operand_id).descriptor;
+  CHECK(data_type_limits.gemm_a.SupportsAll(
+      {input_a_descriptor, input_b_descriptor}));
+  CHECK_EQ(input_a_descriptor.data_type(), input_b_descriptor.data_type());
+
+  std::vector<const char*> inputs = {input_a.c_str(), input_b.c_str()};
+  std::string input_c;
+  if (gemm.c_operand_id.has_value()) {
+    const OperandDescriptor& input_c_descriptor =
+        GetOperand(*gemm.c_operand_id).descriptor;
+    CHECK(data_type_limits.gemm_c.Supports(input_c_descriptor));
+    CHECK_EQ(input_c_descriptor.data_type(), input_a_descriptor.data_type());
+
+    input_c = GetOperandNameById(*gemm.c_operand_id);
+    inputs.push_back(input_c.c_str());
+  }
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAlpha = "alpha";
+  constexpr base::cstring_view kAttrBeta = "beta";
+  constexpr base::cstring_view kAttrTransA = "transA";
+  constexpr base::cstring_view kAttrTransB = "transB";
+  std::array<ScopedOrtOpAttr, 4> attributes = {
+      model_editor_.CreateAttribute(kAttrAlpha, gemm.alpha),
+      model_editor_.CreateAttribute(kAttrBeta, gemm.beta),
+      model_editor_.CreateAttribute(kAttrTransA,
+                                    static_cast<int64_t>(gemm.a_transpose)),
+      model_editor_.CreateAttribute(kAttrTransB,
+                                    static_cast<int64_t>(gemm.b_transpose))};
+
+  model_editor_.AddNode(kOpTypeGemm, node, inputs, outputs, attributes);
+}
+
 [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                              mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
@@ -293,6 +338,10 @@ GraphBuilderOrt::BuildModel() {
         AddElementWiseUnaryOperation(*operation->get_element_wise_unary());
         break;
       }
+      case mojom::Operation::Tag::kGemm: {
+        AddGemmOperation(*operation->get_gemm());
+        break;
+      }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kClamp:
@@ -306,7 +355,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGelu:
-      case mojom::Operation::Tag::kGemm:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:

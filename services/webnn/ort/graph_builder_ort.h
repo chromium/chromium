@@ -79,6 +79,7 @@ class GraphBuilderOrt {
       const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);
+  void AddGemmOperation(const mojom::Gemm& gemm);
 
   [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
                                mojom::ErrorPtr>
