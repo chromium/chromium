@@ -70,7 +70,8 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   std::optional<base::FilePath> GetInstallerDestination() const;
 
   // Invoked when the installer download started.
-  void OnInstallerDownloadCreated(CompletionCallback completion_callback,
+  void OnInstallerDownloadCreated(const base::FilePath& expected_path,
+                                  CompletionCallback completion_callback,
                                   download::DownloadItem* item,
                                   download::DownloadInterruptReason reason);
 

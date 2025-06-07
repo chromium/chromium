@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider.h"
@@ -323,6 +324,54 @@ TEST_F(InstallerDownloaderModelTest, CompleteDownloadFailureInvokesCallback) {
   fake_download_item.NotifyDownloadUpdated();
 
   run_loop.Run();
+}
+
+TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricTrue) {
+  base::HistogramTester histograms;
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  const GURL url("https://example.com/installer.exe");
+  content::FakeDownloadItem fake_item;
+  fake_item.SetDummyFilePath(destination);
+
+  EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        std::move(params->callback())
+            .Run(&fake_item,
+                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+      });
+
+  model_->StartDownload(url, destination, mock_download_manager_,
+                        base::DoNothing());
+
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.DestinationMatches",
+      /*value=*/true, /*expected_count=*/1);
+}
+
+TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricFalse) {
+  base::HistogramTester histograms;
+
+  const base::FilePath requested(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  const base::FilePath actual(FILE_PATH_LITERAL("C:\\tmp\\installer (1).exe"));
+  const GURL url("https://example.com/installer.exe");
+
+  content::FakeDownloadItem fake_item;
+  fake_item.SetDummyFilePath(actual);
+
+  EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
+      .WillOnce([&](download::DownloadUrlParameters* params) {
+        std::move(params->callback())
+            .Run(&fake_item,
+                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+      });
+
+  model_->StartDownload(url, requested, mock_download_manager_,
+                        base::DoNothing());
+
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.DestinationMatches",
+      /*value=*/false, /*expected_count=*/1);
 }
 
 }  // namespace

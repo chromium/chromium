@@ -165,6 +165,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.InstallerDownloader.DestinationMatches" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logged once per installer download attempt. True when the DownloaderManager
+    successfully saved the file under the suggested name.
+  </summary>
+</histogram>
+
 <histogram name="Windows.InstallerDownloader.DownloadSucceed" enum="Boolean"
     expires_after="2025-12-31">
   <owner>koretadaniel@chromium.org</owner>
