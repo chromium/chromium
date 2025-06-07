@@ -11,6 +11,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 
