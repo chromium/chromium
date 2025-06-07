@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
@@ -16,6 +17,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
@@ -39,6 +41,9 @@ import org.chromium.ui.widget.ViewRectProvider;
  */
 @NullMarked
 class ExtensionActionPopup implements Destroyable {
+    /** The context to use for creating views. */
+    private final Context mContext;
+
     /** The ID of the extension action this popup is associated with. */
     private final String mActionId;
 
@@ -72,6 +77,7 @@ class ExtensionActionPopup implements Destroyable {
             View anchorView,
             String actionId,
             ExtensionActionPopupContents contents) {
+        mContext = context;
         mActionId = actionId;
         mContents = contents;
 
@@ -106,11 +112,16 @@ class ExtensionActionPopup implements Destroyable {
                 new AnchoredPopupWindow(
                         context,
                         decorView,
-                        new ColorDrawable(Color.TRANSPARENT),
+                        new ColorDrawable(Color.WHITE),
                         frame,
                         new ViewRectProvider(anchorView));
+
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setOutsideTouchable(true);
+
+        Resources resources = mContext.getResources();
+        mPopupWindow.setElevation(
+                resources.getDimensionPixelSize(R.dimen.extension_action_popup_elevation));
 
         contents.setDelegate(new ContentsDelegate());
     }
