@@ -79,3 +79,70 @@ source_set("extensions") {
     ]
   }
 }
+
+source_set("impl") {
+  sources = []
+  deps = [ ":extensions" ]
+
+  if (enable_extensions_core) {
+    sources += [ "extension_install_ui.cc" ]
+    deps += [ "//chrome/browser/profiles:profile" ]
+
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "extension_install_ui_desktop.cc" ]
+      deps += [
+        "//chrome/app:generated_resources",
+        "//chrome/browser/prefs",
+        "//chrome/browser/themes",
+        "//chrome/browser/ui:browser_navigator_params_headers",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/common",
+        "//components/infobars/content",
+        "//content/public/browser",
+        "//extensions/browser/install",
+        "//extensions/common",
+        "//ui/base",
+      ]
+    }
+    if (is_android) {
+      sources += [ "extension_install_ui_android.cc" ]
+      deps += [ "//extensions/common" ]
+    }
+  }
+
+  if (enable_extensions) {
+    sources += [
+      "app_launch_params.cc",
+      "application_launch.cc",
+      "controlled_home_bubble_delegate.cc",
+      "extension_action_view_controller.cc",
+      "extension_enable_flow.cc",
+      "extension_installed_bubble_model.cc",
+      "extension_installed_waiter.cc",
+      "extension_settings_overridden_dialog.cc",
+      "extensions_overrides/simple_overrides.cc",
+      "hosted_app_browser_controller.cc",
+      "icon_with_badge_image_source.cc",
+      "installation_error_infobar_delegate.cc",
+      "mv2_disabled_dialog_controller.cc",
+      "settings_api_bubble_helpers.cc",
+      "settings_overridden_params_providers.cc",
+    ]
+
+    deps += [
+      ":extension_enable_flow_delegate",
+      ":extension_popup_types",
+      "//apps",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service:constants",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/extensions",
+      "//chrome/browser/infobars",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/web_applications",
+      "//components/prefs",
+      "//components/security_state/content",
+      "//components/signin/public/base:signin_switches",
+    ]
+  }
+}

@@ -8219,7 +8219,17 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_manager.h",
     ]
 
-    deps += [ "//chrome/browser/ui/extensions" ]
+    deps += [
+      "//chrome/browser/ui/extensions",
+
+      # TODO(crbug.com/420905611): Remove this circular dependency when:
+      # - c/b/app_mode/app_mode_utils.h,
+      # - c/b/supervised_user/supervised_user_browser_utils.h and
+      # - c/b/signin/signin_promo_util.h
+      # ... get modularized.
+      "//chrome/browser/ui/extensions:impl",
+    ]
+    allow_circular_includes_from += [ "//chrome/browser/ui/extensions:impl" ]
 
     if (is_chromeos) {
       sources += [

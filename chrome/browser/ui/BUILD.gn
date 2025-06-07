@@ -5263,7 +5263,6 @@ static_library("ui") {
 
   if (enable_extensions_core) {
     sources += [
-      "extensions/extension_install_ui.cc",
       "toolbar/toolbar_actions_model.cc",
       "toolbar/toolbar_actions_model.h",
       "toolbar/toolbar_actions_model_factory.cc",
@@ -5286,15 +5285,12 @@ static_library("ui") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/extensions:impl",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
 
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "extensions/extension_install_ui_desktop.cc" ]
-    }
-    if (is_android) {
-      sources += [ "extensions/extension_install_ui_android.cc" ]
-    }
+    # TODO(crbug.com/420905611): Verify whether this circular dependency declaration can
+    # be removed from here.
+    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
   }
 
   if (enable_extensions) {
@@ -5309,6 +5305,7 @@ static_library("ui") {
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
       "//chrome/browser/ui/extensions:extension_popup_types",
+      "//chrome/browser/ui/extensions:impl",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/extensions_zero_state_promo:mojo_bindings",
       "//chrome/browser/web_applications",
@@ -5331,24 +5328,10 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/ui/extensions:impl",
     ]
 
     sources += [
-      "extensions/app_launch_params.cc",
-      "extensions/application_launch.cc",
-      "extensions/controlled_home_bubble_delegate.cc",
-      "extensions/extension_action_view_controller.cc",
-      "extensions/extension_enable_flow.cc",
-      "extensions/extension_installed_bubble_model.cc",
-      "extensions/extension_installed_waiter.cc",
-      "extensions/extension_settings_overridden_dialog.cc",
-      "extensions/extensions_overrides/simple_overrides.cc",
-      "extensions/hosted_app_browser_controller.cc",
-      "extensions/icon_with_badge_image_source.cc",
-      "extensions/installation_error_infobar_delegate.cc",
-      "extensions/mv2_disabled_dialog_controller.cc",
-      "extensions/settings_api_bubble_helpers.cc",
-      "extensions/settings_overridden_params_providers.cc",
       "extensions/web_file_handlers/multiclient_util.cc",
       "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
