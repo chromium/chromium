@@ -396,6 +396,7 @@
       <!--Tabindex is set to 1 so that the thumbnail is tabbed first,
         then the search box. -->
       <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
+          is-deletable_="[[isThumbnailDeletable_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
           role="button" aria-label="[[i18n('searchboxThumbnailLabel')]]"
           tabindex="1">

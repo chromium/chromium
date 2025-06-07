@@ -1521,7 +1521,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+            metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
 
   // Verify that after text selection, the controller has a copy of the text,
   // the thumbnail is no longer shown and the controller's copy of the
@@ -1539,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_selected_region_for_testing().is_null());
   EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
 
   // Verify that after a signal from the searchbox that the text was modified,
   // no text selection is present.

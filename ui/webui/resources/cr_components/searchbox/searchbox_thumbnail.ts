@@ -31,6 +31,10 @@ class SearchboxThumbnailElement extends ThumbnailElementBase {
         type: String,
       },
 
+      isDeletable_: {
+        type: Boolean,
+      },
+
       enableThumbnailSizingTweaks_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableThumbnailSizingTweaks'),
@@ -40,7 +44,11 @@ class SearchboxThumbnailElement extends ThumbnailElementBase {
     };
   }
 
+  // The URL of the thumbnail to display.
   declare private thumbnailUrl_: string;
+  // Whether the user can delete the thumbnail.
+  declare private isDeletable_: boolean;
+  // Whether to enable thumbnail sizing tweaks.
   declare private enableThumbnailSizingTweaks_: boolean;
 
   //============================================================================

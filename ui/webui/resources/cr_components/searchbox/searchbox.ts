@@ -262,6 +262,11 @@ export class SearchboxElement extends SearchboxElementBase {
         value: '',
       },
 
+      isThumbnailDeletable_: {
+        type: Boolean,
+        value: false,
+      },
+
       queryAutocompleteOnEmptyInput_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('queryAutocompleteOnEmptyInput'),
@@ -305,6 +310,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare private selectedMatch_: AutocompleteMatch|null;
   declare private selectedMatchIndex_: number;
   declare private thumbnailUrl_: string;
+  declare private isThumbnailDeletable_: boolean;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -431,8 +437,9 @@ export class SearchboxElement extends SearchboxElementBase {
     this.updateInput_({text: inputText, inline: ''});
   }
 
-  private onSetThumbnail_(thumbnailUrl: string) {
+  private onSetThumbnail_(thumbnailUrl: string, isDeletable: boolean) {
     this.thumbnailUrl_ = thumbnailUrl;
+    this.isThumbnailDeletable_ = isDeletable;
   }
 
   //============================================================================

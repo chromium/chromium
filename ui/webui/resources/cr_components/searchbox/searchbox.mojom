@@ -128,14 +128,18 @@ struct OmniboxPopupSelection {
 interface PageHandler {
   // The SearchboxBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
+
   // Informs the handler and model about focus state changes.
   OnFocusChanged(bool focused);
+
   // Queries autocomplete matches from the browser.
-  QueryAutocomplete(mojo_base.mojom.String16 input,
-                    bool prevent_inline_autocomplete);
+  QueryAutocomplete(
+      mojo_base.mojom.String16 input, bool prevent_inline_autocomplete);
+
   // Cancels the current autocomplete query. Clears the result set if
   // |clear_result| is true.
   StopAutocomplete(bool clear_result);
+
   // Handles navigation to an autocomplete match (i.e. an item in the realbox's
   // list of matches).
   // Note: |url| is only used to confirm the match |line| selection.
@@ -149,6 +153,7 @@ interface PageHandler {
                         bool ctrl_key,
                         bool meta_key,
                         bool shift_key);
+
   // Informs the browser that the user has changed the selected suggestion. The
   // new suggestion is located at |line|. |navigation_predictor|
   // indicates the event that indicated navigation was likely.
@@ -156,9 +161,11 @@ interface PageHandler {
   OnNavigationLikely(uint8 line,
                      url.mojom.Url url,
                      omnibox.mojom.NavigationPredictor navigation_predictor);
+
   // Deletes the AutocompleteMatch in the current results by |line| number if
   // it is deletable. |url| is used to confirm the match |line| selection.
   DeleteAutocompleteMatch(uint8 line, url.mojom.Url url);
+
   // Executes the Pedal Action. match_selection_timestamp is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch).
   // |url| is only used to confirm the match |line| selection.
@@ -171,8 +178,10 @@ interface PageHandler {
                 bool ctrl_key,
                 bool meta_key,
                 bool shift_key);
+
   // Called when the popup results view element size is changed.
   PopupElementSizeChanged(gfx.mojom.Size size);
+
   // Notifies browser that thumbnail has been removed.
   OnThumbnailRemoved();
 };
@@ -181,12 +190,15 @@ interface PageHandler {
 interface Page {
   // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
+
   // Updates the UI's selected line and action based on the |selection| and
   // |old_selection|.
-  UpdateSelection(OmniboxPopupSelection old_selection,
-                  OmniboxPopupSelection selection);
+  UpdateSelection(
+      OmniboxPopupSelection old_selection, OmniboxPopupSelection selection);
+
   // Called to set searchbox input.
   SetInputText(string input);
+
   // Sets searchbox thumbnail.
-  SetThumbnail(string thumbnail_url);
+  SetThumbnail(string thumbnail_url, bool is_deletable);
 };
