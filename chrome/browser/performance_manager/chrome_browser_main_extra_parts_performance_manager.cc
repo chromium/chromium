@@ -26,6 +26,7 @@
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/performance_manager/policies/keep_alive_dse_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
+#include "chrome/browser/performance_manager/policies/termination_target_policy.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -186,6 +187,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   auto weak_discard_eligibility_policy =
       discard_eligibility_policy->GetWeakPtr();
   graph->PassToGraph(std::move(discard_eligibility_policy));
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kTerminationTargetPolicy)) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::TerminationTargetPolicy>());
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
   using performance_manager::policies::FreezingOptOutChecker;

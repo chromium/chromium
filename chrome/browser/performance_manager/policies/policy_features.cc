@@ -154,5 +154,11 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kTerminationTargetPolicy,
+             "TerminationTargetPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace features
 }  // namespace performance_manager
