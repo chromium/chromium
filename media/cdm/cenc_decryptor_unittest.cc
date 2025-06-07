@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "crypto/aes_ctr.h"
 #include "media/base/decoder_buffer.h"

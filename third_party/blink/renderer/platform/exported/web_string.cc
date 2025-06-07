@@ -32,6 +32,7 @@
 
 #include "base/strings/latin1_string_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"

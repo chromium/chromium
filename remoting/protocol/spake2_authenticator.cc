@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hmac.h"
 #include "crypto/secure_util.h"
 #include "remoting/base/constants.h"

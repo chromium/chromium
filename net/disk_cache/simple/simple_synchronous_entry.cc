@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "crypto/hash.h"

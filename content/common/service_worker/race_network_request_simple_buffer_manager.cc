@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/location.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/features.h"
 

@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"

@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"

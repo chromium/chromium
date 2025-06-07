@@ -7,8 +7,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include <array>
-
 // Tests for WebSocketBasicStream. Note that we do not attempt to verify that
 // frame parsing itself functions correctly, as that is covered by the
 // WebSocketFrameParser tests.
@@ -19,6 +17,7 @@
 #include <stdint.h>
 #include <string.h>  // for memcpy() and memset().
 
+#include <array>
 #include <iterator>
 #include <optional>
 #include <utility>
@@ -26,6 +25,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

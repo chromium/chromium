@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"

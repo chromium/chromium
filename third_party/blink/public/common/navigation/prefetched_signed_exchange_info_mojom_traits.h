@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/hash_value.h"

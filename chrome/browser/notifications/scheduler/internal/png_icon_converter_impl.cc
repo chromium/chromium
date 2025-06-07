@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_entry.h"

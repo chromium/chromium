@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/mock_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 
 namespace {

@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"

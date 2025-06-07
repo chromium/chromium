@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"

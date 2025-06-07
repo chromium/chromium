@@ -7,6 +7,7 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/strings/string_view_util.h"
 
 // Encode some random data, and then decode it.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {

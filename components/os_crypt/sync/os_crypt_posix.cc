@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "crypto/aes_cbc.h"

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -40,6 +40,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"

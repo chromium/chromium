@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_view_util.h"
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_http_handler.h"

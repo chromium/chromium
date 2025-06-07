@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/net/command_id.h"

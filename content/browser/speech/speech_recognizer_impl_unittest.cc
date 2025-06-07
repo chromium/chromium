@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"

@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/types/fixed_array.h"

@@ -8,6 +8,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"

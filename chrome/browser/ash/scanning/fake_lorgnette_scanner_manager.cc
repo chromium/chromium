@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "third_party/re2/src/re2/re2.h"

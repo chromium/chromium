@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "build/branding_buildflags.h"
 #include "crypto/apple_keychain.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"

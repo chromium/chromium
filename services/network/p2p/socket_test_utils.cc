@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "net/base/io_buffer.h"

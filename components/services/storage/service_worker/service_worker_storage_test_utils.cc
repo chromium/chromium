@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

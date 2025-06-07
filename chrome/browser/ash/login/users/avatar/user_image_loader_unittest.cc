@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/chrome_paths.h"

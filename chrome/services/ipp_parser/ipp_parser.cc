@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 #include "net/http/http_util.h"
 

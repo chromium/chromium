@@ -23,6 +23,7 @@
 #include "base/immediate_crash.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"

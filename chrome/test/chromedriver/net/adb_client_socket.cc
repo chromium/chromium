@@ -10,6 +10,7 @@
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_repeating_callback.h"

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "puffin/src/include/puffin/puffpatch.h"
-
 #include <inttypes.h>
 
 #include <algorithm>
@@ -14,19 +12,20 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
-#include "zucchini/patch_reader.h"
-#include "zucchini/zucchini.h"
-
+#include "base/strings/string_view_util.h"
 #include "puffin/memory_stream.h"
 #include "puffin/src/include/puffin/brotli_util.h"
 #include "puffin/src/include/puffin/common.h"
 #include "puffin/src/include/puffin/file_stream.h"
 #include "puffin/src/include/puffin/huffer.h"
 #include "puffin/src/include/puffin/puffer.h"
+#include "puffin/src/include/puffin/puffpatch.h"
 #include "puffin/src/include/puffin/stream.h"
 #include "puffin/src/logging.h"
 #include "puffin/src/puffin.pb.h"
 #include "puffin/src/puffin_stream.h"
+#include "zucchini/patch_reader.h"
+#include "zucchini/zucchini.h"
 
 using std::string;
 using std::unique_ptr;

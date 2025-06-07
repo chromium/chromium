@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"

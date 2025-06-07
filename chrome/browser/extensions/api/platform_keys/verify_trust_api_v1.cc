@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
 #include "content/public/browser/browser_thread.h"

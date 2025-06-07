@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"

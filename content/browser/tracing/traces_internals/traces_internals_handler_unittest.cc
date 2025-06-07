@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/path_service.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_proto_loader.h"

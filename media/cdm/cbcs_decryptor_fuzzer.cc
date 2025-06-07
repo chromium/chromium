@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/subsample_entry.h"

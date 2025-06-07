@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"

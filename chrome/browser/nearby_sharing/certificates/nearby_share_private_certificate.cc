@@ -19,6 +19,7 @@
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"

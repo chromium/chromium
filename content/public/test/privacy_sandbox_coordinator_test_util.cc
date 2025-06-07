@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"

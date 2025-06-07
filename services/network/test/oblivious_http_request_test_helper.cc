@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace network {

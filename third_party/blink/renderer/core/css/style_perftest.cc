@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_view_util.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"

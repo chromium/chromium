@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"

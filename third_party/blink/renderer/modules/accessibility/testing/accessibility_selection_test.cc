@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"

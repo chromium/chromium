@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "net/cert/qwac.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"

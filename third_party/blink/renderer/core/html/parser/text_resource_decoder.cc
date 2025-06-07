@@ -25,6 +25,7 @@
 #include <string_view>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/html/parser/html_meta_charset_parser.h"
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"

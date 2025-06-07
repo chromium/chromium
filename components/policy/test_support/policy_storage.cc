@@ -7,6 +7,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 
 namespace policy {

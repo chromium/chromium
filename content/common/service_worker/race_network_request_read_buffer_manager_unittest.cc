@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
+
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

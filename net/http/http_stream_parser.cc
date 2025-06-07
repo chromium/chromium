@@ -23,6 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/base/features.h"

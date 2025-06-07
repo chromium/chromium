@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"

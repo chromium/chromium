@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

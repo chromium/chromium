@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_view_util.h"
 #include "content/public/browser/browser_thread.h"
 
 // static

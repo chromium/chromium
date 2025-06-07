@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_socket.h"

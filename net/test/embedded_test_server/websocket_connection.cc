@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/net_errors.h"
 #include "net/socket/socket.h"
 #include "net/socket/stream_socket.h"

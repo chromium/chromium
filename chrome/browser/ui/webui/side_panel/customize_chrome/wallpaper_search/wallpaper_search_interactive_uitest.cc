@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "net/base/net_module.h"

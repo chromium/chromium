@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 

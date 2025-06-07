@@ -19,6 +19,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"

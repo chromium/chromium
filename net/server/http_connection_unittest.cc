@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

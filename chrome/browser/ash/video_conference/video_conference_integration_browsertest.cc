@@ -26,6 +26,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"

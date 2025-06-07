@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"

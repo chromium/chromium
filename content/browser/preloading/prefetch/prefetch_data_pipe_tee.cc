@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "services/network/public/cpp/loading_params.h"
 

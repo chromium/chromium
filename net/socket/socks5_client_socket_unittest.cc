@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"

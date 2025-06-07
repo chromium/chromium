@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/net_errors.h"
 
 namespace network {

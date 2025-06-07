@@ -12,6 +12,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/manta/manta_status.h"

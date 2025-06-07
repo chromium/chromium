@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"

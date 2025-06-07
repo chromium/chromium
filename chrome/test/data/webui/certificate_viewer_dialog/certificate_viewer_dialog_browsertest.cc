@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/certificate_viewer.h"

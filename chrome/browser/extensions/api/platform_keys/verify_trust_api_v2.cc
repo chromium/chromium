@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"

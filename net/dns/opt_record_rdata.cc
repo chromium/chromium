@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
 #include "net/dns/public/dns_protocol.h"
 

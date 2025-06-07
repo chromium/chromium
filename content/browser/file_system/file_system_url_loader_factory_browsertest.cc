@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

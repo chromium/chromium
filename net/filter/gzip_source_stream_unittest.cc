@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/filter_source_stream_test_util.h"

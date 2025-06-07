@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"

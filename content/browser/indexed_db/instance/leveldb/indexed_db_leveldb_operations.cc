@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

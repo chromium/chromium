@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 
 namespace ash::secure_channel {

@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"

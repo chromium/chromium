@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"

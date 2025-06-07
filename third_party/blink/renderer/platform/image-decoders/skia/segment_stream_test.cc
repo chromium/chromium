@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"

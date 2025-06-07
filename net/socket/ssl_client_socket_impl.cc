@@ -27,6 +27,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"

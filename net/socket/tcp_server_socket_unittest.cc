@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"

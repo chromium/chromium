@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/sys_byteorder.h"
 #include "base/types/optional_util.h"
 #include "net/base/io_buffer.h"

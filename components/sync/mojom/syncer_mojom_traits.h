@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/mojom/syncer.mojom-shared.h"
 

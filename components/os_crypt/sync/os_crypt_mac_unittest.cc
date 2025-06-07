@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/sync/os_crypt.h"
 
+#include "base/strings/string_view_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/mock_apple_keychain.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -34,6 +34,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/span_printf.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"

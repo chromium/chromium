@@ -5,6 +5,7 @@
 #include "skia/ext/skia_utils_base.h"
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

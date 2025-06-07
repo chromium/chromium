@@ -37,6 +37,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

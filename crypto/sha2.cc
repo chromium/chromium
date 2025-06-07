@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/strings/string_view_util.h"
 #include "crypto/secure_hash.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 

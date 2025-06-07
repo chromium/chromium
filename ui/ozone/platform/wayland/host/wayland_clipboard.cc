@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

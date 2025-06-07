@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"

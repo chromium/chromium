@@ -9,6 +9,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 
 namespace base {

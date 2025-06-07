@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/public/dns_protocol.h"

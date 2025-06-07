@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace speech {

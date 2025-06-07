@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/browser_thread.h"

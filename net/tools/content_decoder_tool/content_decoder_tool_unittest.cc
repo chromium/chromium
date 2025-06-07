@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_view_util.h"
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream_test_util.h"
 #include "net/filter/mock_source_stream.h"

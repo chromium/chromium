@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"

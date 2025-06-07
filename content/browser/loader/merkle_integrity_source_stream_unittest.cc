@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"

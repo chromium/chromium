@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/grit/new_tab_page_instant_resources.h"

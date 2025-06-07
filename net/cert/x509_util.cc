@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"

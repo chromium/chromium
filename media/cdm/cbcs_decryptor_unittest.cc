@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "crypto/aes_cbc.h"
 #include "media/base/decoder_buffer.h"

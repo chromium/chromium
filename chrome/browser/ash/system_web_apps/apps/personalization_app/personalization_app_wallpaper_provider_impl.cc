@@ -39,6 +39,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"

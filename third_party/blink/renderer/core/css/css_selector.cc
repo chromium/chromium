@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_view_util.h"
 #include "style_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"

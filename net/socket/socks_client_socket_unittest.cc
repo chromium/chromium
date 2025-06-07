@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/test_completion_callback.h"

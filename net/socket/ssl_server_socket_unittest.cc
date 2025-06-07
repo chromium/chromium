@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 // This test suite uses SSLClientSocket to test the implementation of
 // SSLServerSocket. In order to establish connections between the sockets
 // we need two additional classes:
@@ -15,9 +13,12 @@
 //
 // Implementations of these two classes are included in this file.
 
+#include "net/socket/ssl_server_socket.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -36,6 +37,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -58,7 +60,6 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/socket/ssl_server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_cert_request_info.h"

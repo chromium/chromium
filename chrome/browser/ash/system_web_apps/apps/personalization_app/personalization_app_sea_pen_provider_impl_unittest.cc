@@ -29,6 +29,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"

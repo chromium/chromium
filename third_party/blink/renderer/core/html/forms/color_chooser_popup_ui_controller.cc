@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/color_chooser_popup_ui_controller.h"
 
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"

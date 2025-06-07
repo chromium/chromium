@@ -36,6 +36,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/string_search.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"

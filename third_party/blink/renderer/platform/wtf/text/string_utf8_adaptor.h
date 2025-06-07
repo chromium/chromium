@@ -35,6 +35,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"

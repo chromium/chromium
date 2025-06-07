@@ -10,6 +10,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 
 namespace base::android {
 

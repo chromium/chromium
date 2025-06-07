@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread.h"

@@ -33,6 +33,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"

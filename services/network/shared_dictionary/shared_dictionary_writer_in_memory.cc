@@ -9,6 +9,7 @@
 #include "base/containers/span_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"

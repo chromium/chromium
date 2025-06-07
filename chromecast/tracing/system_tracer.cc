@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/tracing/system_tracing_common.h"

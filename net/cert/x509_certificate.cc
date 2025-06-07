@@ -20,6 +20,7 @@
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "crypto/hash.h"
 #include "crypto/openssl_util.h"

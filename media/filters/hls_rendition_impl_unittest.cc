@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "crypto/random.h"

@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"

@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_view_util.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/proto/common.pb.h"
 #include "components/feedback/proto/dom.pb.h"

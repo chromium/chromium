@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 
 namespace net {
 

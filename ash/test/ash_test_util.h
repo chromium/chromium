@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "crypto/hash.h"

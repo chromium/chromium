@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "crypto/sha2.h"

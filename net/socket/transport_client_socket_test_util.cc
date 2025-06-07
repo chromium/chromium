@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/test/gtest_util.h"

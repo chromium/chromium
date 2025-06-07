@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

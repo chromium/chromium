@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/file_util.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"

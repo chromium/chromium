@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"

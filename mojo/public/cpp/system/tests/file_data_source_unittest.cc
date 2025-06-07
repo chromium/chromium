@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "testing/gtest/include/gtest/gtest.h"

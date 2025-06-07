@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/ipp_validator.h"

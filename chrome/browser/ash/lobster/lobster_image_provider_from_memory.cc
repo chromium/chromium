@@ -7,6 +7,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"

@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/cbor/reader.h"

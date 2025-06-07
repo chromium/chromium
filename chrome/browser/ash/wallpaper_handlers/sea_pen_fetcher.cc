@@ -21,6 +21,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"

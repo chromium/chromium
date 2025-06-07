@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"

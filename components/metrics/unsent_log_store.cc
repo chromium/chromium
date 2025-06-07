@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/unsent_log_store_metrics.h"

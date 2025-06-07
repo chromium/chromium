@@ -15,6 +15,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/skia_utils_base.h"

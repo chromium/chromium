@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/state_transitions.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

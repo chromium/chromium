@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"

@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

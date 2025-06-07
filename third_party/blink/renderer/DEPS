@@ -57,6 +57,7 @@ include_rules = [
     "+base/strings/strcat.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_util.h",
+    "+base/strings/string_view_util.h",
     "+base/strings/stringprintf.h",
     "+base/synchronization",
     "+base/sys_byteorder.h",

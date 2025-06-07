@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 

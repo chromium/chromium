@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"

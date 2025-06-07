@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"

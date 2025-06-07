@@ -8,6 +8,7 @@
 #include "base/functional/overloaded.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/values.h"

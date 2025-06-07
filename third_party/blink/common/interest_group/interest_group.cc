@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "crypto/hash.h"

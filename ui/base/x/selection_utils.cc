@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/x/atom_cache.h"

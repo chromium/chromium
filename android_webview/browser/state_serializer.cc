@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/pickle.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"

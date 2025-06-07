@@ -14,6 +14,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

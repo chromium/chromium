@@ -17,6 +17,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"

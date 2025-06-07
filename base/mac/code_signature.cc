@@ -9,6 +9,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/mac/info_plist_data.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 using base::apple::ScopedCFTypeRef;

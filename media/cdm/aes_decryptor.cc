@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/cdm_promise.h"

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"

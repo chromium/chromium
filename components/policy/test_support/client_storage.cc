@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 
 namespace policy {

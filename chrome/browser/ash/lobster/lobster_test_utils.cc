@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -25,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

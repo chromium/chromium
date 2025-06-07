@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/encryptor.h"

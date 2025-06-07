@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"

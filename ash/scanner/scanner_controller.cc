@@ -48,6 +48,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"

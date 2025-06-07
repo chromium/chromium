@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "storage/browser/blob/blob_storage_context.h"
-
 #include <memory>
 #include <string>
 
@@ -12,6 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"

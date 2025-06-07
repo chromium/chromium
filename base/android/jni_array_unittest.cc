@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

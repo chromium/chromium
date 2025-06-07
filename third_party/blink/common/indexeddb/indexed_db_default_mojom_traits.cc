@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"

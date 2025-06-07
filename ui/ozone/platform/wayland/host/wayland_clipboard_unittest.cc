@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string_view>
-
-#include "base/containers/span.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 
 #include <linux/input.h>
 #include <wayland-server.h>
@@ -12,15 +10,18 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -32,7 +33,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"

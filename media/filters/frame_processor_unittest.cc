@@ -7,6 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
+#include "media/filters/frame_processor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -22,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/media_log.h"
@@ -31,7 +33,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/timestamp_constants.h"
 #include "media/filters/chunk_demuxer.h"
-#include "media/filters/frame_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Milliseconds;

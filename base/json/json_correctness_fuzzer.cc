@@ -19,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 
 // Entry point for libFuzzer.

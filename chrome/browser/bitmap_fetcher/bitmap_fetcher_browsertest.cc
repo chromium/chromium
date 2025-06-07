@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"

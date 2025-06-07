@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 
 // Tries to use a dangling pointer, triggers a UaF crash under ASAN.
 NOINLINE int TriggerUAF() {

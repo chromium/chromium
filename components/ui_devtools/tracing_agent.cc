@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"

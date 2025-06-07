@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
 #include "crypto/hash.h"

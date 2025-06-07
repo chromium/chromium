@@ -13,6 +13,7 @@
 #include <set>
 
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "third_party/nearby/sharing/proto/timestamp.pb.h"

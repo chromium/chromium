@@ -12,6 +12,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_view_util.h"
 #include "ipc/ipc_message.h"
 #include "tools/ipc_fuzzer/message_lib/message_cracker.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"

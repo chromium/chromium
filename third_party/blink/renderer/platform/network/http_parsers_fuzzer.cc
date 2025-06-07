@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"

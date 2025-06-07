@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"

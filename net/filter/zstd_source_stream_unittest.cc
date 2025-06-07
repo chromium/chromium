@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
