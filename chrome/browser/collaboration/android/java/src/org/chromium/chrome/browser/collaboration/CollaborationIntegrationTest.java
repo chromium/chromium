@@ -9,13 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -24,25 +22,18 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.m
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.view.View;
-
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -50,17 +41,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingUiDelegateAndroid;
 import org.chromium.chrome.browser.data_sharing.FakeDataSharingUIDelegateImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.collaboration.CollaborationService;
@@ -70,16 +58,9 @@ import org.chromium.components.data_sharing.DataSharingServiceImpl;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.tab_group_sync.LocalTabGroupId;
-import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for {@link CollaborationService}. */
@@ -99,7 +80,6 @@ public class CollaborationIntegrationTest {
     private static final String TEST_COLLABORATION_ID = "collaboration_id";
     private static final String TEST_ACCESS_TOKEN = "access_token";
     private static final String TEST_GROUP_TITLE = "group_title";
-    private static final long DELAY_MS_FOR_TAB_GROUP_ADDED = 1000;
 
     @Rule(order = 0)
     public SyncTestRule mActivityTestRule = new SyncTestRule();
@@ -112,8 +92,7 @@ public class CollaborationIntegrationTest {
 
     private Profile mProfile;
     private String mUrl;
-    @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private ShareDelegate mShareDelegate;
+    private CollaborationTestUtils mCollaborationTestUtils;
 
     public CollaborationIntegrationTest() {
         DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
@@ -136,6 +115,8 @@ public class CollaborationIntegrationTest {
                 DataSharingServiceImpl.getDataSharingUrlForTesting(
                                 new GroupToken(TEST_COLLABORATION_ID, "access_token"))
                         .getSpec();
+
+        mCollaborationTestUtils = new CollaborationTestUtils(mActivityTestRule, mProfile);
     }
 
     /* Sets up preview data for the group ID. */
@@ -306,10 +287,10 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testDataSharingShowShare() {
-        setUpSyncAndSignIn();
+        mCollaborationTestUtils.setUpSyncAndSignIn();
 
         final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
-        createTabGroupAndOpenTabGridDialog(cta);
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
         // Setting create flow callback to show share sheet with share link.
         Callback<Boolean> callback =
@@ -319,10 +300,11 @@ public class CollaborationIntegrationTest {
                             TEST_COLLABORATION_ID, TEST_ACCESS_TOKEN);
                 };
         mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
-        setupShareDelegateSupplier();
+        mCollaborationTestUtils.setupShareDelegateSupplier(cta);
 
-        onView(withId(R.id.share_button)).perform(relaxedClick());
-        prepareToShareGroup(getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
+        mCollaborationTestUtils.prepareToShareGroup(
+                mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
         onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
@@ -332,10 +314,10 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testDataSharingShowShareCancelled() {
-        setUpSyncAndSignIn();
+        mCollaborationTestUtils.setUpSyncAndSignIn();
 
         final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
-        createTabGroupAndOpenTabGridDialog(cta);
+        mCollaborationTestUtils.createTabGroupAndOpenTabGridDialog(cta);
 
         // Setting create flow callback to cancel create flow.
         Callback<Boolean> callback =
@@ -344,152 +326,9 @@ public class CollaborationIntegrationTest {
                 };
         mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
 
-        onView(withId(R.id.share_button)).perform(relaxedClick());
+        onView(withId(R.id.share_button)).perform(CollaborationTestUtils.relaxedClick());
 
         // Check share button doesn't change.
         onViewWaiting(withText(R.string.tab_grid_share_button_text)).check(matches(isDisplayed()));
-    }
-
-    private static ViewAction relaxedClick() {
-        final ViewAction clickAction = click();
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isDisplayingAtLeast(51);
-            }
-
-            @Override
-            public String getDescription() {
-                return clickAction.getDescription();
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                clickAction.perform(uiController, view);
-            }
-        };
-    }
-
-    private boolean isDialogFullyVisible(ChromeTabbedActivity cta) {
-        View dialogView = cta.findViewById(R.id.dialog_parent_view);
-        View dialogContainerView = cta.findViewById(R.id.dialog_container_view);
-        return dialogView.getVisibility() == View.VISIBLE && dialogContainerView.getAlpha() == 1f;
-    }
-
-    // Prepares to share the group with `tabGroupId` to the `collaborationId`. This is updating the
-    // fake sync server.
-    private void prepareToShareGroup(LocalTabGroupId tabGroupId, String collaborationId) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
-                    assert tabGroupSyncService != null && collaborationId != null;
-                    tabGroupSyncService.setCollaborationAvailableInFinderForTesting(
-                            collaborationId);
-                    SavedTabGroup savedGroup = tabGroupSyncService.getGroup(tabGroupId);
-                    assert savedGroup != null && savedGroup.collaborationId == null;
-                    mActivityTestRule
-                            .getFakeServerHelper()
-                            .addCollaborationGroupToFakeServer(collaborationId);
-
-                    mActivityTestRule.getSyncService().triggerRefresh();
-                });
-    }
-
-    // Sets the `collaborationId` for the given `tabGroupId` and makes tab group shared.
-    private void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
-                    assert tabGroupSyncService != null && collaborationId != null;
-                    prepareToShareGroup(tabGroupId, collaborationId);
-                    SavedTabGroup savedGroup = tabGroupSyncService.getGroup(tabGroupId);
-                    assert savedGroup != null && savedGroup.collaborationId == null;
-                    tabGroupSyncService.makeTabGroupShared(
-                            tabGroupId,
-                            collaborationId,
-                            (result) -> {
-                                assert result;
-                            });
-                });
-    }
-
-    // Sets the `collaborationId` for the given `syncGroupId` and makes tab group shared.
-    private void setCollaborationIdForSavedTabGroup(String syncGroupId, String collaborationId) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
-                    assert tabGroupSyncService != null && collaborationId != null;
-                    SavedTabGroup savedGroup = tabGroupSyncService.getGroup(syncGroupId);
-                    assert savedGroup != null && savedGroup.collaborationId == null;
-                    makeTabGroupShared(savedGroup.localId, collaborationId);
-                });
-    }
-
-    @SuppressWarnings("unused")
-    // Creates the shared tab group with the given `collab_id` and saves it to the fake server.
-    private void createSharedTabGroupInFakeServer(String collaborationId) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabGroupSyncService tabGroupSyncService = getTabGroupSyncService();
-                    assert tabGroupSyncService != null && collaborationId != null;
-                    String syncGroupId = UUID.randomUUID().toString();
-                    mActivityTestRule
-                            .getFakeServerHelper()
-                            .addSavedTabGroupToFakeServer(
-                                    syncGroupId, TEST_GROUP_TITLE, /* numberOfTabs= */ 1);
-                    mActivityTestRule.getSyncService().triggerRefresh();
-                    // Post delayed task in order to make sure that `NotifyTabGroupAdded` is
-                    // called first.
-                    ThreadUtils.postOnUiThreadDelayed(
-                            () -> {
-                                setCollaborationIdForSavedTabGroup(syncGroupId, collaborationId);
-                            },
-                            DELAY_MS_FOR_TAB_GROUP_ADDED);
-                });
-    }
-
-    /** Return the {@link} to TabGroupSyncService for the current profile. */
-    private TabGroupSyncService getTabGroupSyncService() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    return TabGroupSyncServiceFactory.getForProfile(mProfile);
-                });
-    }
-
-    // Sign in and sets selected types for tab groups.
-    private void setUpSyncAndSignIn() {
-        mActivityTestRule.setUpAccountAndSignInForTesting();
-        mActivityTestRule.setSelectedTypes(
-                true,
-                new HashSet<>(
-                        Arrays.asList(
-                                UserSelectableType.TABS, UserSelectableType.SAVED_TAB_GROUPS)));
-    }
-
-    // Returns the local tab group id.
-    private LocalTabGroupId getLocalTabGroupId(ChromeTabbedActivity cta) {
-        return new LocalTabGroupId(
-                cta.getTabModelSelector().getModel(false).getTabAt(0).getTabGroupId());
-    }
-
-    // Create a tab group and open tab grid dialog.
-    private void createTabGroupAndOpenTabGridDialog(ChromeTabbedActivity cta) {
-        addBlankTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        mergeAllNormalTabsToAGroup(cta);
-        clickFirstCardFromTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
-    }
-
-    // Mock share delegate and return success for opening the share sheet.
-    private void setupShareDelegateSupplier() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
-                    var rootUiCoordinator =
-                            mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-                    DataSharingTabManager dstm = rootUiCoordinator.getDataSharingTabManager();
-                    dstm.setShareDelegateSupplierForTesting(mShareDelegateSupplier);
-                });
     }
 }

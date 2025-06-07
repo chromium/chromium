@@ -4,4 +4,5 @@ include_rules = [
   "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
   "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateBridge.java",
   "+components/data_sharing/internal/android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateTestImpl.java",
+  "+chrome/android/javatests/src/org/chromium/chrome/browser/sync/SyncTestRule.java",
 ]

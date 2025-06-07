@@ -1298,7 +1298,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
 android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
   resources_package = "org.chromium.chrome.test"
 
-  sources = [ "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java" ]
+  sources = [
+    "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java",
+    "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationTestUtils.java",
+  ]
 
   deps = [
     ":chrome_test_java_helper",
