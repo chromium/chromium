@@ -11,7 +11,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/strings/utf_ostream_operators.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
