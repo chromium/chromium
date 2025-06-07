@@ -12,8 +12,8 @@
 namespace content {
 
 struct ServiceWorkerConsts {
-  static constexpr char kBadMessageFromNonWindow[] =
-      "The request message should not come from a non-window client.";
+  static constexpr char kBadMessageFromUnsupportedClient[] =
+      "The request message should not come from an unsupported client.";
 
   static constexpr char kBadMessageGetRegistrationForReadyDuplicated[] =
       "There's already a completed or ongoing request to get the ready "

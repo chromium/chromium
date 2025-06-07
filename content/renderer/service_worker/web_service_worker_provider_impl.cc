@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/service_worker/service_worker_type_converters.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
@@ -39,14 +41,22 @@ static std::string MojoEnumToString(T mojo_enum) {
   return oss.str();
 }
 
+bool IsValidContext(ServiceWorkerProviderContext* context) {
+  return context->container_type() ==
+             blink::mojom::ServiceWorkerContainerType::kForWindow ||
+         (base::FeatureList::IsEnabled(
+              blink::features::kServiceWorkerInDedicatedWorker) &&
+          context->container_type() ==
+              blink::mojom::ServiceWorkerContainerType::kForDedicatedWorker);
+}
+
 }  // anonymous namespace
 
 WebServiceWorkerProviderImpl::WebServiceWorkerProviderImpl(
     ServiceWorkerProviderContext* context)
     : context_(context), provider_client_(nullptr) {
   DCHECK(context_);
-  DCHECK_EQ(context_->container_type(),
-            blink::mojom::ServiceWorkerContainerType::kForWindow);
+  DCHECK(IsValidContext(context_.get()));
   context_->SetWebServiceWorkerProvider(weak_factory_.GetWeakPtr());
 }
 

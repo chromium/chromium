@@ -56,12 +56,11 @@ namespace blink {
 
 class ExecutionContext;
 class ExceptionState;
-class LocalDOMWindow;
 class ServiceWorkerRegistration;
 
 class MODULES_EXPORT ServiceWorkerContainer final
     : public EventTarget,
-      public Supplement<LocalDOMWindow>,
+      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver,
       public WebServiceWorkerProviderClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -69,13 +68,13 @@ class MODULES_EXPORT ServiceWorkerContainer final
  public:
   static const char kSupplementName[];
 
-  static ServiceWorkerContainer* From(LocalDOMWindow&);
+  static ServiceWorkerContainer* From(ExecutionContext&);
 
   static ServiceWorkerContainer* CreateForTesting(
-      LocalDOMWindow&,
+      ExecutionContext&,
       std::unique_ptr<WebServiceWorkerProvider>);
 
-  explicit ServiceWorkerContainer(LocalDOMWindow&);
+  explicit ServiceWorkerContainer(ExecutionContext&);
   ~ServiceWorkerContainer() override;
 
   void Trace(Visitor*) const override;

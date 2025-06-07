@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +28,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
@@ -41,6 +43,13 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
       return ServiceWorkerMetrics::EventType::FETCH_SUB_RESOURCE;
   }
   NOTREACHED();
+}
+
+bool IsClientValidForCall(const ServiceWorkerClient& service_worker_client) {
+  return service_worker_client.IsContainerForWindowClient() ||
+         (base::FeatureList::IsEnabled(
+              blink::features::kServiceWorkerInDedicatedWorker) &&
+          service_worker_client.IsContainerForWorkerClient());
 }
 
 }  // namespace
@@ -118,8 +127,9 @@ void ServiceWorkerContainerHostForClient::Register(
     return;
   }
 
-  if (!service_worker_client().IsContainerForWindowClient()) {
-    mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  if (!IsClientValidForCall(service_worker_client())) {
+    mojo::ReportBadMessage(
+        ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
     std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
                             std::string(), nullptr);
     return;
@@ -174,10 +184,15 @@ void ServiceWorkerContainerHostForClient::Register(
   // process yet. This must be after commit so it should be populated, while
   // it's possible the RenderFrameHost has already been destroyed due to IPC
   // ordering.
-  GlobalRenderFrameHostId global_frame_id =
-      service_worker_client().GetRenderFrameHostId();
-  DCHECK_NE(global_frame_id.child_id, ChildProcessHost::kInvalidUniqueID);
-  DCHECK_NE(global_frame_id.frame_routing_id, MSG_ROUTING_NONE);
+  GlobalRenderFrameHostId global_frame_id(ChildProcessHost::kInvalidUniqueID,
+                                          MSG_ROUTING_NONE);
+  if (service_worker_client().IsContainerForWindowClient()) {
+    // TODO(crbug.com/40364838): Validate that it is acceptable to have an
+    // invalid global_frame_id for worker cases.
+    global_frame_id = service_worker_client().GetRenderFrameHostId();
+    DCHECK(global_frame_id.child_id != ChildProcessHost::kInvalidUniqueID);
+    DCHECK(global_frame_id.frame_routing_id != MSG_ROUTING_NONE);
+  }
 
   // Registrations could come from different origins when "disable-web-security"
   // is active, we need to make sure we get the correct key.
@@ -339,7 +354,7 @@ void ServiceWorkerContainerHostForServiceWorker::Register(
         outside_fetch_client_settings_object,
     RegisterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
                           std::string(), nullptr);
 }
@@ -347,7 +362,7 @@ void ServiceWorkerContainerHostForServiceWorker::Register(
 void ServiceWorkerContainerHostForServiceWorker::GetRegistration(
     const GURL& client_url,
     GetRegistrationCallback callback) {
-  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
   // ReportBadMessage() will kill the renderer process, but Mojo complains if
   // the callback is not run. Just run it with nonsense arguments.
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
@@ -356,7 +371,7 @@ void ServiceWorkerContainerHostForServiceWorker::GetRegistration(
 
 void ServiceWorkerContainerHostForServiceWorker::GetRegistrations(
     GetRegistrationsCallback callback) {
-  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
   // ReportBadMessage() will kill the renderer process, but Mojo complains if
   // the callback is not run. Just run it with nonsense arguments.
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
@@ -367,7 +382,7 @@ void ServiceWorkerContainerHostForServiceWorker::GetRegistrationForReady(
     GetRegistrationForReadyCallback callback) {
   std::string error_message;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromNonWindow);
+  mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageFromUnsupportedClient);
   // ReportBadMessage() will kill the renderer process, but Mojo complains if
   // the callback is not run. Just run it with nonsense arguments.
   std::move(callback).Run(nullptr);
@@ -1042,8 +1057,8 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationMessage(
     const GURL& client_url,
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_worker_client().IsContainerForWindowClient()) {
-    *out_error = ServiceWorkerConsts::kBadMessageFromNonWindow;
+  if (!IsClientValidForCall(service_worker_client())) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
     return false;
   }
   if (!client_url.is_valid()) {
@@ -1063,8 +1078,8 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationMessage(
 bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationsMessage(
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_worker_client().IsContainerForWindowClient()) {
-    *out_error = ServiceWorkerConsts::kBadMessageFromNonWindow;
+  if (!IsClientValidForCall(service_worker_client())) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
     return false;
   }
   if (!OriginCanAccessServiceWorkers(url_for_access_check())) {
@@ -1078,8 +1093,8 @@ bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationsMessage(
 bool ServiceWorkerContainerHostForClient::IsValidGetRegistrationForReadyMessage(
     std::string* out_error) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_worker_client().IsContainerForWindowClient()) {
-    *out_error = ServiceWorkerConsts::kBadMessageFromNonWindow;
+  if (!IsClientValidForCall(service_worker_client())) {
+    *out_error = ServiceWorkerConsts::kBadMessageFromUnsupportedClient;
     return false;
   }
 
@@ -1334,17 +1349,14 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
     scoped_refptr<ServiceWorkerVersion> version,
     ::blink::TransferableMessage message,
     StatusCallback callback) {
-  if (service_worker_client().IsContainerForWindowClient()) {
+  if (IsClientValidForCall(service_worker_client())) {
     service_worker_client_utils::GetClient(
         &service_worker_client(),
         base::BindOnce(&DispatchExtendableMessageEventFromClient, context(),
                        std::move(version), std::move(message),
                        url::Origin::Create(url()), std::move(callback)));
   } else {
-    DCHECK(service_worker_client().IsContainerForWorkerClient());
-
-    // Web workers don't yet have access to ServiceWorker objects, so they
-    // can't postMessage to one (https://crbug.com/371690).
+    // No other clients are allowed to send messages.
     NOTREACHED();
   }
 }

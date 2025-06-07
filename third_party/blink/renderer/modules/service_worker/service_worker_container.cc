@@ -33,6 +33,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
@@ -58,6 +60,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
@@ -86,8 +89,7 @@ struct WebTypeTraits<WebServiceWorkerRegistrationObjectInfo> {
   static ServiceWorkerRegistration* ToIDLType(
       ScriptState* script_state,
       WebServiceWorkerRegistrationObjectInfo info) {
-    return ServiceWorkerContainer::From(
-               *To<LocalDOMWindow>(ExecutionContext::From(script_state)))
+    return ServiceWorkerContainer::From(*ExecutionContext::From(script_state))
         ->GetOrCreateServiceWorkerRegistration(std::move(info));
   }
 };
@@ -167,12 +169,14 @@ class CallbackPromiseAdapter
 void MaybeRecordThirdPartyServiceWorkerUsage(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
-  // ServiceWorkerContainer is only supported on windows.
-  LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
-  DCHECK(window);
+  if (execution_context->IsWindow()) {
+    LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
+    DCHECK(window);
 
-  if (window->IsCrossSiteSubframe())
-    UseCounter::Count(window, WebFeature::kThirdPartyServiceWorker);
+    if (window->IsCrossSiteSubframe()) {
+      UseCounter::Count(window, WebFeature::kThirdPartyServiceWorker);
+    }
+  }
 }
 
 bool HasFiredDomContentLoaded(const Document& document) {
@@ -216,8 +220,7 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
       return;
     }
     resolver_->Resolve(
-        ServiceWorkerContainer::From(
-            *To<LocalDOMWindow>(resolver_->GetExecutionContext()))
+        ServiceWorkerContainer::From(*resolver_->GetExecutionContext())
             ->GetOrCreateServiceWorkerRegistration(std::move(info)));
   }
 
@@ -241,11 +244,14 @@ class ServiceWorkerContainer::DomContentLoadedListener final
   void Invoke(ExecutionContext* execution_context, Event* event) override {
     DCHECK_EQ(event->type(), "DOMContentLoaded");
 
+    // We can only get DOMContentLoaded event from a Window, not a Worker.
+    DCHECK(execution_context->IsWindow());
     LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
     DCHECK(HasFiredDomContentLoaded(*window.document()));
 
     auto* container =
-        Supplement<LocalDOMWindow>::From<ServiceWorkerContainer>(window);
+        Supplement<ExecutionContext>::From<ServiceWorkerContainer>(
+            execution_context);
     if (!container) {
       // There is no container for some reason, which means there's no message
       // queue to start. Just abort.
@@ -258,31 +264,48 @@ class ServiceWorkerContainer::DomContentLoadedListener final
 
 const char ServiceWorkerContainer::kSupplementName[] = "ServiceWorkerContainer";
 
-ServiceWorkerContainer* ServiceWorkerContainer::From(LocalDOMWindow& window) {
+ServiceWorkerContainer* ServiceWorkerContainer::From(
+    ExecutionContext& execution_context) {
   ServiceWorkerContainer* container =
-      Supplement<LocalDOMWindow>::From<ServiceWorkerContainer>(window);
+      Supplement<ExecutionContext>::From<ServiceWorkerContainer>(
+          execution_context);
   if (!container) {
     // TODO(leonhsl): Figure out whether it's really necessary to create an
     // instance when there's no frame or frame client for |window|.
-    container = MakeGarbageCollected<ServiceWorkerContainer>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, container);
-    if (window.GetFrame() && window.GetFrame()->Client()) {
-      std::unique_ptr<WebServiceWorkerProvider> provider =
-          window.GetFrame()->Client()->CreateServiceWorkerProvider();
-      if (provider) {
-        provider->SetClient(container);
-        container->provider_ = std::move(provider);
+    container = MakeGarbageCollected<ServiceWorkerContainer>(execution_context);
+    Supplement<ExecutionContext>::ProvideTo(execution_context, container);
+    std::unique_ptr<WebServiceWorkerProvider> provider;
+
+    if (execution_context.IsWindow()) {
+      auto& window = To<LocalDOMWindow>(execution_context);
+      if (window.GetFrame() && window.GetFrame()->Client()) {
+        provider = window.GetFrame()->Client()->CreateServiceWorkerProvider();
       }
+    } else if (execution_context.IsDedicatedWorkerGlobalScope()) {
+      CHECK(base::FeatureList::IsEnabled(
+          blink::features::kServiceWorkerInDedicatedWorker));
+      auto& worker = To<DedicatedWorkerGlobalScope>(execution_context);
+      provider = worker.CreateServiceWorkerProvider();
+    } else {
+      // TODO(https://crbug.com/422940475): Add support for Service Worker
+      // APIs in shared workers.
+      NOTREACHED() << "ServiceWorkerContainer can only be created for a "
+                      "Window or DedicatedWorkerGlobalScope.";
+    }
+
+    if (provider) {
+      provider->SetClient(container);
+      container->provider_ = std::move(provider);
     }
   }
   return container;
 }
 
 ServiceWorkerContainer* ServiceWorkerContainer::CreateForTesting(
-    LocalDOMWindow& window,
+    ExecutionContext& execution_context,
     std::unique_ptr<WebServiceWorkerProvider> provider) {
   ServiceWorkerContainer* container =
-      MakeGarbageCollected<ServiceWorkerContainer>(window);
+      MakeGarbageCollected<ServiceWorkerContainer>(execution_context);
   container->provider_ = std::move(provider);
   return container;
 }
@@ -306,7 +329,7 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   visitor->Trace(service_worker_registration_objects_);
   visitor->Trace(service_worker_objects_);
   EventTarget::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -628,39 +651,42 @@ void ServiceWorkerContainer::SetController(
 
 void ServiceWorkerContainer::ReceiveMessage(WebServiceWorkerObjectInfo source,
                                             TransferableMessage message) {
-  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
-  if (!window)
-    return;
-  // ServiceWorkerContainer is only supported on documents.
-  auto* document = window->document();
-  DCHECK(document);
-
-  if (!is_client_message_queue_enabled_) {
-    if (!HasFiredDomContentLoaded(*document)) {
-      // Wait for DOMContentLoaded. This corresponds to the specification steps
-      // for "Parsing HTML documents": "The end" at
-      // https://html.spec.whatwg.org/C/#the-end:
-      //
-      // 1. Fire an event named DOMContentLoaded at the Document object, with
-      // its bubbles attribute initialized to true.
-      // 2. Enable the client message queue of the ServiceWorkerContainer object
-      // whose associated service worker client is the Document object's
-      // relevant settings object.
-      if (!dom_content_loaded_observer_) {
-        dom_content_loaded_observer_ =
-            MakeGarbageCollected<DomContentLoadedListener>();
-        document->addEventListener(event_type_names::kDOMContentLoaded,
-                                   dom_content_loaded_observer_.Get(), false);
-      }
-      queued_messages_.emplace_back(std::make_unique<MessageFromServiceWorker>(
-          std::move(source), std::move(message)));
-      // The messages will be dispatched once EnableClientMessageQueue() is
-      // called.
+  if (GetExecutionContext()->IsWindow()) {
+    auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+    if (!window) {
       return;
     }
+    auto* document = window->document();
+    DCHECK(document);
 
-    // DOMContentLoaded was fired already, so enable the queue.
-    EnableClientMessageQueue();
+    if (!is_client_message_queue_enabled_) {
+      if (!HasFiredDomContentLoaded(*document)) {
+        // Wait for DOMContentLoaded. This corresponds to the specification
+        // steps for "Parsing HTML documents": "The end" at
+        // https://html.spec.whatwg.org/C/#the-end:
+        //
+        // 1. Fire an event named DOMContentLoaded at the Document object, with
+        // its bubbles attribute initialized to true.
+        // 2. Enable the client message queue of the ServiceWorkerContainer
+        // object whose associated service worker client is the Document
+        // object's relevant settings object.
+        if (!dom_content_loaded_observer_) {
+          dom_content_loaded_observer_ =
+              MakeGarbageCollected<DomContentLoadedListener>();
+          document->addEventListener(event_type_names::kDOMContentLoaded,
+                                     dom_content_loaded_observer_.Get(), false);
+        }
+        queued_messages_.emplace_back(
+            std::make_unique<MessageFromServiceWorker>(std::move(source),
+                                                       std::move(message)));
+        // The messages will be dispatched once EnableClientMessageQueue() is
+        // called.
+        return;
+      }
+
+      // DOMContentLoaded was fired already, so enable the queue.
+      EnableClientMessageQueue();
+    }
   }
 
   DispatchMessageEvent(std::move(source), std::move(message));
@@ -676,7 +702,7 @@ void ServiceWorkerContainer::CountFeature(mojom::WebFeature feature) {
 }
 
 ExecutionContext* ServiceWorkerContainer::GetExecutionContext() const {
-  return GetSupplementable()->GetExecutionContext();
+  return GetSupplementable();
 }
 
 const AtomicString& ServiceWorkerContainer::InterfaceName() const {
@@ -710,8 +736,8 @@ ServiceWorkerContainer::GetOrCreateServiceWorkerRegistration(
 
   const int64_t registration_id = info.registration_id;
   ServiceWorkerRegistration* registration =
-      MakeGarbageCollected<ServiceWorkerRegistration>(
-          GetSupplementable()->GetExecutionContext(), std::move(info));
+      MakeGarbageCollected<ServiceWorkerRegistration>(GetSupplementable(),
+                                                      std::move(info));
   service_worker_registration_objects_.Set(registration_id, registration);
   return registration;
 }
@@ -726,15 +752,16 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
     return it->value.Get();
 
   const int64_t version_id = info.version_id;
-  ServiceWorker* worker = ServiceWorker::Create(
-      GetSupplementable()->GetExecutionContext(), std::move(info));
+  ServiceWorker* worker =
+      ServiceWorker::Create(GetSupplementable(), std::move(info));
   service_worker_objects_.Set(version_id, worker);
   return worker;
 }
 
-ServiceWorkerContainer::ServiceWorkerContainer(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
-      ExecutionContextLifecycleObserver(&window) {}
+ServiceWorkerContainer::ServiceWorkerContainer(
+    ExecutionContext& execution_context)
+    : Supplement<ExecutionContext>(execution_context),
+      ExecutionContextLifecycleObserver(&execution_context) {}
 
 ServiceWorkerContainer::ReadyProperty*
 ServiceWorkerContainer::CreateReadyProperty() {

@@ -4489,6 +4489,12 @@
       status: "experimental",
     },
     {
+      // Support for Service Worker APIs in Dedicated Workers.
+      // See https://chromestatus.com/feature/6497653025931264
+      // See https://issues.chromium.org/issues/40364838
+      name: "ServiceWorkerInDedicatedWorker",
+    },
+    {
       name: "ServiceWorkerStaticRouterTimingInfo",
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "ServiceWorkerStaticRouterTimingInfo",

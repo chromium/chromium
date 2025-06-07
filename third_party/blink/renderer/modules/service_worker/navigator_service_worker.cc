@@ -16,10 +16,12 @@
 
 namespace blink {
 
-ServiceWorkerContainer* NavigatorServiceWorker::From(LocalDOMWindow& window) {
-  if (!window.GetSecurityOrigin()->CanAccessServiceWorkers())
+ServiceWorkerContainer* NavigatorServiceWorker::From(
+    ExecutionContext& execution_context) {
+  if (!execution_context.GetSecurityOrigin()->CanAccessServiceWorkers()) {
     return nullptr;
-  return ServiceWorkerContainer::From(window);
+  }
+  return ServiceWorkerContainer::From(execution_context);
 }
 
 // static
@@ -27,24 +29,30 @@ ServiceWorkerContainer* NavigatorServiceWorker::serviceWorker(
     ScriptState* script_state,
     Navigator&,
     ExceptionState& exception_state) {
-  LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
-  auto* container = From(window);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  auto* container = From(*execution_context);
   if (!container) {
-    String error_message;
-    if (window.IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
-      error_message =
-          "Service worker is disabled because the context is sandboxed and "
-          "lacks the 'allow-same-origin' flag.";
-    } else {
-      error_message =
-          "Access to service workers is denied in this document origin.";
+    if (execution_context->IsWindow()) {
+      auto& window = To<LocalDOMWindow>(*execution_context);
+      String error_message;
+      if (window.IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
+        error_message =
+            "Service worker is disabled because the context is sandboxed and "
+            "lacks the 'allow-same-origin' flag.";
+      } else {
+        error_message =
+            "Access to service workers is denied in this document origin.";
+      }
+      exception_state.ThrowSecurityError(error_message);
     }
-    exception_state.ThrowSecurityError(error_message);
     return nullptr;
   }
 
-  if (window.GetSecurityOrigin()->IsLocal())
-    UseCounter::Count(window, WebFeature::kFileAccessedServiceWorker);
+  if (execution_context->IsWindow() &&
+      execution_context->GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kFileAccessedServiceWorker);
+  }
 
   return container;
 }
