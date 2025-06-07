@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
 
 #include <map>
-#include <set>
 
 #include "base/types/pass_key.h"
 
@@ -22,11 +21,6 @@ class UnownedUserDataHost {
  public:
   UnownedUserDataHost();
   ~UnownedUserDataHost();
-
-  // Marks the given `key` as being used in testing. This allows tests to
-  // override the value in the map for the given key (which would normally
-  // result in a crash).
-  void MarkKeyForTesting(const char* key);
 
   // Sets the entry in the map for the given `key` to `data`.
   // CHECKs that there is no existing entry.
@@ -46,7 +40,6 @@ class UnownedUserDataHost {
 
  private:
   std::map<const char*, void*> map_;
-  std::set<const char*> testing_keys_;
 };
 
 #endif  // CHROME_BROWSER_UI_UNOWNED_USER_DATA_UNOWNED_USER_DATA_HOST_H_
