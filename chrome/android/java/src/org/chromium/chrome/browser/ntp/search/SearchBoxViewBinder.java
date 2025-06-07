@@ -62,10 +62,9 @@ class SearchBoxViewBinder
                             ? View.VISIBLE
                             : View.GONE);
         } else if (SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY == propertyKey) {
-            composeplateButton.setVisibility(
-                    model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY)
-                            ? View.VISIBLE
-                            : View.GONE);
+            ((SearchBoxContainerView) view)
+                    .setComposeplateButtonVisibility(
+                            model.get(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY));
         } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
             lensButton.setVisibility(
                     model.get(SearchBoxProperties.LENS_VISIBILITY) ? View.VISIBLE : View.GONE);
