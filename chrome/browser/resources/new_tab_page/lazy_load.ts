@@ -18,7 +18,9 @@ import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
+export {ComposeboxFile} from './composebox/common.js';
 export {ComposeboxElement} from './composebox/composebox.js';
+export {ComposeboxFileCarouselElement} from './composebox/file_carousel.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';

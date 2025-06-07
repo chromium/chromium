@@ -1,23 +1,20 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './file_carousel.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
-
-class ComposeboxFile {
-  uuid: string;
-  name: string;
-  objectUrl: string|null;
-  type: string;
-}
+import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ComposeboxElement {
   $: {
     attachmentUploader: HTMLInputElement,
+    carousel: ComposeboxFileCarouselElement,
     imageUploader: HTMLInputElement,
   };
 }
@@ -38,14 +35,15 @@ export class ComposeboxElement extends CrLitElement {
   static override get properties() {
     return {
       attachmentFileTypes_: {type: String},
-      files_: {type: Array},
+      files: {type: Array},
       imageFileTypes_: {type: String},
     };
   }
 
+  accessor files: ComposeboxFile[] = [];
+
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
-  protected accessor files_: ComposeboxFile[] = [];
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
 
@@ -74,7 +72,7 @@ export class ComposeboxElement extends CrLitElement {
         // TODO(crbug.com/422559977): Upload the file.
       }
     }
-    this.files_ = this.files_.concat(newFiles);
+    this.files = this.files.concat(newFiles);
   }
 
   private createUuid(): string {

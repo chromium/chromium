@@ -10,16 +10,8 @@ export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="main">
-  <!-- TODO(crbug.com/422561249): Move file results to a separate component. -->
-  ${this.files_.map((item) => {
-    if (item.objectUrl) {
-      return html`<img class="file"
-                      id="${item.uuid}"
-                      src="${item.objectUrl}">
-                  </img>`;
-    }
-    return html`<p class="file" id="${item.uuid}">${item.name}</p>`;
-  })}
+  <ntp-composebox-file-carousel id="carousel" .files=${this.files}>
+  </ntp-composebox-file-carousel>
   <!-- TODO(crbug.com/422561574): Style inputs. -->
   <label for="imageUploader">Image Upload</label>
   <input type="file"

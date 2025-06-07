@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 composebox_ts_files = [
+  "composebox/common.ts",
   "composebox/composebox.html.ts",
   "composebox/composebox.ts",
+  "composebox/file_carousel.html.ts",
+  "composebox/file_carousel.ts",
 ]
 
-composebox_css_files = [ "composebox/composebox.css" ]
+composebox_css_files = [
+  "composebox/composebox.css",
+  "composebox/file_carousel.css",
+]
