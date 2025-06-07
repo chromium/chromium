@@ -585,6 +585,7 @@ void InputManager::SetupRenderInputRouterDelegateConnection(
         rir_delegate_remote,
     mojo::PendingAssociatedReceiver<input::mojom::RenderInputRouterDelegate>
         rir_delegate_receiver) {
+  TRACE_EVENT("viz", "InputManager::SetupRenderInputRouterDelegateConnection");
   rir_delegate_remote_map_[frame_sink_id].Bind(std::move(rir_delegate_remote));
   rir_delegate_remote_map_[frame_sink_id].set_disconnect_handler(
       base::BindOnce(&InputManager::OnRIRDelegateClientDisconnected,
