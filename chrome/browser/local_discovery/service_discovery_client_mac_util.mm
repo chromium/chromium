@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "net/base/ip_endpoint.h"

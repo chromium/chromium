@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 
 namespace base {
 // Implementation of SHA-1. Only handles data in byte-sized blocks,

@@ -1939,37 +1939,6 @@ TEST(SpanTest, ByteSpansFromNonUnique) {
   }
 }
 
-TEST(SpanTest, AsStringView) {
-  {
-    constexpr uint8_t kArray[] = {'h', 'e', 'l', 'l', 'o'};
-    // Fixed size span.
-    auto s = as_string_view(kArray);
-    static_assert(std::is_same_v<decltype(s), std::string_view>);
-    EXPECT_EQ(s.data(), reinterpret_cast<const char*>(&kArray[0u]));
-    EXPECT_EQ(s.size(), std::size(kArray));
-
-    // Dynamic size span.
-    auto s2 = as_string_view(span<const uint8_t>(kArray));
-    static_assert(std::is_same_v<decltype(s2), std::string_view>);
-    EXPECT_EQ(s2.data(), reinterpret_cast<const char*>(&kArray[0u]));
-    EXPECT_EQ(s2.size(), std::size(kArray));
-  }
-  {
-    constexpr char kArray[] = {'h', 'e', 'l', 'l', 'o'};
-    // Fixed size span.
-    auto s = as_string_view(kArray);
-    static_assert(std::is_same_v<decltype(s), std::string_view>);
-    EXPECT_EQ(s.data(), &kArray[0u]);
-    EXPECT_EQ(s.size(), std::size(kArray));
-
-    // Dynamic size span.
-    auto s2 = as_string_view(span<const char>(kArray));
-    static_assert(std::is_same_v<decltype(s2), std::string_view>);
-    EXPECT_EQ(s2.data(), &kArray[0u]);
-    EXPECT_EQ(s2.size(), std::size(kArray));
-  }
-}
-
 TEST(SpanTest, EnsureConstexprGoodness) {
   static constexpr std::array<int, 5> kArray = {5, 4, 3, 2, 1};
   constexpr span<const int> constexpr_span(kArray);

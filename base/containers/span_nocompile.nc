@@ -375,11 +375,6 @@ void ByteConversionsFromNonUnique() {
   as_writable_byte_span(arr);               // expected-error {{no matching function for call}}
 }
 
-void AsStringViewNotBytes() {
-  const int arr[] = {1, 2, 3};
-  as_string_view(span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
-}
-
 void SpanFromCstrings() {
   static const char with_null[] = { 'a', 'b', '\0' };
   span_from_cstring(with_null);

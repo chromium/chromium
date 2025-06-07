@@ -257,8 +257,8 @@
 //   conversion to a fixed-extent span, and return null on failure.
 // - Because Chromium bans `std::byte`, `as_[writable_]bytes()` use `uint8_t`
 //   instead of `std::byte` as the returned element type.
-// - For convenience, provides `as_[writable_]chars()` and `as_string_view()`
-//   to convert to other "view of bytes"-like objects.
+// - For convenience, provides `as_[writable_]chars()` to convert to other
+//   "view of bytes"-like objects.
 // - For convenience, provides `[byte_]span_from_ref()` to convert single
 //   (non-range) objects to spans.
 // - For convenience, provides `[byte_]span_[with_nul_]from_cstring()` to
@@ -1458,27 +1458,6 @@ template <typename ElementType, size_t Extent, typename InternalPtrType>
 constexpr auto as_writable_chars(allow_nonunique_obj_t,
                                  span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<char>(s);
-}
-
-// Converts a span over byte-like elements to `std::string_view`.
-//
-// (Not in `std::`; eases span adoption in Chromium, which uses `string`s and
-// `string_view`s in many cases that rightfully should be containers of
-// `uint8_t`.)
-//
-// TODO(C++23): Replace with direct use of the `std::string_view` range
-// constructor.
-constexpr auto as_string_view(span<const char> s) {
-  return std::string_view(s.begin(), s.end());
-}
-constexpr auto as_string_view(span<const unsigned char> s) {
-  return as_string_view(as_chars(s));
-}
-constexpr auto as_string_view(span<const char16_t> s) {
-  return std::u16string_view(s.begin(), s.end());
-}
-constexpr auto as_string_view(span<const wchar_t> s) {
-  return std::wstring_view(s.begin(), s.end());
 }
 
 // Converts a `T&` to a `span<T, 1>`.

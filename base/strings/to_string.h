@@ -16,6 +16,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/supports_ostream_operator.h"
 #include "base/types/supports_to_string.h"
 
