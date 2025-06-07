@@ -457,6 +457,11 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     parent = parent->PlatformGetParent();
   }
 
+  // A kMenu container should not be interesting and navigatable.
+  if (GetRole() == ax::mojom::Role::kMenu) {
+    return false;
+  }
+
   // Otherwise, focusable nodes are always interesting. Note that IsFocusable()
   // already skips over things like iframes and child frames that are
   // technically focusable but shouldn't be exposed as focusable on Android.
