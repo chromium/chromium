@@ -16,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/values.h"
@@ -63,6 +62,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -379,7 +379,7 @@ class MessageServiceFactory
   ChannelEndpoint GetEndpoint(content::BrowserContext* context,
                               const Source& source) {
     return std::visit(
-        base::Overloaded{
+        absl::Overload{
             [&](const WorkerId& worker) {
               return ChannelEndpoint(
                   context, worker.render_process_id,
