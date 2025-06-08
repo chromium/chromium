@@ -68,6 +68,7 @@ public class SigninPreferencesManager {
     public void clearSigninPromoLastShownPrefsForTesting() {
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES);
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME);
     }
 
     /**
@@ -81,6 +82,24 @@ public class SigninPreferencesManager {
     /** Sets Chrome major version number when signin promo was last shown. */
     public void setSigninPromoLastShownVersion(int majorVersion) {
         mManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION, majorVersion);
+    }
+
+    /**
+     * Returns the time in milliseconds when signin promo should be shown again, or 0 if it was
+     * never recorded.
+     */
+    public long getSigninPromoNextShowTime() {
+        return mManager.readLong(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME);
+    }
+
+    /**
+     * Sets the time after when signin promo should be shown again. The time is stored in
+     * milliseconds.
+     *
+     * @param showTime The next time in milliseconds when the promo should be shown.
+     */
+    public void setSigninPromoNextShowTime(long showTime) {
+        mManager.writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME, showTime);
     }
 
     /**
