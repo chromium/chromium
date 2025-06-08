@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -46,6 +45,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -1235,7 +1235,7 @@ void AttributionSrcLoader::ResourceClient::
   AtomicString header;
 
   AttributionReportingIssueType issue_type = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](attribution_reporting::mojom::SourceRegistrationError) {
             header = headers.web_source;
             return AttributionReportingIssueType::kInvalidRegisterSourceHeader;

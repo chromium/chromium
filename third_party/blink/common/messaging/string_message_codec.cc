@@ -12,11 +12,11 @@
 #include "base/check_op.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 
 namespace blink {
@@ -189,7 +189,7 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const std::u16string& str) {
             if (ContainsOnlyLatin1(str)) {
               std::string data_latin1(str.cbegin(), str.cend());

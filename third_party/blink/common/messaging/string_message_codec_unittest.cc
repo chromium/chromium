@@ -13,11 +13,11 @@
 #include <variant>
 
 #include "base/containers/span.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -102,7 +102,7 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
     serializer.WriteHeader();
 
     std::visit(
-        base::Overloaded{
+        absl::Overload{
             [&](const std::u16string& str) {
               v8::Local<v8::String> message_as_value =
                   v8::String::NewFromTwoByte(

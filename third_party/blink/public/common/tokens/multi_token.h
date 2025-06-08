@@ -40,7 +40,7 @@ namespace blink {
 // void TeleportGoat(const GoatToken&);
 //
 // void TeleportUngulate(const UngulateToken& token) {
-//   token.Visit(base::Overloaded(
+//   token.Visit(absl::Overload(
 //         [](const CowToken& cow_token) { TeleportCow(cow_token); },
 //         [](const GoatToken& goat_token) { TeleportGoat(goat_token); }));
 // }

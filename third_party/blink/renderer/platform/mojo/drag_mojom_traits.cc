@@ -13,12 +13,12 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -266,7 +266,7 @@ blink::mojom::DragItemDataView::Tag
 UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::GetTag(
     const blink::WebDragData::Item& item) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const blink::WebDragData::StringItem&) {
             return blink::mojom::DragItemDataView::Tag::kString;
           },

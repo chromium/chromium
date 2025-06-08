@@ -7,7 +7,7 @@
 #include <utility>
 #include <variant>
 
-#include "base/functional/overloaded.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -255,7 +255,7 @@ v8::Local<v8::Object> PublicKeyCredential::toJSON(
 
   v8::Local<v8::Value> result;
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](AuthenticatorAttestationResponseJSON* attestation_response) {
             auto* registration_response = RegistrationResponseJSON::Create();
             registration_response->setId(id());
