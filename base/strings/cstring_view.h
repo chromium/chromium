@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -552,23 +551,6 @@ std::basic_ostream<Char, Traits>& operator<<(
 // rather than strings.
 inline void PrintTo(cstring_view view, std::ostream* os) {
   *os << view;
-}
-
-// Converts a `basic_cstring_view` instance to a `span<const CharT>`, preserving
-// the trailing '\0'.
-//
-// Explicitly includes the trailing nul, which would be omitted by calling the
-// range constructor.
-template <typename CharT>
-constexpr auto span_with_nul_from_cstring_view(basic_cstring_view<CharT> str) {
-  // SAFETY: It is safe to read the guaranteed null-terminator in `str`.
-  return UNSAFE_BUFFERS(span(str.data(), str.size() + 1));
-}
-// Like `span_with_nul_from_cstring_view()`, but returns a byte span.
-template <typename CharT>
-constexpr auto byte_span_with_nul_from_cstring_view(
-    basic_cstring_view<CharT> str) {
-  return as_bytes(span_with_nul_from_cstring_view(str));
 }
 
 }  // namespace base
