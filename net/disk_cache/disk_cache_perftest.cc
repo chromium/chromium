@@ -595,11 +595,8 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
 
   InitCache();
   // Write out the entries, and keep their objects around.
-  auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kHeadersSize);
-  auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kBodySize);
-
-  CacheTestFillBuffer(buffer1->span(), false);
-  CacheTestFillBuffer(buffer2->span(), false);
+  auto buffer1 = CacheTestCreateAndFillBuffer(kHeadersSize, false);
+  auto buffer2 = CacheTestCreateAndFillBuffer(kBodySize, false);
 
   std::array<disk_cache::Entry*, kBatchSize> cache_entry;
   for (int i = 0; i < kBatchSize; ++i) {
