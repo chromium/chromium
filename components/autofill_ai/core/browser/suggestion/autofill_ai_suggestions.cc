@@ -279,8 +279,6 @@ bool EntityShouldProduceSuggestion(const AutofillField& trigger_field,
     return false;
   }
 
-  const FieldType trigger_field_type = trigger_field.Type().GetStorableType();
-
   // Only entities that match the triggering field entity should be used to
   // generate suggestions.
   if (entity.type() != trigger_attribute_type->entity_type()) {
@@ -289,9 +287,13 @@ bool EntityShouldProduceSuggestion(const AutofillField& trigger_field,
   base::optional_ref<const AttributeInstance> trigger_attribute =
       entity.attribute(*trigger_attribute_type);
   // Do not create a suggestion if the triggering field cannot be filled.
-  if (!trigger_attribute ||
-      trigger_attribute->GetInfo(trigger_field_type, app_locale, std::nullopt)
-          .empty()) {
+  if (!trigger_attribute) {
+    return false;
+  }
+  std::u16string trigger_value =
+      trigger_attribute->GetInfo(trigger_field.Type().GetStorableType(),
+                                 app_locale, trigger_field.format_string());
+  if (trigger_value.empty()) {
     return false;
   }
 
@@ -299,9 +301,7 @@ bool EntityShouldProduceSuggestion(const AutofillField& trigger_field,
   // use the existence of suggestions to guess a user's data.
   if (!trigger_attribute_type->is_obfuscated()) {
     const std::u16string normalized_attribute =
-        AutofillProfileComparator::NormalizeForComparison(
-            trigger_attribute->GetInfo(trigger_field_type, app_locale,
-                                       trigger_field.format_string()));
+        AutofillProfileComparator::NormalizeForComparison(trigger_value);
     const std::u16string normalized_field_content =
         AutofillProfileComparator::NormalizeForComparison(
             trigger_field.value());
