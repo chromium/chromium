@@ -156,19 +156,6 @@ void OnDeviceTranslationServiceController::CreateTranslator(
                                       to_be_registered_packs);
 
     if (!to_be_registered_packs.empty()) {
-      if (!base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
-          (kTranslationAPILimitLanguagePackCount.Get() &&
-           to_be_registered_packs.size() >
-               GetInstallablePackageCount(
-                   ComponentManager::GetRegisteredLanguagePacks().size()))) {
-        RecordLanguagePairUma(
-            "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
-            source_lang, target_lang);
-        std::move(callback).Run(base::unexpected(
-            CreateTranslatorError::kExceedsLanguagePackCountLimitation));
-        return;
-      }
-
       for (const auto& language_pack : to_be_registered_packs) {
         RecordLanguagePairUma(
             "Translate.OnDeviceTranslation.Download.LanguagePair",
@@ -318,17 +305,6 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
     return CanCreateTranslatorResult::kNoNotSupportedLanguage;
-  }
-
-  if (!to_be_registered_packs.empty() &&
-      !base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
-      kTranslationAPILimitLanguagePackCount.Get() &&
-      to_be_registered_packs.size() >
-          GetInstallablePackageCount(
-              ComponentManager::GetRegisteredLanguagePacks().size())) {
-    // The number of installed language packs will exceed the limitation if the
-    // new required language packs are installed.
-    return CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation;
   }
 
   if (required_not_installed_packs.empty()) {

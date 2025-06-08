@@ -23,18 +23,6 @@ extern const base::FeatureParam<std::string>
 // Any version string longer than this will be truncated.
 inline constexpr size_t kTranslationAPILibraryVersionStringSize = 14;
 
-// When this feature param is enabled, the Translation API will fail if neither
-// the source nor destination language is in the AcceptLanguages. This is
-// introduced to mitigate privacy concerns.
-extern const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck;
-
-// This feature limits the number of language components downloaded by
-// createTranslator() to 3.
-extern const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount;
-
-// Returns the number of additionally installable language packs.
-size_t GetInstallablePackageCount(size_t installed_package_count);
-
 // The duration that the OnDeviceTranslation service can remain idle before it
 // is terminated.
 extern const base::FeatureParam<base::TimeDelta>

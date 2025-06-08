@@ -18,19 +18,6 @@
 
 namespace on_device_translation {
 
-namespace {
-
-bool IsSupportedPopularLanguage(const std::string& lang) {
-  const std::optional<SupportedLanguage> supported_lang =
-      ToSupportedLanguage(lang);
-  if (!supported_lang) {
-    return false;
-  }
-  return IsPopularLanguage(*supported_lang);
-}
-
-}  // namespace
-
 const std::vector<std::string_view> GetAcceptLanguages(
     content::BrowserContext* browser_context) {
   CHECK(browser_context);
@@ -59,36 +46,6 @@ bool IsTranslatorAllowed(content::BrowserContext* browser_context) {
   return Profile::FromBrowserContext(browser_context)
       ->GetPrefs()
       ->GetBoolean(prefs::kTranslatorAPIAllowed);
-}
-
-bool PassAcceptLanguagesCheck(
-    const std::vector<std::string_view>& accept_languages,
-    const std::string& source_lang,
-    const std::string& target_lang) {
-  if (base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) ||
-      !kTranslationAPIAcceptLanguagesCheck.Get()) {
-    return true;
-  }
-
-  // TODO(crbug.com/371899260): Implement better language code handling.
-
-  // One of the source or the destination language must be in the user's accept
-  // language.
-  const bool source_lang_is_in_accept_langs =
-      IsInAcceptLanguage(accept_languages, source_lang);
-  const bool target_lang_is_in_accept_langs =
-      IsInAcceptLanguage(accept_languages, target_lang);
-
-  // The other language must be a popular language.
-  if (!source_lang_is_in_accept_langs &&
-      !IsSupportedPopularLanguage(source_lang)) {
-    return false;
-  }
-  if (!target_lang_is_in_accept_langs &&
-      !IsSupportedPopularLanguage(target_lang)) {
-    return false;
-  }
-  return true;
 }
 
 }  // namespace on_device_translation

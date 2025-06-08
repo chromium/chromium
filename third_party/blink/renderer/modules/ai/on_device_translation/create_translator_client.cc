@@ -21,10 +21,6 @@ using mojom::blink::CreateTranslatorError;
 
 const char kExceptionMessageUnableToCreateTranslator[] =
     "Unable to create translator for the given source and target language.";
-const char kLinkToDocument[] =
-    "See "
-    "https://developer.chrome.com/docs/ai/translator-api?#supported-languages "
-    "for more details.";
 
 String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
   switch (error) {
@@ -36,14 +32,6 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
       return "Failed to initialize the translation library.";
     case CreateTranslatorError::kFailedToCreateTranslator:
       return "The translation library failed to create a translator.";
-    case CreateTranslatorError::kAcceptLanguagesCheckFailed:
-      return String(base::StrCat(
-          {"The preferred languages check for Translator API failed. ",
-           kLinkToDocument}));
-    case CreateTranslatorError::kExceedsLanguagePackCountLimitation:
-      return String(base::StrCat(
-          {"The Translator API language pack count exceeded the limitation. ",
-           kLinkToDocument}));
     case CreateTranslatorError::kServiceCrashed:
       return "The translation service crashed.";
     case CreateTranslatorError::kDisallowedByPolicy:
@@ -70,13 +58,6 @@ String ConvertCanCreateTranslatorResultToDebugString(
       NOTREACHED();
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
       return "The language pair is unsupported.";
-    case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-      equivalent_error = CreateTranslatorError::kAcceptLanguagesCheckFailed;
-      break;
-    case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
-      equivalent_error =
-          CreateTranslatorError::kExceedsLanguagePackCountLimitation;
-      break;
     case CanCreateTranslatorResult::kNoServiceCrashed:
       equivalent_error = CreateTranslatorError::kServiceCrashed;
       break;
@@ -101,8 +82,6 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
       return true;
     case CanCreateTranslatorResult::kReadily:
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-    case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
@@ -120,8 +99,6 @@ bool TranslatorIsUnavailable(CanCreateTranslatorResult result) {
     case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
       return false;
     case CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed:
-    case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
     case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
@@ -253,8 +230,7 @@ void CreateTranslatorClient::OnGotAvailability(
   // they lack the ability to do so.
   CHECK(window != nullptr || context->IsServiceWorkerGlobalScope());
 
-  if (RuntimeEnabledFeatures::TranslationAPIV1Enabled() &&
-      !context->IsServiceWorkerGlobalScope() &&
+  if (!context->IsServiceWorkerGlobalScope() &&
       RequiresUserActivation(result) &&
       !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     GetResolver()->RejectWithDOMException(
