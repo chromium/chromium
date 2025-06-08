@@ -828,6 +828,10 @@ external/wpt/webxr/xr_viewport_scale.https.html
 external/wpt/workers/baseurl/alpha/sharedworker-in-worker.html
 external/wpt/workers/postMessage_block.https.html
 
+# These tests fail on the long-press variant only, likely for testdriver reasons.
+external/wpt/html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html*
+virtual/interest-target-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html*
+
 # TODO(crbug.com/421119389): This is a crash test that (currently) crashes on
 # content_shell but doesn't run properly on headless. It either gives "Tried to
 # run in a non-testharness window without a call to set_test_context" if written
