@@ -5,55 +5,23 @@
 #include "content/public/test/mock_navigation_throttle_registry.h"
 
 #include "base/check_deref.h"
-#include "content/browser/renderer_host/navigation_request.h"
+#include "base/notimplemented.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 
 namespace content {
 
-// A wrapper class for the NavigationRequest that holds a weak pointer to the
-// NavigationRequest internally, and hide the NavigationRequest in the public
-// header to avoid unexpected forbidden use outside //content.
-// TODO(https://crbug.com/412524375): Update existing tests that needs this
-// WeakPtr protection, and remove this class.
-class MockNavigationThrottleRegistry::NavigationHandleHolder {
- public:
-  explicit NavigationHandleHolder(NavigationHandle* navigation_handle)
-      : navigation_request_(
-            NavigationRequest::From(navigation_handle)->GetWeakPtr()) {}
-  ~NavigationHandleHolder() = default;
-
-  NavigationHandle* Get() {
-    CHECK(navigation_request_);
-    return navigation_request_.get();
-  }
-
- private:
-  base::WeakPtr<NavigationRequest> navigation_request_;
-};
-
 MockNavigationThrottleRegistry::MockNavigationThrottleRegistry(
     NavigationHandle* navigation_handle,
     RegistrationMode registration_mode)
-    : navigation_handle_holder_(
-          std::make_unique<NavigationHandleHolder>(navigation_handle)),
+    : navigation_handle_(navigation_handle),
       registration_mode_(registration_mode) {}
-
-MockNavigationThrottleRegistry::MockNavigationThrottleRegistry(
-    MockNavigationHandle* mock_navigation_handle,
-    RegistrationMode registration_mode)
-    : mock_navigation_handle_(mock_navigation_handle),
-      registration_mode_(registration_mode) {}
-
 
 MockNavigationThrottleRegistry::~MockNavigationThrottleRegistry() = default;
 
 NavigationHandle& MockNavigationThrottleRegistry::GetNavigationHandle() {
-  if (mock_navigation_handle_) {
-    return *mock_navigation_handle_;
-  }
-  return *navigation_handle_holder_->Get();
+  return *navigation_handle_;
 }
 
 void MockNavigationThrottleRegistry::AddThrottle(
@@ -96,6 +64,17 @@ void MockNavigationThrottleRegistry::RegisterHeldThrottles() {
     handle.RegisterThrottleForTesting(std::move(it));
   }
   throttles_.clear();
+}
+
+bool MockNavigationThrottleRegistry::HasThrottle(const std::string& name) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool MockNavigationThrottleRegistry::EraseThrottleForTesting(
+    const std::string& name) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 }  // namespace content

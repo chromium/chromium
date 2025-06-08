@@ -16,6 +16,7 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 
@@ -197,6 +198,10 @@ class NavigationThrottleRunnerTest : public RenderViewHostTestHarness,
       AddThrottle(std::move(navigation_throttle));
     }
   }
+  MOCK_METHOD(bool, HasThrottle, (const std::string& name), (override));
+  MOCK_METHOD(bool, EraseThrottleForTesting, (const std::string& name),
+              (override));
+
   // NavigationThrottleRegistryBase:
   void OnEventProcessed(
       NavigationThrottleEvent event,

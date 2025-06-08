@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_REGISTRY_H_
 
 #include <memory>
+#include <string>
 
 #include "content/common/content_export.h"
 
@@ -32,6 +33,14 @@ class CONTENT_EXPORT NavigationThrottleRegistry {
       std::unique_ptr<NavigationThrottle> navigation_throttle) = 0;
   virtual void MaybeAddThrottle(
       std::unique_ptr<NavigationThrottle> navigation_throttle) = 0;
+
+  // Checks if the registry contains a throttle with the given name. Returns
+  // true if the throttle is found.
+  virtual bool HasThrottle(const std::string& name) = 0;
+
+  // Erases the throttle with the given name from the registry. This is only
+  // used for testing. Returns true if the throttle is found and erased.
+  virtual bool EraseThrottleForTesting(const std::string& name) = 0;
 };
 
 }  // namespace content

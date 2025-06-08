@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -174,6 +176,19 @@ void NavigationThrottleRegistryImpl::MaybeAddThrottle(
   if (navigation_throttle) {
     AddThrottle(std::move(navigation_throttle));
   }
+}
+
+bool NavigationThrottleRegistryImpl::HasThrottle(const std::string& name) {
+  return std::ranges::find_if(throttles_, [name](const auto& throttle) {
+    return throttle->GetNameForLogging() == name;
+  }) != throttles_.end();
+}
+
+bool NavigationThrottleRegistryImpl::EraseThrottleForTesting(
+    const std::string& name) {
+  return std::erase_if(throttles_, [name](const auto& throttle) {
+    return throttle->GetNameForLogging() == name;
+  });
 }
 
 void NavigationThrottleRegistryImpl::OnEventProcessed(
