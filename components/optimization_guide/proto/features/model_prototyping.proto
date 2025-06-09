@@ -417,6 +417,13 @@ message ModelPrototypingMetadata {
   // not ask the user to annotate the task completion status.
   TaskCompletionStatus task_completion_status = 7 [features = { field_presence: IMPLICIT }];
 
+  // If the task was completed and the status is a failure, the user-annotated
+  // reason for the failure.
+  // Note: This field is only set if the task_completion_status is a failure.
+  // his field is commonly empty, as many failure reasons are not asked
+  // for by the data collection.
+  string task_completion_failure_reason = 8 [features = { field_presence: IMPLICIT }];
+
   enum PageAnnotation {
     PAGE_ANNOTATION_UNSPECIFIED = 0;
 

@@ -324,10 +324,13 @@ message BrowserActionResult {
 }
 
 // A single set of actions to be taken by Chrome. The response is ActionsResult.
-// Next ID: 2
+// Next ID: 3
 message Actions {
   // The actions to be taken by Chrome.
   repeated ActionInformation actions = 1;
+
+  // The task id of the action.
+  int32 task_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about a chrome window.

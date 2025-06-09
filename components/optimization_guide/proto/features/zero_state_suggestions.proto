@@ -32,11 +32,27 @@ message ZeroStateSuggestionsLoggingData {
 }
 
 message ZeroStateSuggestionsRequest {
-  // The context of the page to generate suggestions for.
-  PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
+  oneof request {
+    // The context of the page to generate suggestions for. This is used when
+    // the user has chosen to share the active tab with Glic.
+    PageContext page_context = 1;
+
+    // The multiple page contexts to generate suggestions for. This is used when
+    // the user has chosen to share multiple tabs with Glic.
+    ZeroStatePageContextList page_context_list = 3;
+  }
 
   // Whether the request is for FRE mode.
   bool is_fre = 2 [features = { field_presence: EXPLICIT }];
+}
+
+message ZeroStatePageContextList {
+  repeated ZeroStatePageContext page_contexts = 1;
+}
+
+message ZeroStatePageContext {
+  // The page context for the shared tab.
+  PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
 }
 
 message ZeroStateSuggestionsResponse {
