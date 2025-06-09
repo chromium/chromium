@@ -384,7 +384,7 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
 #if BUILDFLAG(IS_WIN)
 // Whether the we should DumpWithoutCrashing when D3D related errors are detected.
 const base::FeatureParam<bool> kSkiaGraphiteDawnDumpWCOnD3DError{
-    &kSkiaGraphite, "dawn_dumpwc_d3d_errors", true};
+    &kSkiaGraphite, "dawn_dumpwc_d3d_errors", false};
 
 // Whether the Dawn D3D11 flush should be delayed until the end of the frame.
 const base::FeatureParam<bool> kSkiaGraphiteDawnD3D11DelayFlush{
