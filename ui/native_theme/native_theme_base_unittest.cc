@@ -102,13 +102,4 @@ TEST_F(NativeThemeBaseTest, GetContrastingPressedOrHoveredTransparencies) {
   }
 }
 
-// Tests that colors are not modified if the feature flag is disabled.
-TEST_F(NativeThemeBaseTest, GetContrastingPressedOrHoveredDisableFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      ::features::kModifyScrollbarCssColorOnHoverOrPress);
-  EXPECT_EQ(GetContrastingPressedOrHoveredColor(SK_ColorRED, SK_ColorBLACK),
-            SK_ColorRED);
-}
-
 }  // namespace ui

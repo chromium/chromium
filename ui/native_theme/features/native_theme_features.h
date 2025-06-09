@@ -19,8 +19,6 @@ BASE_DECLARE_FEATURE(kScrollbarAnimations);
 COMPONENT_EXPORT(NATIVE_THEME_FEATURES) BASE_DECLARE_FEATURE(kFluentScrollbar);
 COMPONENT_EXPORT(NATIVE_THEME_FEATURES)
 BASE_DECLARE_FEATURE(kFluentOverlayScrollbar);
-COMPONENT_EXPORT(NATIVE_THEME_FEATURES)
-BASE_DECLARE_FEATURE(kModifyScrollbarCssColorOnHoverOrPress);
 
 }  // namespace features
 
@@ -31,8 +29,6 @@ COMPONENT_EXPORT(NATIVE_THEME_FEATURES) bool IsFluentScrollbarEnabled();
 
 COMPONENT_EXPORT(NATIVE_THEME_FEATURES)
 bool IsOverlayScrollbarEnabledByFeatureFlag();
-COMPONENT_EXPORT(NATIVE_THEME_FEATURES)
-bool IsModifyScrollbarCssColorOnHoverOrPressEnabled();
 
 }  // namespace ui
 

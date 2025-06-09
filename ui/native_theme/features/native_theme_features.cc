@@ -48,11 +48,6 @@ BASE_FEATURE(kFluentOverlayScrollbar,
              "FluentOverlayScrollbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables modifying CSS `scrollbar-color` foreground elements colors on hover
-// or press. This feature flag is meant to be used as a killswitch.
-BASE_FEATURE(kModifyScrollbarCssColorOnHoverOrPress,
-             "ModifyScrollbarCssColorOnHoverOrPress",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace ui {
@@ -79,11 +74,6 @@ bool IsFluentScrollbarEnabled() {
 bool IsOverlayScrollbarEnabledByFeatureFlag() {
   return base::FeatureList::IsEnabled(features::kOverlayScrollbar) ||
          IsFluentOverlayScrollbarEnabled();
-}
-
-bool IsModifyScrollbarCssColorOnHoverOrPressEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kModifyScrollbarCssColorOnHoverOrPress);
 }
 
 }  // namespace ui

@@ -506,8 +506,7 @@ std::optional<SkColor> NativeThemeBase::GetContrastingPressedOrHoveredColor(
     State state,
     Part part) const {
   CHECK(SupportedPartsForContrastingColor(part));
-  if (!IsModifyScrollbarCssColorOnHoverOrPressEnabled() ||
-      !fg_color.has_value() ||
+  if (!fg_color.has_value() ||
       (state != NativeTheme::kPressed && state != NativeTheme::kHovered) ||
       SkColorGetA(fg_color.value()) == SK_AlphaTRANSPARENT) {
     return fg_color;
