@@ -4133,6 +4133,31 @@ TEST_F(TabStripModelTest, AddTabToNewGroup) {
   tabstrip()->CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, FindGroupIdFor) {
+  ASSERT_TRUE(tabstrip()->SupportsTabGroups());
+
+  {
+    auto result = tabstrip()->FindGroupIdFor(tabs::TabCollection::Handle(888));
+    ASSERT_FALSE(result.has_value());
+  }
+
+  {
+    tabstrip()->AppendWebContents(CreateWebContents(), false);
+    auto* tab = tabstrip()->GetTabAtIndex(0);
+
+    ASSERT_TRUE(tab != nullptr);
+
+    auto group_id = tabstrip()->AddToNewGroup({0});
+
+    auto* collection = tab->GetParentCollection();
+    ASSERT_TRUE(collection != nullptr);
+
+    auto result = tabstrip()->FindGroupIdFor(collection->GetHandle());
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(group_id, result.value());
+  }
+}
+
 TEST_F(TabStripModelTest, AddTabToNewGroupUpdatesObservers) {
   ASSERT_TRUE(tabstrip()->SupportsTabGroups());
 

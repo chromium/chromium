@@ -413,6 +413,18 @@ void TabStripCollection::ValidateData() const {
   }
 }
 
+std::optional<const tab_groups::TabGroupId> TabStripCollection::FindGroupIdFor(
+    const tabs::TabCollection::Handle& collection_handle,
+    base::PassKey<TabStripModel>) const {
+  for (auto& pair : group_mapping_) {
+    if (pair.second->GetHandle() == collection_handle) {
+      return pair.first;
+    }
+  }
+
+  return std::nullopt;
+}
+
 TabGroupTabCollection* TabStripCollection::MaybeAttachDetachedGroupCollection(
     int index,
     const tab_groups::TabGroupId& new_group) {

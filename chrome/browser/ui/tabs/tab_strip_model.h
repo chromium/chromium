@@ -64,6 +64,7 @@ class TabGroupTabCollection;
 
 namespace tabs_api {
 class MojoTreeBuilder;
+class TabStripModelAdapterImpl;
 }
 
 class TabGroupModelFactory {
@@ -681,6 +682,13 @@ class TabStripModel {
   const tabs::TabCollection* Root(
       base::PassKey<tabs_api::MojoTreeBuilder> key) const;
 
+  // Finds the group id for a tab collection. Note that this API can be error
+  // prone. Make sure to read and understand the potential problems with
+  // relying on group id.
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle,
+      base::PassKey<tabs_api::TabStripModelAdapterImpl>) const;
+
   // View API //////////////////////////////////////////////////////////////////
 
   // Context menu functions. Tab groups uses command ids following CommandLast
@@ -830,6 +838,8 @@ class TabStripModel {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
+  // Temporary private API.
+  FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, FindGroupIdFor);
 
   struct DetachNotifications;
   struct MoveNotification {
@@ -1257,6 +1267,15 @@ class TabStripModel {
   // returns a valid group.
   std::optional<tab_groups::TabGroupId> GetGroupToAssign(int index,
                                                          int to_position);
+
+  // Private API for now, because this API can be difficult to use correctly.
+  // Interim stop gap until we have a handle based API. Use PassKey to access
+  // this.
+  // One notable deficiencies is that it doesn't work for all tab collection
+  // types (e.g.: unpinned collection, tab strip collection, and split tab
+  // collection). The onus is on the caller to handle those cases correctly.
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle) const;
 
   // Returns a valid index to be selected after the tabs in `block_tabs` are
   // closed. If index is after the block, index is adjusted to reflect the fact

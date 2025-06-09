@@ -9,10 +9,13 @@
 #include <optional>
 #include <unordered_map>
 
+#include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
+
+class TabStripModel;
 
 namespace tabs {
 
@@ -111,6 +114,10 @@ class TabStripCollection : public TabCollection {
                         std::optional<tab_groups::TabGroupId> group);
   std::unique_ptr<TabCollection> RemoveSplit(SplitTabCollection* split);
   void ValidateData() const;
+
+  std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
+      const tabs::TabCollection::Handle& collection_handle,
+      base::PassKey<TabStripModel>) const;
 
  private:
   // If the group specified by new_group is detached, pop it from the detached

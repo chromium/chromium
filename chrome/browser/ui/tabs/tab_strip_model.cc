@@ -2195,6 +2195,12 @@ const tabs::TabCollection* TabStripModel::Root(
   return contents_data_.get();
 }
 
+std::optional<const tab_groups::TabGroupId> TabStripModel::FindGroupIdFor(
+    const tabs::TabCollection::Handle& collection_handle,
+    base::PassKey<tabs_api::TabStripModelAdapterImpl>) const {
+  return FindGroupIdFor(collection_handle);
+}
+
 // Context menu functions.
 bool TabStripModel::IsContextMenuCommandEnabled(
     int context_index,
@@ -4500,6 +4506,12 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetGroupToAssign(
   }
 
   return tab_to_move->GetGroup();
+}
+
+std::optional<const tab_groups::TabGroupId> TabStripModel::FindGroupIdFor(
+    const tabs::TabCollection::Handle& collection_handle) const {
+  return contents_data_->FindGroupIdFor(collection_handle,
+                                        base::PassKey<TabStripModel>());
 }
 
 int TabStripModel::GetTabIndexAfterClosing(int index,
