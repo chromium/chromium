@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +50,7 @@ class CustomizableTestEnvBrowserTestBase
 
   // MixinBasedInProcessBrowserTest:
   void SetUp() override;
+  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
  protected:
@@ -63,7 +63,6 @@ class CustomizableTestEnvBrowserTestBase
   std::unique_ptr<ash::GuestSessionMixin> guest_session_mixin_;
   std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
   std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   // This is initialized to a regular account on a consumer owned device. A
   // subclass can overwrite this by calling `SetTestEnvironment` before `SetUp`

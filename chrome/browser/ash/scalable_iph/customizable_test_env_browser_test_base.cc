@@ -6,9 +6,13 @@
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
+
+namespace em = enterprise_management;
 
 namespace ash {
 
@@ -147,12 +151,19 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
   }
 
-  if (!owner_user_email_.empty()) {
-    scoped_testing_cros_settings_.device_settings()->Set(
-        ash::kDeviceOwner, base::Value(owner_user_email_));
-  }
-
   MixinBasedInProcessBrowserTest::SetUp();
+}
+
+void CustomizableTestEnvBrowserTestBase::SetUpInProcessBrowserTestFixture() {
+  MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+
+  if (!owner_user_email_.empty()) {
+    policy::CachedDevicePolicyUpdater updater;
+    updater.policy_data().set_username(owner_user_email_);
+    updater.policy_data().set_management_mode(
+        enterprise_management::PolicyData::LOCAL_OWNER);
+    updater.Commit();
+  }
 }
 
 void CustomizableTestEnvBrowserTestBase::SetUpOnMainThread() {
