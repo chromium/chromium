@@ -59,6 +59,8 @@ const char* kSensitivePolicies[] = {
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     key::kCommandLineFlagSecurityWarningsEnabled,
+    key::kEnterpriseCustomLabelForBrowser,
+    key::kEnterpriseLogoUrlForBrowser,
 #endif
 #if !BUILDFLAG(IS_IOS)
     key::kFirstPartySetsOverrides,
