@@ -254,6 +254,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
   const base::TimeDelta wait_for_release_delay_;
   base::TimeTicks wait_for_release_time_;
   bool wait_for_release_pending_ = false;
+  gpu::SyncToken sync_token_;
   base::WeakPtrFactory<Texture> weak_ptr_factory_{this};
 };
 
@@ -282,9 +283,8 @@ Buffer::Texture::Texture(
                              gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
-  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
-  ri->WaitSyncTokenCHROMIUM(sync_token_out.GetConstData());
+  sync_token_ = sync_token_out;
 
   // Provides a notification when |context_provider_| is lost.
   context_provider_->AddObserver(this);
@@ -330,7 +330,7 @@ Buffer::Texture::Texture(
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
-  ri->WaitSyncTokenCHROMIUM(sync_token_out.GetConstData());
+  sync_token_ = sync_token_out;
   ri->GenQueriesEXT(1, &query_id_);
 
   // Provides a notification when |context_provider_| is lost.
@@ -364,8 +364,7 @@ void Buffer::Texture::Release(
   if (context_provider_) {
     // Only need to wait on the sync token if we don't have a release fence.
     if (resource.sync_token.HasData() && resource.release_fence.is_null()) {
-      gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-      ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
+      sync_token_ = resource.sync_token;
     }
   }
 
@@ -376,7 +375,6 @@ void Buffer::Texture::Release(
 
 gpu::SyncToken Buffer::Texture::UpdateSharedImage(
     std::unique_ptr<gfx::GpuFence> acquire_fence) {
-  gpu::SyncToken sync_token;
   if (context_provider_) {
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
     CHECK(shared_image_);
@@ -386,10 +384,10 @@ gpu::SyncToken Buffer::Texture::UpdateSharedImage(
     // |query_type_| is available.
     sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
                            shared_image_->mailbox());
-    sync_token = sii->GenUnverifiedSyncToken();
+    sync_token_ = sii->GenUnverifiedSyncToken();
     TRACE_EVENT_ASYNC_STEP_INTO0("exo", kBufferInUse, GetBufferId(), "bound");
   }
-  return sync_token;
+  return sync_token_;
 }
 
 void Buffer::Texture::ReleaseSharedImage(
@@ -401,6 +399,7 @@ void Buffer::Texture::ReleaseSharedImage(
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
     if (resource.sync_token.HasData()) {
       ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
+      sync_token_ = resource.sync_token;
     }
     ri->BeginQueryEXT(query_type_, query_id_);
     ri->EndQueryEXT(query_type_);
@@ -421,17 +420,19 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     std::unique_ptr<gfx::GpuFence> acquire_fence,
     Texture* destination,
     base::OnceClosure callback) {
-  gpu::SyncToken sync_token;
   if (context_provider_) {
     CHECK(shared_image_);
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-    sii->UpdateSharedImage(gpu::SyncToken(), std::move(acquire_fence),
+    sii->UpdateSharedImage(sync_token_, std::move(acquire_fence),
                            shared_image_->mailbox());
-    sync_token = sii->GenUnverifiedSyncToken();
+    gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+    std::unique_ptr<gpu::RasterScopedAccess> ri_src_access =
         shared_image_->BeginRasterAccess(ri, sync_token, /*readonly=*/true);
+    std::unique_ptr<gpu::RasterScopedAccess> ri_dst_access =
+        destination->shared_image_->BeginRasterAccess(
+            ri, destination->sync_token_, /*readonly=*/false);
 
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
@@ -445,9 +446,11 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     // Create and return a sync token that can be used to ensure that the
     // CopySharedImage call is processed before issuing any commands
     // that will read from the target texture on a different context.
-    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    destination->sync_token_ =
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_dst_access));
+    sync_token_ = gpu::RasterScopedAccess::EndAccess(std::move(ri_src_access));
   }
-  return sync_token;
+  return sync_token_;
 }
 
 void Buffer::Texture::DestroyResources() {
