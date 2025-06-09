@@ -11,55 +11,38 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Eq;
 
 namespace {
-class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
- protected:
-  void TearDown() override {
-    pref_service_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
-  }
 
-  TestingProfile* CreateProfile(const std::string& profile_name) override {
-    std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs(
-        new sync_preferences::TestingPrefServiceSyncable);
-    RegisterUserProfilePrefs(prefs->registry());
-    pref_service_ = prefs.get();
+using ChromeWebContentsMenuHelperBrowserTest = InProcessBrowserTest;
 
-    auto* profile = profile_manager()->CreateTestingProfile(
-        profile_name, std::move(prefs), std::u16string(), 0,
-        TestingProfile::TestingFactories());
-    return profile;
-  }
-
-  sync_preferences::PrefServiceSyncable* pref_service() {
-    return pref_service_;
-  }
-
- private:
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-};
-}  // namespace
-
-TEST_F(ChromeWebContentsMenuHelperUnitTest,
-       AllowContextMenuAccessThroughPreferences) {
-  pref_service()->SetBoolean(
+IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
+                       AllowContextMenuAccessThroughPreferences) {
+  browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 
   // Make sure we have 1 window to start with.
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
-  AddTab(browser(), GURL("http://foo/1"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://foo/1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::ContextMenuParams enriched_params =
       AddContextMenuParamsPropertiesFromPreferences(
@@ -69,15 +52,18 @@ TEST_F(ChromeWebContentsMenuHelperUnitTest,
                     prefs::kDefaultSearchProviderContextMenuAccessAllowed));
 }
 
-TEST_F(ChromeWebContentsMenuHelperUnitTest,
-       DisallowContextMenuAccessThroughPreferences) {
-  pref_service()->SetBoolean(
+IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
+                       DisallowContextMenuAccessThroughPreferences) {
+  browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, false);
 
   // Make sure we have 1 window to start with.
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
-  AddTab(browser(), GURL("http://foo/1"));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://foo/1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::ContextMenuParams enriched_params =
       AddContextMenuParamsPropertiesFromPreferences(
@@ -85,3 +71,5 @@ TEST_F(ChromeWebContentsMenuHelperUnitTest,
           content::ContextMenuParams());
   EXPECT_EQ(0U, enriched_params.properties.size());
 }
+
+}  // namespace

@@ -98,7 +98,6 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "chrome_web_contents_menu_helper_unittest.cc",
       "core_tab_helper_unittest.cc",
       "tab_contents_iterator_unittest.cc",
     ]
@@ -131,5 +130,26 @@ if (!is_android) {
       sources += [ "chrome_web_contents_view_handle_drop_unittest.cc" ]
       deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
     }
+  }
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_web_contents_menu_helper_browsertest.cc" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/prefs",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tab_contents",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//components/search_engines",
+      "//components/sync_preferences",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+    ]
   }
 }
