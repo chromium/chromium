@@ -20,6 +20,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//components/send_tab_to_self",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",

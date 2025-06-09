@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view.h"
 
 #import "base/check.h"
+#import "base/time/time.h"
+#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/reminder_notifications/ui/constants.h"
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_interaction_handler.h"
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view_cell.h"
@@ -45,7 +47,10 @@ typedef NS_ENUM(NSInteger, ReminderNotificationsDatePickerRowType) {
 - (instancetype)initWithInteractionHandler:
     (id<ReminderNotificationsDatePickerInteractionHandler>)interactionHandler {
   if ((self = [super initWithFrame:CGRectZero style:ChromeTableViewStyle()])) {
-    _date = [NSDate date];
+    _date = [NSDate
+        dateWithTimeIntervalSinceNow:
+            send_tab_to_self::GetReminderNotificationsDefaultTimeOffset()
+                .InSecondsF()];
     _interactionHandler = interactionHandler;
 
     // Initialize date & time formatters

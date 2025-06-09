@@ -9,6 +9,10 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace send_tab_to_self {
 
 // If this feature is enabled, the notification shown to users will disapear
@@ -44,6 +48,15 @@ extern const char kSendTabIOSPushNotificationsWithTabRemindersParam[];
 // Convenience method for determining when `kSendTabToSelfIOSPushNotifications`
 // is enabled with Tab Reminders.
 bool IsSendTabIOSPushNotificationsEnabledWithTabReminders();
+
+// Parameter representing the default time offset initially presented in the
+// 'Set a Reminder' UI half-sheet. Users can select a different offset manually.
+extern const char kReminderNotificationsDefaultTimeOffset[];
+
+// Returns the default time offset used to pre-populate the date/time picker
+// when the 'Set a Reminder' UI half-sheet is first shown. This value is
+// controlled by the `kReminderNotificationsDefaultTimeOffset` Finch parameter.
+const base::TimeDelta GetReminderNotificationsDefaultTimeOffset();
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace send_tab_to_self
