@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_active_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/egl_util.h"
@@ -988,17 +990,69 @@ void WebGLRenderingContextWebGPUBase::generateMipmap(GLenum target) {
 }
 
 WebGLActiveInfo* WebGLRenderingContextWebGPUBase::getActiveAttrib(
-    WebGLProgram*,
+    WebGLProgram* program,
     GLuint index) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!ValidateProgramOrShader("getActiveAttrib", program)) {
+    return nullptr;
+  }
+
+  GLint max_name_length = -1;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetProgramivFn(
+          program->Object(), GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_name_length),
+      nullptr);
+
+  if (max_name_length <= 0) {
+    return nullptr;
+  }
+
+  GLsizei length = 0;
+  GLint size = -1;
+  GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetActiveAttribFn(
+          program->Object(), index, max_name_length, &length, &size, &type,
+          reinterpret_cast<GLchar*>(name_buffer.data())),
+      nullptr);
+  DCHECK_GE(size, 0);
+  return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
+                                               type, size);
 }
 
 WebGLActiveInfo* WebGLRenderingContextWebGPUBase::getActiveUniform(
-    WebGLProgram*,
+    WebGLProgram* program,
     GLuint index) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!ValidateProgramOrShader("getActiveUniform", program)) {
+    return nullptr;
+  }
+
+  GLint max_name_length = -1;
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetProgramivFn(
+          program->Object(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length),
+      nullptr);
+
+  if (max_name_length <= 0) {
+    return nullptr;
+  }
+
+  GLsizei length = 0;
+  GLint size = -1;
+  GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glGetActiveUniformFn(
+          program->Object(), index, max_name_length, &length, &size, &type,
+          reinterpret_cast<GLchar*>(name_buffer.data())),
+      nullptr);
+  DCHECK_GE(size, 0);
+  return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
+                                               type, size);
 }
 
 std::optional<HeapVector<Member<WebGLShader>>>
@@ -1124,9 +1178,32 @@ ScriptValue WebGLRenderingContextWebGPUBase::getProgramParameter(
   }
 }
 
-String WebGLRenderingContextWebGPUBase::getProgramInfoLog(WebGLProgram*) {
-  NOTIMPLEMENTED();
-  return {};
+String WebGLRenderingContextWebGPUBase::getProgramInfoLog(
+    WebGLProgram* program) {
+  if (!ValidateObject("getProgramInfoLog", program)) {
+    return String();
+  }
+
+  GLint length = 0;
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetProgramivFn(
+                         program->Object(), GL_INFO_LOG_LENGTH, &length),
+                     String());
+
+  if (length == 0) {
+    return String();
+  }
+
+  GLsizei write_length = 0;
+  StringBuffer<LChar> log_buffer(length);
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetProgramInfoLogFn(
+                         program->Object(), length, &write_length,
+                         reinterpret_cast<GLchar*>(log_buffer.Span().data())),
+                     String());
+
+  // The returnedLength excludes the null terminator. If this check wasn't
+  // true, then we'd need to tell the returned String the real length.
+  DCHECK_EQ(write_length + 1, length);
+  return String::Adopt(log_buffer);
 }
 
 ScriptValue WebGLRenderingContextWebGPUBase::getRenderbufferParameter(
@@ -1177,9 +1254,31 @@ ScriptValue WebGLRenderingContextWebGPUBase::getShaderParameter(
   }
 }
 
-String WebGLRenderingContextWebGPUBase::getShaderInfoLog(WebGLShader*) {
-  NOTIMPLEMENTED();
-  return {};
+String WebGLRenderingContextWebGPUBase::getShaderInfoLog(WebGLShader* shader) {
+  if (!ValidateObject("getShaderInfoLog", shader)) {
+    return String();
+  }
+
+  GLint length = 0;
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetShaderivFn(shader->Object(),
+                                                   GL_INFO_LOG_LENGTH, &length),
+                     String());
+
+  if (length == 0) {
+    return String();
+  }
+
+  GLsizei write_length = 0;
+  StringBuffer<LChar> log_buffer(length);
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetShaderInfoLogFn(
+                         shader->Object(), length, &write_length,
+                         reinterpret_cast<GLchar*>(log_buffer.Span().data())),
+                     String());
+
+  // The returnedLength excludes the null terminator. If this check wasn't
+  // true, then we'd need to tell the returned String the real length.
+  DCHECK_EQ(write_length + 1, length);
+  return String::Adopt(log_buffer);
 }
 
 WebGLShaderPrecisionFormat*
