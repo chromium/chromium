@@ -114,6 +114,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_keyed_service_unittest.cc",
+    "aggregated_journal_unittest.cc",
     "site_policy_unittest.cc",
   ]
   deps = [
