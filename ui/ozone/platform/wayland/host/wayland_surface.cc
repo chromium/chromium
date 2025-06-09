@@ -9,7 +9,6 @@
 #include <content-type-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <linux-drm-syncobj-v1-client-protocol.h>
-#include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
@@ -90,24 +89,6 @@ const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
 
 }  // namespace
 
-WaylandSurface::ExplicitReleaseInfoLegacy::ExplicitReleaseInfoLegacy(
-    wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
-    wl_buffer* buffer,
-    ExplicitReleaseCallback explicit_release_callback)
-    : linux_buffer_release(std::move(linux_buffer_release)),
-      buffer(buffer),
-      explicit_release_callback(std::move(explicit_release_callback)) {}
-
-WaylandSurface::ExplicitReleaseInfoLegacy::~ExplicitReleaseInfoLegacy() =
-    default;
-
-WaylandSurface::ExplicitReleaseInfoLegacy::ExplicitReleaseInfoLegacy(
-    ExplicitReleaseInfoLegacy&&) = default;
-
-WaylandSurface::ExplicitReleaseInfoLegacy&
-WaylandSurface::ExplicitReleaseInfoLegacy::operator=(
-    ExplicitReleaseInfoLegacy&&) = default;
-
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
                                WaylandWindow* root_window)
     : connection_(connection),
@@ -123,13 +104,7 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
   }
 }
 
-WaylandSurface::~WaylandSurface() {
-  for (auto& release : linux_buffer_releases_legacy_) {
-    DCHECK(release.second.explicit_release_callback);
-    std::move(release.second.explicit_release_callback)
-        .Run(release.second.buffer.get(), base::ScopedFD());
-  }
-}
+WaylandSurface::~WaylandSurface() = default;
 
 void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
   DCHECK(!next_explicit_release_request_);
@@ -428,54 +403,6 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   return region;
 }
 
-bool WaylandSurface::SetExplicitSyncLegacy() {
-  // The server needs to support the linux_explicit_synchronization protocol.
-  if (!connection_->linux_explicit_synchronization_v1()) {
-    NOTIMPLEMENTED_LOG_ONCE();
-    return false;
-  }
-
-  if (!surface_sync_legacy_) {
-    surface_sync_legacy_.reset(
-        zwp_linux_explicit_synchronization_v1_get_synchronization(
-            connection_->linux_explicit_synchronization_v1(), surface_.get()));
-  }
-  auto* surface_sync = surface_sync_legacy_.get();
-  if (!surface_sync) {
-    return false;
-  }
-
-  if (!pending_state_.acquire_fence.is_null()) {
-    zwp_linux_surface_synchronization_v1_set_acquire_fence(
-        surface_sync, pending_state_.acquire_fence.Peek());
-  }
-
-  if (!next_explicit_release_request_.is_null()) {
-    auto* linux_buffer_release =
-        zwp_linux_surface_synchronization_v1_get_release(surface_sync);
-    // This must be very unlikely to happen, but there is a bug for this.
-    // Thus, add a check for this object to ensure it's not null. See
-    // https://crbug.com/1382976
-    LOG_IF(FATAL, !linux_buffer_release)
-        << "Unable to get an explicit release object.";
-
-    static constexpr zwp_linux_buffer_release_v1_listener
-        kBufferReleaseListener = {
-            .fenced_release = &OnFencedRelease,
-            .immediate_release = &OnImmediateRelease,
-        };
-    zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
-                                             &kBufferReleaseListener, this);
-
-    linux_buffer_releases_legacy_.emplace(
-        linux_buffer_release,
-        ExplicitReleaseInfoLegacy(
-            wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
-            pending_state_.buffer, std::move(next_explicit_release_request_)));
-  }
-  return true;
-}
-
 void WaylandSurface::EnsureSurfaceSync() {
   if (!surface_sync_) {
     surface_sync_.reset(wp_linux_drm_syncobj_manager_v1_get_surface(
@@ -609,7 +536,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     // Moreover, a Wayland protocol error will be raised as only one surface
     // sync can exist.
     if (pending_state_.buffer && !explicit_sync_success.value() &&
-        !SetExplicitSyncLegacy() && connection_->UseImplicitSyncInterop() &&
+        connection_->UseImplicitSyncInterop() &&
         !pending_state_.acquire_fence.is_null()) {
       connection_->buffer_manager_host()->InsertAcquireFence(
           pending_state_.buffer_id, pending_state_.acquire_fence.Peek());
@@ -884,17 +811,6 @@ void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
 }
 
-void WaylandSurface::ExplicitRelease(
-    zwp_linux_buffer_release_v1* linux_buffer_release,
-    base::ScopedFD fence) {
-  auto iter = linux_buffer_releases_legacy_.find(linux_buffer_release);
-  CHECK(iter != linux_buffer_releases_legacy_.end());
-  DCHECK(iter->second.buffer);
-  std::move(iter->second.explicit_release_callback)
-      .Run(iter->second.buffer.get(), std::move(fence));
-  linux_buffer_releases_legacy_.erase(iter);
-}
-
 WaylandSurface::State::State() = default;
 
 WaylandSurface::State::~State() = default;
@@ -1025,24 +941,6 @@ void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
       connection_->zcr_color_manager()->GetColorSpace(color_space);
   if (wayland_zcr_color_space != nullptr)
     pending_state_.color_space = wayland_zcr_color_space;
-}
-
-// static
-void WaylandSurface::OnFencedRelease(
-    void* data,
-    zwp_linux_buffer_release_v1* buffer_release,
-    int32_t fence) {
-  auto* self = static_cast<WaylandSurface*>(data);
-  auto fd = base::ScopedFD(fence);
-  self->ExplicitRelease(buffer_release, std::move(fd));
-}
-
-// static
-void WaylandSurface::OnImmediateRelease(
-    void* data,
-    zwp_linux_buffer_release_v1* buffer_release) {
-  auto* self = static_cast<WaylandSurface*>(data);
-  self->ExplicitRelease(buffer_release, base::ScopedFD());
 }
 
 }  // namespace ui

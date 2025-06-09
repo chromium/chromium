@@ -241,27 +241,6 @@ class WaylandSurface {
                            ExplicitSyncSet_SubsequentAcquireFenceNotSet);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
                            ExplicitSyncNotSet_SubsequentAcquireFenceImportFail);
-  // Holds information about each explicit synchronization buffer release.
-  struct ExplicitReleaseInfoLegacy {
-    ExplicitReleaseInfoLegacy(
-        wl::Object<zwp_linux_buffer_release_v1>&& linux_buffer_release,
-        wl_buffer* buffer,
-        ExplicitReleaseCallback explicit_release_callback);
-    ~ExplicitReleaseInfoLegacy();
-
-    ExplicitReleaseInfoLegacy(const ExplicitReleaseInfoLegacy&) = delete;
-    ExplicitReleaseInfoLegacy& operator=(const ExplicitReleaseInfoLegacy&) =
-        delete;
-
-    ExplicitReleaseInfoLegacy(ExplicitReleaseInfoLegacy&&);
-    ExplicitReleaseInfoLegacy& operator=(ExplicitReleaseInfoLegacy&&);
-
-    wl::Object<zwp_linux_buffer_release_v1> linux_buffer_release;
-    // The buffer associated with this explicit release.
-    raw_ptr<wl_buffer, AcrossTasksDanglingUntriaged> buffer;
-    // The associated release callback with this request.
-    ExplicitReleaseCallback explicit_release_callback;
-  };
 
   struct State {
     State();
@@ -330,7 +309,6 @@ class WaylandSurface {
 
   bool IsViewportScaled(const State& state);
 
-  bool SetExplicitSyncLegacy();
   void EnsureSurfaceSync();
   void EnsureAcquireTimeline();
   // Returns whether explicit sync was set, or std::nullopt if there was some
@@ -368,7 +346,6 @@ class WaylandSurface {
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
   wl::Object<zcr_blending_v1> blending_;
-  wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_legacy_;
   wl::Object<wp_linux_drm_syncobj_surface_v1> surface_sync_;
   std::unique_ptr<WaylandSyncobjAcquireTimeline> acquire_timeline_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
@@ -376,8 +353,6 @@ class WaylandSurface {
   wl::Object<wp_fractional_scale_v1> fractional_scale_;
   std::unique_ptr<WaylandZcrColorManagementSurface>
       zcr_color_management_surface_;
-  base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfoLegacy>
-      linux_buffer_releases_legacy_;
   ExplicitReleaseCallback next_explicit_release_request_;
 
   // A cached copy of connection->supports_viewporter_surface_scaling(). While
@@ -398,9 +373,6 @@ class WaylandSurface {
   // Holds the preferred buffer factor for this surface, if any was received
   // through wp-fractional-scale-v1 protocol, when available.
   std::optional<float> preferred_scale_factor_;
-
-  void ExplicitRelease(zwp_linux_buffer_release_v1* linux_buffer_release,
-                       base::ScopedFD fence);
 
   // wl_surface_listener callbacks:
   static void OnEnter(void* data, wl_surface* surface, wl_output* output);

@@ -963,7 +963,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
 
           // Release the buffer immediately as the test always attaches the same
           // buffer.
-          mock_surface->ReleaseBufferFenced(buffer_resource, {});
+          mock_surface->ReleaseBuffer(buffer_resource);
 
           mock_surface->SendFrameCallback();
         });
@@ -1081,7 +1081,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
       auto* buffer_resource = mock_surface->prev_attached_buffer();
       ASSERT_TRUE(buffer_resource);
-      mock_surface->ReleaseBufferFenced(buffer_resource, {});
+      mock_surface->ReleaseBuffer(buffer_resource);
     });
 
     base::RunLoop().RunUntilIdle();
@@ -1182,7 +1182,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck2) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
       auto* buffer_resource = mock_surface->prev_attached_buffer();
       ASSERT_TRUE(buffer_resource);
-      mock_surface->ReleaseBufferFenced(buffer_resource, {});
+      mock_surface->ReleaseBuffer(buffer_resource);
     });
 
     base::RunLoop().RunUntilIdle();

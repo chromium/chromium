@@ -82,7 +82,6 @@ constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerV1Version = 1;
 constexpr uint32_t kMaxTextInputManagerV3Version = 1;
-constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxLinuxDrmSyncobjVersion = 1;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
@@ -633,16 +632,6 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
         registry, name, std::min(version, kMaxAlphaCompositingVersion));
     if (!alpha_compositing_) {
       LOG(ERROR) << "Failed to bind zcr_alpha_compositing_v1";
-      return;
-    }
-  } else if (!linux_explicit_synchronization_ &&
-             (UNSAFE_TODO(strcmp(
-                  interface, "zwp_linux_explicit_synchronization_v1")) == 0)) {
-    linux_explicit_synchronization_ =
-        wl::Bind<zwp_linux_explicit_synchronization_v1>(
-            registry, name, std::min(version, kMaxExplicitSyncVersion));
-    if (!linux_explicit_synchronization_) {
-      LOG(ERROR) << "Failed to bind zwp_linux_explicit_synchronization_v1";
       return;
     }
   } else if (!linux_drm_syncobj_manager_ &&

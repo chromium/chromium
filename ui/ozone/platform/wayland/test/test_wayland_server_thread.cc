@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -140,10 +141,6 @@ bool TestWaylandServerThread::Start() {
       return false;
     }
   }
-  if (!SetupExplicitSynchronizationProtocol(
-          config_.use_explicit_synchronization)) {
-    return false;
-  }
   if (!SetupLinuxDrmSyncobjProtocol(config_.use_linux_drm_syncobj)) {
     return false;
   }
@@ -266,17 +263,6 @@ bool TestWaylandServerThread::SetupPrimarySelectionManager(
       break;
   }
   return primary_selection_device_manager_->Initialize(display_.get());
-}
-
-bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
-    ShouldUseExplicitSynchronizationProtocol usage) {
-  switch (usage) {
-    case ShouldUseExplicitSynchronizationProtocol::kNone:
-      return true;
-    case ShouldUseExplicitSynchronizationProtocol::kUse:
-      return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
-  }
-  NOTREACHED();
 }
 
 bool TestWaylandServerThread::SetupLinuxDrmSyncobjProtocol(

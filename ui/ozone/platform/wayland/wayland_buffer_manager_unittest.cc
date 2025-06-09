@@ -626,11 +626,10 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
     GTEST_SKIP();
   }
 
-  const size_t expected_number_of_buffers =
-      connection_->linux_explicit_synchronization_v1() ? 1 : 2;
+  const size_t expected_number_of_buffers = 2;
 
   PostToServerAndWait(
-      [expected_number_of_buffers](wl::TestWaylandServerThread* server) {
+      [](wl::TestWaylandServerThread* server) {
         EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _))
             .Times(expected_number_of_buffers);
       });
@@ -740,8 +739,7 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
 
       base::RunLoop().RunUntilIdle();
 
-      if (!should_root_have_nan_bounds &&
-          !connection_->linux_explicit_synchronization_v1()) {
+      if (!should_root_have_nan_bounds) {
         // This case submits kBufferId2 twice. So, a second handle is requested
         // during a frame playback if explicit sync is unavailable.
         ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
@@ -767,11 +765,9 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
               server->GetObject<wl::MockSurface>(subsurface_id);
           EXPECT_TRUE(mock_surface_of_subsurface);
           mock_surface_of_subsurface->SendFrameCallback();
-          mock_surface_of_subsurface->ClearBufferReleases();
         }
 
         mock_surface->SendFrameCallback();
-        mock_surface->ClearBufferReleases();
       });
     }
   }
@@ -2376,118 +2372,8 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   });
 }
 
-// TODO(crbug.com/367623923) Decouple this test from the older explicit sync
-// protocol and/or add coverage for the new linux-drm-syncobj protocol.
-TEST_P(WaylandBufferManagerTest, FencedRelease) {
-  if (!connection_->linux_explicit_synchronization_v1())
-    GTEST_SKIP();
-
-  constexpr uint32_t kBufferId1 = 1;
-  constexpr uint32_t kBufferId2 = 2;
-  constexpr uint32_t kBufferId3 = 3;
-
-  const gfx::AcceleratedWidget widget = window_->GetWidget();
-  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
-  window_->SetBoundsInDIP(bounds);
-
-  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(3);
-  });
-  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
-  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
-  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId3);
-  ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
-                                               false /* fail */);
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
-
-    constexpr uint32_t kNumberOfCommits = 3;
-    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
-    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
-  });
-
-  ::testing::InSequence s;
-
-  // Commit the first buffer and expect the OnSubmission immediately.
-  EXPECT_CALL(
-      mock_surface_gpu,
-      OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK,
-                   Truly([](const auto& fence) { return fence.is_null(); })))
-      .Times(1);
-  CommitBuffer(widget, kBufferId1, kBufferId1,
-               gfx::FrameData(delegate_.viz_seq()), bounds,
-               gfx::RoundedCornersF(), kDefaultScale, bounds);
-
-  // Let mojo messages from gpu to host to go through.
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
-
-  SendFrameCallbackForSurface(surface_id_);
-
-  // Commit the second buffer now.
-  CommitBuffer(widget, kBufferId2, kBufferId2,
-               gfx::FrameData(delegate_.viz_seq()), bounds,
-               gfx::RoundedCornersF(), kDefaultScale, bounds);
-
-  SendFrameCallbackForSurface(surface_id_);
-
-  EXPECT_CALL(
-      mock_surface_gpu,
-      OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK,
-                   Truly([](const auto& fence) { return !fence.is_null(); })))
-      .Times(1);
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    // Release the first buffer via fenced release. This should trigger
-    // OnSubmission for the second buffer with a non-null fence.
-    gfx::GpuFenceHandle handle;
-    const int32_t kFenceFD = dup(1);
-    handle.Adopt(base::ScopedFD(kFenceFD));
-
-    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
-    mock_surface->ReleaseBufferFenced(mock_surface->prev_attached_buffer(),
-                                      std::move(handle));
-    mock_surface->SendFrameCallback();
-  });
-
-  // Let mojo messages from gpu to host to go through.
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
-
-  // Commit the third buffer now.
-  CommitBuffer(widget, kBufferId3, kBufferId3,
-               gfx::FrameData(delegate_.viz_seq()), bounds,
-               gfx::RoundedCornersF(), kDefaultScale, bounds);
-
-  SendFrameCallbackForSurface(surface_id_);
-
-  // Release the second buffer via immediate explicit release. This should
-  // trigger OnSubmission for the second buffer with a null fence.
-  EXPECT_CALL(
-      mock_surface_gpu,
-      OnSubmission(kBufferId3, gfx::SwapResult::SWAP_ACK,
-                   Truly([](const auto& fence) { return fence.is_null(); })))
-      .Times(1);
-
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
-    mock_surface->ReleaseBufferFenced(mock_surface->prev_attached_buffer(),
-                                      gfx::GpuFenceHandle());
-    mock_surface->SendFrameCallback();
-  });
-
-  // Let mojo messages from gpu to host to go through.
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
-
-  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
-  DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
-}
+// TODO(crbug.com/367623923): add FencedRelease test coverage for the new
+// linux-drm-syncobj protocol.
 
 // Tests that destroying a channel doesn't result in resetting surface state
 // and buffers can be attached after the channel has been reinitialized.
@@ -2547,17 +2433,6 @@ TEST_P(WaylandBufferManagerTest,
 
   // Let mojo messages from host to gpu go through.
   base::RunLoop().RunUntilIdle();
-
-  // The surface must has the buffer detached and all the buffers are destroyed.
-  // Release the fence as there is no further need to hold that as the client
-  // no longer expects that. Moreover, its next attach may result in a DCHECK,
-  // as the next buffer resource can be allocated on the same memory address
-  // resulting in a DCHECK when set_linux_buffer_release is called. The reason
-  // is that wl_resource_create calls internally calls malloc, which may reuse
-  // that memory.
-  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    server->GetObject<wl::MockSurface>(id)->ClearBufferReleases();
-  });
 
   auto interface_ptr = manager_host_->BindInterface();
   buffer_manager_gpu_->Initialize(std::move(interface_ptr), {},
@@ -2680,7 +2555,6 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* root_surface = server->GetObject<wl::MockSurface>(id);
-    root_surface->ClearBufferReleases();
     root_surface->SendFrameCallback();
   });
 
@@ -3070,19 +2944,6 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerViewportTest,
                          Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithoutExplicitSync,
-    WaylandBufferManagerTest,
-    Values(wl::ServerConfig{
-        .use_explicit_synchronization =
-            wl::ShouldUseExplicitSynchronizationProtocol::kNone}));
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithExplicitSync,
-    WaylandBufferManagerTest,
-    Values(wl::ServerConfig{
-        .use_explicit_synchronization =
-            wl::ShouldUseExplicitSynchronizationProtocol::kUse}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithViewporterSurfaceScalingDisabled,

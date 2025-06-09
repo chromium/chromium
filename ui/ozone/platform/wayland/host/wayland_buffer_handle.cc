@@ -28,13 +28,11 @@ void WaylandBufferHandle::OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer) {
   static constexpr wl_buffer_listener kBufferListener = {
       .release = &OnRelease,
   };
-  if (!backing_->UseExplicitSyncRelease()) {
-    wl_buffer_add_listener(wl_buffer_.get(), &kBufferListener, this);
-  }
-
-  if (backing_->connection()->linux_drm_syncobj_manager_v1()) {
+  if (backing_->UseExplicitSyncRelease()) {
     release_timeline_ =
         WaylandSyncobjReleaseTimeline::Create(backing_->connection());
+  } else {
+    wl_buffer_add_listener(wl_buffer_.get(), &kBufferListener, this);
   }
 
   if (!created_callback_.is_null())

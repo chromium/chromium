@@ -48,9 +48,8 @@ class WaylandBufferBacking {
   uint32_t id() const { return buffer_id_; }
   gfx::Size size() const { return size_; }
 
-  // Whether linux_explicit_synchronization extension is enabled. It is an
-  // extension that completely replaces base protocol's wl_buffer.release
-  // events.
+  // If true, protocol's wl_buffer.release event is superceded by
+  // linux-drm-syncobj extension.
   bool UseExplicitSyncRelease() const;
 
   // Returns a wl_buffer wrapper that can be attached to the |requestor|.
