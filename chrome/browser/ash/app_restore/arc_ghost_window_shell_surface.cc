@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "base/check_op.h"
@@ -14,19 +13,15 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
-#include "ui/aura/env.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"
-#include "ui/wm/core/shadow_controller.h"
 
 namespace ash::full_restore {
 
@@ -134,15 +129,11 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
   std::optional<gfx::RoundedCornersF> overlay_corners_radii;
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    DCHECK_NE(window_state, chromeos::WindowStateType::kPip);
+  if (ash::WindowState::ShouldWindowStateHaveRoundedCorners(window_state)) {
+    CHECK_NE(window_state, chromeos::WindowStateType::kPip);
 
-    const int window_corner_radius =
-        ash::WindowState::ShouldWindowStateHaveRoundedCorners(window_state)
-            ? chromeos::features::RoundedWindowsRadius()
-            : 0;
-
-    gfx::RoundedCornersF window_radii(window_corner_radius);
+    const gfx::RoundedCornersF window_radii =
+        chromeos::GetWindowRoundedCorners();
     shell_surface->SetWindowCornersRadii(window_radii);
 
     // Ghost surface shadow radii must match the window radii.
@@ -151,8 +142,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     // Ghost surface is an overlay widget, so its corners must be rounded. The
     // bottom two corners of the ghost window overlay overlap with the window,
     // so we need to round them.
-    overlay_corners_radii =
-        gfx::RoundedCornersF(0, 0, window_corner_radius, window_corner_radius);
+    overlay_corners_radii = gfx::RoundedCornersF(
+        0, 0, window_radii.lower_right(), window_radii.lower_left());
   }
 
   shell_surface->controller_surface()->Commit();

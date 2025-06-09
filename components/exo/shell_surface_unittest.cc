@@ -32,8 +32,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/window_properties.h"
@@ -3241,12 +3239,6 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   constexpr gfx::Point kOrigin(20, 20);
   constexpr int kWindowCornerRadius = 12;
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kRoundedWindows,
-       chromeos::features::kFeatureManagementRoundedWindows},
-      /*disabled_features=*/{});
-
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
           .SetOrigin(kOrigin)
@@ -3288,12 +3280,6 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
 TEST_F(ShellSurfaceTest, RoundedWindows) {
   constexpr gfx::Point kOrigin(20, 20);
   constexpr int kWindowCornerRadius = 12;
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kRoundedWindows,
-       chromeos::features::kFeatureManagementRoundedWindows},
-      /*disabled_features=*/{});
 
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})

@@ -30,7 +30,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "cc/paint/display_item_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -606,9 +605,6 @@ TEST_P(ClientControlledShellSurfaceTest, Frame) {
 TEST_P(ClientControlledShellSurfaceTest,
        ShadowRoundedCornersWithPipTransition) {
   constexpr gfx::Point kOrigin(20, 20);
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kRoundedWindows);
 
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})

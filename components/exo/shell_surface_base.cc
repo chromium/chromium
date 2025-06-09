@@ -2163,9 +2163,8 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
   const ash::WindowState* window_state = ash::WindowState::Get(window);
   if (window_state && window_state->IsPip()) {
     shadow_radii = gfx::RoundedCornersF(chromeos::kPipRoundedCornerRadius);
-  } else if (chromeos::features::IsRoundedWindowsEnabled() &&
-             (shadow_corners_radii_dp_.has_value() ||
-              window_corners_radii_dp_.has_value())) {
+  } else if (shadow_corners_radii_dp_.has_value() ||
+             window_corners_radii_dp_.has_value()) {
     // For backward version compatibility, fallback to use the window radii if
     // the shadow radii is not specified.
     // TODO(crbug.com/40256581): Revisit once all the clients have migrated.
