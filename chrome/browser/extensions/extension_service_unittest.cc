@@ -5937,6 +5937,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
 // Tests that --load-extension is ignored for users opted in to Enhanced Safe
 // Browsing (ESB).
 TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
+  base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Enable ESB.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -5950,6 +5951,8 @@ TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
   task_environment()->RunUntilIdle();
   ASSERT_EQ(0u, loaded_extensions().size());
   ValidatePrefKeyCount(0);
+
+  histograms.ExpectTotalCount("Extensions.LoadingFromCommandLine", 0);
 }
 
 // Tests --load-extension works for non-ESB users.
@@ -5970,14 +5973,16 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
 
-  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
-                                false, 1);
+  histograms.ExpectUniqueSample(
+      "Extensions.LoadingFromCommandLine",
+      ExtensionService::LoadExtensionFlag::kLoadExtension, 1);
 }
 
 // Tests that --load-extension is ignored for users with policy
 // ExtensionInstallTypeBlocklist containing command_line.
 TEST_F(ExtensionServiceTest,
        WillNotLoadFromCommandLineForUsersWithPolicyFalse) {
+  base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   profile()->GetPrefs()->SetList(pref_names::kExtensionInstallTypeBlocklist,
@@ -5992,11 +5997,15 @@ TEST_F(ExtensionServiceTest,
   task_environment()->RunUntilIdle();
   ASSERT_EQ(0u, loaded_extensions().size());
   ValidatePrefKeyCount(0);
+
+  histograms.ExpectTotalCount("Extensions.LoadingFromCommandLine", 0);
 }
 
-// Tests --load-extension works for users with policy
-// ExtensionInstallTypeBlocklist not containing "command_line" (default value)
+// Tests --load-extension and --disable-extensions-except work for users with
+// policy ExtensionInstallTypeBlocklist not containing "command_line" (default
+// value)
 TEST_F(ExtensionServiceTest, LoadsFromCommandLineForUsersWithoutPolicy) {
+  base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Not setting pref as false is default value.
   // Try to load an extension from command line.
@@ -6004,11 +6013,20 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForUsersWithoutPolicy) {
       base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kLoadExtension, path);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kDisableExtensionsExcept, path);
   service()->Init();
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
+
+  histograms.ExpectBucketCount(
+      "Extensions.LoadingFromCommandLine",
+      ExtensionService::LoadExtensionFlag::kLoadExtension, 1);
+  histograms.ExpectBucketCount(
+      "Extensions.LoadingFromCommandLine",
+      ExtensionService::LoadExtensionFlag::kDisableExtensionsExcept, 1);
 }
 
 TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
@@ -6034,8 +6052,7 @@ TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
   ASSERT_EQ(0u, loaded_extensions().size());
   ValidatePrefKeyCount(0);
 
-  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
-                                true, 1);
+  histograms.ExpectTotalCount("Extensions.LoadingFromCommandLine", 0);
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for
