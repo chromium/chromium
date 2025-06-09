@@ -193,10 +193,10 @@
         AI playback
       </message>
       <message name="IDS_READALOUD_FEEDBACK_THUMB_UP" desc="Accessibility string for thumb up button (for audio overview mode only).">
-        Thumb up
+        Thumbs up button, select to submit feedback that you like this feature
       </message>
       <message name="IDS_READALOUD_FEEDBACK_THUMB_DOWN" desc="Accessibility string for thumb down button (for audio overview mode only).">
-        Thumb down
+        Thumbs down button, select to open a form to give detailed feedback about an issue with this feature
       </message>
       <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_TITLE" desc="Menu title for negative feedback.">
         What went wrong?
