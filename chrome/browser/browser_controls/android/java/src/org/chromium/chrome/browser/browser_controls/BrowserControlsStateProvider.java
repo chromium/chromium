@@ -195,4 +195,7 @@ public interface BrowserControlsStateProvider {
      */
     @ControlsPosition
     int getControlsPosition();
+
+    /** Returns whether the visibility is controlled by the browser. */
+    boolean isVisibilityForced();
 }
