@@ -26,6 +26,8 @@
 
 namespace blink {
 
+class SVGPoint;
+
 class SVGAnimateMotionElement final : public SVGAnimationElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -34,6 +36,8 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   ~SVGAnimateMotionElement() override;
 
   void ChildMPathChanged();
+
+  void Trace(Visitor*) const override;
 
  private:
   bool HasValidAnimation() const override;
@@ -44,18 +48,21 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   SMILAnimationValue CreateAnimationValue() const override;
   void ClearAnimationValue() override;
-  bool CalculateToAtEndOfDurationValue(
-      const String& to_at_end_of_duration_string) override;
+  void UpdateKeyframeValues(const Keyframe& keyframe,
+                            SVGPropertyBase& from,
+                            SVGPropertyBase& to) override;
   void CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
   void CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
+  void CalculateValues(const Vector<String>& values,
+                       HeapVector<Member<SVGPropertyBase>>&) override;
   void CalculateAnimationValue(SMILAnimationValue&,
                                float percentage,
                                unsigned repeat_count) const override;
   void ApplyResultsToTarget(const SMILAnimationValue&) override;
-  float CalculateDistance(const String& from_string,
-                          const String& to_string) override;
+  float CalculateDistance(const SVGPropertyBase& from,
+                          const SVGPropertyBase& to) override;
 
   enum RotateMode { kRotateAngle, kRotateAuto, kRotateAutoReverse };
   RotateMode GetRotateMode() const;
@@ -65,9 +72,9 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   // Note: we do not support percentage values for to/from coords as the spec
   // implies we should (opera doesn't either)
-  gfx::PointF from_point_;
-  gfx::PointF to_point_;
-  gfx::PointF to_point_at_end_of_duration_;
+  Member<SVGPoint> from_point_;
+  Member<SVGPoint> to_point_;
+  Member<SVGPoint> to_point_at_end_of_duration_;
 
   Path path_;
   Path animation_path_;

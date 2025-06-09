@@ -641,12 +641,18 @@ AnimationMode SVGAnimateElement::CalculateAnimationMode() {
   return animation_mode;
 }
 
-bool SVGAnimateElement::CalculateToAtEndOfDurationValue(
-    const String& to_at_end_of_duration_string) {
-  if (to_at_end_of_duration_string.empty())
-    return false;
-  to_at_end_of_duration_property_ = ParseValue(to_at_end_of_duration_string);
-  return true;
+void SVGAnimateElement::UpdateKeyframeValues(const Keyframe& keyframe,
+                                             SVGPropertyBase& from,
+                                             SVGPropertyBase& to) {
+  DCHECK(targetElement());
+  from_property_ = &from;
+  from_property_value_type_ = values_is_inherit_[keyframe.from_index]
+                                  ? kInheritValue
+                                  : kRegularPropertyValue;
+  to_property_ = &to;
+  to_property_value_type_ = values_is_inherit_[keyframe.to_index]
+                                ? kInheritValue
+                                : kRegularPropertyValue;
 }
 
 void SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
@@ -675,6 +681,20 @@ void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   to_property_value_type_ =
       PropertyValueType(IsAnimatingCSSProperty(), by_string);
   to_property_->Add(from_property_, targetElement());
+}
+
+void SVGAnimateElement::CalculateValues(
+    const Vector<String>& values,
+    HeapVector<Member<SVGPropertyBase>>& out_values) {
+  values_is_inherit_.clear();
+  for (const auto& value : values) {
+    out_values.push_back(ParseValue(value));
+    values_is_inherit_.push_back(
+        PropertyValueType(IsAnimatingCSSProperty(), value) == kInheritValue);
+  }
+  if (!out_values.empty()) {
+    to_at_end_of_duration_property_ = out_values.back();
+  }
 }
 
 SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAnimation() const {
@@ -769,18 +789,17 @@ bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() const {
   }
 }
 
-float SVGAnimateElement::CalculateDistance(const String& from_string,
-                                           const String& to_string) {
+float SVGAnimateElement::CalculateDistance(const SVGPropertyBase& from,
+                                           const SVGPropertyBase& to) {
   DCHECK(targetElement());
   // FIXME: A return value of float is not enough to support paced animations on
   // lists.
-  SVGPropertyBase* from_value = ParseValue(from_string);
-  SVGPropertyBase* to_value = ParseValue(to_string);
-  return from_value->CalculateDistance(to_value, targetElement());
+  return from.CalculateDistance(&to, targetElement());
 }
 
 void SVGAnimateElement::WillChangeAnimatedType() {
   UnregisterAnimation(attribute_name_);
+  InvalidateValues();
   from_property_.Clear();
   to_property_.Clear();
   to_at_end_of_duration_property_.Clear();

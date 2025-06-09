@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
+#include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/core/svg/svg_polygon_element.h"
 #include "third_party/blink/renderer/core/svg/svg_polyline_element.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
@@ -143,32 +144,34 @@ void SVGAnimateMotionElement::UpdateAnimationPath() {
 }
 
 template <typename CharType>
-static bool ParsePointInternal(const CharType* ptr,
-                               const CharType* end,
-                               gfx::PointF& point) {
+static std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
+                                                     const CharType* end) {
   if (!SkipOptionalSVGSpaces(ptr, end))
-    return false;
+    return std::nullopt;
 
   float x = 0;
   if (!ParseNumber(ptr, end, x))
-    return false;
+    return std::nullopt;
 
   float y = 0;
   if (!ParseNumber(ptr, end, y))
-    return false;
-
-  point = gfx::PointF(x, y);
+    return std::nullopt;
 
   // disallow anything except spaces at the end
-  return !SkipOptionalSVGSpaces(ptr, end);
+  if (SkipOptionalSVGSpaces(ptr, end)) {
+    return std::nullopt;
+  }
+  return gfx::PointF(x, y);
 }
 
-static bool ParsePoint(const String& string, gfx::PointF& point) {
-  if (string.empty())
-    return false;
-  return WTF::VisitCharacters(string, [&](auto chars) {
-    return ParsePointInternal(chars.data(), chars.data() + chars.size(), point);
-  });
+static SVGPoint* ParsePoint(const String& string) {
+  std::optional<gfx::PointF> point;
+  if (!string.empty()) {
+    point = WTF::VisitCharacters(string, [&](auto chars) {
+      return ParsePointInternal(chars.data(), chars.data() + chars.size());
+    });
+  }
+  return MakeGarbageCollected<SVGPoint>(point.value_or(gfx::PointF{}));
 }
 
 SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue() const {
@@ -183,19 +186,19 @@ void SVGAnimateMotionElement::ClearAnimationValue() {
   target_element->ClearAnimatedMotionTransform();
 }
 
-bool SVGAnimateMotionElement::CalculateToAtEndOfDurationValue(
-    const String& to_at_end_of_duration_string) {
-  ParsePoint(to_at_end_of_duration_string, to_point_at_end_of_duration_);
-  return true;
+void SVGAnimateMotionElement::UpdateKeyframeValues(const Keyframe&,
+                                                   SVGPropertyBase& from,
+                                                   SVGPropertyBase& to) {
+  DCHECK(targetElement());
+  from_point_ = To<SVGPoint>(from);
+  to_point_ = To<SVGPoint>(to);
 }
 
 void SVGAnimateMotionElement::CalculateFromAndToValues(
     const String& from_string,
     const String& to_string) {
-  ParsePoint(from_string, from_point_);
-  ParsePoint(to_string, to_point_);
-  // TODO(fs): Looks like this would clobber the at-end-of-duration
-  // value for a cumulative 'values' animation.
+  from_point_ = ParsePoint(from_string);
+  to_point_ = ParsePoint(to_string);
   to_point_at_end_of_duration_ = to_point_;
 }
 
@@ -206,8 +209,20 @@ void SVGAnimateMotionElement::CalculateFromAndByValues(
   // Apply 'from' to 'to' to get 'by' semantics. If the animation mode
   // is 'by', |from_string| will be the empty string and yield a point
   // of (0,0).
-  to_point_ += from_point_.OffsetFromOrigin();
+  to_point_->SetValue(to_point_->Value() +
+                      from_point_->Value().OffsetFromOrigin());
   to_point_at_end_of_duration_ = to_point_;
+}
+
+void SVGAnimateMotionElement::CalculateValues(
+    const Vector<String>& values,
+    HeapVector<Member<SVGPropertyBase>>& out_values) {
+  for (const auto& value : values) {
+    out_values.push_back(ParsePoint(value));
+  }
+  if (!out_values.empty()) {
+    to_point_at_end_of_duration_ = &To<SVGPoint>(*out_values.back());
+  }
 }
 
 void SVGAnimateMotionElement::CalculateAnimationValue(
@@ -218,15 +233,19 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   PointAndTangent position;
   if (GetAnimationMode() != kPathAnimation) {
+    const gfx::PointF& from_point = from_point_->Value();
+    const gfx::PointF& to_point = to_point_->Value();
+    const gfx::PointF& to_point_at_end_of_duration =
+        to_point_at_end_of_duration_->Value();
     position.point =
         gfx::PointF(ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                          from_point_.x(), to_point_.x(),
-                                          to_point_at_end_of_duration_.x()),
+                                          from_point.x(), to_point.x(),
+                                          to_point_at_end_of_duration.x()),
                     ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                          from_point_.y(), to_point_.y(),
-                                          to_point_at_end_of_duration_.y()));
+                                          from_point.y(), to_point.y(),
+                                          to_point_at_end_of_duration.y()));
     position.tangent_in_degrees =
-        Rad2deg((to_point_ - from_point_).SlopeAngleRadians());
+        Rad2deg((to_point - from_point).SlopeAngleRadians());
   } else {
     DCHECK(!animation_path_.IsEmpty());
 
@@ -277,15 +296,9 @@ void SVGAnimateMotionElement::ApplyResultsToTarget(
   target_element->SetAnimatedMotionTransform(animation_value.motion_transform);
 }
 
-float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
-                                                 const String& to_string) {
-  gfx::PointF from;
-  gfx::PointF to;
-  if (!ParsePoint(from_string, from))
-    return -1;
-  if (!ParsePoint(to_string, to))
-    return -1;
-  return (to - from).Length();
+float SVGAnimateMotionElement::CalculateDistance(const SVGPropertyBase& from,
+                                                 const SVGPropertyBase& to) {
+  return (To<SVGPoint>(to).Value() - To<SVGPoint>(from).Value()).Length();
 }
 
 AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
@@ -295,6 +308,13 @@ AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
     return kPathAnimation;
   }
   return SVGAnimationElement::CalculateAnimationMode();
+}
+
+void SVGAnimateMotionElement::Trace(Visitor* visitor) const {
+  visitor->Trace(from_point_);
+  visitor->Trace(to_point_);
+  visitor->Trace(to_point_at_end_of_duration_);
+  SVGAnimationElement::Trace(visitor);
 }
 
 }  // namespace blink
