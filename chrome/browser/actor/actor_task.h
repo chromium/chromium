@@ -38,6 +38,14 @@ class ActorTask {
   // Sets State to kFinished and cancels any pending actions.
   void Stop();
 
+  // Pause() is called to indicate that the user is pausing server-driven
+  // actuation. This will cancel any ongoing actuation.
+  void Pause();
+
+  // Resume() indicates the user wants server-driven actuation to resume. The
+  // caller is responsible for sending new state to the server (e.g. APC).
+  void Resume();
+
   bool IsPaused() const;
 
   ActorCoordinator* GetActorCoordinator() const;

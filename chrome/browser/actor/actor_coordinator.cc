@@ -87,22 +87,18 @@ ActorCoordinator::~ActorCoordinator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void ActorCoordinator::SetOwner(ActorTask* task) {
+  task_ = task;
+}
+
 // static
 void ActorCoordinator::RegisterWithProfile(Profile* profile) {
   InitActionBlocklist(profile);
 }
 
-void ActorCoordinator::PauseTask() {
+void ActorCoordinator::CancelOngoingActions(mojom::ActionResultCode reason) {
   if (actions_) {
-    CompleteActions(
-        MakeResult(mojom::ActionResultCode::kTaskPaused, "Task was paused"));
-  }
-}
-
-void ActorCoordinator::StopTask() {
-  if (actions_) {
-    CompleteActions(
-        MakeResult(mojom::ActionResultCode::kTaskWentAway, "Task was stopped"));
+    CompleteActions(MakeResult(reason));
   }
 }
 
@@ -122,8 +118,16 @@ void ActorCoordinator::Act(const BrowserAction& action,
                            ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   TaskId task_id(action.task_id());
+
+  if (task_->IsPaused()) {
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+                  "Unable to perform action: task is paused");
+    PostTaskForActCallback(std::move(callback),
+                           MakeResult(mojom::ActionResultCode::kTaskPaused));
+    return;
+  }
+
   if (tab_scoped_actions_deprecated_ && !tab_) {
     journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
                   "Unable to perform action: tab has been destroyed");

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -122,9 +123,11 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
     fake_chrome_render_frame.OverrideBinder(main_rfh());
 
     base::test::TestFuture<mojom::ActionResultPtr> success;
-    ActorCoordinator coordinator(profile(), GetTab());
+    auto actor_coordinator =
+        std::make_unique<ActorCoordinator>(profile(), GetTab());
+    ActorTask task(std::move(actor_coordinator));
     BrowserAction action = std::move(make_action).Run();
-    coordinator.Act(action, success.GetCallback());
+    task.GetActorCoordinator()->Act(action, success.GetCallback());
     return IsOk(*success.Get());
   }
 
@@ -174,13 +177,15 @@ TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  ActorCoordinator coordinator(profile(), GetTab());
+  auto actor_coordinator =
+      std::make_unique<ActorCoordinator>(profile(), GetTab());
+  ActorTask task(std::move(actor_coordinator));
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  coordinator.Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                  result.GetCallback());
+  task.GetActorCoordinator()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                                  result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -198,9 +203,11 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  ActorCoordinator coordinator(profile(), GetTab());
-  coordinator.Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                  result.GetCallback());
+  auto actor_coordinator =
+      std::make_unique<ActorCoordinator>(profile(), GetTab());
+  ActorTask task(std::move(actor_coordinator));
+  task.GetActorCoordinator()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                                  result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

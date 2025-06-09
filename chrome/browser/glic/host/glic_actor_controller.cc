@@ -48,13 +48,6 @@ void PostTaskForActCallback(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-void PostTaskForActionResultCallback(
-    actor::ActorCoordinator::ActionResultCallback callback,
-    actor::mojom::ActionResultPtr result) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-}
-
 void OnGetContextFromFocusedTab(
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     base::WeakPtr<actor::ActorCoordinator> actor_coordinator,
@@ -82,12 +75,6 @@ void OnGetContextFromFocusedTab(
   std::move(callback).Run(std::move(result));
 }
 
-void MaybeWarnMultiTaskNotImplemented(actor::TaskId task_id) {
-  if (task_id) {
-    NOTIMPLEMENTED() << "Multi-task not implemented.";
-  }
-}
-
 }  // namespace
 
 GlicActorController::GlicActorController(Profile* profile) : profile_(profile) {
@@ -111,7 +98,7 @@ void GlicActorController::Act(
     return;
   }
 
-  // Create a new task if it one doesn't exist already.
+  // Create a new task if one doesn't exist already.
   if (!actor_task_ ||
       actor_task_->GetState() == actor::ActorTask::State::kFinished) {
     starting_task_ = true;
@@ -166,54 +153,41 @@ void GlicActorController::OnTaskStartedForAct(
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
 // to stop a task.
 void GlicActorController::StopTask(actor::TaskId task_id) {
-  MaybeWarnMultiTaskNotImplemented(task_id);
   if (!GetActorCoordinator() ||
       actor_task_->GetState() == actor::ActorTask::State::kFinished) {
     return;
   }
-  GetActorCoordinator()->StopTask();
-  actor_task_->SetState(actor::ActorTask::State::kFinished);
+  actor_task_->Stop();
 }
 
 void GlicActorController::PauseTask(actor::TaskId task_id) {
-  MaybeWarnMultiTaskNotImplemented(task_id);
-  if (!GetActorCoordinator() ||
-      actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+  if (!actor_task_) {
     return;
   }
-  GetActorCoordinator()->PauseTask();
-  actor_task_->SetState(actor::ActorTask::State::kPausedByClient);
+  actor_task_->Pause();
 }
 
 void GlicActorController::ResumeTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  MaybeWarnMultiTaskNotImplemented(task_id);
-  if (!GetActorCoordinator() ||
-      actor_task_->GetState() == actor::ActorTask::State::kFinished) {
+  if (!actor_task_ ||
+      actor_task_->GetState() != actor::ActorTask::State::kPausedByClient) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("task does not exist")));
+        std::string("task does not exist or was not paused")));
     return;
   }
-
-  if (!actor_task_->IsPaused()) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("task is not paused")));
-    return;
-  }
-
+  actor_task_->Resume();
   tabs::TabInterface* tab_of_resumed_task =
       GetActorCoordinator()->GetTabOfCurrentTask();
   if (!tab_of_resumed_task) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+    std::move(callback).Run(glic::mojom::GetContextResult::NewErrorReason(
         std::string("tab does not exist")));
     return;
   }
 
-  actor_task_->SetState(actor::ActorTask::State::kReflecting);
-  FetchPageContext(tab_of_resumed_task, context_options,
-                   /*include_actionable_data=*/true, std::move(callback));
+  glic::FetchPageContext(tab_of_resumed_task, context_options,
+                         /*include_actionable_data=*/true, std::move(callback));
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(
@@ -242,15 +216,6 @@ void GlicActorController::ActImpl(
   actor::ActorCoordinator::ActionResultCallback action_callback =
       base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(), tab,
                      options, std::move(callback));
-
-  if (actor_task_->IsPaused()) {
-    VLOG(1) << "Unable to perform action: task is paused";
-    PostTaskForActionResultCallback(
-        std::move(action_callback),
-        actor::MakeResult(actor::mojom::ActionResultCode::kError,
-                          "Task is paused"));
-    return;
-  }
 
   GetActorCoordinator()->Act(action, std::move(action_callback));
 }

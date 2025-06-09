@@ -43,6 +43,8 @@ class Origin;
 
 namespace actor {
 
+class ActorTask;
+
 // Coordinates the execution of a multi-step task.
 // This class is misnamed. It's a specific type of execution engine.
 class ActorCoordinator {
@@ -59,13 +61,14 @@ class ActorCoordinator {
   ActorCoordinator& operator=(const ActorCoordinator&) = delete;
   ~ActorCoordinator();
 
+  // This cannot be in the constructor as we first construct the
+  // ActorCoordinator, then the ActorTask.
+  void SetOwner(ActorTask* task);
+
   static void RegisterWithProfile(Profile* profile);
 
-  // Pauses the current task, if it's active. Callbacks for in-progress actions
-  // are invoked.
-  void PauseTask();
-  // Stop and pause are identical, they just emit different error codes.
-  void StopTask();
+  // Cancels any in-progress actions with the reason: "kTaskPaused".
+  void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Returns the tab associated with the current task if it exists.
   tabs::TabInterface* GetTabOfCurrentTask() const;
@@ -131,6 +134,9 @@ class ActorCoordinator {
   // which is not true. This should eventually be removed.
   bool tab_scoped_actions_deprecated_ = false;
   base::WeakPtr<tabs::TabInterface> tab_;
+
+  // Owns `this`.
+  raw_ptr<ActorTask> task_;
 
   ToolController tool_controller_;
 

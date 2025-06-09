@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/profiles/profile.h"
@@ -140,8 +141,9 @@ class ActorToolsTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
-    actor_coordinator_ = std::make_unique<ActorCoordinator>(
+    auto actor_coordinator = std::make_unique<ActorCoordinator>(
         browser()->profile(), browser()->GetActiveTabInterface());
+    actor_task_ = std::make_unique<ActorTask>(std::move(actor_coordinator));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -152,7 +154,7 @@ class ActorToolsTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     // The coordinator has a pointer to the profile, which must be released
     // before the browser is torn down to avoid a dangling pointer.
-    actor_coordinator_.reset();
+    actor_task_.reset();
   }
 
   void GoBack() {
@@ -176,7 +178,9 @@ class ActorToolsTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  ActorCoordinator& actor_coordinator() { return *actor_coordinator_; }
+  ActorCoordinator& actor_coordinator() {
+    return *actor_task_->GetActorCoordinator();
+  }
 
   std::string GetSelectElementCurrentValue(std::string_view query_selector) {
     return EvalJs(web_contents(),
@@ -186,7 +190,7 @@ class ActorToolsTest : public InProcessBrowserTest {
 
  private:
   ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ActorCoordinator> actor_coordinator_;
+  std::unique_ptr<ActorTask> actor_task_;
 };
 
 // ===============================================
