@@ -569,19 +569,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
-- (NSString*)usernameAtRow:(NSInteger)row {
-  FormSuggestion* suggestion = [self.suggestions objectAtIndex:row];
-
-  // Removing suffix ' ••••••••' appended to the username in the suggestion.
-  NSString* username = suggestion.value;
-  if ([username containsString:kPasswordFormSuggestionSuffix]) {
-    username = [username
-        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
-                                  withString:@""];
-  }
-  return username;
-}
-
 - (void)loadFaviconWithBlockHandler:
     (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock {
   if (!_faviconLoader) {

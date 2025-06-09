@@ -225,6 +225,10 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
       metadata.likely_from_real_password_field = isPasswordField;
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kIOSFillRecoveryPassword)) {
+        // TODO(crbug.com/422206607): Set `metadata.is_recovery_password` here.
+      }
       [results
           addObject:
               [FormSuggestion

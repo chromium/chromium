@@ -17,9 +17,6 @@
 // disabled.
 - (void)disableBottomSheet;
 
-// Returns the username at a given row with the appended suffix removed.
-- (NSString*)usernameAtRow:(NSInteger)row;
-
 // Loads the favicon for cell. Defaults to the globe symbol if the URL is empty.
 - (void)loadFaviconWithBlockHandler:
     (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock;

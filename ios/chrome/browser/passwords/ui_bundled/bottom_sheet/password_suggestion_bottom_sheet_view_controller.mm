@@ -38,6 +38,23 @@ CGFloat const kSpacingBeforeTitle = 16;
 // Spacing use for the spacing after the logo title in the bottom sheet.
 CGFloat const kSpacingAfterTitle = 4;
 
+// Returns the username to display for the given `suggestion`.
+NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
+  NSString* username = suggestion.value;
+
+  // If present, remove the ' ••••••••' suffix appended to the username in the
+  // suggestion.
+  if ([username containsString:kPasswordFormSuggestionSuffix]) {
+    username = [username
+        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
+                                  withString:@""];
+  }
+
+  return ([username length] == 0)
+             ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
+             : username;
+}
+
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetViewController () <
@@ -311,29 +328,27 @@ CGFloat const kSpacingAfterTitle = 4;
   return titleView;
 }
 
-// Returns the string to display at a given row in the table view.
-- (NSString*)suggestionAtRow:(NSInteger)row {
-  NSString* username = [self.delegate usernameAtRow:row];
-  return ([username length] == 0)
-             ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
-             : username;
-}
-
 // Loads the favicon associated with the provided cell.
 // Defaults to the globe symbol if no URL is associated with the cell.
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-                       forCell:(UITableViewCell*)cell {
+// In case of a recovery password suggestion, the favicon is replaced by a
+// symbol.
+- (void)loadFaviconForCell:(UITableViewCell*)cell
+    associatedWithSuggestion:(FormSuggestion*)suggestion {
   DCHECK(cell);
-
   TableViewURLCell* URLCell =
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-    DCHECK(attributes);
-    // It doesn't matter which cell the user sees here, all the credentials
-    // listed are for the same page and thus share the same favicon.
-    [URLCell.faviconView configureWithAttributes:attributes];
-  };
-  [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
+
+  if (suggestion.metadata.is_recovery_password) {
+    // TODO(crbug.com/417943553): Replace favicon with kHistorySymbol.
+  } else {
+    auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+      DCHECK(attributes);
+      // It doesn't matter which cell the user sees here, all the credentials
+      // listed are for the same page and thus share the same favicon.
+      [URLCell.faviconView configureWithAttributes:attributes];
+    };
+    [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
+  }
 }
 
 // Creates the UI action used to open the password manager.
@@ -394,31 +409,34 @@ CGFloat const kSpacingAfterTitle = 4;
 - (TableViewURLCell*)layoutCell:(TableViewURLCell*)cell
               forTableViewWidth:(CGFloat)tableViewWidth
                     atIndexPath:(NSIndexPath*)indexPath {
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  CHECK(_suggestions.count);
+  FormSuggestion* formSuggestion = [_suggestions objectAtIndex:indexPath.row];
 
   // Note that both the credentials and URLs will use middle truncation, as it
   // generally makes it easier to differentiate between different ones, without
   // having to resort to displaying multiple lines to show the full username
   // and URL.
-  cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
+  cell.titleLabel.text = GetSuggestionDisplayUsername(formSuggestion);
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.titleLabel.numberOfLines = 1;
   cell.URLLabel.text = _domain;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.numberOfLines = 1;
   cell.URLLabel.hidden = NO;
+  // TODO(crbug.com/417943553): Set `cell.thirdRowLabel`.
   cell.accessibilityLabel = [self cellAccessibilityLabel:cell];
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   [cell setFaviconContainerBackgroundColor:
             [UIColor colorNamed:kPrimaryBackgroundColor]];
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
-  [self loadFaviconAtIndexPath:indexPath forCell:cell];
+  [self loadFaviconForCell:cell associatedWithSuggestion:formSuggestion];
   return cell;
 }
 
