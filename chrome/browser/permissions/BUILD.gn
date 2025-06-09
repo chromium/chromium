@@ -302,6 +302,7 @@ if (!is_android && !is_chromeos_device) {
       ":permissions",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/permissions/system",
+      "//chrome/browser/ui/extensions:test_support",
       "//chrome/test:test_support",
       "//components/content_settings/browser",
       "//components/embedder_support",

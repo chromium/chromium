@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("extension_enable_flow_delegate") {
@@ -45,6 +46,7 @@ source_set("extensions") {
       "extension_side_panel_utils.h",
       "extensions_container.h",
       "extensions_dialogs.h",
+      "extensions_overrides/simple_overrides.h",
       "hosted_app_browser_controller.h",
       "icon_with_badge_image_source.h",
       "installation_error_infobar_delegate.h",
@@ -52,6 +54,7 @@ source_set("extensions") {
       "settings_api_bubble_helpers.h",
       "settings_overridden_dialog_controller.h",
       "settings_overridden_params_providers.h",
+      "web_file_handlers/multiclient_util.h",
     ]
 
     public_deps += [
@@ -127,6 +130,7 @@ source_set("impl") {
       "mv2_disabled_dialog_controller.cc",
       "settings_api_bubble_helpers.cc",
       "settings_overridden_params_providers.cc",
+      "web_file_handlers/multiclient_util.cc",
     ]
 
     deps += [
@@ -144,5 +148,149 @@ source_set("impl") {
       "//components/security_state/content",
       "//components/signin/public/base:signin_switches",
     ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  public_deps = []
+
+  if (toolkit_views) {
+    sources += [ "extension_action_test_helper.h" ]
+
+    public_deps += [
+      ":extensions",
+      "//extensions/common",
+      "//ui/gfx",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "controlled_home_bubble_delegate_unittest.cc",
+      "extension_installed_bubble_model_unittest.cc",
+      "extension_installed_waiter_unittest.cc",
+      "extension_settings_overridden_dialog_unittest.cc",
+      "extensions_overrides/simple_overrides_unittest.cc",
+      "settings_api_bubble_helpers_unittest.cc",
+      "settings_overridden_params_providers_unittest.cc",
+    ]
+    deps += [
+      ":extensions",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/search_engines",
+      "//chrome/common",
+      "//chrome/common/extensions",
+      "//chrome/test:test_support",
+      "//components/crx_file",
+      "//components/proxy_config",
+      "//components/search_engines",
+      "//components/signin/public/base",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "extension_action_view_controller_browsertest.cc",
+      "extension_enable_flow_browsertest.cc",
+      "extension_enable_flow_test_delegate.cc",
+      "extension_enable_flow_test_delegate.h",
+      "extension_image_util_browsertest.cc",
+      "hosted_app_browsertest.cc",
+      "notifications_custom_bindings_browsertest.cc",
+      "settings_overridden_params_providers_browsertest.cc",
+    ]
+
+    public_deps = [ ":extension_enable_flow_delegate" ]
+
+    deps += [
+      ":extensions",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:features",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+      "//chrome/common",
+      "//chrome/common:chrome_features",
+      "//chrome/common:non_code_constants",
+      "//chrome/common/extensions",
+      "//chrome/common/extensions/api",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/search_engines",
+      "//components/search_engines:test_support",
+      "//components/sessions",
+      "//components/webapps/browser",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//extensions/common:common_constants",
+      "//extensions/common:extension_features",
+      "//extensions/common:mojom_shared",
+      "//extensions/common:mojom_shared_cpp_sources",
+      "//net",
+      "//net:test_support",
+      "//pdf:buildflags",
+      "//pdf:features",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//third_party/blink/public/common:headers",
+      "//ui/base",
+      "//ui/base:buildflags",
+      "//ui/base:features",
+      "//ui/color:color_headers",
+      "//ui/gfx",
+      "//ui/native_theme",
+    ]
+
+    if (is_linux) {
+      deps += [ "//ui/linux:linux_ui" ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "application_launch_browsertest.cc" ]
+    }
   }
 }

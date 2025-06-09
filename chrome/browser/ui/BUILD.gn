@@ -5332,7 +5332,6 @@ static_library("ui") {
     ]
 
     sources += [
-      "extensions/web_file_handlers/multiclient_util.cc",
       "views/chrome_javascript_app_modal_view_factory_views.cc",
       "views/extensions/browser_action_drag_data.cc",
       "views/extensions/browser_action_drag_data.h",
@@ -5858,13 +5857,12 @@ static_library("test_support") {
 
   if (toolkit_views) {
     deps += [
-      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/extensions:test_support",
       "//components/constrained_window:constrained_window",
       "//components/webauthn/content/browser",
       "//ui/views:test_support",
     ]
     sources += [
-      "extensions/extension_action_test_helper.h",
       "views/extensions/extensions_menu_test_util.cc",
       "views/extensions/extensions_menu_test_util.h",
       "views/find_bar_host_unittest_util_views.cc",
