@@ -96,6 +96,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2182457891543959921">Perguntar antes de permitir que os sites criem um mapa 3D do ambiente à sua volta ou monitorizem a posição da câmara (recomendado)</translation>
 <translation id="2185965788978862351">Esta ação elimina <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps no seu ecrã principal.</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Ontem}other{Há <ph name="NUM_DAYS_MANY" /> dias}}</translation>
 <translation id="2215727959747642672">Edição de ficheiros</translation>
 <translation id="2218389616572918761">Os sites podem pedir acesso ao seu microfone</translation>
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6530703012083415527">Quando esta opção está ativada, os sites podem usar pop-ups e redirecionamentos. Quando esta opção está desativada, os sites não podem usar pop-ups e redirecionamentos.</translation>
 <translation id="6540488083026747005">Permitiu cookies de terceiros neste site</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Há <ph name="NUM_WEEKS_ONE" /> semana}other{Há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}}</translation>
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>
@@ -521,6 +523,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7554752735887601236">Um site está a utilizar o seu microfone.</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">Normalmente, os sites utilizam a sua câmara de vídeo para funcionalidades de comunicação como chat de vídeo.</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Há <ph name="NUM_MONTHS_ONE" /> mês}other{Há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="757524316907819857">Impedir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="7594634374516752650">Ligado a um dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Pode eliminar parte ou todo o seu histórico, cookies, dados de sites e muito mais</translation>
@@ -542,6 +545,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7881140103901777395">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque este depende deles para oferecer serviços básicos.\n\nAceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
+<translation id="7891547341794213004">Ocultar cartão Continuar com este separador</translation>
 <translation id="789180354981963912">Bloqueie cookies de terceiros na Navegação anónima:</translation>
 <translation id="789722939441020330">Não permitir que os sites transfiram automaticamente vários ficheiros</translation>
 <translation id="7940722705963108451">Lembrar-me</translation>

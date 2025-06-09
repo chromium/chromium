@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">เมนูเสียง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
+<translation id="1357114957607379632">กำลังสร้างการเล่นสำหรับ AI...</translation>
 <translation id="1370273601702151510">ชอบ</translation>
 <translation id="1483137792530497944">แม่น้ำ</translation>
 <translation id="1586836055630070874">สบายๆ</translation>
+<translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1666704368140506043">เนื้อหาที่ทำให้เกิดความไม่พอใจ</translation>
 <translation id="1741047078107369903">อบอุ่น</translation>
 <translation id="1807863182207623884">ทับทิม</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">ขออภัย ไม่สามารถเล่นเสียงสำหรับหน้านี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3457812538570616687">ไม่ชอบ</translation>
 <translation id="3493899379487634969">เกิดข้อผิดพลาดอะไรขึ้น</translation>
+<translation id="3730775656877876887">กำลังสร้างการเล่นสำหรับ AI</translation>
 <translation id="3778044272390020426">เมนูตัวเลือกความคิดเห็นเชิงลบ</translation>
 <translation id="3807208219231826020">สครับการเล่น</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">สดใส</translation>
 <translation id="5234971936051226002">โปรแกรมเล่น "ฟังหน้านี้" ที่ย่อขนาดอยู่</translation>
 <translation id="5251803541071282808">ระบบคลาวด์</translation>
-<translation id="5526614127710223793">ตัวเลือกโหมดการเล่น</translation>
+<translation id="5528503854289436485">การเล่นสำหรับ AI</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="565342223183747919">แตะเพื่อเปลี่ยนโหมดการเล่น</translation>
 <translation id="5694491020339060116">เมนูความเร็วในการเล่น</translation>
 <translation id="5965409657393819302">ปัญหาทางเทคนิค</translation>
 <translation id="6218961554829577610">ไม่ชอบเสียง</translation>
 <translation id="6315170314923504164">เสียง</translation>
-<translation id="6330455646577575965">การเล่นเสียง AI</translation>
 <translation id="6343633247422081848">มอส</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">ระบบจะอัปโหลด URL ของคุณพร้อมกับความคิดเห็นเพื่อปรับปรุงคุณภาพและการวิจัย</translation>
 <translation id="8481839122437406573">สงบ</translation>
 <translation id="8756370108715456837">ไม่ถูกต้องตามข้อเท็จจริง</translation>
-<translation id="881960277396325853">กำลังสร้างเสียงโดย AI...</translation>
 <translation id="8953618380150219653">โปรแกรมเล่น "ฟังหน้านี้" ที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="978117257931832348">ระดับเสียงต่ำ</translation>
 </translationbundle>

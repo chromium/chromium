@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">&amp;ChromiumOS'i güncellemek için yeniden başlat</translation>
 <translation id="1040916596585577953">Chromium bu uzantıyı incelemenizi öneriyor.</translation>
 <translation id="1042552502243217427">Bir site kendi sayfasındaki bağlantıları gizli olarak önceden yüklemek istediğinde Chromium, Google sunucularını kullanır. Bu şekilde kimliğiniz önceden yüklenmiş siteden gizlenmiş olur, ancak Google hangi sitelerin önceden yüklendiğini öğrenir.</translation>
+<translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="1083934481477628225">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
 <translation id="1104942323762546749">Chromium, şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">İndirilen dosya doğrulanamadı.</translation>
 <translation id="2137162749895930932">Çeviri ekranını kapat</translation>
 <translation id="215352261310130060">Sitede güvenli bağlantı kullanılmadığı ve dosya üzerinde oynanmış olabileceği için Chromium bu indirme işlemini engelledi</translation>
-<translation id="2157600032285353789">Yer işaretlerini, okuma modunu ve daha fazlasını Chromium menüsünden açabilirsiniz</translation>
 <translation id="2174178932569897599">Chromium'u özelleştir</translation>
 <translation id="2174917724755363426">Yükleme işlemi tamamlanmadı. İptal etmek istediğinizden emin misiniz?</translation>
 <translation id="2185166961232948079">Chromium - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
@@ -355,7 +355,6 @@
 <translation id="5987687638152509985">Senkronizasyonu başlatmak için Chromium'u güncelleyin</translation>
 <translation id="5988505247484123880">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da da saklayabilir.</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>
-<translation id="6019451407441383358">Yer işaretlerini, okuma modunu ve daha fazlasını sağ üstteki Chromium menüsünden açabilirsiniz</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6058380562449900225">Verilerinizin korunması için Chromium'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin. Bu işlem, bildirimleri durdurmaz.</translation>
 <translation id="6063093106622310249">&amp;Chromium'da aç</translation>

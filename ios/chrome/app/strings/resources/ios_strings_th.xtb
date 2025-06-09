@@ -1446,6 +1446,7 @@
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
+<translation id="6857446173140146664">ลบพื้นหลัง</translation>
 <translation id="6858718102216837409">เพิ่มภาษา…</translation>
 <translation id="6858855187367714033">สแกนแล้ว</translation>
 <translation id="6859944681507688231">หากต้องการสแกนคิวอาร์โค้ดหรือบัตรเครดิต ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
@@ -2055,7 +2056,7 @@
 <translation id="932305336591073205">{count,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="932327136139879170">หน้าแรก</translation>
 <translation id="939472100615258482">เว็บไซต์ปัจจุบัน</translation>
-<translation id="939598580284253335">ป้อนข้อความรหัสผ่าน</translation>
+<translation id="939598580284253335">ป้อนรหัสผ่าน</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>

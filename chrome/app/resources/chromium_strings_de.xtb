@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Neu starten, um &amp;Chromium OS zu aktualisieren</translation>
 <translation id="1040916596585577953">Chromium empfiehlt, diese Erweiterung zu überprüfen</translation>
 <translation id="1042552502243217427">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chromium dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
+<translation id="1051793555070215510">Hilf uns, den Inkognitomodus zu verbessern, indem du dir 1 Minute Zeit für diese Umfrage nimmst.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="1083934481477628225">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chromium deaktiviert</translation>
 <translation id="1104942323762546749">Chromium möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">Die heruntergeladene Datei konnte nicht verifiziert werden.</translation>
 <translation id="2137162749895930932">Bildschirm „Übersetzen“ schließen</translation>
 <translation id="215352261310130060">Chromium hat diesen Download blockiert, weil die Website keine verschlüsselte Verbindung verwendet und die Datei möglicherweise manipuliert wurde</translation>
-<translation id="2157600032285353789">Über das Chromium-Menü kannst du u. a. Lesezeichen und den Lesemodus öffnen</translation>
 <translation id="2174178932569897599">Chromium anpassen</translation>
 <translation id="2174917724755363426">Die Installation wurde nicht abgeschlossen. Möchtest du den Vorgang wirklich abbrechen?</translation>
 <translation id="2185166961232948079">Chromium – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
@@ -357,7 +357,6 @@
 <translation id="5987687638152509985">Aktualisiere Chromium, um die Synchronisierung zu starten</translation>
 <translation id="5988505247484123880">Von dir besuchte Websites können deine Interessen speichern und zur Personalisierung verwenden. Websites können außerdem Daten zu deinen Interessen bei Chromium speichern.</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
-<translation id="6019451407441383358">Über das Chromium-Menü rechts oben kannst du u. a. Lesezeichen und den Lesemodus öffnen</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6058380562449900225">Erlaube Chromium zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast. Benachrichtigungen werden dadurch nicht deaktiviert.</translation>
 <translation id="6063093106622310249">In Chr&amp;omium öffnen</translation>

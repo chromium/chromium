@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Menu Steminstellingen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1246424317317450637">Vet</translation>
+<translation id="1357114957607379632">AI-weergave genereren...</translation>
 <translation id="1370273601702151510">Leuk</translation>
 <translation id="1483137792530497944">Rivier</translation>
 <translation id="1586836055630070874">Rustgevend</translation>
+<translation id="1639239467298939599">Laden</translation>
 <translation id="1666704368140506043">Aanstootgevende content</translation>
 <translation id="1741047078107369903">Warm</translation>
 <translation id="1807863182207623884">Robijn</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Afspelen is op dit moment niet beschikbaar voor deze pagina. Probeer het later opnieuw.</translation>
 <translation id="3457812538570616687">Niet leuk</translation>
 <translation id="3493899379487634969">Wat is er misgegaan?</translation>
+<translation id="3730775656877876887">AI-weergave genereren</translation>
 <translation id="3778044272390020426">Menu met opties voor negatieve feedback</translation>
 <translation id="3807208219231826020">Weergave doorlopen</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Duidelijk</translation>
 <translation id="5234971936051226002">De speler 'Deze pagina beluisteren' is geminimaliseerd.</translation>
 <translation id="5251803541071282808">Cloud</translation>
-<translation id="5526614127710223793">Kiezer voor afspeelmodus</translation>
+<translation id="5528503854289436485">AI-weergave</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="565342223183747919">Tik om de afspeelmodus te wijzigen</translation>
 <translation id="5694491020339060116">Menu Afspeelsnelheid</translation>
 <translation id="5965409657393819302">Technisch probleem</translation>
 <translation id="6218961554829577610">De stem beviel me niet</translation>
 <translation id="6315170314923504164">Spraak</translation>
-<translation id="6330455646577575965">AI-audio afspelen</translation>
 <translation id="6343633247422081848">Mos</translation>
 <translation id="6550675742724504774">Opties</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Je URL wordt geüpload met de feedback om de kwaliteit te verbeteren en voor onderzoek.</translation>
 <translation id="8481839122437406573">Kalm</translation>
 <translation id="8756370108715456837">Niet feitelijk juist</translation>
-<translation id="881960277396325853">AI-audio genereren...</translation>
 <translation id="8953618380150219653">De speler 'Deze pagina beluisteren' is op volledige hoogte geopend.</translation>
 <translation id="978117257931832348">Lage toonhoogte</translation>
 </translationbundle>

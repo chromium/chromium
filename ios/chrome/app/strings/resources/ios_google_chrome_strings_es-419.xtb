@@ -138,7 +138,6 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="4724297637870447613">Usa Chrome en todas partes</translation>
 <translation id="4738647308035481133">Página de Google Chrome</translation>
 <translation id="4742795653798179840">Se borraron los datos de Chrome</translation>
-<translation id="4749294594657945639">Para obtener fácilmente tus contraseñas guardadas en otras apps, elige Autocompletar en Chrome.</translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
 <translation id="4798859546468762093">Para obtener la personalización y otras funciones, incluye Chrome en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
@@ -205,7 +204,7 @@ Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se b
 <translation id="630693926528731525">No se compartió tu contraseña. Revisa la conexión a Internet y asegúrate de que accediste a Chrome. Luego, vuelve a intentarlo.</translation>
 <translation id="6348855835728304880">Accede a tus contraseñas de Chrome y más en otras apps de este dispositivo.</translation>
 <translation id="6373751563207403289">La Verificación de seguridad te protege de violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Recibe alertas sobre cualquier problema de privacidad o seguridad que Chrome detecte.</translation>
-<translation id="6389317667633680932">Explora nuevas funciones que te ayudan a aprovechar Chrome al máximo.</translation>
+<translation id="6389317667633680932">Explora nuevas funciones que te ayudarán a aprovechar Chrome al máximo.</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6427126399757991875">Tu organización está configurando Chrome…</translation>
 <translation id="6481963882741794338">Vincula Chrome y otros servicios de Google para la personalización y otros fines</translation>
@@ -215,6 +214,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="6533470733797826516">Accede más rápido con Autocompletar de Chrome</translation>
 <translation id="6536544321553662809">Establece Chrome como tu navegador predeterminado para compartir y abrir vínculos fácilmente</translation>
 <translation id="6545449117344801102">Chrome detecta direcciones y usa Google Maps para brindarte información local, además de instrucciones sobre cómo llegar.</translation>
+<translation id="6611692150236062461">Para obtener fácilmente tus contraseñas guardadas en otras apps, elige Autocompletar en Chrome.</translation>
 <translation id="6636941099779251629">Tu organización requiere que accedas para usar Chrome. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta la dirección IP. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, Chrome también puede enviar las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="6647304104688527905">Abre una nueva pestaña en Chrome.</translation>
@@ -230,7 +230,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 
 Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chrome, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Borra los datos de navegación en Chrome.</translation>
-<translation id="6924922227983877439">Abre vínculos en Chrome de forma predeterminada</translation>
+<translation id="6924922227983877439">Abrir vínculos en Chrome de forma predeterminada</translation>
 <translation id="6975725306479268850">Elige Chrome para autocompletar</translation>
 <translation id="7056826488869329999">Abre y ejecuta la Verificación de seguridad en Chrome.</translation>
 <translation id="7061455974939528301">Mantén presionado el ícono de Chrome y haz clic en "Edita la pantalla de inicio"</translation>

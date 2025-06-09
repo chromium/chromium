@@ -2339,6 +2339,7 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
       Se la policy non viene configurata, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> non è disponibile per alcuna applicazione web.
 Per migliorare la privacy, questa policy non supporterà gli aggiornamenti a metà sessione del valore della policy, pertanto le modifiche verranno applicate solo dopo che l'utente si è disconnesso e ha eseguito nuovamente l'accesso.
 L'utente avrà la certezza che, dopo l'accesso, le altre app non saranno in grado di acquisire le schermate, se ciò non era già stato consentito all'inizio della sessione.</translation>
+<translation id="2614156176932194496">Impostazioni per le integrazioni di AI Mode di Google nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="2615240493030733717">Segnala informazioni sul fuso orario</translation>
 <translation id="2619258867868873629">La destinazione "Salva come PDF" e la destinazione "Salva su Google Drive" sui dispositivi <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configura l'elenco di domini in cui <ph name="PRODUCT_NAME" /> deve disattivare <ph name="PASSWORD_MANAGER_NAME" />. Ciò significa che i workflow di salvataggio e compilazione verranno disattivati, in modo che le password di questi siti web non possano essere salvate o compilate automaticamente nei moduli web.
@@ -3146,13 +3147,6 @@ Se non viene configurata, JavaScript è consentito, ma gli utenti possono modifi
 
       Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> carica tutti gli host di messaggistica nativi installati.</translation>
 <translation id="3211426942294667684">Impostazioni di accesso al browser</translation>
-<translation id="3213872023700948990">Questa policy consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
-
-Se viene attivata o se non viene configurata, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita.
-
-Se questa policy viene disattivata, le barre di scorrimento non saranno attivabili con la tastiera per impostazione predefinita.
-
-Questa policy è una soluzione alternativa temporanea e verrà rimossa nella versione M135.</translation>
 <translation id="3216094710930835317">Il nuovo comportamento del parser HTML che consente l'uso di più tag verrà disattivato.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> verrà modificata in <ph name="PRODUCT_NAME" /> per conformarla alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questa policy ripristina il comportamento precedente fino alla versione M120.
 
@@ -3240,6 +3234,15 @@ Se la policy viene impostata su true o non viene configurata, le app web verrann
 <translation id="3256920103934729145">Impedisci il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="3257786863492892609">Controlla le policy relative alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Questa policy consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
+
+I dati di Outlook non verranno archiviati dal browser.
+
+La scheda di Outlook mostra il prossimo evento nel calendario, nonché un'anteprima delle riunioni previste per il resto della giornata. Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia alla prossima riunione.
+
+La scheda Microsoft Outlook richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a Outlook, visita la pagina https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è abilitata, la scheda di Outlook verrà mostrata se anche la relativa policy è abilitata e sono disponibili dati da mostrare. Se la policy <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di Outlook verrà mostrata se anche la relativa policy è abilitata, l'utente ha abilitato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
 <translation id="3262080895269946462">Consenti la disattivazione per impostazione predefinita di WebSQL nei contesti di terze parti.</translation>
 <translation id="326341982850521928">Attiva la correzione del colore</translation>
@@ -4425,6 +4428,15 @@ Se la policy viene impostata su <ph name="DISABLE_UNPUBLISHED" /> (1), le estens
 
           Se questa policy non viene impostata, inizialmente la funzione di lettura vocale è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="4173974507809462880">Visualizza la schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
+<translation id="4175770453187201981">Questo criterio controlla le integrazioni di AI Mode di Google nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda.
+
+Per accedere a questa funzionalità, è necessario impostare Google come motore di ricerca predefinito dell'utente.
+
+0/non impostato = la funzionalità sarà disponibile per gli utenti.
+
+1 = la funzionalità non sarà disponibile per gli utenti.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo nella schermata di accesso.
 
           Se questa policy è impostata su true, l'evidenziazione del cursore di testo sarà sempre attivata sulla schermata di accesso.
@@ -4735,6 +4747,7 @@ Questa policy è stata rimossa nella versione M112.</translation>
 
       Questa policy richiede una configurazione aggiuntiva per essere applicata. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="4402887080007986374">La versione valida dei Termini di servizio dell'account della scuola</translation>
+<translation id="4405712318246131640">Non consentire le integrazioni di AI Mode.</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
 <translation id="4410361389637971319">Consenti alle origini delle app web isolate di utilizzare Direct Sockets</translation>
@@ -5708,6 +5721,7 @@ Questa policy è una sospensione temporanea per consentire la migrazione dei con
 <translation id="5090791951240382356">Consenti l'unione delle policy del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5093603777978346818">Non attivare il salvaschermo nella schermata di blocco.</translation>
+<translation id="5099140200662153931">Mostra la scheda File di SharePoint e OneDrive nella pagina Nuova scheda</translation>
 <translation id="5099239365323299669">L'avvio della quota permanente non sarà più supportato a partire dalla versione M106. Questa policy consente di riattivare la funzionalità della quota permanente fino alla versione M107.
 
       Se questa policy viene impostata su Attivata, webkitRequestFileSystem con tipo permanente funzionerà con la quota permanente.
@@ -6372,6 +6386,15 @@ Questa policy è stata rimossa nella versione M112.</translation>
 <translation id="5511266910976210617">Non consentire Aiutami a scrivere.</translation>
 <translation id="5511702823008968136">Attiva barra dei Preferiti</translation>
 <translation id="5512418063782665071">URL pagina iniziale</translation>
+<translation id="5512785896190859782">Questa policy consente di stabilire la visibilità della scheda File di SharePoint e OneDrive nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se la policy è abilitata e la tua organizzazione ha autorizzato l'utilizzo dei dati dei file di SharePoint e OneDrive nel browser.
+
+I dati di SharePoint e OneDrive non verranno archiviati dal browser.
+
+La scheda dei file di SharePoint e OneDrive consigliati mostra un elenco di file consigliati.  Lo scopo è risolvere il problema del cambio di contesto e migliorare la produttività fornendo agli utenti una scorciatoia ai loro documenti più importanti.
+
+La scheda Microsoft di SharePoint e OneDrive richiederà una configurazione amministrativa aggiuntiva. Per informazioni dettagliate su come collegare la scheda della pagina Nuova scheda di Chrome a SharePoint, visita la pagina https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di SharePoint e OneDrive non verrà mostrata. Se la policy <ph name="NTPCARDSVISIBLE" /> è abilitata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è abilitata e sono disponibili dati da mostrare. Se la policy <ph name="NTPCARDSVISIBLE" /> non viene configurata, la scheda di SharePoint e OneDrive verrà mostrata se anche la relativa policy è abilitata, l'utente ha abilitato la scheda in Personalizza Chrome e sono disponibili dati da mostrare.</translation>
 <translation id="5516293691820655022">Chiudi completamente Chrome</translation>
 <translation id="551639594034811656">Questa policy definisce un elenco di percentuali che definiranno la frazione dei dispositivi di <ph name="PRODUCT_OS_NAME" /> nell'UO da aggiornare ogni giorno a partire dal giorno in cui l'aggiornamento viene rilevato la prima volta. L'ora del rilevamento è successiva all'ora in cui l'aggiornamento viene pubblicato, perché potrebbe passare del tempo tra la pubblicazione dell'aggiornamento e il momento in cui il dispositivo controlla la disponibilità di aggiornamenti.
 
@@ -6532,6 +6555,7 @@ Se la policy non viene configurata o se viene impostato un elenco vuoto, all'ute
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Consenti l'esecuzione di app di Chrome nelle sessioni kiosk.</translation>
 <translation id="5607021831414604820">Attiva i report sullo stato di archiviazione del dispositivo</translation>
+<translation id="5607808178576647930">Consenti le integrazioni di AI Mode.</translation>
 <translation id="5608114828230655271">Comportamento predefinito del dispositivo</translation>
 <translation id="5609294254185484756">Consente di controllare l'esperienza utente delle funzionalità disattivate elencate nella policy <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> per le sessioni Ospite gestite (MGS).
 
@@ -6644,6 +6668,13 @@ di gestione del dispositivo.
 L'opzione dell'algoritmo chiave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> è supportata a partire dalla versione 132 di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Consenti l'utilizzo dell'API U2F Security Key deprecata</translation>
 <translation id="5656177735561364047">Attiva la funzione Appunti condivisi</translation>
+<translation id="5657289110555300740">Questa policy consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
+
+Se viene attivata o se non viene configurata, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita.
+
+Se questa policy viene disattivata, le barre di scorrimento non saranno attivabili con la tastiera per impostazione predefinita.
+
+Questa policy è una soluzione alternativa temporanea. A partire dalla versione M139, questa policy sarà ritirata.</translation>
 <translation id="5657752663637568277">La policy consente di stabilire se gli avvisi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /> vengono mostrati agli utenti nella finestra di anteprima di stampa o nelle pagine di impostazioni.
       Se la policy viene impostata su True, gli avvisi relativi al ritiro verranno nascosti.
       Se la policy viene impostata su False o non viene impostata, gli avvisi relativi al ritiro verranno mostrati.</translation>
@@ -7011,6 +7042,11 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="5917897389577978190">Gmail (supportato a partire dalla versione 135)</translation>
 <translation id="592036544845479336">Riattiva eventi Mutazione deprecati/rimossi</translation>
 <translation id="5921713479449475707">Permetti download di aggiornamento automatico tramite HTTP</translation>
+<translation id="5923084443277419535">Il parser HTML sta per essere modificato per consentire l'inserimento di tag HTML aggiuntivi all'interno dell'elemento &lt;select&gt;. Questa policy consente di utilizzare il comportamento del parser HTML precedente fino alla versione M138.
+
+Se la policy viene abilitata o se non viene configurata, il parser HTML consente l'uso di tag aggiuntivi all'interno dell'elemento &lt;select&gt;.
+
+Se viene disabilitata, il parser HTML limita i tag che possono essere inseriti all'interno dell'elemento &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Questa policy è deprecata perché la funzionalità che controlla non è mai stata lanciata. Usa invece <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Se la policy non viene configurata o se viene impostata su <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valore 0), accanto all'avatar della barra degli strumenti viene visualizzata l'etichetta Lavoro o Scuola.
@@ -9713,11 +9749,6 @@ Se questa policy viene impostata su false o se non viene configurata, <ph name="
 Per maggiori informazioni sulla policy <ph name="IEEM_SITELIST_POLICY" /> di Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Non consentire agli utenti di acquisire screenshot o registrazioni video</translation>
 <translation id="7792796937016596423">L'utente non potrà eseguire acquisizioni di pacchetti di rete</translation>
-<translation id="7795648856511126914">Il parser HTML sta per essere modificato per consentire l'inserimento di tag HTML aggiuntivi all'interno dell'elemento &lt;select&gt;. Questa policy consente di utilizzare il comportamento del parser HTML precedente fino alla versione M136.
-
-Se la policy viene attivata o se non viene configurata, il parser HTML consente l'uso di tag aggiuntivi all'interno dell'elemento &lt;select&gt;.
-
-Se viene disattivata, il parser HTML limita i tag che possono essere inseriti all'interno dell'elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Questa policy è stata rimossa dalla versione 89 di <ph name="PRODUCT_NAME" /> perché<ph name="FLASH_PLUGIN_NAME" /> è stata ritirata.
 
       Se la policy viene impostata su True, vengono eseguiti tutti i contenuti <ph name="FLASH_PLUGIN_NAME" /> incorporati nei siti web che consentono <ph name="FLASH_PLUGIN_NAME" />, inclusi i contenuti di altre origini o contenuti ridotti.

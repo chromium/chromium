@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
 <translation id="1312811472299082263">ສ້າງຈາກຄູ່ມື Ansible ຫຼື ໄຟລ໌ສຳຮອງຂໍ້ມູນ Crostini</translation>
 <translation id="13130607084115184">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຈະປາກົດຂຶ້ນບ່ອນນີ້. ເພື່ອນຳເຂົ້າລະຫັດຜ່ານໄປໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້, <ph name="BEGIN_LINK" /> ໃຫ້ເລືອກໄຟລ໌ CSV.<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971">ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ອອກແລ້ວ</translation>
 <translation id="1313405956111467313">ການປັບຕັ້ງພຣັອກຊີອັດຕະໂນມັດ</translation>
 <translation id="131364520783682672">ປຸ່ມ Caps Lock</translation>
 <translation id="1313660246522271310">ທ່ານຈະຖືກນຳອອກຈາກລະບົບເວັບໄຊທັງໝົດ, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
@@ -4189,6 +4188,7 @@
 <translation id="3876219572815410515">ປັບຂະໜາດໜ້າຈໍໄປທາງເທິງແລ້ວ</translation>
 <translation id="3877075909000773256">ການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງສຳລັບອຸປະກອນຂອງ <ph name="USER_NAME" />, ທີ່ແບ່ງປັນພາຍໃຕ້ບັນຊີ <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">ເລືອກເພື່ອສະແດງການນຳໃຊ້ໜ່ວຍຄວາມຈຳ ແລະ ຮູບໃນບັດຕົວຢ່າງເມື່ອວາງເມົ້າເທິງແຖບ</translation>
+<translation id="3877603629930976930">ບໍ່ແບ່ງປັນ</translation>
 <translation id="3878445208930547646">ບໍ່ອະນຸຍາດໃຫ້ມີການສຳເນົາຈາກເວັບໄຊນີ້</translation>
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
 <translation id="3880513902716032002">ໜ້າບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງແມ່ນຖືກໂຫຼດກ່ອນລ່ວງໜ້າແລ້ວ</translation>
@@ -4614,7 +4614,6 @@
 <translation id="4190492351494485814">ສຳລັບການຕັ້ງຄ່າເລີ່ມຕົ້ນ, ທ່ານຈະຕ້ອງເຊື່ອມຕໍ່ອິນເຕີເນັດເພື່ອໃຫ້ຊິ້ງໄຟລ໌ກັບ Chromebook ຂອງທ່ານໄດ້</translation>
 <translation id="4190828427319282529">ໄຮໄລ້ໂຟກັສແປ້ນພິມ</translation>
 <translation id="4191892134568599822">ຮັບດ້ວຍ <ph name="FEATURE_NAME" /> ບໍ?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{ລຶບການອະນຸຍາດສຳລັບ 1 ເວັບໄຊທີ່ບໍ່ໄດ້ໃຊ້ອອກແລ້ວ}other{ລຶບການອະນຸຍາດສຳລັບ {NUM_SITES} ເວັບໄຊທີ່ບໍ່ໄດ້ໃຊ້ອອກແລ້ວ}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />ພິເສດສະເພາະສຳລັບ <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />AI ສ້າງເນື້ອຫາແມ່ນຄຸນສົມບັດການທົດລອງ, ໃນການພັດທະນາໄລຍະເລີ່ມຕົ້ນ ແລະ ຕອນນີ້ອາດມີໃຫ້ໃຊ້ໃນວົງຈຳກັດ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">CA ທີ່ເຊື່ອຖືໄດ້</translation>
@@ -5168,7 +5167,6 @@
 <translation id="4585793705637313973">ແກ້ໄຂໜ້າ</translation>
 <translation id="4586275095964870617">ບໍ່ສາມາດເປີດ <ph name="URL" /> ໃນໂປຣແກຣມທ່ອງເວັບສຳຮອງໄດ້ ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
-<translation id="4588497044036650559">ເປີດໜ້າຕົວເລືອກຂອງສ່ວນຂະຫຍາຍໜ້າແຖບໃໝ່ໃນແຖບປັດຈຸບັນ</translation>
 <translation id="4588749726511456218">ການເລັ່ງຄວາມໄວຂອງການເລື່ອນ <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ແລະ <ph name="DOMAIN" /> ເບິ່ງຄືຈະກ່ຽວຂ້ອງກັນ. ກວດສອບວ່າທ່ານເຊື່ອຖື <ph name="DOMAIN" /> ໄດ້ກ່ອນທີ່ຈະໃຊ້ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="4589713469967853491">ຂຽນບັນທຶກໃສ່ແຟ້ມການດາວໂຫຼດສຳເລັດແລ້ວ.</translation>
@@ -6132,6 +6130,7 @@
 <translation id="5278823018825269962">ID ສະຖານະ</translation>
 <translation id="5279600392753459966">ບລັອກ​ທັງ​ຫມົດ</translation>
 <translation id="5280064835262749532">ອັບເດດຂໍ້ມູນປະຈຳຕົວສຳລັບ <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">ການຕັ້ງຄ່ານີ້ຖືກຕັ້ງຄ່າໂດຍອົງກອນຂອງທ່ານ. ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບໂປຣແກຣມຊອກຫານີ້?</translation>
 <translation id="5280426389926346830">ສ້າງທາງລັດບໍ?</translation>
 <translation id="5281013262333731149">ເປີດໃນ: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">ເພື່ອດາວໂຫຼດ ແລະ ໃຊ້ແອັບ Android, ກ່ອນອື່ນທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງການອັບເດດທີ່ຈຳເປັນນີ້. ໃນຂະນະທີ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກຳລັງອັບເດດ, ທ່ານບໍ່ສາມາດໃຊ້ມັນໄດ້. ຫຼັງຈາກການຕິດຕັ້ງສຳເລັດແລ້ວ, <ph name="DEVICE_TYPE" /> ຂອງທ່ານຈະປິດເປີດຄືນໃໝ່.</translation>
@@ -6258,7 +6257,6 @@
 <translation id="5376931455988532197">ໄຟລ໌ຍາວເກີນໄປ</translation>
 <translation id="5377367976106153749">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="5379140238605961210">ສືບ​ຕໍ່ບລັອກການເຂົ້າຫາໄມໂຄຣໂຟນ</translation>
-<translation id="5380424552031517043">ລຶບ <ph name="PERMISSION" /> ອອກແລ້ວ</translation>
 <translation id="5380526436444479273">ລໍຖ້າສອງສາມນາທີແລ້ວລອງໃໝ່</translation>
 <translation id="5382591305415226340">ຈັດການລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="5384401776498845256">ໃຜສາມາດແບ່ງປັນກັບທ່ານໄດ້</translation>
@@ -6994,7 +6992,6 @@
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5919305207330938913">ການໃຊ້ຂໍ້ມູນທັງໝົດທີ່ຮວບຮວມຈະເປັນໄປຕາມ <ph name="BEGIN_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" /> ຂອງ Google.</translation>
-<translation id="5919486630433391408">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານປິດການນຳໃຊ້ການອັບເດດເຟີມແວ.</translation>
 <translation id="5920543303088087579">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="5922963926582976524">ຍົກເລີກການເຊື່ອມຕໍ່ເຄືອຂ່າຍຮັອດສະປອດພ້ອມໃຊ້</translation>
 <translation id="5924047253200400718">ຂໍຄວາມຊ່ວຍເຫຼືອ<ph name="SCANNING_STATUS" /></translation>
@@ -7116,7 +7113,6 @@
 <translation id="6003479444341796444">ຕອນນີ້ກຳລັງສະແດງແຖບຊື່</translation>
 <translation id="6003582434972667631">ອົງການຂອງທ່ານຕັ້ງຮູບແບບສີສັນໄວ້ແລ້ວ</translation>
 <translation id="6005045517426700202">ອາຄານດິນຈີ່</translation>
-<translation id="6006392003290068688">ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ອອກແລ້ວ</translation>
 <translation id="6006484371116297560">ຄລາສສິກ</translation>
 <translation id="6007053304250788613">ສາມາດຍົກເວັ້ນຈໍສະແດງຜົນໄດ້ພຽງຈໍດຽວໃນໂໝດກະຈົກ</translation>
 <translation id="6007240208646052708">ການຊອກຫາດ້ວຍສຽງເປັນພາສາຂອງທ່ານບໍ່ສາມາດໃຊ້ໄດ້.</translation>
@@ -8469,6 +8465,7 @@
 <translation id="69739764870135975">ຫາກ Google ເປັນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານນຳ, ທ່ານຈະເຫັນການແນະນຳທີ່ກ່ຽວຂ້ອງຕາມບໍລິບົດທີ່ດີຂຶ້ນ</translation>
 <translation id="697508444536771064">ປິດເຄື່ອງ Linux</translation>
 <translation id="6978121630131642226">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
+<translation id="6978236010531171013">ຢືນຢັນການແບ່ງປັນ</translation>
 <translation id="6978717888677691380">ເວັບໄຊທີ່ທ່ານບລັອກແລ້ວ</translation>
 <translation id="6979041727349121225">ຕົວປະຢັດພະລັງງານ</translation>
 <translation id="6979044105893951891">ເປີດໃຊ້ ແລະ ອອກຈາກເຊດຊັນແຂກທີ່ມີການຈັດການ</translation>
@@ -8568,7 +8565,6 @@
 <translation id="7039912931802252762">ລົງຊື່ເຂົ້າ​ໃຊ້ Microsoft Smart Card</translation>
 <translation id="7039951224110875196">ສ້າງບັນຊີ Google ສຳລັບເດັກ</translation>
 <translation id="7039968672732182060">Chromebook ຂອງທ່ານບໍ່ໄດ້ຮັບການອັບເດດຄວາມປອດໄພອີກຕໍ່ໄປ. ຮອດເວລາໃນການອັບເກຣດຄວາມປອດໄພ ແລະ ຊອບແວເປັນເວີຊັນຫຼ້າສຸດແລ້ວ. ມີຂໍ້ກຳນົດຂໍ້ສະເໜີ.</translation>
-<translation id="7041405817194720353">ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການອອກແລ້ວ</translation>
 <translation id="7042116641003232070">ອະນຸຍາດໃຫ້ບັນທຶກຂໍ້ມູນໃສ່ອຸປະກອນຂອງທ່ານແລ້ວ</translation>
 <translation id="7043108582968290193">ສຳເລັດແລ້ວ! ບໍ່ມີພົບແອັບພລິເຄຊັນທີ່ບໍ່ເຂົ້າກັນໃດໆ.</translation>
 <translation id="7044124535091449260">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການເຂົ້າເຖິງເວັບໄຊ</translation>
@@ -8684,6 +8680,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ກຳລັງລໍຖ້າ</translation>
 <translation id="7132886488919643383">ໃຊ້ Google AI ເພື່ອຮັບຄວາມຊ່ວຍເຫຼືອໃນການອ່ານ, ຂຽນ ແລະ ສ້າງສັນ</translation>
 <translation id="7134098520442464001">ເຮັດ​ຂໍ້​ຄວາມ​ໃຫ້​ນ້ອຍລົງ</translation>
+<translation id="7134653428559514680">ບໍ່ແນະນຳໃຫ້ແບ່ງປັນຈາກເວັບໄຊນີ້</translation>
 <translation id="7134951043985383439">ດາວໂຫຼດໄຟລ໌ທີ່ອັນຕະລາຍແລ້ວ</translation>
 <translation id="7135729336746831607">ເປີດ Bluetooth ບໍ?</translation>
 <translation id="7136694880210472378">ເຮັດ​ເປັນຄ່າມາດຕະຖານ</translation>
@@ -9129,6 +9126,7 @@
 <translation id="7460045493116006516">ຮູບແບບສີສັນປັດຈຸບັນທີ່ທ່ານໄດ້ຕິດຕັ້ງ</translation>
 <translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="746216226901520237">ຄັ້ງຕໍ່ໄປ, ໂທລະສັບຂອງທ່ານຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="7463068149674892185">ບໍ່ແນະນຳໃຫ້ດຳເນີນການນີ້</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">ອົງການຂອງທ່ານຈັດການວິທີໃຊ້ຂໍ້ມູນທີ່ຮວບຮວມໂດຍຄຸນສົມບັດເຫຼົ່ານີ້.</translation>
 <translation id="7464645554245611385">ອັບເດດຫຼ້າສຸດໃສ່ແຖບນີ້</translation>
@@ -11690,7 +11688,6 @@
 <translation id="934244546219308557">ຕັ້ງຊື່ໃຫ້ກຸ່ມນີ້</translation>
 <translation id="93480724622239549">ຂໍ້ບົກພ່ອງ ຫຼື ຂໍ້ຜິດພາດ</translation>
 <translation id="9354763467503131">ອະນຸຍາດໃຫ້ຂໍຕິດຕັ້ງເວັບແອັບຢູ່ອຸປະກອນຂອງທ່ານ</translation>
-<translation id="936329857119665832">ເປີດໃນແຖບປັດຈຸບັນ</translation>
 <translation id="936646668635477464">ກ້ອງ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="936801553271523408">ຂໍ້ມູນກວດວິເຄາະລະບົບ</translation>
 <translation id="93766956588638423">ສ້ອມ​ແປງສ່ວນຂະ​ຫຍາຍ​</translation>

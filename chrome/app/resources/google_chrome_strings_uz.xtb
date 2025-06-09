@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Google Chrome brauzerini o‘z didingizda sozlang. Yangilanish mavjud.</translation>
 <translation id="1028061813283459617">Brauzer maʼlumotlarini faqat shu qurilmadan oʻchirish va Google hisobingizda saqlash uchun <ph name="BEGIN_LINK" />Chrome hisobingizdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Chrome tizimiga kirish oynasini yopish uchun bosing</translation>
+<translation id="1051793555070215510">1 daqiqalik soʻrovnoma orqali Inkognito rejimini yaxshilashimizga yordam bering.</translation>
 <translation id="1059838145689930908">Bu kengaytmani <ph name="USER_EMAIL_ADDRESS" /> sifatida ishlatish uchun Chrome tizimiga kiring.</translation>
 <translation id="1065672644894730302">Sozlamalarni ko‘rib bo‘lmadi. Ba’zi funksiyalar mavjud emas va o‘zgartirilgan sozlamalar saqlanmaydi.</translation>
 <translation id="1086486568852410168">Google Lens orqali qidirish</translation>
@@ -219,6 +220,7 @@
 <translation id="3716540481907974026">ChromeOS Flex versiyasi</translation>
 <translation id="3718181793972440140">Bu qurilmadagi 1 elementni tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome uni olib tashlashni tavsiya qiladi. <ph name="BEGIN_LINK" />Dastaklanadigan kengaytmalar haqida batafsil<ph name="END_LINK" />}other{Chrome ularni olib tashlashni tavsiya qiladi. <ph name="BEGIN_LINK" />Dastaklanadigan kengaytmalar haqida batafsil<ph name="END_LINK" />}}</translation>
+<translation id="3756724684201900923">Chrome oʻrnatish haqida batafsil</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Hisobga kirishdagi xatolik sababli ChromeOS Flex maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -553,7 +555,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8019103195866286235">Bu kengaytma dasturchisi uning nashrini bekor qildi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="8040768861829554732">Kengaytma Chrome hisobiga kirishingizni soʻramoqda</translation>
 <translation id="80471789339884597">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin barcha brauzerlarni qayta ishga tushirishingiz kerak.</translation>
-<translation id="8064015041956107954">Yuqori oʻng burchakdagi Chrome menyusidan bukmark, oʻqish rejimi va boshqalarni ochishingiz mumkin</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>
 <translation id="8086881907087796310">Kompyuter minimal talablarga javob bermasligi sababli oʻrnatilmadi.</translation>
@@ -565,7 +566,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8177472873527554730">Sahifada kontent topilmadi</translation>
 <translation id="8221491193165283816">Odatda bildirishnomalarni bloklaysiz. Bu saytga ruxsat berish uchun bu yerga bosing.</translation>
 <translation id="8255190535488645436">Google Chrome kamera va mikrofoningizdan foydalanmoqda.</translation>
-<translation id="8257796129973882597">Chrome menyusidan bukmark, oʻqish rejimi va boshqalarni ochishingiz mumkin</translation>
 <translation id="8267953129876836456">Sizda Chrome bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
 <translation id="8286862437124483331">Google Chrome parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="829923460755755423">Google Parollar menejeri uchun yorliq kiriting</translation>

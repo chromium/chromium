@@ -3085,13 +3085,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 변형은 크로스 사이트 
 
       정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 설치되어 있는 모든 기본 메시지 호스트를 로드합니다.</translation>
 <translation id="3211426942294667684">브라우저 로그인 설정</translation>
-<translation id="3213872023700948990">이 정책을 통해 새로운 키보드의 포커스 가능 스크롤러 동작을 일시적으로 선택 해제할 수 있습니다.
-
-정책을 사용 설정하거나 설정하지 않으면 포커스 가능 하위 요소가 없는 스크롤러가 기본적으로 키보드 포커스 가능해집니다.
-
-정책을 사용 중지하면 기본적으로 스크롤러가 키보드 포커스 가능하지 않습니다.
-
-이 정책은 일시적인 해결 방법이며 M135에서 삭제될 예정입니다.</translation>
 <translation id="3216094710930835317">더 많은 태그를 허용하는 새로운 HTML 파서 동작이 사용 중지됩니다.</translation>
 <translation id="3217774577897351942"><ph name="FIREFOX_PRODUCT_NAME" /> 및 <ph name="SAFARI_PRODUCT_NAME" />의 변경사항을 준수하기 위해 <ph name="PRODUCT_NAME" />에서 <ph name="OFFSET_PARENT" /> API가 변경됩니다. 이 정책은 M120 버전까지의 이전 동작을 가져옵니다.
 
@@ -3179,6 +3172,15 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 변형은 크로스 사이트 
 <translation id="3256920103934729145">사용자가 SSL 경고 페이지를 클릭하지 못하도록 차단</translation>
 <translation id="3257786863492892609">스크린캐스트 정책을 제어합니다.</translation>
 <translation id="3258380413685430793">모든 <ph name="FLASH_PLUGIN_NAME" /> 콘텐츠 실행</translation>
+<translation id="3258754138048508776">이 정책은 새 탭 페이지에서 Outlook 카드를 표시할지 여부를 제어합니다. 정책이 사용 설정되어 있고 조직에서 브라우저에서 Outlook Calendar 데이터를 사용하도록 승인한 경우에만 새 탭 페이지에 카드가 표시됩니다.
+
+Outlook 데이터는 브라우저에 저장되지 않습니다.
+
+Outlook 카드에는 다음 캘린더 일정과 함께 당일의 나머지 회의가 한눈에 볼 수 있게 표시됩니다. 사용자에게 다음 회의의 바로가기를 제공하여 문맥 전환 문제를 해결하고 생산성을 향상시키는 것을 목표로 합니다.
+
+Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrome 새 탭 페이지 카드를 Outlook에 연결하는 방법에 관한 자세한 내용은 https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards를 참고하세요.
+
+<ph name="NTPCARDSVISIBLE" />이 사용 중지된 경우 Outlook 카드가 표시되지 않습니다. <ph name="NTPCARDSVISIBLE" />이 사용 설정되어 있고 이 정책도 사용 설정되어 있으며 표시할 데이터가 있는 경우 Outlook 카드가 표시됩니다. <ph name="NTPCARDSVISIBLE" />을 설정하지 않으면 이 정책도 사용 설정되어 있고 사용자가 Chrome 맞춤설정에서 카드를 사용 설정했으며 표시할 데이터가 있는 경우 Outlook 카드가 표시됩니다.</translation>
 <translation id="3261592499545947104">갱신이 실행되어야 하는 인증서 만료 전까지 남은 시간(초)입니다.</translation>
 <translation id="3262080895269946462">타사 컨텍스트에서 WebSQL이 기본적으로 사용 중지되어 있도록 허용</translation>
 <translation id="326341982850521928">색상 보정 사용 설정</translation>
@@ -5674,6 +5676,7 @@ false로 설정되면 기기 식별을 위해 사용할 수 있는 정보가 수
 <translation id="5090791951240382356">출처가 서로 다른 사전 정책의 병합 허용</translation>
 <translation id="5091315650312105069">HTTP 연결에 <ph name="BASIC_AUTH" /> 인증 허용</translation>
 <translation id="5093603777978346818">잠금 화면에서 화면 보호기를 사용 설정하지 않습니다.</translation>
+<translation id="5099140200662153931">새 탭 페이지에 SharePoint 및 OneDrive 파일 카드 표시</translation>
 <translation id="5099239365323299669">M106 영구 할당량은 더 이상 지원되지 않습니다. 이 정책은 M107까지 영구 할당량 기능을 다시 사용 설정합니다.
 
       정책을 사용으로 설정하면 영구 유형이 있는 webkitRequestFileSystem은 영구 할당량으로 작동합니다.
@@ -6343,6 +6346,15 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="5511266910976210617">글쓰기 도우미를 허용하지 않습니다.</translation>
 <translation id="5511702823008968136">북마크바 사용</translation>
 <translation id="5512418063782665071">홈페이지 URL</translation>
+<translation id="5512785896190859782">이 정책은 새 탭 페이지에서 SharePoint 및 OneDrive 파일 카드를 표시할지 여부를 제어합니다. 정책이 사용 설정되어 있고 조직에서 브라우저에서 SharePoint 및 OneDrive 파일 데이터를 사용하도록 승인한 경우에만 새 탭 페이지에 카드가 표시됩니다.
+
+SharePoint 및 OneDrive 데이터는 브라우저에 저장되지 않습니다.
+
+SharePoint 및 OneDrive 파일 추천 카드에는 추천 파일 목록이 표시됩니다.  사용자에게 가장 중요한 문서의 바로가기를 제공하여 문맥 전환 문제를 해결하고 생산성을 향상시키는 것을 목표로 합니다.
+
+Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요합니다. Chrome 새 탭 페이지 카드를 Sharepoint에 연결하는 방법에 관한 자세한 내용은 https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards 페이지를 참고하세요.
+
+<ph name="NTPCARDSVISIBLE" />이 사용 중지된 경우 SharePoint 및 OneDrive 카드가 표시되지 않습니다. <ph name="NTPCARDSVISIBLE" />이 사용 설정되어 있고 이 정책도 사용 설정되어 있으며 표시할 데이터가 있는 경우 SharePoint 및 OneDrive 카드가 표시됩니다. <ph name="NTPCARDSVISIBLE" />을 설정하지 않으면 이 정책도 사용 설정되어 있고 사용자가 Chrome 맞춤설정에서 카드를 사용 설정했으며 표시할 데이터가 있는 경우 SharePoint 및 OneDrive 카드가 표시됩니다.</translation>
 <translation id="5516293691820655022">Chrome 완전히 종료</translation>
 <translation id="551639594034811656">이 정책은 OU에 있는 <ph name="PRODUCT_OS_NAME" /> 기기의 일부를 정의하는 비율의 목록을 정의하여 업데이트가 처음 발견된 날부터 매주 업데이트합니다. 업데이트가 게시된 후 기기가 업데이트를 확인할 때까지 시간이 다소 걸리므로 발견 시간은 업데이트 게시 시간 이후입니다.
 
@@ -6615,6 +6627,13 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 키 알고리즘 옵션은 <ph name="PRODUCT_OS_NAME" /> 버전 132부터 지원됩니다.</translation>
 <translation id="5655553344896004108">지원 중단된 U2F Security Key API 사용 허용</translation>
 <translation id="5656177735561364047">공유 클립보드 기능 사용</translation>
+<translation id="5657289110555300740">이 정책을 통해 새로운 키보드 포커스 가능 스크롤러 동작을 일시적으로 선택 해제할 수 있습니다.
+
+정책을 사용 설정하거나 설정하지 않으면 포커스 가능 하위 요소가 없는 스크롤러가 기본적으로 키보드 포커스 가능해집니다.
+
+정책을 사용 중지하면 기본적으로 스크롤러가 키보드 포커스 가능하지 않습니다.
+
+이 정책은 일시적인 해결 방법이며, M139부터 지원 중단됩니다.</translation>
 <translation id="5657752663637568277">이 정책은 인쇄 미리보기 대화상자 또는 설정 페이지에서 <ph name="CLOUD_PRINT_NAME" /> 지원 중단 경고를 사용자에게 표시할지를 제어합니다.
       정책을 True로 설정하면 지원 중단 경고가 숨겨집니다.
       정책을 False로 설정하거나 설정하지 않으면 지원 중단 경고가 표시됩니다.</translation>
@@ -6995,6 +7014,11 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="5917897389577978190">Gmail(버전 135부터 지원됨)</translation>
 <translation id="592036544845479336">지원 중단/삭제된 변형 이벤트 다시 사용 설정</translation>
 <translation id="5921713479449475707">HTTP를 통한 자동 업데이트 다운로드 허용</translation>
+<translation id="5923084443277419535">&lt;select&gt; 요소 내에서 추가 HTML 태그를 허용하도록 HTML 파서가 변경되었습니다. 이 정책을 사용하면 M138까지 이전 HTML 파서 동작을 사용할 수 있습니다.
+
+이 정책을 사용 설정하거나 설정하지 않으면 HTML 파서가 &lt;select&gt; 요소 내에서 추가 태그를 허용합니다.
+
+이 정책이 사용 중지되면 HTML 파서가 &lt;select&gt; 요소 내에 넣을 수 있는 태그를 제한합니다.</translation>
 <translation id="5925405187134730827">이 정책은 제어 대상 기능이 출시되지 않았기 때문에 지원 중단되었습니다. 대신 <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> 정책을 사용하세요.
 
 정책을 설정하지 않거나 <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />(값 0)로 설정하면 툴바 아바타 옆에 직장 또는 학교 라벨이 표시됩니다.
@@ -9684,11 +9708,6 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
 Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)을 자세히 살펴보세요.</translation>
 <translation id="7791215522423893512">사용자가 스크린샷을 찍고 동영상을 녹화하도록 허용 안함</translation>
 <translation id="7792796937016596423">사용자가 네트워크 패킷 캡처를 실행할 수 없음</translation>
-<translation id="7795648856511126914">&lt;select&gt; 요소 내에서 추가 HTML 태그를 허용하도록 HTML 파서가 변경되었습니다. 이 정책을 사용하면 M136까지 이전 HTML 파서 동작을 사용할 수 있습니다.
-
-이 정책을 사용 설정하거나 설정하지 않으면 HTML 파서가 &lt;select&gt; 요소 내에서 추가 태그를 허용합니다.
-
-이 정책이 사용 중지되면 HTML 파서가 &lt;select&gt; 요소 내에 넣을 수 있는 태그를 제한합니다.</translation>
 <translation id="7798441698807517880">이 정책은 <ph name="FLASH_PLUGIN_NAME" />이(가) 지원 중단되어 <ph name="PRODUCT_NAME" /> 버전 89부터 삭제되었습니다.
 
       정책을 True로 설정하면 다른 출처의 콘텐츠나 크기가 작은 콘텐츠를 비롯해 <ph name="FLASH_PLUGIN_NAME" /> 플러그인을 허용하는 웹사이트에 삽입된 <ph name="FLASH_PLUGIN_NAME" /> 콘텐츠가 전부 실행됩니다.

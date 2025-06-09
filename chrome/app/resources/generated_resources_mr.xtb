@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="1312811472299082263">Ansible Playbook किंवा Crostini बॅकअप फाइल वापरून तयार करा</translation>
 <translation id="13130607084115184">सेव्ह केलेले पासवर्ड येथे दिसतील. या डिव्हाइसवर <ph name="BRAND" /> वर पासवर्ड इंपोर्ट करण्यासाठी, <ph name="BEGIN_LINK" />CSV फाइल निवडणे<ph name="END_LINK" /> हे करा.</translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> काढून टाकल्या</translation>
 <translation id="1313405956111467313">ऑटोमॅटिक प्रॉक्सी कॉन्फिगरेशन</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तुम्हाला उघड्या असलेल्या टॅबसह सर्व साइटमधून साइन आउट केले जाईल</translation>
@@ -4189,6 +4188,7 @@
 <translation id="3876219572815410515">आकार बदललेल्या विंडो सर्वात वरती आहेत</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> च्या डिव्हाइससाठी Nearby सह शेअरिंग सेटिंग्ज. या शेअरिंगसाठी <ph name="USER_EMAIL" /> खाते वापरत आहे.</translation>
 <translation id="3877209288227498506">कर्सर फिरवून दिसणाऱ्या टॅब पूर्वावलोकन कार्डमध्ये मेमरीचा वापर आणि इमेज दाखवण्याचे निवडा</translation>
+<translation id="3877603629930976930">शेअर करू नका</translation>
 <translation id="3878445208930547646">या साइटवरून कॉपी करण्याची अनुमती नाही</translation>
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3880513902716032002">तुम्ही भेट देत असलेली काही पेज प्रीलोड केलेली आहेत</translation>
@@ -4612,7 +4612,6 @@
 <translation id="4190492351494485814">सुरुवातीच्या सेटअपसाठी, तुम्ही इंटरनेटशी कनेक्ट करणे आवश्यक आहे, जेणेकरून फाइल या तुमच्या Chromebook मध्ये सिंक होऊ शकतील</translation>
 <translation id="4190828427319282529">कीबोर्ड फोकस हायलाइट करा</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> सह मिळवायचे आहे का?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{न वापरलेल्या १ साइटसाठी परवानग्या काढून टाकल्या आहेत}other{न वापरलेल्या {NUM_SITES} साइटसाठी परवानग्या काढून टाकल्या आहेत}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />खास <ph name="DEVICE_TYPE" /> साठी.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />जनरेटिव्ह AI हे प्रायोगिक आहे, विकासाच्या सुरुवातीच्या टप्प्यात आहे आणि सध्या त्याची उपलब्धता मर्यादित आहे.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">विश्वसनीय CA</translation>
@@ -5166,7 +5165,6 @@
 <translation id="4585793705637313973">पेज संपादित करा</translation>
 <translation id="4586275095964870617"><ph name="URL" /> पर्यायी ब्राउझरमध्ये उघडता आले नाही. कृपया तुमच्या सिस्टीम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="4587589328781138893">Sites</translation>
-<translation id="4588497044036650559">सध्याच्या टॅबमध्ये नवीन टॅब पेज एक्स्टेंशनचे पर्याय पेज उघडा</translation>
 <translation id="4588749726511456218">अ‍ॅक्सिलरेशन स्क्रोल करा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> आणि <ph name="DOMAIN" /> हे एकमेकांशी संबंधित असल्याचे आढळते. तुमचा पासवर्ड वापरण्यापूर्वी <ph name="DOMAIN" /> वर विश्वास असल्याची खात्री करा.</translation>
 <translation id="4589713469967853491">डाउनलोड डिरेक्टरीमध्ये लॉग यशस्वीरीत्या राइट केले गेले.</translation>
@@ -6130,6 +6128,7 @@
 <translation id="5278823018825269962">स्थिती आयडी</translation>
 <translation id="5279600392753459966">सर्व अवरोधित करा</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> ची क्रेडेंशिअल अपडेट करा.</translation>
+<translation id="5280303168922585051">हे सेटिंग तुमच्या संस्थेने सेट केले होते. तुम्हाला हे शोध इंजीन नक्की हटवायचे आहे का?</translation>
 <translation id="5280426389926346830">शॉर्टकट तयार करायचा?</translation>
 <translation id="5281013262333731149">यामध्ये उघडेल: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android अ‍ॅप्स डाउनलोड करण्यासाठी आणि वापरण्यासाठी, अगोदर तुम्ही हा आवश्यक अपडेट इंस्टॉल करणे गरजेचे आहे. तुमचे <ph name="DEVICE_TYPE" /> अपडेट होत असताना, तुम्ही त्याचा वापर करू शकत नाही. इंस्टॉल झाल्यानंतर तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
@@ -6256,7 +6255,6 @@
 <translation id="5376931455988532197">फाईल खूप मोठी आहे</translation>
 <translation id="5377367976106153749">कॅमेराचा अ‍ॅक्सेस सुरू करायचा आहे का?</translation>
 <translation id="5379140238605961210">मायक्रोफोन ॲक्सेस ब्लॉक करणे सुरू ठेवा</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" /> काढून टाकली</translation>
 <translation id="5380526436444479273">काही मिनिटे प्रतीक्षा करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="5382591305415226340">सपोर्ट असलेल्या लिंक व्यवस्थापित करा</translation>
 <translation id="5384401776498845256">तुमच्यासोबत कोण शेअर करू शकते</translation>
@@ -6993,7 +6991,6 @@
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="59174027418879706">सक्षम</translation>
 <translation id="5919305207330938913">सर्व डेटा Google चे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> यानुसार वापरला जाईल.</translation>
-<translation id="5919486630433391408">तुमच्या अ‍ॅडमिनिस्ट्रेटरने फर्मवेअर अपडेट बंद केली आहेत.</translation>
 <translation id="5920543303088087579">तुमच्या ॲडमिनिस्ट्रेटरने या नेटवर्कशी कनेक्‍ट करणे अक्षम केले आहे</translation>
 <translation id="5922963926582976524">इंस्टंट हॉटस्पॉट नेटवर्क डिस्‍कनेक्‍ट करा</translation>
 <translation id="5924047253200400718">मदत मिळवा<ph name="SCANNING_STATUS" /></translation>
@@ -7118,7 +7115,6 @@
 <translation id="6005045517426700202">वीट बांधणी
 
 I feel - विटांची इमारत</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> काढून टाकल्या</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007053304250788613">फक्त एक डिस्प्ले मिरर मोडमध्ये वगळला जाऊ शकतो</translation>
 <translation id="6007240208646052708">तुमच्या भाषेमध्ये व्हॉइस शोध उपलब्ध नाही.</translation>
@@ -8471,6 +8467,7 @@ I feel - विटांची इमारत</translation>
 <translation id="69739764870135975">Google देखील तुमचे डीफॉल्ट शोध इंजीन असल्यास, तुम्हाला आणखी चांगल्या, संदर्भानुसार उपयुक्त सूचना दिसतील</translation>
 <translation id="697508444536771064">Linux बंद करा</translation>
 <translation id="6978121630131642226">शोध इंजिने</translation>
+<translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979041727349121225">एनर्जी सेव्हर</translation>
 <translation id="6979044105893951891">लाँच करा आणि व्यवस्थापित केलेल्या अतिथी सत्रांमधून बाहेर पडा</translation>
@@ -8571,7 +8568,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">लहान मुलासाठी Google खाते तयार करा</translation>
 <translation id="7039968672732182060">तुमच्या Chromebook ला आता सुरक्षा अपडेट मिळत नाहीत. नवीनतम सुरक्षेसाठी आणि सॉफ्टवेअरसाठी अपग्रेड करण्याची वेळ आली आहे. ऑफर अटी लागू.</translation>
-<translation id="7041405817194720353"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="COUNT" /> काढून टाकल्या</translation>
 <translation id="7042116641003232070">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती द्या</translation>
 <translation id="7043108582968290193">झाले! कंपॅटिबल नसलेली कोणतीही ॲप्लिकेशन सापडली नाहीत.</translation>
 <translation id="7044124535091449260">साइट ॲक्सेसबद्दल अधिक जाणून घ्या</translation>
@@ -8687,6 +8683,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, प्रतीक्षा करत आहे</translation>
 <translation id="7132886488919643383">वाचणे, लिहिणे आणि तयार करणे यांमध्ये मदत मिळवण्यासाठी Google AI वापरा</translation>
 <translation id="7134098520442464001">मजकूर लहान करा</translation>
+<translation id="7134653428559514680">या साइटवरून शेअर करण्याची शिफारस केली जात नाही</translation>
 <translation id="7134951043985383439">धोकादायक फाइल डाउनलोड केली आहे</translation>
 <translation id="7135729336746831607">ब्लूटूथ सुरू करायचे आहे का?</translation>
 <translation id="7136694880210472378">डीफॉल्ट बनवा</translation>
@@ -9133,6 +9130,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7460045493116006516">तुम्ही इंस्टॉल केलेली सध्याची थीम</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
+<translation id="7463068149674892185">या कृतीची शिफारस केली जात नाही</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">या वैशिष्ट्यांद्वारे गोळा केलेला डेटा कसा वापरला जाऊ शकतो हे तुमची संस्था व्यवस्थापित करते.</translation>
 <translation id="7464645554245611385">या टॅबसंबंधित शेवटचे अपडेट</translation>
@@ -11695,7 +11693,6 @@ I feel - विटांची इमारत</translation>
 <translation id="934244546219308557">या गटाला नाव द्या</translation>
 <translation id="93480724622239549">बग किंवा एरर</translation>
 <translation id="9354763467503131">तुमच्या डिव्हाइसवर वेब अ‍ॅप्स इंस्टॉल करण्याची विनंती करण्यास अनुमती दिली आहे</translation>
-<translation id="936329857119665832">सध्याच्या टॅबमध्ये उघडते</translation>
 <translation id="936646668635477464">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="936801553271523408">सिस्टीम निदान डेटा</translation>
 <translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>

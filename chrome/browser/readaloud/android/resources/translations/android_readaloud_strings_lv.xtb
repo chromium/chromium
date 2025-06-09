@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Balss izvēlne</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1246424317317450637">Treknraksts</translation>
+<translation id="1357114957607379632">Notiek MI atskaņošanas ģenerēšana…</translation>
 <translation id="1370273601702151510">Patīk</translation>
 <translation id="1483137792530497944">Upe</translation>
 <translation id="1586836055630070874">Nomierinošs</translation>
+<translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1666704368140506043">Aizvainojošs saturs</translation>
 <translation id="1741047078107369903">Silts</translation>
 <translation id="1807863182207623884">Rubīns</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Diemžēl atskaņošana pašlaik nav pieejama šai lapai. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3457812538570616687">Nepatīk</translation>
 <translation id="3493899379487634969">Kāda problēma radās?</translation>
+<translation id="3730775656877876887">Notiek MI atskaņošanas ģenerēšana</translation>
 <translation id="3778044272390020426">Negatīvas atsauksmes opciju izvēlne</translation>
 <translation id="3807208219231826020">Pārtīt atskaņoto failu</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Pacilājošs</translation>
 <translation id="5234971936051226002">Atskaņotājs “Klausīties šo lapu” ir minimizēts.</translation>
 <translation id="5251803541071282808">Mākonis</translation>
-<translation id="5526614127710223793">Atskaņošanas režīma atlasītājs</translation>
+<translation id="5528503854289436485">MI atskaņošana</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="565342223183747919">Pieskarieties, lai pārslēgtu atskaņošanas režīmu</translation>
 <translation id="5694491020339060116">Atskaņošanas ātruma izvēlne</translation>
 <translation id="5965409657393819302">Tehniska problēma</translation>
 <translation id="6218961554829577610">Nepatika balss</translation>
 <translation id="6315170314923504164">Balss</translation>
-<translation id="6330455646577575965">MI audio atskaņošana</translation>
 <translation id="6343633247422081848">Sūnas</translation>
 <translation id="6550675742724504774">Opcijas</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Jūsu URL tiks augšupielādēts kopā ar atsauksmēm, lai uzlabotu kvalitāti un veiktu izpēti.</translation>
 <translation id="8481839122437406573">Mierīgs tonis</translation>
 <translation id="8756370108715456837">Neatbilda faktiem</translation>
-<translation id="881960277396325853">Notiek MI audio apkopojumu ģenerēšana…</translation>
 <translation id="8953618380150219653">Atskaņotājs “Klausīties šo lapu” ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="978117257931832348">Zems tonis</translation>
 </translationbundle>

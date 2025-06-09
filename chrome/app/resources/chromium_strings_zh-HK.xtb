@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">重新啟動以更新 &amp;Chromium 作業系統</translation>
 <translation id="1040916596585577953">Chromium 建議你審核此擴充程式</translation>
 <translation id="1042552502243217427">當網站要求以私密方式預先載入網頁上的連結時，Chromium 會使用 Google 伺服器。這麼做可在預先載入網站中隱藏你的身分，不過 Google 會知道這類網站預先載入的內容。</translation>
+<translation id="1051793555070215510">請花 1 分鐘填寫問卷，協助我們改善無痕模式。</translation>
 <translation id="1065672644894730302">系統無法讀取您的偏好設定。
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
@@ -86,7 +87,6 @@
 <translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="215352261310130060">由於此網站未使用安全連線，且檔案可能已被篡改，因此 Chromium 已禁止下載</translation>
-<translation id="2157600032285353789">你可從 Chromium 選單開啟書籤、閱讀模式等功能</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
 <translation id="2174917724755363426">安裝尚未完成。確定要取消嗎？</translation>
 <translation id="2185166961232948079">Chromium - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
@@ -359,7 +359,6 @@
 <translation id="5987687638152509985">更新 Chromium 即可開始同步</translation>
 <translation id="5988505247484123880">您瀏覽的網站經常會記住您感興趣的項目，以便為您提供個人化體驗。網站亦可將您的興趣相關資訊儲存在 Chromium 中。</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
-<translation id="6019451407441383358">你可以由右上角嘅 Chromium 選單打開書籤、閱讀模式之類嘅功能</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6058380562449900225">為保護你的資料，請允許 Chromium 從你最近未瀏覽的網站移除權限。這不會停止通知。</translation>
 <translation id="6063093106622310249">在 Chromium 中開啟</translation>

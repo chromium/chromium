@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">隨時隨地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
-<translation id="4749294594657945639">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chrome 的自動填入功能。</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4798859546468762093">如要取得個人化和其他功能，請將 Chrome 加入「<ph name="FEATURE_NAME_1" />」以及「<ph name="FEATURE_NAME_2" />」</translation>
 <translation id="4819268619367838612">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">使用 Chrome 自動填入功能快速登入</translation>
 <translation id="6536544321553662809">將 Chrome 設定為預設瀏覽器，輕鬆分享和開啟連結</translation>
 <translation id="6545449117344801102">Chrome 會偵測地址，並使用「Google 地圖」為你規劃路線及提供當地資訊。</translation>
+<translation id="6611692150236062461">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chrome 的自動填入功能。</translation>
 <translation id="6636941099779251629">你的機構要求你登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果有網站試圖盜取你的密碼，或當你下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至 Google。</translation>
 <translation id="6647304104688527905">在 Chrome 中開啟新分頁。</translation>

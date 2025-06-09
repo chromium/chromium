@@ -1014,6 +1014,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4305817255990598646">Canvia</translation>
 <translation id="4307713728991152670">Configura la visualització de les aplicacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
 <translation id="4312840429157639164">La càmera s'ha ajustat a l'extrem superior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
+<translation id="4312935606722154789">Agrupa o desagrupa dues finestres l'una al costat de l'altra</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Amaga tots els suggeriments del navegador Chrome</translation>
@@ -1582,7 +1583,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
 <translation id="6103838137565245112">sistema</translation>
-<translation id="610395411842312282">Agrupa dues finestres l'una al costat de l'altra</translation>
 <translation id="6108952804512516814">Crea amb IA</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>

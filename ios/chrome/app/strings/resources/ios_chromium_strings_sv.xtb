@@ -176,6 +176,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="5259423875997548710">Sök efter bilder i Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan inte söka efter uppdateringar</translation>
 <translation id="5311557153294205270">Lägger till de angivna webbadresserna i dina bokmärken i Chromium.</translation>
+<translation id="5383251701169024761">Välj Chromium för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar.</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5389058611415066188">Surfa säkert med Chromium</translation>
 <translation id="5415273218238091735">Tips för Chromium</translation>
@@ -276,7 +277,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="7784950022329154821">Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="78025249032851484">Chromium är inaktuellt.</translation>
-<translation id="7811371919871579588">Välj Chromium för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar.</translation>
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
 <translation id="7905064834449738336">När du använder ett lösenord visas en varning i Chromium om det har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>

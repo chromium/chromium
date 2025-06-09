@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">طلب الإذن قبل السماح لموقع إلكتروني بإنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا (مقترَح)</translation>
 <translation id="2185965788978862351">سيؤدي هذا الإجراء إلى محو <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط المُخزّنة من خلال المواقع الإلكترونية أو التطبيقات على الشاشة الرئيسية.</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{أمس}zero{قبل <ph name="NUM_DAYS_MANY" /> يوم}two{قبل يومَين (<ph name="NUM_DAYS_MANY" />)}few{قبل <ph name="NUM_DAYS_MANY" /> أيام}many{قبل <ph name="NUM_DAYS_MANY" /> يومًا}other{قبل <ph name="NUM_DAYS_MANY" /> يوم}}</translation>
 <translation id="2215727959747642672">تعديل الملف</translation>
 <translation id="2218389616572918761">السماح للمواقع الإلكترونية بطلب استخدام الميكروفون</translation>
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
@@ -449,6 +450,7 @@
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="6530703012083415527">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية استخدام النوافذ المنبثقة وعمليات إعادة التوجيه. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام النوافذ المنبثقة وعمليات إعادة التوجيه.</translation>
 <translation id="6540488083026747005">لقد سمحت باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية في هذا الموقع الإلكتروني.</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{قبل أسبوع واحد (<ph name="NUM_WEEKS_ONE" />)}zero{قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}two{قبل أسبوعَين (<ph name="NUM_WEEKS_MANY" />)}few{قبل <ph name="NUM_WEEKS_MANY" /> أسابيع}many{قبل <ph name="NUM_WEEKS_MANY" /> أسبوعًا}other{قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}}</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
@@ -522,6 +524,7 @@
 <translation id="7554752735887601236">هناك موقع إلكتروني يستخدم الميكروفون.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7573594921350120855">تستخدم المواقع الإلكترونية عادةً كاميرا الفيديو لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{قبل شهر واحد (<ph name="NUM_MONTHS_ONE" />)}zero{قبل <ph name="NUM_MONTHS_MANY" /> شهر}two{قبل شهرَين (<ph name="NUM_MONTHS_MANY" />)}few{قبل <ph name="NUM_MONTHS_MANY" /> أشهر}many{قبل <ph name="NUM_MONTHS_MANY" /> شهرًا}other{قبل <ph name="NUM_MONTHS_MANY" /> شهر}}</translation>
 <translation id="757524316907819857">منع المواقع الإلكترونية من تشغيل المحتوى المحمي</translation>
 <translation id="7594634374516752650">تم الاتصال بجهاز يتضمّن بلوتوث.</translation>
 <translation id="7617547684249261169">يمكنك حذف كل أو بعض بيانات السجلّ وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وغير ذلك</translation>
@@ -543,6 +546,7 @@
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7881140103901777395">‏يمنع Chrome معظم المواقع الإلكترونية من استخدام ملفات تعريف الارتباط التابعة لجهات خارجية. ويُسمح باستخدامها على هذا الموقع الإلكتروني لأنه يعتمد عليها لتقديم خدمات أساسية.\n\nانتقِل إلى الإعدادات <ph name="BEGIN_LINK" />لإدارة الوصول إلى ملفات تعريف الارتباط التابعة لجهات خارجية<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">السماح بتشغيل الصوت لموقع معين.</translation>
+<translation id="7891547341794213004">إخفاء بطاقة "المتابعة باستخدام علامة التبويب هذه"</translation>
 <translation id="789180354981963912">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي:</translation>
 <translation id="789722939441020330">عدم السماح للمواقع الإلكترونية بتنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="7940722705963108451">تذكير</translation>

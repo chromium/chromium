@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Menu głosowe</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1246424317317450637">Pogrubienie</translation>
+<translation id="1357114957607379632">Generuję odtwarzanie podsumowań AI…</translation>
 <translation id="1370273601702151510">Lubię</translation>
 <translation id="1483137792530497944">Rzeka</translation>
 <translation id="1586836055630070874">Uspokajający</translation>
+<translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1666704368140506043">Obraźliwe treści</translation>
 <translation id="1741047078107369903">Ciepły</translation>
 <translation id="1807863182207623884">Rubin</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Teraz nie można włączyć odtwarzania na tej stronie. Spróbuj ponownie później.</translation>
 <translation id="3457812538570616687">Nie lubię</translation>
 <translation id="3493899379487634969">Z czym był problem?</translation>
+<translation id="3730775656877876887">Generuję odtwarzanie podsumowań AI</translation>
 <translation id="3778044272390020426">Menu opcji negatywnej opinii</translation>
 <translation id="3807208219231826020">Odtwarzanie podczas przewijania</translation>
 <translation id="385051799172605136">Wstecz</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Jasny</translation>
 <translation id="5234971936051226002">Odtwarzacz „Odsłuchaj tę stronę” zminimalizowany.</translation>
 <translation id="5251803541071282808">Chmura</translation>
-<translation id="5526614127710223793">Selektor trybu odtwarzania</translation>
+<translation id="5528503854289436485">Odtwarzanie podsumowania AI</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="565342223183747919">Kliknij, aby zmienić tryb odtwarzania</translation>
 <translation id="5694491020339060116">Menu szybkości odtwarzania</translation>
 <translation id="5965409657393819302">Problem techniczny</translation>
 <translation id="6218961554829577610">Nie podobał mi się głos</translation>
 <translation id="6315170314923504164">Głos</translation>
-<translation id="6330455646577575965">Odtwarzanie dźwięku wygenerowanego przez AI</translation>
 <translation id="6343633247422081848">Mech</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Twój adres URL zostanie przesłany wraz z opinią, abyśmy mogli poprawić jakość usługi i badań.</translation>
 <translation id="8481839122437406573">Spokojny</translation>
 <translation id="8756370108715456837">Błędy merytoryczne</translation>
-<translation id="881960277396325853">Generuję audio stworzone przez AI…</translation>
 <translation id="8953618380150219653">Odtwarzacz „Odsłuchaj tę stronę” otwarty na całą wysokość.</translation>
 <translation id="978117257931832348">Niski</translation>
 </translationbundle>

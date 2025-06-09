@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Reinicia per actualitzar &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium et recomana que revisis aquesta extensió</translation>
 <translation id="1042552502243217427">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chromium fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
+<translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1083934481477628225">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium</translation>
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
 <translation id="2137162749895930932">Tanca la pantalla de traducció</translation>
 <translation id="215352261310130060">Chromium ha bloquejat aquesta baixada perquè el lloc web no utilitza una connexió segura i és possible que el fitxer s'hagi manipulat</translation>
-<translation id="2157600032285353789">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chromium</translation>
 <translation id="2174178932569897599">Personalitza Chromium</translation>
 <translation id="2174917724755363426">La instal·lació no s'ha completat. Confirmes que vols cancel·lar-la?</translation>
 <translation id="2185166961232948079">Chromium - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Actualitza Chromium per iniciar la sincronització</translation>
 <translation id="5988505247484123880">És habitual que els llocs web que visites recordin coses que t'interessen per personalitzar la teva experiència. Els llocs web també poden emmagatzemar informació a Chromium sobre els teus interessos.</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
-<translation id="6019451407441383358">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chromium de la part superior dreta</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6058380562449900225">Per protegir les teves dades, permet que Chromium suprimeixi els permisos dels llocs web que no has visitat recentment. En continuaràs rebent notificacions.</translation>
 <translation id="6063093106622310249">&amp;Obre a Chromium</translation>

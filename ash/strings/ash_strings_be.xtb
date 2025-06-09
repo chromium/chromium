@@ -1014,6 +1014,7 @@
 <translation id="4305817255990598646">Пераключыцца</translation>
 <translation id="4307713728991152670">Наладзіць прагляд нядаўніх фота, медыяфайлаў і праграм з тэлефона</translation>
 <translation id="4312840429157639164">Акно перадпрагляду камеры прывязана да правага верхняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
+<translation id="4312935606722154789">Згрупаваць або разгрупаваць два суседнія вокны</translation>
 <translation id="4316910396681052118">УСЕ ПРАГРАМЫ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Не паказваць прапановы па браўзеру Chrome</translation>
@@ -1582,7 +1583,6 @@
 <translation id="6095425951508823973">Дадаць падключэнне праз <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Зменена ў мінулым месяцы</translation>
 <translation id="6103838137565245112">сістэма</translation>
-<translation id="610395411842312282">Згрупаваць два суседнія вокны</translation>
 <translation id="6108952804512516814">Стварыць з дапамогай AI</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -2531,7 +2531,7 @@
 <translation id="945383118875625837">Перацягнуць спасылку на панэль закладак</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="951991426597076286">Адхіліць</translation>
-<translation id="953431725143473984">Завяршыць працу прылады?</translation>
+<translation id="953431725143473984">Завяршыць работу прылады?</translation>
 <translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="954520015070501466">30 хв</translation>
 <translation id="956452277966142925">Налады гульнявой панэлі</translation>

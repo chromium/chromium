@@ -1013,6 +1013,7 @@
 <translation id="4305817255990598646">切换</translation>
 <translation id="4307713728991152670">设置查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4312840429157639164">相机已对准右上角。与系统界面冲突。</translation>
+<translation id="4312935606722154789">将两个并排窗口设为一组或取消分组</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">隐藏所有 Chrome 浏览器建议</translation>
@@ -1580,7 +1581,6 @@
 <translation id="6095425951508823973">添加与 <ph name="PROVIDER" /> 的关联</translation>
 <translation id="6099678161144790572">过去一个月内修改过</translation>
 <translation id="6103838137565245112">系统</translation>
-<translation id="610395411842312282">将两个并排窗口设为一组</translation>
 <translation id="6108952804512516814">利用 AI 创建</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />语音识别结果文件已下载完毕</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>

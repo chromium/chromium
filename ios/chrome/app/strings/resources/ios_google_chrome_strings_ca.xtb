@@ -138,7 +138,6 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="4724297637870447613">Utilitza Chrome a tot arreu</translation>
 <translation id="4738647308035481133">Pàgina de Google Chrome</translation>
 <translation id="4742795653798179840">S'han suprimit les dades de Chrome</translation>
-<translation id="4749294594657945639">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chrome per a l'Emplenament automàtic.</translation>
 <translation id="4761869838909035636">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="4798859546468762093">Per obtenir personalització i altres funcions, inclou Chrome a <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 <translation id="6533470733797826516">Inicia la sessió més de pressa amb Emplenament automàtic de Chrome</translation>
 <translation id="6536544321553662809">Estableix Chrome com a navegador predeterminat per compartir i obrir enllaços fàcilment</translation>
 <translation id="6545449117344801102">Chrome detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
+<translation id="6611692150236062461">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chrome per a l'Emplenament automàtic.</translation>
 <translation id="6636941099779251629">La teva organització requereix que iniciïs la sessió per utilitzar Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
 <translation id="6647304104688527905">Obre una pestanya nova a Chrome.</translation>

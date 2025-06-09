@@ -473,7 +473,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1312721752506309252">Erweiterter Schutz ist aktiviert</translation>
 <translation id="1312811472299082263">Aus einem Ansible-Playbook oder einer Crostini-Sicherungsdatei erstellen</translation>
 <translation id="13130607084115184">Deine gespeicherten Passwörter kannst du hier sehen. Um Passwörter auf dieses Gerät in <ph name="BRAND" /> zu importieren, <ph name="BEGIN_LINK" />wähle eine CSV-Datei aus<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971">„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ wurden entzogen</translation>
 <translation id="1313405956111467313">Automatische Proxy-Konfiguration</translation>
 <translation id="131364520783682672">Feststelltaste</translation>
 <translation id="1313660246522271310">Du wirst von allen Websites abgemeldet, auch auf offenen Tabs</translation>
@@ -4172,6 +4171,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3876219572815410515">Fenstergröße nach oben angepasst</translation>
 <translation id="3877075909000773256">Nearby Share-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Du kannst auf der Vorschaukarte, die beim Bewegen des Mauszeigers auf einen Tab erscheint, die Arbeitsspeichernutzung und Bilder anzeigen lassen</translation>
+<translation id="3877603629930976930">Nicht teilen</translation>
 <translation id="3878445208930547646">Das Kopieren von dieser Website ist nicht zulässig</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3880513902716032002">Einige der besuchten Seiten werden vorab geladen</translation>
@@ -4597,7 +4597,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4190492351494485814">Zur Ersteinrichtung musst du mit dem Internet verbunden sein, damit Dateien mit deinem Chromebook synchronisiert werden können</translation>
 <translation id="4190828427319282529">Tastaturfokus hervorheben</translation>
 <translation id="4191892134568599822">Mit <ph name="FEATURE_NAME" /> empfangen?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Berechtigungen für 1 nicht verwendete Website entfernt}other{Berechtigungen für {NUM_SITES} nicht verwendete Websites entfernt}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Exklusiv für: <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Vertrauenswürdige Zertifizierungsstelle</translation>
@@ -5151,7 +5150,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4585793705637313973">Seite bearbeiten</translation>
 <translation id="4586275095964870617"><ph name="URL" /> konnte nicht in einem alternativen Browser geöffnet werden. Bitte setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="4587589328781138893">Websites</translation>
-<translation id="4588497044036650559">Optionenseite der Erweiterung für die neue Tab-Seite im aktuellen Tab öffnen</translation>
 <translation id="4588749726511456218">Beschleunigtes Scrollen <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> und <ph name="DOMAIN" /> scheinen zusammenzuhängen. Du solltest dein Passwort nur dann verwenden, wenn du <ph name="DOMAIN" /> vertraust.</translation>
 <translation id="4589713469967853491">Protokolle erfolgreich in Downloadverzeichnis geschrieben.</translation>
@@ -6114,6 +6112,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5278823018825269962">Status-ID</translation>
 <translation id="5279600392753459966">Alle blockieren</translation>
 <translation id="5280064835262749532">Anmeldedaten für <ph name="SHARE_PATH" /> aktualisieren</translation>
+<translation id="5280303168922585051">Diese Einstellung wurde von deiner Organisation festgelegt. Möchtest du diese Suchmaschine wirklich löschen?</translation>
 <translation id="5280426389926346830">Verknüpfung erstellen?</translation>
 <translation id="5281013262333731149">Wird in <ph name="OPEN_BROWSER" /> geöffnet</translation>
 <translation id="528208740344463258">Wenn du Android-Apps herunterladen und verwenden möchtest, musst du zuerst dieses erforderliche Update installieren. Du kannst dein <ph name="DEVICE_TYPE" /> während des Updates nicht nutzen. Nach Abschluss der Installation wird dein <ph name="DEVICE_TYPE" /> neu gestartet.</translation>
@@ -6239,7 +6238,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5376931455988532197">Datei zu groß</translation>
 <translation id="5377367976106153749">Kamerazugriff aktivieren?</translation>
 <translation id="5379140238605961210">Zugriff auf das Mikrofon weiter blockieren</translation>
-<translation id="5380424552031517043">„<ph name="PERMISSION" />“ wurde entzogen</translation>
 <translation id="5380526436444479273">Bitte warte einige Minuten und versuche es noch einmal</translation>
 <translation id="5382591305415226340">Unterstützte Links verwalten</translation>
 <translation id="5384401776498845256">Wer Inhalte mit dir teilen kann</translation>
@@ -6974,7 +6972,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5919305207330938913">Alle erhobenen Daten werden gemäß der <ph name="BEGIN_LINK" />Datenschutzerklärung von Google<ph name="END_LINK" /> verarbeitet.</translation>
-<translation id="5919486630433391408">Firmware-Updates wurden von deinem Administrator deaktiviert.</translation>
 <translation id="5920543303088087579">Die Möglichkeit einer Verbindung zu diesem Netzwerk wurde von deinem Administrator deaktiviert</translation>
 <translation id="5922963926582976524">Verbindung zum Instant-Hotspot-Netzwerk trennen</translation>
 <translation id="5924047253200400718">Hilfe aufrufen, <ph name="SCANNING_STATUS" /></translation>
@@ -7095,7 +7092,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6003479444341796444">Titelleiste wird jetzt angezeigt</translation>
 <translation id="6003582434972667631">Das Design wurde von deiner Organisation festgelegt</translation>
 <translation id="6005045517426700202">Backsteingebäude</translation>
-<translation id="6006392003290068688">„<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ wurden entzogen</translation>
 <translation id="6006484371116297560">Klassisch</translation>
 <translation id="6007053304250788613">Im Spiegelmodus kann nur ein Display ausgeschlossen werden</translation>
 <translation id="6007240208646052708">Die Sprachsuche ist nicht in deiner Sprache verfügbar.</translation>
@@ -8448,6 +8444,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
 <translation id="697508444536771064">Linux herunterfahren</translation>
 <translation id="6978121630131642226">Suchmaschinen</translation>
+<translation id="6978236010531171013">Trotzdem freigeben</translation>
 <translation id="6978717888677691380">Von dir blockierte Websites</translation>
 <translation id="6979041727349121225">Energiesparmodus</translation>
 <translation id="6979044105893951891">Verwaltete Gastsitzungen starten und beenden</translation>
@@ -8548,7 +8545,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7039912931802252762">Microsoft-Smartcard-Anmeldung</translation>
 <translation id="7039951224110875196">Google-Konto für ein Kind erstellen</translation>
 <translation id="7039968672732182060">Dein Chromebook erhält keine Sicherheitsupdates mehr. Wir empfehlen, für die neuesten Sicherheits- und Softwareupdates auf ein neues Gerät umzusteigen. Es gelten die Angebotsbedingungen.</translation>
-<translation id="7041405817194720353">„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere wurden entzogen</translation>
 <translation id="7042116641003232070">Speichern von Daten auf deinem Gerät genehmigt</translation>
 <translation id="7043108582968290193">Fertig! Keine nicht kompatiblen Anwendungen gefunden.</translation>
 <translation id="7044124535091449260">Weitere Informationen zum Websitezugriff</translation>
@@ -8664,6 +8660,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ausstehend</translation>
 <translation id="7132886488919643383">Mit Google AI Unterstützung beim Lesen, Schreiben und Erstellen erhalten</translation>
 <translation id="7134098520442464001">Schrift verkleinern</translation>
+<translation id="7134653428559514680">Das Teilen von Inhalten dieser Website wird nicht empfohlen</translation>
 <translation id="7134951043985383439">Gefährliche Datei heruntergeladen</translation>
 <translation id="7135729336746831607">Bluetooth aktivieren?</translation>
 <translation id="7136694880210472378">Als Standard festlegen</translation>
@@ -8829,7 +8826,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
-<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem:</translation>
+<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet. Daher können andere Personen als du bestimmte Informationen in deinem Profil einsehen, wie z. B.:</translation>
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
 <translation id="7267044199012331848">Die virtuelle Maschine konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lege den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
@@ -9110,6 +9107,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7460045493116006516">Derzeit genutztes Design</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="746216226901520237">Das nächste Mal wird dein <ph name="DEVICE_TYPE" /> von deinem Smartphone entsperrt. Du kannst Smart Lock in den Einstellungen deaktivieren.</translation>
+<translation id="7463068149674892185">Diese Aktion wird nicht empfohlen</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Deine Organisation legt fest, wie die von diesen Funktionen erhobenen Daten verwendet werden dürfen.</translation>
 <translation id="7464645554245611385">Letzte Aktualisierung dieses Tabs</translation>
@@ -11673,7 +11671,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="934244546219308557">Gruppe benennen</translation>
 <translation id="93480724622239549">Programmfehler oder sonstiger Fehler</translation>
 <translation id="9354763467503131">Darf nachfragen, ob Web-Apps auf deinem Gerät installiert werden dürfen</translation>
-<translation id="936329857119665832">Wird im aktuellen Tab geöffnet</translation>
 <translation id="936646668635477464">Kamera &amp; Mikrofon</translation>
 <translation id="936801553271523408">Fehlerberichte des Systems</translation>
 <translation id="93766956588638423">Erweiterung reparieren</translation>

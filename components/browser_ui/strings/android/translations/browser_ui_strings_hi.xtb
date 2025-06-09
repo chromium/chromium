@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">किसी साइट को आपके आस-पास की जगह का 3D मैप बनाने या कैमरे की स्थिति ट्रैक करने की अनुमति देने से पहले पूछें (सुझाया गया)</translation>
 <translation id="2185965788978862351">इससे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगी, जिन्हें साइटों या ऐप्लिकेशन ने आपकी होम स्क्रीन पर सेव किया है.</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{बीता हुआ कल}one{<ph name="NUM_DAYS_MANY" /> दिन पहले}other{<ph name="NUM_DAYS_MANY" /> दिन पहले}}</translation>
 <translation id="2215727959747642672">फ़ाइल में बदलाव करना</translation>
 <translation id="2218389616572918761">साइटें, आपके माइक्रोफ़ोन का इस्तेमाल करने की अनुमति मांग सकती हैं</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> को कैमरे का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6530703012083415527">इस सेटिंग के चालू होने पर, साइटें पॉप-अप का इस्तेमाल और रीडायरेक्ट कर सकती हैं. इस सेटिंग के बंद होने पर, साइटें पॉप-अप का इस्तेमाल और रीडायरेक्ट नहीं कर सकती हैं.</translation>
 <translation id="6540488083026747005">इस साइट पर आपने तीसरे पक्ष की कुकी को अनुमति दी है</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हफ़्ते पहले}one{<ph name="NUM_WEEKS_MANY" /> हफ़्ते पहले}other{<ph name="NUM_WEEKS_MANY" /> हफ़्ते पहले}}</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
 <translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">कोई साइट आपके माइक्रोफ़ोन का इस्तेमाल कर रही है</translation>
 <translation id="7561196759112975576">हमेशा</translation>
 <translation id="7573594921350120855">आम तौर पर, साइटें, वीडियो चैटिंग जैसी कम्यूनिकेशन सुविधाओं के लिए, आपके वीडियो कैमरा का इस्तेमाल करती हैं</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महीने पहले}one{<ph name="NUM_MONTHS_MANY" /> महीने पहले}other{<ph name="NUM_MONTHS_MANY" /> महीने पहले}}</translation>
 <translation id="757524316907819857">साइटों को सुरक्षित कॉन्टेंट चलाने से रोकें</translation>
 <translation id="7594634374516752650">ब्लूटूथ डिवाइस से जुड़ा हुआ है</translation>
 <translation id="7617547684249261169">आपके पास अपना ब्राउज़िंग इतिहास, कुकी, साइट डेटा, और अन्य डेटा का कुछ हिस्सा या पूरा डेटा मिटाने का विकल्प है</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">चुना गया हटाएं</translation>
 <translation id="7881140103901777395">Chrome, ज़्यादातर साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से रोकता है. हालांकि, इस साइट को तीसरे पक्ष की कुकी इस्तेमाल करने की अनुमति है. ऐसा इसलिए, क्योंकि यह बुनियादी सेवाएं देने के लिए इन कुकी पर निर्भर करती है.\n\n<ph name="BEGIN_LINK" />तीसरे पक्ष की कुकी का ऐक्सेस मैनेज करने<ph name="END_LINK" /> के लिए, सेटिंग पर जाएं.</translation>
 <translation id="7882806643839505685">किसी खास साइट के लिए आवाज़ की अनुमति दें.</translation>
+<translation id="7891547341794213004">'इस टैब के साथ जारी रखें' कार्ड को छिपाएं</translation>
 <translation id="789180354981963912">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें:</translation>
 <translation id="789722939441020330">साइटों को अपने-आप कई फ़ाइलें डाउनलोड करने की अनुमति न दें</translation>
 <translation id="7940722705963108451">मुझे याद दिलाएं</translation>

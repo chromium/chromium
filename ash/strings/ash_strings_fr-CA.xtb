@@ -1013,6 +1013,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4305817255990598646">Changer</translation>
 <translation id="4307713728991152670">Configurer l'affichage des photos, des applications et du contenu multimédia récents de votre téléphone</translation>
 <translation id="4312840429157639164">Caméra alignée sur le coin supérieur droit. Conflit avec la surface du système.</translation>
+<translation id="4312935606722154789">Grouper ou dégrouper deux fenêtres côte à côte</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Masquer toutes les suggestions du navigateur Chrome</translation>
@@ -1581,7 +1582,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6095425951508823973">Ajouter une connexion avec <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
-<translation id="610395411842312282">Grouper deux fenêtres côte à côte</translation>
 <translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

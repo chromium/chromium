@@ -71,7 +71,6 @@
 <translation id="1118429183611783760">ເຄື່ອງດູດຝຸ່ນ ແລະ ເບິ່ງແຍງພື້ນ</translation>
 <translation id="1122714970786750095">ອີເລັກໂທຣນິກ ແລະ ການໄຟຟ້າ</translation>
 <translation id="1123753900084781868">ຄຳບັນຍາຍສົດບໍ່ສາມາດໃຊ້ໄດ້ໃນຕອນນີ້</translation>
-<translation id="1125453215844207206">ກຣາບຟິກທີ່ບໍ່ມີປ້າຍກຳກັບ. ກຳລັງດຶງຂໍ້ຄວາມ, ເຊິ່ງຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="112840717907525620">ແຄຊ໌ນະໂຍບາຍໃຊ້ໄດ້</translation>
 <translation id="1131264053432022307">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
@@ -326,7 +325,6 @@
 <translation id="1549470594296187301">ຕ້ອງເປີດໃຊ້ງານ JavaScript ເພື່ອໃຊ້ຄຸນສົມບັດໃຊ້ງານນີ້.</translation>
 <translation id="1553152622374372421">ກິລາລະດູໜາວ</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
-<translation id="1554485704925237240">ຄວບຄຸມຜູ້ອ່ານທີ່ມີຊື່ວ່າ <ph name="READERNAME" /> ແລະ ບັດອັດສະລິຍະທີ່ໃຊ້ກັບພວກມັນ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1555191101192706055">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກລວງໃຫ້ທ່ານຕິດຕັ້ງຊອບແວທີ່ເປັນອັນຕະລາຍເຊິ່ງສົ່ງຜົນກະທົບຕໍ່ວິທີການທ່ອງເວັບຂອງທ່ານ — ຕົວຢ່າງ: ໂດຍການປ່ຽນໜ້າຫຼັກຂອງທ່ານ ຫຼື ສະແດງໂຄສະນາເພີ່ມເຕີມຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="1559231233244409191">ເຈ້ຍແກັດ (3 ຊັ້ນ)</translation>
@@ -448,6 +446,7 @@
 <translation id="1734878702283171397">ລອງຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ໝົດອາຍຸ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">ຄອມພິວເຕີ</translation>
+<translation id="1741474054575634405">ຈັດການບັດສະມາຊິກ...</translation>
 <translation id="1741613555002899862">ຕ້ອງລະບຸ ແລະ ເປັນສະຕຣິງທີ່ຖືກຕ້ອງເມື່ອ DnsOverHttpsMode ແມ່ນ <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">ເຄື່ອງນອນ ແລະ ຜ້າປູບ່ອນນອນ</translation>
 <translation id="1743892871127720056">ຊື່ຕາຕະລາງປຽບທຽບ, ແກ້ໄຂຂໍ້ຄວາມ</translation>
@@ -488,6 +487,7 @@
 <translation id="180757923930449935">(ແບບຈຳລອງ 64 ບິດ)</translation>
 <translation id="180991881384371158">CVC ຂອງທ່ານແມ່ນສະແດງຢູ່ດ້ານຫຼັງບັດຂອງທ່ານ. ໂດຍເປັນ 3 ຕົວເລກສຸດທ້າຍທີ່ຢູ່ດ້ານຂວາເທິງຫ້ອງລາຍເຊັນ.</translation>
 <translation id="1810391395243432441">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍການລັອກໜ້າຈໍຂອງທ່ານ</translation>
+<translation id="1810866804106729802">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນເມື່ອບັນທຶກບັດຂອງທ່ານໄວ້. ລະບົບຈະບັນທຶກລາຍລະອຽດບັດໄວ້ໃນ Chrome ຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1812527064848182527">ແນວນອນ</translation>
 <translation id="1812975699435941848">ການສຶກສາດ້ານສຸຂະພາບ ແລະ ການເຝິກອົບຮົມການແພດ</translation>
 <translation id="1816436748874040213">ສາມາດຂໍໃຫ້ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວໄດ້</translation>
@@ -846,6 +846,7 @@
 <translation id="2399344929880464793">IBAN ນີ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ມັນໃນທົ່ວບໍລິການ Google.</translation>
 <translation id="2399868464369312507">Google Chrome ກຳລັງພະຍາຍາມແກ້ໄຂວິທີການຈ່າຍເງິນ.</translation>
 <translation id="2400263725572336749">ເພີ່ມໜັງສືຜ່ານແດນ</translation>
+<translation id="2400271059665846158">ຈັດການບັດສະມາຊິກຂອງທ່ານໃນ Google Wallet</translation>
 <translation id="2400600116338235695">ສາມາດຂໍເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
 <translation id="2404884497378469141">ລອງສຳເນົາໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="2413155254802890957">ເກົ່າ</translation>
@@ -952,6 +953,7 @@
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ເພີ່ມແຖບແລ້ວ</translation>
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2587841377698384444">ລະ​ຫັດ API ຂອງໄດເຣັກທໍຣີ:</translation>
+<translation id="2588322182880276190">ໂລໂກ່ຂອງ Chrome</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2594318783181750337">ມຸມມອງເວັບແບບດ່ວນ:</translation>
 <translation id="2595719060046994702">ອຸປະກອນ ແລະ ບັນຊີນີ້ບໍ່ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການຈັດຕັ້ງອື່ນ.</translation>
@@ -1028,6 +1030,7 @@
 <translation id="2725492561136085792">ກົດ Enter ເພື່ອເປີດໃຊ້ຄຳສັ່ງນີ້.</translation>
 <translation id="2725927759457695883">ຕື່ມຊື່ເຕັມ</translation>
 <translation id="2726001110728089263">ຖາດຂ້າງ</translation>
+<translation id="272616190148046464">ບັດສະມາຊິກທັງໝົດຂອງທ່ານ</translation>
 <translation id="2728127805433021124">ໃບຢັ້ງຢືນຂອງເຊີບເວີໄດ້ຮັບການລົງລາຍເຊັນດ້ວຍການໃຊ້ຂັ້ນຕອນການລົງລາຍເຊັນອ່ອນແອ</translation>
 <translation id="272937284275742856">ກຳລັງຢັ້ງຢືນລາຍລະອຽດການຈ່າຍເງິນຂອງທ່ານຢ່າງປອດໄພ...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ກຳລັງເປີດໃຊ້ Connectivity Diagnostics<ph name="END_LINK" /></translation>
@@ -1229,6 +1232,7 @@
 <translation id="3113930177999394798">ພິມ @history ເພື່ອຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ເຊິ່ງຂັບເຄື່ອນໂດຍ AI</translation>
 <translation id="3114040155724590991">ກຳລັງອັບເດດລະບົບ Android
     ການເລີ່ມແອັບຂອງທ່ານອາດໃຊ້ເວລາດົນກວ່າປົກກະຕິ.</translation>
+<translation id="3114197119223448048">ການເຄື່ອນໄຫວໃໝ່</translation>
 <translation id="3115363211799416195">{0,plural, =1{ດາວໂຫຼດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}other{ດາວໂຫຼດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນ.</translation>
 <translation id="3116158981186517402">ແຍກອອກເປັນຊັ້ນໆ</translation>
@@ -1381,6 +1385,7 @@
 <translation id="3362968246557010467">ນະໂຍບາຍນີ້ຖືກສຳເນົາໂດຍອັດຕະໂນມັດຈາກນະໂຍບາຍ <ph name="OLD_POLICY" /> ທີ່ເຊົາຮອງຮັບແລ້ວ. ທ່ານຄວນໃຊ້ນະໂຍບາຍນີ້ແທນ.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> ຕ້ອງການໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີ</translation>
 <translation id="3369192424181595722">ໂມງ​ຜິດ​ພາດ</translation>
+<translation id="3370855919511944393">ການຕັ້ງຄ່າ Wallet</translation>
 <translation id="3371064404604898522">ຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="3371186787117738282">ເພີ່ມ <ph name="ATTRIBUTE_NAME" /> ແລ້ວ</translation>
 <translation id="337363190475750230">ຖອນການຈັດໃຫ້ແລ້ວ</translation>
@@ -1621,7 +1626,6 @@
 <translation id="3728173127485570463">ໂປຣແກຣມທ່ອງເວັບ Chrome ຈະບໍ່ຕ້ອງໃຊ້ລາຍນິ້ວມືຂອງທ່ານໃນການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດອີກຕໍ່ໄປ</translation>
 <translation id="3736739313435669994">ທ່ານໄດ້ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
-<translation id="3738428049780661523">ສ້າງຂຶ້ນເມື່ອ <ph name="DATE" /></translation>
 <translation id="3739842843727261045">ປຸ່ມຍົກໂປ້ຈະສົ່ງຄຳຕິຊົມວ່າທ່ານຖືກໃຈຜົນການຊອກຫາເຫຼົ່ານີ້</translation>
 <translation id="3740447166056383374">ຕ້ອງກວດສອບກ່ອນທີ່ຈະສຳເນົາ</translation>
 <translation id="374325029554577103">ຜະລິດຕະພັນເທັກໂນໂລຢີຟິດເນສ</translation>
@@ -1688,6 +1692,7 @@
 <translation id="3839220096695873023">ໄຮບຣິດ ແລະ ຍານພາຫະນະທາງເລືອກ</translation>
 <translation id="3841356782900714251">ຕົວອ່ານບັດອັດສະລິຍະ</translation>
 <translation id="384315386171052386">ປາ ແລະ ອາຫານທະເລ</translation>
+<translation id="3843447501960446468">ຈັດການບັດສະມາຊິກ...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງ Google Doc ໃໝ່ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
@@ -2257,6 +2262,7 @@
 <translation id="4844937814014739139">ການເລື່ອນ ແລະ ການຊູມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="484671803914931257">ຮັບສ່ວນຫຼຸດຢູ່ <ph name="MERCHANT_NAME" /> ແລະ ອື່ນໆ</translation>
 <translation id="484988093836683706">ໃຊ້ການປົດລັອກອຸປະກອນ</translation>
+<translation id="4850669014075537160">ການເລື່ອນ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="4854853140771946034">ສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="4855395119669662878">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະເລີ່ມອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ໃນວັນທີ <ph name="DATE_TIME" />. ເຊື່ອມຕໍ່ອຸປະກອນຂອງທ່ານໄວ້ຈົນກວ່າການອັບໂຫຼດໄຟລ໌ຂອງທ່ານຈະສຳເລັດ. ໃນລະຫວ່າງທີ່ອັບໂຫຼດ, ທ່ານຈະສາມາດອ່ານໄຟລ໌ໃນເຄື່ອງໄດ້ເທົ່ານັ້ນ.</translation>
@@ -2822,6 +2828,7 @@
 <translation id="5826507051599432481">ຊື່ທົ່ວໄປ (CN)</translation>
 <translation id="5830698870816298009">ກ້ອງ ແລະ ການເຄື່ອນໄຫວ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
+<translation id="5832976493438355584">ລັອກ​ແລ້ວ</translation>
 <translation id="5837220895135257862">ເພີ່ມພື້ນທີ່ຫວ່າງໃນ <ph name="CLOUD_PROVIDER" /> ກ່ອນແລ້ວລອງໃໝ່</translation>
 <translation id="5838278095973806738">ທ່ານບໍ່ຄວນປ້ອນຂໍ້ມູນທີ່ອ່ອນໄຫວໃດໆໃສ່ເວັບໄຊນີ້ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ), ເພາະວ່າມັນອາດຈະຖືກລັກໂດຍຜູ້ໂຈມຕີໄດ້.</translation>
 <translation id="5838732667866024867">ທ່ານສາມາດໃຊ້ລູກສອນຊ້າຍ/ຂວາເພື່ອກວດສອບການປ່ຽນແປງລາຄາຢູ່ກຣາບໄດ້</translation>
@@ -3509,7 +3516,6 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">ຈັດການສິດເຂົ້າເຖິງຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6979440798594660689">ປິດສຽງ (ຄ່າເລີ່ມຕົ້ນ)</translation>
-<translation id="6984270784814146224">ຮູບພາບທີ່ບໍ່ມີປ້າຍກຳກັບ. ກຳລັງດຶງຂໍ້ຄວາມ, ເຊິ່ງຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="6987806006823772670">ຊອງ (ເຄືອບ)</translation>
 <translation id="6989256887001961296">ເນື້ອຫານີ້ຖືກບລັອກ.</translation>
 <translation id="6989763994942163495">ສະ​ແດງການຕັ້ງຄ່າຂັ້ນສູງ...</translation>
@@ -4803,6 +4809,7 @@
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="9222403027701923763">ໂຮງຮຽນປະຖົມ ແລະ ມັດທະຍົມ (K-12)</translation>
+<translation id="922849469395748170">ບັດສະມາຊິກ</translation>
 <translation id="93020190163435405">ການເຝິກວຽກ</translation>
 <translation id="931598121743515856">ການຊື້ຕ້ອງມີມູນຄ່າສູງກວ່າ <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">ບັດ Diners Club</translation>

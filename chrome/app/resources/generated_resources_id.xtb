@@ -473,7 +473,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1312721752506309252">Perlindungan yang ditingkatkan aktif</translation>
 <translation id="1312811472299082263">Buat dari Playbook Ansible atau file cadangan Crostini</translation>
 <translation id="13130607084115184">Sandi tersimpan akan muncul di sini. Untuk mengimpor sandi ke <ph name="BRAND" /> di perangkat ini, <ph name="BEGIN_LINK" />pilih file CSV.<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971">Menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">Konfigurasi proxy otomatis</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Anda akan logout dari semua situs, termasuk tab apa pun yang aktif</translation>
@@ -2530,7 +2529,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2727712005121231835">Ukuran Sebenarnya</translation>
 <translation id="2727744317940422214">Maaf, terjadi error. Berikan masukan dan cantumkan #bruschetta di deskripsi. Kode error adalah <ph name="ERROR" />. Pembersihan gagal, Anda mungkin perlu melakukannya secara manual.</translation>
 <translation id="2729577602370119849">Akses dan kelola printer dengan mudah</translation>
-<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat yang lebih akurat. Perkiraan lokasi perangkat yang lebih akurat tersebut digunakan oleh aplikasi dan layanan Android untuk menyediakan fitur berdasarkan lokasi. Untuk melakukannya, Google secara berkala mengumpulkan informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk berkontribusi pada lokasi sinyal nirkabel yang diperoleh melalui crowdsource.<ph name="END_PARAGRAPH1" />
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat dengan lebih akurat, yang kemudian dimanfaatkan aplikasi dan layanan untuk menyediakan fitur berbasis lokasi. Untuk melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk ikut memberikan lokasi sinyal nirkabel secara crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi yang dikumpulkan dari perangkat ini untuk: meningkatkan akurasi lokasi serta layanan yang berbasis lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. Informasi ini tidak digunakan untuk mengidentifikasi individu mana pun.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda dapat menonaktifkan Akurasi Lokasi kapan saja di setelan lokasi perangkat ini di bagian Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi &gt; Setelan lokasi lanjutan. Jika Akurasi Lokasi dinonaktifkan, data Akurasi Lokasi tidak akan dikumpulkan. Untuk aplikasi dan layanan Android, hanya alamat IP yang digunakan, jika tersedia, untuk menentukan lokasi perangkat ini, yang dapat memengaruhi ketersediaan dan akurasi lokasi untuk aplikasi dan layanan Android seperti Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Mencadangkan aplikasi dan file Linux</translation>
@@ -4190,6 +4189,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3876219572815410515">Jendela diubah ukurannya ke atas</translation>
 <translation id="3877075909000773256">Setelan Berbagi Langsung untuk perangkat <ph name="USER_NAME" />, berbagi menggunakan akun <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Pilih untuk menampilkan penggunaan memori dan gambar di pratinjau kartu informasi tab</translation>
+<translation id="3877603629930976930">Jangan bagikan</translation>
 <translation id="3878445208930547646">Menyalin dari situs ini tidak diizinkan</translation>
 <translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3880513902716032002">Beberapa halaman yang Anda buka akan dipramuat</translation>
@@ -4358,7 +4358,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3988124842897276887">Tab ini terhubung ke perangkat USB</translation>
 <translation id="3988996860813292272">Pilih zona waktu</translation>
 <translation id="3989635538409502728">Logout</translation>
-<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat yang lebih akurat. Perkiraan lokasi perangkat yang lebih akurat tersebut digunakan oleh aplikasi dan layanan Android untuk menyediakan fitur berdasarkan lokasi. Untuk melakukannya, Google secara berkala mengumpulkan informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk berkontribusi pada lokasi sinyal nirkabel yang diperoleh melalui crowdsource.<ph name="END_PARAGRAPH1" />
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat dengan lebih akurat, yang kemudian dimanfaatkan aplikasi dan layanan untuk menyediakan fitur berbasis lokasi. Untuk melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat ini untuk ikut memberikan lokasi sinyal nirkabel secara crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi yang dikumpulkan dari perangkat ini untuk: meningkatkan akurasi lokasi serta layanan yang berbasis lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. Informasi ini tidak digunakan untuk mengidentifikasi individu mana pun.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda dapat menonaktifkan Akurasi Lokasi kapan saja di setelan lokasi perangkat ini di bagian Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi &gt; Setelan lokasi lanjutan. Jika Akurasi Lokasi dinonaktifkan, data Akurasi Lokasi tidak akan dikumpulkan. Untuk aplikasi dan layanan Android, hanya alamat IP yang digunakan, jika tersedia, untuk menentukan lokasi perangkat ini, yang dapat memengaruhi ketersediaan dan akurasi lokasi untuk aplikasi dan layanan Android seperti Google Maps.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Pelajari lebih lanjut Akurasi Lokasi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
@@ -4523,7 +4523,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Sandi file</translation>
-<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat yang lebih akurat. Perkiraan lokasi perangkat yang lebih akurat tersebut digunakan oleh aplikasi dan layanan Android untuk menyediakan fitur berdasarkan lokasi. Untuk melakukannya, Google secara berkala mengumpulkan informasi tentang sensor perangkat dan sinyal nirkabel di dekat Anda untuk berkontribusi pada lokasi sinyal nirkabel yang diperoleh melalui crowdsource.<ph name="END_PARAGRAPH1" />
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat dengan lebih akurat, yang kemudian dimanfaatkan aplikasi dan layanan untuk menyediakan fitur berbasis lokasi. Untuk melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat Anda untuk ikut memberikan lokasi sinyal nirkabel secara crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi ini tanpa mengidentifikasi Anda untuk: meningkatkan akurasi lokasi serta layanan yang berbasis lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda dapat menonaktifkan Akurasi Lokasi kapan saja di setelan lokasi perangkat Anda di bagian Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi &gt; Setelan lokasi lanjutan. Jika Akurasi Lokasi dinonaktifkan, data Akurasi Lokasi tidak akan dikumpulkan. Untuk aplikasi dan layanan Android, hanya alamat IP yang digunakan, jika tersedia, untuk menentukan lokasi perangkat Anda, yang dapat memengaruhi ketersediaan dan akurasi lokasi untuk aplikasi dan layanan Android seperti Google Maps.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Pelajari lebih lanjut Akurasi Lokasi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
@@ -4615,7 +4615,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4190492351494485814">Untuk penyiapan awal, Anda harus terhubung ke internet agar file dapat disinkronkan ke Chromebook</translation>
 <translation id="4190828427319282529">Sorotan fokus keyboard</translation>
 <translation id="4191892134568599822">Terima dengan <ph name="FEATURE_NAME" />?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Izin dihapus untuk 1 situs yang tidak digunakan}other{Izin dihapus untuk {NUM_SITES} situs yang tidak digunakan}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Eksklusif untuk <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />AI generatif bersifat eksperimental, dalam pengembangan awal, dan saat ini memiliki ketersediaan terbatas.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">CA Tepercaya</translation>
@@ -5169,7 +5168,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4585793705637313973">Edit halaman</translation>
 <translation id="4586275095964870617"><ph name="URL" /> tidak dapat dibuka di browser alternatif. Harap hubungi administrator sistem Anda.</translation>
 <translation id="4587589328781138893">Situs</translation>
-<translation id="4588497044036650559">Buka halaman opsi ekstensi halaman tab baru di tab saat ini</translation>
 <translation id="4588749726511456218">Akselerasi scroll <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> dan <ph name="DOMAIN" /> tampaknya berkaitan. Pastikan Anda memercayai <ph name="DOMAIN" /> sebelum menggunakan sandi Anda.</translation>
 <translation id="4589713469967853491">Log berhasil ditulis ke direktori Download.</translation>
@@ -6133,6 +6131,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5278823018825269962">ID Status</translation>
 <translation id="5279600392753459966">Blokir semua</translation>
 <translation id="5280064835262749532">Perbarui kredensial untuk <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">Setelan ini disiapkan oleh organisasi Anda. Yakin ingin menghapus mesin telusur ini?</translation>
 <translation id="5280426389926346830">Buat pintasan?</translation>
 <translation id="5281013262333731149">Buka di: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Untuk mendownload dan menggunakan aplikasi Android, Anda harus menginstal update yang diperlukan terlebih dahulu. Saat <ph name="DEVICE_TYPE" /> sedang diupdate, Anda tidak dapat menggunakannya. Setelah penginstalan selesai, <ph name="DEVICE_TYPE" /> akan dimulai ulang.</translation>
@@ -6259,7 +6258,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5376931455988532197">File terlalu besar</translation>
 <translation id="5377367976106153749">Aktifkan akses kamera?</translation>
 <translation id="5379140238605961210">Terus blokir akses mikrofon</translation>
-<translation id="5380424552031517043">Menghapus <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Tunggu beberapa menit, lalu coba lagi</translation>
 <translation id="5382591305415226340">Kelola link yang didukung</translation>
 <translation id="5384401776498845256">Yang dapat berbagi dengan Anda</translation>
@@ -6996,7 +6994,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="59174027418879706">Diaktifkan</translation>
 <translation id="5919305207330938913">Semua data yang dikumpulkan akan digunakan sesuai dengan <ph name="BEGIN_LINK" />Kebijakan Privasi<ph name="END_LINK" /> Google.</translation>
-<translation id="5919486630433391408">Update firmware dinonaktifkan oleh administrator.</translation>
 <translation id="5920543303088087579">Koneksi ke jaringan ini tidak diizinkan oleh administrator</translation>
 <translation id="5922963926582976524">Putuskan koneksi jaringan Hotspot instan</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
@@ -7118,7 +7115,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6003479444341796444">Panel judul sekarang ditampilkan</translation>
 <translation id="6003582434972667631">Tema disetel oleh Organisasi Anda</translation>
 <translation id="6005045517426700202">Bangunan bata</translation>
-<translation id="6006392003290068688">Menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6006484371116297560">Klasik</translation>
 <translation id="6007053304250788613">Hanya satu layar yang dapat dikecualikan dalam mode cermin</translation>
 <translation id="6007240208646052708">Penelusuran suara dalam bahasa Anda tidak tersedia.</translation>
@@ -8471,6 +8467,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="69739764870135975">Jika Google juga merupakan mesin telusur default Anda, Anda akan melihat saran yang lebih baik dan relevan secara kontekstual</translation>
 <translation id="697508444536771064">Matikan Linux</translation>
 <translation id="6978121630131642226">Mesin Telusur</translation>
+<translation id="6978236010531171013">Tetap bagikan</translation>
 <translation id="6978717888677691380">Situs yang Anda blokir</translation>
 <translation id="6979041727349121225">Penghemat Energi</translation>
 <translation id="6979044105893951891">Luncurkan dan tutup sesi tamu terkelola</translation>
@@ -8571,7 +8568,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">Buat Akun Google untuk anak</translation>
 <translation id="7039968672732182060">Chromebook Anda tidak lagi menerima update keamanan. Saatnya mengupgrade ke keamanan dan software terbaru. Persyaratan penawaran berlaku.</translation>
-<translation id="7041405817194720353">Menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya</translation>
 <translation id="7042116641003232070">Diizinkan menyimpan data ke perangkat Anda</translation>
 <translation id="7043108582968290193">Selesai! Tidak ditemukan aplikasi yang tidak kompatibel.</translation>
 <translation id="7044124535091449260">Pelajari akses situs lebih lanjut</translation>
@@ -8687,6 +8683,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7131896909366247105"><ph name="APP_NAME" />, menunggu</translation>
 <translation id="7132886488919643383">Gunakan AI Google untuk mendapatkan bantuan membaca, menulis, dan berkreasi</translation>
 <translation id="7134098520442464001">Perkecil Teks</translation>
+<translation id="7134653428559514680">Berbagi dari situs ini tidak direkomendasikan</translation>
 <translation id="7134951043985383439">File berbahaya didownload</translation>
 <translation id="7135729336746831607">Aktifkan Bluetooth?</translation>
 <translation id="7136694880210472378">Jadikan default</translation>
@@ -9132,6 +9129,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7460045493116006516">Tema saat ini yang telah diinstal</translation>
 <translation id="7461924472993315131">Sematkan</translation>
 <translation id="746216226901520237">Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
+<translation id="7463068149674892185">Tindakan ini tidak direkomendasikan</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Organisasi Anda mengelola cara penggunaan data yang dikumpulkan oleh fitur ini.</translation>
 <translation id="7464645554245611385">Pembaruan terakhir untuk tab ini</translation>
@@ -11070,7 +11068,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8803953437405899238">Buka tab baru dengan sekali klik</translation>
-<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat yang lebih akurat. Perkiraan lokasi perangkat yang lebih akurat tersebut digunakan oleh aplikasi dan layanan Android untuk menyediakan fitur berdasarkan lokasi. Untuk melakukannya, Google secara berkala mengumpulkan informasi tentang sensor perangkat dan sinyal nirkabel di dekat Anda untuk berkontribusi pada lokasi sinyal nirkabel yang diperoleh melalui crowdsource.<ph name="END_PARAGRAPH1" />
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Jika Akurasi Lokasi diaktifkan, informasi tentang sinyal nirkabel, seperti titik akses Wi-Fi dan menara BTS, serta data sensor perangkat, seperti akselerometer dan giroskop, akan digunakan untuk memperkirakan lokasi perangkat dengan lebih akurat, yang kemudian dimanfaatkan aplikasi dan layanan untuk menyediakan fitur berbasis lokasi. Untuk melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel di dekat perangkat Anda untuk ikut memberikan lokasi sinyal nirkabel secara crowdsource.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan informasi ini tanpa mengidentifikasi Anda untuk: meningkatkan akurasi lokasi serta layanan yang berbasis lokasi; dan secara umum meningkatkan, menyediakan, serta mengelola layanan Google. Kami memproses informasi ini berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda dapat menonaktifkan Akurasi Lokasi kapan saja di setelan lokasi perangkat Anda di bagian Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi &gt; Setelan lokasi lanjutan. Jika Akurasi Lokasi dinonaktifkan, data Akurasi Lokasi tidak akan dikumpulkan. Untuk aplikasi dan layanan Android, hanya alamat IP yang digunakan, jika tersedia, untuk menentukan lokasi perangkat Anda, yang dapat memengaruhi ketersediaan dan akurasi lokasi untuk aplikasi dan layanan Android seperti Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Buka di</translation>
@@ -11695,7 +11693,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="934244546219308557">Beri nama grup ini</translation>
 <translation id="93480724622239549">Bug atau Error</translation>
 <translation id="9354763467503131">Diizinkan untuk meminta penginstalan aplikasi web di perangkat Anda</translation>
-<translation id="936329857119665832">Dibuka di tab saat ini</translation>
 <translation id="936646668635477464">Kamera &amp; mikrofon</translation>
 <translation id="936801553271523408">Data diagnosis sistem</translation>
 <translation id="93766956588638423">Perbaiki ekstensi</translation>

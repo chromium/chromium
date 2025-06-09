@@ -3216,13 +3216,6 @@ Se ela não for definida, o JavaScript será executado, mas os usuários poderã
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="3211426942294667684">Configurações de login no navegador</translation>
-<translation id="3213872023700948990">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
-
-Quando ela está ativada ou sem definição, os controles de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão.
-
-Quando esta política está desativada, os controles de rolagem não podem ser focalizados pelo teclado por padrão.
-
-Esta política é uma solução temporária e será removida na versão M135.</translation>
 <translation id="3216094710930835317">O novo comportamento do analisador HTML que permite mais tags vai ser desativado.</translation>
 <translation id="3217774577897351942">A API <ph name="OFFSET_PARENT" /> está sendo modificada no <ph name="PRODUCT_NAME" /> para obedecer às mudanças que foram feitas no <ph name="FIREFOX_PRODUCT_NAME" /> e no <ph name="SAFARI_PRODUCT_NAME" />. Esta política retorna o comportamento antigo até a versão M120.
 
@@ -3310,6 +3303,15 @@ Se a política for definida como "true" (verdadeira) ou for deixada sem definiç
 <translation id="3256920103934729145">Impedir que os usuários ignorem páginas de aviso SSL</translation>
 <translation id="3257786863492892609">Controla as políticas do Screencast.</translation>
 <translation id="3258380413685430793">Executar todo o conteúdo do <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Essa política controla a visibilidade do card do Outlook na página "Nova guia". O card só vai aparecer nessa página se a política estiver ativada e sua organização tiver autorizado o uso dos dados do Calendário do Outlook no navegador.
+
+Os dados do Outlook não serão armazenados pelo navegador.
+
+O card do Outlook mostra o próximo evento da agenda e uma visão geral das outras reuniões do dia. O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar a próxima reunião.
+
+O card do Microsoft Outlook vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Outlook, consulte a página https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook não vai aparecer. Se <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Outlook vai aparecer se essa política também estiver ativada e houver dados para mostrar. Se <ph name="NTPCARDSVISIBLE" /> não for definida, o card do Outlook vai aparecer se esta política também estiver ativada, o usuário tiver ativado o card em "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="3261592499545947104">Número de segundos antes da expiração de um certificado quando a renovação precisa ser acionada.</translation>
 <translation id="3262080895269946462">Permitir que o WebSQL em contextos de terceiros fique desativado por padrão.</translation>
 <translation id="326341982850521928">Ativar a correção de cor</translation>
@@ -5844,6 +5846,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
 <translation id="5093603777978346818">Não ativar o protetor na tela de bloqueio.</translation>
+<translation id="5099140200662153931">Mostrar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
 <translation id="5099239365323299669">Da versão M106 em diante, não vai mais haver suporte para a cota persistente. Esta política vai reativar a funcionalidade de cota persistente até a versão M107.
 
       Se a política for ativada, o webkitRequestFileSystem com tipo persistente vai funcionar com essa cota.
@@ -6521,6 +6524,15 @@ A remoção foi feita na versão M112.</translation>
 <translation id="5511266910976210617">Não permitir o recurso Quero ajuda para escrever.</translation>
 <translation id="5511702823008968136">Ativar a barra de favoritos</translation>
 <translation id="5512418063782665071">URL da página inicial</translation>
+<translation id="5512785896190859782">Essa política controla a visibilidade do card de arquivos do SharePoint e do OneDrive na página "Nova guia". O card só vai aparecer na página "Nova guia" se a política estiver ativada e sua organização tiver autorizado o uso dos dados de arquivos do SharePoint e do OneDrive no navegador.
+
+Os dados do SharePoint e do OneDrive não serão armazenados pelo navegador.
+
+O card de recomendação de arquivos do SharePoint e do OneDrive mostra uma lista de arquivos recomendados.  O objetivo é resolver o problema da mudança de contexto e aumentar a produtividade, dando aos usuários um atalho para acessar os documentos mais importantes.
+
+O card da Microsoft para o SharePoint e o OneDrive vai precisar de mais configurações administrativas. Para mais informações sobre como conectar o card da página "Nova guia" do Chrome ao Sharepoint, consulte a página https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do SharePoint e do OneDrive não vai aparecer. Se <ph name="NTPCARDSVISIBLE" /> for ativada, o card do Sharepoint e do OneDrive vai aparecer caso essa política também esteja ativada e haja dados para mostrar. Se <ph name="NTPCARDSVISIBLE" /> for deixada sem definição, o card do SharePoint e do OneDrive vai aparecer se essa política também estiver ativada, o usuário tiver ativado o card na página "Personalizar o Chrome" e houver dados para mostrar.</translation>
 <translation id="5516293691820655022">Fechar o Chrome completamente</translation>
 <translation id="551639594034811656">Esta política define uma lista de porcentagens que determina a fração dos dispositivos <ph name="PRODUCT_OS_NAME" /> na UO a ser atualizada diariamente a partir do dia em que a atualização é descoberta pela primeira vez. A descoberta acontece após a publicação da atualização, já que o dispositivo pode levar algum tempo para procurar por atualizações.
 
@@ -6794,6 +6806,13 @@ gerenciamento do dispositivo.
 Há suporte à opção de algoritmo de chave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> desde a versão 132 do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Permitir o uso da API U2F Security Key descontinuada</translation>
 <translation id="5656177735561364047">Ativa o recurso de área de transferência compartilhada</translation>
+<translation id="5657289110555300740">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
+
+Quando ela está ativada ou sem definição, os controles de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão.
+
+Quando esta política está desativada, os controles de rolagem não podem ser focalizados pelo teclado por padrão.
+
+Esta política é uma solução temporária. A partir da versão M139, ela está descontinuada.</translation>
 <translation id="5657752663637568277">Esta política controla se os avisos de suspensão de uso do <ph name="CLOUD_PRINT_NAME" /> serão exibidos ao usuário na caixa de diálogo de visualização da impressão ou na página de configurações.
       Definir esta política como "Verdadeira" fará com que os avisos de suspensão de uso não sejam exibidos
       Definir esta política como "Falsa" ou deixá-la sem definição fará com que os avisos de suspensão de uso sejam exibidos.</translation>
@@ -7171,6 +7190,11 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="5917897389577978190">Gmail (compatível desde a versão 135)</translation>
 <translation id="592036544845479336">Reativar eventos de mutação descontinuados/removidos</translation>
 <translation id="5921713479449475707">Permitir atualização automática de downloads via HTTP</translation>
+<translation id="5923084443277419535">O analisador de HTML está sendo modificado para permitir mais tags HTML no elemento &lt;select&gt;. Essa política permite que o comportamento antigo do analisador de HTML seja usado até a versão M138.
+
+Se ela for ativada ou não for definida, o analisador de HTML vai permitir mais tags no elemento &lt;select&gt;.
+
+Se for desativada, o analisador de HTML vai restringir quais tags podem ser colocadas no elemento &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Esta política foi descontinuada porque o recurso que ela controla nunca foi lançado. Use a política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Se ela for deixada sem definição ou for definida como <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valor 0), um rótulo "Trabalho" ou "Escola" vai aparecer ao lado do avatar da barra de ferramentas.
@@ -9955,11 +9979,6 @@ Quando esta política é definida como falsa ou não é definida, o <ph name="PR
 Para mais informações sobre a política <ph name="IEEM_SITELIST_POLICY" /> do Internet Explorer, acesse: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Não permitir que os usuários façam capturas de tela e gravações de vídeo</translation>
 <translation id="7792796937016596423">O usuário não poderá capturar pacotes de rede</translation>
-<translation id="7795648856511126914">O analisador HTML está sendo modificado para permitir mais tags HTML no elemento &lt;select&gt;. Esta política permite que o comportamento antigo do analisador de HTML seja usado até a versão M136.
-
-Se ela for ativada ou deixada sem definição, o analisador de HTML vai permitir mais tags no elemento &lt;select&gt;.
-
-Se for desativada, o analisador HTML vai restringir quais tags podem ser colocadas no elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política foi removida na versão 89 do <ph name="PRODUCT_NAME" /> porque o uso de <ph name="FLASH_PLUGIN_NAME" /> foi suspenso.
 
       Se ela for definida como verdadeira, todo conteúdo em <ph name="FLASH_PLUGIN_NAME" /> incorporado em sites com permissão para <ph name="FLASH_PLUGIN_NAME" /> será executado, incluindo conteúdos pequenos ou de outras origens.

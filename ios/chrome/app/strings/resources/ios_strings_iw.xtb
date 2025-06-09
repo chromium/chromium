@@ -671,6 +671,7 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3850952228519377137">הסתרת האפשרות "מעקב אחר המחירים בכרטיסיות"</translation>
 <translation id="3851938967634752633">הסיסמאות של <ph name="WEBSITE" />, של <ph name="SECOND_WEBSITE" /> ושל <ph name="NUMBER_OF_ACCOUNTS" /> אתרים נוספים יימחקו. החשבונות שלך לא יימחקו.</translation>
+<translation id="3853162385423733133">‏המשך השימוש בסיסמאות ושמירה שלהן בחשבון שלך ב-Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3868495844258915202">‏הצגת כתובת ה-URL המלאה</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="5141363746588976328">הסתרת הכרטיס "ירידות במחיר"</translation>
 <translation id="5145331760738811130">יציאה מהכלי למעבר בין כרטיסיות</translation>
+<translation id="5148717509369231739">‏ייבוא מ-Safari</translation>
 <translation id="5157638238828697074">משהו השתבש. לא ניתן לפתוח את האפליקציה.</translation>
 <translation id="5163417375525818870">‏קובצי PDF</translation>
 <translation id="5168414296986405587">‏מותאם ל-iPadOS</translation>
@@ -1113,6 +1115,7 @@
 <translation id="5626245204502895507">לא ניתן להוריד את הקובץ בשלב הזה.</translation>
 <translation id="562753339521713441">הרצה של בדיקת האבטחה</translation>
 <translation id="5628388627414062173">{count,plural, =1{דף אחד ({count}) ברשימת הקריאה}one{‫{count} דפים ברשימת הקריאה}two{‫{count} דפים ברשימת הקריאה}other{‫{count} דפים ברשימת הקריאה}}</translation>
+<translation id="5632194969640946913">אפשר לחפש תוך כדי גלישה את מה שרואים בדף כדי לבדוק מוצרים, מקומות וטקסט.</translation>
 <translation id="5632485077360054581">איך עושים זאת?</translation>
 <translation id="5633237939819267663">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘}one{‫{count} סימניות נשמרו בתיקייה ‘{title}‘}two{‫{count} סימניות נשמרו בתיקייה ‘{title}‘}other{‫{count} סימניות נשמרו בתיקייה ‘{title}‘}}</translation>
 <translation id="564170563478022912">לצאת מהחשבון? נתוני החשבון שלא נשמרו יימחקו.</translation>

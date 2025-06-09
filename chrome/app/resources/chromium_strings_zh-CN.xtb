@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">重新启动以更新 Chromium 操作系统(&amp;C)</translation>
 <translation id="1040916596585577953">Chromium 建议您检查此扩展程序</translation>
 <translation id="1042552502243217427">当某个网站请求以私密方式预加载其网页上的链接时，Chromium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
+<translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1083934481477628225">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”</translation>
 <translation id="1104942323762546749">Chromium 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
-<translation id="2157600032285353789">您可以通过 Chromium 菜单打开书签、阅读模式等</translation>
 <translation id="2174178932569897599">自定义 Chromium</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="2185166961232948079">Chromium - 网络登录 - <ph name="PAGE_TITLE" /></translation>
@@ -357,7 +357,6 @@
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>
 <translation id="5988505247484123880">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chromium 中。</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
-<translation id="6019451407441383358">您可以通过右上角的 Chromium 菜单打开书签、阅读模式等</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6058380562449900225">为保护您的数据，对于您近期未访问的网站，请允许 Chromium 移除网站权限。此操作不会停用通知功能。</translation>
 <translation id="6063093106622310249">在 Chromium 中打开(&amp;O)</translation>

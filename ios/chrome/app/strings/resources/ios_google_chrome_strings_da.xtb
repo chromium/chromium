@@ -138,7 +138,6 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="4724297637870447613">Brug Chrome overalt</translation>
 <translation id="4738647308035481133">Google Chrome-side</translation>
 <translation id="4742795653798179840">Chrome-dataene er slettet</translation>
-<translation id="4749294594657945639">For nemt at tilgå dine gemte adgangskoder i andre apps skal du vælge Chrome til autofyld.</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
 <translation id="4798859546468762093">For at få personlig tilpasning og andre funktioner skal du medtage Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="6533470733797826516">Log hurtigere ind med autofyld i Chrome</translation>
 <translation id="6536544321553662809">Angiv Chrome som din standardbrowser, så du nemt kan dele og åbne links</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
+<translation id="6611692150236062461">Hvis du nemt vil have adgang til dine gemte adgangskoder i andre apps, skal du vælge Autofyld i Chrome.</translation>
 <translation id="6636941099779251629">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Google.</translation>
 <translation id="6647304104688527905">Åbner en ny fane i Chrome.</translation>

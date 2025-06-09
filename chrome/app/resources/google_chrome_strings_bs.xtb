@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Prilagodite i kontrolirajte Google Chrome. Dostupno je ažuriranje.</translation>
 <translation id="1028061813283459617">Da izbrišete podatke pregledanja samo s ovog uređaja, a da ih zadržite na Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Zatvaranje dijaloškog okvira za prijavu u Chrome klikom</translation>
+<translation id="1051793555070215510">Pomozite nam da poboljšamo anonimni način rada popunjavanjem 1-minutne ankete.</translation>
 <translation id="1059838145689930908">Da koristite ekstenziju kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se u Chrome.</translation>
 <translation id="1065672644894730302">Nije moguće sačuvati vaše postavke.
 
@@ -557,7 +558,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8019103195866286235">Programer je opozvao objavljivanje ove ekstenzije i može biti nesigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
 <translation id="8040768861829554732">Ekstenzija želi da se prijavite u Chrome</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8064015041956107954">Možete otvoriti oznake, način rada za čitanje i više u Chrome meniju u gornjem desnom uglu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
@@ -569,7 +569,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8177472873527554730">Nije moguće pronaći sadržaj na stranici</translation>
 <translation id="8221491193165283816">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite ovdje.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
-<translation id="8257796129973882597">Možete otvoriti oznake, način rada za čitanje i drugo u Chrome meniju</translation>
 <translation id="8267953129876836456">Chrome je pronašao neke sigurnosne preporuke koje trebate pregledati</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="829923460755755423">Dodajte prečicu za Google upravitelja lozinki</translation>

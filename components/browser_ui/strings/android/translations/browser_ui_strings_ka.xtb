@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">შეკითხვა საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="2185965788978862351">ამ მოქმედებით წაიშლება საიტების ან აპების მიერ თქვენს მთავარ ეკრანზე შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
 <translation id="2194856509914051091">გასათვალისწინებელი საკითხები</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{გუშინ}other{<ph name="NUM_DAYS_MANY" /> დღის წინ}}</translation>
 <translation id="2215727959747642672">ფაილების რედაქტირება</translation>
 <translation id="2218389616572918761">საიტებმა შეიძლება მოითხოვოს თქვენს მიკროფონზე წვდომა</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />-მა კამერით რომ ისარგებლოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="6530703012083415527">ჩართვის შემთხვევაში საიტებს შეეძლება ამომხტარი ფანჯრებისა და გადამისამართებების გამოყენება. გამორთვის შემთხვევაში საიტებს არ შეეძლება ამომხტარი ფანჯრებისა და გადამისამართებების გამოყენება.</translation>
 <translation id="6540488083026747005">თქვენ დაუშვით მესამე მხარის ქუქი-ჩანაწერები ამ საიტზე</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> კვირის წინ}other{<ph name="NUM_WEEKS_MANY" /> კვირის წინ}}</translation>
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაბლოკილია}}</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">ეს საიტი იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561196759112975576">ყოველთვის</translation>
 <translation id="7573594921350120855">როგორც წესი, საიტების მიერ თქვენი ვიდეოკამერა გამოიყენება კომუნიკაციასთან დაკავშირებული ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა ვიდეოჩეთი</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> თვის წინ}other{<ph name="NUM_MONTHS_MANY" /> თვის წინ}}</translation>
 <translation id="757524316907819857">საიტებისთვის დაცული კონტენტის დაკვრის დაბლოკვა</translation>
 <translation id="7594634374516752650">დაკავშირებულია Bluetooth მოწყობილობასთან</translation>
 <translation id="7617547684249261169">შეგიძლიათ, მთლიანად ან ნაწილობრივ წაშალოთ ისტორია, ქუქი-ჩანაწერები, საიტების და სხვა მონაცემები</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
 <translation id="7881140103901777395">Chrome უზღუდავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენებას. ამის მიუხედავად, მესამე მხარის ქუქი-ჩანაწერები დაშვებულია ამ საიტზე, რადგან ის მათი მეშვეობით უზრუნველყოფს ძირითად სერვისებს.\n\n<ph name="BEGIN_LINK" />მესამე მხარის ქუქი-ჩანაწერებზე წვდომის მართვა<ph name="END_LINK" /> პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="7882806643839505685">ხმის დაშვება კონკრეტული საიტისთვის.</translation>
+<translation id="7891547341794213004">„ამ ჩანართით გაგრძელების“ ბარათის დამალვა</translation>
 <translation id="789180354981963912">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში:</translation>
 <translation id="789722939441020330">საიტებისთვის რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის აკრძალვა</translation>
 <translation id="7940722705963108451">შემახსენეთ</translation>

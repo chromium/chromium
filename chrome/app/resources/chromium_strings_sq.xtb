@@ -86,7 +86,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
 <translation id="2137162749895930932">Mbyll ekranin e përkthimit</translation>
 <translation id="215352261310130060">Chromium e bllokoi këtë shkarkim sepse sajti nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
-<translation id="2157600032285353789">Mund të hapësh faqeshënuesit, modalitetin e leximit etj. nga menyja e Chromium</translation>
 <translation id="2174178932569897599">Personalizo Chromium</translation>
 <translation id="2174917724755363426">Instalimi nuk përfundoi. E konfirmon që dëshiron ta anulosh?</translation>
 <translation id="2185166961232948079">Chromium - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
@@ -359,7 +358,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5987687638152509985">Përditëso Chromium për të nisur sinkronizimin</translation>
 <translation id="5988505247484123880">Zakonisht, sajtet që ti viziton i kujtojnë gjërat që të interesojnë për të personalizuar përvojën tënde. Gjithashtu, sajtet mund të ruajnë informacione për interesat e tua në Chromium.</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
-<translation id="6019451407441383358">Mund të hapësh faqeshënuesit, modalitetin e leximit etj. nga menyja e Chromium në krye djathtas</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6058380562449900225">Për të mbrojtur të dhënat e tua, lejo që Chromium të heqë lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="6063093106622310249">&amp;Hape në Chromium</translation>

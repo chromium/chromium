@@ -138,7 +138,6 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="4724297637870447613">Uporabljajte Chrome kjer koli</translation>
 <translation id="4738647308035481133">Stran Google Chroma</translation>
 <translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>
-<translation id="4749294594657945639">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chrome za samodejno izpolnjevanje.</translation>
 <translation id="4761869838909035636">Zaženi varnostno opravljanje v Chromu</translation>
 <translation id="4798859546468762093">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chrome v <ph name="FEATURE_NAME_1" /> in <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Zaradi izboljšanja aplikacije Chrome Googlu pošlje podatke o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="6533470733797826516">Hitrejša prijava s samodejnim izpolnjevanjem v Chromu</translation>
 <translation id="6536544321553662809">Nastavite Chrome kot privzeti brskalnik, če želite preprosto deliti in odpirati povezave</translation>
 <translation id="6545449117344801102">Chrome zaznava naslove ter z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne informacije.</translation>
+<translation id="6611692150236062461">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chrome za samodejno izpolnjevanje.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahteva, da se za uporabo Chroma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome Googlu prav tako pošlje URL-je, vključno z delčki vsebine strani.</translation>
 <translation id="6647304104688527905">Odpiranje novega zavihka v Chromu.</translation>

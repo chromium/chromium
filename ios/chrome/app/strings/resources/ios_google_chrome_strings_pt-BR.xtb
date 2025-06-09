@@ -138,7 +138,6 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="4724297637870447613">Usar o Chrome em qualquer lugar</translation>
 <translation id="4738647308035481133">Página do Google Chrome</translation>
 <translation id="4742795653798179840">Dados do Chrome excluídos</translation>
-<translation id="4749294594657945639">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático do Chrome.</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4798859546468762093">Para acessar a personalização e outros recursos, inclua o Chrome na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="6533470733797826516">Faça login mais rápido com o preenchimento automático do Chrome</translation>
 <translation id="6536544321553662809">Defina o Chrome como seu navegador padrão para compartilhar e abrir links com facilidade</translation>
 <translation id="6545449117344801102">O Chrome detecta endereços e usa o Google Maps para mostrar rotas e informações locais.</translation>
+<translation id="6611692150236062461">Para ter acesso fácil às suas senhas salvas em outros apps, use o preenchimento automático do Chrome.</translation>
 <translation id="6636941099779251629">Sua organização exige que você faça login para usar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar o URL, incluindo partes do conteúdo da página, ao Google.</translation>
 <translation id="6647304104688527905">Abre uma nova guia no Chrome.</translation>
@@ -313,6 +313,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Receba alertas sobre problemas de privacidade ou segurança detectados pelo Chrome.</translation>
+<translation id="855027533751209304">Dica do Chrome: pesquise o que você vê</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>

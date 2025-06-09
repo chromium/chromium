@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">সব জায়গায় Chrome ব্যবহার করুন</translation>
 <translation id="4738647308035481133">Google Chrome পৃষ্ঠা</translation>
 <translation id="4742795653798179840">Chrome সম্পর্কিত ডেটা মুছে ফেলা হয়েছে</translation>
-<translation id="4749294594657945639">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পেতে অটোফিলের জন্য Chrome বেছে নিন।</translation>
 <translation id="4761869838909035636">'Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা' চালান</translation>
 <translation id="4798859546468762093">পছন্দমতো সুবিধা ও অন্যান্য ফিচার ব্যবহার করতে <ph name="FEATURE_NAME_1" /> ও <ph name="FEATURE_NAME_2" />-এ Chrome যোগ করে নিন</translation>
 <translation id="4819268619367838612">অ্যাপ উন্নত করতে সাহায্য করার জন্য, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">Chrome অটোফিলের মাধ্যমে দ্রুত সাইন-ইন করুন</translation>
 <translation id="6536544321553662809">সহজেই শেয়ার করতে ও লিঙ্ক খুলতে আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করুন</translation>
 <translation id="6545449117344801102">Chrome আপনাকে দিকনির্দেশ এবং স্থানীয় তথ্য দিতে ঠিকানা শনাক্ত ও Google Maps ব্যবহার করে।</translation>
+<translation id="6611692150236062461">অন্য অ্যাপে সেভ করা পাসওয়ার্ড সহজেই পেতে, অটোফিলের জন্য Chrome বেছে নিন।</translation>
 <translation id="6636941099779251629">আপনার সংস্থার নিয়ম অনুযায়ী, আপনাকে Chrome ব্যবহার করার জন্য সাইন-ইন করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">সেই সাইটের URL-এর অস্পষ্ট অংশ গোপনীয়তা সার্ভারের মাধ্যমে Google-এ পাঠায়। এই সার্ভার আপনার IP অ্যাড্রেস লুকিয়ে রাখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Google-এ পাঠাতে পারে।</translation>
 <translation id="6647304104688527905">Chrome-এ নতুন ট্যাব খোলে।</translation>

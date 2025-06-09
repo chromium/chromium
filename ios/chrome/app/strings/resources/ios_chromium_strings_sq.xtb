@@ -275,7 +275,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="7784950022329154821">Kyç skedat "e fshehta" kur mbyll Chromium</translation>
 <translation id="78025249032851484">Chromium është i papërditësuar.</translation>
-<translation id="7811371919871579588">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, zgjidh Chromium për "Plotësimin automatik".</translation>
 <translation id="7859018312476869945">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="7890287942691234100">Fillo të përdorësh skanerin e Chromium</translation>
 <translation id="7905064834449738336">Kur përdor një fjalëkalim, Chromium të paralajmëron nëse ai është publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
@@ -330,6 +329,7 @@ Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani,
 <translation id="9050790730841755540">Përdor Chromium sa herë që troket te lidhjet në aplikacione të tjera.</translation>
 <translation id="9059693977935746710">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet në "Menaxherin e fjalëkalimeve" për <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
+<translation id="9105645282262300612">Këshillë për Chromium: Kërko për ato që shikon</translation>
 <translation id="9152995302810511799">Këshillë për Chromium: Merr sigurinë më të fortë të Chromium</translation>
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium po menaxhohet.</translation>
 <translation id="921174536258924340">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>

@@ -475,7 +475,6 @@
 <translation id="1312721752506309252">Побољшана заштита је укључена</translation>
 <translation id="1312811472299082263">Направите од Ansible водича или Crostini резервног фајла</translation>
 <translation id="13130607084115184">Сачуване лозинке ће се појавити овде. Да бисте увезли лозинке у <ph name="BRAND" />, <ph name="BEGIN_LINK" />изаберите CSV фајл<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971">Уклоњене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">Аутоматска конфигурација проксија</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Одјавићете се са свих сајтова, укључујући и инстанце на отвореним картицама</translation>
@@ -4175,6 +4174,7 @@
 <translation id="3876219572815410515">Промењена величина прозора при врху</translation>
 <translation id="3877075909000773256">Подешавања дељења у близини за уређај корисника <ph name="USER_NAME" />, који дели помоћу налога <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Одаберите да се приказује коришћење меморије и слике на картици за преглед при преласку курсором</translation>
+<translation id="3877603629930976930">Не дели</translation>
 <translation id="3878445208930547646">Копирање са овог сајта није дозвољено</translation>
 <translation id="3879748587602334249">Менаџер преузимања</translation>
 <translation id="3880513902716032002">Неке од страница које посећујете су предучитане</translation>
@@ -4600,7 +4600,6 @@
 <translation id="4190492351494485814">За почетно подешавање треба да се повежете на интернет да би фајлови могли да се синхронизују са Chromebook-ом</translation>
 <translation id="4190828427319282529">Истицање фокуса тастатуре</translation>
 <translation id="4191892134568599822">Желите да примате садржај уз <ph name="FEATURE_NAME" />?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Уклоњене су дозволе за 1 сајт који се не користи}one{Уклоњене су дозволе за {NUM_SITES} сајт који се не користи}few{Уклоњене су дозволе за {NUM_SITES} сајта који се не користе}other{Уклоњене су дозволе за {NUM_SITES} сајтова који се не користе}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Ексклузивно за <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Генеративни AI је експерименталан, у раном развоју и тренутно има ограничену доступност.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Поуздани ауторитет за издавање сертификата</translation>
@@ -5154,7 +5153,6 @@
 <translation id="4585793705637313973">Измени страницу</translation>
 <translation id="4586275095964870617">Нисмо успели да отворимо <ph name="URL" /> у алтернативном прегледачу. Контактирајте администратора система.</translation>
 <translation id="4587589328781138893">Сајтови</translation>
-<translation id="4588497044036650559">Отворите страницу опција додатка за страницу нове картице на актуелној картици</translation>
 <translation id="4588749726511456218">Убрзање скроловања <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Изгледа да су <ph name="PASSWORD_DOMAIN" /> и <ph name="DOMAIN" /> повезани. Уверите се да је <ph name="DOMAIN" /> поуздан пре коришћења лозинке.</translation>
 <translation id="4589713469967853491">Евиденције су уписане у фолдер Подешавања.</translation>
@@ -6118,6 +6116,7 @@
 <translation id="5278823018825269962">ИД статуса</translation>
 <translation id="5279600392753459966">Блокирај све</translation>
 <translation id="5280064835262749532">Ажурирајте акредитиве за: <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">Ово подешавање је изабрала организација. Желите ли стварно да избришете овај претраживач?</translation>
 <translation id="5280426389926346830">Желите ли да направите пречицу?</translation>
 <translation id="5281013262333731149">Отвара се у:<ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Да бисте преузели и користили Android апликације, прво треба да инсталирате ово обавезно ажурирање. Док се <ph name="DEVICE_TYPE" /> ажурира, не можете да га користите. Кад се инсталација доврши, <ph name="DEVICE_TYPE" /> ће се рестартовати.</translation>
@@ -6243,7 +6242,6 @@
 <translation id="5376931455988532197">Датотека је превелика</translation>
 <translation id="5377367976106153749">Желите да укључите приступ камери?</translation>
 <translation id="5379140238605961210">Настави да блокираш приступ микрофону</translation>
-<translation id="5380424552031517043">Уклоњен је филтер <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Сачекајте пар минута и пробајте поново</translation>
 <translation id="5382591305415226340">Управљај подржаним линковима</translation>
 <translation id="5384401776498845256">Ко може да дели са вама</translation>
@@ -6980,7 +6978,6 @@
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="59174027418879706">Омогућено</translation>
 <translation id="5919305207330938913">Сви прикупљени подаци ће се користити у складу са Google <ph name="BEGIN_LINK" />политиком приватности<ph name="END_LINK" />.</translation>
-<translation id="5919486630433391408">Администратор је онемогућио ажурирања фирмвера.</translation>
 <translation id="5920543303088087579">Администратор је онемогућио повезивање са овом мрежом</translation>
 <translation id="5922963926582976524">Прекини везу са мрежом инстант хотспота</translation>
 <translation id="5924047253200400718">Потражите помоћ<ph name="SCANNING_STATUS" /></translation>
@@ -7102,7 +7099,6 @@
 <translation id="6003479444341796444">Насловна трака се сада приказује</translation>
 <translation id="6003582434972667631">Организација је подесила тему</translation>
 <translation id="6005045517426700202">Зграда од цигала</translation>
-<translation id="6006392003290068688">Уклоњене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007053304250788613">Само један екран може да се изузме у режиму огледала</translation>
 <translation id="6007240208646052708">Гласовна претрага на вашем језику није доступна.</translation>
@@ -8459,6 +8455,7 @@
 <translation id="69739764870135975">Ако вам је Google и подразумевани претраживач, видећете боље, контекстуално релевантне предлоге</translation>
 <translation id="697508444536771064">Искључи Linux</translation>
 <translation id="6978121630131642226">Претраживачи</translation>
+<translation id="6978236010531171013">Ипак дели</translation>
 <translation id="6978717888677691380">Сајтови које сте блокирали</translation>
 <translation id="6979041727349121225">Уштеда енергије</translation>
 <translation id="6979044105893951891">Покретање и напуштање сесија госта којима се управља</translation>
@@ -8559,7 +8556,6 @@
 <translation id="7039912931802252762">Microsoft пријављивање помоћу паметне картице</translation>
 <translation id="7039951224110875196">Отворите Google налог за дете</translation>
 <translation id="7039968672732182060">Chromebook више не прима безбедносна ажурирања. Време је да обавите надоградњу како бисте добили најновије безбедносне и софтверске функције. Важе услови понуде.</translation>
-<translation id="7041405817194720353">Уклоњене су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="COUNT" /></translation>
 <translation id="7042116641003232070">Дозвољено му је да чува податке на уређају</translation>
 <translation id="7043108582968290193">Готово! Није пронађена ниједна некомпатибилна апликација.</translation>
 <translation id="7044124535091449260">Сазнајте више о приступу сајтовима</translation>
@@ -8675,6 +8671,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, чека се</translation>
 <translation id="7132886488919643383">Користите Google вештачку интелигенцију да бисте добили помоћ при читању, писању и стварању</translation>
 <translation id="7134098520442464001">Умањи текст</translation>
+<translation id="7134653428559514680">Дељење са овог сајта није препоручено</translation>
 <translation id="7134951043985383439">Преузет је опасан фајл</translation>
 <translation id="7135729336746831607">Желите ли да укључите Bluetooth?</translation>
 <translation id="7136694880210472378">Постави као подразумевано</translation>
@@ -9121,6 +9118,7 @@
 <translation id="7460045493116006516">Актуелна тема коју сте инсталирали</translation>
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746216226901520237">Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима.</translation>
+<translation id="7463068149674892185">Ова радња се не препоручује</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Организација контролише како подаци прикупљени помоћу ових функција могу да се користе.</translation>
 <translation id="7464645554245611385">Последња промена ове картице</translation>
@@ -11686,7 +11684,6 @@
 <translation id="934244546219308557">Дајте назив овој групи</translation>
 <translation id="93480724622239549">Проблем или грешка</translation>
 <translation id="9354763467503131">Дозвољено је да се тражи да инсталирате веб-апликације на уређају</translation>
-<translation id="936329857119665832">Отвара се на актуелној картици</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Системски дијагностички подаци</translation>
 <translation id="93766956588638423">Поправи додатак</translation>

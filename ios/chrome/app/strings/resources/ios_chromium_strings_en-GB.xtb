@@ -176,6 +176,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5259423875997548710">Search visuals in Chromium.</translation>
 <translation id="5308226104666789935">Chromium can't check for updates</translation>
 <translation id="5311557153294205270">Adds the inputted URLs to your bookmarks in Chromium.</translation>
+<translation id="5383251701169024761">To easily get your saved passwords in other apps, choose Chromium for autofill.</translation>
 <translation id="538767207339317086">Allow Chromium sign-in</translation>
 <translation id="5389058611415066188">Stay safe with Chromium</translation>
 <translation id="5415273218238091735">Chromium tip</translation>
@@ -276,7 +277,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="7784950022329154821">Lock Incognito tabs when you close Chromium</translation>
 <translation id="78025249032851484">Your Chromium is out of date.</translation>
-<translation id="7811371919871579588">To easily get your saved passwords in other apps, choose Chromium for autofill.</translation>
 <translation id="7859018312476869945">When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="7905064834449738336">When you use a password, Chromium warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>

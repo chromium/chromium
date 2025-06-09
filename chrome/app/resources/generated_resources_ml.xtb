@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
 <translation id="1312811472299082263">Ansible പ്ലേബുക്കിൽ നിന്നോ Crostini ബാക്കപ്പ് ഫയലിൽ നിന്നോ സൃഷ്ടിക്കുക</translation>
 <translation id="13130607084115184">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇവിടെ ദൃശ്യമാകും. ഈ ഉപകരണത്തിലെ <ph name="BRAND" /> എന്നതിലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാൻ, <ph name="BEGIN_LINK" />CSV ഫയൽ തിരഞ്ഞെടുക്കുക<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നിവ നീക്കം ചെയ്‌തു</translation>
 <translation id="1313405956111467313">സ്വയമേവയുള്ള പ്രോക്സി ക്രമീകരണം</translation>
 <translation id="131364520783682672">ക്യാപ്സ് ലോക്ക്</translation>
 <translation id="1313660246522271310">തുറന്നിരിക്കുന്ന ടാബുകൾ ഉണ്ടെങ്കിൽ അവയിൽ നിന്ന് ഉൾപ്പെടെ എല്ലാ സൈറ്റുകളിൽ നിന്നും നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും</translation>
@@ -4174,6 +4173,7 @@
 <translation id="3876219572815410515">വലുപ്പം മാറ്റിയ വിൻഡോകൾ മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> എന്നയാളുടെ ഉപകരണത്തിന്റെ 'സമീപമുള്ള പങ്കിടൽ' ക്രമീകരണം, <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിന് കീഴിൽ പങ്കിടുന്നു.</translation>
 <translation id="3877209288227498506">ടാബ് ഹോവർ പ്രിവ്യൂ കാർഡിൽ, മെമ്മറി ഉപയോഗവും ചിത്രങ്ങളും കാണിക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="3877603629930976930">പങ്കിടരുത്</translation>
 <translation id="3878445208930547646">ഈ സൈറ്റിൽ നിന്ന് പകർത്തുന്നത് അനുവദനീയമല്ല</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880513902716032002">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തവയാണ്</translation>
@@ -4598,7 +4598,6 @@
 <translation id="4190492351494485814">പ്രാരംഭ സജ്ജീകരണത്തിന് നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യേണ്ടതുണ്ട്, അതുവഴി ഫയലുകൾ നിങ്ങളുടെ Chromebook സമന്വയിപ്പിക്കാനാകും</translation>
 <translation id="4190828427319282529">കീബോർഡ് ഫോക്കസ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് സ്വീകരിക്കണോ?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{ഉപയോഗിക്കാത്ത ഒരു സൈറ്റിനുള്ള അനുമതികൾ നീക്കം ചെയ്തു}other{ഉപയോഗിക്കാത്ത {NUM_SITES} സൈറ്റുകൾക്കുള്ള അനുമതികൾ നീക്കം ചെയ്തു}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> എന്നതിൽ മാത്രം.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ജനറേറ്റീവ് AI പരീക്ഷണാത്മകവും പ്രാരംഭ ഘട്ടത്തിലുള്ളതുമാണ്, നിലവിൽ ഇതിന്റെ ലഭ്യത പരിമിതമാണ്.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">വിശ്വസ്‌ത CA</translation>
@@ -5152,7 +5151,6 @@
 <translation id="4585793705637313973">പേജ് എഡിറ്റുചെയ്യുക</translation>
 <translation id="4586275095964870617"><ph name="URL" /> മറ്റൊരു ബ്രൗസറിൽ തുറക്കാനായില്ല. നിങ്ങളുടെ സിസ്‌റ്റം അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="4587589328781138893">സൈറ്റുകള്‍</translation>
-<translation id="4588497044036650559">നിലവിലെ ടാബിൽ പുതിയ ടാബ് പേജ് വിപുലീകരണത്തിന്റെ ഓപ്ഷൻ പേജ് തുറക്കുക</translation>
 <translation id="4588749726511456218">സ്ക്രോൾ ആക്‌സിലറേഷൻ <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" />, <ph name="DOMAIN" /> എന്നിവ തമ്മിൽ ബന്ധമുണ്ടെന്ന് തോന്നുന്നു. നിങ്ങളുടെ പാസ്‌വേഡ് ഉപയോഗിക്കുന്നതിന് മുമ്പ്, <ph name="DOMAIN" /> എന്നതിനെ നിങ്ങൾ വിശ്വസിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="4589713469967853491">'ഡൗൺ‌ലോഡുകൾ'‌ ഡയറക്റ്ററിയിലേക്ക് ലോഗുകൾ‌ എഴുതി.</translation>
@@ -6116,6 +6114,7 @@
 <translation id="5278823018825269962">സ്‌റ്റാറ്റസ് ഐഡി</translation>
 <translation id="5279600392753459966">എല്ലാം തടയുക</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> എന്നതിനായി ക്രെഡന്‍ഷ്യലുകൾ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="5280303168922585051">ഈ ക്രമീകരണം നിങ്ങളുടെ സ്ഥാപനമാണ് സജ്ജീകരിച്ചത്. നിങ്ങൾക്ക് ഈ തിരയൽ എഞ്ചിൻ ഇല്ലാതാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="5280426389926346830">കുറുക്കുവഴി സൃഷ്‌ടിക്കണോ?</translation>
 <translation id="5281013262333731149">ഇനിപ്പറയുന്നതിൽ തുറക്കുന്നു: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android ആപ്പുകൾ ഡൗൺലോഡ് ചെയ്‌ത് ഉപയോഗിക്കാൻ ആദ്യം നിങ്ങൾ ഈ ആവശ്യമായ അപ്‌ഡേറ്റ് ഇൻസ്‌റ്റാൾ ചെയ്യേണ്ടതുണ്ട്. <ph name="DEVICE_TYPE" /> അപ്ഡേറ്റ് ചെയ്യുമ്പോൾ, നിങ്ങൾക്കത് ഉപയോഗിക്കാനാവില്ല. ഇൻസ്റ്റലേഷൻ പൂർത്തിയായി കഴിയുമ്പോൾ, നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യും.</translation>
@@ -6242,7 +6241,6 @@
 <translation id="5376931455988532197">ഫയല്‍ വളരെ വലുതാണ്</translation>
 <translation id="5377367976106153749">ക്യാമറയിലേക്കുള്ള ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="5379140238605961210">മൈക്രോഫോൺ ആക്‌സസ് തടയുന്നത് തുടരുക</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" /> നീക്കം ചെയ്‌തു</translation>
 <translation id="5380526436444479273">അൽപ്പസമയം കാത്തിരുന്ന ശേഷം വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5382591305415226340">പിന്തുണയ്‌ക്കുന്ന ലിങ്കുകൾ മാനേജുചെയ്യുക</translation>
 <translation id="5384401776498845256">ആർക്കൊക്കെ നിങ്ങളുമായി പങ്കിടാനാകും</translation>
@@ -6979,7 +6977,6 @@
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="59174027418879706">പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5919305207330938913">ശേഖരിച്ച എല്ലാ ഡാറ്റയും Google-ന്റെ <ph name="BEGIN_LINK" />സ്വകാര്യതാ നയം<ph name="END_LINK" /> അനുസരിച്ച് ഉപയോഗിക്കും.</translation>
-<translation id="5919486630433391408">ഫേംവെയർ അപ്ഡേറ്റുകൾ നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5920543303088087579">ഈ നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്യുന്നതിനെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5922963926582976524">ഇൻസ്റ്റന്റ് ഹോട്ട്‌സ്പോട്ട് നെറ്റ്‌വർക്ക് വിച്ഛേദിക്കുക</translation>
 <translation id="5924047253200400718">സഹായം തേടുക<ph name="SCANNING_STATUS" /></translation>
@@ -7101,7 +7098,6 @@
 <translation id="6003479444341796444">ശീർഷക ബാർ ഇപ്പോൾ കാണിക്കുന്നു</translation>
 <translation id="6003582434972667631">തീം സജ്ജീകരിച്ചത് നിങ്ങളുടെ സ്ഥാപനമാണ്</translation>
 <translation id="6005045517426700202">ബ്രിക്ക് ബിൽഡിംഗ്</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവ നീക്കം ചെയ്‌തു</translation>
 <translation id="6006484371116297560">ക്ലാസിക്</translation>
 <translation id="6007053304250788613">മിറർ മോഡിൽ ഒരു ഡിസ്‌പ്ലേ മാത്രമേ ഒഴിവാക്കാനാകൂ</translation>
 <translation id="6007240208646052708">നിങ്ങളുടെ ഭാഷയിൽ ശബ്‌ദ തിരയൽ ലഭ്യമല്ല.</translation>
@@ -8454,6 +8450,7 @@
 <translation id="69739764870135975">Google നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രം കൂടിയാണെങ്കിൽ, മികച്ചതും സന്ദർഭോചിതവുമായ നിർദ്ദേശങ്ങൾ നിങ്ങൾ കാണും</translation>
 <translation id="697508444536771064">Linux ഷട്ട് ഡൗൺ ചെയ്യുക</translation>
 <translation id="6978121630131642226">തിരയൽ യന്ത്രങ്ങൾ</translation>
+<translation id="6978236010531171013">എന്തായാലും പങ്കിടുക</translation>
 <translation id="6978717888677691380">നിങ്ങൾ ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ</translation>
 <translation id="6979041727349121225">എനർജി സേവർ</translation>
 <translation id="6979044105893951891">ആരംഭിക്കലും പുറത്തുകടക്കലും മാനേജ് ചെയ്‌ത അതിഥി സെഷനുകൾ</translation>
@@ -8554,7 +8551,6 @@
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">കുട്ടിക്കായി Google Account സൃഷ്‌ടിക്കുക</translation>
 <translation id="7039968672732182060">നിങ്ങളുടെ Chromebook-ന് ഇനി സുരക്ഷാ അപ്‌ഡേറ്റുകൾ ലഭിക്കില്ല. ഏറ്റവും പുതിയ സുരക്ഷാ, സോഫ്‌റ്റ്‌വെയർ അപ്‌ഗ്രേഡുകൾ നേടാൻ സമയമായിരിക്കുന്നു. ഓഫർ നിബന്ധനകൾ ബാധകം.</translation>
-<translation id="7041405817194720353"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="COUNT" /> എണ്ണവും നീക്കം ചെയ്തു</translation>
 <translation id="7042116641003232070">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് ഡാറ്റ സംരക്ഷിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="7043108582968290193">പൂർത്തിയായി! അനുയോജ്യതയില്ലാത്ത അപ്ലിക്കേഷനുകളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="7044124535091449260">സൈറ്റ് ആക്‌സസിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -8670,6 +8666,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, പൂർത്തിയായിട്ടില്ല</translation>
 <translation id="7132886488919643383">വായിക്കാനും എഴുതാനും സൃഷ്‌ടിക്കാനും സഹായം നേടാൻ Google AI ഉപയോഗിക്കുക</translation>
 <translation id="7134098520442464001">പാഠത്തെ ചെറുതാക്കുക</translation>
+<translation id="7134653428559514680">ഈ സൈറ്റിൽ നിന്നുള്ള പങ്കിടൽ നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="7134951043985383439">അപകടകരമായ ഫയൽ ഡൗൺലോഡ് ചെയ്തു</translation>
 <translation id="7135729336746831607">Bluetooth ഓണാക്കണോ?</translation>
 <translation id="7136694880210472378">ഡിഫോൾട്ട് ആക്കുക</translation>
@@ -9115,6 +9112,7 @@
 <translation id="7460045493116006516">നിങ്ങൾ നിലവിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്ന തീം</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746216226901520237">അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. Smart Lock ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
+<translation id="7463068149674892185">ഈ പ്രവർത്തനം നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">ഈ ഫീച്ചറുകൾ ശേഖരിക്കുന്ന ഡാറ്റ ഉപയോഗിക്കുന്ന രീതി മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്.</translation>
 <translation id="7464645554245611385">ഈ ടാബിനുള്ള അവസാന അപ്‌ഡേറ്റ്</translation>
@@ -11677,7 +11675,6 @@
 <translation id="934244546219308557">ഈ ഗ്രൂപ്പിന് പേര് നൽകുക</translation>
 <translation id="93480724622239549">ബഗ് അല്ലെങ്കിൽ പിശക്</translation>
 <translation id="9354763467503131">നിങ്ങളുടെ ഉപകരണത്തിൽ വെബ് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ ആവശ്യപ്പെടാൻ അനുവാദമുണ്ട്</translation>
-<translation id="936329857119665832">നിലവിലെ ടാബിൽ തുറക്കുന്നു</translation>
 <translation id="936646668635477464">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="936801553271523408">സിസ്റ്റം ഡയഗണോസ്റ്റിക് ഡാറ്റ</translation>
 <translation id="93766956588638423">വിപുലീകരണം റിപ്പയർ ചെയ്യുക</translation>

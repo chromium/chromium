@@ -2297,6 +2297,7 @@ LƯU Ý: Chỉ các quy trình kết xuất hình ảnh mới bắt đầu mới
       Nếu bạn chưa đặt chính sách này thì mọi ứng dụng web đều không thể dùng <ph name="GET_ALL_SCREENS_MEDIA_NAME" />.
 Để cải thiện quyền riêng tư, chính sách này sẽ không hỗ trợ cập nhật giá trị chính sách vào giữa phiên. Do đó, nội dung thay đổi sẽ chỉ áp dụng sau khi người dùng đăng xuất rồi đăng nhập lại.
 Người dùng có thể yên tâm rằng không có thêm ứng dụng nào có thể chụp màn hình sau khi đăng nhập nếu không được cho phép từ khi phiên bắt đầu.</translation>
+<translation id="2614156176932194496">Chế độ cài đặt cho phần tích hợp chế độ AI của Google trong thanh địa chỉ và hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="2615240493030733717">Báo cáo thông tin về múi giờ</translation>
 <translation id="2619258867868873629">Đích "Lưu dưới dạng PDF" cũng như đích "Lưu vào Google Drive" trên các thiết bị <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Thiết lập danh sách các miền mà <ph name="PRODUCT_NAME" /> sẽ vô hiệu hoá <ph name="PASSWORD_MANAGER_NAME" />. Nói cách khác, quy trình Lưu và điền sẽ bị vô hiệu hoá, đảm bảo rằng hệ thống không thể lưu hoặc tự động điền mật khẩu cho những trang web đó vào các biểu mẫu web.
@@ -3085,13 +3086,6 @@ Nếu bạn không đặt chính sách này, thì các trang web có thể chạ
 
       Nếu bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ tải tất cả máy chủ nhắn tin gốc đã cài đặt.</translation>
 <translation id="3211426942294667684">Cài đặt đăng nhập vào trình duyệt</translation>
-<translation id="3213872023700948990">Chính sách này cho phép bạn chọn tạm thời không sử dụng hành vi mới về thanh cuộn có thể lấy tiêu điểm bằng bàn phím.
-
-Khi bạn đặt chính sách này thành Bật hoặc không đặt, thì theo mặc định, thanh cuộn không có phần tử con có thể lấy tiêu điểm sẽ có thể lấy tiêu điểm bằng bàn phím.
-
-Khi bạn đặt chính sách này thành Tắt, thì theo mặc định, thanh cuộn sẽ không thể lấy tiêu điểm bằng bàn phím.
-
-Chính sách này chỉ là giải pháp tạm thời và sẽ bị loại bỏ trong phiên bản M135.</translation>
 <translation id="3216094710930835317">Hành vi mới của trình phân tích cú pháp HTML (cho phép nhiều thẻ hơn) sẽ bị vô hiệu hoá.</translation>
 <translation id="3217774577897351942">API <ph name="OFFSET_PARENT" /> đang được thay đổi trong <ph name="PRODUCT_NAME" /> để tuân theo những thay đổi đã được thực hiện trong <ph name="FIREFOX_PRODUCT_NAME" /> và <ph name="SAFARI_PRODUCT_NAME" />. Chính sách này khôi phục thao tác cũ cho đến M120.
 
@@ -3179,6 +3173,15 @@ Nếu bạn đặt chính sách này thành true (đúng) hoặc không đặt, 
 <translation id="3256920103934729145">Ngăn người dùng nhấp vào các trang cảnh báo SSL</translation>
 <translation id="3257786863492892609">Chính sách kiểm soát đối với Screencast.</translation>
 <translation id="3258380413685430793">Chạy toàn bộ nội dung <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Chính sách này kiểm soát chế độ hiển thị của Thẻ Outlook trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Lịch Outlook trong trình duyệt.
+
+Trình duyệt sẽ không lưu trữ dữ liệu Outlook.
+
+Thẻ Outlook cho biết sự kiện tiếp theo trên lịch, cùng thông tin nhanh về các cuộc họp còn lại trong ngày. Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến cuộc họp tiếp theo của họ.
+
+Thẻ Microsoft Outlook sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Outlook, vui lòng xem https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn cũng bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Outlook sẽ hiển thị nếu bạn bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="3261592499545947104">Số giây cần phải kích hoạt quá trình gia hạn trước khi chứng chỉ hết hạn</translation>
 <translation id="3262080895269946462">Cho phép tắt WebSQL trong bối cảnh của bên thứ ba theo mặc định.</translation>
 <translation id="326341982850521928">Bật tính năng chỉnh màu</translation>
@@ -4398,6 +4401,15 @@ Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng phản hồi bằng giọng nói sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="4173974507809462880">Hiển thị màn hình hướng cuộn của bàn di chuột trong khi đăng nhập</translation>
+<translation id="4175770453187201981">Chính sách này kiểm soát phần tích hợp chế độ AI của Google trong thanh địa chỉ và hộp tìm kiếm trên trang Thẻ mới.
+
+Để truy cập tính năng này, người dùng phải đặt Google làm công cụ tìm kiếm mặc định.
+
+0/chưa đặt = Người dùng sẽ có thể sử dụng tính năng này.
+
+1 = Người dùng sẽ không thể sử dụng tính năng này.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.</translation>
 <translation id="417956245902013347">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn trên màn hình đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì tính năng làm nổi bật dấu chèn sẽ luôn bật trên màn hình đăng nhập.
@@ -4715,6 +4727,7 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 
       Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="4402887080007986374">Phiên bản hợp lệ của Điều khoản dịch vụ của tài khoản trường học</translation>
+<translation id="4405712318246131640">Không cho phép tích hợp chế độ AI.</translation>
 <translation id="4408428864159735559">Danh sách các mục chia sẻ tệp trong mạng đã định cấu hình sẵn.</translation>
 <translation id="4410236409016356088">Cho phép điều chỉnh băng thông mạng</translation>
 <translation id="4410361389637971319">Cho phép các nguồn gốc của Ứng dụng web tách biệt sử dụng Direct Sockets</translation>
@@ -5707,6 +5720,7 @@ Chính sách này là giải pháp tạm thời để bạn có thời gian di c
 <translation id="5090791951240382356">Cho phép hợp nhất các chính sách từ điển thuộc các nguồn khác nhau</translation>
 <translation id="5091315650312105069">Cho phép dùng phương thức xác thực <ph name="BASIC_AUTH" /> cho HTTP</translation>
 <translation id="5093603777978346818">Không bật trình bảo vệ màn hình trên màn hình khoá.</translation>
+<translation id="5099140200662153931">Hiển thị Thẻ tệp SharePoint và OneDrive trên Trang thẻ mới</translation>
 <translation id="5099239365323299669">Kể từ M106, hệ thống sẽ không còn hỗ trợ hạn mức cố định. Chính sách này sẽ bật lại chức năng hạn mức cố định cho đến M107.
 
       Nếu bạn bật chính sách này, thì webkitRequestFileSystem thuộc loại cố định sẽ hoạt động với hạn mức cố định.
@@ -6380,6 +6394,15 @@ API này đã bị loại bỏ ở M112.</translation>
 <translation id="5511266910976210617">Không cho phép tính năng Giúp tôi viết.</translation>
 <translation id="5511702823008968136">Bật Thanh dấu trang</translation>
 <translation id="5512418063782665071">URL trang chủ</translation>
+<translation id="5512785896190859782">Chính sách này kiểm soát chế độ hiển thị của Thẻ tệp SharePoint và OneDrive trên Trang thẻ mới. Thẻ này sẽ chỉ hiển thị trên Trang thẻ mới nếu bạn bật chính sách này và tổ chức của bạn cho phép sử dụng dữ liệu Tệp Sharepoint và OneDrive trong trình duyệt.
+
+Trình duyệt sẽ không lưu trữ dữ liệu SharePoint và OneDrive.
+
+Thẻ đề xuất Tệp SharePoint và OneDrive hiển thị một danh sách các tệp được đề xuất.  Thẻ này nhằm giải quyết vấn đề chuyển đổi ngữ cảnh và nâng cao năng suất bằng cách cung cấp cho người dùng lối tắt đến các tài liệu quan trọng nhất đối với họ.
+
+Thẻ Microsoft SharePoint và OneDrive sẽ yêu cầu thêm cấu hình của quản trị viên. Để biết thông tin chi tiết về cách kết nối Thẻ trên Trang thẻ mới của Chrome với Sharepoint, vui lòng xem https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, thẻ SharePoint và OneDrive sẽ không hiển thị. Nếu bạn bật <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint và OneDrive sẽ hiển thị nếu bạn cũng bật chính sách này và có dữ liệu để hiển thị. Nếu bạn không đặt <ph name="NTPCARDSVISIBLE" />, thẻ Sharepoint và OneDrive sẽ hiển thị nếu bạn cũng bật chính sách này, người dùng bật thẻ này trong phần Tuỳ chỉnh Chrome và có dữ liệu để hiển thị.</translation>
 <translation id="5516293691820655022">Đóng hẳn Chrome</translation>
 <translation id="551639594034811656">Chính sách này xác định danh sách tỷ lệ phần trăm cho biết số lượng thiết bị <ph name="PRODUCT_OS_NAME" /> trong đơn vị tổ chức sẽ được cập nhật mỗi ngày, bắt đầu từ ngày bản cập nhật được phát hiện lần đầu tiên. Vì thiết bị có thể kiểm tra các bản cập nhật sau một khoảng thời gian sau khi bản cập nhật được phát hành, nên thời điểm phát hiện sẽ muộn hơn thời điểm phát hành bản cập nhật.
 
@@ -6540,6 +6563,7 @@ Nếu bạn đặt chính sách này thành một danh sách trống hoặc khô
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5605676983184673391">Cho phép các ứng dụng Chrome chạy trong các phiên Kiosk.</translation>
 <translation id="5607021831414604820">Bật tính năng báo cáo trạng thái bộ nhớ của thiết bị</translation>
+<translation id="5607808178576647930">Cho phép tích hợp chế độ AI.</translation>
 <translation id="5608114828230655271">Hành vi mặc định của thiết bị</translation>
 <translation id="5609294254185484756">Kiểm soát trải nghiệm người dùng đối với các tính năng bị tắt có trong danh sách <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> dành cho Phiên khách được quản lý (MGS).
 
@@ -6653,6 +6677,13 @@ quản lý thiết bị.
 Lựa chọn thuật toán khoá <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> được hỗ trợ kể từ phiên bản <ph name="PRODUCT_OS_NAME" /> 132.</translation>
 <translation id="5655553344896004108">Cho phép sử dụng API Khóa bảo mật U2F đã bị chấm dứt</translation>
 <translation id="5656177735561364047">Bật tính năng Bảng nhớ tạm dùng chung</translation>
+<translation id="5657289110555300740">Chính sách này cho phép bạn chọn tạm thời không sử dụng hành vi mới về thanh cuộn có thể lấy tiêu điểm bằng bàn phím.
+
+Khi bạn đặt chính sách này thành Bật hoặc không đặt, thì theo mặc định, thanh cuộn không có phần tử con có thể lấy tiêu điểm sẽ có thể lấy tiêu điểm bằng bàn phím.
+
+Khi bạn đặt chính sách này thành Tắt, thì theo mặc định, thanh cuộn sẽ không thể lấy tiêu điểm bằng bàn phím.
+
+Chính sách này chỉ là giải pháp tạm thời. Chính sách này không còn được dùng kể từ M139.</translation>
 <translation id="5657752663637568277">Chính sách này kiểm soát việc có hiển thị các cảnh báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /> với người dùng trong hộp thoại xem trước bản in hoặc trang cài đặt hay không.
       Việc đặt chính sách này thành Bật sẽ ẩn các cảnh báo về việc ngừng cung cấp.
       Việc đặt thành Tắt hoặc không đặt chính sách này sẽ hiển thị các cảnh báo về việc ngừng cung cấp.</translation>
@@ -7029,6 +7060,11 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="5917897389577978190">Gmail (được hỗ trợ kể từ phiên bản 135)</translation>
 <translation id="592036544845479336">Kích hoạt lại Sự kiện đột biến không được dùng nữa/đã bị loại bỏ</translation>
 <translation id="5921713479449475707">Cho phép tài nguyên đã tải xuống tự động cập nhật qua HTTP</translation>
+<translation id="5923084443277419535">Trình phân tích cú pháp HTML sẽ được thay đổi để cho phép các thẻ HTML bổ sung bên trong phần tử &lt;select&gt;. Chính sách này cho phép sử dụng hành vi cũ của trình phân tích cú pháp HTML cho đến M138.
+
+Nếu bạn bật hoặc không đặt chính sách này thì trình phân tích cú pháp HTML sẽ cho phép các thẻ bổ sung bên trong phần tử &lt;select&gt;.
+
+Nếu bạn tắt chính sách này thì trình phân tích cú pháp HTML sẽ hạn chế những thẻ có thể được đặt bên trong phần tử &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Chính sách này không còn được dùng vì tính năng mà chính sách này kiểm soát không được phát hành. Thay vào đó, vui lòng sử dụng chính sách <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Nếu bạn không đặt hoặc đặt chính sách này thành <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (giá trị 0) thì nhãn Cơ quan hoặc Trường học sẽ hiển thị bên cạnh hình đại diện trên thanh công cụ.
@@ -9741,11 +9777,6 @@ Khi bạn đặt chính sách này thành false hoặc không đặt, <ph name="
 Để biết thêm thông tin về chính sách <ph name="IEEM_SITELIST_POLICY" /> của Internet Explorer, hãy truy cập vào trang web: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Không cho phép người dùng chụp ảnh màn hình hoặc quay video</translation>
 <translation id="7792796937016596423">Người dùng sẽ không thể chặn bắt gói tin qua mạng</translation>
-<translation id="7795648856511126914">Trình phân tích cú pháp HTML sẽ được thay đổi để cho phép các thẻ HTML bổ sung bên trong phần tử &lt;select&gt;. Chính sách này cho phép sử dụng hành vi cũ của trình phân tích cú pháp HTML cho đến M136.
-
-Nếu bạn bật hoặc không đặt chính sách này thì trình phân tích cú pháp HTML sẽ cho phép các thẻ bổ sung bên trong phần tử &lt;select&gt;.
-
-Nếu bạn tắt chính sách này thì trình phân tích cú pháp HTML sẽ hạn chế những thẻ có thể được đặt bên trong phần tử &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Chúng tôi đã xóa chính sách này khỏi <ph name="PRODUCT_NAME" /> phiên bản 89 trở đi <ph name="FLASH_PLUGIN_NAME" /> không còn được dùng nữa.
 
       Nếu bạn đặt chính sách này thành Bật, thì tất cả nội dung <ph name="FLASH_PLUGIN_NAME" /> được nhúng trên những trang web cho phép <ph name="FLASH_PLUGIN_NAME" /> đều sẽ chạy, kể cả nội dung của các nguồn khác hoặc nội dung nhỏ.

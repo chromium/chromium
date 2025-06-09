@@ -1014,6 +1014,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4305817255990598646">Wechseln</translation>
 <translation id="4307713728991152670">Anzeige der letzten Fotos, Medien und Apps auf deinem Smartphone einrichten</translation>
 <translation id="4312840429157639164">Kamera ist an der oberen rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
+<translation id="4312935606722154789">Zwei nebeneinanderliegende Fenster gruppieren oder die Gruppierung aufheben</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">Strg</translation>
 <translation id="4322385711258710213">Alle Vorschläge im Chrome-Browser ausblenden</translation>
@@ -1582,7 +1583,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6095425951508823973">Verbindung mit <ph name="PROVIDER" /> hinzufügen</translation>
 <translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6103838137565245112">System</translation>
-<translation id="610395411842312282">Zwei nebeneinander liegende Fenster gruppieren</translation>
 <translation id="6108952804512516814">Mit KI erstellen</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>

@@ -71,7 +71,6 @@
 <translation id="1118429183611783760">Chang tozalash va pol parvarishi</translation>
 <translation id="1122714970786750095">Elektronika va elektrika</translation>
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
-<translation id="1125453215844207206">Yorliqsiz tasvir. Matn Google AI yordamida chiqarilmoqda</translation>
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
@@ -326,7 +325,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1549470594296187301">Bu xususiyatdan foydalanish uchun JavaScript yoqilgan bo‘lishi lozim.</translation>
 <translation id="1553152622374372421">Qishki sport</translation>
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
-<translation id="1554485704925237240"><ph name="READERNAME" /> nomli riderlar va ularda ishlatiladigan smart kartalarni boshqaring</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1555191101192706055">Siz ochayotgan saytda firibgarlar — bosh sahifani oʻzgartirish yoki saytlarda qoʻshimcha reklama chiqarish orqali sizni aldab, sahifalarni kezishingizga taʼsir qiluvchi xavfli dasturni oʻrnatishi mumkin.</translation>
 <translation id="1559231233244409191">Karton (uch qatlamli)</translation>
@@ -447,6 +445,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1734878702283171397">Tizim administratori bilan bog‘lanish.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, muddati: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompyuter</translation>
+<translation id="1741474054575634405">Sodiq mijoz kartalarini boshqarish...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode –<ph name="SECURE_DNS_MODE_SECURE" /> boʻlganda qator kiritilishi va yaroqli boʻlishi kerak.</translation>
 <translation id="1743393865165844832">Yotoq mahsulotlari va matolar</translation>
 <translation id="1743892871127720056">Taqqoslash jadvali nomi, matnni tahrirlash</translation>
@@ -487,6 +486,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="180757923930449935">(64-bit emulyatsiya)</translation>
 <translation id="180991881384371158">CVC – kartangizning orqa tomonida. U 3 ta oxirgi raqam boʻlib, imzo katagining yuqori oʻng tomonida joylashgan.</translation>
 <translation id="1810391395243432441">Parollarni ekran qulfingiz bilan himoyalang</translation>
+<translation id="1810866804106729802">Karta saqlanganda xaridlar uchun tezkor toʻlang. Karta tafsilotlari qurilmangizdagi Chrome xotirasiga saqlandi.</translation>
 <translation id="1812527064848182527">yotiq</translation>
 <translation id="1812975699435941848">Tibbiy taʼlim</translation>
 <translation id="1816436748874040213">Sayt ulashilgan varaqlarda zum oʻzgartirish va varaqlashga ruxsat soʻrashi mumkin</translation>
@@ -521,6 +521,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1863257867908022953">Tarnov 12</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />dan</translation>
 <translation id="186539747722034544">Kabel va sputnik provayderlari</translation>
+<translation id="1866757068250903512"><ph name="READERNAME" /> nomli autentifikatsiya qurilmalari va ularda ishlatiladigan smart kartalarni boshqaring</translation>
 <translation id="1870473978371099486">Xususiy repetitorlik xizmatlari</translation>
 <translation id="1871208020102129563">Proksi-serverlar PAC fayli manzil orqali emas, o‘zgarmas manzil orqali sozlangan.</translation>
 <translation id="1871284979644508959">Kiritilishi shart</translation>
@@ -845,6 +846,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2399344929880464793">Bu IBAN raqami Google hisobingizga saqlangan va undan Google xizmatlarida foydalanish mumkin.</translation>
 <translation id="2399868464369312507">Google Chrome toʻlov usullarini oʻzgartirishga urinmoqda.</translation>
 <translation id="2400263725572336749">Pasport qoʻshish</translation>
+<translation id="2400271059665846158">Sodiq mijoz kartalarini Google Wallet orqali boshqaring</translation>
 <translation id="2400600116338235695">Seriyali portlarga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2404884497378469141">Fayllarni qaytadan nusxalang</translation>
 <translation id="2413155254802890957">Eski</translation>
@@ -951,6 +953,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> varaq kiritdi</translation>
 <translation id="2586657967955657006">Klipbord</translation>
 <translation id="2587841377698384444">Katalog API ID:</translation>
+<translation id="2588322182880276190">Chrome logotipi</translation>
 <translation id="2593272815202181319">Bir xil kenglikdagi</translation>
 <translation id="2594318783181750337">Tezkor veb shakli:</translation>
 <translation id="2595719060046994702">Bu qurilma va hisob kompaniya yoki tashkilot boshqaruvida emas.</translation>
@@ -1027,6 +1030,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2725492561136085792">Bu amalni faollashtirish uchun Enter tugmasini bosing.</translation>
 <translation id="2725927759457695883">Toʻliq nomini kiritish</translation>
 <translation id="2726001110728089263">Yon tarnov</translation>
+<translation id="272616190148046464">Barhca sodiq mijoz kartalari</translation>
 <translation id="2728127805433021124">Server sertifikati kuchsiz imzo algoritmi yordamida imzolangan.</translation>
 <translation id="272937284275742856">Toʻlov tafsilotlari xavfsiz tekshirilmoqda...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Aloqa diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>
@@ -1228,6 +1232,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3113930177999394798">@history yozib, AI yordamida ochilgan sahifalardan qidiring</translation>
 <translation id="3114040155724590991">Android tizimi yangilanmoqda
     Ilova odatdagidan kechroq ishga tushishi mumkin.</translation>
+<translation id="3114197119223448048">yangi faollik</translation>
 <translation id="3115363211799416195">{0,plural, =1{Maxfiy fayl yuklab olinsinmi?}other{Maxfiy fayllar yuklab olinsinmi?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini qaytarishingizni talab qilmoqda.</translation>
 <translation id="3116158981186517402">Laminatsiyalash</translation>
@@ -1378,6 +1383,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3362968246557010467">Bu parametr eskirgan <ph name="OLD_POLICY" /> siyosatidan avtomatik ravishda nusxa olgan. Oʻrniga bu parametrdan foydalaning.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> virtual reallik qurilmangiz va uning maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="3369192424181595722">Soat xatoligi</translation>
+<translation id="3370855919511944393">Wallet sozlamalari</translation>
 <translation id="3371064404604898522">Chrome brauzerini standart etib tayinlash</translation>
 <translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> kiritildi</translation>
 <translation id="337363190475750230">O‘chirib qo‘yilgan</translation>
@@ -1616,7 +1622,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3728173127485570463">Chrome endi parollarni avtomatik kiritishda barmoq izingizni talab qilmaydi</translation>
 <translation id="3736739313435669994">Saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni blokladingiz. <ph name="LINK" /> uchun sozlamalarni oching.</translation>
 <translation id="3738166223076830879">Brauzeringiz administrator tomonidan boshqariladi.</translation>
-<translation id="3738428049780661523">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="3739842843727261045">Ijobiy baho bosilsa, bu natijalarning sizga yoqqani haqida fikr-mulohaza yuboriladi</translation>
 <translation id="3740447166056383374">Nusxalashdan oldin tekshirilishi lozim</translation>
 <translation id="374325029554577103">Fitnes texnologiyasi mahsulotlari</translation>
@@ -1683,6 +1688,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3839220096695873023">Gibrid va muqobil avtomobillar</translation>
 <translation id="3841356782900714251">Smart karta riderlari</translation>
 <translation id="384315386171052386">Baliq va dengiz taomlari</translation>
+<translation id="3843447501960446468">Sodiq mijoz kartalarini boshqarish...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Docda yangi hujjatni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="385051799172605136">Orqaga</translation>
@@ -2087,11 +2093,13 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4530347922939905757">Matnli xabar</translation>
 <translation id="4531477351494678589">Virtual karta raqami:</translation>
 <translation id="4535523368173457420">Bu qidiruv tizimlari mintaqangizda mashhur va tasodifiy tartibda chiqariladi</translation>
+<translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 yil oldin yaratilgan}other{{NUM_YEARS} yil oldin yaratilgan}}</translation>
 <translation id="4541810033354695636">boyitilgan reallik</translation>
 <translation id="4542971377163063093">Tarnov 6</translation>
 <translation id="4543072026714825470">Keyingi safar tezroq toʻlash uchun karta va toʻlov manzilini Google hisobingizga saqlang</translation>
 <translation id="454441086898495030"><ph name="SET" /> jadvaliga kiritilsinmi?</translation>
 <translation id="4546730006268514143">Yuborish vaqti tugadi</translation>
+<translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 kun oldin yaratilgan}other{{NUM_DAYS} kun oldin yaratilgan}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Parollarni kiritish uchun ekran qulfidan foydalanmoqdasiz</translation>
 <translation id="4557573143631562971">Mol-mulk sugʻurtasi</translation>
@@ -2252,6 +2260,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4844937814014739139">Umumiy varaqlarni zumlash va varaqlash</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> va doʻkonlardan chegirmalar</translation>
 <translation id="484988093836683706">Qurilma kalitidan foydalanish</translation>
+<translation id="4850669014075537160">Sahifani aylantirish</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="4854853140771946034">Google Keepda yangi qaydni tez yaratish</translation>
 <translation id="4855395119669662878">Administrator <ph name="DATE_TIME" /> da fayllarni <ph name="CLOUD_PROVIDER" /> xizmatiga yuklaydi. Fayllarni yuklash yakunlanmaguncha qurlima aloqada qolsin. Yuklash vaqtida qurilmadagi fayllarni faqat oʻqish mumkin.</translation>
@@ -2817,6 +2826,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5826507051599432481">Umumiy Ism (CN)</translation>
 <translation id="5830698870816298009">kameradan foydalanish va siljitish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
+<translation id="5832976493438355584">Qulflangan</translation>
 <translation id="5837220895135257862"><ph name="CLOUD_PROVIDER" /> xotirasidan joy oching va qaytadan urining</translation>
 <translation id="5838278095973806738">Bu saytda muhim ma’lumotlaringizni (parollar va bank kartalar kabi) kiritmasligingiz kerak, chunki firibgarlar tomonidan o‘g‘irlanishi mumkin.</translation>
 <translation id="5838732667866024867">Grafik tasvirda narx oʻzgarishlarini koʻrib chiqish uchun chap/oʻng strelkadan foydalanishingiz mumkin</translation>
@@ -2883,6 +2893,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5938153366081463283">Virtual karta kiritish</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5938866385061293322">Bu axborot mustaqil saytlardan olinadi (Trustpilot, ScamAdviser va Google kabi). Xulosalar AI yordamida yaratilgan.</translation>
+<translation id="5943775258256265106">{NUM_MINS,plural, =1{1 daqiqa oldin yaratilgan}other{{NUM_MINS} daqiqa oldin yaratilgan}}</translation>
 <translation id="5944297261866530437">Mato (juda yaltiroq)</translation>
 <translation id="5950901984834744590">Ustara va soqol olish mashinasi</translation>
 <translation id="5951495562196540101">Qurilmani iste’molchi hisobidan registratsiya qilib bo‘lmadi (to‘plamli litsenziyasi bor)</translation>
@@ -3503,7 +3514,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">tashqi cookie fayllarga ruxsatni boshqarish</translation>
 <translation id="6979440798594660689">Ovozsiz (birlamchi)</translation>
-<translation id="6984270784814146224">Yorliqsiz rasm. Matn Google AI yordamida chiqarilmoqda</translation>
 <translation id="6987806006823772670">Konvert (qoplamali)</translation>
 <translation id="6989256887001961296">Bu kontent bloklandi.</translation>
 <translation id="6989763994942163495">Kengaytirilgan sozlamalar...</translation>
@@ -4043,6 +4053,7 @@ Batafsil axborot:
 <translation id="7894280532028510793">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Tarmoq diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
 <translation id="7905064834449738336">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chromium sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
+<translation id="7906177144646315659">{NUM_HOURS,plural, =1{1 soat oldin yaratilgan}other{{NUM_HOURS} soat oldin yaratilgan}}</translation>
 <translation id="7908648876066812348">Virtual karta yoqilmoqda</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, sozlamalarda Chrome xavfsizlik tekshiruvi sahifasiga kirish uchun Tab tugmasini, keyin Enter tugmasini bosing</translation>
 <translation id="791107458486222637">Natija qayta hisoblanmoqda</translation>
@@ -4177,6 +4188,7 @@ Batafsil axborot:
 <translation id="8134058435519644366">Ishga yonlash va xodimlar boshqaruvi</translation>
 <translation id="8135546115396015134">chap tugma</translation>
 <translation id="8137456439814903304">Energiya va vositalar</translation>
+<translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 oy oldin yaratilgan}other{{NUM_MONTHS} oy oldin yaratilgan}}</translation>
 <translation id="8148608574971654810">PDF versiyasi:</translation>
 <translation id="8149426793427495338">Kompyuteringiz uyqu rejimiga o‘tib qoldi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> manzilidagi faylni o‘qib bo‘lmadi. U o‘chirilgan, ko‘chirilgan yoki ko‘rishni taqiqlovchi ruxsat cheklamalariga ega bo‘lishi mumkin.</translation>
@@ -4797,6 +4809,7 @@ Batafsil axborot:
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
 <translation id="9222403027701923763">Boshlangʻich va oʻrta taʼlim (K-12)</translation>
+<translation id="922849469395748170">Sodiq mijoz kartalari</translation>
 <translation id="93020190163435405">Amaliyot</translation>
 <translation id="931598121743515856">Xarid <ph name="CHECKOUT_AMOUNT_MINIMUM" /> summasidan oshmasin</translation>
 <translation id="933712198907837967">Diners Club</translation>

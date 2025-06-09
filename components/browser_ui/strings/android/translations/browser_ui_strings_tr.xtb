@@ -96,6 +96,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2182457891543959921">Sitelerin çevremin 3D haritasını oluşturmasına veya kamera konumunu takip etmesine izin vermeden önce sor (önerilir)</translation>
 <translation id="2185965788978862351">Bu işlem, Ana ekranınızdaki siteler veya uygulamalar tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizleyecek.</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Dün}other{<ph name="NUM_DAYS_MANY" /> gün önce}}</translation>
 <translation id="2215727959747642672">Dosya düzenleme</translation>
 <translation id="2218389616572918761">Siteler mikrofonunuzu kullanmak isteyebilir</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> uygulamasının kameranıza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da kamerayı açın.</translation>
@@ -448,6 +449,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6530703012083415527">Bu düğme açıkken siteler, pop-up'ları ve yönlendirmeleri kullanabilir. Düğme kapalıyken siteler, pop-up'ları ve yönlendirmeleri kullanamaz.</translation>
 <translation id="6540488083026747005">Bu sitede üçüncü taraf çerezlerine izin verdiniz</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta önce}other{<ph name="NUM_WEEKS_MANY" /> hafta önce}}</translation>
 <translation id="6545864417968258051">Bluetooth taraması</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> izin daha engellendi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> izin daha engellendi}}</translation>
 <translation id="6554732001434021288">En son <ph name="NUM_DAYS" /> gün önce ziyaret edildi</translation>
@@ -521,6 +523,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7554752735887601236">Bir site mikrofonunuzu kullanıyor</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7573594921350120855">Görüntülü sohbet gibi iletişim özelliklerinin kullanılması için siteler genellikle video kameranızı kullanır</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay önce}other{<ph name="NUM_MONTHS_MANY" /> ay önce}}</translation>
 <translation id="757524316907819857">Sitelerin korumalı içeriği oynatmasını engellenir</translation>
 <translation id="7594634374516752650">Bir Bluetooth aygıtına bağlı</translation>
 <translation id="7617547684249261169">Geçmişiniz, çerezleriniz, site verileriniz ve diğer öğelerinizin bir kısmını veya tamamını silebilirsiniz</translation>
@@ -542,6 +545,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7881140103901777395">Chrome, çoğu sitenin, üçüncü taraf çerezlerini kullanmasını sınırlandırır. Ancak temel hizmetleri sağlamadaki rolünden dolayı bu sitede üçüncü taraf çerezlerine izin verilir.\n\n<ph name="BEGIN_LINK" />Üçüncü taraf çerezlerine erişimi yönetmek<ph name="END_LINK" /> için ayarlara gidin.</translation>
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
+<translation id="7891547341794213004">Bu sekmeyle devam et kartını gizle</translation>
 <translation id="789180354981963912">Gizli modda üçüncü taraf çerezlerini engelle:</translation>
 <translation id="789722939441020330">Sitelerin birden fazla dosyayı otomatik olarak indirmesine izin verme</translation>
 <translation id="7940722705963108451">Bana hatırlat</translation>

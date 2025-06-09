@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Znova zaženite, če želite posodobiti &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium priporoča, da pregledate to razširitev</translation>
 <translation id="1042552502243217427">Ko spletno mesto zahteva zasebno vnaprejšnje nalaganje povezav na svoji strani, Chromium uporabi Googlove strežnike. S tem je vaša identiteta skrita pred vnaprej naloženim mestom, vendar Google izve, katera spletna mesta se vnaprej nalagajo.</translation>
+<translation id="1051793555070215510">Izpolnite to enominutno anketo in nam pomagajte izboljšati anonimni način.</translation>
 <translation id="1065672644894730302">Nastavitev ni mogoče prebrati.
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
@@ -87,7 +88,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2126108037660393668">Napaka pri preverjanju prenesene datoteke.</translation>
 <translation id="2137162749895930932">Zapiranje zaslona za prevajanje</translation>
 <translation id="215352261310130060">Chromium je blokiral ta prenos, ker spletno mesto ne uporablja varne povezave in so v datoteko morda posegali</translation>
-<translation id="2157600032285353789">V Chromiumovem meniju lahko odprete zaznamke, način za branje in drugo</translation>
 <translation id="2174178932569897599">Prilagodi Chromium</translation>
 <translation id="2174917724755363426">Namestitev še ni končana. Ali ste prepričani, da jo želite preklicati?</translation>
 <translation id="2185166961232948079">Chromium – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
@@ -360,7 +360,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5987687638152509985">Posodobite Chromium, če želite začeti sinhronizacijo</translation>
 <translation id="5988505247484123880">Spletna mesta, ki jih obiščete, si zaradi osebnega prilagajanja vaše izkušnje pogosto zapomnijo, kaj vas zanima. Spletna mesta lahko v Chromiumu prav tako shranjujejo podatke o vaših zanimanjih.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
-<translation id="6019451407441383358">V Chromiumovem meniju lahko v zgornjem desnem kotu odprete zaznamke, način za branje in drugo</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6058380562449900225">Zaradi zaščite podatkov dovolite Chromiumu, da odstrani dovoljenja za spletna mesta, ki jih nedavno niste obiskali. Prikazovanje obvestil se ne ustavi.</translation>
 <translation id="6063093106622310249">&amp;Odpri v Chromiumu</translation>

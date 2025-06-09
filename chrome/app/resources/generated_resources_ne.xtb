@@ -471,7 +471,6 @@
 <translation id="1312721752506309252">"उन्नत सुरक्षा" अन गरिएको छ</translation>
 <translation id="1312811472299082263">Ansible प्लेबुक वा Crostini ब्याकअप फाइल प्रयोग गरी बनाउनुहोस्</translation>
 <translation id="13130607084115184">सेभ गरिएका पासवर्डहरू यहाँ देखिने छन्। तपाईं यो डिभाइसमा भएको <ph name="BRAND" /> मा पासवर्डहरू इम्पोर्ट गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />कुनै CSV फाइल छनौट गर्नुहोस्।<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र <ph name="PERMISSION_3" /> रद्द गरिएका छन्</translation>
 <translation id="1313405956111467313">स्वचालित प्रोक्सी कन्फिगरेसन</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तपाईंलाई खुला रहेका ट्याबहरूसहित सबै साइटहरूबाट साइन आउट गरिने छ</translation>
@@ -4173,6 +4172,7 @@
 <translation id="3876219572815410515">विन्डोहरूको आकार माथितिरबाट बदलिए</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> को डिभाइसमा <ph name="USER_EMAIL" /> खाता प्रयोग गरी नजिकैका डिभाइससँग सेयर गर्ने सुविधाका सेटिङ।</translation>
 <translation id="3877209288227498506">ट्याबमा होभर गर्दा देखिने प्रिभ्यू कार्डमा मेमोरीको प्रयोगसम्बन्धी जानकारी र फोटो देखाउने विकल्प रोज्नुहोस्</translation>
+<translation id="3877603629930976930">सेयर नगर्नुहोस्</translation>
 <translation id="3878445208930547646">यो साइटबाट कपी गर्ने अनुमति दिइएको छैन</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3880513902716032002">तपाईंले खोल्ने केही पेजहरू प्रिलोड गरिन्छन्</translation>
@@ -4597,7 +4597,6 @@
 <translation id="4190492351494485814">प्रारम्भिक सेटअपका क्रममा Chromebook मा तपाईंका फाइलहरू सिंक गर्न सकियोस् भन्नाका लागि तपाईंले आफ्नो डिभाइस इन्टरनेटमा कनेक्ट गर्नु पर्ने हुन्छ</translation>
 <translation id="4190828427319282529">किबोर्डको फोकस हाइलाइट गर्नुहोस्</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> मार्फत प्राप्त गर्ने हो?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{प्रयोग नगरिएको एउटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{प्रयोग नगरिएका {NUM_SITES} वटा साइटलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />यो AI <ph name="DEVICE_TYPE" /> मा मात्र उपलब्ध छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />जेनेरेटिभ AI परीक्षणकै क्रममा छ, पूर्ण रूपमा तयार भइसकेको छैन र हाल सीमित रूपमा उपलब्ध छ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">विश्वसनीय CA</translation>
@@ -5151,7 +5150,6 @@
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
 <translation id="4586275095964870617">वैकल्पिक ब्राउजरमा <ph name="URL" /> खोल्न सकिँदैन। कृपया आफ्नो प्रणालीका प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
-<translation id="4588497044036650559">नयाँ ट्याब पेजको एक्स्टेन्सनको विकल्प भएको पेज हालको ट्याबमा खोल्नुहोस्</translation>
 <translation id="4588749726511456218">स्क्रोल हुने गति बढाउनुहोस् <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> र <ph name="DOMAIN" /> सम्बन्धित छन् जस्तो देखिन्छ। <ph name="DOMAIN" /> को विश्वसनीयता पुष्टि गर्नुहोस् अनि मात्र आफ्नो पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="4589713469967853491">लगहरू डाउनलोड नामक डिरेक्टरीमा सफलतापूर्वक राइट गरियो।</translation>
@@ -6115,6 +6113,7 @@
 <translation id="5278823018825269962">स्ट्याटस Id</translation>
 <translation id="5279600392753459966">सबै रोक्नुहोस्</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> को युजरनेम र पासवर्ड अपडेट गर्नुहोस्</translation>
+<translation id="5280303168922585051">यो सेटिङ तपाईंको सङ्गठनले सेटअप गरेको हो। तपाईंले यो सर्च इन्जिन मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="5280426389926346830">सर्टकट सिर्जना गर्ने हो?</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" /> मा खुल्छ</translation>
 <translation id="528208740344463258">Android एपहरू डाउनलोड गर्न र प्रयोग गर्न, तपाईंले पहिले यो आवश्यक अद्यावधिक स्थापना गर्नु पर्छ। तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक भइरहेका अवस्थामा, तपाईं यसलाई प्रयोग गर्न सक्नुहुन्न। स्थापना सम्पन्न भएपछि, तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुने छ।</translation>
@@ -6241,7 +6240,6 @@
 <translation id="5376931455988532197">फाइल ज्यादै ठुलो छ</translation>
 <translation id="5377367976106153749">क्यामेरा प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="5379140238605961210">माइक्रोफोन पहुँच रोक्न जारी राख्नुहोस्</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" /> रद्द गरिएको छ</translation>
 <translation id="5380526436444479273">केही बेर पर्खनुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5382591305415226340">समर्थन गरिने लिंकहरूलाई व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5384401776498845256">कसकसले तपाईंसँग सेयर गर्न सक्छन्</translation>
@@ -6976,7 +6974,6 @@
 <translation id="5916664084637901428">अन</translation>
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5919305207330938913">सङ्कलन गरिएका सबै डेटा Google को <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" />बमोजिम प्रयोग गरिने छ।</translation>
-<translation id="5919486630433391408">तपाईंका एड्मिनले फर्मवेयर अपडेटसम्बन्धी सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="5920543303088087579">तपाईंका प्रशासकले यस नेवर्टकमा जडान गर्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
 <translation id="5922963926582976524">इन्स्ट्यान्ट हटस्पटको नेटवर्क डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
@@ -7099,7 +7096,6 @@
 <translation id="6003479444341796444">अहिले टाइटल बार देखाइँदै छ</translation>
 <translation id="6003582434972667631">तपाईंको सङ्गठनले थिम व्यवस्थापन गर्छ</translation>
 <translation id="6005045517426700202">इँटाको पर्खाल</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> रद्द गरिएका छन्</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007053304250788613">मिरर मोडमा एउटा मात्र डिस्प्ले समावेश नगर्न सकिन्छ</translation>
 <translation id="6007240208646052708">तपाईंको भाषामा आवाजमार्फत खोजी गर्ने सुविधा उपलब्ध छैन।</translation>
@@ -8452,6 +8448,7 @@
 <translation id="69739764870135975">तपाईंको डिफल्ट सर्च इन्जिन Google नै हो भने तपाईं अझ उपयुक्त र सान्दर्भिक सुझावहरू देख्नु हुने छ</translation>
 <translation id="697508444536771064">Linux बन्द गर्नुहोस्</translation>
 <translation id="6978121630131642226">खोज इन्जिनहरू</translation>
+<translation id="6978236010531171013">जे भए तापनि सेयर गर्नुहोस्</translation>
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979041727349121225">इनर्जी सेभर</translation>
 <translation id="6979044105893951891">अतिथिका व्यवस्थित सत्रहरू सुरु गर्ने तथा सोबाट बाहिर निस्कने</translation>
@@ -8551,7 +8548,6 @@
 <translation id="7039912931802252762">Microsoft स्मार्ट कार्ड लगअन</translation>
 <translation id="7039951224110875196">आफ्ना बच्चाको Google खाता बनाउनुहोस्</translation>
 <translation id="7039968672732182060">तपाईंको Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त हुन छाडेको छ। नयाँ सुरक्षा तथा सफ्टवेयर प्राप्त गर्न आफ्नो Chromebook अपडेट गरिहाल्नुहोस्। अफरका सर्तहरू लागू हुन्छन्।</translation>
-<translation id="7041405817194720353"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र अन्य <ph name="COUNT" /> वटा अनुमति रद्द गरिएका छन्</translation>
 <translation id="7042116641003232070">यो साइटलाई तपाईंको डिभाइसमा डेटा सेभ गर्ने अनुमति दिइएको छ</translation>
 <translation id="7043108582968290193">सम्पन्न भयो! कुनै पनि नमिल्दा एपहरू फेला परेनन्‌।</translation>
 <translation id="7044124535091449260">साइटको पाहुँचबारे थप जान्नुहोस्‌</translation>
@@ -8667,6 +8663,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, प्रतीक्षा गरिँदै छ</translation>
 <translation id="7132886488919643383">पढ्न, लेख्न र सिर्जना गर्न मद्दत प्राप्त गर्न Google AI प्रयोग गर्नुहोस्</translation>
 <translation id="7134098520442464001">पाठलाई अझ सानो बनाउनुहोस्</translation>
+<translation id="7134653428559514680">यो साइटबाट सेयर गर्न सिफारिस गरिँदैन</translation>
 <translation id="7134951043985383439">जोखिमपूर्ण फाइल डाउनलोड गर्नुहोस्</translation>
 <translation id="7135729336746831607">ब्लुटुथ सक्रिय पार्ने हो?</translation>
 <translation id="7136694880210472378">डिफल्ट बनाउनुहोस्</translation>
@@ -9113,6 +9110,7 @@
 <translation id="7460045493116006516">तपाईंले स्थापना गर्नुभएको हालको विषयवस्तु</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">अर्को पटकदेखि, तपाईंको फोनले तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्ने छ। तपाईं सेटिङहरूमा गई Smart Lock निष्क्रिय पार्न सक्नुहुन्छ।</translation>
+<translation id="7463068149674892185">यो कारबाही गर्न सिफारिस गरिँदैन</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">तपाईंको सङ्गठनले यी सुविधाले सङ्कलन गर्ने डेटा कसरी प्रयोग गरिन सक्छ भन्ने कुरा व्यवस्थापन गर्छ।</translation>
 <translation id="7464645554245611385">यो ट्याबमा गरिएको पछिल्लो परिवर्तन</translation>
@@ -11675,7 +11673,6 @@
 <translation id="934244546219308557">यो समूहको नाम राख्नुहोस्</translation>
 <translation id="93480724622239549">त्रुटि</translation>
 <translation id="9354763467503131">तपाईंको डिभाइसमा वेब एप इन्स्टल गर्ने अनुमति माग्न दिइएको</translation>
-<translation id="936329857119665832">हालको ट्याबमा खुल्छ</translation>
 <translation id="936646668635477464">क्यामेरा र माइक्रोफोन</translation>
 <translation id="936801553271523408">प्रणाली विकर्ण लगत</translation>
 <translation id="93766956588638423">विस्तार मर्मत गर्नुहोस्</translation>

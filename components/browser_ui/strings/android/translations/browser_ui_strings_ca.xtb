@@ -96,6 +96,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2182457891543959921">Pregunta abans de permetre que els llocs web creïn un mapa en 3D del teu entorn o facin un seguiment de la posició de la càmera (opció recomanada)</translation>
 <translation id="2185965788978862351">Aquesta acció suprimirà dades i galetes (<ph name="DATASIZE" />) emmagatzemades pels llocs web o per les aplicacions de la pantalla d'inici.</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Ahir}other{Fa <ph name="NUM_DAYS_MANY" /> dies}}</translation>
 <translation id="2215727959747642672">Edició de fitxers</translation>
 <translation id="2218389616572918761">Els llocs web poden demanar permís per utilitzar el micròfon</translation>
 <translation id="2228071138934252756">Perquè <ph name="APP_NAME" /> pugui accedir a la càmera, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6530703012083415527">Quan aquesta opció està activada, els llocs web poden utilitzar finestres emergents i redireccions. Quan aquesta opció està desactivada, els llocs web no poden utilitzar finestres emergents ni redireccions.</translation>
 <translation id="6540488083026747005">Has permès les galetes de tercers en aquest lloc web</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Fa <ph name="NUM_WEEKS_ONE" /> setmana}other{Fa <ph name="NUM_WEEKS_MANY" /> setmanes}}</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
@@ -521,6 +523,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">Els llocs web solen utilitzar la càmera de vídeo per a funcions de comunicació com ara el xat de vídeo</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Fa <ph name="NUM_MONTHS_ONE" /> mes}other{Fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
 <translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
 <translation id="7594634374516752650">Connectat a un dispositiu Bluetooth</translation>
 <translation id="7617547684249261169">Pots suprimir l'historial, les galetes, les dades dels llocs web i més en la seva totalitat o bé una part</translation>
@@ -542,6 +545,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7881140103901777395">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics.\n\nVes a la configuració per <ph name="BEGIN_LINK" />gestionar l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
+<translation id="7891547341794213004">Amaga la targeta Continua amb aquesta pestanya</translation>
 <translation id="789180354981963912">Bloqueja les galetes de tercers en mode d'incògnit:</translation>
 <translation id="789722939441020330">No permetis que els llocs web baixin automàticament diversos fitxers</translation>
 <translation id="7940722705963108451">Recorda-m'ho</translation>

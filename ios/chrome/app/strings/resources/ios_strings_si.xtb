@@ -671,6 +671,7 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3850952228519377137">"ඔබේ පටිතිවලින් මිල ගණන් නිරීක්ෂණය කරන්න" සඟවන්න</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, සහ තව<ph name="NUMBER_OF_ACCOUNTS" />ත් සඳහා මුරපද මකනු ඇත. ඔබේ ගිණුම් මකා නොදමනු ඇත.</translation>
+<translation id="3853162385423733133">ඔබේ Google ගිණුමේ <ph name="EMAIL" /> මුරපද භාවිතා කිරීම සහ සුරැකීම දිගටම කරගෙන යන්න</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3868495844258915202">සම්පූර්ණ URL එක පෙන්වන්න</translation>
 <translation id="3875783148670536197">කෙසේද කියා මට පෙන්වන්න</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5132942445612118989">ඔබේ මුරපද, ඉතිහාසය සහ තවත් දෑ සියලුම උපාංගවල සමමුහු කරන්න</translation>
 <translation id="5141363746588976328">ඔබේ පටිති කාඩ්පතේ මිල පහත වැටීම් සඟවන්න</translation>
 <translation id="5145331760738811130">පටිති මාරුකරවනය වෙතින් ඉවත් වන්න</translation>
+<translation id="5148717509369231739">Safari ආයාත කිරීම</translation>
 <translation id="5157638238828697074">යමක් වැරදිණි. යෙදුම විවෘත කළ නොහැකි විය.</translation>
 <translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">iPadOS සඳහා තනා ඇත</translation>
@@ -1113,6 +1115,7 @@
 <translation id="5626245204502895507">ගොනුව මෙම අවස්ථාවේදී බාගැනීමට නොහැකි විය.</translation>
 <translation id="562753339521713441">ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="5628388627414062173">{count,plural, =1{ඔබේ කියවීම් ලැයිස්තුවෙහි {count} පිටුවක්}one{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}other{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}}</translation>
+<translation id="5632194969640946913">නිෂ්පාදන, ස්ථාන සහ පෙළ ගවේෂණය කිරීම සඳහා ඕනෑම පිටුවක ඔබ දකින දේ බ්‍රවුස් කර සොයන විට තව දැන ගන්න.</translation>
 <translation id="5632485077360054581">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}" වෙත පිටුසන සුරැකිණි}one{"{title}" වෙත පිටුසන් {count} සුරැකිණි}other{"{title}" වෙත පිටුසන් {count} සුරැකිණි}}</translation>
 <translation id="564170563478022912">වරන්න ද? නොසුරැකි ගිණුම් දත්ත මකනු ලැබේ.</translation>

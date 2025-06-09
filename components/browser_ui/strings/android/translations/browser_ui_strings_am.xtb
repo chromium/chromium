@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዲፈጥሩ ወይም የካሜራ ቦታን እንዲከታተል ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
 <translation id="2185965788978862351">ይህ በጣቢያዎች ወይም በመነሻ ገፅዎ ላይ ባሉ መተግበሪያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ይሰርዛል።</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{ትላንት}one{ከ<ph name="NUM_DAYS_MANY" /> ቀን በፊት}other{ከ<ph name="NUM_DAYS_MANY" /> ቀናት በፊት}}</translation>
 <translation id="2215727959747642672">የፋይል አርትዖት አደራረግ</translation>
 <translation id="2218389616572918761">ጣቢያዎች ማይክሮፎንዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6530703012083415527">ሲበራ፣ ጣቢያዎች ብቅ-ባዮችን እና ማዞሪያዎችን መጠቀም ይችላሉ። ሲጠፋ፣ ጣቢያዎች ብቅ-ባዮችን እና ማዞሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="6540488083026747005">በዚህ ጣቢያ ላይ የሦስተኛ ወገን ኩኪዎችን ፈቅደዋል</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{ከ<ph name="NUM_WEEKS_ONE" /> ሳምንት በፊት}one{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንት በፊት}other{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንታት በፊት}}</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}}</translation>
 <translation id="6554732001434021288">ለመጨረሻ ጊዜ የተጎበኘው ከ<ph name="NUM_DAYS" /> ቀናት በፊት ነው</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">አንድ ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7573594921350120855">ጣቢያዎች አብዛኛውን ጊዜ የቪዲዮ ካሜራዎን እንደ የቪዲዮ ውይይት ላሉ የመገናኛ ባህሪዎች ይጠቀሙበታል</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት}other{ከ<ph name="NUM_MONTHS_MANY" /> ወራት በፊት}}</translation>
 <translation id="757524316907819857">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘት እንዳያጫውቱ ያግዱ</translation>
 <translation id="7594634374516752650">ከብሉቱዝ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="7617547684249261169">የእርስዎን አንዳንድ ወይም ሁሉንም ታሪክ፣ ኩኪዎች፣ የጣቢያ ውሂቦች እና ሌሎችም መሰረዝ ይችላሉ</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7881140103901777395">Chrome አብዛኛዎቹን ጣቢያዎች የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ይገድባል። ነገር ግን የሦስተኛ ወገን ኩኪዎች መሠረታዊ አገልግሎቶችን ለማቅረብ በእነሱ ላይ ስለሚተማመን በዚህ ጣቢያ ላይ ተፈቅዶላቸዋል።\n\n<ph name="BEGIN_LINK" />ለሦስተኛ ወገን ኩኪዎች መዳረሻ ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጎብኙ።</translation>
 <translation id="7882806643839505685">ለተወሰነ ጣቢያ ድምፅ ፍቀድ።</translation>
+<translation id="7891547341794213004">በዚህ የትር ካርድ ቀጥል የሚለውን ደብቅ</translation>
 <translation id="789180354981963912">ማንነትን በማያሳውቅ ላይ የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
 <translation id="789722939441020330">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር እንዲያወርዱ አይፍቀዱ</translation>
 <translation id="7940722705963108451">አስታውሰኝ</translation>

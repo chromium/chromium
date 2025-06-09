@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Chạy lại để cập nhật &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">Chromium khuyên bạn nên xem xét tiện ích này</translation>
 <translation id="1042552502243217427">Khi một trang web yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, Chromium sẽ sử dụng các máy chủ của Google. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước, nhưng Google sẽ biết những trang web được tải trước.</translation>
+<translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
 <translation id="1083934481477628225">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium</translation>
 <translation id="1104942323762546749">Chromium muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2137162749895930932">Đóng màn hình dịch</translation>
 <translation id="215352261310130060">Chromium đã chặn tệp tải xuống này vì trang web không sử dụng kết nối an toàn và tệp có thể đã bị can thiệp</translation>
-<translation id="2157600032285353789">Bạn có thể mở dấu trang, chế độ đọc và nhiều nội dung khác từ trình đơn Chromium</translation>
 <translation id="2174178932569897599">Tùy chỉnh Chromium</translation>
 <translation id="2174917724755363426">Chưa cài đặt xong. Bạn có chắc chắn muốn huỷ không?</translation>
 <translation id="2185166961232948079">Chromium – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Cập nhật Chromium để bắt đầu đồng bộ hóa</translation>
 <translation id="5988505247484123880">Các trang web bạn truy cập thường ghi nhớ các mối quan tâm của bạn để cá nhân hoá trải nghiệm cho bạn. Các trang web cũng có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn.</translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
-<translation id="6019451407441383358">Bạn có thể mở dấu trang, chế độ đọc và nhiều nội dung khác từ trình đơn Chromium ở trên cùng bên phải</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6058380562449900225">Để bảo vệ dữ liệu của bạn, hãy cho phép Chromium loại bỏ quyền khỏi các trang web mà gần đây bạn không truy cập. Bạn sẽ vẫn nhận được thông báo.</translation>
 <translation id="6063093106622310249">&amp;Mở trong Chromium</translation>

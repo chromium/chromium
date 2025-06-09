@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Дауыс мәзірі</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1246424317317450637">Жуан</translation>
+<translation id="1357114957607379632">Жасанды интеллект аудиосы ойнатылайын деп жатыр...</translation>
 <translation id="1370273601702151510">Ұнайды</translation>
 <translation id="1483137792530497944">Өзен</translation>
 <translation id="1586836055630070874">Байсалды</translation>
+<translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1666704368140506043">Қорлаушы контент</translation>
 <translation id="1741047078107369903">Жылы</translation>
 <translation id="1807863182207623884">Лағыл</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Өкінішке қарай, бұл бетте әзірше ойнату қолжетімді емес. Кейінірек қайталап көріңіз.</translation>
 <translation id="3457812538570616687">Ұнамайды</translation>
 <translation id="3493899379487634969">Не дұрыс болмады?</translation>
+<translation id="3730775656877876887">Жасанды интеллект аудиосы ойнатылайын деп жатыр</translation>
 <translation id="3778044272390020426">Теріс пікір опцияларының мәзірі</translation>
 <translation id="3807208219231826020">Іздеу жолағында ойнату</translation>
 <translation id="385051799172605136">Артқа</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Жарқын</translation>
 <translation id="5234971936051226002">"Осы бетті тыңдау" ойнатқышы кішірейтілді.</translation>
 <translation id="5251803541071282808">Бұлт</translation>
-<translation id="5526614127710223793">Ойнату режимін таңдау құралы</translation>
+<translation id="5528503854289436485">Жасанды интеллект аудиосын ойнату</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="565342223183747919">Ойнату режимін ауыстыру үшін түртіңіз</translation>
 <translation id="5694491020339060116">Ойнату жылдамдығы мәзірі</translation>
 <translation id="5965409657393819302">Техникалық мәселе</translation>
 <translation id="6218961554829577610">Бұл дауыс ұнамайды</translation>
 <translation id="6315170314923504164">Микрофон</translation>
-<translation id="6330455646577575965">Жасанды интеллект аудиосын ойнату</translation>
 <translation id="6343633247422081848">Мүк</translation>
 <translation id="6550675742724504774">Опциялар</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Сапа мен зерттеу қызметін жақсарту үшін URL мекенжайыңыз пікірмен бірге жүктеп салынады.</translation>
 <translation id="8481839122437406573">Сабырлы</translation>
 <translation id="8756370108715456837">Мәліметтері қате</translation>
-<translation id="881960277396325853">Жасанды интеллект аудиосы жасалып жатыр...</translation>
 <translation id="8953618380150219653">"Осы бетті тыңдау" ойнатқышы толығымен ашылды.</translation>
 <translation id="978117257931832348">Төмен</translation>
 </translationbundle>

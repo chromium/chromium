@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Riavvia per aggiornare &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ti consiglia di esaminare questa estensione</translation>
 <translation id="1042552502243217427">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chromium usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
+<translation id="1051793555070215510">Aiutaci a migliorare la modalità di navigazione in incognito partecipando a questo sondaggio di 1 minuto.</translation>
 <translation id="1065672644894730302">Impossibile leggere le preferenze. Alcune funzioni potrebbero non essere disponibili e le modifiche alle preferenze non verranno salvate.</translation>
 <translation id="1083934481477628225">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chromium</translation>
 <translation id="1104942323762546749">Chromium vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">Il file scaricato non ha superato la verifica.</translation>
 <translation id="2137162749895930932">Chiudi la schermata di traduzione</translation>
 <translation id="215352261310130060">Chromium ha bloccato questo download perché il sito non utilizza una connessione sicura e il file potrebbe essere stato manomesso</translation>
-<translation id="2157600032285353789">Puoi aprire i preferiti, la modalità Lettura e altro ancora dal menu di Chromium</translation>
 <translation id="2174178932569897599">Personalizza Chromium</translation>
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="2185166961232948079">Chromium - Accesso rete - <ph name="PAGE_TITLE" /></translation>
@@ -357,7 +357,6 @@
 <translation id="5987687638152509985">Aggiorna Chromium per avviare la sincronizzazione</translation>
 <translation id="5988505247484123880">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chromium informazioni relative ai tuoi interessi.</translation>
 <translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>
-<translation id="6019451407441383358">Puoi aprire i preferiti, la modalità Lettura e altro ancora dal menu di Chromium in alto a destra</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6058380562449900225">Per proteggere i tuoi dati, consenti a Chromium di rimuovere le autorizzazioni dai siti che non hai visitato di recente. Le notifiche non vengono interrotte.</translation>
 <translation id="6063093106622310249">&amp;Apri in Chromium</translation>

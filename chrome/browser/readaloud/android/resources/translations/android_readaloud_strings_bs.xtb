@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Meni glasovnih komandi</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1246424317317450637">Podebljano</translation>
+<translation id="1357114957607379632">Generiranje AI reprodukcije…</translation>
 <translation id="1370273601702151510">Oznaka "Sviđa mi se"</translation>
 <translation id="1483137792530497944">Rijeka</translation>
 <translation id="1586836055630070874">Umirujuće</translation>
+<translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1666704368140506043">Uvredljiv sadržaj</translation>
 <translation id="1741047078107369903">Toplo</translation>
 <translation id="1807863182207623884">Rubin</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Nažalost, reprodukcija trenutno nije dostupna za ovu stranicu. Pokušajte ponovo kasnije.</translation>
 <translation id="3457812538570616687">Oznaka "Ne sviđa mi se"</translation>
 <translation id="3493899379487634969">Šta nije uredu?</translation>
+<translation id="3730775656877876887">Generiranje AI reprodukcije</translation>
 <translation id="3778044272390020426">Meni s opcijama za negativne povratne informacije</translation>
 <translation id="3807208219231826020">Reprodukcija pomicanjem</translation>
 <translation id="385051799172605136">Nazad</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Veselo</translation>
 <translation id="5234971936051226002">Plejer "Poslušajte ovu stranicu je minimiziran".</translation>
 <translation id="5251803541071282808">Oblak</translation>
-<translation id="5526614127710223793">Birač načina rada reprodukcije</translation>
+<translation id="5528503854289436485">AI reprodukcija</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="565342223183747919">Dodirnite da promijenite način rada za reprodukciju</translation>
 <translation id="5694491020339060116">Meni brzine reprodukcije</translation>
 <translation id="5965409657393819302">Tehnički problem</translation>
 <translation id="6218961554829577610">Ne sviđa mi se glas</translation>
 <translation id="6315170314923504164">Govor</translation>
-<translation id="6330455646577575965">AI reprodukcija zvuka</translation>
 <translation id="6343633247422081848">Mahovina</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">URL će se otpremiti s povratnim informacijama da poboljšamo kvalitet i istraživanje.</translation>
 <translation id="8481839122437406573">Mirno</translation>
 <translation id="8756370108715456837">Nije činjenično tačno</translation>
-<translation id="881960277396325853">Generiranje AI zvuka...</translation>
 <translation id="8953618380150219653">Plejer "Poslušajte ovu stranicu" je otvoren u punoj visini.</translation>
 <translation id="978117257931832348">Nizak ton</translation>
 </translationbundle>

@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">‏אפשר להשתמש ב-Chrome בכל מקום</translation>
 <translation id="4738647308035481133">‏דף Google Chrome</translation>
 <translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
-<translation id="4749294594657945639">‏אפשר לבחור ב-Chrome למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
 <translation id="4761869838909035636">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
 <translation id="4798859546468762093">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chrome ב<ph name="FEATURE_NAME_1" /> וב<ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
@@ -313,6 +312,7 @@
 הנתונים שלך הוצפנו באמצעות ביטוי הסיסמה ב-<ph name="TIME" />. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">‏התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chrome מזהה.</translation>
+<translation id="855027533751209304">‏טיפ ל-Chrome: מחפשים את מה שרואים</translation>
 <translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או לוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="8603022514504485810">‏למנהל הסיסמאות של Google לא הייתה אפשרות לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">‏מפעילים את האפשרות 'כרטיסיות פרטיות יינעלו כש-Chrome ייסגר'.</translation>

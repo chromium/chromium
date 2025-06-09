@@ -221,7 +221,6 @@
 <translation id="181434555916624618">Foreløpig vises ikke resultater med personer. Prøv en annen forespørsel.</translation>
 <translation id="1815850098929213707">Den valgte tasten er <ph name="KEYS" />. Trykk på knappen for å endre kontrollen</translation>
 <translation id="1818174214124933000">Når du velger Send, blir tilbakemeldingen og innholdet i den (som du ser nedenfor) sendt til Google, gjennomgått av mennesker og brukt til å lære opp eller forbedre produktene og tjenestene våre, i henhold til <ph name="LINK_POLICY_BEGIN" />personvernreglene<ph name="LINK_POLICY_END" /> og <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googles vilkår for bruk<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
-<translation id="1821075635029692203">Læreren din har sendt en ressurs som ikke støttes. Fortell dem det.</translation>
 <translation id="1823120442877418684">Tegn</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="183287940576828840">Støtende/farlig</translation>
@@ -1271,7 +1270,7 @@
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
 <translation id="6608043585557830684">Transkripsjon er av. Slå det på i innstillingene eller på <ph name="THREE_DOTS_MENU_ICON" />-menyen.</translation>
-<translation id="660846213831377756">Mustaster</translation>
+<translation id="660846213831377756">Musetaster</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6624819909909965616">Kan ikke laste opp filer som er større enn 10 MB</translation>

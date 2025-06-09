@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">Пытацца, перш чым дазволіць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
 <translation id="2185965788978862351">Будуць выдалены даныя і файлы cookie (<ph name="DATASIZE" />), захаваныя сайтамі або дададзенымі на галоўны экран праграмамі.</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Учора}one{<ph name="NUM_DAYS_MANY" /> дзень таму}few{<ph name="NUM_DAYS_MANY" /> дні таму}many{<ph name="NUM_DAYS_MANY" /> дзён таму}other{<ph name="NUM_DAYS_MANY" /> дня таму}}</translation>
 <translation id="2215727959747642672">Змяненне файлаў</translation>
 <translation id="2218389616572918761">Сайты могуць запытваць дазвол на доступ да мікрафона</translation>
 <translation id="2228071138934252756">Каб праграма "<ph name="APP_NAME" />" атрымала доступ да камеры, уключыце камеру таксама ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6530703012083415527">Калі гэты параметр уключаны, сайты могуць паказваць усплывальныя вокны і выкарыстоўваць перанакіраванне. Калі параметр выключаны, сайты не могуць ажыццяўляць такія дзеянні.</translation>
 <translation id="6540488083026747005">Вы дазволілі староннія файлы cookie для гэтага сайта</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> тыдзень таму}one{<ph name="NUM_WEEKS_MANY" /> тыдзень таму}few{<ph name="NUM_WEEKS_MANY" /> тыдні таму}many{<ph name="NUM_WEEKS_MANY" /> тыдняў таму}other{<ph name="NUM_WEEKS_MANY" /> тыдня таму}}</translation>
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Заблакіраваны <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">Сайт выкарыстоўвае мікрафон</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7573594921350120855">Сайты звычайна выкарыстоўваюць відэакамеру для работы функцый сувязі (напрыклад, для відэачата)</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> месяц таму}one{<ph name="NUM_MONTHS_MANY" /> месяц таму}few{<ph name="NUM_MONTHS_MANY" /> месяцы таму}many{<ph name="NUM_MONTHS_MANY" /> месяцаў таму}other{<ph name="NUM_MONTHS_MANY" /> месяца таму}}</translation>
 <translation id="757524316907819857">Блакіраваць прайграванне абароненага змесціва на сайтах</translation>
 <translation id="7594634374516752650">Вэб-сайт падключаны да прылады з Bluetooth</translation>
 <translation id="7617547684249261169">Гісторыю, файлы cookie, даныя сайтаў і іншыя даныя можна часткова або поўнасцю выдаліць</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7881140103901777395">Выкарыстанне старонніх файлаў cookie абмежавана ў Chrome для большасці сайтаў. Тым не менш на гэтым сайце староннія файлы cookie дазволены, бо ён выкарыстоўвае іх для забеспячэння работы базавых функцый.\n\n<ph name="BEGIN_LINK" />Кіраваць доступам да старонніх файлаў cookie<ph name="END_LINK" /> можна ў наладах.</translation>
 <translation id="7882806643839505685">Дазвол гуку на канкрэтным сайце.</translation>
+<translation id="7891547341794213004">Схаваць картку "Працягнуць працу з гэтай укладкай"</translation>
 <translation id="789180354981963912">Блакіраваць староннія файлы cookie у рэжыме інкогніта:</translation>
 <translation id="789722939441020330">Не дазваляць сайтам аўтаматычна спампоўваць некалькі файлаў</translation>
 <translation id="7940722705963108451">Нагадаць</translation>

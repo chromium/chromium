@@ -3064,13 +3064,6 @@ Si cette règle n'est pas configurée, les sites peuvent exécuter JavaScript. T
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
 <translation id="3211426942294667684">Paramètres de connexion au navigateur</translation>
-<translation id="3213872023700948990">Cette règle permet de désactiver temporairement le nouveau comportement des barres de défilement sélectionnables au clavier.
-
-Si cette règle est activée ou n'est pas configurée, les barres de défilement sans enfants sélectionnables peuvent être sélectionnées par défaut au clavier.
-
-Lorsque cette règle est désactivée, les barres de défilement ne sont pas sélectionnables au clavier par défaut.
-
-Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
 <translation id="3216094710930835317">Le nouveau comportement de l'analyseur HTML, permettant d'utiliser plus de balises, sera désactivé.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> est modifiée dans <ph name="PRODUCT_NAME" /> afin de respecter les modifications apportées dans <ph name="FIREFOX_PRODUCT_NAME" /> et <ph name="SAFARI_PRODUCT_NAME" />. Cette règle rétablit l'ancien comportement jusqu'à M120.
 
@@ -3158,6 +3151,15 @@ Si la règle est définie sur "True" ou n'est pas configurée, les applis Web so
 <translation id="3256920103934729145">Empêcher les utilisateurs de passer les pages d'avertissement SSL</translation>
 <translation id="3257786863492892609">Contrôle les règles pour l'enregistreur d'écran.</translation>
 <translation id="3258380413685430793">Exécuter tout le contenu <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Cette règle contrôle la visibilité de la carte Outlook sur la page "Nouvel onglet". La carte ne s'affiche sur la page "Nouvel onglet" que si la règle est activée et si votre organisation a autorisé l'utilisation des données de l'agenda Outlook dans le navigateur.
+
+Les données Outlook ne seront pas stockées par le navigateur.
+
+La carte Outlook affiche le prochain événement d'agenda, ainsi qu'un aperçu des autres réunions de la journée. Elle vise à résoudre le problème de changement de contexte et à améliorer la productivité en donnant aux utilisateurs un raccourci vers leur prochaine réunion.
+
+La carte Microsoft Outlook nécessite une configuration supplémentaire par l'administrateur. Pour en savoir plus sur la connexion de la carte de la page "Nouvel onglet" de Chrome à Outlook, veuillez consulter https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche pas. Si <ph name="NTPCARDSVISIBLE" /> est activé, la carte Outlook s'affiche si cette règle est également activée et s'il y a des données à afficher. Si <ph name="NTPCARDSVISIBLE" /> n'est pas défini, la carte Outlook s'affiche si cette règle est également activée, si l'utilisateur a activé la carte dans "Personnaliser Chrome" et s'il y a des données à afficher.</translation>
 <translation id="3261592499545947104">Nombre de secondes avant l'expiration d'un certificat lorsque le renouvellement doit être déclenché.</translation>
 <translation id="3262080895269946462">Autoriser la désactivation par défaut de WebSQL dans des contextes tiers.</translation>
 <translation id="326341982850521928">Activer la correction des couleurs</translation>
@@ -5600,6 +5602,7 @@ Cette règle est proposée pour une durée limitée afin de laisser le temps de 
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
 <translation id="5091315650312105069">Autoriser l'authentification <ph name="BASIC_AUTH" /> pour HTTP</translation>
 <translation id="5093603777978346818">Ne pas activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
+<translation id="5099140200662153931">Afficher la carte des fichiers SharePoint et OneDrive sur la page "Nouvel onglet"</translation>
 <translation id="5099239365323299669">À partir de M106, le quota persistant ne sera plus accepté. Cette règle réactivera la fonctionnalité de quota persistant jusqu'à M107.
 
       Si cette règle est configurée sur activée, webkitRequestFileSystem de type persistant fonctionnera avec un quota persistant.
@@ -6264,6 +6267,15 @@ Cette API a été supprimée dans M112.</translation>
 <translation id="5511266910976210617">Ne pas autoriser M'aider à écrire.</translation>
 <translation id="5511702823008968136">Activer le barre de favoris</translation>
 <translation id="5512418063782665071">URL de la page d'accueil</translation>
+<translation id="5512785896190859782">Cette règle contrôle la visibilité de la carte des fichiers SharePoint et OneDrive sur la page "Nouvel onglet". La carte ne s'affiche sur la page "Nouvel onglet" que si la règle est activée et si votre organisation a autorisé l'utilisation des données de fichiers SharePoint et OneDrive dans le navigateur.
+
+Les données SharePoint et OneDrive ne seront pas stockées par le navigateur.
+
+La carte de recommandation de fichiers SharePoint et OneDrive affiche une liste de fichiers recommandés.  Elle vise à résoudre le problème de changement de contexte et à améliorer la productivité en donnant aux utilisateurs un raccourci vers leurs documents les plus importants.
+
+La carte Microsoft SharePoint et OneDrive nécessite une configuration supplémentaire par l'administrateur. Pour en savoir plus sur la connexion de la carte de la page "Nouvel onglet" de Chrome à SharePoint, veuillez consulter https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte SharePoint et OneDrive ne s'affiche pas. Si <ph name="NTPCARDSVISIBLE" /> est activé, la carte SharePoint et OneDrive s'affiche si cette règle est également activée et s'il y a des données à afficher. Si <ph name="NTPCARDSVISIBLE" /> n'est pas défini, la carte SharePoint et OneDrive s'affiche si cette règle est également activée, si l'utilisateur a activé la carte dans "Personnaliser Chrome" et s'il y a des données à afficher.</translation>
 <translation id="5516293691820655022">Fermer complètement Chrome</translation>
 <translation id="551639594034811656">Cette règle dresse une liste de pourcentages qui définit la fraction d'appareils <ph name="PRODUCT_OS_NAME" /> de l'unité organisationnelle qui doivent être mis à jour, par jour, à compter de la date où la mise à jour est détectée pour la première fois. La date de détection est postérieure à la date de publication de la mise à jour, car un certain temps peut s'écouler avant que l'appareil ne recherche des mises à jour après la publication de la mise à jour.
 
@@ -6536,6 +6548,13 @@ Si elle n'est pas définie ou que l'ancienneté de la version ne peut pas être 
 L'option d'algorithme de clé <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> est prise en charge depuis la version 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Autoriser l'utilisation de l'API U2F Security Key obsolète</translation>
 <translation id="5656177735561364047">Activer la fonctionnalité de presse-papiers partagé</translation>
+<translation id="5657289110555300740">Cette règle permet de désactiver temporairement le nouveau comportement des barres de défilement sélectionnables au clavier.
+
+Si elle est activée ou n'est pas configurée, les barres de défilement sans enfants sélectionnables peuvent être sélectionnées par défaut au clavier.
+
+Si elle est désactivée, les barres de défilement ne sont pas sélectionnables au clavier par défaut.
+
+Cette règle est une solution temporaire qui sera obsolète à compter de M139.</translation>
 <translation id="5657752663637568277">Cette règle détermine si les avertissements d'abandon de <ph name="CLOUD_PRINT_NAME" /> sont présentés aux utilisateurs dans la boîte de dialogue d'aperçu avant impression ou dans les pages de paramètres.
       Si cette règle est définie sur "True", les avertissements d'abandon seront masqués.
       Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>
@@ -6908,6 +6927,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5917897389577978190">Gmail (compatible depuis la version 135)</translation>
 <translation id="592036544845479336">Réactiver les événements de mutation obsolètes/supprimés</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
+<translation id="5923084443277419535">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M138.
+
+Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
+
+Si elle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Cette règle a été abandonnée, car la fonctionnalité qu'elle contrôle n'a jamais été lancée. Veuillez utiliser la règle <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> à la place.
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valeur 0), un libellé "Professionnel" ou "Scolaire" s'affiche à côté de l'avatar de la barre d'outils.
@@ -9555,11 +9579,6 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph n
 Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet Explorer, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Ne pas autoriser les captures d'écran et l'enregistrement de vidéos</translation>
 <translation id="7792796937016596423">L'utilisateur ne pourra pas capturer de paquets du réseau</translation>
-<translation id="7795648856511126914">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M136.
-
-Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
-
-Si cette règle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Cette règle a été supprimée depuis la version 89 de <ph name="PRODUCT_NAME" />, car <ph name="FLASH_PLUGIN_NAME" /> est obsolète.
 
       Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).

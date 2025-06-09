@@ -476,7 +476,6 @@
 <translation id="1312721752506309252">Покращений захист увімкнено</translation>
 <translation id="1312811472299082263">Додайте посібник Ansible або файл резервної копії Crostini</translation>
 <translation id="13130607084115184">Тут відображатимуться збережені паролі. Щоб імпортувати паролі в <ph name="BRAND" /> на цьому пристрої, <ph name="BEGIN_LINK" />виберіть файл CSV<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971">Дозволи "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" та "<ph name="PERMISSION_3" />" скасовано</translation>
 <translation id="1313405956111467313">Автоматична конфігурація проксі-сервера</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Ви вийдете з облікового запису на всіх сайтах, зокрема у відкритих вкладках</translation>
@@ -4193,6 +4192,7 @@
 <translation id="3876219572815410515">Розмір вікон змінено розтягуванням угору</translation>
 <translation id="3877075909000773256">Налаштування функції "Передавання поблизу" для пристрою користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />).</translation>
 <translation id="3877209288227498506">Виберіть чи показуватимуться зображення й інформація про використання пам’яті на картці попереднього перегляду вкладки</translation>
+<translation id="3877603629930976930">Не ділитися</translation>
 <translation id="3878445208930547646">Копіювання із цього сайту заборонено</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3880513902716032002">Деякі сторінки, які ви відвідуєте, попередньо завантажені</translation>
@@ -4618,7 +4618,6 @@
 <translation id="4190492351494485814">Для початкового налаштування потрібне інтернет-з’єднання, щоб синхронізувати файли з Chromebook</translation>
 <translation id="4190828427319282529">Виділяти фокус клавіатури</translation>
 <translation id="4191892134568599822">Отримати дані за допомогою функції <ph name="FEATURE_NAME" />?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Скасовано дозволи для 1 сайту, який не використовується}one{Скасовано дозволи для {NUM_SITES} сайту, які не використовуються}few{Скасовано дозволи для {NUM_SITES} сайтів, які не використовуються}many{Скасовано дозволи для {NUM_SITES} сайтів, які не використовуються}other{Скасовано дозволи для {NUM_SITES} сайту, які не використовуються}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Ексклюзивно для пристроїв <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Генеративний ШІ є експериментальною функцією, яка перебуває на ранніх стадіях розробки й зараз доступна не для всіх.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Надійний центр сертифікації</translation>
@@ -5172,7 +5171,6 @@
 <translation id="4585793705637313973">Редагувати сторінку</translation>
 <translation id="4586275095964870617">Не вдалося відкрити <ph name="URL" /> в альтернативному веб-переглядачі. Зв’яжіться із системним адміністратором.</translation>
 <translation id="4587589328781138893">Сайти</translation>
-<translation id="4588497044036650559">Відкрити сторінку з параметрами розширення на сторінці нової вкладки в поточній вкладці</translation>
 <translation id="4588749726511456218">Прискорення прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Схоже, вебсайти <ph name="PASSWORD_DOMAIN" /> і <ph name="DOMAIN" /> пов’язані. Перш ніж використати пароль, переконайтеся, що довіряєте сайту <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Журнали записано в каталог "Завантаження".</translation>
@@ -6135,6 +6133,7 @@
 <translation id="5278823018825269962">Ідентифікатор статусу</translation>
 <translation id="5279600392753459966">Блокувати всі</translation>
 <translation id="5280064835262749532">Оновіть облікові дані для <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">Це параметр налаштував адміністратор вашої організації. Видалити цю пошукову систему?</translation>
 <translation id="5280426389926346830">Створити комбінацію клавіш?</translation>
 <translation id="5281013262333731149">Відкривається у веб-переглядачі <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Щоб завантажувати й використовувати додатки Android, спершу потрібно встановити оновлення. Не користуйтеся пристроєм <ph name="DEVICE_TYPE" />, поки він оновлюється. Коли встановляться оновлення, <ph name="DEVICE_TYPE" /> перезапуститься.</translation>
@@ -6260,7 +6259,6 @@
 <translation id="5376931455988532197">Файл завеликий</translation>
 <translation id="5377367976106153749">Увімкнути доступ до камери?</translation>
 <translation id="5379140238605961210">Продовжити блокувати доступ до мікрофона</translation>
-<translation id="5380424552031517043">Дозвіл "<ph name="PERMISSION" />" скасовано</translation>
 <translation id="5380526436444479273">Зачекайте кілька хвилин і повторіть спробу</translation>
 <translation id="5382591305415226340">Керувати підтримуваними посиланнями</translation>
 <translation id="5384401776498845256">Хто може ділитися з вами даними</translation>
@@ -6995,7 +6993,6 @@
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="59174027418879706">Увімкнено</translation>
 <translation id="5919305207330938913">Усі зібрані дані використовуватимуться згідно з <ph name="BEGIN_LINK" />Політикою конфіденційності Google<ph name="END_LINK" />.</translation>
-<translation id="5919486630433391408">Адміністратор вимкнув оновлення мікропрограм.</translation>
 <translation id="5920543303088087579">Ваш адміністратор заборонив під’єднуватися до цієї мережі</translation>
 <translation id="5922963926582976524">Від’єднати мережу миттєвої точки доступу</translation>
 <translation id="5924047253200400718">Довідка<ph name="SCANNING_STATUS" /></translation>
@@ -7116,7 +7113,6 @@
 <translation id="6003479444341796444">Рядок заголовка показано</translation>
 <translation id="6003582434972667631">Тему вибирає ваша організація</translation>
 <translation id="6005045517426700202">Цегляна будівля</translation>
-<translation id="6006392003290068688">Дозволи "<ph name="PERMISSION_1" />" та "<ph name="PERMISSION_2" />" скасовано</translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007053304250788613">У дзеркальному режимі можна виключити лише один екран</translation>
 <translation id="6007240208646052708">Голосовий пошук недоступний вашою мовою.</translation>
@@ -8475,6 +8471,7 @@
 <translation id="69739764870135975">Якщо Google є вашою пошуковою системою за умовчанням, ви бачитимете кращі та доречніші за контекстом підказки</translation>
 <translation id="697508444536771064">Завершити роботу Linux</translation>
 <translation id="6978121630131642226">Пошукові системи</translation>
+<translation id="6978236010531171013">Усе одно поділитися</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979041727349121225">Режим енергозбереження</translation>
 <translation id="6979044105893951891">Запустити сеанси в режимі "Гість", якими керує адміністратор, і вийти з них</translation>
@@ -8575,7 +8572,6 @@
 <translation id="7039912931802252762">Вхід за допомогою смарт-картки Microsoft</translation>
 <translation id="7039951224110875196">Створити обліковий запис Google для дитини</translation>
 <translation id="7039968672732182060">Ваш Chromebook більше не отримує оновлення системи безпеки. Придбайте пристрій з останньою версією системи безпеки й програмного забезпечення. Діють умови пропозиції.</translation>
-<translation id="7041405817194720353">Дозволи "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="COUNT" /> скасовано</translation>
 <translation id="7042116641003232070">Сайту дозволено зберігати дані на вашому пристрої</translation>
 <translation id="7043108582968290193">Готово. Несумісних додатків не знайдено.</translation>
 <translation id="7044124535091449260">Докладніше про доступ до сайтів</translation>
@@ -8691,6 +8687,7 @@
 <translation id="7131896909366247105">Очікування встановлення додатка <ph name="APP_NAME" /></translation>
 <translation id="7132886488919643383">Використовувати ШІ від Google, щоб отримувати допомогу із читанням, написанням текстів і створенням зображень</translation>
 <translation id="7134098520442464001">Зменшити розмір тексту</translation>
+<translation id="7134653428559514680">Не рекомендується ділитися контентом із цього сайту</translation>
 <translation id="7134951043985383439">Завантажено небезпечний файл</translation>
 <translation id="7135729336746831607">Увімкнути Bluetooth?</translation>
 <translation id="7136694880210472378">Установити за умовчанням</translation>
@@ -9136,6 +9133,7 @@
 <translation id="7460045493116006516">Поточна встановлена тема</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746216226901520237">Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
+<translation id="7463068149674892185">Адміністратор не рекомендує виконувати цю дію</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Ваша організація керує тим, як використовуються дані, зібрані цими функціями.</translation>
 <translation id="7464645554245611385">Останнє оновлення цієї вкладки</translation>
@@ -11702,7 +11700,6 @@
 <translation id="934244546219308557">Введіть назву групи</translation>
 <translation id="93480724622239549">Помилка</translation>
 <translation id="9354763467503131">Дозволено запитувати дозвіл на встановлення вебдодатків на вашому пристрої</translation>
-<translation id="936329857119665832">Відкриється в поточній вкладці</translation>
 <translation id="936646668635477464">Камера та мікрофон</translation>
 <translation id="936801553271523408">Дані діагностики системи</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>

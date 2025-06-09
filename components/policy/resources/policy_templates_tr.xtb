@@ -3128,13 +3128,6 @@ Politikayı ayarlamadan bırakırsanız JavaScript'e izin verilir. Kullanıcıla
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, tüm yüklü yerel mesajlaşma ana makinelerini yükler.</translation>
 <translation id="3211426942294667684">Tarayıcı oturum açma ayarları</translation>
-<translation id="3213872023700948990">Bu politika, klavyeyle odaklanılabilen yeni kaydırıcı davranışının geçici olarak devre dışı bırakılmasını sağlar.
-
-Bu politika, Etkin değerine ayarlandığında veya ayarlanmadan bırakıldığında odaklanılabilir alt öğeleri olmayan kaydırıcılar varsayılan olarak klavyeyle odaklanılabilir olur.
-
-Bu politika, Devre Dışı değerine ayarlandığında kaydırıcılar varsayılan olarak klavyeye odaklanılabilir olmaz.
-
-Geçici bir çözüm olan bu politika M135 sürümünde kaldırılacaktır.</translation>
 <translation id="3216094710930835317">Daha fazla etiketin eklenmesine izin veren yeni HTML ayrıştırıcı davranışı devre dışı bırakılır</translation>
 <translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API, <ph name="FIREFOX_PRODUCT_NAME" /> ve <ph name="SAFARI_PRODUCT_NAME" /> tarayıcılarında yapılan değişikliklere uymak için <ph name="PRODUCT_NAME" /> tarayıcıda da değiştiriliyor. Bu politika, M120 sürümüne kadar eski davranışı geri getirir.
 
@@ -3220,6 +3213,15 @@ Politika doğru değerine ayarlanır veya ayarlanmadan bırakılırsa web uygula
 <translation id="3256920103934729145">Kullanıcıların SSL uyarı sayfalarını tıklamasını engelle</translation>
 <translation id="3257786863492892609">Ekran Kaydı ile ilgili politikaları kontrol eder.</translation>
 <translation id="3258380413685430793"><ph name="FLASH_PLUGIN_NAME" /> içeriklerinin tamamını çalıştır</translation>
+<translation id="3258754138048508776">Bu politika, Yeni Sekme Sayfası'nda Outlook Kartı'nın görünürlüğünü kontrol eder. Kart yalnızca politika etkinleştirilirse ve kuruluşunuz Outlook Takvim verilerinin tarayıcıda kullanılmasına izin verirse Yeni Sekme Sayfası'nda gösterilir.
+
+Outlook verileri tarayıcı tarafından depolanmaz.
+
+Outlook kartı bir sonraki takvim etkinliğinin yanı sıra günün diğer saatlerindeki toplantılarla ilgili genel bir bakış sunar. Bu özelliğin amacı, kullanıcılara bir sonraki toplantılarının kısayolunu sunarak bağlam değiştirme sorununu gidermek ve üretkenliği artırmaktır.
+
+Microsoft Outlook kartının kullanılabilmesi için ek yönetici yapılandırması gerekir. Chrome Yeni Sekme Sayfası Kartı'nın Outlook'a bağlanması hakkında ayrıntılı bilgi için lütfen https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards adresine göz atın.
+
+<ph name="NTPCARDSVISIBLE" /> devre dışı bırakılırsa Outlook kartı gösterilmez. <ph name="NTPCARDSVISIBLE" /> etkinleştirilirse Outlook kartının gösterilmesi için bu politika da etkinleştirilmeli ve gösterilecek veri bulunmalıdır. <ph name="NTPCARDSVISIBLE" /> ayarlanmazsa Outlook kartının gösterilmesi için bu politikanın etkinleştirilmesi, ayrıca kullanıcının Chrome'u Özelleştir bölümünden kartı etkinleştirmesi ve gösterilecek veri bulunması gerekir.</translation>
 <translation id="3261592499545947104">Bir sertifikanın kullanım süresi dolmadan kaç saniye önce yenilemenin tetikleneceği</translation>
 <translation id="3262080895269946462">Üçüncü taraf bağlamında WebSQL'nin varsayılan olarak devre dışı bırakılmasına izin ver.</translation>
 <translation id="326341982850521928">Renk düzeltmeyi etkinleştir</translation>
@@ -5696,6 +5698,7 @@ Bu politika, web içeriğinin yeni davranışa geçirilmesi için zaman tanıyan
 <translation id="5090791951240382356">Farklı kaynaklara ait sözlük politikalarını birleştirmeye izin ver</translation>
 <translation id="5091315650312105069">HTTP için <ph name="BASIC_AUTH" /> kimlik doğrulamasına izin ver</translation>
 <translation id="5093603777978346818">Kilit ekranında ekran koruyucuyu etkinleştirme.</translation>
+<translation id="5099140200662153931">Yeni Sekme Sayfası'nda SharePoint ve OneDrive Dosya Kartı'nı göster</translation>
 <translation id="5099239365323299669">Kalıcı kota, M106 sürümünden itibaren desteklenmeyecektir. Bu politika, kalıcı kota işlevini M107 sürümüne kadar yeniden etkinleştirir.
 
       Bu politika, etkin değerine ayarlanırsa kalıcı türe sahip webkitRequestFileSystem, kalıcı kotayla çalışır.
@@ -6369,6 +6372,15 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="5511266910976210617">"Yazmama yardım et" özelliğine izin verme.</translation>
 <translation id="5511702823008968136">Yer İşareti Çubuğunu etkinleştir</translation>
 <translation id="5512418063782665071">Ana sayfa URL'si</translation>
+<translation id="5512785896190859782">Bu politika, Yeni Sekme Sayfası'nda SharePoint ve OneDrive Dosya Kartı'nın görünürlüğünü kontrol eder. Kart yalnızca politika etkinleştirilirse ve kuruluşunuz SharePoint Dosya verilerinin tarayıcıda kullanılmasına izin verirse Yeni Sekme Sayfası'nda gösterilir.
+
+SharePoint ve OneDrive verileri tarayıcı tarafından depolanmaz.
+
+SharePoint ve OneDrive Dosyaları öneri kartında, önerilen dosyaların bir listesi bulunur.  Bu özelliğin amacı, kullanıcılara en önemli dokümanlarının kısayollarını sunarak bağlam değiştirme sorununu gidermek ve verimliliği artırmaktır.
+
+Microsoft SharePoint ve OneDrive kartı için ek yönetici yapılandırması gerekir. Chrome Yeni Sekme Sayfası Kartı'nın Sharepoint'e bağlanması hakkında ayrıntılı bilgi için lütfen https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards adresine göz atın.
+
+<ph name="NTPCARDSVISIBLE" /> devre dışı bırakılırsa SharePoint ve OneDrive kartı gösterilmez. <ph name="NTPCARDSVISIBLE" /> etkinleştirilirse Sharepoint ve OneDrive kartının gösterilmesi için bu politika da etkinleştirilmeli ve gösterilecek veri bulunmalıdır. <ph name="NTPCARDSVISIBLE" /> ayarlanmazsa Sharepoint ve OneDrive kartının gösterilmesi için bu politikanın etkinleştirilmesi, ayrıca kullanıcının Chrome'u Özelleştir bölümünden kartı etkinleştirmesi ve gösterilecek veri bulunması gerekir.</translation>
 <translation id="5516293691820655022">Chrome'u tamamen kapat</translation>
 <translation id="551639594034811656">Bu politika, güncellemenin ilk keşfedildiği günden başlamak üzere kuruluş biriminde günlük olarak güncellenecek <ph name="PRODUCT_OS_NAME" /> cihazlarının oranını gösteren yüzde değerlerin listesini tanımlar. Güncelleme yayınlandıktan sonra cihazın güncellemeleri kontrol etmesi biraz zaman aldığından, keşif zamanı güncelleme zamanından sonradır.
 
@@ -6641,6 +6653,13 @@ Politika ayarlanmazsa veya sürüm yaşı belirlenemezse tüm güncellemelerde <
 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> anahtar algoritması seçeneği, <ph name="PRODUCT_OS_NAME" /> 132 sürümünden itibaren desteklenmektedir.</translation>
 <translation id="5655553344896004108">Kullanımdan kaldırılan U2F Security Key API'nin kullanılmasına izin ver</translation>
 <translation id="5656177735561364047">Paylaşılan Pano Özelliğini Etkinleştir</translation>
+<translation id="5657289110555300740">Bu politika, klavyeyle odaklanılabilen yeni kaydırıcı davranışının geçici olarak devre dışı bırakılmasını sağlar.
+
+Bu politika, Etkin değerine ayarlandığında veya ayarlanmadan bırakıldığında odaklanılabilir alt öğeleri olmayan kaydırıcılar varsayılan olarak klavyeyle odaklanılabilir olur.
+
+Bu politika, Devre Dışı değerine ayarlandığında kaydırıcılar varsayılan olarak klavyeye odaklanılabilir olmaz.
+
+Bu politika geçici bir çözümdür. Bu politikanın desteği, M139 sürümünden itibaren sonlandırılmıştır.</translation>
 <translation id="5657752663637568277">Bu politika, <ph name="CLOUD_PRINT_NAME" /> kullanımdan kaldırma uyarılarının baskı önizleme iletişim kutusunda veya ayarlar sayfalarında kullanıcılara gösterilip gösterilmeyeceğini kontrol eder.
       Bu politika Doğru değerine ayarlanırsa kullanımdan kaldırma uyarıları gizlenir.
       Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanımdan kaldırma uyarıları gösterilir.</translation>
@@ -7009,6 +7028,11 @@ Bu politika normal ifadeleri desteklemez ancak belirli bir alanın alt alan adla
 <translation id="5917897389577978190">Gmail (135 sürümünden itibaren desteklenir)</translation>
 <translation id="592036544845479336">Desteği sonlandırılmış/kaldırılmış mutasyon etkinliklerini yeniden etkinleştir</translation>
 <translation id="5921713479449475707">HTTP aracılığıyla otomatik güncelleme indirmeye izin ver</translation>
+<translation id="5923084443277419535">HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla HTML etiketinin eklenmesine izin verecek şekilde değiştiriliyor. Bu politika, M138 sürümüne kadar eski HTML ayrıştırıcı davranışının kullanılmasına olanak tanır.
+
+Bu politika etkinleştirilir veya ayarlanmazsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla etiketin eklenmesine izin verir.
+
+Bu politika devre dışı bırakılırsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine hangi etiketlerin eklenebileceğini kısıtlar.</translation>
 <translation id="5925405187134730827">Kontrol ettiği özellik hiç kullanıma sunulmadığı için bu politikanın desteği sonlandırılmıştır. Bunun yerine <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> politikasını kullanabilirsiniz.
 
 Bu politika ayarlanmadan bırakılır veya <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (0 değeri) olarak ayarlanırsa araç çubuğu avatarının yanında iş veya okul etiketi gösterilir.
@@ -9726,11 +9750,6 @@ Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa <ph n
 Internet Explorer'ın <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında daha fazla bilgiyi https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode adresinde bulabilirsiniz.</translation>
 <translation id="7791215522423893512">Kullanıcıların ekran görüntüsü almasına veya video kaydı yapmasına izin verme</translation>
 <translation id="7792796937016596423">Kullanıcı, ağ paketi yakalama işlemleri gerçekleştiremez</translation>
-<translation id="7795648856511126914">HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla HTML etiketinin eklenmesine izin verecek şekilde değiştiriliyor. Bu politika, M136 sürümüne kadar eski HTML ayrıştırıcı davranışının kullanılmasına olanak tanır.
-
-Bu politika etkinleştirilir veya ayarlanmazsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine daha fazla etiketin eklenmesine izin verir.
-
-Bu politika devre dışı bırakılırsa HTML ayrıştırıcı, &lt;select&gt; öğesinin içine hangi etiketlerin eklenebileceğini kısıtlar.</translation>
 <translation id="7798441698807517880"><ph name="FLASH_PLUGIN_NAME" /> kullanımdan kaldırıldığı için bu politika, <ph name="PRODUCT_NAME" /> sürüm 89 itibariyle kaldırılmıştır.
 
       Politikayı Doğru değerine ayarlamak, diğer kaynaklardan gelen içerikler veya küçük içerikler de dahil olmak üzere <ph name="FLASH_PLUGIN_NAME" /> eklentisine izin veren web sitelerindeki yerleşik tüm <ph name="FLASH_PLUGIN_NAME" /> içeriğini çalıştırır.

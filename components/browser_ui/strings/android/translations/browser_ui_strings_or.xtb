@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="2185965788978862351">ଏହା ଆପଣଙ୍କ ହୋମ ସ୍କ୍ରିନରେ ସାଇଟ କିମ୍ବା ଆପ୍ସ ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଇଥିବା <ph name="DATASIZE" /> ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଡିଲିଟ କରିବ।</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{ଗତକାଲି}other{<ph name="NUM_DAYS_MANY" /> ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="2215727959747642672">ଫାଇଲ୍ ଏଡିଟିଂ</translation>
 <translation id="2218389616572918761">ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ପାଇଁ କହିପାରିବ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ କ୍ୟାମେରା ଆକ୍ସେସ୍ ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6530703012083415527">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ପପ-ଅପ ଓ ରିଡାଇରେକ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ପପ-ଅପ ଓ ରିଡାଇରେକ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="6540488083026747005">ଏହି ସାଇଟରେ ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ସପ୍ତାହ ପୂର୍ବେ}other{<ph name="NUM_WEEKS_MANY" /> ସପ୍ତାହ ପୂର୍ବେ}}</translation>
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ବ୍ଲକ୍ କରାଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="6554732001434021288">ଗତ ଥର <ph name="NUM_DAYS" /> ଦିନ ପୂର୍ବେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7561196759112975576">ସର୍ବଦା</translation>
 <translation id="7573594921350120855">ଭିଡିଓ ଚାଟିଂ ପରି କମ୍ୟୁନିକେସନ୍ ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ଭିଡିଓ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରିଥାଏ</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ମାସ ପୂର୍ବେ}other{<ph name="NUM_MONTHS_MANY" /> ମାସ ପୂର୍ବେ}}</translation>
 <translation id="757524316907819857">ସୁରକ୍ଷିତ ଥିବା ବିଷୟବସ୍ତୁ ଚଲାଇବାରୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="7594634374516752650">ଏକ ବ୍ଲୁଟୁଥ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="7617547684249261169">ଆପଣ ଆପଣଙ୍କର କିଛି କିମ୍ବା ସମସ୍ତ ଇତିହାସ, କୁକୀ, ସାଇଟ ଡାଟା ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଡିଲିଟ କରିପାରିବେ</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7881140103901777395">Chrome ଅଧିକାଂଶ ସାଇଟକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ୟବହାର କରିବାକୁ ସୀମିତ କରେ। କିନ୍ତୁ ବେସିକ ସେବାଗୁଡ଼ିକ ପ୍ରଦାନ କରିବା ପାଇଁ ଏହି ସାଇଟ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ଉପରେ ନିର୍ଭର କରୁଥିବା ଯୋଗୁଁ ଏଥିରେ ସେଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି।\n\n<ph name="BEGIN_LINK" />ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକର ଆକ୍ସେସକୁ ପରିଚାଳନା କରିବା<ph name="END_LINK" /> ପାଇଁ ସେଟିଂସକୁ ଭିଜିଟ କରନ୍ତୁ।</translation>
 <translation id="7882806643839505685">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ରେ ଧ୍ୱନୀ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
+<translation id="7891547341794213004">"ଏହି ଟାବ ମାଧ୍ୟମରେ ଜାରି ରଖନ୍ତୁ" କାର୍ଡକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="789180354981963912">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ:</translation>
 <translation id="789722939441020330">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="7940722705963108451">ମୋତେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>

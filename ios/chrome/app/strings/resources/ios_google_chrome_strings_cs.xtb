@@ -138,7 +138,6 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="4724297637870447613">Používejte Chrome všude</translation>
 <translation id="4738647308035481133">Stránka prohlížeče Google Chrome</translation>
 <translation id="4742795653798179840">Data Chromu byla smazána</translation>
-<translation id="4749294594657945639">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chrome pro automatické vyplňování</translation>
 <translation id="4761869838909035636">Spustit bezpečnostní kontrolu Chromu</translation>
 <translation id="4798859546468762093">Pokud chcete získat personalizaci a další funkce, zahrňte Chrome do: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Za účelem vylepšování aplikace odesílá Chrome do Googlu údaje o využití a selháních. <ph name="BEGIN_LINK" />Spravovat<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="6533470733797826516">Přihlašujte se rychleji s automatickým vyplňováním v Chromu</translation>
 <translation id="6536544321553662809">Nastavte Chrome jako výchozí prohlížeč, abyste mohli snadno sdílet a otevírat odkazy</translation>
 <translation id="6545449117344801102">Chrome zjišťuje pomocí Map Google adresy, aby vám mohl poskytovat trasy a místní informace.</translation>
+<translation id="6611692150236062461">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chrome pro automatické vyplňování.</translation>
 <translation id="6636941099779251629">Vaše organizace vyžaduje, abyste se k používání Chromu přihlásili. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome do Googlu odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="6647304104688527905">Otevře novou kartu v prohlížeči Chrome.</translation>

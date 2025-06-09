@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">어디서나 Chrome 사용</translation>
 <translation id="4738647308035481133">Chrome 페이지</translation>
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
-<translation id="4749294594657945639">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성을 선택하세요.</translation>
 <translation id="4761869838909035636">Chrome 안전 확인 실행</translation>
 <translation id="4798859546468762093">맞춤설정 및 기타 기능을 사용하려면 <ph name="FEATURE_NAME_1" /> 그리고 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요.</translation>
 <translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">Chrome 자동 완성으로 더 빠르게 로그인하세요</translation>
 <translation id="6536544321553662809">Chrome을 기본 브라우저로 설정하여 링크를 간편하게 공유하고 열어 보세요</translation>
 <translation id="6545449117344801102">Chrome에서는 주소를 감지하고 Google 지도를 사용하여 경로 및 지역 정보를 제공합니다.</translation>
+<translation id="6611692150236062461">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성을 선택하세요.</translation>
 <translation id="6636941099779251629">조직에서 Chrome을 사용하려면 로그인할 것을 요구합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="6647304104688527905">Chrome에서 새 탭을 엽니다.</translation>

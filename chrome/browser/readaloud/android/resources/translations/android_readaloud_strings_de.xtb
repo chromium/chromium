@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Sprachmenü</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1246424317317450637">Fett</translation>
+<translation id="1357114957607379632">KI-Wiedergabe wird erstellt…</translation>
 <translation id="1370273601702151510">Mag ich</translation>
 <translation id="1483137792530497944">Fluss</translation>
 <translation id="1586836055630070874">Besänftigend</translation>
+<translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1666704368140506043">Anstößige Inhalte</translation>
 <translation id="1741047078107369903">Warm</translation>
 <translation id="1807863182207623884">Rubin</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Die Wiedergabe ist für diese Seite derzeit leider nicht möglich. Bitte versuch es später noch einmal.</translation>
 <translation id="3457812538570616687">Mag ich nicht</translation>
 <translation id="3493899379487634969">Was ist schiefgelaufen?</translation>
+<translation id="3730775656877876887">KI-Wiedergabe wird erstellt</translation>
 <translation id="3778044272390020426">Menü mit Optionen für negatives Feedback</translation>
 <translation id="3807208219231826020">Scrubbing-Wiedergabe</translation>
 <translation id="385051799172605136">Zurück</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Hell</translation>
 <translation id="5234971936051226002">Der Player „Diese Seite anhören“ ist minimiert.</translation>
 <translation id="5251803541071282808">Cloud</translation>
-<translation id="5526614127710223793">Auswahl des Wiedergabemodus</translation>
+<translation id="5528503854289436485">KI-Wiedergabe</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="565342223183747919">Zum Wechseln des Wiedergabemodus tippen</translation>
 <translation id="5694491020339060116">Menü für Wiedergabegeschwindigkeit</translation>
 <translation id="5965409657393819302">Technisches Problem</translation>
 <translation id="6218961554829577610">Stimme gefällt mir nicht</translation>
 <translation id="6315170314923504164">Stimme</translation>
-<translation id="6330455646577575965">KI-Audiowiedergabe</translation>
 <translation id="6343633247422081848">Moos</translation>
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Zur Verbesserung der Qualität und für Forschungszwecke wird deine URL zusammen mit dem Feedback hochgeladen.</translation>
 <translation id="8481839122437406573">Ruhig</translation>
 <translation id="8756370108715456837">Faktisch nicht korrekt</translation>
-<translation id="881960277396325853">Audio wird mithilfe von KI erstellt…</translation>
 <translation id="8953618380150219653">Der Player „Diese Seite anhören“ ist vollständig geöffnet.</translation>
 <translation id="978117257931832348">Tiefe Stimmlage</translation>
 </translationbundle>

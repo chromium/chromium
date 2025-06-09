@@ -1014,6 +1014,7 @@
 <translation id="4305817255990598646">Превключване</translation>
 <translation id="4307713728991152670">Настройване на прегледа на скорошните снимки, мултимедийни файлове и приложения на телефона ви</translation>
 <translation id="4312840429157639164">Картината от камерата е прилепена към горния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
+<translation id="4312935606722154789">Групиране или разгрупиране на два прозореца един до друг</translation>
 <translation id="4316910396681052118">ВСИЧКИ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Скриване на всички предложения от браузъра Chrome</translation>
@@ -1582,7 +1583,6 @@
 <translation id="6095425951508823973">Добавяне на връзка с(ъс) <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Редактирано през миналия месец</translation>
 <translation id="6103838137565245112">система</translation>
-<translation id="610395411842312282">Групиране на два прозореца един до друг</translation>
 <translation id="6108952804512516814">Създаване с AI</translation>
 <translation id="6114505516289286752">Файловете за говор на <ph name="LANGUAGE" /> бяха изтеглени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

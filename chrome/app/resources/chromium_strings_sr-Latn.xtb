@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Ponovo pokreni da bi se &amp;Chromium OS ažurirao</translation>
 <translation id="1040916596585577953">Chromium preporučuje da pregledate ovaj dodatak</translation>
 <translation id="1042552502243217427">Kada sajt zatraži da privatno predučitava linkove na stranici, Chromium koristi Google servere. Na taj način se vaš identitet krije od predučitanog sajta, ali Google saznaje koji sajtovi su unapred učitani.</translation>
+<translation id="1051793555070215510">Pomozite nam da poboljšamo režim bez arhiviranja tako što ćete popuniti ovu jednominutnu anketu.</translation>
 <translation id="1065672644894730302">Podešavanja ne mogu da se pročitaju.
 
 Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.</translation>
@@ -87,7 +88,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
 <translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer ovaj sajt ne koristi bezbednu vezu, pa je fajl možda neovlašćeno menjan</translation>
-<translation id="2157600032285353789">Možete da otvarate obeleživače, režim za čitanje i drugo iz Chromium menija</translation>
 <translation id="2174178932569897599">Prilagodite Chromium</translation>
 <translation id="2174917724755363426">Instalacija nije dovršena. Želite stvarno da je otkažete?</translation>
 <translation id="2185166961232948079">Chromium – prijavljivanje na mrežu – <ph name="PAGE_TITLE" /></translation>
@@ -360,7 +360,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5987687638152509985">Ažurirajte Chromium da biste započeli sinhronizaciju</translation>
 <translation id="5988505247484123880">Uobičajeno je da sajtovi koje posećujete pamte stvari koje vas zanimaju radi personalizacije doživljaja. Sajtovi mogu i da čuvaju informacije o vašim interesovanjima u Chromium-u.</translation>
 <translation id="6003112304606738118">Preuzima se... Još <ph name="HOURS" /> č</translation>
-<translation id="6019451407441383358">Možete da otvarate obeleživače, režim za čitanje i drugo iz Chromium menija u gornjem desnom uglu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6058380562449900225">Da biste zaštitili podatke, dozvolite da Chromium uklanja dozvole sa sajtova koje duže niste posećivali. To ne zaustavlja obaveštenja.</translation>
 <translation id="6063093106622310249">&amp;Otvori u Chromium-u</translation>

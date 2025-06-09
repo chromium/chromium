@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="2185965788978862351">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שאוחסנו על ידי אתרים ואפליקציות במסך הבית.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{אתמול}one{לפני <ph name="NUM_DAYS_MANY" /> ימים}two{לפני יומיים (<ph name="NUM_DAYS_MANY" />)}other{לפני <ph name="NUM_DAYS_MANY" /> ימים}}</translation>
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2218389616572918761">אתרים יכולים לבקש הרשאה להשתמש במיקרופון</translation>
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -449,12 +450,13 @@
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6530703012083415527">כשהאפשרות מופעלת, אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות. כשהאפשרות מושבתת, אתרים לא יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות.</translation>
 <translation id="6540488083026747005">‏אישרת את השימוש בקובצי Cookie של צד שלישי באתר הזה</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{לפני שבוע (<ph name="NUM_WEEKS_ONE" />)}one{לפני <ph name="NUM_WEEKS_MANY" /> שבועות}two{לפני שבועיים (<ph name="NUM_WEEKS_MANY" />)}other{לפני <ph name="NUM_WEEKS_MANY" /> שבועות}}</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
-<translation id="6593061639179217415">אתר שמותאם למחשב</translation>
+<translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
@@ -522,6 +524,7 @@
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7573594921350120855">אתרים משתמשים בדרך כלל במצלמת הווידאו כדי לתמוך בתכונות תקשורת כמו וידאו צ'אט</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{לפני חודש (<ph name="NUM_MONTHS_ONE" />)}one{לפני <ph name="NUM_MONTHS_MANY" /> חודשים}two{לפני חודשיים (<ph name="NUM_MONTHS_MANY" />)}other{לפני <ph name="NUM_MONTHS_MANY" /> חודשים}}</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
 <translation id="7594634374516752650">‏האתר מחובר למכשיר Bluetooth</translation>
 <translation id="7617547684249261169">‏אפשר למחוק חלק מההיסטוריה, קובצי ה-Cookie, נתוני האתרים ונתונים נוספים. אפשר גם לבחור למחוק את הכול.</translation>
@@ -543,6 +546,7 @@
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7881140103901777395">‏‫Chrome מגביל את השימוש בקובצי Cookie של צד שלישי ברוב האתרים. עם זאת, קובצי Cookie של צד שלישי מותרים באתר הזה כי הוא מסתמך עליהם לאספקת שירותים בסיסיים.\n\nבהגדרות <ph name="BEGIN_LINK" />ניתן לנהל את הגישה לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
+<translation id="7891547341794213004">הסתרת הכרטיס "המשך הגלישה בכרטיסייה הזו"</translation>
 <translation id="789180354981963912">‏חסימת קובצי cookie של צד שלישי במצב פרטי:</translation>
 <translation id="789722939441020330">לא לאפשר לאתרים להוריד באופן אוטומטי קבצים מרובים</translation>
 <translation id="7940722705963108451">קבלת תזכורת</translation>

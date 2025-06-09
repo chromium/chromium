@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">已開啟「強化保護功能」</translation>
 <translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
 <translation id="13130607084115184">已儲存的密碼會在這裡顯示。如要在此裝置上將密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
-<translation id="1313264149528821971">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
 <translation id="131364520783682672">Caps Lock 鍵</translation>
 <translation id="1313660246522271310">您將會從所有網站 (包括已開啟的分頁) 登出</translation>
@@ -4187,6 +4186,7 @@
 <translation id="3876219572815410515">已經向上調整並排視窗大細</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的裝置的「咫尺共享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="3877209288227498506">選擇在分頁懸停預覽資訊卡顯示記憶體用量和圖像</translation>
+<translation id="3877603629930976930">不要分享</translation>
 <translation id="3878445208930547646">不允許複製此網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880513902716032002">系統會預先載入你瀏覽的部分網頁</translation>
@@ -4609,7 +4609,6 @@
 <translation id="4190492351494485814">進行初始設定時，你需要連接互聯網才能將檔案同步至 Chromebook</translation>
 <translation id="4190828427319282529">突顯鍵盤焦點</translation>
 <translation id="4191892134568599822">要透過「<ph name="FEATURE_NAME" />」接收嗎？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{已為 1 個未使用的網站移除權限}other{已為 {NUM_SITES} 個未使用的網站移除權限}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> 專用。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />生成式 AI 是實驗版功能，仍在初期開發階段，目前僅供部分使用者使用。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">可信任的 CA</translation>
@@ -5163,7 +5162,6 @@
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
 <translation id="4587589328781138893">網站</translation>
-<translation id="4588497044036650559">喺目前嘅分頁打開新分頁擴充程式選項頁面</translation>
 <translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 和 <ph name="DOMAIN" /> 似乎有關聯。請確認你信任 <ph name="DOMAIN" />，再使用此密碼。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
@@ -6126,6 +6124,7 @@
 <translation id="5278823018825269962">狀態 ID</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
+<translation id="5280303168922585051">此設定是由你的機構指定，確定要刪除此搜尋引擎嗎？</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
 <translation id="528208740344463258">如要下載並使用 Android 應用程式，請先安裝此必要更新。<ph name="DEVICE_TYPE" /> 更新時，您將無法使用裝置。安裝完成後，<ph name="DEVICE_TYPE" /> 將會重新啟動。</translation>
@@ -6251,7 +6250,6 @@
 <translation id="5376931455988532197">檔案太大</translation>
 <translation id="5377367976106153749">要允許存取相機嗎？</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
-<translation id="5380424552031517043">已移除「<ph name="PERMISSION" />」</translation>
 <translation id="5380526436444479273">請等候數分鐘，然後再試一次</translation>
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5384401776498845256">誰能與你分享內容</translation>
@@ -6986,7 +6984,6 @@
 <translation id="5916664084637901428">開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919305207330938913">我們會根據 Google 的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
-<translation id="5919486630433391408">管理員已停用韌體更新。</translation>
 <translation id="5920543303088087579">您的管理員已停用連線至此網絡的權限</translation>
 <translation id="5922963926582976524">解除與「即時熱點」網絡的連線</translation>
 <translation id="5924047253200400718">查看說明<ph name="SCANNING_STATUS" /></translation>
@@ -7107,7 +7104,6 @@
 <translation id="6003479444341796444">正在顯示標題列</translation>
 <translation id="6003582434972667631">主題由機構設定</translation>
 <translation id="6005045517426700202">磚牆建築</translation>
-<translation id="6006392003290068688">已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」</translation>
 <translation id="6006484371116297560">經典主題</translation>
 <translation id="6007053304250788613">鏡像模式只可排除一個顯示屏</translation>
 <translation id="6007240208646052708">無法使用您的語言執行語音搜尋。</translation>
@@ -8460,6 +8456,7 @@
 <translation id="69739764870135975">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
 <translation id="697508444536771064">關閉 Linux</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
+<translation id="6978236010531171013">仍要分享</translation>
 <translation id="6978717888677691380">您已封鎖的網站</translation>
 <translation id="6979041727349121225">慳電模式</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>
@@ -8560,7 +8557,6 @@
 <translation id="7039912931802252762">Microsoft 智能卡登入</translation>
 <translation id="7039951224110875196">為子女建立 Google 帳戶</translation>
 <translation id="7039968672732182060">Chromebook 不會再收到安全更新。請盡快改用新 Chromebook，以獲得最新的安全和軟件更新。須遵守優惠條款。</translation>
-<translation id="7041405817194720353">已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和其他 <ph name="COUNT" /> 個權限</translation>
 <translation id="7042116641003232070">可將資料儲存至您的裝置</translation>
 <translation id="7043108582968290193">大功告成！已沒有任何不兼容的應用程式。</translation>
 <translation id="7044124535091449260">瞭解詳情網站存取權</translation>
@@ -8676,6 +8672,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" /> 等緊</translation>
 <translation id="7132886488919643383">Google AI 可以幫手讀寫和建立項目</translation>
 <translation id="7134098520442464001">縮小文字</translation>
+<translation id="7134653428559514680">不建議分享此網站的內容</translation>
 <translation id="7134951043985383439">下載咗危險嘅檔案</translation>
 <translation id="7135729336746831607">要開啟藍牙嗎？</translation>
 <translation id="7136694880210472378">設定為預設</translation>
@@ -9121,6 +9118,7 @@
 <translation id="7460045493116006516">您目前安裝的主題</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
+<translation id="7463068149674892185">不建議執行此操作</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">你的機構會管理如何使用這些功能收集的資料。</translation>
 <translation id="7464645554245611385">此分頁最近的更新</translation>
@@ -11678,7 +11676,6 @@
 <translation id="934244546219308557">為此群組命名</translation>
 <translation id="93480724622239549">問題或錯誤</translation>
 <translation id="9354763467503131">允許要求在你的裝置上安裝網絡應用程式</translation>
-<translation id="936329857119665832">喺目前嘅分頁打開</translation>
 <translation id="936646668635477464">攝錄機和麥克風</translation>
 <translation id="936801553271523408">系統診斷數據</translation>
 <translation id="93766956588638423">修復擴充程式</translation>

@@ -176,6 +176,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5259423875997548710">Maghanap ng mga visual sa Chromium.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="5311557153294205270">Idaragdag ang mga in-input na URL sa iyong mga bookmark sa Chromium.</translation>
+<translation id="5383251701169024761">Para madaling makuha ang iyong mga naka-save na password sa iba pang app, piliin ang Chromium para sa Autofill.</translation>
 <translation id="538767207339317086">Pagayan ang pag-sign in sa Chromium</translation>
 <translation id="5389058611415066188">Manatiling ligtas sa Chromium</translation>
 <translation id="5415273218238091735">Tip sa Chromium</translation>
@@ -276,7 +277,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="7784950022329154821">I-lock ang mga tab na Incognito kapag isinara mo ang Chromium</translation>
 <translation id="78025249032851484">Luma na ang iyong Chromium.</translation>
-<translation id="7811371919871579588">Para madaling makuha ang iyong mga naka-save na password sa iba pang app, piliin ang Chromium para sa Autofill.</translation>
 <translation id="7859018312476869945">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chromium kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="7890287942691234100">Simulang gamitin ang scanner ng Chromium</translation>
 <translation id="7905064834449738336">Kapag gumamit ka ng password, babalaan ka ng Chromium kung na-publish na ito online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>

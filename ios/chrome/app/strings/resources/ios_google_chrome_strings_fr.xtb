@@ -97,7 +97,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="314782365035065913">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="322254490661677575">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète.</translation>
-<translation id="3282568296779691940">Connectez-vous à Chrome</translation>
+<translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3303503998967553377">Utiliser Actions Chrome sur iOS</translation>
 <translation id="3348862487678490430">Ajouter un élément de liste de lecture à Chrome</translation>
 <translation id="3357827134511189025">Connectez-vous avec vos mots de passe et clés d'accès enregistrés depuis n'importe quelle appli avec Chrome pour la saisie automatique</translation>
@@ -138,7 +138,6 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="4724297637870447613">Utilisez Chrome où que vous soyez</translation>
 <translation id="4738647308035481133">Page Google Chrome</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
-<translation id="4749294594657945639">Pour retrouver facilement vos mots de passe enregistrés dans d'autres applis, choisissez Chrome pour la saisie automatique.</translation>
 <translation id="4761869838909035636">Effectuer un contrôle de sécurité de Chrome</translation>
 <translation id="4798859546468762093">Pour bénéficier de la personnalisation et d'autres fonctionnalités, ajoutez Chrome à l'<ph name="FEATURE_NAME_1" /> ainsi qu'aux <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="6533470733797826516">Connectez-vous plus vite avec la saisie automatique Chrome</translation>
 <translation id="6536544321553662809">Définissez Chrome comme navigateur par défaut pour partager et ouvrir des liens facilement</translation>
 <translation id="6545449117344801102">Chrome détecte les adresses et utilise Google Maps pour vous proposer des itinéraires et des informations locales.</translation>
+<translation id="6611692150236062461">Pour retrouver facilement vos mots de passe enregistrés dans d'autres applis, choisissez Chrome pour la saisie automatique.</translation>
 <translation id="6636941099779251629">Votre organisation exige que vous vous connectiez pour utiliser Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à Google.</translation>
 <translation id="6647304104688527905">Ouvre un nouvel onglet dans Chrome.</translation>
@@ -230,7 +230,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 
 Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Supprimez les données de navigation dans Chrome.</translation>
-<translation id="6924922227983877439">Ouvrez les liens dans Chrome par défaut</translation>
+<translation id="6924922227983877439">Ouvrir les liens dans Chrome par défaut</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>
 <translation id="7056826488869329999">Lance le contrôle de sécurité dans Chrome.</translation>
 <translation id="7061455974939528301">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>

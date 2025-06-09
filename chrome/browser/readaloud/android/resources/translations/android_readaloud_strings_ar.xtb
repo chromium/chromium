@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">قائمة الصوت</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1246424317317450637">غامق</translation>
+<translation id="1357114957607379632">جارٍ إنشاء وتشغيل الملخّص الصوتي باستخدام الذكاء الاصطناعي…</translation>
 <translation id="1370273601702151510">يعجبني</translation>
 <translation id="1483137792530497944">نهر</translation>
 <translation id="1586836055630070874">مريح</translation>
+<translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1666704368140506043">محتوى مسيء</translation>
 <translation id="1741047078107369903">دافئ</translation>
 <translation id="1807863182207623884">ياقوت</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">لا يمكن تشغيل هذه الصفحة في الوقت الحالي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3457812538570616687">لا يعجبني</translation>
 <translation id="3493899379487634969">ما المشكلة التي حدثت؟</translation>
+<translation id="3730775656877876887">جارٍ إنشاء وتشغيل الملخّص الصوتي باستخدام الذكاء الاصطناعي</translation>
 <translation id="3778044272390020426">قائمة خيارات الملاحظات السلبية</translation>
 <translation id="3807208219231826020">التقديم والترجيع</translation>
 <translation id="385051799172605136">رجوع</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">جليّ</translation>
 <translation id="5234971936051226002">تم تصغير مشغِّل خيار "الاستماع إلى هذه الصفحة".</translation>
 <translation id="5251803541071282808">السحابة الإلكترونية</translation>
-<translation id="5526614127710223793">أداة اختيار وضع التشغيل</translation>
+<translation id="5528503854289436485">التشغيل باستخدام الذكاء الاصطناعي</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="565342223183747919">يمكنك النقر لتبديل وضع التشغيل</translation>
 <translation id="5694491020339060116">قائمة سرعة التشغيل</translation>
 <translation id="5965409657393819302">مشكلة فنية</translation>
 <translation id="6218961554829577610">لم يعجبني الصوت</translation>
 <translation id="6315170314923504164">الصوت</translation>
-<translation id="6330455646577575965">تشغيل الصوت باستخدام الذكاء الاصطناعي</translation>
 <translation id="6343633247422081848">طحلب</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6727569846535331147"><ph name="PITCH" /> و<ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">‏سيتم تحميل عنوان URL مع تضمين الملاحظات لتحسين الجودة وإجراء الأبحاث.</translation>
 <translation id="8481839122437406573">نبرة هادئة</translation>
 <translation id="8756370108715456837">المحتوى يتضمّن معلومات غير صحيحة</translation>
-<translation id="881960277396325853">جارٍ إنشاء صوت باستخدام الذكاء الاصطناعي…</translation>
 <translation id="8953618380150219653">تم فتح مشغِّل خيار "الاستماع إلى هذه الصفحة" بطول الشاشة.</translation>
 <translation id="978117257931832348">حدّة صوت منخفضة</translation>
 </translationbundle>

@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Personnalisez et contrôlez Google Chrome. Une mise à jour est disponible.</translation>
 <translation id="1028061813283459617">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Cliquez pour fermer la boîte de dialogue de connexion à Chrome</translation>
+<translation id="1051793555070215510">Aidez-nous à améliorer la navigation privée en répondant à cette enquête d'une minute.</translation>
 <translation id="1059838145689930908">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
@@ -186,7 +187,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3226612997184048185">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chrome et être averti lorsqu'ils baissent</translation>
 <translation id="3242123554343253302">Ajouter un profil Chrome</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
-<translation id="3282568296779691940">Connectez-vous à Chrome</translation>
+<translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="3327226547491422998">Plus tard, Chrome pourra vous demander si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
@@ -556,7 +557,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8019103195866286235">Cette extension peut présenter des risques, car son développeur a annulé sa publication. Supprimez-la de Chrome pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="8040768861829554732">Une extension vous demande de vous connecter à Chrome</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8064015041956107954">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome situé en haut à droite</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
@@ -568,7 +568,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8221491193165283816">Les notifications sont bloquées par défaut. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
-<translation id="8257796129973882597">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome</translation>
 <translation id="8267953129876836456">Chrome a identifié des recommandations de sécurité à examiner</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="829923460755755423">Ajoutez un raccourci au Gestionnaire de mots de passe de Google</translation>

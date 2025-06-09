@@ -138,7 +138,6 @@ Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, ši
 <translation id="4724297637870447613">Chrome izmantošana visur</translation>
 <translation id="4738647308035481133">Pārlūka Google Chrome lapa</translation>
 <translation id="4742795653798179840">Chrome dati ir izdzēsti</translation>
-<translation id="4749294594657945639">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izvēlieties pārlūku Chrome automātiskajai aizpildei.</translation>
 <translation id="4761869838909035636">Veikt Chrome drošības pārbaudi</translation>
 <translation id="4798859546468762093">Lai varētu izmantot personalizēšanu un citas funkcijas, iekļaujiet pārlūku Chrome iestatījumos <ph name="FEATURE_NAME_1" /> un <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="4819268619367838612">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai i
 <translation id="6533470733797826516">Pierakstieties ātrāk, izmantojot automātisko aizpildi pārlūkā Chrome.</translation>
 <translation id="6536544321553662809">Iestatiet Chrome kā noklusējuma pārlūku, lai ērti kopīgotu un atvērtu saites.</translation>
 <translation id="6545449117344801102">Chrome nosaka adreses un izmanto pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju.</translation>
+<translation id="6611692150236062461">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izvēlieties pārlūku Chrome automātiskajai aizpildei.</translation>
 <translation id="6636941099779251629">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chrome, jums ir jāpierakstās. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6646696210740573446">Google serveriem tiek nosūtīta pieslēpta URL daļa, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, pārlūks Chrome var arī nosūtīt Google serveriem attiecīgos URL, tostarp lapas satura fragmentus.</translation>
 <translation id="6647304104688527905">Atver jaunu cilni pārlūkā Chrome.</translation>

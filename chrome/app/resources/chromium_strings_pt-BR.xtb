@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Reinicializar para atualizar o &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">O Chromium recomenda que você revise essa extensão</translation>
 <translation id="1042552502243217427">Quando um site pede para pré-carregar links anonimamente, o Chromium usa os servidores do Google. Isso oculta sua identidade para o site, mas o Google aprende quais sites são pré-carregados.</translation>
+<translation id="1051793555070215510">Responda a esta pesquisa de um minuto e ajude a melhorar a navegação anônima.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1083934481477628225">Seu familiar responsável desativou "Permissões para sites, apps e extensões" no Chromium</translation>
 <translation id="1104942323762546749">O Chromium quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
 <translation id="2137162749895930932">Fechar o tradutor</translation>
 <translation id="215352261310130060">O Chromium bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
-<translation id="2157600032285353789">É possível abrir os favoritos, o modo de leitura e muito mais no menu do Google Chromium</translation>
 <translation id="2174178932569897599">Personalizar o Chromium</translation>
 <translation id="2174917724755363426">A instalação não foi concluída. Tem certeza de que quer cancelar?</translation>
 <translation id="2185166961232948079">Chromium - Login na rede - <ph name="PAGE_TITLE" /></translation>
@@ -356,7 +356,6 @@
 <translation id="5987687638152509985">Atualize o Chromium para começar a sincronizar</translation>
 <translation id="5988505247484123880">É comum os sites que você visita lembrarem dos seus interesses para personalizar sua experiência. Sites também podem armazenar informações sobre seus interesses com o Chromium.</translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
-<translation id="6019451407441383358">É possível abrir os favoritos, o modo de leitura e muito mais no menu do Chromium no canto superior direito</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6058380562449900225">Para proteger seus dados, permita que o Chromium remova permissões de sites que você não visitou recentemente. Não interrompe notificações.</translation>
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>

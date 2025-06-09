@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">भ्वाइस मेनु</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
+<translation id="1357114957607379632">AI प्लेब्याक जेनेरेट गरिँदै छ...</translation>
 <translation id="1370273601702151510">थम्ब अप</translation>
 <translation id="1483137792530497944">नदी</translation>
 <translation id="1586836055630070874">सुमधुर</translation>
+<translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1666704368140506043">अपमानजनक सामग्री</translation>
 <translation id="1741047078107369903">न्यानो</translation>
 <translation id="1807863182207623884">रुबी</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">दुर्भाग्यवश, अहिले यो पेजमा प्लेब्याक उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3457812538570616687">थम्ब डाउन</translation>
 <translation id="3493899379487634969">के समस्या आयो?</translation>
+<translation id="3730775656877876887">AI प्लेब्याक जेनेरेट गरिँदै छ</translation>
 <translation id="3778044272390020426">नकारात्मक प्रतिक्रियाका विकल्पहरू भएको मेनु</translation>
 <translation id="3807208219231826020">प्लेब्याक स्क्रब गर्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">चहकिलो</translation>
 <translation id="5234971936051226002">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर मिनिमाइज गरिएको छ।</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
-<translation id="5526614127710223793">प्लेब्याक मोड सेलेक्टर</translation>
+<translation id="5528503854289436485">AI प्लेब्याक</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="565342223183747919">प्लेब्याक मोड बदल्न ट्याप गर्नुहोस्</translation>
 <translation id="5694491020339060116">प्लेब्याकको गतिसम्बन्धी मेनु</translation>
 <translation id="5965409657393819302">प्राविधिक समस्या</translation>
 <translation id="6218961554829577610">आवाज मन परेन</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
-<translation id="6330455646577575965">AI अडियो प्लेब्याक</translation>
 <translation id="6343633247422081848">मस</translation>
 <translation id="6550675742724504774">विकल्पहरू</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">तपाईंको URL गुणस्तर सुधार्न र अनुसन्धान परिष्कृत गर्न सघाउने प्रतिक्रियासहित अपलोड गरिने छ।</translation>
 <translation id="8481839122437406573">शान्त</translation>
 <translation id="8756370108715456837">तथ्यात्मक रूपमा सही छैन</translation>
-<translation id="881960277396325853">AI प्रयोग गरी अडियो जेनेरेट गरिँदै छ...</translation>
 <translation id="8953618380150219653">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="978117257931832348">लो पिच</translation>
 </translationbundle>

@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Äänivalikko</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1246424317317450637">Lihavoitu</translation>
+<translation id="1357114957607379632">Luodaan AI-toistoa…</translation>
 <translation id="1370273601702151510">Tykkään</translation>
 <translation id="1483137792530497944">Joki</translation>
 <translation id="1586836055630070874">Rauhoittava</translation>
+<translation id="1639239467298939599">Ladataan</translation>
 <translation id="1666704368140506043">Loukkaava sisältö</translation>
 <translation id="1741047078107369903">Lämmin</translation>
 <translation id="1807863182207623884">Rubiini</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Valitettavasti toisto ei ole juuri nyt käytettävissä tällä sivulla. Yritä myöhemmin uudelleen.</translation>
 <translation id="3457812538570616687">En tykkää</translation>
 <translation id="3493899379487634969">Mikä meni pieleen?</translation>
+<translation id="3730775656877876887">Luodaan AI-toistoa</translation>
 <translation id="3778044272390020426">Negatiivisen palautteen valikko</translation>
 <translation id="3807208219231826020">Kelaa toistoa edestakaisin</translation>
 <translation id="385051799172605136">Takaisin</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Kirkas</translation>
 <translation id="5234971936051226002">Kuuntele tämä sivu ‐soitin pienennetty.</translation>
 <translation id="5251803541071282808">Pilvi</translation>
-<translation id="5526614127710223793">Toistotilan valitsin</translation>
+<translation id="5528503854289436485">AI-toisto</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="565342223183747919">Vaihda toistotilaa napauttamalla</translation>
 <translation id="5694491020339060116">Toistonopeusvalikko</translation>
 <translation id="5965409657393819302">Tekninen ongelma</translation>
 <translation id="6218961554829577610">En pitänyt äänestä</translation>
 <translation id="6315170314923504164">Ääni</translation>
-<translation id="6330455646577575965">AI-audiotoisto</translation>
 <translation id="6343633247422081848">Sammal</translation>
 <translation id="6550675742724504774">Asetukset</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">URL-osoitteesi ladataan palautteen mukana laadun ja tutkimuksen parantamiseksi.</translation>
 <translation id="8481839122437406573">Tyyni</translation>
 <translation id="8756370108715456837">Asiavirhe</translation>
-<translation id="881960277396325853">Luodaan tekoälyaudiota…</translation>
 <translation id="8953618380150219653">Kuuntele tämä sivu ‑soitin avattu kokonaan.</translation>
 <translation id="978117257931832348">Matala äänenkorkeus</translation>
 </translationbundle>

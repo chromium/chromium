@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">Spyrja áður en vefsvæðum er leyft að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar (ráðlagt)</translation>
 <translation id="2185965788978862351">Þetta eyðir <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði og forrit hafa vistað á heimaskjánum.</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Í gær}one{fyrir <ph name="NUM_DAYS_MANY" /> degi}other{fyrir <ph name="NUM_DAYS_MANY" /> dögum}}</translation>
 <translation id="2215727959747642672">Skráarvinnsla</translation>
 <translation id="2218389616572918761">Vefsvæði geta beðið um hljóðnemann þinn</translation>
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6530703012083415527">Þegar kveikt er á þessu geta vefsvæði notað sprettiglugga og framsendingar. Þegar slökkt er á þessu geta vefsvæði ekki notað sprettiglugga og framsendingar.</translation>
 <translation id="6540488083026747005">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Fyrir <ph name="NUM_WEEKS_ONE" /> viku}one{fyrir <ph name="NUM_WEEKS_MANY" /> viku}other{fyrir <ph name="NUM_WEEKS_MANY" /> vikum}}</translation>
 <translation id="6545864417968258051">Bluetooth-leit</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">Vefsvæði er að nota hljóðnemann</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7573594921350120855">Vefsvæði nota yfirleitt myndupptöku fyrir samskiptaeiginleika eins og myndspjall</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
 <translation id="757524316907819857">Banna síðum að spila varið efni</translation>
 <translation id="7594634374516752650">Tengt við Bluetooth-tæki</translation>
 <translation id="7617547684249261169">Þú getur eytt ferlinum þínum, fótsporum, vefsvæðagögnum og fleiru að hluta til eða í heild sinni.</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7881140103901777395">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila. Fótspor þriðju aðila eru þó leyfð á þessu vefsvæði vegna þess að það reiðir sig á þau til að veita grunnþjónustu.\n\nFarðu í stillingarnar til að <ph name="BEGIN_LINK" />stjórna aðgangi að fótsporum þriðju aðila<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
+<translation id="7891547341794213004">Fela spjaldið „Halda áfram á þessum flipa“</translation>
 <translation id="789180354981963912">Loka á fótspor þriðju aðila í huliðsstillingu:</translation>
 <translation id="789722939441020330">Ekki leyfa vefsvæðum að hlaða mörgum skrám niður sjálfkrafa</translation>
 <translation id="7940722705963108451">Minna mig á</translation>

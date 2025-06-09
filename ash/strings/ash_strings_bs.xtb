@@ -1014,6 +1014,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4305817255990598646">Prebaci</translation>
 <translation id="4307713728991152670">Postavljanje pregledanja nedavnih fotografija, medijskih fajlova i aplikacija telefona</translation>
 <translation id="4312840429157639164">Kamera se uklopila u gornji desni ugao. Došlo je do konflikta s površinom sistema.</translation>
+<translation id="4312935606722154789">Grupisanje ili razgrupisanje dvaju prozora jednog pored drugog</translation>
 <translation id="4316910396681052118">SVE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Sakrij sve prijedloge preglednika Chrome</translation>
@@ -1582,7 +1583,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6095425951508823973">Dodavanje veze s pružaocem <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Uređeno u proteklom mjesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
-<translation id="610395411842312282">Grupisanje dvaju prozora jednog pored drugog</translation>
 <translation id="6108952804512516814">Kreiraj pomoću AI-ja</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

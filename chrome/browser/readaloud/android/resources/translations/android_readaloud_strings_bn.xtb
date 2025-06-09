@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">'ভয়েস' মেনু</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1246424317317450637">বোল্ড</translation>
+<translation id="1357114957607379632">AI প্লেব্যাক তৈরি করা হচ্ছে...</translation>
 <translation id="1370273601702151510">পছন্দ</translation>
 <translation id="1483137792530497944">নদী</translation>
 <translation id="1586836055630070874">সুদিং</translation>
+<translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1666704368140506043">আপত্তিকর কন্টেন্ট</translation>
 <translation id="1741047078107369903">উষ্ণ</translation>
 <translation id="1807863182207623884">Ruby</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">এই সময়ে, এই পৃষ্ঠার জন্য প্লেব্যাক উপলভ্য নেই। পরে আবার চেষ্টা করে দেখুন।</translation>
 <translation id="3457812538570616687">পছন্দ হয়নি</translation>
 <translation id="3493899379487634969">কী সমস্যা হয়েছে?</translation>
+<translation id="3730775656877876887">AI প্লেব্যাক তৈরি করা হচ্ছে</translation>
 <translation id="3778044272390020426">খারাপ মতামত দেওয়ার বিকল্পের মেনু</translation>
 <translation id="3807208219231826020">প্লেব্যাক স্ক্রাব করুন</translation>
 <translation id="385051799172605136">ফিরুন</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">উজ্জ্বল</translation>
 <translation id="5234971936051226002">“এই পৃষ্ঠা শুনুন” প্লেয়ার মিনিমাইজ করা হয়েছে।</translation>
 <translation id="5251803541071282808">ক্লাউড</translation>
-<translation id="5526614127710223793">প্লেব্যাক মোড বাছাইকারী</translation>
+<translation id="5528503854289436485">AI প্লেব্যাক</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="565342223183747919">প্লেব্যাক মোড পাল্টাতে ট্যাপ করুন</translation>
 <translation id="5694491020339060116">'প্লেব্যাক স্পিড' মেনু</translation>
 <translation id="5965409657393819302">প্রযুক্তিগত সমস্যা</translation>
 <translation id="6218961554829577610">ভয়েস পছন্দ হয়নি</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
-<translation id="6330455646577575965">AI অডিও প্লেব্যাক</translation>
 <translation id="6343633247422081848">শ্যাওলা</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">কোয়ালিটি এবং রিসার্চ উন্নত করতে মতামত সহ আপনার URL আপলোড করা হবে।</translation>
 <translation id="8481839122437406573">শান্তভাবে</translation>
 <translation id="8756370108715456837">তথ্যগতভাবে ঠিক নয়</translation>
-<translation id="881960277396325853">AI-এর মাধ্যমে অডিও জেনারেট করা হচ্ছে...</translation>
 <translation id="8953618380150219653">“এই পৃষ্ঠা শুনুন” প্লেয়ার সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="978117257931832348">লো-পিচ</translation>
 </translationbundle>

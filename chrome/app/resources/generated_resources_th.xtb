@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="1312811472299082263">สร้างจากไฟล์ข้อมูลสำรองของ Ansible Playbook หรือ Crostini</translation>
 <translation id="13130607084115184">รหัสผ่านที่บันทึกไว้จะแสดงที่นี่ หากต้องการนำเข้ารหัสผ่านไปยัง<ph name="BRAND" /> ในอุปกรณ์นี้ ให้<ph name="BEGIN_LINK" />เลือกไฟล์ CSV<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971">นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และ<ph name="PERMISSION_3" />ออกแล้ว</translation>
 <translation id="1313405956111467313">กำหนดค่าพร็อกซีอัตโนมัติ</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">คุณจะออกจากระบบของเว็บไซต์ทั้งหมด รวมถึงในแท็บที่เปิดอยู่</translation>
@@ -4175,6 +4174,7 @@
 <translation id="3876219572815410515">ปรับขนาดหน้าต่างไปทางด้านบนแล้ว</translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3877209288227498506">เลือกเพื่อแสดงการใช้งานหน่วยความจำและอิมเมจในการ์ดตัวอย่างเมื่อวางเมาส์เหนือแท็บ</translation>
+<translation id="3877603629930976930">ไม่แชร์</translation>
 <translation id="3878445208930547646">ไม่อนุญาตให้คัดลอกจากเว็บไซต์นี้</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880513902716032002">ระบบจะโหลดหน้าเว็บบางหน้าที่คุณเข้าชมไว้ล่วงหน้า</translation>
@@ -4600,7 +4600,6 @@
 <translation id="4190492351494485814">สำหรับการตั้งค่าเริ่มต้น คุณจะต้องเชื่อมต่ออินเทอร์เน็ตเพื่อให้ซิงค์ไฟล์กับ Chromebook ได้</translation>
 <translation id="4190828427319282529">ไฮไลต์โฟกัสแป้นพิมพ์</translation>
 <translation id="4191892134568599822">รับด้วย<ph name="FEATURE_NAME" />ใช่ไหม</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{นำสิทธิ์ออกจากเว็บไซต์ที่ไม่ได้ใช้แล้ว 1 รายการ}other{นำสิทธิ์ออกจากเว็บไซต์ที่ไม่ได้ใช้แล้ว {NUM_SITES} รายการ}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />พิเศษสำหรับ <ph name="DEVICE_TYPE" /><ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Generative AI เป็นเวอร์ชันทดลอง อยู่ในช่วงการพัฒนาขั้นต้น และขณะนี้มีให้บริการจํากัด<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">CA ที่เชื่อถือได้</translation>
@@ -5154,7 +5153,6 @@
 <translation id="4585793705637313973">แก้ไขหน้า</translation>
 <translation id="4586275095964870617"><ph name="URL" /> เปิดในเบราว์เซอร์สำรองไม่ได้ โปรดติดต่อผู้ดูแลระบบของคุณ</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
-<translation id="4588497044036650559">เปิดหน้าตัวเลือกของส่วนขยายหน้าแท็บใหม่ในแท็บปัจจุบัน</translation>
 <translation id="4588749726511456218">การเร่งความเร็วของการเลื่อน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">ดูเหมือน <ph name="PASSWORD_DOMAIN" /> และ <ph name="DOMAIN" /> จะเกี่ยวข้องกัน ตรวจสอบว่าคุณเชื่อถือ <ph name="DOMAIN" /> ได้ก่อนจะใช้รหัสผ่านของคุณ</translation>
 <translation id="4589713469967853491">เขียนบันทึกไปยังไดเรกทอรี "การดาวน์โหลด" เรียบร้อยแล้ว</translation>
@@ -6117,6 +6115,7 @@
 <translation id="5278823018825269962">รหัสสถานะ</translation>
 <translation id="5279600392753459966">บล็อกทั้งหมด</translation>
 <translation id="5280064835262749532">อัปเดตข้อมูลเข้าสู่ระบบสำหรับ <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">องค์กรของคุณเป็นผู้กำหนดการตั้งค่านี้ คุณแน่ใจไหมว่าต้องการลบเครื่องมือค้นหานี้</translation>
 <translation id="5280426389926346830">สร้างทางลัดไหม</translation>
 <translation id="5281013262333731149">เปิดใน <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">คุณต้องติดตั้งอัปเดตที่จำเป็นนี้ก่อนจึงจะดาวน์โหลดและใช้แอป Android ได้ และจะใช้ <ph name="DEVICE_TYPE" /> ขณะกำลังอัปเดตไม่ได้ <ph name="DEVICE_TYPE" /> จะรีสตาร์ทหลังการติดตั้งเสร็จสมบูรณ์</translation>
@@ -6242,7 +6241,6 @@
 <translation id="5376931455988532197">ไฟล์ใหญ่เกินไป</translation>
 <translation id="5377367976106153749">เปิดการเข้าถึงกล้องไหม</translation>
 <translation id="5379140238605961210">บล็อกการเข้าถึงไมโครโฟนต่อไป</translation>
-<translation id="5380424552031517043">นำสิทธิ์เข้าถึง<ph name="PERMISSION" />ออกแล้ว</translation>
 <translation id="5380526436444479273">โปรดรอสักครู่แล้วลองอีกครั้ง</translation>
 <translation id="5382591305415226340">จัดการลิงก์ที่รองรับ</translation>
 <translation id="5384401776498845256">คนที่จะแชร์กับคุณได้</translation>
@@ -6977,7 +6975,6 @@
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>
 <translation id="5919305207330938913">การใช้ข้อมูลทั้งหมดที่เก็บรวบรวมจะเป็นไปตาม<ph name="BEGIN_LINK" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK" /></translation>
-<translation id="5919486630433391408">ผู้ดูแลระบบปิดใช้การอัปเดตเฟิร์มแวร์</translation>
 <translation id="5920543303088087579">ผู้ดูแลระบบปิดใช้การเชื่อมต่อเครือข่ายนี้</translation>
 <translation id="5922963926582976524">ยกเลิกการเชื่อมต่อเครือข่ายฮอตสปอตด่วน</translation>
 <translation id="5924047253200400718">รับความช่วยเหลือ<ph name="SCANNING_STATUS" /></translation>
@@ -7098,7 +7095,6 @@
 <translation id="6003479444341796444">แถบชื่อกำลังแสดงอยู่</translation>
 <translation id="6003582434972667631">องค์กรของคุณเป็นผู้ตั้งค่าธีม</translation>
 <translation id="6005045517426700202">อาคารอิฐ</translation>
-<translation id="6006392003290068688">นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" />ออกแล้ว</translation>
 <translation id="6006484371116297560">คลาสสิก</translation>
 <translation id="6007053304250788613">จะไม่รวมจอแสดงผลได้เพียง 1 จอเท่านั้นในโหมดมิเรอร์</translation>
 <translation id="6007240208646052708">ภาษาของคุณไม่มีการค้นหาด้วยเสียง</translation>
@@ -8451,6 +8447,7 @@
 <translation id="69739764870135975">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="697508444536771064">ปิด Linux</translation>
 <translation id="6978121630131642226">เครื่องมือค้นหา</translation>
+<translation id="6978236010531171013">แชร์เลย</translation>
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979041727349121225">โหมดประหยัดพลังงาน</translation>
 <translation id="6979044105893951891">เปิดและออกจากเซสชันผู้เยี่ยมชมที่มีการจัดการ</translation>
@@ -8551,7 +8548,6 @@
 <translation id="7039912931802252762">การเข้าสู่ระบบด้วยสมาร์ทการ์ดของ Microsoft</translation>
 <translation id="7039951224110875196">สร้างบัญชี Google ให้บุตรหลาน</translation>
 <translation id="7039968672732182060">Chromebook ของคุณจะไม่ได้รับการอัปเดตความปลอดภัยอีกต่อไป ถึงเวลาเปลี่ยนเป็นรุ่นใหม่เพื่อใช้การรักษาความปลอดภัยและซอฟต์แวร์ล่าสุดแล้ว เป็นไปตามข้อกำหนดของข้อเสนอ</translation>
-<translation id="7041405817194720353">นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="COUNT" /> รายการออก</translation>
 <translation id="7042116641003232070">ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
 <translation id="7043108582968290193">เรียบร้อย ไม่พบแอปพลิเคชันที่ใช้ร่วมกันไม่ได้</translation>
 <translation id="7044124535091449260">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเข้าถึงเว็บไซต์</translation>
@@ -8667,6 +8663,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" /> กำลังรอ</translation>
 <translation id="7132886488919643383">ใช้ AI ของ Google เพื่อรับความช่วยเหลือในการอ่าน เขียน และสร้างสรรค์</translation>
 <translation id="7134098520442464001">ทำให้ข้อความเล็กลง</translation>
+<translation id="7134653428559514680">ไม่แนะนำให้แชร์จากเว็บไซต์นี้</translation>
 <translation id="7134951043985383439">ดาวน์โหลดไฟล์อันตรายแล้ว</translation>
 <translation id="7135729336746831607">เปิดบลูทูธไหม</translation>
 <translation id="7136694880210472378">ทำให้เป็นค่าเริ่มต้น</translation>
@@ -9112,6 +9109,7 @@
 <translation id="7460045493116006516">ธีมที่คุณติดตั้งอยู่ตอนนี้</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
+<translation id="7463068149674892185">ไม่แนะนำให้ดำเนินการนี้</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">องค์กรของคุณเป็นผู้จัดการวิธีใช้ข้อมูลที่ฟีเจอร์เหล่านี้เก็บรวบรวม</translation>
 <translation id="7464645554245611385">ข้อมูลอัปเดตล่าสุดของแท็บนี้</translation>
@@ -11675,12 +11673,11 @@
 <translation id="934244546219308557">ตั้งชื่อกลุ่มนี้</translation>
 <translation id="93480724622239549">ข้อบกพร่องหรือข้อผิดพลาด</translation>
 <translation id="9354763467503131">อนุญาตให้ขอติดตั้งเว็บแอปในอุปกรณ์</translation>
-<translation id="936329857119665832">เปิดในแท็บปัจจุบัน</translation>
 <translation id="936646668635477464">กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="936801553271523408">ข้อมูลวินิจฉัยระบบ</translation>
 <translation id="93766956588638423">ซ่อมส่วนขยาย</translation>
 <translation id="938623846785894166">ไฟล์ที่ไม่แพร่หลาย</translation>
-<translation id="939598580284253335">ป้อนข้อความรหัสผ่าน</translation>
+<translation id="939598580284253335">ป้อนรหัสผ่าน</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940212040923880623">ค้นหาและแก้ไข</translation>
 <translation id="942296794412775122">เปิด/ปิดไมโครโฟน</translation>

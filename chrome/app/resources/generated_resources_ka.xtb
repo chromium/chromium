@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">გაძლიერებული დაცვა ჩართულია</translation>
 <translation id="1312811472299082263">შექმენით Ansible Playbook-ის ან Crostini-ს სარეზერვო ფაილიდან</translation>
 <translation id="13130607084115184">აქ გამოჩნდება შენახული პაროლები. ამ მოწყობილობაზე პაროლების <ph name="BRAND" />-ში იმპორტირებისთვის <ph name="BEGIN_LINK" />აირჩიეთ CSV-ფაილი<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971">გაუქმდა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">პროქსის ავტომატური კონფიგურაცია</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">თქვენ გამოხვალთ ყველა საიტიდან, მათ შორის, გახსნილ ჩანართებზეც</translation>
@@ -4177,6 +4176,7 @@
 <translation id="3876219572815410515">ფანჯრების ზომა შეიცვალა ზემოთ</translation>
 <translation id="3877075909000773256">მახლობლად გაზიარების პარამეტრები <ph name="USER_NAME" />-ის მოწყობილობისთვის, ზიარდება <ph name="USER_EMAIL" />-ის სახელით.</translation>
 <translation id="3877209288227498506">აირჩიეთ ჩანართის მეხსიერების მოხმარებისა და სურათის ჩვენება გადახედვის ბარათში ჩანართზე კურსორის გადატარებისას</translation>
+<translation id="3877603629930976930">არ გაზიარდეს</translation>
 <translation id="3878445208930547646">ამ საიტიდან კოპირება დაუშვებელია</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3880513902716032002">თქვენ მიერ მონახულებული ზოგიერთი გვერდი წინასწარ ჩატვირთულია</translation>
@@ -4602,7 +4602,6 @@
 <translation id="4190492351494485814">საწყისი დაყენებისთვის საჭიროა ინტერნეტთან დაკავშირება, რომ ფაილები თქვენს Chromebook-თან დასინქრონდეს</translation>
 <translation id="4190828427319282529">კლავიატურით ფოკუსირების გამოყოფა</translation>
 <translation id="4191892134568599822">გსურთ, მისაღებად გამოიყენოთ „<ph name="FEATURE_NAME" />“?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{ნებართვები გაუქმდა 1 გამოუყენებელი საიტისთვის}other{ნებართვები გაუქმდა {NUM_SITES} გამოუყენებელი საიტისთვის}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />ხელმისაწვდომია მხოლოდ <ph name="DEVICE_TYPE" />-ისთვის.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />გენერაციული ხელოვნური ინტელექტი ექსპერიმენტული ფუნქციაა, რომელიც შემუშავების ადრეულ სტადიებზეა, ამიტომ მისი ხელმისაწვდომობა შეზღუდულია.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">სანდო CA</translation>
@@ -5156,7 +5155,6 @@
 <translation id="4585793705637313973">გვერდის რედაქტირება</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ვერ გაიხსნა ალტერნატიულ ბრაუზერში. გთხოვთ, დაუკავშირდეთ თქვენი სიტემის ადმინისტრატორს.</translation>
 <translation id="4587589328781138893">საიტები</translation>
-<translation id="4588497044036650559">ახალი ჩანართის გვერდის გაფართოების ვარიანტების გვერდის ახალ ჩანართში გახსნა</translation>
 <translation id="4588749726511456218">გადაადგილების აჩქარება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> და <ph name="DOMAIN" />, როგორც ჩანს, დაკავშირებულია ერთმანეთთან. დარწმუნდით, რომ <ph name="DOMAIN" /> სანდოა, სანამ თქვენს პაროლს გამოიყენებთ.</translation>
 <translation id="4589713469967853491">ჟურნალები წარმატებით ჩაიწერა „ჩამოტვირთვების“ კატალოგში.</translation>
@@ -6120,6 +6118,7 @@
 <translation id="5278823018825269962">სტატუსის ID</translation>
 <translation id="5279600392753459966">ყველას დაბლოკვა</translation>
 <translation id="5280064835262749532">განაახლეთ ავტორიზაციის მონაცემები <ph name="SHARE_PATH" />-ისთვის</translation>
+<translation id="5280303168922585051">ეს პარამეტრი დაყენებულია თქვენი ორგანიზაციის მიერ. ნამდვილად გსურთ ამ საძიებო სისტემის წაშლა?</translation>
 <translation id="5280426389926346830">გსურთ მალსახმობის შექმნა?</translation>
 <translation id="5281013262333731149">იხსნება შემდეგი აპით: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android აპების ჩამოსატვირთად და გამოსაყენებლად საჭიროა აუცილებელი განახლების ინსტალაცია. განახლების მიმდინარეობისას თქვენი <ph name="DEVICE_TYPE" />-ის გამოყენება ვერ მოხერხდება. ინსტალაციის შემდეგ <ph name="DEVICE_TYPE" /> გადაიტვირთება.</translation>
@@ -6246,7 +6245,6 @@
 <translation id="5376931455988532197">ფაილი ძალიან დიდია</translation>
 <translation id="5377367976106153749">ჩაირთოს კამერაზე წვდომა?</translation>
 <translation id="5379140238605961210">გაგრძელება მიკროფონზე წვდომის დაბლოკვით</translation>
-<translation id="5380424552031517043">გაუქმდა <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">დაელოდეთ რამდენიმე წუთი და ცადეთ ხელახლა</translation>
 <translation id="5382591305415226340">მხარდაჭერილი ბმულების მართვა</translation>
 <translation id="5384401776498845256">ვის შეუძლია თქვენთან გაზიარება</translation>
@@ -6983,7 +6981,6 @@
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="59174027418879706">ჩართული</translation>
 <translation id="5919305207330938913">ყველა შეგროვილი მონაცემი გამოიყენება Google-ის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> მიხედვით.</translation>
-<translation id="5919486630433391408">ჩაშენებული პროგრამული უზრუნველყოფის განახლებები გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="5920543303088087579">ამ ქსელთან დაკავშირება გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="5922963926582976524">მყისიერი უსადენო ქსელის გათიშვა</translation>
 <translation id="5924047253200400718">დახმარების მიღება<ph name="SCANNING_STATUS" /></translation>
@@ -7105,7 +7102,6 @@
 <translation id="6003479444341796444">სათაურის ზოლი უკვე ხილულია</translation>
 <translation id="6003582434972667631">თემა დაყენებულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="6005045517426700202">აგურებით შენება</translation>
-<translation id="6006392003290068688">გაუქმდა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6006484371116297560">კლასიკური</translation>
 <translation id="6007053304250788613">სარკის რეჟიმში მხოლოდ ერთი ეკრანის გამორიცხვა შეიძლება</translation>
 <translation id="6007240208646052708">ხმოვანი ძიება თქვენს ენაზე მიუწვდომელია.</translation>
@@ -8458,6 +8454,7 @@
 <translation id="69739764870135975">თუ Google თქვენი ნაგულისხმევი საძიებო სისტემაცაა, უკეთეს, კონტექსტური თვალსაზრისით შესაფერის, შემოთავაზებებს იხილავთ</translation>
 <translation id="697508444536771064">Linux-ის გამორთვა</translation>
 <translation id="6978121630131642226">საძიებო სისტემები</translation>
+<translation id="6978236010531171013">მაინც გაზიარება</translation>
 <translation id="6978717888677691380">თქვენ მიერ დაბლოკილი საიტები</translation>
 <translation id="6979041727349121225">ენერგიის დამზოგი</translation>
 <translation id="6979044105893951891">სტუმრების მართული სესიების გაშვება და სესიებიდან გასვლა</translation>
@@ -8557,7 +8554,6 @@
 <translation id="7039912931802252762">Microsoft Smart Card-ის ავტორიზაცია</translation>
 <translation id="7039951224110875196">ბავშვის Google ანგარიშის შექმნა</translation>
 <translation id="7039968672732182060">თქვენი Chromebook აღარ იღებს უსაფრთხოების განახლებებს. დროა, გამოცვალოთ მოწყობილობა, უსაფრთხოების უახლესი განახლებებითა და ახალი პროგრამული უზრუნველყოფით რომ ისარგებლოთ. მოქმედებს შემოთავაზების პირობები.</translation>
-<translation id="7041405817194720353">გაუქმდა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="COUNT" /> სხვა</translation>
 <translation id="7042116641003232070">თქვენს მოწყობილობაზე მონაცემების შენახვა დაშვებულია</translation>
 <translation id="7043108582968290193">ყველაფერი მზადაა! შეუთავსებელი აპლიკაციები არ მოიძებნა.</translation>
 <translation id="7044124535091449260">შეიტყვეთ მეტი საიტების წვდომის შესახებ</translation>
@@ -8673,6 +8669,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, მოლოდინში</translation>
 <translation id="7132886488919643383">დაიხმარეთ Google-ის ხელოვნური ინტელექტი კითხვაში, წერასა და შექმნაში</translation>
 <translation id="7134098520442464001">დააპატარავეთ ტექსტი</translation>
+<translation id="7134653428559514680">ამ საიტიდან გაზიარება არ არის რეკომენდებული</translation>
 <translation id="7134951043985383439">ჩამოტვირთულია სახიფათო ფაილი</translation>
 <translation id="7135729336746831607">გსურთ Bluetooth-ის ჩართვა?</translation>
 <translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
@@ -9118,6 +9115,7 @@
 <translation id="7460045493116006516">თქვენ მიერ ამჟამად დაინსტალირებული თემა</translation>
 <translation id="7461924472993315131">პინი</translation>
 <translation id="746216226901520237">შემდეგში <ph name="DEVICE_TYPE" /> განიბლოკება თქვენი ტელეფონის მეშვეობით. Smart Lock-ის გამორთვა შესაძლებელია პარამეტრებიდან.</translation>
+<translation id="7463068149674892185">ეს მოქმედება არ არის რეკომენდებული</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">თქვენი ორგანიზაცია მართავს, როგორ გამოიყენება ამ ფუნქციების მიერ შეგროვილი მონაცემები.</translation>
 <translation id="7464645554245611385">ამ ჩანართში ბოლო სიახლე</translation>
@@ -11680,7 +11678,6 @@
 <translation id="934244546219308557">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="93480724622239549">ხარვეზი ან შეცდომა</translation>
 <translation id="9354763467503131">ნებადართულია თქვენს მოწყობილობაში ვებ-აპების ინსტალაციის მოთხოვნა</translation>
-<translation id="936329857119665832">გაიხსნება არსებულ ჩანართში</translation>
 <translation id="936646668635477464">კამერა და მიკროფონი</translation>
 <translation id="936801553271523408">სისტემის დიაგნოსტიკის მონაცემები</translation>
 <translation id="93766956588638423">გაფართოების აღდგენა</translation>

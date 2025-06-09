@@ -96,6 +96,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
 <translation id="2185965788978862351">Bus ištrinta <ph name="DATASIZE" /> duomenų ir slapukų, kuriuos svetainės ar programos saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Vakar}one{Prieš <ph name="NUM_DAYS_MANY" /> dieną}few{Prieš <ph name="NUM_DAYS_MANY" /> dienas}many{Prieš <ph name="NUM_DAYS_MANY" /> dienos}other{Prieš <ph name="NUM_DAYS_MANY" /> dienų}}</translation>
 <translation id="2215727959747642672">Failo redagavimas</translation>
 <translation id="2218389616572918761">Svetainės gali prašyti leidimo naudoti mikrofoną</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6530703012083415527">Įjungus svetainėse galima naudoti iššokančiuosius langus ir peradresavimus. Išjungus svetainėse negalima naudoti iššokančiųjų langų ir peradresavimų.</translation>
 <translation id="6540488083026747005">Leidote trečiųjų šalių slapukus šioje svetainėje</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Prieš <ph name="NUM_WEEKS_ONE" /> savaitę}one{Prieš <ph name="NUM_WEEKS_MANY" /> savaitę}few{Prieš <ph name="NUM_WEEKS_MANY" /> savaites}many{Prieš <ph name="NUM_WEEKS_MANY" /> savaitės}other{Prieš <ph name="NUM_WEEKS_MANY" /> savaičių}}</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Paskutinį kartą lankytasi prieš <ph name="NUM_DAYS" /> d.</translation>
@@ -521,6 +523,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7554752735887601236">Svetainėje naudojamas jūsų mikrofonas</translation>
 <translation id="7561196759112975576">Visada</translation>
 <translation id="7573594921350120855">Paprastai svetainėse naudojama vaizdo kamera bendravimo funkcijoms, pvz., vaizdo pokalbiams, vykdyti</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
 <translation id="757524316907819857">Užblokuoti svetaines, kad neleistų apsaugoto turinio</translation>
 <translation id="7594634374516752650">Prijungta prie „Bluetooth“ įrenginio</translation>
 <translation id="7617547684249261169">Galite ištrinti visą istoriją ar jos dalį, slapukus, svetainės duomenis ir kt.</translation>
@@ -542,6 +545,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7881140103901777395">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą. Tačiau trečiųjų šalių slapukai leidžiami šioje svetainėje, nes jie priklauso nuo jų teikiamų pagrindinių paslaugų.\n\nApsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
+<translation id="7891547341794213004">Slėpti kortelę „Tęsti naudojant šį skirtuką“</translation>
 <translation id="789180354981963912">Blokuoti trečiųjų šalių slapukus inkognito režimu:</translation>
 <translation id="789722939441020330">Neleisti svetainėms automatiškai atsisiųsti kelių failų</translation>
 <translation id="7940722705963108451">Priminti</translation>

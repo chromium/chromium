@@ -3062,13 +3062,6 @@ Wird die Richtlinie nicht konfiguriert, können Websites JavaScript ausführen, 
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="3211426942294667684">Einstellungen für die Anmeldung im Browser</translation>
-<translation id="3213872023700948990">Diese Richtlinie bietet die Möglichkeit, das neue Verhalten „Mit der Tastatur fokussierbare Scroller“ vorübergehend zu deaktivieren.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller ohne untergeordnete fokussierbare Elemente standardmäßig mit der Tastatur fokussiert werden.
-
-Wenn diese Richtlinie deaktiviert ist, können Scroller standardmäßig nicht mit der Tastatur fokussiert werden.
-
-Diese Richtlinie ist eine vorübergehende Problemumgehung und wird in M135 entfernt.</translation>
 <translation id="3216094710930835317">Das neue HTML-Parser-Verhalten, das mehr Tags zulässt, wird deaktiviert.</translation>
 <translation id="3217774577897351942">Die <ph name="OFFSET_PARENT" /> API wird bei <ph name="PRODUCT_NAME" /> geändert, um den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen zu entsprechen. Mit dieser Richtlinie wird das alte Verhalten bis zur Einführung von M120 wiederhergestellt.
 
@@ -3156,6 +3149,15 @@ Wenn die Richtlinie auf „true“ festgelegt oder nicht konfiguriert ist, werde
 <translation id="3256920103934729145">Nutzer daran hindern, SSL-Warnseiten zu schließen</translation>
 <translation id="3257786863492892609">Hiermit werden Richtlinien für Screencast gesteuert.</translation>
 <translation id="3258380413685430793">Alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausführen</translation>
+<translation id="3258754138048508776">Mit dieser Richtlinie wird die Sichtbarkeit der Outlook-Karte auf der Seite „Neuer Tab“ festgelegt. Die Karte wird nur auf der Seite „Neuer Tab“ angezeigt, wenn die Richtlinie aktiviert ist und deine Organisation die Verwendung der Outlook-Kalenderdaten im Browser zulässt.
+
+Outlook-Daten werden nicht vom Browser gespeichert.
+
+Auf der Outlook-Karte werden der nächste Kalendertermin sowie eine Übersicht zu den verbleibenden Besprechungen des Tages angezeigt. Sie dient dazu, den Kontextwechsel zu erleichtern und die Produktivität zu steigern, indem Nutzer eine Verknüpfung zu ihrer nächsten Besprechung erhalten.
+
+Die Microsoft Outlook-Karte muss von einem Administrator konfiguriert werden. Detaillierte Informationen zum Verknüpfen der Chrome-Karte für die Seite „Neuer Tab“ mit Outlook findest du unter https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outlook-Karte nicht angezeigt. Ist <ph name="NTPCARDSVISIBLE" /> aktiviert, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist und Daten vorhanden sind, die angezeigt werden können. Wenn <ph name="NTPCARDSVISIBLE" /> nicht konfiguriert ist, wird die Outlook-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist, der Nutzer die Karte in „Chrome anpassen“ aktiviert hat und Daten vorhanden sind, die angezeigt werden können.</translation>
 <translation id="3261592499545947104">Zeitpunkt, an dem eine Zertifikatsverlängerung ausgelöst werden soll, angegeben in Sekunden bis zum Zertifikatsablauf</translation>
 <translation id="3262080895269946462">Zulassen, dass WebSQL im Zusammenhang mit Drittanbietern standardmäßig deaktiviert wird.</translation>
 <translation id="326341982850521928">Farbkorrektur aktivieren</translation>
@@ -5599,6 +5601,7 @@ Diese Richtlinie ist eine vorübergehende Lösung, damit genug Zeit ist, Webinha
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
 <translation id="5093603777978346818">Bildschirmschoner auf dem Sperrbildschirm nicht aktivieren.</translation>
+<translation id="5099140200662153931">Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="5099239365323299669">Ab Version M106 wird das persistente Kontingent nicht mehr unterstützt. Durch diese Richtlinie wird die Funktion für persistente Kontingente bis Version M107 wieder aktiviert.
 
       Wenn diese Richtlinie aktiviert ist, hat „webkitRequestFileSystem“ mit persistentem Typ ein persistentes Kontingent.
@@ -6260,6 +6263,15 @@ Dies wurde in M112 entfernt.</translation>
 <translation id="5511266910976210617">„Formuliere für mich“ nicht zulassen.</translation>
 <translation id="5511702823008968136">Lesezeichenleiste aktivieren</translation>
 <translation id="5512418063782665071">Startseiten-URL</translation>
+<translation id="5512785896190859782">Mit dieser Richtlinie wird die Sichtbarkeit der Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ festgelegt. Die Karte wird nur auf der Seite „Neuer Tab“ angezeigt, wenn die Richtlinie aktiviert ist und deine Organisation die Verwendung der SharePoint- und OneDrive-Daten im Browser zulässt.
+
+SharePoint- und OneDrive-Daten werden nicht vom Browser gespeichert.
+
+Die Karte mit Empfehlungen für SharePoint- und OneDrive-Dateien enthält eine Liste empfohlener Dateien.  Sie dient dazu, den Kontextwechsel zu erleichtern und die Produktivität zu steigern, indem Nutzer eine Verknüpfung zu ihren wichtigsten Dokumenten erhalten.
+
+Die Microsoft SharePoint- und OneDrive-Karte muss von einem Administrator konfiguriert werden. Detaillierte Informationen zum Verknüpfen der Chrome-Karte für die Seite „Neuer Tab“ mit SharePoint findest du unter https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die SharePoint- und OneDrive-Karte nicht angezeigt. Ist <ph name="NTPCARDSVISIBLE" /> aktiviert, wird die SharePoint- und OneDrive-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist und Daten vorhanden sind, die angezeigt werden können. Wenn <ph name="NTPCARDSVISIBLE" /> nicht konfiguriert ist, wird die SharePoint- und OneDrive-Karte angezeigt, wenn diese Richtlinie ebenfalls aktiviert ist, der Nutzer die Karte in „Chrome anpassen“ aktiviert hat und Daten vorhanden sind, die angezeigt werden können.</translation>
 <translation id="5516293691820655022">Chrome vollständig schließen</translation>
 <translation id="551639594034811656">Durch diese Richtlinie wird eine Liste mit Prozentwerten festgelegt, die angeben, welcher Anteil der <ph name="PRODUCT_OS_NAME" />-Geräte in der OE pro Tag aktualisiert wird, nachdem das Update zum ersten Mal entdeckt wurde. Der Abstand zwischen Entdeckungszeitpunkt und Veröffentlichungszeitpunkt hängt davon ab, wann das Gerät nach Updates sucht.
 
@@ -6531,6 +6543,13 @@ Wenn die Richtlinie nicht konfiguriert ist oder das Alter des Release nicht ermi
 Die <ph name="EC_KEY_ALGORITHM_VALUE_NAME" />-Option für den Schlüssel-Algorithmus wird von <ph name="PRODUCT_OS_NAME" /> seit Version 132 unterstützt.</translation>
 <translation id="5655553344896004108">Verwendung der eingestellten U2F Security Key API zulassen</translation>
 <translation id="5656177735561364047">Mit dieser Richtlinie wird die Funktion "Geteilte Zwischenablage" aktiviert.</translation>
+<translation id="5657289110555300740">Diese Richtlinie bietet die Möglichkeit, das neue Verhalten „Mit der Tastatur fokussierbare Scroller“ vorübergehend zu deaktivieren.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller ohne untergeordnete fokussierbare Elemente standardmäßig mit der Tastatur fokussiert werden.
+
+Ist diese Richtlinie deaktiviert, können Scroller standardmäßig nicht mit der Tastatur fokussiert werden.
+
+Diese Richtlinie ist eine vorübergehende Behelfslösung. Sie wird ab Version M139 eingestellt.</translation>
 <translation id="5657752663637568277">Mit dieser Richtlinie wird festgelegt, ob Nutzern Warnungen zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> im "Druckvorschau"-Dialogfeld oder auf den Einstellungsseiten angezeigt werden.
       Wenn diese Richtlinie auf "true" gesetzt wird, werden die Warnungen zu veralteten Funktionen ausgeblendet.
       Wenn diese Richtlinie auf "false" oder gesetzt oder nicht konfiguriert wird, werden die Warnungen zu veralteten Funktionen angezeigt.</translation>
@@ -6894,6 +6913,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5917897389577978190">Gmail (wird seit Version 135 unterstützt)</translation>
 <translation id="592036544845479336">Eingestellte/entfernte Mutationsereignisse wieder aktivieren</translation>
 <translation id="5921713479449475707">Downloads automatischer Updates über HTTP zulassen</translation>
+<translation id="5923084443277419535">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M138 verwendet werden.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
+
+Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="5925405187134730827">Diese Richtlinie wurde eingestellt, da die von ihr gesteuerte Funktion nie eingeführt wurde. Verwende stattdessen die Richtlinie „<ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />“.
 
 Ist diese Richtlinie nicht konfiguriert oder auf „<ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />“ (Wert 0) gesetzt, wird neben dem Avatar der Symbolleiste das Label „Arbeit“ oder „Schule“ angezeigt.
@@ -9538,11 +9562,6 @@ Wenn für die Richtlinie „false“ festgelegt oder sie nicht konfiguriert ist,
 Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Nutzer dürfen keine Screenshots und Videoaufzeichnungen machen</translation>
 <translation id="7792796937016596423">Der Nutzer ist nicht zu Netzwerkpaketaufnahmen berechtigt</translation>
-<translation id="7795648856511126914">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M136 verwendet werden.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
-
-Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
 
       Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.

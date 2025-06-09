@@ -3222,13 +3222,6 @@ Jika kebijakan tidak disetel, JavaScript akan diizinkan, tetapi pengguna dapat m
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
 <translation id="3211426942294667684">Setelan login browser</translation>
-<translation id="3213872023700948990">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
-
-Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard.
-
-Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan keyboard secara default.
-
-Kebijakan ini adalah solusi sementara, dan akan dihapus di M135.</translation>
 <translation id="3216094710930835317">Perilaku baru parser HTML yang memungkinkan lebih banyak tag akan dinonaktifkan.</translation>
 <translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API diubah di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini mengembalikan perilaku lama hingga M120.
 
@@ -3316,6 +3309,15 @@ Jika kebijakan ini disetel ke benar atau tidak disetel, aplikasi web akan dilunc
 <translation id="3256920103934729145">Cegah pengguna mengklik halaman peringatan SSL</translation>
 <translation id="3257786863492892609">Mengontrol kebijakan untuk Screencast.</translation>
 <translation id="3258380413685430793">Jalankan semua konten <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Kebijakan ini mengontrol visibilitas Kartu Outlook di Halaman Tab Baru. Kartu ini hanya akan ditampilkan di Halaman Tab Baru jika kebijakan ini disetel ke aktif dan organisasi Anda mengizinkan penggunaan data Outlook Calendar di browser.
+
+Data Outlook tidak akan disimpan oleh browser.
+
+Kartu Outlook menampilkan acara kalender berikutnya, beserta tampilan sekilas rapat pada hari itu. Kartu ini bertujuan untuk mengatasi masalah pergantian konteks dan meningkatkan produktivitas dengan memberi pengguna pintasan ke rapat berikutnya.
+
+Kartu Microsoft Outlook memerlukan konfigurasi admin tambahan. Untuk mengetahui informasi selengkapnya tentang cara menghubungkan Kartu Halaman Tab Baru Chrome ke Outlook, lihat https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> disetel ke aktif, kartu Outlook akan ditampilkan jika kebijakan ini juga disetel ke aktif dan ada data yang dapat ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> tidak disetel, kartu Outlook akan ditampilkan jika kebijakan ini juga disetel ke aktif, pengguna telah mengaktifkan kartu di Sesuaikan Chrome, dan ada data yang dapat ditampilkan.</translation>
 <translation id="3261592499545947104">Jumlah detik sebelum masa berlaku sertifikat habis saat perpanjangan harus dipicu.</translation>
 <translation id="3262080895269946462">Izinkan WebSQL di konteks pihak ketiga dinonaktifkan secara default.</translation>
 <translation id="326341982850521928">Aktifkan koreksi warna</translation>
@@ -5855,6 +5857,7 @@ Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk me
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
 <translation id="5091315650312105069">Mengizinkan autentikasi <ph name="BASIC_AUTH" /> untuk HTTP</translation>
 <translation id="5093603777978346818">Jangan aktifkan screensaver di layar kunci.</translation>
+<translation id="5099140200662153931">Menampilkan Kartu SharePoint dan OneDrive File di Halaman Tab Baru</translation>
 <translation id="5099239365323299669">Mulai M106, kuota persisten tidak akan didukung lagi. Kebijakan ini akan mengaktifkan kembali fungsi kuota persisten hingga M107.
 
       Jika kebijakan ini disetel ke aktif, webkitRequestFileSystem dengan jenis persisten akan beroperasi dengan kuota persisten.
@@ -6534,6 +6537,15 @@ Hal ini dihapus di M112.</translation>
 <translation id="5511266910976210617">Jangan izinkan Bantu Tulis.</translation>
 <translation id="5511702823008968136">Aktifkan Bilah Bookmark</translation>
 <translation id="5512418063782665071">URL beranda</translation>
+<translation id="5512785896190859782">Kebijakan ini mengontrol visibilitas Kartu SharePoint dan OneDrive File di Halaman Tab Baru. Kartu ini hanya akan ditampilkan di Halaman Tab Baru jika kebijakan ini disetel ke aktif dan organisasi Anda mengizinkan penggunaan data SharePoint dan OneDrive File di browser.
+
+Data SharePoint dan OneDrive tidak akan disimpan oleh browser.
+
+Kartu rekomendasi SharePoint dan OneDrive File menampilkan daftar file yang direkomendasikan.  Kartu ini bertujuan untuk mengatasi masalah pergantian konteks dan meningkatkan produktivitas dengan memberi pengguna pintasan ke dokumen terpenting.
+
+Kartu Microsoft SharePoint dan OneDrive memerlukan konfigurasi admin tambahan. Untuk mengetahui informasi selengkapnya tentang cara menghubungkan Kartu Halaman Tab Baru Chrome ke SharePoint, lihat https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu SharePoint dan OneDrive tidak akan ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> disetel ke aktif, kartu SharePoint dan OneDrive akan ditampilkan jika kebijakan ini juga disetel ke aktif dan ada data yang dapat ditampilkan. Jika <ph name="NTPCARDSVISIBLE" /> tidak disetel, kartu SharePoint dan OneDrive akan ditampilkan jika kebijakan ini juga disetel ke aktif, pengguna telah mengaktifkan kartu di Sesuaikan Chrome, dan ada data yang dapat ditampilkan.</translation>
 <translation id="5516293691820655022">Tutup Chrome sepenuhnya</translation>
 <translation id="551639594034811656">Kebijakan ini menentukan daftar persentase yang akan menentukan jumlah perangkat <ph name="PRODUCT_OS_NAME" /> di OU untuk diupdate per hari sejak hari pertama update ditemukan. Waktu penemuan lebih lama daripada waktu publikasi update, karena mungkin perlu waktu agak lama hingga perangkat memeriksa apakah ada update.
 
@@ -6807,6 +6819,13 @@ pengelolaan perangkat.
 Opsi algoritma kunci <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> didukung sejak <ph name="PRODUCT_OS_NAME" /> versi 132.</translation>
 <translation id="5655553344896004108">Mengizinkan penggunaan U2F Security Key API yang sudah tidak digunakan lagi</translation>
 <translation id="5656177735561364047">Mengaktifkan Fitur Papan Klip Bersama</translation>
+<translation id="5657289110555300740">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard.
+
+Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan keyboard secara default.
+
+Kebijakan ini adalah solusi sementara. Mulai M139, kebijakan ini tidak digunakan lagi.</translation>
 <translation id="5657752663637568277">Kebijakan ini mengontrol apakah peringatan penghentian <ph name="CLOUD_PRINT_NAME" /> akan ditampilkan kepada pengguna di dialog pratinjau cetak atau di halaman setelan.
       Jika kebijakan ini disetel ke True (Benar), peringatan penghentian akan disembunyikan.
       Jika kebijakan ini disetel ke False (Salah) atau tidak disetel, peringatan penghentian akan ditampilkan.</translation>
@@ -7186,6 +7205,11 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="5917897389577978190">Gmail (didukung sejak versi 135)</translation>
 <translation id="592036544845479336">Mengaktifkan kembali Peristiwa Mutasi yang tidak digunakan lagi/dihapus</translation>
 <translation id="5921713479449475707">Izinkan download pembaruan otomatis melalui HTTP</translation>
+<translation id="5923084443277419535">Parser HTML sedang diubah untuk mengizinkan tag HTML tambahan di dalam elemen &lt;select&gt;. Kebijakan ini memungkinkan perilaku parser HTML lama digunakan hingga M138.
+
+Jika kebijakan ini disetel ke aktif atau tidak disetel, parser HTML akan mengizinkan tag tambahan di dalam elemen &lt;select&gt;.
+
+Jika kebijakan ini disetel ke nonaktif, parser HTML akan membatasi tag yang dapat dimasukkan ke dalam elemen &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Kebijakan ini tidak digunakan lagi karena fitur yang dikontrolnya tidak pernah diluncurkan. Sebagai gantinya, gunakan kebijakan <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Jika kebijakan ini tidak disetel atau disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (nilai 0), label Kerja atau Sekolah akan ditampilkan di samping avatar toolbar.
@@ -9982,11 +10006,6 @@ Jika kebijakan ini disetel ke salah (false) atau tidak disetel, <ph name="PRODUC
 Untuk informasi selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Jangan izinkan pengguna mengambil screenshot atau rekaman video</translation>
 <translation id="7792796937016596423">Pengguna tidak akan dapat melakukan rekaman paket jaringan</translation>
-<translation id="7795648856511126914">Parser HTML sedang diubah untuk mengizinkan tag HTML tambahan di dalam elemen &lt;select&gt;. Kebijakan ini memungkinkan perilaku parser HTML lama digunakan hingga M136.
-
-Jika kebijakan ini disetel ke aktif atau tidak disetel, parser HTML akan mengizinkan tag tambahan di dalam elemen &lt;select&gt;.
-
-Jika kebijakan ini disetel ke nonaktif, parser HTML akan membatasi tag yang dapat dimasukkan ke dalam elemen &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Kebijakan ini telah dihapus sejak <ph name="PRODUCT_NAME" /> versi 89 karena <ph name="FLASH_PLUGIN_NAME" /> tidak digunakan lagi.
 
       Menyetel kebijakan ke Benar (True) akan menjalankan semua konten <ph name="FLASH_PLUGIN_NAME" /> yang disematkan di situs yang mengizinkan <ph name="FLASH_PLUGIN_NAME" />, termasuk konten dari asal lain atau konten kecil.

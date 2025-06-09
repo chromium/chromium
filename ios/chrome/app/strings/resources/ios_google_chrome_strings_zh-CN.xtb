@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">随时随地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 页面</translation>
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
-<translation id="4749294594657945639">若要轻松获取其他应用中已保存的密码，请选择 Chrome 的自动填充功能。</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
 <translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -213,6 +212,7 @@
 <translation id="6533470733797826516">使用 Chrome 自动填充功能更快地登录</translation>
 <translation id="6536544321553662809">将 Chrome 设为默认浏览器，即可轻松分享和打开链接</translation>
 <translation id="6545449117344801102">Chrome 会检测地址，并使用 Google 地图为您提供路线和本地信息。</translation>
+<translation id="6611692150236062461">若要轻松获取其他应用中已保存的密码，请选择 Chrome 的自动填充功能。</translation>
 <translation id="6636941099779251629">根据贵组织的要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google。</translation>
 <translation id="6647304104688527905">在 Chrome 中打开新标签页。</translation>

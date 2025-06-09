@@ -96,6 +96,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="2182457891543959921">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে কোনও সাইট অনুমোদন দেওয়ার আগে, একবার জিজ্ঞাসা করে নিন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="2185965788978862351">এটি আপনার হোম স্ক্রিনে সাইট বা অ্যাপের মাধ্যমে সেভ হওয়া <ph name="DATASIZE" /> ডেটা এবং কুকি মুছে দেবে।</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{গতকাল}one{<ph name="NUM_DAYS_MANY" /> দিন আগে}other{<ph name="NUM_DAYS_MANY" /> দিন আগে}}</translation>
 <translation id="2215727959747642672">ফাইল এডিট করা</translation>
 <translation id="2218389616572918761">আপনার মাইক্রোফোন ব্যবহারের জন্য, সাইটগুলি অনুমতি চাইতে পারে</translation>
 <translation id="2228071138934252756">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার ক্যামেরা অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও ক্যামেরা চালু করে দিন।</translation>
@@ -448,6 +449,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6530703012083415527">চালু থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে। বন্ধ থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে না।</translation>
 <translation id="6540488083026747005">এই সাইটে আপনি থার্ড-পার্টি কুকিকে অনুমতি দিয়েছেন</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> সপ্তাহ আগে}one{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ আগে}other{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ আগে}}</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
@@ -521,6 +523,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="7554752735887601236">একটি সাইট আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7573594921350120855">ভিডিও চ্যাটের মতো যোগাযোগ ফিচারের জন্য সাইট সাধারণত আপনার ভিডিও ক্যামেরা ব্যবহার করে</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাস আগে}one{<ph name="NUM_MONTHS_MANY" /> মাস আগে}other{<ph name="NUM_MONTHS_MANY" /> মাস আগে}}</translation>
 <translation id="757524316907819857">সুরক্ষিত কন্টেন্ট চালানো থেকে সাইটকে ব্লক করুন</translation>
 <translation id="7594634374516752650">ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা হয়েছে</translation>
 <translation id="7617547684249261169">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
@@ -542,6 +545,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7881140103901777395">Chrome বেশিরভাগ সাইটের ক্ষেত্রে থার্ড-পার্টি কুকির ব্যবহারের উপর বিধিনিষেধ আরোপ করে। তবে এই সাইটে থার্ড-পার্টি কুকি ব্যবহারের অনুমতি দেওয়া আছে, কারণ সাধারণ পরিষেবা দেওয়ার জন্য সাইটটি এইসব কুকির উপর নির্ভর করে।\n\n<ph name="BEGIN_LINK" />থার্ড-পার্টি কুকির অ্যাক্সেস ম্যানেজ করতে<ph name="END_LINK" /> সেটিংসে যান।</translation>
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
+<translation id="7891547341794213004">'এই ট্যাবের সাহায্যে চালিয়ে যান' কার্ডটি লুকান</translation>
 <translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="789722939441020330">অটোমেটিক একাধিক ফাইল ডাউনলোড করার অনুমতি দেয় না</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>

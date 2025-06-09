@@ -96,6 +96,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="2182457891543959921">Spør før nettsteder får lage 3D-kart av omgivelsene dine eller spore kameraposisjonen (anbefales)</translation>
 <translation id="2185965788978862351">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder eller apper på startskjermen.</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{I går}other{For <ph name="NUM_DAYS_MANY" /> dager siden}}</translation>
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2218389616572918761">Nettsteder kan be om å få bruke mikrofonen</translation>
 <translation id="2228071138934252756">For å gi <ph name="APP_NAME" /> tilgang til kameraet må du også slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="6527303717912515753">Del</translation>
 <translation id="6530703012083415527">Når dette er på, kan nettsteder bruke forgrunnsvinduer og viderekoblinger. Når dette er av, kan ikke nettsteder bruke forgrunnsvinduer eller viderekoblinger.</translation>
 <translation id="6540488083026747005">Du har tillatt informasjonskapsler fra tredjeparter for dette nettstedet</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{for <ph name="NUM_WEEKS_ONE" /> uke siden}other{For <ph name="NUM_WEEKS_MANY" /> uker siden}}</translation>
 <translation id="6545864417968258051">Bluetooth-skanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}}</translation>
 <translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
@@ -521,6 +523,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7554752735887601236">Et nettsted bruker mikrofonen din</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7573594921350120855">Nettsteder bruker vanligvis videokameraet ditt for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{For <ph name="NUM_MONTHS_ONE" /> måned siden}other{For <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
 <translation id="757524316907819857">Blokkér nettsteder fra å spille av beskyttet innhold</translation>
 <translation id="7594634374516752650">Koblet til en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan slette deler av eller hele loggen din, informasjonskapsler, nettstedsdata med mer</translation>
@@ -542,6 +545,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7846076177841592234">Opphev valget</translation>
 <translation id="7881140103901777395">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter. Men informasjonskapsler fra tredjeparter er tillatt på dette nettstedet fordi det trenger dem for å kunne levere grunnleggende tjenester.\n\nGå til innstillingene for å <ph name="BEGIN_LINK" />administrere tilgangen til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
+<translation id="7891547341794213004">Skjul kortet Fortsett med denne fanen</translation>
 <translation id="789180354981963912">Blokker informasjonskapsler fra tredjeparter i Inkognito:</translation>
 <translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
 <translation id="7940722705963108451">Minn meg på det senere</translation>

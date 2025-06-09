@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">다시 실행하여 ChromiumOS 업데이트</translation>
 <translation id="1040916596585577953">Chromium에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
 <translation id="1042552502243217427">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chromium은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습하게 됩니다.</translation>
+<translation id="1051793555070215510">1분 정도 소요되는 설문조사에 참여하여 시크릿 모드를 개선하는 데 도움을 주세요.</translation>
 <translation id="1065672644894730302">환경설정을 읽을 수 없습니다.
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
@@ -86,7 +87,6 @@
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2137162749895930932">번역 화면 닫기</translation>
 <translation id="215352261310130060">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
-<translation id="2157600032285353789">Chromium 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다.</translation>
 <translation id="2174178932569897599">Chromium 맞춤설정</translation>
 <translation id="2174917724755363426">설치가 완료되지 않았습니다. 취소하시겠습니까?</translation>
 <translation id="2185166961232948079">Chromium - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
@@ -359,7 +359,6 @@
 <translation id="5987687638152509985">동기화를 시작하려면 Chromium을 업데이트하세요.</translation>
 <translation id="5988505247484123880">방문하는 사이트에서는 일반적으로 사용 경험을 개인화하기 위해 내가 관심을 보인 항목을 기억합니다. 또한 사이트에서는 내 관심분야에 관한 정보를 Chromium에 저장할 수 있습니다.</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
-<translation id="6019451407441383358">오른쪽 상단의 Chromium 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6058380562449900225">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chromium에서 삭제하도록 허용하세요. 알림은 중지되지 않습니다.</translation>
 <translation id="6063093106622310249">&amp;Chromium에서 열기</translation>

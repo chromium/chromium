@@ -7,6 +7,7 @@
 <translation id="1370273601702151510">אהבתי</translation>
 <translation id="1483137792530497944">נהר</translation>
 <translation id="1586836055630070874">רגוע</translation>
+<translation id="1639239467298939599">בטעינה</translation>
 <translation id="1666704368140506043">תוכן פוגעני</translation>
 <translation id="1741047078107369903">חמים</translation>
 <translation id="1807863182207623884">רובי</translation>
@@ -35,14 +36,12 @@
 <translation id="5026371835667036198">צלול</translation>
 <translation id="5234971936051226002">הנגן 'האזנה לדף הזה' ממוזער.</translation>
 <translation id="5251803541071282808">ענן</translation>
-<translation id="5526614127710223793">בחירת מצב הפעלה</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="565342223183747919">אפשר ללחוץ כדי לשנות את מצב ההפעלה</translation>
 <translation id="5694491020339060116">תפריט מהירות ההפעלה</translation>
 <translation id="5965409657393819302">בעיה טכנית</translation>
 <translation id="6218961554829577610">הקול לא מצא חן בעיניי</translation>
 <translation id="6315170314923504164">קול</translation>
-<translation id="6330455646577575965">‏הפעלת אודיו באמצעות AI</translation>
 <translation id="6343633247422081848">מוס</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />,‏ <ph name="TONE" /></translation>
@@ -65,7 +64,6 @@
 <translation id="8462210863277153423">‏כתובת ה-URL שלך תישלח עם המשוב כדי לשפר את האיכות והמחקר.</translation>
 <translation id="8481839122437406573">רגוע</translation>
 <translation id="8756370108715456837">העובדות שגויות</translation>
-<translation id="881960277396325853">‏המערכת יוצרת אודיו באמצעות AI…</translation>
 <translation id="8953618380150219653">הנגן 'האזנה לדף הזה' נפתח בגובה מלא.</translation>
 <translation id="978117257931832348">נמוך</translation>
 </translationbundle>

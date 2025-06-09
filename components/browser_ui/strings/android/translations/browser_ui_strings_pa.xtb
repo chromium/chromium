@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">ਸਾਈਟਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2185965788978862351">ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸਾਈਟਾਂ ਜਾਂ ਐਪਾਂ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ <ph name="DATASIZE" /> ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{ਬੀਤੇ ਕੱਲ੍ਹ}one{<ph name="NUM_DAYS_MANY" /> ਦਿਨ ਪਹਿਲਾਂ}other{<ph name="NUM_DAYS_MANY" /> ਦਿਨ ਪਹਿਲਾਂ}}</translation>
 <translation id="2215727959747642672">ਫ਼ਾਈਲ ਸੰਪਾਦਨ</translation>
 <translation id="2218389616572918761">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਮੰਗ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕੈਮਰਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6530703012083415527">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6540488083026747005">ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਹੈ</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ਹਫ਼ਤਾ ਪਹਿਲਾਂ}one{<ph name="NUM_WEEKS_MANY" /> ਹਫ਼ਤਾ ਪਹਿਲਾਂ}other{<ph name="NUM_WEEKS_MANY" /> ਹਫ਼ਤੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="6554732001434021288">ਪਿਛਲੀ ਵਾਰ <ph name="NUM_DAYS" /> ਦਿਨ ਪਹਿਲਾਂ ਦੇਖੀ ਗਈ</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">ਕੋਈ ਸਾਈਟ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7561196759112975576">ਹਮੇਸ਼ਾਂ</translation>
 <translation id="7573594921350120855">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਵੀਡੀਓ ਚੈਟਿੰਗ ਜਿਹੀਆਂ ਸੰਚਾਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਤੁਹਾਡਾ ਵੀਡੀਓ ਕੈਮਰਾ ਵਰਤਦੀਆਂ ਹਨ</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ਮਹੀਨਾ ਪਹਿਲਾਂ}one{<ph name="NUM_MONTHS_MANY" /> ਮਹੀਨਾ ਪਹਿਲਾਂ}other{<ph name="NUM_MONTHS_MANY" /> ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="757524316907819857">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7594634374516752650">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="7617547684249261169">ਤੁਸੀਂ ਤੁਹਾਡੇ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਸਾਈਟ ਡਾਟੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵਿੱਚੋਂ ਕੁਝ ਜਾਂ ਸਭ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7881140103901777395">Chrome ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਤੋਂ ਸੀਮਤ ਕਰਦਾ ਹੈ। ਪਰ ਇਸ ਸਾਈਟ 'ਤੇ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਮੂਲ ਸੇਵਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਉਨ੍ਹਾਂ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ।\n\n<ph name="BEGIN_LINK" />ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਤੱਕ ਪਹੁੰਚ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="7882806643839505685">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਧੁਨੀ ਵਜਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
+<translation id="7891547341794213004">'ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="789180354981963912">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ:</translation>
 <translation id="789722939441020330">ਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7940722705963108451">ਮੈਨੂੰ ਯਾਦ ਕਰਵਾਓ</translation>

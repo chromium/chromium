@@ -168,7 +168,7 @@
 <translation id="1654232554734641711">Mikrofon erişimine izin veriliyor</translation>
 <translation id="16554782717487656">Birimleri algıla</translation>
 <translation id="1657011748321897393">Ağa bağlı olmadığınızdan paylaşma başarısız oldu.</translation>
-<translation id="1668001730617725852">Yeni Sekme Grubu'nda aç</translation>
+<translation id="1668001730617725852">Yeni Sekme Grubunda Aç</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="169048873465870056">Sekme kaldırılıp grup silinsin mi?</translation>
@@ -671,6 +671,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="385051799172605136">Geri</translation>
 <translation id="3850952228519377137">"Sekmelerinizdeki fiyatları takip edin" seçeneğini gizle</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ve <ph name="NUMBER_OF_ACCOUNTS" /> sitenin daha şifresi silinecek. Hesaplarınız silinmeyecek.</translation>
+<translation id="3853162385423733133">Şifreleri Google Hesabınızda (<ph name="EMAIL" />) kullanmaya ve kaydetmeye devam edin</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3868495844258915202">Tam URL'yi göster</translation>
 <translation id="3875783148670536197">Nasıl Yapıldığını Göster</translation>
@@ -790,7 +791,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4286718549648564014">Adres, <ph name="USER_EMAIL" /> hesabınıza taşındı</translation>
 <translation id="4287172530684295552">Okundu olarak işaretle</translation>
 <translation id="428768789042547925">Yenilikler</translation>
-<translation id="429074084062258019">{count,plural, =1{Sekmeyi gruba ekle}other{Sekmeleri gruba ekle}}</translation>
+<translation id="429074084062258019">{count,plural, =1{Sekmeyi Gruba Ekle}other{Sekmeleri Gruba Ekle}}</translation>
 <translation id="4302061870579014542">Konumu ayarla</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4309403553630140242">Daha fazla bilgi için iki kez dokunun</translation>
@@ -1002,6 +1003,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5141363746588976328">Sekmelerinizdeki fiyat düşüşleri kartını gizle</translation>
 <translation id="5145331760738811130">Sekme Değiştirici'den çık</translation>
+<translation id="5148717509369231739">Safari'den içe aktarma</translation>
 <translation id="5157638238828697074">Bir hata oluştu. Uygulama açılamadı.</translation>
 <translation id="5163417375525818870">PDF'ler</translation>
 <translation id="5168414296986405587">iPadOS için geliştirildi</translation>
@@ -1113,6 +1115,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5626245204502895507">Dosya şu anda indirilemedi.</translation>
 <translation id="562753339521713441">Güvenlik Kontrolü gerçekleştir</translation>
 <translation id="5628388627414062173">{count,plural, =1{Okuma listenizde {count} sayfa var}other{Okuma listenizde {count} sayfa var}}</translation>
+<translation id="5632194969640946913">Ürünleri, yerleri ve metinleri keşfetmek için herhangi bir sayfada gördüğünüz içeriklere göz atarken ve arama yaparken daha fazla bilgi edinin.</translation>
 <translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
 <translation id="5633237939819267663">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi}other{{count} yer işareti "{title}" konumuna kaydedildi}}</translation>
 <translation id="564170563478022912">Oturum kapatılsın mı? Kaydedilmemiş hesap verileri silinecek.</translation>
@@ -1774,7 +1777,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8202744799033457229">Geçmişi göster</translation>
 <translation id="8205564605687841303">İptal</translation>
 <translation id="8206354486702514201">Bu seçenek, yöneticiniz tarafınızdan denetleniyor.</translation>
-<translation id="8209050860603202033">Resmi aç</translation>
+<translation id="8209050860603202033">Resmi Aç</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> için birden fazla şifre aldınız</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
 <translation id="8214293972734702249"><ph name="TAB_TITLE" /> sabitlendi</translation>

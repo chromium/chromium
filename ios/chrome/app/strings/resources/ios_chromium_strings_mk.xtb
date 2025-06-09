@@ -176,6 +176,7 @@
 <translation id="5259423875997548710">Пребарувајте визуелни елементи во Chromium.</translation>
 <translation id="5308226104666789935">Chromium не може да провери дали има ажурирања</translation>
 <translation id="5311557153294205270">Ги додава внесените URL-адреси во вашите обележувачи во Chromium.</translation>
+<translation id="5383251701169024761">За да ги добиете зачуваните лозинки лесно во други апликации, користете Chromium for AutoFill.</translation>
 <translation id="538767207339317086">Дозволете најавување на Chromium</translation>
 <translation id="5389058611415066188">Заштитете се со Chromium</translation>
 <translation id="5415273218238091735">Совет за Chromium</translation>
@@ -276,7 +277,6 @@
 <translation id="7763454117143368771">Користете го Chromium како ваш стандарден прелистувач за да останете заштитени од опасни сајтови и чувајте ги лозинките на безбедно</translation>
 <translation id="7784950022329154821">Заклучувај ги картичките „Инкогнито“ кога ќе го затворам Chromium</translation>
 <translation id="78025249032851484">Вашата верзија на Chromium е застарена.</translation>
-<translation id="7811371919871579588">За да ги добивате зачуваните лозинки лесно во други апликации, изберете Chromium for AutoFill.</translation>
 <translation id="7859018312476869945">Кога ќе напишете нешто во лентата за адреси или полето за пребарување, Chromium го испраќа напишаното до вашиот стандарден пребарувач за да добиете подобри предлози. Ова е исклучено во „Инкогнито“.</translation>
 <translation id="7890287942691234100">Започнете со користење на скенерот на Chromium</translation>
 <translation id="7905064834449738336">Кога користите лозинка, Chromium ве предупредува ако е објавена онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани така што не може да ги прочита никој, па дури ни Google.</translation>
@@ -331,6 +331,7 @@
 <translation id="9050790730841755540">Користете го Chromium секогаш кога ќе допрете линкови во други апликации.</translation>
 <translation id="9059693977935746710">Не треба да ја помните лозинкава. Ќе се зачува во „Управникот со лозинки“ за <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
+<translation id="9105645282262300612">Совет за Chromium: Пребарувајте го она што го гледате</translation>
 <translation id="9152995302810511799">Совет за Chromium: добијте ја најсилната безбедност на Chromium</translation>
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium е управуван.</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>

@@ -138,7 +138,6 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="4724297637870447613">Notaðu Chrome hvar sem er</translation>
 <translation id="4738647308035481133">Google Chrome-síða</translation>
 <translation id="4742795653798179840">Chrome-gögnum var eytt</translation>
-<translation id="4749294594657945639">Notaðu sjálfvirka útfyllingu í Chrome til að hafa greiðan aðgang að vistuðu aðgangsorðunum þínum í öðrum forritum.</translation>
 <translation id="4761869838909035636">Keyra öryggisathugun í Chrome</translation>
 <translation id="4798859546468762093">Hafðu Chrome með í <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /> til að fá aðgang að sérsniði og öðrum eiginleikum</translation>
 <translation id="4819268619367838612">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="6533470733797826516">Skráðu þig inn í hvelli með sjálfvirkri útfyllingu Chrome</translation>
 <translation id="6536544321553662809">Stilla Chrome sem sjálfgefinn vafra til að deila og opna tengla á auðveldan hátt</translation>
 <translation id="6545449117344801102">Chrome greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
+<translation id="6611692150236062461">Notaðu sjálfvirka útfyllingu í Chrome til að hafa greiðan aðgang að vistuðu aðgangsorðunum þínum í öðrum forritum.</translation>
 <translation id="6636941099779251629">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sendir ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir til Google, þar á meðal hluta af efni síðna.</translation>
 <translation id="6647304104688527905">Opnar nýjan flipa í Chrome.</translation>

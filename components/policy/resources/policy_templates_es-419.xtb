@@ -2387,6 +2387,7 @@ NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambio
       Si no estableces la política, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> no estará disponible para ninguna aplicación web.
 Para mejorar la privacidad, esta política no admitirá actualizaciones del valor de la política durante la sesión y, por lo tanto, los cambios solo se aplicarán después de que el usuario salga de su cuenta y vuelva a acceder.
 Podemos garantizar al usuario que ninguna app adicional capturará las pantallas después de acceder si no se permitió al inicio de sesión.</translation>
+<translation id="2614156176932194496">Configuración de las integraciones del Modo IA de Google en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="2615240493030733717">Envía información sobre la zona horaria</translation>
 <translation id="2619258867868873629">El destino de "Guardar como PDF" y el destino de "Guardar en Google Drive" en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Configura la lista de dominios en los que <ph name="PRODUCT_NAME" /> debe inhabilitar el <ph name="PASSWORD_MANAGER_NAME" />. Esto significa que se inhabilitarán los flujos de trabajo de guardar y completar, lo que garantiza que las contraseñas de esos sitios web no se puedan guardar ni completar automáticamente en formularios web.
@@ -3213,13 +3214,6 @@ Si no la estableces, se podrá ejecutar JavaScript, pero los usuarios podrán ca
 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajería nativa instalados.</translation>
 <translation id="3211426942294667684">Configuración de acceso en el navegador</translation>
-<translation id="3213872023700948990">Esta política ofrece una inhabilitación temporal para el nuevo comportamiento de los desplazadores enfocables del teclado.
-
-Si habilitas esta política o no la estableces, los desplazadores sin elementos secundarios enfocables se enfocarán con el teclado de forma predeterminada.
-
-Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada con el teclado.
-
-Esta política es una solución temporal y se quitará en la versión M135.</translation>
 <translation id="3216094710930835317">Se inhabilitará el nuevo comportamiento del analizador HTML, que permite más etiquetas.</translation>
 <translation id="3217774577897351942">La API de <ph name="OFFSET_PARENT" /> se modificará en <ph name="PRODUCT_NAME" /> a fin de cumplir con los cambios realizados en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política recupera el comportamiento anterior hasta la versión M120.
 
@@ -3308,6 +3302,15 @@ Si estableces la política como verdadera o no la estableces, se iniciarán las 
 <translation id="3256920103934729145">Impedir que los usuarios hagan clic para omitir las páginas de advertencia de SSL</translation>
 <translation id="3257786863492892609">Controla las políticas para Screencast.</translation>
 <translation id="3258380413685430793">Ejecutar todo el contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="3258754138048508776">Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos del calendario de Outlook en el navegador.
+
+El navegador no almacenará los datos de Outlook.
+
+La tarjeta de Outlook muestra el próximo evento de calendario, junto con una vista rápida del resto de las reuniones del día. Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a su próxima reunión.
+
+La tarjeta de Microsoft Outlook requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a Outlook, consulta https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outlook. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrará la tarjeta de Outlook si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="3261592499545947104">La cantidad de segundos restantes para que caduque un certificado y se active la renovación.</translation>
 <translation id="3262080895269946462">Permitir que se inhabilite de forma predeterminada WebSQL en contextos de terceros</translation>
 <translation id="326341982850521928">Habilitar la corrección de colores</translation>
@@ -4523,6 +4526,15 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
 
           Si no la estableces, los comentarios por voz estarán inicialmente inhabilitados en la pantalla de acceso, pero el usuario podrá habilitarlos en cualquier momento.</translation>
 <translation id="4173974507809462880">Mostrar la pantalla de dirección de desplazamiento del panel táctil durante el acceso</translation>
+<translation id="4175770453187201981">Esta política controla las integraciones del Modo IA de Google en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña.
+
+Para acceder a esta función, Google debe establecerse como el motor de búsqueda predeterminado del usuario.
+
+0 o no establecido = La función estará disponible para los usuarios.
+
+1 = La función no estará disponible para los usuarios.
+
+Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="417956245902013347">Habilita la función de accesibilidad para resaltar el signo de intercalación en la pantalla de acceso.
 
           Si se establece esta política como verdadera, la función para resaltar el signo de intercalación estará siempre habilitada en la pantalla de acceso.
@@ -4840,6 +4852,7 @@ Esto se quitó en M112.</translation>
 
       Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="4402887080007986374">La versión válida de las Condiciones del Servicio de Edu Coexistence</translation>
+<translation id="4405712318246131640">No permitir integraciones del Modo IA.</translation>
 <translation id="4408428864159735559">Lista de archivos compartidos de red configurados previamente</translation>
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de apps web aisladas usen Direct Sockets</translation>
@@ -5845,6 +5858,7 @@ Esta política es una prórroga temporal para permitir que el contenido web migr
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para HTTP</translation>
 <translation id="5093603777978346818">No habilitar el protector de pantalla en la pantalla de bloqueo</translation>
+<translation id="5099140200662153931">Mostrar la tarjeta de archivos de SharePoint y OneDrive en la página Nueva pestaña</translation>
 <translation id="5099239365323299669">A partir de la versión M106, no se admitirá la cuota persistente. Esta política volverá a habilitar la funcionalidad de la cuota persistente hasta la versión M107.
 
       Si habilitas esta política, webkitRequestFileSystem con tipo persistente funcionará con cuota persistente.
@@ -6524,6 +6538,15 @@ Esto se quitó en M112.</translation>
 <translation id="5511266910976210617">No permitir Ayúdame a escribir.</translation>
 <translation id="5511702823008968136">Habilitar barra de favoritos</translation>
 <translation id="5512418063782665071">URL de la página principal</translation>
+<translation id="5512785896190859782">Esta política controla la visibilidad de la tarjeta de archivos de SharePoint y OneDrive en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización autorizó el uso de los datos de archivos de SharePoint y OneDrive en el navegador.
+
+El navegador no almacenará los datos de SharePoint ni OneDrive.
+
+En la tarjeta de recomendaciones de archivos de SharePoint y OneDrive, se muestra una lista de archivos recomendados.  Su objetivo es abordar el problema relacionado con el cambio de contexto y mejorar la productividad brindándoles a los usuarios un acceso directo a sus documentos más importantes.
+
+La tarjeta de Microsoft SharePoint y OneDrive requerirá una configuración adicional del administrador. Si quieres obtener información detallada para conectar la tarjeta de la página Nueva pestaña de Chrome a SharePoint, consulta https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards.
+
+Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de SharePoint ni OneDrive. Si habilitas <ph name="NTPCARDSVISIBLE" />, se mostrarán la tarjeta de SharePoint y la de OneDrive si esta política también está habilitada y hay datos para mostrar. Si no estableces <ph name="NTPCARDSVISIBLE" />, se mostrarán la tarjeta de SharePoint y la de OneDrive si esta política también está habilitada, el usuario tiene la tarjeta habilitada en Personalizar Chrome y hay datos para mostrar.</translation>
 <translation id="5516293691820655022">Cerrar Chrome por completo</translation>
 <translation id="551639594034811656">Esta política define una lista de porcentajes que determinará la fracción de dispositivos <ph name="PRODUCT_OS_NAME" /> en la UO que se actualizará por día a partir del momento en que se descubre la actualización (posterior a la publicación, conforme a lo que tarde el dispositivo en buscar actualizaciones).
       Cada par (día, porcentaje) contiene el porcentaje de la flota que se debe actualizar en una cantidad dada de días a partir del descubrimiento de la actualización. Por ejemplo, si tenemos los pares [(4, 40), (10, 70), (15, 100)], el 40% de la flota debe haberse actualizado 4 días después de descubrir la actualización. El 70% debe actualizarse después de 10 días, y así sucesivamente.
@@ -6683,6 +6706,7 @@ Si no estableces la política o la estableces como una lista vacía, se mostrar�
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir que las apps de Chrome se ejecuten en sesiones de Kiosco.</translation>
 <translation id="5607021831414604820">Habilitar los informes de estado del almacenamiento del dispositivo</translation>
+<translation id="5607808178576647930">Permitir las integraciones del Modo IA.</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
 <translation id="5609294254185484756">Controla la experiencia del usuario de las funciones inhabilitadas que se mencionan en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> para las sesiones de invitado administradas (MGS).
 
@@ -6796,6 +6820,13 @@ de dispositivos.
 La opción de algoritmo de clave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> es compatible desde la versión 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5655553344896004108">Permitir el uso de la API de U2F Security Key que se dio de baja</translation>
 <translation id="5656177735561364047">Habilita la función de portapapeles compartido</translation>
+<translation id="5657289110555300740">Esta política ofrece una inhabilitación temporal para el nuevo comportamiento de los desplazadores enfocables del teclado.
+
+Si habilitas esta política o no la estableces, los desplazadores sin elementos secundarios enfocables se enfocarán con el teclado de forma predeterminada.
+
+Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada con el teclado.
+
+Esta política es una solución temporal. A partir de la versión M139, esta política dejará de estar disponible.</translation>
 <translation id="5657752663637568277">Esta política controla si se muestran las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /> a los usuarios en el diálogo de la vista previa de impresión o en las páginas de configuración.
       Si estableces esta política como verdadera, se ocultarán las advertencias de baja.
       Si la estableces como falsa o no la estableces, se mostrarán las advertencias de baja.</translation>
@@ -7177,6 +7208,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="5917897389577978190">Gmail (compatible a partir de la versión 135)</translation>
 <translation id="592036544845479336">Volver a habilitar los eventos de mutación que quedaron obsoletos o se quitaron</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
+<translation id="5923084443277419535">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M138.
+
+Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
+
+Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Esta política dejó de estar disponible porque la función que controla nunca se lanzó. En su lugar, usa la política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Si no estableces esta política o la estableces como <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valor 0), se mostrará una etiqueta de trabajo o de institución educativa junto al avatar de la barra de herramientas.
@@ -9972,11 +10008,6 @@ Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME
 Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">No permitir que los usuarios tomen capturas de pantalla ni graben videos</translation>
 <translation id="7792796937016596423">El usuario no podrá realizar capturas de paquetes de red</translation>
-<translation id="7795648856511126914">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M136.
-
-Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
-
-Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política se quitó desde la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> dejó de estar disponible.
 
       Si estableces la política como verdadera, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> incorporado en sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o el contenido pequeño.

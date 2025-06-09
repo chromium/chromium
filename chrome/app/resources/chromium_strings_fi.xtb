@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Päivitä &amp;Chromium-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="1040916596585577953">Chromium suosittelee tämän laajennuksen tarkistamista</translation>
 <translation id="1042552502243217427">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chromium käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
+<translation id="1051793555070215510">Auta meitä parantamaan Incognitoa vastaamalla tähän minuutin kestävään kyselyyn.</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1083934481477628225">Vanhempasi on laittanut Chromiumin "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="1104942323762546749">Chromium yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
 <translation id="215352261310130060">Chromium on estänyt tämän latauksen, koska sivusto ei käytä suojattua yhteyttä ja tiedostoa on ehkä peukaloitu</translation>
-<translation id="2157600032285353789">Voit avata esimerkiksi kirjanmerkit ja lukutilan Chromium-valikosta</translation>
 <translation id="2174178932569897599">Yksilöi Chromiumia</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2185166961232948079">Chromium – Kirjautuminen verkkoon – <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Aloita synkronointi päivittämällä Chromium.</translation>
 <translation id="5988505247484123880">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi.</translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
-<translation id="6019451407441383358">Voit avata esimerkiksi kirjanmerkit ja lukutilan oikean yläkulman Chromium-valikosta</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6058380562449900225">Datasi suojaamiseksi salli Chromiumin poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina. Tämä ei estä ilmoituksia.</translation>
 <translation id="6063093106622310249">&amp;Avaa Chromiumissa</translation>

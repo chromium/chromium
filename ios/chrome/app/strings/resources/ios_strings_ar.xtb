@@ -1444,6 +1444,7 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
 <translation id="6851516051005285358">طلب موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي</translation>
+<translation id="6857446173140146664">حذف الخلفية</translation>
 <translation id="6858718102216837409">إضافة لغة…</translation>
 <translation id="6858855187367714033">تم مسحه ضوئيًا.</translation>
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>
@@ -2024,7 +2025,7 @@
 <translation id="9098541895599151034">هل تريد حذف كلمات مرور <ph name="NUMBER_OF_ACCOUNTS" /> حساب؟</translation>
 <translation id="9099233023029360602">السؤال عن الحساب المُراد استخدامه في كل مرة</translation>
 <translation id="9099821309562615674">يُرجى التأكُّد من وضوح النص ووجوده داخل الإطار.</translation>
-<translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
+<translation id="9100610230175265781">يجب إدخال عبارة المرور</translation>
 <translation id="91023216973987714">طُرق الدفع</translation>
 <translation id="9106655997975673326">من "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">التحقُّق من كلمات المرور المحتمَل تعرّضها للاختراق</translation>

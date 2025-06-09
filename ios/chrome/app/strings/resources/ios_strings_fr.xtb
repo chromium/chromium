@@ -545,7 +545,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3235063766008841141">Identifiant saisi sur un site trompeur et détecté lors d'une violation des données</translation>
 <translation id="3235242129752692527">Modifiez les détails de l'événement, puis appuyez sur "Enregistrer".</translation>
-<translation id="3240426699337459095">Le lien a bien été copié.</translation>
+<translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3245744387817103524">Impossible d'enregistrer votre modification.</translation>
@@ -1003,6 +1003,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
 <translation id="5141363746588976328">Masquer la carte de baisses de prix dans vos onglets</translation>
 <translation id="5145331760738811130">Quitter le sélecteur d'onglets</translation>
+<translation id="5148717509369231739">Importation Safari</translation>
 <translation id="5157638238828697074">Un problème est survenu. Impossible d'ouvrir l'appli.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
@@ -1323,7 +1324,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410005280995367944">Mots de passe dans d'autres applis</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
-<translation id="6410883413783534063">Utilisez les onglets pour consulter plusieurs pages en même temps</translation>
+<translation id="6410883413783534063">Ouvrez des onglets pour consulter plusieurs pages en même temps</translation>
 <translation id="6416807286621280684">Vos colis suivis et les notifications de livraison.</translation>
 <translation id="6418346271604475326">PDF en prépa.</translation>
 <translation id="6421038304268477484">Texte traduit</translation>

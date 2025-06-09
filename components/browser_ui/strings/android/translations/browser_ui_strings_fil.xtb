@@ -96,6 +96,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
 <translation id="2185965788978862351">Ide-delete nito ang <ph name="DATASIZE" /> na data at cookies na na-store ng mga site o app sa iyong Home screen.</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Kahapon}one{<ph name="NUM_DAYS_MANY" /> araw ang nakalipas}other{<ph name="NUM_DAYS_MANY" /> na araw ang nakalipas}}</translation>
 <translation id="2215727959747642672">Pag-edit ng file</translation>
 <translation id="2218389616572918761">Puwedeng hilingin ng mga site ang iyong mikropono</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6530703012083415527">Kapag naka-on, makakagamit ng mga pop-up at pag-redirect ang mga site. Kapag naka-off, hindi makakagamit ng mga pop-up at pag-redirect ang mga site .</translation>
 <translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> linggo ang nakalipas}one{<ph name="NUM_WEEKS_MANY" /> linggo ang nakalipas}other{<ph name="NUM_WEEKS_MANY" /> na linggo ang nakalipas}}</translation>
 <translation id="6545864417968258051">Pag-scan ng Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{Naka-block ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="6554732001434021288">Huling binisita <ph name="NUM_DAYS" /> (na) araw ang nakalipas</translation>
@@ -521,6 +523,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="7573594921350120855">Karaniwang ginagamit ng mga site ang iyong video camera para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{<ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{<ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
 <translation id="757524316907819857">I-block ang mga site sa pag-play ng pinoprotektahang content</translation>
 <translation id="7594634374516752650">Nakakonekta sa isang Bluetooth device</translation>
 <translation id="7617547684249261169">Puwede mong i-delete ang ilan sa o lahat ng iyong history, cookies, data ng site at higit pa</translation>
@@ -542,6 +545,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
 <translation id="7881140103901777395">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo.\n\nBisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Payagan ang tunog para sa isang partikular na site.</translation>
+<translation id="7891547341794213004">I-hide ang card na magpatuloy sa tab na ito</translation>
 <translation id="789180354981963912">I-block ang third-party na cookies sa Incognito:</translation>
 <translation id="789722939441020330">Huwag payagan ang mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="7940722705963108451">Ipaalala sa akin</translation>

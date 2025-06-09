@@ -96,6 +96,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="2182457891543959921">Kysy, saavatko sivustot luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa (suositus)</translation>
 <translation id="2185965788978862351">Tämä poistaa <ph name="DATASIZE" /> dataa ja aloitusnäytölläsi olevien sivustojen tai sovellusten tallentamat evästeet.</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Eilen}other{<ph name="NUM_DAYS_MANY" /> päivää sitten}}</translation>
 <translation id="2215727959747642672">Tiedostojen muokkaus</translation>
 <translation id="2218389616572918761">Sivustot voivat pyytää mikrofonia</translation>
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
@@ -448,6 +449,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6530703012083415527">Kun tämä on päällä, sivustot voivat käyttää ponnahdusikkunoita ja uudelleenohjauksia. Kun tämä on pois päältä, sivustot eivät voi käyttää ponnahdusikkunoita tai uudelleenohjauksia.</translation>
 <translation id="6540488083026747005">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> viikko sitten}other{<ph name="NUM_WEEKS_MANY" /> viikkoa sitten}}</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta estetty}}</translation>
 <translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
@@ -521,6 +523,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7554752735887601236">Sivusto käyttää mikrofoniasi</translation>
 <translation id="7561196759112975576">Aina</translation>
 <translation id="7573594921350120855">Sivustot käyttävät videokameraa yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{<ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
 <translation id="757524316907819857">Estä sivustoja toistamasta suojattua sisältöä</translation>
 <translation id="7594634374516752650">Yhdistetty Bluetooth-laitteeseen</translation>
 <translation id="7617547684249261169">Voit poistaa osan tai kaiken historian, evästeet, sivustodatan ja muuta</translation>
@@ -542,6 +545,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7846076177841592234">Peru valinta</translation>
 <translation id="7881140103901777395">Chrome rajoittaa useimpien sivustojen kolmannen osapuolen evästeiden käyttöä. Kolmannen osapuolen evästeet on kuitenkin sallittu tällä sivustolla, koska se tarvitsee niitä peruspalvelujen tarjoamiseen.\n\nVoit <ph name="BEGIN_LINK" />muuttaa kolmannen osapuolen evästeisiin pääsyä<ph name="END_LINK" /> asetuksista.</translation>
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
+<translation id="7891547341794213004">Piilota "Jatka tällä välilehdellä" ‐kortti</translation>
 <translation id="789180354981963912">Estä kolmannen osapuolen evästeet incognito-tilassa:</translation>
 <translation id="789722939441020330">Älä salli sivustojen ladata automaattisesti useita tiedostoja</translation>
 <translation id="7940722705963108451">Muistuta minua</translation>

@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Atkārtoti palaist, lai atjauninātu &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium komanda iesaka pārskatīt šo paplašinājumu.</translation>
 <translation id="1042552502243217427">Kad vietnē tiek piedāvāts privāti iepriekš ielādēt saites lapā, pārlūks Chromium izmanto Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem, taču Google uzzina, kādas lapas tiek iepriekš ielādētas.</translation>
+<translation id="1051793555070215510">Palīdziet mums uzlabot pārlūkošanu inkognito režīmā, aizpildot šo vienas minūtes aptauju.</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="1083934481477628225">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium.</translation>
 <translation id="1104942323762546749">Pārlūkā Chromium tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ievadiet savu Windows paroli.</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">Neizdevās verificēt lejupielādēto failu.</translation>
 <translation id="2137162749895930932">Aizvērt tulkošanas ekrānu</translation>
 <translation id="215352261310130060">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo vietnē netiek izmantots drošs savienojums un, iespējams, failā ir veiktas izmaiņas.</translation>
-<translation id="2157600032285353789">Varat atvērt grāmatzīmes, lasīšanas režīmu un citas iespējas, izmantojot Chromium izvēlni.</translation>
 <translation id="2174178932569897599">Pielāgot pārlūkprogrammu Chromium</translation>
 <translation id="2174917724755363426">Instalēšana nav pabeigta. Vai tiešām vēlaties atcelt?</translation>
 <translation id="2185166961232948079">Chromium — pierakstīšanās tīklā — <ph name="PAGE_TITLE" /></translation>
@@ -357,7 +357,6 @@
 <translation id="5987687638152509985">Lai sāktu sinhronizēšanu, atjauniniet Chromium.</translation>
 <translation id="5988505247484123880">Bieži vien jūsu apmeklētajās vietnēs tiek saglabāta informācija par jūs interesējošām lietām, lai personalizētu jūsu pieredzi. Vietnes var arī glabāt informāciju par jūsu interesēm pārlūkā Chromium.</translation>
 <translation id="6003112304606738118">Notiek lejupielāde... Atlikušais laiks: <ph name="HOURS" /> stunda(-as).</translation>
-<translation id="6019451407441383358">Varat atvērt grāmatzīmes, lasīšanas režīmu un citas iespējas, izmantojot Chromium izvēlni, kas atrodas augšējā labajā stūrī.</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6058380562449900225">Lai aizsargātu savus datus, ļaujiet pārlūkā Chromium atsaukt atļaujas vietnēm, ko pēdējā laikā neesat apmeklējis (paziņojumi netiks bloķēti)</translation>
 <translation id="6063093106622310249">&amp;Atvērt pārlūkā Chromium</translation>

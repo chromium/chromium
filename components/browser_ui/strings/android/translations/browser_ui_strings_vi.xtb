@@ -95,6 +95,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2182457891543959921">Hỏi trước khi cho phép các trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
 <translation id="2185965788978862351">Thao tác này sẽ xoá <ph name="DATASIZE" /> dữ liệu và cookie do các trang web hoặc ứng dụng trên Màn hình chính lưu trữ.</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Hôm qua}other{<ph name="NUM_DAYS_MANY" /> ngày trước}}</translation>
 <translation id="2215727959747642672">Chỉnh sửa tệp</translation>
 <translation id="2218389616572918761">Các trang web có thể yêu cầu sử dụng micrô của bạn</translation>
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
@@ -251,7 +252,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3965467402665811906">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3981465354637804599">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là hiện quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
-<translation id="3987993985790029246">Sao chép liên kết</translation>
+<translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992308058851451478"><ph name="SITE" /> có thể sử dụng thông tin của bạn khi bạn duyệt web</translation>
 <translation id="3992684624889376114">Thông tin về trang này</translation>
@@ -447,6 +448,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6530703012083415527">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng.</translation>
 <translation id="6540488083026747005">Bạn đã cho phép cookie của bên thứ ba trên trang web này</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> tuần trước}other{<ph name="NUM_WEEKS_MANY" /> tuần trước}}</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="6554732001434021288">Lần truy cập gần đây nhất: <ph name="NUM_DAYS" /> ngày trước</translation>
@@ -520,6 +522,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7554752735887601236">Một trang web đang sử dụng micrô của bạn</translation>
 <translation id="7561196759112975576">Luôn luôn</translation>
 <translation id="7573594921350120855">Các trang web thường sử dụng máy quay video cho các tính năng giao tiếp như trò chuyện video</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> tháng trước}other{<ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
 <translation id="757524316907819857">Chặn không cho trang web phát nội dung được bảo vệ</translation>
 <translation id="7594634374516752650">Đã kết nối với một thiết bị Bluetooth</translation>
 <translation id="7617547684249261169">Bạn có thể xoá một số hoặc toàn bộ nhật ký, cookie, dữ liệu trang web và các dữ liệu khác</translation>
@@ -541,6 +544,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7881140103901777395">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba. Tuy nhiên, trang web này được phép sử dụng cookie của bên thứ ba để cung cấp các dịch vụ cơ bản dựa trên loại cookie này.\n\nHãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
+<translation id="7891547341794213004">Ẩn thẻ tiếp tục duyệt xem thẻ này</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở Chế độ ẩn danh:</translation>
 <translation id="789722939441020330">Không cho phép trang web tự động tải nhiều tệp xuống</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>

@@ -1014,6 +1014,7 @@
 <translation id="4305817255990598646">ປ່ຽນ</translation>
 <translation id="4307713728991152670">ຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ແອັບຂອງໂທລະສັບທ່ານ</translation>
 <translation id="4312840429157639164">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
+<translation id="4312935606722154789">ຈັດກຸ່ມ ຫຼື ຍົກເລີກການຈັດກຸ່ມສອງໜ້າຈໍທີ່ຢູ່ຮຽງຂ້າງກັນ</translation>
 <translation id="4316910396681052118">ທຸກແອັບ</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322385711258710213">ເຊື່ອງການແນະນຳທັງໝົດຂອງໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
@@ -1582,7 +1583,6 @@
 <translation id="6095425951508823973">ເພີ່ມການເຊື່ອມຕໍ່ກັບ <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">ແກ້ໄຂເດືອນແລ້ວ</translation>
 <translation id="6103838137565245112">ລະບົບ</translation>
-<translation id="610395411842312282">ຈັດກຸ່ມໜ້າຈໍ 2 ອັນໄວ້ຂ້າງກັນ</translation>
 <translation id="6108952804512516814">ສ້າງດ້ວຍ AI</translation>
 <translation id="6114505516289286752">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າ <ph name="LANGUAGE" /> ແລ້ວ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

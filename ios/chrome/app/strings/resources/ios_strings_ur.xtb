@@ -671,6 +671,7 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3850952228519377137">"اپنے ٹیبز سے قیمتیں ٹریک کریں" کو چھپائیں</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" /> اور <ph name="NUMBER_OF_ACCOUNTS" /> دیگر کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
+<translation id="3853162385423733133">‏اپنے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈز استعمال کرنا اور محفوظ کرنا جاری رکھیں</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3868495844258915202">‏مکمل URL دکھائیں</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
 <translation id="5141363746588976328">ٹیبز کارڈ پر قیمت میں کمی کو چھپائیں</translation>
 <translation id="5145331760738811130">ٹیب سوئچر کو چھوڑیں</translation>
+<translation id="5148717509369231739">‏‫Safari سے درآمد کرنے کی سہولت</translation>
 <translation id="5157638238828697074">کچھ غلط ہو گیا۔ ایپلیکیشن نہیں کھل سکی۔</translation>
 <translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">‏iPadOS کیلئے بنائی گئی</translation>
@@ -1113,6 +1115,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5626245204502895507">فائل اس وقت ڈاؤن لوڈ نہیں ہو سکی۔</translation>
 <translation id="562753339521713441">سیفٹی چیک چلائیں</translation>
 <translation id="5628388627414062173">{count,plural, =1{آپ کی پڑھنے کی فہرست پر {count} صفحہ}other{آپ کی پڑھنے کی فہرست پر {count} صفحات}}</translation>
+<translation id="5632194969640946913">پروڈکٹس، مقامات اور ٹیکسٹ کو دریافت کرنے کے لیے کسی بھی صفحہ پر جو کچھ آپ دیکھتے ہیں اسے براؤز اور تلاش کرتے وقت مزید جانیں۔</translation>
 <translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
 <translation id="5633237939819267663">{count,plural, =1{‫"{title}" میں بُک مارک کو محفوظ کیا گیا}other{‫"{title}" میں {count} بُک مارکس کو محفوظ کیا گیا}}</translation>
 <translation id="564170563478022912">سائن آؤٹ کریں؟ غیر محفوظ شدہ اکاؤنٹ کا ڈیٹا حذف کر دیا جائے گا۔</translation>

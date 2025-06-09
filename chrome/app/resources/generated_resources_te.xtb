@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="1312811472299082263">Ansible గైడ్‌లైన్ కిట్ నుండి లేదా Crostini బ్యాకప్ ఫైల్ నుండి క్రియేట్ చేయండి</translation>
 <translation id="13130607084115184">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఇక్కడ కనిపిస్తాయి. ఈ పరికరంలోని <ph name="BRAND" />‌కు పాస్‌వర్డ్‌లను దిగుమతి చేయడానికి, <ph name="BEGIN_LINK" />CSV ఫైల్‌ను ఎంచుకోండి.<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> తీసివేయబడ్డాయి</translation>
 <translation id="1313405956111467313">ఆటోమేటిక్‌ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">తెరిచిన ట్యాబ్‌లతో సహా, అన్ని సైట్‌ల నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
@@ -4188,6 +4187,7 @@
 <translation id="3876219572815410515">సైజ్ మార్చిన విండోలు పైకి</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> పరికరం కోసం సమీప షేర్ సెట్టింగ్‌లు, <ph name="USER_EMAIL" /> ఖాతా ద్వారా షేర్ చేయబడుతున్నాయి.</translation>
 <translation id="3877209288227498506">ట్యాబ్ హోవర్ ప్రివ్యూ కార్డ్‌లో మెమరీ వినియోగాన్ని, ఇమేజ్‌లను చూడటాన్ని ఎంచుకోండి</translation>
+<translation id="3877603629930976930">షేర్ చేయకండి</translation>
 <translation id="3878445208930547646">ఈ సైట్ నుండి కాపీ చేయడం అనుమతించబడదు</translation>
 <translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
 <translation id="3880513902716032002">మీరు చూసే కొన్ని పేజీలు ప్రీ - లోడ్ చేయబడ్డాయి</translation>
@@ -4613,7 +4613,6 @@
 <translation id="4190492351494485814">ప్రారంభ సెటప్ కోసం, మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేయాల్సి ఉంటుంది కాబట్టి ఫైళ్లు మీ Chromebookకు సింక్ చేయబడతాయి</translation>
 <translation id="4190828427319282529">కీబోర్డ్ ఫోకస్‌ను హైలైట్ చేయండి</translation>
 <translation id="4191892134568599822">మీరు ఫైల్స్‌ను పొందడానికి <ph name="FEATURE_NAME" />‌ను ఉపయోగించాలా?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{1 ఉపయోగించని సైట్ నుండి అనుమతులు తీసివేయబడ్డాయి}other{{NUM_SITES} ఉపయోగించని సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" />‌కు మాత్రమే ప్రత్యేకమైనది.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">విశ్వసనీయ CA</translation>
@@ -5167,7 +5166,6 @@
 <translation id="4585793705637313973">పేజీని ఎడిట్ చేయండి</translation>
 <translation id="4586275095964870617"><ph name="URL" />ని ప్రత్యామ్నాయ బ్రౌజర్‌లో తెరవడం సాధ్యపడదు. దయచేసి మీ సిస్టమ్ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
-<translation id="4588497044036650559">ప్రస్తుత ట్యాబ్‌లో కొత్త ట్యాబ్ పేజీ ఎక్స్‌టెన్షన్‌కు సంబంధించిన ఆప్షన్ పేజీని తెరవండి</translation>
 <translation id="4588749726511456218">స్క్రోల్ యాక్సిలరేషన్ గురించి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" />, <ph name="DOMAIN" />‌కు సంబంధం ఉన్నట్లు కనిపిస్తోంది. మీ పాస్‌వర్డ్‌ను ఉపయోగించే ముందు మీరు <ph name="DOMAIN" />‌ను ట్రస్ట్ చేస్తున్నారని నిర్ధారించుకోండి.</translation>
 <translation id="4589713469967853491">లాగ్స్, విజయవంతంగా 'డౌన్‌లోడ్స్' డైరెక్టరీలోకి చేర్చబడ్డాయి.</translation>
@@ -6131,6 +6129,7 @@
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
 <translation id="5279600392753459966">అన్నింటినీ నిరోధించు</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> కోసం ఆధారాలు అప్‌డేట్ చేయండి</translation>
+<translation id="5280303168922585051">ఈ సెట్టింగ్‌ను మీ సంస్థ సెటప్ చేసింది. మీరు ఈ సెర్చ్ ఇంజిన్‌ను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="5280426389926346830">షార్ట్‌కట్‌ను సృష్టించాలా?</translation>
 <translation id="5281013262333731149">దీనిలో తెరవబడుతుంది: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android యాప్‌లను డౌన్‌లోడ్ చేసి, ఉపయోగించడం కోసం, ముందుగా మీరు ఈ అవసరమైన అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయాలి. మీ <ph name="DEVICE_TYPE" /> అప్‌డేట్ అవుతున్న సమయంలో, మీరు దీనిని ఉపయోగించలేరు. ఇన్‌స్టాల్ చేయడం పూర్తయిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> పునఃప్రారంభించబడుతుంది.</translation>
@@ -6256,7 +6255,6 @@
 <translation id="5376931455988532197">ఫైల్ చాలా పెద్దదిగా ఉంది</translation>
 <translation id="5377367976106153749">కెమెరా యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
 <translation id="5379140238605961210">మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయడాన్ని కొనసాగించండి</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" /> తీసివేయబడింది</translation>
 <translation id="5380526436444479273">కొద్ది నిమిషాలు ఆగి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="5382591305415226340">మద్దతు గల లింక్‌లను నిర్వహించండి</translation>
 <translation id="5384401776498845256">మీకు ఎవరు షేర్ చేయవచ్చు</translation>
@@ -6993,7 +6991,6 @@
 <translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5919305207330938913">సేకరించబడిన మొత్తం డేటా <ph name="BEGIN_LINK" />Google గోప్యతా పాలసీ<ph name="END_LINK" />కి అనుగుణంగా ఉపయోగించబడుతుంది.</translation>
-<translation id="5919486630433391408">ఫర్మ్‌వేర్ అప్‌డేట్‌లను మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేశారు.</translation>
 <translation id="5920543303088087579">ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="5922963926582976524">ఇన్‌స్టంట్ హాట్‌స్పాట్ నెట్‌వర్క్ డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="5924047253200400718">సహాయం పొందండి<ph name="SCANNING_STATUS" /></translation>
@@ -7115,7 +7112,6 @@
 <translation id="6003479444341796444">టైటిల్ బార్ ఇప్పుడు కనిపిస్తోంది</translation>
 <translation id="6003582434972667631">మీ సంస్థ ద్వారా థీమ్ సెట్ చేయబడింది</translation>
 <translation id="6005045517426700202">ఇటుకల భవనం</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> తీసివేయబడ్డాయి</translation>
 <translation id="6006484371116297560">క్లాసిక్</translation>
 <translation id="6007053304250788613">మిర్రర్ మోడ్‌లో ఒక డిస్‌ప్లే మాత్రమే మినహాయించబడుతుంది</translation>
 <translation id="6007240208646052708">మీ భాషలో వాయిస్ శోధన అందుబాటులో లేదు.</translation>
@@ -8468,6 +8464,7 @@
 <translation id="69739764870135975">అలాగే Google మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ అయితే, మీకు మరింత సందర్భోచితమైన సూచనలు కనిపిస్తాయి</translation>
 <translation id="697508444536771064">Linuxను షట్ డౌన్ చేయండి</translation>
 <translation id="6978121630131642226">సెర్చ్ ఇంజిన్‌లు</translation>
+<translation id="6978236010531171013">ఏదేమైనా షేర్ చేయండి</translation>
 <translation id="6978717888677691380">మీరు బ్లాక్ చేసిన సైట్‌లు</translation>
 <translation id="6979041727349121225">ఎనర్జీ సేవర్</translation>
 <translation id="6979044105893951891">నిర్వాహిత గెస్ట్ సెషన్‌లను ప్రారంభించడం మరియు విడిచిపెట్టడం</translation>
@@ -8568,7 +8565,6 @@
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
 <translation id="7039951224110875196">చిన్నారి కోసం Google ఖాతాను క్రియేట్ చేయండి</translation>
 <translation id="7039968672732182060">ఇప్పటి నుండి, మీ Chromebook సెక్యూరిటీ అప్‌డేట్‌లను అందుకోదు. తాజా సెక్యూరిటీ, సాఫ్ట్‌వేర్ కోసం అప్‌గ్రేడ్ చేయాల్సిన సమయం వచ్చింది. ఆఫర్ నియమాలు వర్తిస్తాయి.</translation>
-<translation id="7041405817194720353"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, మరో <ph name="COUNT" /> తీసివేయబడ్డాయి</translation>
 <translation id="7042116641003232070">మీ పరికరంలో డేటాను సేవ్ చేయడానికి ఈ సైట్ అనుమతించబడింది</translation>
 <translation id="7043108582968290193">పూర్తయింది! అనుకూలంగా లేని అప్లికేషన్‌లను కనుగొనబడలేదు.</translation>
 <translation id="7044124535091449260">సైట్ యాక్సెస్ గురించి మరింత తెలుసుకోండి</translation>
@@ -8684,6 +8680,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />, వేచి ఉంది</translation>
 <translation id="7132886488919643383">Googleకు చెందిన AI టెక్నాలజీలను ఉపయోగించి చదవడంలో, రాయడంలో, క్రియేట్ చేయడంలో సహాయం పొందండి</translation>
 <translation id="7134098520442464001">టెక్స్ట్‌ని చిన్నదిగా చేయండి</translation>
+<translation id="7134653428559514680">ఈ సైట్ నుండి షేర్ చేయడం సరైన పని కాదు</translation>
 <translation id="7134951043985383439">ప్రమాదకరమైన ఫైల్‌ను డౌన్‌లోడ్ చేశారు</translation>
 <translation id="7135729336746831607">బ్లూటూత్ ఆన్ చేయాలా?</translation>
 <translation id="7136694880210472378">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయి</translation>
@@ -9130,6 +9127,7 @@
 <translation id="7460045493116006516">మీరు ప్రస్తుతం ఇన్‌స్టాల్ చేసుకున్న థీమ్</translation>
 <translation id="7461924472993315131">పిన్ చేయండి</translation>
 <translation id="746216226901520237">తదుపరిసారి మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో Smart Lockను ఆఫ్ చేయవచ్చు.</translation>
+<translation id="7463068149674892185">ఈ చర్య సరైనది కాదు</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">ఈ ఫీచర్‌ల ద్వారా కలెక్ట్ చేసిన డేటా ఎలా ఉపయోగించబడుతుంది అనేది మీ సంస్థ కంట్రోల్ చేస్తుంది.</translation>
 <translation id="7464645554245611385">ఈ ట్యాబ్‌కు సంబంధించిన చివరి అప్‌డేట్</translation>
@@ -11689,7 +11687,6 @@
 <translation id="934244546219308557">ఈ గ్రూప్‌నకు పేరు పెట్టండి</translation>
 <translation id="93480724622239549">బగ్ లేదా ఎర్రర్</translation>
 <translation id="9354763467503131">మీ పరికరంలో వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయమని అడగడానికి అనుమతించబడింది</translation>
-<translation id="936329857119665832">ప్రస్తుత ట్యాబ్‌లో తెరుచుకుంటుంది</translation>
 <translation id="936646668635477464">కెమెరా &amp; మైక్రోఫోన్</translation>
 <translation id="936801553271523408">సిస్టమ్ విశ్లేషణ డేటా</translation>
 <translation id="93766956588638423">ఎక్స్‌టెన్షన్‌ను సరి చేయి</translation>

@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Häälmenüü</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1246424317317450637">Paks</translation>
+<translation id="1357114957607379632">AI taasesituse genereerimine …</translation>
 <translation id="1370273601702151510">Meeldib</translation>
 <translation id="1483137792530497944">Jõgi</translation>
 <translation id="1586836055630070874">Rahustav</translation>
+<translation id="1639239467298939599">Laadimine</translation>
 <translation id="1666704368140506043">Solvav sisu</translation>
 <translation id="1741047078107369903">Soe</translation>
 <translation id="1807863182207623884">Rubiin</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Kahjuks pole selle lehe jaoks praegu taasesitus saadaval. Proovige hiljem uuesti.</translation>
 <translation id="3457812538570616687">Ei meeldi</translation>
 <translation id="3493899379487634969">Mis läks valesti?</translation>
+<translation id="3730775656877876887">AI taasesituse genereerimine</translation>
 <translation id="3778044272390020426">Negatiivse tagasiside valikute menüü</translation>
 <translation id="3807208219231826020">Taasesituse kerimine</translation>
 <translation id="385051799172605136">Tagasi</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Hele</translation>
 <translation id="5234971936051226002">Pleier „Kuula seda lehte“ on minimeeritud.</translation>
 <translation id="5251803541071282808">Pilv</translation>
-<translation id="5526614127710223793">Taasesitusrežiimi valija</translation>
+<translation id="5528503854289436485">AI taasesitus</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="565342223183747919">Puudutage taasesitusrežiimi vahetamiseks</translation>
 <translation id="5694491020339060116">Esituskiiruse menüü</translation>
 <translation id="5965409657393819302">Tehniline probleem</translation>
 <translation id="6218961554829577610">Mulle ei meeldinud hääl</translation>
 <translation id="6315170314923504164">Hääl</translation>
-<translation id="6330455646577575965">AI heli taasesitus</translation>
 <translation id="6343633247422081848">Sammal</translation>
 <translation id="6550675742724504774">Valikud</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Teie URL laaditakse koos tagasisidega üles, et kvaliteeti ja uuringuid parandada.</translation>
 <translation id="8481839122437406573">Rahulik</translation>
 <translation id="8756370108715456837">Faktiliselt vale</translation>
-<translation id="881960277396325853">Heli AI-põhine genereerimine…</translation>
 <translation id="8953618380150219653">Pleier „Kuula seda lehte“ on avatud täiskõrgusel.</translation>
 <translation id="978117257931832348">Madal</translation>
 </translationbundle>

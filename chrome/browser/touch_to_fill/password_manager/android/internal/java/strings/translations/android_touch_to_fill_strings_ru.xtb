@@ -23,6 +23,7 @@
 <translation id="7286867818472074330">Выбрать ключ доступа</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, позиция <ph name="ITEM_POSITION" /> из <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Вы получили пароли для сайта <ph name="SITE_NAME" />.</translation>
+<translation id="8363484128299778310">Временное восстановление в случае проблем</translation>
 <translation id="8614995815226664591">Пользователь <ph name="SENDER_NAME" /> передал вам пароль для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="8891372124884726271">Список учетных данных закрыт.</translation>
 </translationbundle>

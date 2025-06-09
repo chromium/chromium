@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Genstart og opdater &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium anbefaler, at du gennemgår denne udvidelse</translation>
 <translation id="1042552502243217427">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chromium Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
+<translation id="1051793555070215510">Hjælp os med at forbedre inkognito ved at deltage i denne undersøgelse, der kun tager 1 minut.</translation>
 <translation id="1065672644894730302">Dine præferencer kan ikke læses. Visse funktioner er muligvis ikke tilgængelige, og ændringer af præferencer gemmes ikke.</translation>
 <translation id="1083934481477628225">Din forælder har deaktiveret "Tilladelser for websites, apps og udvidelser" for Chromium</translation>
 <translation id="1104942323762546749">Chromium anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">Verificering af den downloadede fil mislykkedes.</translation>
 <translation id="2137162749895930932">Luk oversættelsesskærmen</translation>
 <translation id="215352261310130060">Chromium har blokeret denne download, fordi websitet ikke anvender en sikker forbindelse, og der kan være blevet manipuleret med filen</translation>
-<translation id="2157600032285353789">Du kan åbne bogmærker, læsetilstand med mere via Chromium-menuen</translation>
 <translation id="2174178932569897599">Tilpas Chromium</translation>
 <translation id="2174917724755363426">Installationen er ikke fuldført. Er du sikker på, at du vil annullere?</translation>
 <translation id="2185166961232948079">Chromium – Login på netværk – <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Opdater Chromium for at starte synkronisering</translation>
 <translation id="5988505247484123880">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse personligt tilpasses. Websites kan også gemme oplysninger med Chromium om dine interesser.</translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
-<translation id="6019451407441383358">Du kan åbne bogmærker, læsetilstand med mere via Chromium-menuen øverst til højre</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6058380562449900225">Du kan beskytte dine data ved at lade Chromium fjerne tilladelser fra websites, du ikke har besøgt for nylig. Dette forhindrer ikke notifikationer.</translation>
 <translation id="6063093106622310249">Åbn i Chr&amp;omium</translation>

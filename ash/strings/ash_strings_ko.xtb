@@ -1014,6 +1014,7 @@
 <translation id="4305817255990598646">전환</translation>
 <translation id="4307713728991152670">휴대전화의 최근 사진, 미디어, 앱 보기 설정</translation>
 <translation id="4312840429157639164">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
+<translation id="4312935606722154789">나란히 배치된 창을 그룹화 또는 그룹 해제</translation>
 <translation id="4316910396681052118">모든 앱</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">모든 Chrome 브라우저 추천 숨기기</translation>
@@ -1582,7 +1583,6 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> 제공업체를 통해 연결 추가</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
 <translation id="6103838137565245112">시스템</translation>
-<translation id="610395411842312282">두 개의 창을 나란히 그룹화</translation>
 <translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>

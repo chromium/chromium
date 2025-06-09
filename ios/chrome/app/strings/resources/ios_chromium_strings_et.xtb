@@ -176,6 +176,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5259423875997548710">Otsige Chromiumis visuaale.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
 <translation id="5311557153294205270">Lisab sisestatud URL-id Chromiumis teie järjehoidjatesse.</translation>
+<translation id="5383251701169024761">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige automaattäite jaoks Chromium.</translation>
 <translation id="538767207339317086">Luba Chromiumisse sisselogimine</translation>
 <translation id="5389058611415066188">Turvalisus Chromiumiga</translation>
 <translation id="5415273218238091735">Chromiumi nõuanne</translation>
@@ -276,7 +277,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="7784950022329154821">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="78025249032851484">Teie Chromium on aegunud.</translation>
-<translation id="7811371919871579588">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige funktsioon Chromium automaattäite jaoks.</translation>
 <translation id="7859018312476869945">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chromium teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="7905064834449738336">Kui kasutate parooli, hoiatab Chromium teid, kui see on veebis avalikustatud. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>

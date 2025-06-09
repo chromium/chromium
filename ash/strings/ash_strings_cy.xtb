@@ -1014,6 +1014,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4305817255990598646">Newid</translation>
 <translation id="4307713728991152670">Gosod gweld lluniau, cyfryngau ac apiau diweddar eich ffôn</translation>
 <translation id="4312840429157639164">Mae'r camera wedi'i snapio i'r gornel dde uchaf. Gwrthdaro ag arwyneb y system.</translation>
+<translation id="4312935606722154789">Grwpio neu ddadgrwpio dwy ffenestr ochr-yn-ochr</translation>
 <translation id="4316910396681052118">POB AP</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Cuddio holl awgrymiadau porwr Chrome</translation>
@@ -1582,7 +1583,6 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6095425951508823973">Ychwanegu cysylltiad â <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Golygwyd yn y mis diwethaf</translation>
 <translation id="6103838137565245112">system</translation>
-<translation id="610395411842312282">Grwpio dwy ffenestr ochr-yn-ochr</translation>
 <translation id="6108952804512516814">Creu gydag AI</translation>
 <translation id="6114505516289286752">Wedi lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

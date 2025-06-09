@@ -1014,6 +1014,7 @@
 <translation id="4305817255990598646">切り替え</translation>
 <translation id="4307713728991152670">スマートフォンの最近の写真、メディア、アプリの表示を設定</translation>
 <translation id="4312840429157639164">カメラは右上にスナップされています。システムのサーフェスと競合しています。</translation>
+<translation id="4312935606722154789">横に並んだ 2 つのウィンドウをグループ化またはグループ化を解除する</translation>
 <translation id="4316910396681052118">すべてのアプリ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Chrome ブラウザの提案をすべて非表示にする</translation>
@@ -1582,7 +1583,6 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> との接続を追加</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
-<translation id="610395411842312282">横に並んだ 2 つのウィンドウをグループ化する</translation>
 <translation id="6108952804512516814">AI を使用して作成</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>

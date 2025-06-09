@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Nabídka k výběru hlasu</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1246424317317450637">Tučné</translation>
+<translation id="1357114957607379632">Generování audia pomocí AI…</translation>
 <translation id="1370273601702151510">Palec nahoru</translation>
 <translation id="1483137792530497944">Řeka</translation>
 <translation id="1586836055630070874">Uklidňující</translation>
+<translation id="1639239467298939599">Načítání</translation>
 <translation id="1666704368140506043">Urážlivý obsah</translation>
 <translation id="1741047078107369903">Vřelý</translation>
 <translation id="1807863182207623884">Rubín</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Tuto stránku momentálně bohužel přehrát nelze. Zkuste to znovu později.</translation>
 <translation id="3457812538570616687">Palec dolů</translation>
 <translation id="3493899379487634969">Co bylo špatně?</translation>
+<translation id="3730775656877876887">Generování audia pomocí AI</translation>
 <translation id="3778044272390020426">Nabídka možností negativní zpětné vazby</translation>
 <translation id="3807208219231826020">Procházet přehrávání</translation>
 <translation id="385051799172605136">Zpět</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Jasný</translation>
 <translation id="5234971936051226002">Přehrávač „Poslechnout si tuto stránku“ byl minimalizován.</translation>
 <translation id="5251803541071282808">Cloud</translation>
-<translation id="5526614127710223793">Výběr režimu přehrávání</translation>
+<translation id="5528503854289436485">Audio od AI</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="565342223183747919">Klepnutím přepnete režim přehrávání</translation>
 <translation id="5694491020339060116">Nabídka rychlosti přehrávání</translation>
 <translation id="5965409657393819302">Technický problém</translation>
 <translation id="6218961554829577610">Hlas se mi nelíbil</translation>
 <translation id="6315170314923504164">Hlas</translation>
-<translation id="6330455646577575965">Přehrávání zvuku od umělé inteligence</translation>
 <translation id="6343633247422081848">Mech</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Pro účely vylepšování kvality a výzkumu se spolu se zpětnou vazbou nahraje vaše adresa URL.</translation>
 <translation id="8481839122437406573">Klidný</translation>
 <translation id="8756370108715456837">Věcně chybné</translation>
-<translation id="881960277396325853">Generování zvuku pomocí AI…</translation>
 <translation id="8953618380150219653">Přehrávač „Poslechnout si tuto stránku“ byl otevřen na celou výšku.</translation>
 <translation id="978117257931832348">Hluboký</translation>
 </translationbundle>

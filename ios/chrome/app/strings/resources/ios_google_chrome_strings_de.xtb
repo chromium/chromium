@@ -138,7 +138,6 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="4724297637870447613">Chrome überall nutzen</translation>
 <translation id="4738647308035481133">Google Chrome-Seite</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
-<translation id="4749294594657945639">Wähle die Funktion „Autofill“ in Chrome, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen.</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
 <translation id="4798859546468762093">Zur Personalisierung und für andere Funktionen musst du Chrome in „<ph name="FEATURE_NAME_1" />“ und „<ph name="FEATURE_NAME_2" />“ aufnehmen</translation>
 <translation id="4819268619367838612">Chrome sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-
 <translation id="6533470733797826516">Mit Chrome Autofill schneller anmelden</translation>
 <translation id="6536544321553662809">Lege Chrome als Standardbrowser fest, um Links ganz einfach zu teilen und zu öffnen</translation>
 <translation id="6545449117344801102">Chrome erkennt Adressen über Google Maps, um dir Wegbeschreibungen und lokale Informationen bereitzustellen.</translation>
+<translation id="6611692150236062461">Wähle die Funktion „Autofill“ in Chrome, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen.</translation>
 <translation id="6636941099779251629">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sendet einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs und Teile von Seiteninhalten an Google senden.</translation>
 <translation id="6647304104688527905">Öffnet einen neuen Tab in Chrome.</translation>

@@ -96,6 +96,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
 <translation id="2185965788978862351">Hiermee verwijder je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Gisteren}other{<ph name="NUM_DAYS_MANY" /> dagen geleden}}</translation>
 <translation id="2215727959747642672">Bestanden bewerken</translation>
 <translation id="2218389616572918761">Sites kunnen om je microfoon vragen</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6530703012083415527">Als deze optie aanstaat, kunnen sites pop-ups en omleidingen gebruiken. Staat de optie uit, dan kunnen sites geen pop-ups en omleidingen gebruiken.</translation>
 <translation id="6540488083026747005">Je hebt cookies van derden toegestaan voor deze site</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week geleden}other{<ph name="NUM_WEEKS_MANY" /> weken geleden}}</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" /> geblokkeerd}}</translation>
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
@@ -521,6 +523,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>
 <translation id="7561196759112975576">Altijd</translation>
 <translation id="7573594921350120855">Sites gebruiken je videocamera meestal voor communicatiefuncties zoals videochatten</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand geleden}other{<ph name="NUM_MONTHS_MANY" /> maanden geleden}}</translation>
 <translation id="757524316907819857">Blokkeren dat sites beschermde content kunnen afspelen</translation>
 <translation id="7594634374516752650">Verbonden met een bluetooth-apparaat</translation>
 <translation id="7617547684249261169">Je kunt onder meer je geschiedenis, cookies en sitegegevens geheel of gedeeltelijk verwijderen</translation>
@@ -542,6 +545,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7881140103901777395">Chrome beperkt het gebruik van cookies van derden voor de meeste sites. Cookies van derden zijn wel toegestaan op deze site omdat ze nodig zijn om basisservices te kunnen leveren.\n\nGa naar de instellingen om <ph name="BEGIN_LINK" />de toegang tot cookies van derden te beheren<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
+<translation id="7891547341794213004">Kaart Doorgaan met dit tabblad verbergen</translation>
 <translation id="789180354981963912">Cookies van derden blokkeren in incognito:</translation>
 <translation id="789722939441020330">Niet toestaan dat sites automatisch meerdere bestanden downloaden</translation>
 <translation id="7940722705963108451">Herinner me eraan</translation>

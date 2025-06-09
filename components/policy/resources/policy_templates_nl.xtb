@@ -3061,13 +3061,6 @@ Als je het beleid niet instelt, is JavaScript toegestaan maar kunnen gebruikers 
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
 <translation id="3211426942294667684">Instellingen voor inloggen bij browser</translation>
-<translation id="3213872023700948990">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
-
-Als je dit beleid toepast of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord.
-
-Als je dit beleid niet toepast, zijn scrollers niet standaard focusbaar met het toetsenbord.
-
-Dit beleid is een tijdelijke oplossing en wordt verwijderd in M135.</translation>
 <translation id="3216094710930835317">Het nieuwe HTML-parsergedrag dat meer tags toestaat, wordt uitgezet.</translation>
 <translation id="3217774577897351942">De <ph name="OFFSET_PARENT" /> API wordt gewijzigd in <ph name="PRODUCT_NAME" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid wordt het oude gedrag hersteld tot M120.
 
@@ -3155,6 +3148,15 @@ Als het beleid is ingesteld op True of niet is ingesteld, worden web-apps zelfs 
 <translation id="3256920103934729145">Voorkomen dat gebruikers doorklikken bij SSL-waarschuwingspagina's</translation>
 <translation id="3257786863492892609">Beheert het beleid voor Screencast.</translation>
 <translation id="3258380413685430793">Alle <ph name="FLASH_PLUGIN_NAME" />-content uitvoeren</translation>
+<translation id="3258754138048508776">Met dit beleid bepaal je of de kaart Outlook zichtbaar is op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Outlook-agendagegevens in de browser heeft goedgekeurd.
+
+Outlook-gegevens worden niet opgeslagen door de browser.
+
+De kaart Outlook toont de volgende agenda-afspraak en een snel overzicht van de rest van de vergaderingen van de dag. Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling naar hun volgende vergadering te geven.
+
+De kaart Microsoft Outlook vereist extra beheerdersconfiguratie. Ga naar https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards voor gedetailleerde informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan Outlook.
+
+Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart Outlook getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="3261592499545947104">Aantal seconden vóór het verlopen van een certificaat wanneer de verlenging moet worden geactiveerd</translation>
 <translation id="3262080895269946462">Toestaan dat WebSQL in contexten van derden standaard wordt uitgezet.</translation>
 <translation id="326341982850521928">Kleurcorrectie aanzetten</translation>
@@ -5568,6 +5570,7 @@ Dit beleid is een tijdelijke uitstelmaatregel om tijd te geven om webcontent te 
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5093603777978346818">De screensaver op het vergrendelscherm niet aanzetten.</translation>
+<translation id="5099140200662153931">Kaart SharePoint- en OneDrive-bestand tonen op de pagina Nieuw tabblad</translation>
 <translation id="5099239365323299669">Vanaf versie M106 worden permanente quota niet meer ondersteund. Met dit beleid wordt de functionaliteit voor een permanent quotum opnieuw aangezet tot M107.
 
       Als je dit beleid toepast, werkt webkitRequestFileSystem met het permanente type met een permanent quotum.
@@ -5626,7 +5629,7 @@ Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens wor
 
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5151099177901233471">Rapportage van tijdzone-informatie van apparaat aanzetten</translation>
-<translation id="5151163911478747031">Toeschrijving van extensie in NTP-voettekst uitzetten</translation>
+<translation id="5151163911478747031">Toeschrijving van extensie in de voettekst van de pagina Nieuw tabblad uitzetten</translation>
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
@@ -6229,6 +6232,15 @@ Dit is verwijderd in M112.</translation>
 <translation id="5511266910976210617">Sta Help me met schrijven niet toe.</translation>
 <translation id="5511702823008968136">Bookmarkbalk aanzetten</translation>
 <translation id="5512418063782665071">URL van homepage</translation>
+<translation id="5512785896190859782">Dit beleid bepaalt de zichtbaarheid van de kaart SharePoint- en OneDrive-bestand op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de SharePoint- en OneDrive-bestandsgegevens in de browser heeft geautoriseerd.
+
+SharePoint- en OneDrive-gegevens worden niet opgeslagen door de browser.
+
+De kaart met aanbevelingen voor SharePoint- en OneDrive-bestanden toont een lijst met aanbevolen bestanden.  Het doel is om het probleem van contextwisseling aan te pakken en de productiviteit te verbeteren door gebruikers een snelkoppeling te geven naar hun belangrijkste documenten.
+
+De kaart Microsoft SharePoint en OneDrive vereist extra beheerdersconfiguratie. Ga naar https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards voor gedetailleerde informatie over hoe je de kaart op de pagina Nieuw tabblad van Chrome koppelt aan SharePoint.
+
+Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart SharePoint en OneDrive niet getoond. Als <ph name="NTPCARDSVISIBLE" /> wordt toegepast, wordt de kaart SharePoint en OneDrive getoond als dit beleid ook wordt toegepast en er gegevens zijn om te tonen. Als <ph name="NTPCARDSVISIBLE" /> niet is ingesteld, wordt de kaart SharePoint en OneDrive getoond als dit beleid ook wordt toegepast, de gebruiker de kaart heeft aangezet in Chrome aanpassen en er gegevens zijn om te tonen.</translation>
 <translation id="5516293691820655022">Chrome helemaal afsluiten</translation>
 <translation id="551639594034811656">Dit beleid definieert een lijst van percentages. Deze percentages bepalen welk deel van <ph name="PRODUCT_OS_NAME" />-apparaten in de OE per week moet worden geüpdatet vanaf de dag waarop de update voor het eerst wordt ontdekt. De update wordt later ontdekt dan deze wordt gepubliceerd, aangezien het even kan duren voordat het apparaat controleert op updates.
 
@@ -6500,6 +6512,13 @@ Als je dit beleid niet instelt of als de releaseleeftijd niet kan worden bepaald
 De optie voor het sleutelalgoritme <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> wordt ondersteund vanaf <ph name="PRODUCT_OS_NAME" /> versie 132.</translation>
 <translation id="5655553344896004108">Het gebruik van de beëindigde U2F-beveiligingssleutel-API toestaan</translation>
 <translation id="5656177735561364047">Functie 'Gedeeld klembord' aanzetten</translation>
+<translation id="5657289110555300740">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
+
+Als je dit beleid toepast of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord.
+
+Als je dit beleid niet toepast, zijn scrollers niet standaard focusbaar met het toetsenbord.
+
+Dit beleid is een tijdelijke oplossing. Dit beleid is beëindigd vanaf M139.</translation>
 <translation id="5657752663637568277">Met dit beleid wordt bepaald of waarschuwingen over de beëindiging van <ph name="CLOUD_PRINT_NAME" /> aan gebruikers worden getoond in het dialoogvenster met het afdrukvoorbeeld of op de pagina's met instellingen.
       Als je dit beleid instelt op True, worden de waarschuwingen over beëindiging verborgen.
       Als je dit beleid instelt op False of niet instelt, worden de waarschuwingen over beëindiging getoond.</translation>
@@ -6862,6 +6881,11 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5917897389577978190">Gmail (ondersteund sinds versie 135)</translation>
 <translation id="592036544845479336">Beëindigde/verwijderde mutatiegebeurtenissen opnieuw aanzetten</translation>
 <translation id="5921713479449475707">Downloads voor automatische updates via HTTP toestaan</translation>
+<translation id="5923084443277419535">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M138.
+
+Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
+
+Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="5925405187134730827">Dit beleid is beëindigd omdat de functie die het beleid beheert, nooit is gelanceerd. Gebruik in plaats daarvan het beleid <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Als je dit beleid niet instelt of instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (waarde 0), wordt het label Werk of School naast de werkbalkavatar getoond.
@@ -9504,11 +9528,6 @@ Als je dit beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_N
 Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode voor meer informatie over het <ph name="IEEM_SITELIST_POLICY" />-beleid van Internet Explorer</translation>
 <translation id="7791215522423893512">Niet toestaan dat gebruikers screenshots en video-opnamen maken</translation>
 <translation id="7792796937016596423">De gebruiker kan geen opnamen van netwerkpakketten uitvoeren</translation>
-<translation id="7795648856511126914">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M136.
-
-Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
-
-Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="7798441698807517880">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> versie 89 omdat <ph name="FLASH_PLUGIN_NAME" /> is beëindigd.
 
       Als je het beleid instelt op True, wordt alle <ph name="FLASH_PLUGIN_NAME" />-content ingesloten op websites waarop <ph name="FLASH_PLUGIN_NAME" /> is toegestaan, waaronder content van een andere herkomst of kleine content.
@@ -10940,7 +10959,7 @@ Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangez
 Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
 
 Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
-<translation id="883025651704099882">Toeschrijving van extensie in NTP-voettekst aanzetten</translation>
+<translation id="883025651704099882">Toeschrijving van extensie in de voettekst van de pagina Nieuw tabblad aanzetten</translation>
 <translation id="8830717323204407209">Hiermee kan de promotie voor de extensie voor inloggegevensproviders worden getoond aan gebruikers</translation>
 <translation id="8832829916385857156">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>

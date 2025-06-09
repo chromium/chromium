@@ -96,6 +96,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2182457891543959921">Chiedi conferma prima di consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera (opzione consigliata)</translation>
 <translation id="2185965788978862351">Verranno eliminati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Ieri}other{<ph name="NUM_DAYS_MANY" /> giorni fa}}</translation>
 <translation id="2215727959747642672">Modifica di file</translation>
 <translation id="2218389616572918761">I siti possono chiedere di utilizzare il microfono</translation>
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6530703012083415527">Quando l'opzione è attiva, i siti possono utilizzare popup e reindirizzamenti. Quando l'opzione è disattivata, i siti non possono utilizzare popup e reindirizzamenti.</translation>
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> settimana fa}other{<ph name="NUM_WEEKS_MANY" /> settimane fa}}</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
@@ -521,6 +523,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7554752735887601236">Un sito sta utilizzando il microfono</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">In genere, i siti usano la videocamera per funzionalità di comunicazione come la chat video</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> mese fa}other{<ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="757524316907819857">Impedisci ai siti di riprodurre contenuti protetti</translation>
 <translation id="7594634374516752650">Connesso a un dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Puoi eliminare in parte o interamente dati della cronologia, cookie, dati dei siti e altro ancora</translation>
@@ -542,6 +545,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7846076177841592234">Annulla selezione</translation>
 <translation id="7881140103901777395">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su di questi cookie per fornire servizi di base.\n\nVai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
+<translation id="7891547341794213004">Nascondi scheda Continua con questa scheda</translation>
 <translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="789722939441020330">Non consentire ai siti di scaricare automaticamente più file</translation>
 <translation id="7940722705963108451">Ricordami</translation>

@@ -71,7 +71,6 @@
 <translation id="1118429183611783760">Sugnwr Llwch a Gofal Llawr</translation>
 <translation id="1122714970786750095">Electroneg a Thrydanol</translation>
 <translation id="1123753900084781868">Nid yw Capsiynau Byw ar gael ar hyn o bryd</translation>
-<translation id="1125453215844207206">Graffig sydd heb ei labelu. Echdynnu testun, wedi'i bweru gan AI Google</translation>
 <translation id="112840717907525620">Mae'r storfa polisïau yn iawn</translation>
 <translation id="1131264053432022307">Llun y gwnaethoch ei gopïo</translation>
 <translation id="1138458427267715730">Cael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan ar draws y we</translation>
@@ -326,7 +325,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1549470594296187301">Rhaid galluogi JavaScript i ddefnyddio'r nodwedd hon.</translation>
 <translation id="1553152622374372421">Chwaraeon y Gaeaf</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
-<translation id="1554485704925237240">Rheoli darllenwyr o'r enw <ph name="READERNAME" /> a chardiau clyfar a ddefnyddir gyda nhw</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="1555191101192706055">Gallai ymosodwyr ar y wefan y gwnaethoch geisio ymweld â hi eich twyllo i osod meddalwedd niweidiol sy'n effeithio ar y ffordd rydych yn pori - er enghraifft, trwy newid eich tudalen hafan neu ddangos hysbysebion ychwanegol i chi ar wefannau rydych yn ymweld â nhw.</translation>
 <translation id="1559231233244409191">Cardbord (Wal Driphlyg)</translation>
@@ -448,6 +446,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1734878702283171397">Rhowch gynnig ar gysylltu â gweinyddwr y system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Cyfrifiadur</translation>
+<translation id="1741474054575634405">Rheoli cardiau teyrngarwch...</translation>
 <translation id="1741613555002899862">Rhaid iddo wedi'i nodi ac iddo fod yn llinyn dilys pan fydd DnsOverHttpsMode yn <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Dillad Gwely</translation>
 <translation id="1743892871127720056">Cymharu teitl y tabl, golygu testun</translation>
@@ -488,6 +487,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Mae eich CVC ar gefn eich cerdyn. Dyma'r 3 digid olaf ar dde uchaf y blwch llofnod</translation>
 <translation id="1810391395243432441">Amddiffyn cyfrineiriau gyda'ch clo sgrin</translation>
+<translation id="1810866804106729802">Talwch yn gyflymach pan fydd eich cerdyn wedi'i gadw. Mae manylion y cerdyn yn cael eu cadw i Chrome ar eich dyfais.</translation>
 <translation id="1812527064848182527">llorweddol</translation>
 <translation id="1812975699435941848">Addysg Iechyd a Hyfforddiant Meddygol</translation>
 <translation id="1816436748874040213">Yn gallu gofyn i sgrolio a chwyddo tabiau a rennir</translation>
@@ -846,6 +846,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2399344929880464793">Mae'r IBAN hwn wedi'i gadw yn eich Cyfrif Google fel y gallwch ei ddefnyddio ar draws gwasanaethau Google.</translation>
 <translation id="2399868464369312507">Mae Google Chrome yn ceisio golygu dulliau talu.</translation>
 <translation id="2400263725572336749">Ychwanegu pasbort</translation>
+<translation id="2400271059665846158">Rheoli eich cardiau teyrngarwch yn Google Wallet</translation>
 <translation id="2400600116338235695">Yn gallu gofyn am gysylltu â phyrth cyfresol</translation>
 <translation id="2404884497378469141">Rhowch gynnig ar gopïo'ch ffeiliau eto</translation>
 <translation id="2413155254802890957">Hen</translation>
@@ -952,6 +953,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="258135245577667916">Mae <ph name="USER_DISPLAY_NAME" /> wedi ychwanegu tab</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2587841377698384444">Rhif Adnabod API y Cyfeiriadur:</translation>
+<translation id="2588322182880276190">Logo Chrome</translation>
 <translation id="2593272815202181319">Lled sefydlog</translation>
 <translation id="2594318783181750337">Gwedd we gyflym:</translation>
 <translation id="2595719060046994702">Nid yw cwmni na sefydliad arall yn rheoli'r ddyfais a'r cyfrif hwn.</translation>
@@ -1028,6 +1030,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2725492561136085792">Pwyswch Enter i weithredu'r weithred hon.</translation>
 <translation id="2725927759457695883">Llenwi enw llawn</translation>
 <translation id="2726001110728089263">Hambwrdd Ochr</translation>
+<translation id="272616190148046464">Eich holl gardiau teyrngarwch</translation>
 <translation id="2728127805433021124">Llofnodir tystysgrif gweinyddwr gan ddefnyddio algorithm llofnodi gwan.</translation>
 <translation id="272937284275742856">Wrthi'n dilysu eich manylion talu yn ddiogel...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Wrthi'n Rhedeg Diagnosteg Cysylltedd<ph name="END_LINK" /></translation>
@@ -1229,6 +1232,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3113930177999394798">Teipiwch @history i chwilio'ch hanes pori, wedi'i bweru gan AI</translation>
 <translation id="3114040155724590991">Wrthi'n diweddaru System Android
     Mae'n bosib y bydd cychwyn eich ap yn cymryd mwy o amser nag arfer.</translation>
+<translation id="3114197119223448048">gweithgaredd newydd</translation>
 <translation id="3115363211799416195">{0,plural, =1{Lawrlwytho ffeil gyfrinachol?}zero{Lawrlwytho ffeiliau cyfrinachol?}two{Lawrlwytho ffeiliau cyfrinachol?}few{Lawrlwytho ffeiliau cyfrinachol?}many{Lawrlwytho ffeiliau cyfrinachol?}other{Lawrlwytho ffeiliau cyfrinachol?}}</translation>
 <translation id="3115874930288085374">Mae <ph name="ENROLLMENT_DOMAIN" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="3116158981186517402">Lamineiddio</translation>
@@ -1621,7 +1625,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3728173127485570463">Ni fydd angen eich olion bysedd ar borwr Chrome mwyach i lenwi cyfrineiriau'n awtomatig</translation>
 <translation id="3736739313435669994">Rydych wedi rhwystro gwefannau rhag defnyddio cwcis trydydd parti i'ch olrhain chi wrth i chi bori. Ewch i'r gosodiadau er mwyn <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Rheolir eich porwr gan eich gweinyddwr</translation>
-<translation id="3738428049780661523">Crëwyd <ph name="DATE" /></translation>
 <translation id="3739842843727261045">Mae bawd i fyny yn cyflwyno adborth eich bod yn hoffi y canlyniadau hyn</translation>
 <translation id="3740447166056383374">Mae angen adolygiad cyn copïo</translation>
 <translation id="374325029554577103">Cynhyrchion Technoleg Ffitrwydd</translation>
@@ -1688,6 +1691,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3839220096695873023">Cerbydau Hybrid ac Amgen</translation>
 <translation id="3841356782900714251">Darllenwyr cardiau smart</translation>
 <translation id="384315386171052386">Pysgod a Bwyd Môr</translation>
+<translation id="3843447501960446468">Rheoli Cardiau Teyrngarwch...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i greu Google Doc yn gyflym</translation>
 <translation id="385051799172605136">Nôl</translation>
@@ -2257,6 +2261,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4844937814014739139">Sgrolio a chwyddo tabiau a rennir</translation>
 <translation id="484671803914931257">Cael gostyngiad ar <ph name="MERCHANT_NAME" /> a rhagor</translation>
 <translation id="484988093836683706">Defnyddio datgloi dyfais</translation>
+<translation id="4850669014075537160">Sgrolio</translation>
 <translation id="4850886885716139402">Gweld</translation>
 <translation id="4854853140771946034">Creu nodyn newydd yn Google Keep yn gyflym</translation>
 <translation id="4855395119669662878">Bydd eich gweinyddwr yn dechrau uwchlwytho'ch ffeiliau i <ph name="CLOUD_PROVIDER" /> ar <ph name="DATE_TIME" />. Cadwch eich dyfais wedi'i chysylltu nes bod eich uwchlwythiad ffeil wedi'i gwblhau. Wrth uwchlwytho, dim ond ffeiliau lleol y byddwch yn gallu eu darllen.</translation>
@@ -2822,6 +2827,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5826507051599432481">Enw Cyffredin (CN)</translation>
 <translation id="5830698870816298009">symudiad a defnydd camera</translation>
 <translation id="583281660410589416">Anhysbys</translation>
+<translation id="5832976493438355584">Wedi'i gloi</translation>
 <translation id="5837220895135257862">Rhyddhewch le yn <ph name="CLOUD_PROVIDER" /> cyn rhoi cynnig arall arni</translation>
 <translation id="5838278095973806738">Ni ddylech roi unrhyw wybodaeth sensitif ar y wefan hon (er enghraifft, cyfrineiriau neu gardiau credyd), oherwydd gallai ymosodwyr ei dwyn.</translation>
 <translation id="5838732667866024867">Gallwch ddefnyddio'r saeth chwith/dde i adolygu newidiadau pris ar y graff</translation>
@@ -3509,7 +3515,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">rheoli mynediad at gwcis trydydd parti</translation>
 <translation id="6979440798594660689">Distewi (diofyn)</translation>
-<translation id="6984270784814146224">Llun sydd heb ei labelu. Echdynnu testun, wedi'i bweru gan AI Google</translation>
 <translation id="6987806006823772670">Amlen (Wedi'i Gorchuddio)</translation>
 <translation id="6989256887001961296">Mae'r cynnwys hwn wedi'i rwystro.</translation>
 <translation id="6989763994942163495">Dangos gosodiadau uwch...</translation>
@@ -4803,6 +4808,7 @@ Manylion ychwanegol:
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="922152298093051471">Personoleiddio Chrome</translation>
 <translation id="9222403027701923763">Ysgolion Cynradd ac Uwchradd (K-12)</translation>
+<translation id="922849469395748170">Cardiau teyrngarwch</translation>
 <translation id="93020190163435405">Interniaethau</translation>
 <translation id="931598121743515856">Rhaid i'r taliad fod dros <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>

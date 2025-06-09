@@ -138,7 +138,6 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="4724297637870447613">Používajte Chrome kdekoľvek</translation>
 <translation id="4738647308035481133">Stránka prehliadača Google Chrome</translation>
 <translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>
-<translation id="4749294594657945639">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, vyberte automatické dopĺňanie v Chrome.</translation>
 <translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
 <translation id="4798859546468762093">Ak chcete mať k dispozícii prispôsobenie a ďalšie funkcie, zahrňte Chrome do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Pred prepnutím účtov skúste počkať niekoľko minút. Ak ich prepnete teraz
 <translation id="6533470733797826516">Prihlasujte sa rýchlejšie pomocou automatického dopĺňania v Chrome</translation>
 <translation id="6536544321553662809">Nastavte si Chrome ako predvolený prehliadač, aby ste mohli jednoducho zdieľať a otvárať odkazy</translation>
 <translation id="6545449117344801102">Chrome rozpoznáva adresy a pomocou Máp Google vám poskytuje trasy aj miestne informácie.</translation>
+<translation id="6611692150236062461">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, vyberte automatické dopĺňanie v Chrome.</translation>
 <translation id="6636941099779251629">Vaša organizácia vyžaduje, aby ste sa na používanie Chromu prihlásili. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Odošle znejasnenú časť webovej adresy Googlu prostredníctvom serveru chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže Googlu odoslať aj webové adresy vrátane častí obsahu stránok.</translation>
 <translation id="6647304104688527905">Otvorí novú kartu v Chrome.</translation>

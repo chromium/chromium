@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">Пре него што дозволите сајтовима да праве 3D мапу окружења или прате положај камере приказује се упит (препоручено)</translation>
 <translation id="2185965788978862351">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови или апликације на почетном екрану.</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Јуче}one{Пре <ph name="NUM_DAYS_MANY" /> дан}few{Пре <ph name="NUM_DAYS_MANY" /> дана}other{Пре <ph name="NUM_DAYS_MANY" /> дана}}</translation>
 <translation id="2215727959747642672">Мењање датотека</translation>
 <translation id="2218389616572918761">Сајтови могу да траже да користе микрофон</translation>
 <translation id="2228071138934252756">Да бисте дозволили да <ph name="APP_NAME" /> приступа камери, укључите камеру и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6530703012083415527">Када је укључено, сајтови могу да користе искачуће прозоре и преусмеравања. Када је искључено, сајтови не могу да користе искачуће прозоре и преусмеравања.</translation>
 <translation id="6540488083026747005">Дозволили сте колачиће треће стране за овај сајт</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Пре <ph name="NUM_WEEKS_ONE" /> недеље}one{Пре <ph name="NUM_WEEKS_MANY" /> недеље}few{Пре <ph name="NUM_WEEKS_MANY" /> недеље}other{Пре <ph name="NUM_WEEKS_MANY" /> недеља}}</translation>
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">Сајт користи микрофон</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7573594921350120855">Сајтови обично користе видео камеру за потребе функција комуникације попут видео чета</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Пре <ph name="NUM_MONTHS_ONE" /> месец}one{Пре <ph name="NUM_MONTHS_MANY" /> месец}few{Пре <ph name="NUM_MONTHS_MANY" /> месеца}other{Пре <ph name="NUM_MONTHS_MANY" /> месеци}}</translation>
 <translation id="757524316907819857">Блокирај да сајтови пуштају заштићени садржај</translation>
 <translation id="7594634374516752650">Повезан је са Bluetooth уређајем</translation>
 <translation id="7617547684249261169">Можете да избришете делове или целу историју, колачиће, податке о сајтовима и друго</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7881140103901777395">Chrome спречава већину сајтова да користе колачиће треће стране. Међутим, колачићи треће стране су дозвољени на овом сајту зато што се Chrome ослања на њих да би пружао основне услуге.\n\nПосетите подешавања да бисте <ph name="BEGIN_LINK" />управљали приступом колачићима треће стране<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Дозволи звук за одређени сајт.</translation>
+<translation id="7891547341794213004">Сакриј картицу Настави са овом картицом</translation>
 <translation id="789180354981963912">Блокирајте колачиће трећих страна у режиму без архивирања:</translation>
 <translation id="789722939441020330">Не дозвољавај сајтовима да аутоматски преузимају више фајлова</translation>
 <translation id="7940722705963108451">Подсети ме</translation>

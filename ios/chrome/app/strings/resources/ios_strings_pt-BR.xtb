@@ -671,6 +671,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3850952228519377137">Ocultar "Monitorar preços nas suas guias"</translation>
 <translation id="3851938967634752633">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e mais <ph name="NUMBER_OF_ACCOUNTS" /> outras contas vão ser excluídas. Suas contas não serão excluídas.</translation>
+<translation id="3853162385423733133">Continue usando e salvando as senhas na sua Conta do Google <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
@@ -1002,6 +1003,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar o card "Redução dos preços mostrados nas suas guias"</translation>
 <translation id="5145331760738811130">Sair do seletor guias</translation>
+<translation id="5148717509369231739">Importação do Safari</translation>
 <translation id="5157638238828697074">Ocorreu um erro. Não foi possível abrir o aplicativo.</translation>
 <translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">Desenvolvido para iPadOS</translation>
@@ -1113,6 +1115,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="562753339521713441">Executar a Confirmação de segurança</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} página na sua lista de leitura}one{{count} página na sua lista de leitura}other{{count} páginas na sua lista de leitura}}</translation>
+<translation id="5632194969640946913">Saiba mais enquanto navega ao pesquisar o que aparece em qualquer página para encontrar produtos, lugares e textos.</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favorito salvo em "{title}"}one{{count} favorito salvo em "{title}"}other{{count} favoritos salvos em "{title}"}}</translation>
 <translation id="564170563478022912">Sair? Os dados da conta não salvos serão excluídos.</translation>
@@ -2022,7 +2025,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9098541895599151034">Excluir <ph name="NUMBER_OF_ACCOUNTS" /> senhas?</translation>
 <translation id="9099233023029360602">Sempre perguntar qual conta usar</translation>
 <translation id="9099821309562615674">Confira se o texto que você está traduzindo está nítido e enquadrado.</translation>
-<translation id="9100610230175265781">Senha necessária</translation>
+<translation id="9100610230175265781">Senha longa necessária</translation>
 <translation id="91023216973987714">Formas de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Veja se há senhas comprometidas</translation>

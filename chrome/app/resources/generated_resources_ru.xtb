@@ -476,7 +476,6 @@
 <translation id="1312721752506309252">Улучшенная защита включена</translation>
 <translation id="1312811472299082263">Добавьте сценарий Ansible или файл резервной копии Crostini</translation>
 <translation id="13130607084115184">Здесь появятся сохраненные пароли. Чтобы импортировать пароли в <ph name="BRAND" /> на этом устройстве, <ph name="BEGIN_LINK" />выберите CSV-файл<ph name="END_LINK" />.</translation>
-<translation id="1313264149528821971">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">Автоматическая настройка прокси-сервера</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Вы автоматически выйдете из аккаунтов на всех сайтах, в том числе на открытых вкладках.</translation>
@@ -3225,7 +3224,7 @@
 <translation id="3238192140106069382">Подключение и проверка…</translation>
 <translation id="3239373508713281971">Для приложения "<ph name="APP_NAME" />" снято ограничение времени использования.</translation>
 <translation id="3240299564104448052">Нет подключения к интернету</translation>
-<translation id="3240426699337459095">Готово</translation>
+<translation id="3240426699337459095">Ссылка скопирована.</translation>
 <translation id="3241638166094654466">Ячеек в каждой строке:</translation>
 <translation id="3241680850019875542">Выберите корневой каталог упаковываемого расширения. Для обновления расширения также укажите закрытый ключ.</translation>
 <translation id="3241810535741601486">Это изменение нельзя отменить. Расширенная поддержка будет применена ко всем пользователям устройства. <ph name="LINK_START" />Подробнее…<ph name="LINK_END" /></translation>
@@ -4179,6 +4178,7 @@
 <translation id="3876219572815410515">Границы окон перемещены вверх</translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Показывать или скрывать изображения и использование памяти вкладкой</translation>
+<translation id="3877603629930976930">Не делиться</translation>
 <translation id="3878445208930547646">Копировать материалы этого сайта запрещено</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880513902716032002">Некоторые страницы, которые вы посещаете, загружаются заранее</translation>
@@ -4604,7 +4604,6 @@
 <translation id="4190492351494485814">Для начальной настройки необходимо подключиться к интернету, чтобы синхронизировать файлы с Chromebook.</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
 <translation id="4191892134568599822">Принять с помощью функции "<ph name="FEATURE_NAME" />"?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Разрешения отозваны у 1 неиспользуемого сайта}one{Разрешения отозваны у {NUM_SITES} неиспользуемого сайта}few{Разрешения отозваны у {NUM_SITES} неиспользуемых сайтов}many{Разрешения отозваны у {NUM_SITES} неиспользуемых сайтов}other{Разрешения отозваны у {NUM_SITES} неиспользуемых  сайтов}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Только для <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Доверенные центры сертификации</translation>
@@ -5158,7 +5157,6 @@
 <translation id="4585793705637313973">Изменить страницу</translation>
 <translation id="4586275095964870617">Не удалось открыть страницу <ph name="URL" /> в альтернативном браузере. Обратитесь к системному администратору.</translation>
 <translation id="4587589328781138893">Сайты</translation>
-<translation id="4588497044036650559">Открыть в текущей вкладке параметры расширения, которое используется на странице быстрого доступа</translation>
 <translation id="4588749726511456218">Ускорение прокрутки (<ph name="LINK_BEGIN" />узнать больше<ph name="LINK_END" />)</translation>
 <translation id="4589197033939192905">Похоже, ресурсы <ph name="PASSWORD_DOMAIN" /> и <ph name="DOMAIN" /> связаны. Используйте свой пароль, только если доверяете домену <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Журналы записаны в каталоге "Скачанные файлы".</translation>
@@ -6121,6 +6119,7 @@
 <translation id="5278823018825269962">Идентификатор состояния</translation>
 <translation id="5279600392753459966">Заблокировать все</translation>
 <translation id="5280064835262749532">Обновите учетные данные для <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">Этот параметр задан вашей организацией. Удалить поисковую систему?</translation>
 <translation id="5280426389926346830">Создать ярлык?</translation>
 <translation id="5281013262333731149">Открывается в браузере "<ph name="OPEN_BROWSER" />"</translation>
 <translation id="528208740344463258">Чтобы скачивать и использовать приложения Android, необходимо установить это обязательное обновление. Во время установки пользоваться устройством <ph name="DEVICE_TYPE" /> нельзя. После обновления устройство <ph name="DEVICE_TYPE" /> перезагрузится автоматически.</translation>
@@ -6247,7 +6246,6 @@
 <translation id="5376931455988532197">Слишком большой файл</translation>
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5379140238605961210">Всегда блокировать доступ к микрофону</translation>
-<translation id="5380424552031517043">Отозвано разрешение: <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Подождите несколько минут и повторите попытку.</translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
 <translation id="5384401776498845256">Кто может отправлять контент на ваше устройство</translation>
@@ -6984,7 +6982,6 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5919305207330938913">Все собранные данные будут использоваться в соответствии с <ph name="BEGIN_LINK" />Политикой конфиденциальности Google<ph name="END_LINK" />.</translation>
-<translation id="5919486630433391408">Функция обновления встроенного ПО отключена администратором</translation>
 <translation id="5920543303088087579">Администратор запретил подключаться к этой сети</translation>
 <translation id="5922963926582976524">Отключиться от мгновенной точки доступа</translation>
 <translation id="5924047253200400718">Справка<ph name="SCANNING_STATUS" /></translation>
@@ -7106,7 +7103,6 @@
 <translation id="6003479444341796444">Строка заголовка теперь видна.</translation>
 <translation id="6003582434972667631">Тема задана вашей организацией</translation>
 <translation id="6005045517426700202">Кирпичный дом</translation>
-<translation id="6006392003290068688">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6007053304250788613">Во время дублирования можно исключить только один экран</translation>
 <translation id="6007240208646052708">Голосовой поиск на вашем языке недоступен.</translation>
@@ -8465,6 +8461,7 @@
 <translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
 <translation id="697508444536771064">Завершить работу Linux</translation>
 <translation id="6978121630131642226">Поисковые системы</translation>
+<translation id="6978236010531171013">Все равно поделиться</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979041727349121225">Режим энергосбережения</translation>
 <translation id="6979044105893951891">Запуск и завершение управляемых гостевых сеансов</translation>
@@ -8565,7 +8562,6 @@
 <translation id="7039912931802252762">Вход по смарт-карте Microsoft</translation>
 <translation id="7039951224110875196">Создать аккаунт Google для ребенка</translation>
 <translation id="7039968672732182060">Устройство Chromebook больше не получает обновления системы безопасности. Пора перейти на последние версии программного обеспечения и системы безопасности. Для предложения действуют специальные условия.</translation>
-<translation id="7041405817194720353">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="COUNT" /></translation>
 <translation id="7042116641003232070">Разрешено сохранять данные на этом устройстве</translation>
 <translation id="7043108582968290193">Готово! Несовместимых приложений не обнаружено.</translation>
 <translation id="7044124535091449260">Подробнее о доступе для сайта…</translation>
@@ -8681,6 +8677,7 @@
 <translation id="7131896909366247105">Ожидание установки приложения "<ph name="APP_NAME" />"</translation>
 <translation id="7132886488919643383">Использовать ИИ от Google для чтения, записи и создания текстов</translation>
 <translation id="7134098520442464001">Уменьшить размер текста</translation>
+<translation id="7134653428559514680">Делиться материалами этого сайта не рекомендуется</translation>
 <translation id="7134951043985383439">Скачан опасный файл</translation>
 <translation id="7135729336746831607">Включить Bluetooth?</translation>
 <translation id="7136694880210472378">Использовать по умолчанию</translation>
@@ -9126,6 +9123,7 @@
 <translation id="7460045493116006516">Установленная сейчас тема</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746216226901520237">После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
+<translation id="7463068149674892185">Не рекомендуется выполнять это действие</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Ваша организация определяет, как могут использоваться данные, собранные при работе с этими функциями.</translation>
 <translation id="7464645554245611385">Последнее обновление вкладки</translation>
@@ -11692,7 +11690,6 @@
 <translation id="934244546219308557">Введите название группы вкладок</translation>
 <translation id="93480724622239549">Ошибка</translation>
 <translation id="9354763467503131">Могут запрашивать разрешение на установку веб-приложений на вашем устройстве</translation>
-<translation id="936329857119665832">Откроется в текущей вкладке</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностические данные системы</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>

@@ -138,7 +138,6 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="4724297637870447613">Koristite Chrome na svim uređajima</translation>
 <translation id="4738647308035481133">Stranica Google Chromea</translation>
 <translation id="4742795653798179840">Izbrisani Chromeovi podaci</translation>
-<translation id="4749294594657945639">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrebljavajte Chrome za automatsko popunjavanje.</translation>
 <translation id="4761869838909035636">Pokreni Chromeovu sigurnosnu provjeru</translation>
 <translation id="4798859546468762093">Da biste dobili personalizaciju i druge značajke, uključite Chrome u <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="6533470733797826516">Brže se prijavite uz automatsko popunjavanje u Chromeu</translation>
 <translation id="6536544321553662809">Postavite Chrome kao zadani preglednik da biste jednostavno dijelili i otvarali veze</translation>
 <translation id="6545449117344801102">Chrome otkriva adrese i upotrebljava Google karte kako bi vam pružio upute i lokalne informacije.</translation>
+<translation id="6611692150236062461">Da biste lako dohvatili spremljene zaporke u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Googleu se šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="6647304104688527905">Otvara novu karticu u Chromeu.</translation>

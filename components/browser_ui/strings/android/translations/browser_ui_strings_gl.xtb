@@ -96,6 +96,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2182457891543959921">Preguntar antes de permitir que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara (recomendado)</translation>
 <translation id="2185965788978862351">Ao realizar esta acción, eliminaranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios ou as aplicacións na túa pantalla de inicio.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Onte}other{Hai <ph name="NUM_DAYS_MANY" /> días}}</translation>
 <translation id="2215727959747642672">Modificación de ficheiros</translation>
 <translation id="2218389616572918761">Os sitios poden pedirche permiso para acceder ao micrófono</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda á cámara, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cando esta opción está activada, os sitios poden utilizar ventás emerxentes e redireccións. Cando esta opción está desactivada, os sitios non poden utilizar ventás emerxentes nin redireccións.</translation>
 <translation id="6540488083026747005">Permitiches o uso de cookies de terceiros neste sitio</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Hai <ph name="NUM_WEEKS_ONE" /> semana}other{Hai <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}}</translation>
 <translation id="6554732001434021288">Visitouse hai <ph name="NUM_DAYS" /> días por última vez</translation>
@@ -521,6 +523,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7554752735887601236">Un sitio está utilizando o micrófono</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7573594921350120855">Os sitios adoitan usar a cámara de vídeo para ofrecerche determinadas funcións relacionadas coa comunicación (por exemplo, chat de vídeo)</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Hai <ph name="NUM_MONTHS_ONE" /> mes}other{Hai <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="757524316907819857">Non permite que os sitios reproduzan o contido protexido</translation>
 <translation id="7594634374516752650">Estableceuse conexión cun dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
@@ -542,6 +545,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7881140103901777395">Chrome evita que a maioría dos sitios usen cookies de terceiros. Así e todo, neste sitio permítese o seu uso porque son necesarias para fornecer servizos básicos.\n\nVai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
+<translation id="7891547341794213004">Ocultar tarxeta Continuar con esta pestana</translation>
 <translation id="789180354981963912">Bloquea as cookies de terceiros no modo de incógnito:</translation>
 <translation id="789722939441020330">Non permitir que os sitios descarguen varios ficheiros de forma automática</translation>
 <translation id="7940722705963108451">Lembrarmo</translation>

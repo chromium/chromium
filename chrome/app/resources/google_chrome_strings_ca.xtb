@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Personalitza i controla Google Chrome. Hi ha una actualització disponible.</translation>
 <translation id="1028061813283459617">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chrome</translation>
+<translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1059838145689930908">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chrome.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
@@ -549,7 +550,6 @@
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="8040768861829554732">Una extensió vol que iniciïs la sessió a Chrome</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8064015041956107954">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome de la part superior dreta</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
@@ -561,7 +561,6 @@
 <translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
-<translation id="8257796129973882597">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome</translation>
 <translation id="8267953129876836456">Chrome ha trobat algunes recomanacions de seguretat que hauries de revisar</translation>
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="829923460755755423">Afegeix una drecera al gestor de contrasenyes de Google</translation>

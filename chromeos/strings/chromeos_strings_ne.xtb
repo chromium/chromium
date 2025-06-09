@@ -221,7 +221,6 @@
 <translation id="181434555916624618">अहिलेका लागि मान्छेहरूसहितका परिणामहरू देखाइने छैनन्। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1815850098929213707">चयन गरिएको की <ph name="KEYS" /> हो। कन्ट्रोल सम्पादन गर्न बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="1818174214124933000">तपाईंले "पठाउनुहोस्" चयन गर्नुभयो भने तपाईंका प्रतिक्रिया र सामग्री (तल देखाइएका) Google मा पठाइने छन्, समीक्षकहरू तिनको समीक्षा गर्ने छन् र तिनको प्रयोग गरी <ph name="LINK_POLICY_BEGIN" />गोपनीयता नीति<ph name="LINK_POLICY_END" /> र <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google का सेवाका सर्तहरू<ph name="LINK_TERMS_OF_SERVICE_END" />बमोजिम हाम्रा उत्पादन तथा सेवाहरूको गुणस्तर सुधार गरिने छ वा ती उत्पादन तथा सेवालाई तालिम दिइने छ।</translation>
-<translation id="1821075635029692203">तपाईंका शिक्षकले एक्सेस गर्न नमिल्ने स्रोत पठाउनुभएको छ। उहाँलाई यसका बारेमा थाहा दिनुहोस्।</translation>
 <translation id="1823120442877418684">वर्णहरू</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
 <translation id="183287940576828840">अपमानजनक/असुरक्षित</translation>
@@ -1617,7 +1616,7 @@
 <translation id="8088963492174775412">रेकर्ड गर्न थिच्नुहोस्</translation>
 <translation id="8094062939584182041">Google लाई तपाईंलाई यो समस्याका बारेमा इमेल पठाउने अनुमति दिनुहोस्</translation>
 <translation id="8104083085214006426">तपाईं खुला र असुरक्षित नेटवर्क प्रयोग गर्दै हुनुहुन्छ</translation>
-<translation id="8108879170356113798">तपाईं <ph name="NUM_SECONDS" /> सेकेन्डपछि मात्र कक्षाका टुलहरू प्रयोग गर्न सक्नु हुने छ</translation>
+<translation id="8108879170356113798">तपाईं अबको <ph name="NUM_SECONDS" /> सेकेन्डपछि कक्षाका टुलहरू मात्र प्रयोग गर्न सक्नु हुने छ</translation>
 <translation id="811820734797650957">(Android) गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>

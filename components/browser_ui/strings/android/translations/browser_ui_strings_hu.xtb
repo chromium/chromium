@@ -96,6 +96,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2182457891543959921">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára 3D-s térkép létrehozását az Ön környezetéről, valamint a kamera pozíciójának követését (ajánlott)</translation>
 <translation id="2185965788978862351">Ezzel törli a webhelyek és a kezdőképernyőn lévő alkalmazások által az eszközön tárolt <ph name="DATASIZE" /> mennyiségű adatot és cookie-t.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Tegnap}other{<ph name="NUM_DAYS_MANY" /> napja}}</translation>
 <translation id="2215727959747642672">Fájlszerkesztés</translation>
 <translation id="2218389616572918761">A webhelyek kérhetik az Ön mikrofonjához való hozzáférést</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
@@ -448,6 +449,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6530703012083415527">Ha be van kapcsolva, a webhelyek használhatnak előugró ablakokat és átirányításokat. Ha ki van kapcsolva, a webhelyek nem használhatnak előugró ablakokat és átirányításokat.</translation>
 <translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hete}other{<ph name="NUM_WEEKS_MANY" /> hete}}</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}}</translation>
 <translation id="6554732001434021288">Utolsó látogatás: <ph name="NUM_DAYS" /> napja</translation>
@@ -521,6 +523,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="7573594921350120855">A webhelyek általában bizonyos kommunikációs funkciók (például a videocsevegés) használata céljából férnek hozzá az Ön videokamerájához</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> hónapja}other{<ph name="NUM_MONTHS_MANY" /> hónapja}}</translation>
 <translation id="757524316907819857">Védett tartalom lejátszásának letiltása a webhelyeken</translation>
 <translation id="7594634374516752650">Bluetooth-eszközhöz csatlakoztatva</translation>
 <translation id="7617547684249261169">Törölheti az előzmények, a cookie-k, a webhelyadatok és egyebek egy részét vagy egészét</translation>
@@ -542,6 +545,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7881140103901777395">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak. A harmadik féltől származó cookie-k azonban engedélyezettek ezen a webhelyen, mivel az alapvető szolgáltatások nyújtásához szüksége van rájuk.\n\nA beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
+<translation id="7891547341794213004">A Folytatás ezen a lapon kártya elrejtése</translation>
 <translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
 <translation id="789722939441020330">A webhelyek nem kérhetnek engedélyt több fájl automatikus letöltésére</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>

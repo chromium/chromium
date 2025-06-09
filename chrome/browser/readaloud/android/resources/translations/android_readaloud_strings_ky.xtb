@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Үн менюсу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1246424317317450637">Жоон</translation>
+<translation id="1357114957607379632">ЖИ аудиосу түзүлүүдө...</translation>
 <translation id="1370273601702151510">Жакты</translation>
 <translation id="1483137792530497944">Дарыя</translation>
 <translation id="1586836055630070874">Тынчтандыруучу</translation>
+<translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1666704368140506043">Орунсуз материалдар</translation>
 <translation id="1741047078107369903">Жылуу</translation>
 <translation id="1807863182207623884">Рубин</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Тилекке каршы, учурда бул баракты окуп берүү жеткиликсиз. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="3457812538570616687">Жаккан жок</translation>
 <translation id="3493899379487634969">Кандай ката кетти?</translation>
+<translation id="3730775656877876887">ЖИ аудиосу түзүлүүдө</translation>
 <translation id="3778044272390020426">Терс пикир билдирүү параметрлеринин менюсу</translation>
 <translation id="3807208219231826020">Ойнотууну түрдүрүү</translation>
 <translation id="385051799172605136">Артка</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Жарык</translation>
 <translation id="5234971936051226002">"Бул баракты угуу" ойноткучу кичирейтилди.</translation>
 <translation id="5251803541071282808">Булут</translation>
-<translation id="5526614127710223793">Ойнотуу режимин тандагыч</translation>
+<translation id="5528503854289436485">ЖИ аудиосу</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="565342223183747919">Ойнотуу режимин которуу үчүн таптаңыз</translation>
 <translation id="5694491020339060116">Ойнотуу ылдамдыгынын менюсу</translation>
 <translation id="5965409657393819302">Техникалык маселе</translation>
 <translation id="6218961554829577610">Үнү жаккан жок</translation>
 <translation id="6315170314923504164">Үн</translation>
-<translation id="6330455646577575965">ЖИ аудиону ойнотуу</translation>
 <translation id="6343633247422081848">Мүк</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Пикир менен бирге URL дареги жүктөлүп берилет. Бул изилдөө жүргүзүүгө жана кызматтын сапатын жакшыртууга жардам берет.</translation>
 <translation id="8481839122437406573">Жай</translation>
 <translation id="8756370108715456837">Чынында туура эмес</translation>
-<translation id="881960277396325853">ЖИ аудио түзүп жатат...</translation>
 <translation id="8953618380150219653">"Бул баракты угуу" ойноткучу толук экранда ачылды.</translation>
 <translation id="978117257931832348">Төмөн тон</translation>
 </translationbundle>

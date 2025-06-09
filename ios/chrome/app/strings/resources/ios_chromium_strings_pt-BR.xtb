@@ -176,6 +176,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5259423875997548710">Pesquise recursos visuais no Chromium.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5311557153294205270">Adiciona os URLs inseridos aos seus favoritos no Chromium.</translation>
+<translation id="5383251701169024761">Para ter acesso fácil às suas senhas salvas em outros apps, use o preenchimento automático do Chromium.</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
 <translation id="5389058611415066188">Proteção com o Chromium</translation>
 <translation id="5415273218238091735">Dica do Chromium</translation>
@@ -276,7 +277,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="7784950022329154821">Bloquear guias anônimas ao fechar o Chromium</translation>
 <translation id="78025249032851484">Sua versão do Chromium está desatualizada.</translation>
-<translation id="7811371919871579588">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático do Chromium.</translation>
 <translation id="7859018312476869945">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chromium envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="7890287942691234100">Começar a usar o leitor do Chromium</translation>
 <translation id="7905064834449738336">Quando você usa uma senha, o Chromium avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
@@ -331,6 +331,7 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="9050790730841755540">Use o Chromium sempre que abrir links em outros apps.</translation>
 <translation id="9059693977935746710">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
+<translation id="9105645282262300612">Dica do Chromium: pesquise o que você vê</translation>
 <translation id="9152995302810511799">Dica do Chromium: aproveite a segurança mais avançada do Chromium</translation>
 <translation id="9177628952266852500"><ph name="EMAIL" />. O Chromium está sendo gerenciado.</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>

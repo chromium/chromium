@@ -96,6 +96,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="2182457891543959921">Pre nego što dozvolite sajtovima da prave 3D mapu okruženja ili prate položaj kamere prikazuje se upit (preporučeno)</translation>
 <translation id="2185965788978862351">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Juče}one{Pre <ph name="NUM_DAYS_MANY" /> dan}few{Pre <ph name="NUM_DAYS_MANY" /> dana}other{Pre <ph name="NUM_DAYS_MANY" /> dana}}</translation>
 <translation id="2215727959747642672">Menjanje datoteka</translation>
 <translation id="2218389616572918761">Sajtovi mogu da traže da koriste mikrofon</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6530703012083415527">Kada je uključeno, sajtovi mogu da koriste iskačuće prozore i preusmeravanja. Kada je isključeno, sajtovi ne mogu da koriste iskačuće prozore i preusmeravanja.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Pre <ph name="NUM_WEEKS_ONE" /> nedelje}one{Pre <ph name="NUM_WEEKS_MANY" /> nedelje}few{Pre <ph name="NUM_WEEKS_MANY" /> nedelje}other{Pre <ph name="NUM_WEEKS_MANY" /> nedelja}}</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Poslednja poseta: pre <ph name="NUM_DAYS" /> dana</translation>
@@ -521,6 +523,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7554752735887601236">Sajt koristi mikrofon</translation>
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7573594921350120855">Sajtovi obično koriste video kameru za potrebe funkcija komunikacije poput video četa</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Pre <ph name="NUM_MONTHS_ONE" /> mesec}one{Pre <ph name="NUM_MONTHS_MANY" /> mesec}few{Pre <ph name="NUM_MONTHS_MANY" /> meseca}other{Pre <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
 <translation id="757524316907819857">Blokiraj da sajtovi puštaju zaštićeni sadržaj</translation>
 <translation id="7594634374516752650">Povezan je sa Bluetooth uređajem</translation>
 <translation id="7617547684249261169">Možete da izbrišete delove ili celu istoriju, kolačiće, podatke o sajtovima i drugo</translation>
@@ -542,6 +545,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7846076177841592234">Otkaži izbor</translation>
 <translation id="7881140103901777395">Chrome sprečava većinu sajtova da koriste kolačiće treće strane. Međutim, kolačići treće strane su dozvoljeni na ovom sajtu zato što se Chrome oslanja na njih da bi pružao osnovne usluge.\n\nPosetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dozvoli zvuk za određeni sajt.</translation>
+<translation id="7891547341794213004">Sakrij karticu Nastavi sa ovom karticom</translation>
 <translation id="789180354981963912">Blokirajte kolačiće trećih strana u režimu bez arhiviranja:</translation>
 <translation id="789722939441020330">Ne dozvoljavaj sajtovima da automatski preuzimaju više fajlova</translation>
 <translation id="7940722705963108451">Podseti me</translation>

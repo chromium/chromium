@@ -138,7 +138,6 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="4724297637870447613">Gunakan Chrome di mana saja</translation>
 <translation id="4738647308035481133">Halaman Google Chrome</translation>
 <translation id="4742795653798179840">Data Chrome berhasil dihapus</translation>
-<translation id="4749294594657945639">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, pilih Chrome untuk Isi Otomatis.</translation>
 <translation id="4761869838909035636">Jalankan Pemeriksaan Keamanan Chrome</translation>
 <translation id="4798859546468762093">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chrome di <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="6533470733797826516">Login lebih cepat dengan fitur isi otomatis Chrome</translation>
 <translation id="6536544321553662809">Setel Chrome sebagai browser default Anda untuk berbagi dan membuka link dengan mudah</translation>
 <translation id="6545449117344801102">Chrome mendeteksi alamat dan menggunakan Google Maps untuk memberikan rute dan info lokal kepada Anda.</translation>
+<translation id="6611692150236062461">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, pilih Chrome untuk Isi Otomatis.</translation>
 <translation id="6636941099779251629">Organisasi mengharuskan Anda login untuk menggunakan Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Mengirim bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Google.</translation>
 <translation id="6647304104688527905">Membuka tab baru di Chrome.</translation>

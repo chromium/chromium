@@ -96,6 +96,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2182457891543959921">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməzdən əvvəl icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="2185965788978862351">Əsas ekranda sayt və ya tətbiqlər tərəfindən saxlanan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Dünən}other{<ph name="NUM_DAYS_MANY" /> gün əvvəl}}</translation>
 <translation id="2215727959747642672">Fayl redaktəsi</translation>
 <translation id="2218389616572918761">Saytlar mikrofona giriş istəyə bilər</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
@@ -448,6 +449,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6530703012083415527">Aktiv ediləndə saytlar popap və yönləndirmələrdən istifadə edə bilər. Deaktiv ediləndə saytlar popap və yönləndirmələrdən istifadə edə bilməz.</translation>
 <translation id="6540488083026747005">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> həftə əvvəl}other{<ph name="NUM_WEEKS_MANY" /> həftə əvvəl}}</translation>
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə bloklanıb}}</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
@@ -521,6 +523,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7554752735887601236">Sayt mikrofonunuzdan istifadə edir</translation>
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7573594921350120855">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün video kameranızdan istifadə edir</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay əvvəl}other{<ph name="NUM_MONTHS_MANY" /> ay əvvəl}}</translation>
 <translation id="757524316907819857">Saytların qorunan kontenti oxutmasını blok edin</translation>
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
 <translation id="7617547684249261169">Tarixçə, kukilər, sayt məlumatları və digərlərinin bir qismini və ya hamısını silə bilərsiniz</translation>
@@ -542,6 +545,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
 <translation id="7881140103901777395">Chrome əksər saytların üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Lakin bu sayt kukilər vasitəsilə əsas xidmətləri təmin etdiyi üçün onlara icazə verir.\n\n<ph name="BEGIN_LINK" />Üçüncü tərəf kukilərinə girişi idarə etmək<ph name="END_LINK" /> üçün Ayarlara keçin.</translation>
 <translation id="7882806643839505685">Xüsusi sayt üçün səsə icazə verin.</translation>
+<translation id="7891547341794213004">Bu tab ilə davam etmək kartını gizlədin</translation>
 <translation id="789180354981963912">Anonim rejimdə üçüncü tərəf kukilərini bloklayın:</translation>
 <translation id="789722939441020330">Saytlara çoxsaylı faylları avtomatik endirmək icazəsi verməyin</translation>
 <translation id="7940722705963108451">Mənə xatırladın</translation>

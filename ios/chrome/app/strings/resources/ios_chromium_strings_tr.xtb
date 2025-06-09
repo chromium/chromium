@@ -176,6 +176,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="5259423875997548710">Chromium'da görsel arayın.</translation>
 <translation id="5308226104666789935">Chromium, güncellemeleri denetleyemiyor</translation>
 <translation id="5311557153294205270">Girilen URL'leri Chromium'daki yer işaretlerinize ekler.</translation>
+<translation id="5383251701169024761">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere otomatik doldurma için Chromium'u kullanın.</translation>
 <translation id="538767207339317086">Chromium'da oturum açmaya izin verin</translation>
 <translation id="5389058611415066188">Chromium ile güvende kalın</translation>
 <translation id="5415273218238091735">Chromium'la ilgili ipucu</translation>
@@ -276,7 +277,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
 <translation id="7784950022329154821">Chromium'u kapattığınızda Gizli sekmeler kilitlensin</translation>
 <translation id="78025249032851484">Chromium'unuz güncel değil.</translation>
-<translation id="7811371919871579588">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere Otomatik Doldurma için Chromium'u kullanın.</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="7890287942691234100">Chromium tarayıcıyı kullanmaya başlayın</translation>
 <translation id="7905064834449738336">Kullandığınız bir şifre internette yayınlanmışsa Chromium sizi uyarır. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
@@ -331,6 +331,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="9050790730841755540">Diğer uygulamalardaki bağlantılara her dokunduğunuzda Chromium'u kullanın.</translation>
 <translation id="9059693977935746710">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
+<translation id="9105645282262300612">Chromium İpucu: Gördüklerinizi arayın</translation>
 <translation id="9152995302810511799">Chromium İpucu: Chromium'un en güçlü güvenlik özelliğinden yararlanın</translation>
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium yönetiliyor.</translation>
 <translation id="921174536258924340">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>

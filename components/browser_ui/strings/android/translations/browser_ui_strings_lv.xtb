@@ -96,6 +96,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2182457891543959921">Vaicāt, pirms ļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju (ieteicams)</translation>
 <translation id="2185965788978862351">Tiks izdzēsti dati un sīkfaili <ph name="DATASIZE" /> apjomā, ko vietnes vai lietotnes glabā jūsu sākuma ekrānā.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Vakar}zero{Pirms <ph name="NUM_DAYS_MANY" /> dienām}one{Pirms <ph name="NUM_DAYS_MANY" /> dienas}other{Pirms <ph name="NUM_DAYS_MANY" /> dienām}}</translation>
 <translation id="2215727959747642672">Faila rediģēšana</translation>
 <translation id="2218389616572918761">Atļaut vietnēm piekļūt mikrofonam</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6530703012083415527">Kad šis slēdzis ir ieslēgts, vietnēs var izmantot uznirstošos elementus un novirzīšanu. Kad šis slēdzis ir izslēgts, vietnēs nevar izmantot uznirstošos elementus un novirzīšanu.</translation>
 <translation id="6540488083026747005">Jūs atļāvāt trešo pušu sīkfailus šajā vietnē</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{Pirms <ph name="NUM_WEEKS_ONE" /> nedēļas}zero{Pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}one{Pirms <ph name="NUM_WEEKS_MANY" /> nedēļas}other{Pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}}</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
@@ -521,6 +523,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7573594921350120855">Parasti vietnēs kamera tiek izmantota, lai nodrošinātu noteiktas saziņas funkcijas, piemēram, video tērzēšanu.</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Pirms <ph name="NUM_MONTHS_ONE" /> mēneša}zero{Pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}one{Pirms <ph name="NUM_MONTHS_MANY" /> mēneša}other{Pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}}</translation>
 <translation id="757524316907819857">Neļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="7594634374516752650">Izveidots savienojums ar Bluetooth ierīci</translation>
 <translation id="7617547684249261169">Varat dzēst daļu vēstures, sīkfailu, vietņu datu vai visus šos datus u. c.</translation>
@@ -542,6 +545,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7846076177841592234">Atcelt atlasi</translation>
 <translation id="7881140103901777395">Pārlūkā Chrome lielākajai daļai vietņu tiek liegts izmantot trešo pušu sīkfailus. Tomēr šajā vietnē trešo pušu sīkfaili ir atļauti, jo vietnei tie ir nepieciešami, lai nodrošinātu pamatpakalpojumus.\n\nLai <ph name="BEGIN_LINK" />pārvaldītu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />, pārejiet uz iestatījumiem.</translation>
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
+<translation id="7891547341794213004">Paslēpt kartīti “Turpināt šajā cilnē”</translation>
 <translation id="789180354981963912">Bloķēt trešo pušu sīkfailus inkognito režīmā:</translation>
 <translation id="789722939441020330">Neļaut vietnēm automātiski lejupielādēt vairākus failus</translation>
 <translation id="7940722705963108451">Atgādināt</translation>

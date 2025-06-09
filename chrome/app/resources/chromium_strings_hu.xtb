@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Indítsa újra a ChromiumOS frissítéséhez</translation>
 <translation id="1040916596585577953">A Chromium a bővítmény ellenőrzését javasolja</translation>
 <translation id="1042552502243217427">Ha valamely webhely a linkek privát módon való előtöltését kéri az oldalán, a Chromium a Google szervereit használja. Ez a művelet elrejti az Ön személyazonosságát az előtöltött webhely elől, de a Google értesül arról, hogy mely webhelyek töltődnek be előre.</translation>
+<translation id="1051793555070215510">Segíthet nekünk az inkognitó mód továbbfejlesztésében, ha kitölti ezt az egyperces felmérést.</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="1083934481477628225">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását.</translation>
 <translation id="1104942323762546749">A Chromium exportálni szeretné a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">A letöltött fájl az ellenőrzés során hibásnak bizonyult.</translation>
 <translation id="2137162749895930932">Fordítási képernyő bezárása</translation>
 <translation id="215352261310130060">A Chromium letiltotta ezt a letöltést, mert a webhely nem használ biztonságos kapcsolatot, és előfordulhat, hogy a fájlt illetéktelenül módosították</translation>
-<translation id="2157600032285353789">A Chromium-menüből megnyithatja a könyvjelzőket, az olvasási módot és egyebeket</translation>
 <translation id="2174178932569897599">A Chromium személyre szabása</translation>
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="2185166961232948079">Chromium – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Frissítse a Chromiumot a szinkronizálás megkezdéséhez</translation>
 <translation id="5988505247484123880">A felkeresett webhelyek esetében megszokott dolog, hogy megjegyzik az Önt érdeklő dolgokat a felhasználói élmény személyre szabása érdekében. Emellett a webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chromiumban.</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
-<translation id="6019451407441383358">A jobb felső sarokban található Chromium-menüből megnyithatja a könyvjelzőket, az olvasási módot és egyebeket.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6058380562449900225">Adatainak védelme érdekében engedélyezze, hogy a Chromium eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában. Ez nem állítja le az értesítéseket.</translation>
 <translation id="6063093106622310249">Megnyitás Chromiumban</translation>

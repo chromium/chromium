@@ -175,6 +175,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="5259423875997548710">Vyhledat obrazový materiál v prohlížeči Chromium.</translation>
 <translation id="5308226104666789935">Chromium nemůže vyhledat dostupné aktualizace</translation>
 <translation id="5311557153294205270">Přidá zadané adresy URL do záložek v prohlížeči Chromium.</translation>
+<translation id="5383251701169024761">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chromium pro automatické vyplňování.</translation>
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
 <translation id="5389058611415066188">S prohlížečem Chromium budete v bezpečí</translation>
 <translation id="5415273218238091735">Tip pro Chromium</translation>
@@ -275,7 +276,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7763454117143368771">Používejte Chromium jako výchozí prohlížeč – ochrání vás před nebezpečnými weby a vaše hesla budou v bezpečí</translation>
 <translation id="7784950022329154821">Při zavření Chromia zamknout anonymní karty</translation>
 <translation id="78025249032851484">Váš prohlížeč Chromium je zastaralý.</translation>
-<translation id="7811371919871579588">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chromium pro automatické vyplňování</translation>
 <translation id="7859018312476869945">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný obsah do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="7890287942691234100">Začněte používat skener prohlížeče Chromium</translation>
 <translation id="7905064834449738336">Když použijete heslo, Chromium vás upozorní, pokud bylo zveřejněno online. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>

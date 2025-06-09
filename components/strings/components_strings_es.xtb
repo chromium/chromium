@@ -71,7 +71,6 @@
 <translation id="1118429183611783760">Aspiradoras y aparatos para limpiar el suelo</translation>
 <translation id="1122714970786750095">Electrónica y electricidad</translation>
 <translation id="1123753900084781868">Subtítulos automáticos no está disponible en estos momentos</translation>
-<translation id="1125453215844207206">Gráfico sin etiquetar. Extrayendo texto con la tecnología de la IA de Google.</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen copiada</translation>
 <translation id="1138458427267715730">Recibe alertas cuando el precio baje en cualquier sitio de la Web</translation>
@@ -326,7 +325,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1549470594296187301">JavaScript debe estar habilitado para utilizar esta función.</translation>
 <translation id="1553152622374372421">Deportes de invierno</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
-<translation id="1554485704925237240">Controlar los lectores con el nombre <ph name="READERNAME" /> y las tarjetas inteligentes que se usan con ellos</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1555191101192706055">Es posible que los atacantes del sitio que has intentado visitar te engañen para que instales software dañino que afecte a tu navegación (por ejemplo, que cambie tu página principal o te muestre anuncios adicionales en los sitios que visites).</translation>
 <translation id="1559231233244409191">Cartón (tres capas)</translation>
@@ -448,6 +446,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
+<translation id="1741474054575634405">Gestionar tarjetas de fidelización...</translation>
 <translation id="1741613555002899862">Se debe especificar y debe ser una cadena válida cuando DnsOverHttpsMode sea <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sábanas y ropa de cama</translation>
 <translation id="1743892871127720056">Título de la tabla comparativa, editar texto</translation>
@@ -488,6 +487,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="180757923930449935">(emulación de 64 bits)</translation>
 <translation id="180991881384371158">El CVC se encuentra en el reverso de tu tarjeta. Son los últimos 3 dígitos situados en la parte superior derecha del recuadro de la firma.</translation>
 <translation id="1810391395243432441">Protege tus contraseñas con el bloqueo de pantalla</translation>
+<translation id="1810866804106729802">Paga más rápido cuando tu tarjeta esté guardada. La información de la tarjeta se guarda en Chrome en tu dispositivo.</translation>
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación sanitaria y formación médica</translation>
 <translation id="1816436748874040213">Puede solicitar permiso para desplazarse por las pestañas compartidas y ampliarlas</translation>
@@ -846,6 +846,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2399344929880464793">Este IBAN se ha guardado en tu cuenta de Google para que la puedas usar en todos los servicios de Google.</translation>
 <translation id="2399868464369312507">Google Chrome está intentando editar los métodos de pago.</translation>
 <translation id="2400263725572336749">Añadir pasaporte</translation>
+<translation id="2400271059665846158">Gestiona tus tarjetas de fidelización en Google Wallet</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos serie</translation>
 <translation id="2404884497378469141">Prueba a copiar tus archivos de nuevo</translation>
 <translation id="2413155254802890957">Antigua</translation>
@@ -952,6 +953,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ha añadido una pestaña</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2587841377698384444">ID de la API del directorio:</translation>
+<translation id="2588322182880276190">Logotipo de Chrome</translation>
 <translation id="2593272815202181319">Monoespaciado</translation>
 <translation id="2594318783181750337">Vista web rápida:</translation>
 <translation id="2595719060046994702">Este dispositivo y esta cuenta no están administrados por ninguna empresa ni organización.</translation>
@@ -1028,6 +1030,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2725492561136085792">Pulsa Intro para activar esta acción.</translation>
 <translation id="2725927759457695883">Rellenar nombre completo</translation>
 <translation id="2726001110728089263">Bandeja lateral</translation>
+<translation id="272616190148046464">Todas tus tarjetas de fidelización</translation>
 <translation id="2728127805433021124">El certificado del servidor está firmado con un algoritmo de firma no seguro.</translation>
 <translation id="272937284275742856">Verificando de forma segura los detalles de tu pago...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Ejecutar Diagnóstico de conectividad<ph name="END_LINK" /></translation>
@@ -1229,6 +1232,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3113930177999394798">Escribe @historial para buscar en tu historial de navegación con tecnología de IA</translation>
 <translation id="3114040155724590991">Actualizando el sistema Android
     Tu aplicación puede tardar más de lo habitual en iniciarse.</translation>
+<translation id="3114197119223448048">actividad nueva</translation>
 <translation id="3115363211799416195">{0,plural, =1{¿Descargar archivo confidencial?}other{¿Descargar archivos confidenciales?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> requiere que crees una copia de seguridad de tus datos y devuelvas este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Plastificar</translation>
@@ -1621,7 +1625,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3728173127485570463">El navegador Chrome ya no necesitará tu huella digital para autocompletar contraseñas</translation>
 <translation id="3736739313435669994">No permites que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas. Accede a la configuración para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
-<translation id="3738428049780661523">Creado hace <ph name="DATE" /></translation>
 <translation id="3739842843727261045">Me gusta permite indicar que te han gustado estos resultados</translation>
 <translation id="3740447166056383374">Los archivos deben revisarse antes de copiarse</translation>
 <translation id="374325029554577103">Productos tecnológicos para la actividad física</translation>
@@ -1688,6 +1691,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3839220096695873023">Vehículos híbridos y alternativos</translation>
 <translation id="3841356782900714251">Lectores de tarjetas inteligentes</translation>
 <translation id="384315386171052386">Pescado y marisco</translation>
+<translation id="3843447501960446468">Gestionar tarjetas de fidelización...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo Documento de Google rápidamente</translation>
 <translation id="385051799172605136">Volver</translation>
@@ -2257,6 +2261,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4844937814014739139">Desplazarse por pestañas compartidas y ampliarlas</translation>
 <translation id="484671803914931257">Obtén descuentos en <ph name="MERCHANT_NAME" /> y más</translation>
 <translation id="484988093836683706">Usar desbloqueo del dispositivo</translation>
+<translation id="4850669014075537160">Desplazamiento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854853140771946034">Crea una nueva nota en Google Keep rápidamente</translation>
 <translation id="4855395119669662878">Tu administrador empezará a subir los archivos a <ph name="CLOUD_PROVIDER" /> el <ph name="DATE_TIME" />. Mantén el dispositivo conectado hasta que se complete la subida. Durante el proceso, solo podrás leer los archivos locales.</translation>
@@ -2822,6 +2827,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
+<translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libera espacio en <ph name="CLOUD_PROVIDER" /> antes de volver a intentarlo</translation>
 <translation id="5838278095973806738">No deberías introducir información confidencial en este sitio web (por ejemplo, contraseñas o tarjetas de crédito) porque los atacantes podrían robarla.</translation>
 <translation id="5838732667866024867">Puedes usar la flecha hacia la izquierda o hacia la derecha para consultar los cambios de precio en el gráfico</translation>
@@ -3509,7 +3515,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">gestionar el acceso a cookies de terceros</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
-<translation id="6984270784814146224">Imagen sin etiquetar. Extrayendo texto con la tecnología de la IA de Google.</translation>
 <translation id="6987806006823772670">Sobre (revestido)</translation>
 <translation id="6989256887001961296">Este contenido está bloqueado.</translation>
 <translation id="6989763994942163495">Mostrar configuración avanzada...</translation>
@@ -4804,6 +4809,7 @@ Más información:
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222403027701923763">Educación primaria y secundaria</translation>
+<translation id="922849469395748170">Tarjetas de fidelización</translation>
 <translation id="93020190163435405">Prácticas</translation>
 <translation id="931598121743515856">La compra debe ser superior a <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>

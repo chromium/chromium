@@ -138,7 +138,6 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="4724297637870447613">A Chrome mindenhol használható</translation>
 <translation id="4738647308035481133">A Google Chrome oldala</translation>
 <translation id="4742795653798179840">Törölt Chrome-adatok</translation>
-<translation id="4749294594657945639">Válassza a Chrome automatikus kitöltési funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is.</translation>
 <translation id="4761869838909035636">A Chrome biztonsági ellenőrzésének futtatása</translation>
 <translation id="4798859546468762093">A személyre szabás és az egyéb funkciók használatához vegye fel a Chrome-ot a következők közé: <ph name="FEATURE_NAME_1" /> és <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="4819268619367838612">Az alkalmazás továbbfejlesztése érdekében a Chrome elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
@@ -215,6 +214,7 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="6533470733797826516">Gyorsabban bejelentkezhet a Chrome automatikus kitöltésével</translation>
 <translation id="6536544321553662809">Állítsa be a Chrome-ot alapértelmezett böngészőként, hogy könnyedén oszthassa meg és nyithassa meg a linkeket</translation>
 <translation id="6545449117344801102">A Chrome észleli a címeket, és a Google Térkép használatával útvonalterveket és helyi információkat jelenít meg.</translation>
+<translation id="6611692150236062461">Válassza a Chrome automatikus kitöltési funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz más alkalmazásokban is.</translation>
 <translation id="6636941099779251629">Szervezete megköveteli a bejelentkezést a Chrome használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6646696210740573446">Elküldi az URL obfuszkált részét a Google-nak egy adatvédelmi szerveren keresztül, amely elrejti az Ön IP-címét. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Google-nak.</translation>
 <translation id="6647304104688527905">Új lapot nyit a Chrome-ban.</translation>

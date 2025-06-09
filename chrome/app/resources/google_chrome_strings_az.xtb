@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Google Chrome'u fərdiləşdirin və idarə edin. Güncəlləmə əlçatandır.</translation>
 <translation id="1028061813283459617">Baxış datasını yalnız bu cihazdan silib, Google Hesabında isə saxlamaq üçün <ph name="BEGIN_LINK" />Chrome-dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="1042270987544905725">Klikləyərək Chrome giriş dialoqunu bağlayın</translation>
+<translation id="1051793555070215510">Anonim rejimini təkmilləşdirməyimizə kömək etmək üçün bu 1 dəqiqəlik sorğunu doldurun.</translation>
 <translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" /> kimi bu artırmanı istifadə etmək üçün Chrome-a daxil olun.</translation>
 <translation id="1065672644894730302">Tərcihləriniz oxuna bilmir.
 
@@ -553,7 +554,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8019103195866286235">Bu artırmanın yayımı tərtibatçı tərəfindən ləğv edildi və təhlükəli ola bilər. Onu Chrome-dan silin ki, daxil olduğunuz saytlardakı dataya, o cümlədən şəxsi məlumatlara baxa və onları dəyişə bilməsin.</translation>
 <translation id="8040768861829554732">Artırma Chrome-a daxil olmağınızı istəyir</translation>
 <translation id="80471789339884597">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl bütün brauzerlərinizi yenidən başlatmalısınız.</translation>
-<translation id="8064015041956107954">Yuxarı sağ tərəfdə Chrome menyusundan əlfəcin, oxu rejimi və s. aça bilərsiniz</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Digər Chrome profilləri</translation>
 <translation id="8086881907087796310">Kompüteriniz minimum avadanlıq tələblərinə cavab vermədiyi üçün quraşdırma alınmadı.</translation>
@@ -565,7 +565,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8177472873527554730">Səhifədə kontenti tapmaq olmur</translation>
 <translation id="8221491193165283816">Bildirişləri, adətən, bloklayırsınız. Bu saytın sizə bildirişlər göndərməsinə icazə vermək üçün buraya klikləyin.</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı və mikrofonunuzu işlədir.</translation>
-<translation id="8257796129973882597">Chrome menyusundan əlfəcin, oxu rejimi və s. aça bilərsiniz</translation>
 <translation id="8267953129876836456">Chrome nəzərdən keçirilməli güvənlik tövsiyələri tapdı</translation>
 <translation id="8286862437124483331">Google Chrome parolları göstərməyə cəhd edir. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="829923460755755423">Google Parol Menecerinə qısayol əlavə edin</translation>

@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">‏‫Chrome کو ہر جگہ استعمال کریں</translation>
 <translation id="4738647308035481133">‏‫Google Chrome صفحہ</translation>
 <translation id="4742795653798179840">‏Chrome کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
-<translation id="4749294594657945639">‏دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز آسانی سے حاصل کرنے کے لیے، آٹو فل کے لیے Chrome کا انتخاب کریں۔</translation>
 <translation id="4761869838909035636">‏Chrome کا سیفٹی چیک چلائیں</translation>
 <translation id="4798859546468762093">‏ذاتی نوعیت سازی اور دیگر خصوصیات حاصل کرنے کے لیے <ph name="FEATURE_NAME_1" /> اور <ph name="FEATURE_NAME_2" /> میں Chrome شامل کریں</translation>
 <translation id="4819268619367838612">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">‏‫Chrome آٹو فل کے ساتھ تیزی سے سائن ان کریں</translation>
 <translation id="6536544321553662809">‏لنکس کا آسانی سے اشتراک کرنے اور انہیں کھولنے کیلئے، Chrome کو اپنے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="6545449117344801102">‏Chrome پتوں کا پتا لگاتا ہے اور آپ کو ڈائریکشنز اور مقامی معلومات دینے کے لیے Google Maps کا استعمال کرتا ہے۔</translation>
+<translation id="6611692150236062461">‏دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز کو آسانی سے حاصل کرنے کیلئے، Chrome برائے آٹو فل کا انتخاب کریں۔</translation>
 <translation id="6636941099779251629">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome استعمال کرنے کیلئے سائن ان کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">‏رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chrome، ‏Google پر صفحہ کے مواد کے بِٹس سمیت URLs بھی بھیج سکتا ہے۔</translation>
 <translation id="6647304104688527905">‏‫Chrome میں ایک نیا ٹیب کھلتا ہے۔</translation>
@@ -313,6 +313,7 @@
 آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ <ph name="TIME" /> کو مرموز کیا گیا تھا۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کے لیے اسے درج کریں۔</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">‏کسی بھی رازداری یا سیکیورٹی کے مسئلے پر الرٹس جس کا Chrome آپ کے لیے پتا لگاتا ہے۔</translation>
+<translation id="855027533751209304">‏‫Chrome تجویز: آپ جو دیکھتے ہیں اسے تلاش کریں</translation>
 <translation id="8558480467877843976">‏اب آپ کسی بھی وقت پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس کو براؤز یا تھپتھپاتے وقت Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="8603022514504485810">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">‏"جب آپ Chrome کو بند کرتے ہیں تو پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں۔</translation>

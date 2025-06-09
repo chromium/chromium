@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Relaunch to update &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium recommends that you review this extension</translation>
 <translation id="1042552502243217427">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
+<translation id="1051793555070215510">Help us improve Incognito by taking this 1-minute survey.</translation>
 <translation id="1065672644894730302">Your preferences cannot be read.
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
@@ -87,7 +88,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
-<translation id="2157600032285353789">You can open bookmarks, reading mode and more from the Chromium menu</translation>
 <translation id="2174178932569897599">Customise Chromium</translation>
 <translation id="2174917724755363426">Installation is not complete. Are you sure that you want to cancel?</translation>
 <translation id="2185166961232948079">Chromium – Network sign-in – <ph name="PAGE_TITLE" /></translation>
@@ -360,7 +360,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5987687638152509985">Update Chromium to start sync</translation>
 <translation id="5988505247484123880">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chromium about your interests.</translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
-<translation id="6019451407441383358">You can open bookmarks, reading mode and more from the Chromium menu at the top right</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6058380562449900225">To protect your data, let Chromium remove permissions from sites you haven't visited recently. Doesn't stop notifications.</translation>
 <translation id="6063093106622310249">&amp;Open in Chromium</translation>

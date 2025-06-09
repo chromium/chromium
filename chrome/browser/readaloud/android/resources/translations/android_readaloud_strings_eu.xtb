@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Ahotsaren menua</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1246424317317450637">Lodia</translation>
+<translation id="1357114957607379632">AA bidezko erreprodukzioa sortzen…</translation>
 <translation id="1370273601702151510">Gustatu zait</translation>
 <translation id="1483137792530497944">Ibaia</translation>
 <translation id="1586836055630070874">Lasaigarria</translation>
+<translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1666704368140506043">Eduki iraingarria</translation>
 <translation id="1741047078107369903">Beroa</translation>
 <translation id="1807863182207623884">Errubia</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Tamalez, une honetan ezin da erreproduzitu orri hau. Saiatu berriro geroago.</translation>
 <translation id="3457812538570616687">Ez zait gustatu</translation>
 <translation id="3493899379487634969">Zer gertatu da?</translation>
+<translation id="3730775656877876887">AA bidezko erreprodukzioa sortzen</translation>
 <translation id="3778044272390020426">Iritzi negatiboen aukeren menua</translation>
 <translation id="3807208219231826020">Arakatu erreprodukzioa</translation>
 <translation id="385051799172605136">Atzera</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Alaia</translation>
 <translation id="5234971936051226002">"Entzun orri honetan dagoena" erreproduzigailua minimizatuta dago.</translation>
 <translation id="5251803541071282808">Hodeia</translation>
-<translation id="5526614127710223793">Erreprodukzio moduaren hautatzailea</translation>
+<translation id="5528503854289436485">AA bidezko erreprodukzioa</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="565342223183747919">Sakatu erreprodukzio modua aldatzeko</translation>
 <translation id="5694491020339060116">Erreprodukzio-abiaduraren menua</translation>
 <translation id="5965409657393819302">Arazo teknikoa</translation>
 <translation id="6218961554829577610">Ez zait gustatu ahotsa</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
-<translation id="6330455646577575965">AA bidezko audioaren erreprodukzioa</translation>
 <translation id="6343633247422081848">Goroldioa</translation>
 <translation id="6550675742724504774">Aukerak</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Kalitatea eta ikerketa hobetzeko oharrekin kargatuko da URLa.</translation>
 <translation id="8481839122437406573">Barea</translation>
 <translation id="8756370108715456837">Informazio okerra</translation>
-<translation id="881960277396325853">AA bidezko audioa sortzen…</translation>
 <translation id="8953618380150219653">"Entzun orri honetan dagoena" erreproduzigailua altuera osoan irekita dago.</translation>
 <translation id="978117257931832348">Baxua</translation>
 </translationbundle>

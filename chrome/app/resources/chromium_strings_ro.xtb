@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Relansează pentru a actualiza sistemul de operare &amp;Chromium</translation>
 <translation id="1040916596585577953">Chromium îți recomandă să examinezi această extensie</translation>
 <translation id="1042552502243217427">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Chromium folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
+<translation id="1051793555070215510">Ajută-ne să îmbunătățim modul incognito, răspunzând la acest sondaj de un minut.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
@@ -85,7 +86,6 @@
 <translation id="2126108037660393668">Fișierul descărcat nu a putut fi verificat.</translation>
 <translation id="2137162749895930932">Închide ecranul de traducere</translation>
 <translation id="215352261310130060">Chromium a blocat descărcarea, deoarece site-ul nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
-<translation id="2157600032285353789">Poți să deschizi marcaje, modul de lectură și altele din meniul Chromium</translation>
 <translation id="2174178932569897599">Personalizează Chromium</translation>
 <translation id="2174917724755363426">Instalarea nu este finalizată. Sigur anulezi?</translation>
 <translation id="2185166961232948079">Chromium – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
@@ -358,7 +358,6 @@
 <translation id="5987687638152509985">Actualizează Chromium pentru a începe sincronizarea</translation>
 <translation id="5988505247484123880">Se întâmplă frecvent ca site-urile pe care le accesezi să rețină lucrurile care te interesează, pentru a-ți personaliza experiența. În plus, site-urile pot stoca informații în Chromium despre interesele tale.</translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
-<translation id="6019451407441383358">Poți să deschizi marcaje, modul de lectură și altele din meniul Chromium din dreapta sus</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6058380562449900225">Pentru a-ți proteja datele, permite browserului Chromium să elimine permisiunile de pe site-urile pe care nu le-ai accesat recent. Nu oprește notificările.</translation>
 <translation id="6063093106622310249">&amp;Deschide în Chromium</translation>

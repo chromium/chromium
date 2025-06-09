@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">Menuen Voice</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1246424317317450637">Fed</translation>
+<translation id="1357114957607379632">AI-afspilning genereres…</translation>
 <translation id="1370273601702151510">Like</translation>
 <translation id="1483137792530497944">Flod</translation>
 <translation id="1586836055630070874">Beroligende</translation>
+<translation id="1639239467298939599">Indlæser</translation>
 <translation id="1666704368140506043">Stødende indhold</translation>
 <translation id="1741047078107369903">Varm</translation>
 <translation id="1807863182207623884">Rubin</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">Afspilning på denne side er ikke tilgængelig i øjeblikket. Prøv igen senere.</translation>
 <translation id="3457812538570616687">Dislike</translation>
 <translation id="3493899379487634969">Hvad var der galt?</translation>
+<translation id="3730775656877876887">AI-afspilning genereres</translation>
 <translation id="3778044272390020426">Menu med valgmuligheder for negativ feedback</translation>
 <translation id="3807208219231826020">Spol i afspilningen ved at stryge</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">Lys</translation>
 <translation id="5234971936051226002">Afspilleren "Lyt til denne side" er minimeret.</translation>
 <translation id="5251803541071282808">Skyen</translation>
-<translation id="5526614127710223793">Valg af afspilningstilstand</translation>
+<translation id="5528503854289436485">AI-afspilning</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="565342223183747919">Tryk for at skifte afspilningstilstand</translation>
 <translation id="5694491020339060116">Menu for afspilningshastighed</translation>
 <translation id="5965409657393819302">Teknisk problem</translation>
 <translation id="6218961554829577610">Jeg kunne ikke lide stemmen</translation>
 <translation id="6315170314923504164">Stemme</translation>
-<translation id="6330455646577575965">AI-lydafspilning</translation>
 <translation id="6343633247422081848">Mos</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">Din webadresse uploades sammen med feedbacken for at forbedre kvaliteten og undersøgelsen.</translation>
 <translation id="8481839122437406573">Rolig</translation>
 <translation id="8756370108715456837">Ikke faktuelt korrekt</translation>
-<translation id="881960277396325853">AI-lyd genereres…</translation>
 <translation id="8953618380150219653">Afspilleren "Lyt til denne side" er åbnet i fuld højde.</translation>
 <translation id="978117257931832348">Dyb stemme</translation>
 </translationbundle>

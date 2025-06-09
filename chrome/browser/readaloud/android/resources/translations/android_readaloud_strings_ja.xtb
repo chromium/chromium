@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">音声メニュー</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1246424317317450637">太字</translation>
+<translation id="1357114957607379632">AI 再生を生成しています...</translation>
 <translation id="1370273601702151510">高く評価</translation>
 <translation id="1483137792530497944">川</translation>
 <translation id="1586836055630070874">心地良い</translation>
+<translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1666704368140506043">不適切なコンテンツ</translation>
 <translation id="1741047078107369903">温かい</translation>
 <translation id="1807863182207623884">ルビー</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">現在このページでは再生できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3457812538570616687">低く評価</translation>
 <translation id="3493899379487634969">どのような問題がありましたか。</translation>
+<translation id="3730775656877876887">AI 再生を生成しています</translation>
 <translation id="3778044272390020426">低評価のオプション メニュー</translation>
 <translation id="3807208219231826020">スクラブ再生</translation>
 <translation id="385051799172605136">戻る</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">明るい</translation>
 <translation id="5234971936051226002">「このページを読み上げ」プレーヤーが最小化されました。</translation>
 <translation id="5251803541071282808">クラウド</translation>
-<translation id="5526614127710223793">再生モードセレクタ</translation>
+<translation id="5528503854289436485">AI 再生</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="565342223183747919">タップして再生モードを切り替える</translation>
 <translation id="5694491020339060116">再生速度メニュー</translation>
 <translation id="5965409657393819302">技術的な問題</translation>
 <translation id="6218961554829577610">声が気に入らなかった</translation>
 <translation id="6315170314923504164">音声</translation>
-<translation id="6330455646577575965">AI 音声再生</translation>
 <translation id="6343633247422081848">コケ</translation>
 <translation id="6550675742724504774">オプション</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />、<ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">品質改善と調査のため、フィードバックとともに URL がアップロードされます。</translation>
 <translation id="8481839122437406573">穏やか</translation>
 <translation id="8756370108715456837">事実と異なる</translation>
-<translation id="881960277396325853">AI による音声を生成しています...</translation>
 <translation id="8953618380150219653">「このページを読み上げ」プレーヤーが画面全体に表示されています。</translation>
 <translation id="978117257931832348">低ピッチ</translation>
 </translationbundle>

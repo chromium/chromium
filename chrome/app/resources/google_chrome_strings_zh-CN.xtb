@@ -7,6 +7,7 @@
 <translation id="102763973188675173">有可用的更新。欢迎自定义和控制 Google Chrome。</translation>
 <translation id="1028061813283459617">若要仅删除此设备中的浏览数据而保留您的 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chrome 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="1042270987544905725">点击即可关闭 Chrome 登录对话框</translation>
+<translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
 <translation id="1059838145689930908">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身份使用此扩展程序，请登录 Chrome。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
@@ -548,7 +549,6 @@
 <translation id="8019103195866286235">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="8040768861829554732">某个扩展程序需要您登录 Chrome</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="8064015041956107954">您可以通过右上角的 Chrome 菜单打开书签、阅读模式等</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
@@ -560,7 +560,6 @@
 <translation id="8177472873527554730">在页面中找不到内容</translation>
 <translation id="8221491193165283816">您通常会屏蔽通知。要允许此网站向您发送通知，请点击此处。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
-<translation id="8257796129973882597">您可以通过 Chrome 菜单打开书签、阅读模式等</translation>
 <translation id="8267953129876836456">Chrome 找到了一些安全建议需要您审核</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>

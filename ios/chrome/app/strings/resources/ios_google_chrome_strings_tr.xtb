@@ -138,7 +138,6 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="4724297637870447613">Chrome'u her yerde kullanın</translation>
 <translation id="4738647308035481133">Google Chrome sayfası</translation>
 <translation id="4742795653798179840">Chrome verileri silindi</translation>
-<translation id="4749294594657945639">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere Otomatik Doldurma için Chrome'u kullanın.</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
 <translation id="4798859546468762093">Kişiselleştirme ve diğer özelliklerden yararlanmak için Chrome'u <ph name="FEATURE_NAME_1" /> ve <ph name="FEATURE_NAME_2" /> bölümlerine ekleyin</translation>
 <translation id="4819268619367838612">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Verileriniz parolanızla şifrelenir. Chrome verilerini kullanmak ve Google Hesa
 <translation id="6533470733797826516">Chrome otomatik doldurma özelliğiyle daha hızlı oturum açın</translation>
 <translation id="6536544321553662809">Bağlantıları kolayca paylaşmak ve açmak için Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="6545449117344801102">Chrome, adresleri algılayıp size yol tarifleri ve yerel bilgiler vermek için Google Haritalar'ı kullanır.</translation>
+<translation id="6611692150236062461">Kayıtlı şifrelerinizi diğer uygulamalarda da kolayca görmek üzere otomatik doldurma için Chrome'u kullanın.</translation>
 <translation id="6636941099779251629">Kuruluşunuz, Chrome'u kullanmak için oturum açmanızı zorunlu tutuyor. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Google'a sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6647304104688527905">Chrome'da yeni sekme açar.</translation>
@@ -313,6 +313,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8544583291890527417">Chrome'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar.</translation>
+<translation id="855027533751209304">Chrome İpucu: Gördüklerinizi arayın</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">"Chrome'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin.</translation>

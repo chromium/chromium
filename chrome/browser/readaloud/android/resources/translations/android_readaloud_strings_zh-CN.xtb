@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">语音菜单</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1246424317317450637">粗体</translation>
+<translation id="1357114957607379632">正在生成 AI 播放内容…</translation>
 <translation id="1370273601702151510">我喜欢</translation>
 <translation id="1483137792530497944">河流</translation>
 <translation id="1586836055630070874">舒缓</translation>
+<translation id="1639239467298939599">正在加载</translation>
 <translation id="1666704368140506043">冒犯性内容</translation>
 <translation id="1741047078107369903">温暖</translation>
 <translation id="1807863182207623884">红宝石</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">很抱歉，目前无法播放此网页。请稍后再试。</translation>
 <translation id="3457812538570616687">不喜欢</translation>
 <translation id="3493899379487634969">有什么问题？</translation>
+<translation id="3730775656877876887">正在生成 AI 播放内容</translation>
 <translation id="3778044272390020426">负面反馈选项菜单</translation>
 <translation id="3807208219231826020">拖动播放</translation>
 <translation id="385051799172605136">返回</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">嘹亮</translation>
 <translation id="5234971936051226002">“读出此网页的内容”播放器已最小化。</translation>
 <translation id="5251803541071282808">云端</translation>
-<translation id="5526614127710223793">播放模式选择器</translation>
+<translation id="5528503854289436485">AI 播放</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="565342223183747919">点按即可切换播放模式</translation>
 <translation id="5694491020339060116">播放速度菜单</translation>
 <translation id="5965409657393819302">技术问题</translation>
 <translation id="6218961554829577610">不喜欢这个声音</translation>
 <translation id="6315170314923504164">语音</translation>
-<translation id="6330455646577575965">AI 音频播放</translation>
 <translation id="6343633247422081848">苔藓</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />、<ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">您的网址将随反馈一起上传，以便我们改进质量和研究工作。</translation>
 <translation id="8481839122437406573">平静</translation>
 <translation id="8756370108715456837">与事实不符</translation>
-<translation id="881960277396325853">正在生成 AI 音频…</translation>
 <translation id="8953618380150219653">“读出此网页的内容”播放器已全屏打开。</translation>
 <translation id="978117257931832348">低音</translation>
 </translationbundle>

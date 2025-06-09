@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવતા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2185965788978862351">આમ કરવાથી તમારી હોમ સ્ક્રીન પર સાઇટ કે ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="DATASIZE" /> ડેટા અને કુકી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{ગઈકાલે}one{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં}other{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં}}</translation>
 <translation id="2215727959747642672">ફાઇલમાં ફેરફાર કરવો</translation>
 <translation id="2218389616572918761">સાઇટ તમારા માઇક્રોફોન માટે પૂછી શકે છે</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6530703012083415527">ચાલુ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકે છે. બંધ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="6540488083026747005">તમે આ સાઇટ માટે ત્રીજા પક્ષની કુકીને મંજૂરી આપી છે</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં}}</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}}</translation>
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">કોઈ સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
 <translation id="7573594921350120855">વીડિયો ચૅટ જેવી સંદેશાવ્યવહારની સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે તમારા વીડિયો કૅમેરાનો ઉપયોગ કરે છે</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં}}</translation>
 <translation id="757524316907819857">સાઇટને સંરક્ષિત કન્ટેન્ટ ચલાવવાથી બ્લૉક કરો</translation>
 <translation id="7594634374516752650">બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરી</translation>
 <translation id="7617547684249261169">તમે તમારો અમુક અથવા તમામ ઇતિહાસ, કુકી, સાઇટનો ડેટા અને બીજું ઘણું ડિલીટ કરી શકો છો</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7881140103901777395">Chrome, મોટાભાગની સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી પ્રતિબંધિત કરે છે. પરંતુ આ સાઇટ પર ત્રીજા પક્ષની કુકીને મંજૂરી આપવામાં આવે છે કારણ કે મૂળભૂત સેવાઓ પ્રદાન કરવા માટે તે સાઇટ આના પર આધાર રાખે છે.\n\n<ph name="BEGIN_LINK" />ત્રીજા પક્ષની કુકીનો ઍક્સેસ મેનેજ કરવા<ph name="END_LINK" /> સેટિંગની મુલાકાત લો.</translation>
 <translation id="7882806643839505685">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ ચલાવવાની મંજૂરી આપો.</translation>
+<translation id="7891547341794213004">'આ ટૅબ સાથે ચાલુ રાખો' કાર્ડ છુપાવો</translation>
 <translation id="789180354981963912">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો:</translation>
 <translation id="789722939441020330">સાઇટને ઑટોમૅટિક રીતે એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7940722705963108451">મને યાદ કરાવો</translation>

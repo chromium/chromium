@@ -7,6 +7,7 @@
 <translation id="102763973188675173">Chrome을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="1028061813283459617">이 기기에서만 인터넷 사용 기록을 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="1042270987544905725">클릭하여 Chrome 로그인 대화상자 닫기</translation>
+<translation id="1051793555070215510">1분 정도 소요되는 설문조사에 참여하여 시크릿 모드를 개선하는 데 도움을 주세요.</translation>
 <translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" /> 계정으로 이 확장 프로그램을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="1065672644894730302">환경설정을 읽을 수 없습니다.
 
@@ -395,7 +396,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="604424701295382420">고정되었습니다. 툴바의 새 버튼에서 Google 렌즈를 다시 이용할 수 있습니다</translation>
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터 암호화</translation>
-<translation id="6075300983329039771">조직(<ph name="MANAGER" />)에서 Chrome에 로그인할 것을 요구합니다</translation>
+<translation id="6075300983329039771">조직(<ph name="MANAGER" />)의 요청에 따라 Chrome에 로그인해야 합니다</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
 <translation id="6116252277240876590">Chrome에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>
 <translation id="6127237283587442951">Chrome을 기본 브라우저로 사용하고 고정하세요</translation>
@@ -556,7 +557,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8019103195866286235">이 확장 프로그램은 개발자가 게시 취소했으며, 안전하지 않을 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="8040768861829554732">확장 프로그램에서 Chrome에 로그인하도록 요청합니다</translation>
 <translation id="80471789339884597">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 모든 브라우저를 다시 시작해야 합니다.</translation>
-<translation id="8064015041956107954">오른쪽 상단의 Chrome 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="8086881907087796310">컴퓨터가 최소 하드웨어 요구사항을 충족하지 않으므로 설치에 실패했습니다.</translation>
@@ -568,7 +568,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8177472873527554730">페이지의 콘텐츠를 찾을 수 없음</translation>
 <translation id="8221491193165283816">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 여기를 클릭하세요.</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
-<translation id="8257796129973882597">Chrome 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다.</translation>
 <translation id="8267953129876836456">Chrome에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>

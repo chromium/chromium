@@ -23,6 +23,7 @@
 <translation id="7286867818472074330">Azonosítókulcs kiválasztása</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. pozíció, összesen: <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Ön jelszavakat kapott a következőhöz: <ph name="SITE_NAME" /></translation>
+<translation id="8363484128299778310">Probléma esetén ideiglenes helyreállítás</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> jelszót osztott meg Önnel a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">A hitelesítési adatok listája be van zárva.</translation>
 </translationbundle>

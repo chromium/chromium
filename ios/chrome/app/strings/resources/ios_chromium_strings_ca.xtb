@@ -176,6 +176,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5259423875997548710">Cerca elements visuals a Chromium.</translation>
 <translation id="5308226104666789935">Chromium no pot cercar actualitzacions</translation>
 <translation id="5311557153294205270">Afegeix els URL introduïts a les adreces d'interès de Chromium.</translation>
+<translation id="5383251701169024761">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chromium per a l'Emplenament automàtic.</translation>
 <translation id="538767207339317086">Permet l'inici de sessió a Chromium</translation>
 <translation id="5389058611415066188">Protegeix-te amb Chromium</translation>
 <translation id="5415273218238091735">Consell de Chromium</translation>
@@ -276,7 +277,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7763454117143368771">Utilitza Chromium com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="7784950022329154821">Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="78025249032851484">Chromium no està actualitzat.</translation>
-<translation id="7811371919871579588">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, tria Chromium per a l'Emplenament automàtic.</translation>
 <translation id="7859018312476869945">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="7890287942691234100">Comença a utilitzar l'escàner de Chromium</translation>
 <translation id="7905064834449738336">Quan utilitzes una contrasenya, Chromium t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten perquè ningú no els pugui llegir (ni tan sols Google).</translation>

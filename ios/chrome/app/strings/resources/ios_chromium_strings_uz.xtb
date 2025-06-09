@@ -175,6 +175,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5259423875997548710">Chromium orqali vizual qidiruv.</translation>
 <translation id="5308226104666789935">Chromium yangilanishlar chiqqanini tekshira olmadi.</translation>
 <translation id="5311557153294205270">Kiritilgan URL manzillarni Chromium bukmarklariga kiritadi.</translation>
+<translation id="5383251701169024761">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chromium avtomatik kiritishini tanlang.</translation>
 <translation id="538767207339317086">Chromium hisobiga kirishga ruxsat berish</translation>
 <translation id="5389058611415066188">Chromium bilan himoyalaning</translation>
 <translation id="5415273218238091735">Chromium maslahati</translation>
@@ -275,7 +276,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7763454117143368771">Internetni xavfsiz kezish va parollaringizni himoyalashda Chromium birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="7784950022329154821">Chromium yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="78025249032851484">Chromium brauzeringiz eskirgan.</translation>
-<translation id="7811371919871579588">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chromium avtomatik kiritishini tanlang</translation>
 <translation id="7859018312476869945">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="7890287942691234100">Chromium skaneridan foydalanish</translation>
 <translation id="7905064834449738336">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chromium sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>

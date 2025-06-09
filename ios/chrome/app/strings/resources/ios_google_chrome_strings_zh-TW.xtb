@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">在所有裝置上使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
-<translation id="4749294594657945639">如要在其他應用程式中輕鬆使用儲存的密碼，請選擇 Chrome 做為自動填寫來源。</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4798859546468762093">如要享有個人化服務和其他功能，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中納入 Chrome</translation>
 <translation id="4819268619367838612">為協助改良應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
@@ -177,7 +176,7 @@
 <translation id="5681291952421236520">切換 Chrome</translation>
 <translation id="5690398455483874150">{count,plural, =1{目前顯示 1 個 Chrome 視窗}other{目前顯示 {count} 個 Chrome 視窗}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5709557627224531708">將 Chrome 設為預設網路瀏覽器</translation>
+<translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
 <translation id="571296537125272375">目前處於離線狀態，因此 Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
 <translation id="5752489513673657785">Google 專為你打造的自訂動態消息</translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">使用 Chrome 自動填入功能快速登入</translation>
 <translation id="6536544321553662809">將 Chrome 設為預設瀏覽器，輕鬆分享及開啟連結</translation>
 <translation id="6545449117344801102">Chrome 會偵測地址，並使用 Google 地圖提供路線和當地資訊。</translation>
+<translation id="6611692150236062461">如要在其他應用程式中輕鬆使用儲存的密碼，請選擇 Chrome 做為自動填寫來源。</translation>
 <translation id="6636941099779251629">根據貴機構的政策規定，你必須先登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
 <translation id="6647304104688527905">使用 Chrome 開啟新分頁。</translation>

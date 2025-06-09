@@ -138,7 +138,6 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="4724297637870447613">Koristite Chrome svugdje</translation>
 <translation id="4738647308035481133">Stranica Google Chromea</translation>
 <translation id="4742795653798179840">Izbrisani su podaci Chromea</translation>
-<translation id="4749294594657945639">Da lako dobijete sačuvane lozinke u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje.</translation>
 <translation id="4761869838909035636">Pokrenite Sigurnosnu provjeru Chromea</translation>
 <translation id="4798859546468762093">Da dobijete personalizaciju i druge funkcije, uključite Chrome u funkcijama <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije, Chrome šalje Googleu podatke o korištenju i padovima. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuva
 <translation id="6533470733797826516">Brže se prijavite putem automatskog popunjavanja u Chromeu</translation>
 <translation id="6536544321553662809">Postavite Chrome kao zadani preglednik da lako dijelite i otvarate linkove</translation>
 <translation id="6545449117344801102">Chrome otkriva adrese i koristi Google Mape da vam daje smjernice i lokalne informacije.</translation>
+<translation id="6611692150236062461">Da lako dobijate sačuvane lozinke u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahtijeva da se prijavite da koristite Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Šalje prikriveni dio URL-a Googleu putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzmete štetan fajl, Chrome može Googleu slati i URL-ove, uključujući dijelove sadržaja stranice.</translation>
 <translation id="6647304104688527905">Otvara novu karticu u Chromeu.</translation>

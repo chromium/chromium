@@ -1014,6 +1014,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4305817255990598646">Skipta</translation>
 <translation id="4307713728991152670">Setja upp skoðun nýlegra mynda, efnis og forrita í símanum</translation>
 <translation id="4312840429157639164">Myndavél fest við efra horn hægra megin. Skörun við vettvang kerfis.</translation>
+<translation id="4312935606722154789">Skipaðu saman eða sundraðu tveimur samhliða gluggum</translation>
 <translation id="4316910396681052118">ÖLL FORRIT</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Fela allar tillögur úr Chrome-vafra</translation>
@@ -1582,7 +1583,6 @@ Engin tæki eru tengd.</translation>
 <translation id="6095425951508823973">Bæta við tengingu við <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Breytt í liðnum mánuði</translation>
 <translation id="6103838137565245112">kerfi</translation>
-<translation id="610395411842312282">Skipaðu saman tvo samhliða glugga</translation>
 <translation id="6108952804512516814">Búa til með gervigreind</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

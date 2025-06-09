@@ -96,6 +96,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
 <translation id="2185965788978862351"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser eller appar på startskärmen raderas.</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{I går}other{<ph name="NUM_DAYS_MANY" /> dagar sedan}}</translation>
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2218389616572918761">Webbplatser får begära åtkomst till mikrofonen</translation>
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6527303717912515753">Dela</translation>
 <translation id="6530703012083415527">När detta är aktiverat kan webbplatser använda popup-fönster och omdirigeringar. När detta är inaktiverat får webbplatser inte använda popup-fönster och omdirigeringar.</translation>
 <translation id="6540488083026747005">Du har tillåtit tredjepartscookies på den här webbplatsen</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> vecka sedan}other{<ph name="NUM_WEEKS_MANY" /> veckor sedan}}</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}}</translation>
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
@@ -521,6 +523,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7554752735887601236">En webbplats använder mikrofonen</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7573594921350120855">Åtkomst till videokameran brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{<ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
 <translation id="757524316907819857">Blockera webbplatser från att spela upp skyddat innehåll</translation>
 <translation id="7594634374516752650">Ansluten till en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan radera all eller delar av din historik, dina cookies, webbplatsdata med mera</translation>
@@ -542,6 +545,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7881140103901777395">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies tillåts dock på den här webbplatsen eftersom den förlitar sig på att de tillhandahåller grundläggande tjänster.\n\nÖppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
+<translation id="7891547341794213004">Dölj kortet Fortsätt med den här fliken</translation>
 <translation id="789180354981963912">Blockera cookies från tredje part i inkognitoläge:</translation>
 <translation id="789722939441020330">Tillåt inte att webbplatser laddar ned flera filer samtidigt</translation>
 <translation id="7940722705963108451">Påminn mig</translation>

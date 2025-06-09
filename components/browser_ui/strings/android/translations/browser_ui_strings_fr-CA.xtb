@@ -96,6 +96,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer une carte 3D de votre environnement ou à faire le suivi de la position de l'appareil photo (recommandé)</translation>
 <translation id="2185965788978862351">Cette action supprimera <ph name="DATASIZE" /> de données et de témoins stockés par des sites ou des applications sur votre écran d'accueil.</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Hier}one{il y a <ph name="NUM_DAYS_MANY" /> jour}other{il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="2215727959747642672">Modification des fichiers</translation>
 <translation id="2218389616572918761">Les sites peuvent demander d'accéder à votre microphone</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
@@ -448,6 +449,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6530703012083415527">Lorsque cette option est activée, les sites peuvent utiliser des fenêtres contextuelles et des redirections. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser des fenêtres contextuelles ni des redirections.</translation>
 <translation id="6540488083026747005">Vous avez autorisé les témoins tiers pour ce site</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres autorisations bloquées}}</translation>
 <translation id="6554732001434021288">Dernière visite il y a <ph name="NUM_DAYS" /> jours</translation>
@@ -521,6 +523,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7554752735887601236">Un site utilise votre microphone</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7573594921350120855">Les sites utilisent généralement votre caméra vidéo pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{il y a <ph name="NUM_MONTHS_ONE" /> mois}one{il y a <ph name="NUM_MONTHS_MANY" /> mois}other{il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="757524316907819857">Empêcher les sites de lire du contenu protégé</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
 <translation id="7617547684249261169">Vous pouvez supprimer une partie ou l'intégralité de votre historique, de vos témoins, de vos données relatives aux sites et plus</translation>
@@ -542,6 +545,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7881140103901777395">Chrome empêche la plupart des sites d'utiliser des témoins tiers. Toutefois, les témoins tiers sont autorisés sur ce site parce qu'il en dépend pour fournir des services de base.\n\nAccédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux témoins tiers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Autorisez le son sur un site précis.</translation>
+<translation id="7891547341794213004">Masquer la carte Continuer avec cet onglet</translation>
 <translation id="789180354981963912">Bloquer les témoins tiers en navigation privée :</translation>
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7940722705963108451">Me le rappeler</translation>

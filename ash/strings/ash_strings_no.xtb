@@ -1014,6 +1014,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4305817255990598646">Bytt</translation>
 <translation id="4307713728991152670">Konfigurer visning av nylige bilder, medier og apper fra telefonen din</translation>
 <translation id="4312840429157639164">Kameraet er festet til øvre høyre hjørne. Konflikt med systemoverflaten.</translation>
+<translation id="4312935606722154789">Grupper eller opphev grupperingen av to vinduer ved siden av hverandre</translation>
 <translation id="4316910396681052118">ALLE APPER</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Skjul alle Chrome-nettleserforslag</translation>
@@ -1582,7 +1583,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6095425951508823973">Legg til forbindelse med <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
-<translation id="610395411842312282">Grupper to vinduer ved siden av hverandre</translation>
 <translation id="6108952804512516814">Lag med AI</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

@@ -1014,6 +1014,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4305817255990598646">Preklopi</translation>
 <translation id="4307713728991152670">Nastavitev ogleda nedavnih fotografij, predstavnosti in aplikacij telefona</translation>
 <translation id="4312840429157639164">Fotoaparat je pripet v zgornji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
+<translation id="4312935606722154789">Združitev ali razdružitev dveh vzporednih oken</translation>
 <translation id="4316910396681052118">VSE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322385711258710213">Skrivanje vseh predlogov za brskalnik Chrome</translation>
@@ -1582,7 +1583,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6095425951508823973">Dodajanje povezavo s ponudnikom <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
-<translation id="610395411842312282">Združiteh dveh oken drugega ob drugem</translation>
 <translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>

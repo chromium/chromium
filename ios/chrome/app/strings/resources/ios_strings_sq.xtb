@@ -671,6 +671,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3850952228519377137">Fshihe "Monitoro çmimet nga skedat e tua"</translation>
 <translation id="3851938967634752633">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="NUMBER_OF_ACCOUNTS" /> të tjera do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
+<translation id="3853162385423733133">Vazhdo të përdorësh dhe të ruash fjalëkalimet në "Llogarinë tënde të Google" <ph name="EMAIL" /></translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3868495844258915202">Shfaq URL-në e plotë</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
@@ -1002,6 +1003,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5141363746588976328">Fshih kartën "Uljet e çmimeve në skedat e tua"</translation>
 <translation id="5145331760738811130">Largohu nga "Ndërruesi i skedave"</translation>
+<translation id="5148717509369231739">Importimi në Safari</translation>
 <translation id="5157638238828697074">Ndodhi një gabim. Aplikacioni nuk mund të hapej.</translation>
 <translation id="5163417375525818870">Skedarët PDF</translation>
 <translation id="5168414296986405587">Krijuar për iPadOS</translation>
@@ -1113,6 +1115,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5626245204502895507">Skedari nuk mund të shkarkohej në këtë moment.</translation>
 <translation id="562753339521713441">Ekzekuto "Kontrollin e sigurisë"</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} faqe në listën e leximit}other{{count} faqe në listën e leximit}}</translation>
+<translation id="5632194969640946913">Mëso më shumë ndërkohë që shfleton dhe kërkon për ato që shikon në çdo faqe për të eksploruar produktet, vendet dhe tekstet.</translation>
 <translation id="5632485077360054581">Më trego mënyrën</translation>
 <translation id="5633237939819267663">{count,plural, =1{Faqeshënuesi u ruajt te "{title}"}other{{count} faqeshënues u ruajtën te "{title}"}}</translation>
 <translation id="564170563478022912">Dëshiron të dalësh? Të dhënat e paruajtura të llogarisë do të fshihen.</translation>

@@ -474,7 +474,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1312811472299082263">Créer à partir d'un guide Ansible ou d'un fichier de sauvegarde Crostini</translation>
 <translation id="13130607084115184">Les mots de passe enregistrés s'affichent ici. Pour importer des mots de passe dans <ph name="BRAND" /> sur cet appareil, <ph name="BEGIN_LINK" /> sélectionnez un fichier CSV.<ph name="END_LINK" /></translation>
-<translation id="1313264149528821971">Les autorisations pour <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" /> ont été retirées</translation>
 <translation id="1313405956111467313">Configuration automatique du mandataire</translation>
 <translation id="131364520783682672">Verrouillage des majuscules</translation>
 <translation id="1313660246522271310">Vous serez déconnecté de tous les sites, y compris dans les onglets ouverts</translation>
@@ -3028,7 +3027,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3082493846131340396">extensions</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Bloquée temporairement afin de protéger votre confidentialité</translation>
-<translation id="3083899879156272923">Déplacer l'écran pour laisser le pointeur de la souris au centre de l'écran</translation>
+<translation id="3083899879156272923">L'écran se déplace pour laisser le pointeur de la souris au centre de l'écran</translation>
 <translation id="3083998949001524405">Autorisé à utiliser des témoins tiers</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> est épinglée par votre administrateur</translation>
 <translation id="3084548735795614657">Déposer pour installer</translation>
@@ -4180,6 +4179,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3876219572815410515">Fenêtres redimensionnées vers le haut</translation>
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3877209288227498506">Choisissez d'afficher l'utilisation de la mémoire et les images dans la fiche informative d'aperçu de l'onglet</translation>
+<translation id="3877603629930976930">Ne pas partager</translation>
 <translation id="3878445208930547646">Copier du contenu de ce site n'est pas autorisé</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3880513902716032002">Certaines des pages que vous visitez sont préchargées</translation>
@@ -4605,7 +4605,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4190492351494485814">Pour la configuration initiale, vous devez vous connecter à Internet afin que les fichiers puissent être synchronisés avec votre Chromebook</translation>
 <translation id="4190828427319282529">Mettre en surbrillance la sélection avec le clavier</translation>
 <translation id="4191892134568599822">Recevoir des fichiers avec le <ph name="FEATURE_NAME" />?</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{Autorisations retirées pour 1 site inutilisé}one{Autorisations retirées pour {NUM_SITES} site inutilisé}other{Autorisations retirées pour {NUM_SITES} sites inutilisés}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Exclusif au <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />L'IA générative est expérimentale, en début de développement et sa disponibilité est actuellement limitée.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Autorité de certification de confiance</translation>
@@ -5159,7 +5158,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4585793705637313973">Modifier la page</translation>
 <translation id="4586275095964870617">L'adresse <ph name="URL" /> n'a pas pu être ouverte dans un navigateur secondaire. Veuillez communiquer avec votre administrateur système.</translation>
 <translation id="4587589328781138893">Sites</translation>
-<translation id="4588497044036650559">Ouvrir la page d'option de l'extension de la page Nouvel onglet dans l'onglet actuel</translation>
 <translation id="4588749726511456218">Accélération du défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> et <ph name="DOMAIN" /> semblent liés. Assurez-vous de faire confiance à <ph name="DOMAIN" /> avant d'utiliser votre mot de passe.</translation>
 <translation id="4589713469967853491">Les journaux ont été écrits dans le répertoire Téléchargements.</translation>
@@ -6122,6 +6120,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5278823018825269962">Identifiant d'état</translation>
 <translation id="5279600392753459966">Tout bloquer</translation>
 <translation id="5280064835262749532">Mettez à jour l'authentifiant pour <ph name="SHARE_PATH" /></translation>
+<translation id="5280303168922585051">Ce paramètre a été configuré par votre organisation. Voulez-vous vraiment supprimer ce moteur de recherche?</translation>
 <translation id="5280426389926346830">Créer un raccourci?</translation>
 <translation id="5281013262333731149">S'ouvre dans : <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Pour télécharger et utiliser des applications Android, vous devez d'abord installer cette mise à jour. Vous ne pourrez pas utiliser votre <ph name="DEVICE_TYPE" /> pendant la mise à jour. Une fois l'installation terminée, votre <ph name="DEVICE_TYPE" /> redémarrera.</translation>
@@ -6247,7 +6246,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5376931455988532197">Fichier trop volumineux</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo?</translation>
 <translation id="5379140238605961210">Continuer de bloquer l'accès au microphone</translation>
-<translation id="5380424552031517043">L'autorisation pour <ph name="PERMISSION" /> a été retirée</translation>
 <translation id="5380526436444479273">Veuillez patienter quelques minutes et réessayer</translation>
 <translation id="5382591305415226340">Gérer des liens pris en charge</translation>
 <translation id="5384401776498845256">Qui peut partager avec vous</translation>
@@ -6984,7 +6982,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5919305207330938913">Toutes les données collectées seront utilisées conformément à la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de Google.</translation>
-<translation id="5919486630433391408">Votre administrateur a désactivé les mises à jour du micrologiciel.</translation>
 <translation id="5920543303088087579">La connexion à ce réseau est désactivée par votre administrateur</translation>
 <translation id="5922963926582976524">Déconnecter le réseau du point d'accès sans fil immédiat</translation>
 <translation id="5924047253200400718">Obtenir de l'aide<ph name="SCANNING_STATUS" /></translation>
@@ -7106,7 +7103,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6003479444341796444">La barre de titre est maintenant affichée</translation>
 <translation id="6003582434972667631">Thème défini par votre organisation</translation>
 <translation id="6005045517426700202">Bâtiment en brique</translation>
-<translation id="6006392003290068688">Les autorisations pour <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> ont été retirées</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007053304250788613">Un seul écran peut être exclu en mode Miroir</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas offerte dans votre langue.</translation>
@@ -8461,6 +8457,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="69739764870135975">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
 <translation id="697508444536771064">Éteindre Linux</translation>
 <translation id="6978121630131642226">Moteurs de recherche</translation>
+<translation id="6978236010531171013">Partager quand même</translation>
 <translation id="6978717888677691380">Les sites que vous avez bloqués</translation>
 <translation id="6979041727349121225">Économiseur d'énergie</translation>
 <translation id="6979044105893951891">Lancer et quitter les sessions d'invité gérées</translation>
@@ -8560,7 +8557,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7039912931802252762">Ouverture de session par carte à puce Microsoft</translation>
 <translation id="7039951224110875196">Créer un compte Google pour un enfant</translation>
 <translation id="7039968672732182060">Votre Chromebook ne reçoit plus les mises à jour de sécurité. Il est temps de passer aux plus récentes possibilités en matière de sécurité et de logiciels. Des conditions s'appliquent à l'offre.</translation>
-<translation id="7041405817194720353">Les autorisations pour <ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> et <ph name="COUNT" /> autres ont été retirées</translation>
 <translation id="7042116641003232070">Autorisé à enregistrer des données sur votre appareil</translation>
 <translation id="7043108582968290193">Terminé! Aucune application incompatible n'a été trouvée.</translation>
 <translation id="7044124535091449260">En savoir plus sur l'accès aux sites</translation>
@@ -8676,6 +8672,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7131896909366247105">En attente de l'installation de <ph name="APP_NAME" />…</translation>
 <translation id="7132886488919643383">Utilisez l'IA de Google pour obtenir de l'aide pour lire, écrire et créer du contenu</translation>
 <translation id="7134098520442464001">Réduire la taille du texte</translation>
+<translation id="7134653428559514680">Il n'est pas recommandé d'effectuer un partage à partir de ce site</translation>
 <translation id="7134951043985383439">Fichier dangereux téléchargé</translation>
 <translation id="7135729336746831607">Activer le Bluetooth?</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
@@ -9122,6 +9119,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7460045493116006516">Le thème actuel que vous avez installé</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746216226901520237">La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans le menu Paramètres.</translation>
+<translation id="7463068149674892185">Cette action n'est pas recommandée</translation>
 <translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Votre organisation gère la façon dont les données recueillies par ces fonctionnalités peuvent être utilisées.</translation>
 <translation id="7464645554245611385">Dernière mise à jour de cet onglet</translation>
@@ -11234,7 +11232,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8920133120839850939">Sélectionnez l'onglet Plus de gestes, puis activez Naviguer d'une page à l'autre pour naviguer vers l'avant et l'arrière</translation>
 <translation id="8921369299636221117">Le service Concierge n'est pas accessible.</translation>
 <translation id="8922348435910470639">Double réservation</translation>
-<translation id="8922624386829239660">Déplacer l'écran lorsque le pointeur de la souris touche les rebords de l'écran</translation>
+<translation id="8922624386829239660">L'écran se déplace lorsque le pointeur de la souris touche les rebords de l'écran</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925124370124776087">La barre de titre est maintenant masquée</translation>
 <translation id="8925458182817574960">Paramètre&amp;s</translation>
@@ -11370,7 +11368,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011262023858991985">Diffuser cet onglet</translation>
 <translation id="9011393886518328654">Notes de version</translation>
-<translation id="9012122671773859802">Déplacer l'écran en continu pour suivre le mouvement du pointeur de la souris</translation>
+<translation id="9012122671773859802">L'écran se déplace en continu pour suivre le mouvement du curseur de la souris</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> d'espace libre est nécessaire pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="9014206344398081366">Tutoriel de ChromeVox</translation>
@@ -11684,7 +11682,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="934244546219308557">Nommer ce groupe</translation>
 <translation id="93480724622239549">Bogue ou erreur</translation>
 <translation id="9354763467503131">Autorisés à demander d'installer des applis Web sur votre appareil</translation>
-<translation id="936329857119665832">S'ouvre dans l'onglet actuel</translation>
 <translation id="936646668635477464">Caméra et microphone</translation>
 <translation id="936801553271523408">Données de diagnostic système</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>

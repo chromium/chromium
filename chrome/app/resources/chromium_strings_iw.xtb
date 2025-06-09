@@ -85,7 +85,6 @@
 <translation id="2126108037660393668">נכשל האימות של הקובץ שהורד.</translation>
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
 <translation id="215352261310130060">‏Chromium חסם את ההורדה הזאת כי האתר לא משתמש בחיבור מאובטח ויכול להיות שבוצעו שינויים לא מורשים בקובץ</translation>
-<translation id="2157600032285353789">‏אפשר לפתוח את הסימניות, את מצב הקריאה ועוד מתפריט Chromium</translation>
 <translation id="2174178932569897599">‏התאמה אישית של Chromium</translation>
 <translation id="2174917724755363426">ההתקנה לא הושלמה. להמשיך בביטול?</translation>
 <translation id="2185166961232948079">‏Chromium – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
@@ -356,7 +355,6 @@
 <translation id="5987687638152509985">‏יש לעדכן את Chromium כדי להתחיל את הסנכרון</translation>
 <translation id="5988505247484123880">‏באתרים רבים נהוג לשמור את תחומי העניין שלך כדי להתאים אישית את חוויית הגלישה בהם. בנוסף, אתרים יכולים לשמור מידע ב-Chromium לגבי תחומי העניין שלך.</translation>
 <translation id="6003112304606738118">מתבצעת הורדה… יש עוד <ph name="HOURS" /> שע'</translation>
-<translation id="6019451407441383358">‏אפשר לפתוח סימניות, מצב קריאה ועוד מתפריט Chromium בפינה השמאלית העליונה</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6058380562449900225">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chromium להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה. המערכת תמשיך לשלוח התראות.</translation>
 <translation id="6063093106622310249">‏&amp;פתיחה ב-Chromium</translation>

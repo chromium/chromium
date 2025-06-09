@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">再起動して Chromium OS を更新</translation>
 <translation id="1040916596585577953">この拡張機能を確認することをおすすめします</translation>
 <translation id="1042552502243217427">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chromium は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
+<translation id="1051793555070215510">シークレット モードの改善のため、1 分程度のアンケートにご協力ください。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1083934481477628225">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
@@ -84,7 +85,6 @@
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
 <translation id="2137162749895930932">翻訳画面を閉じる</translation>
 <translation id="215352261310130060">このダウンロードは Chromium でブロックされました。サイトで安全な接続が使用されておらず、ファイルが改ざんされている可能性があります</translation>
-<translation id="2157600032285353789">Chromium メニューからブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="2174178932569897599">Chromium をカスタマイズ</translation>
 <translation id="2174917724755363426">インストールは完了していません。キャンセルしてもよろしいですか？</translation>
 <translation id="2185166961232948079">Chromium - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
@@ -357,7 +357,6 @@
 <translation id="5987687638152509985">同期を開始するには、Chromium を更新します</translation>
 <translation id="5988505247484123880">多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をパーソナライズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chromium に保存する場合があります。</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
-<translation id="6019451407441383358">右上の Chromium メニューから、ブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6058380562449900225">データを保護するため、最近アクセスしていないサイトから権限を自動で削除します。通知は停止されません。</translation>
 <translation id="6063093106622310249">Chromium で開く(&amp;O)</translation>

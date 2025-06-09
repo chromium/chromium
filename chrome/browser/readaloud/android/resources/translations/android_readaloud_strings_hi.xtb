@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">वॉइस मेन्यू</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1246424317317450637">बोल्ड टेक्स्ट</translation>
+<translation id="1357114957607379632">एआई की मदद से प्लेबैक जनरेट किया जा रहा है...</translation>
 <translation id="1370273601702151510">पसंद करें</translation>
 <translation id="1483137792530497944">नदी</translation>
 <translation id="1586836055630070874">सुकून भरी आवाज़</translation>
+<translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1666704368140506043">आपत्तिजनक कॉन्टेंट</translation>
 <translation id="1741047078107369903">उत्साह भरी आवाज़</translation>
 <translation id="1807863182207623884">रूबी</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">माफ़ करें, फ़िलहाल इस पेज पर प्लेबैक की सुविधा उपलब्ध नहीं है. कृपया बाद में कोशिश करें.</translation>
 <translation id="3457812538570616687">नापसंद करें</translation>
 <translation id="3493899379487634969">क्या गड़बड़ी हुई?</translation>
+<translation id="3730775656877876887">एआई की मदद से प्लेबैक जनरेट किया जा रहा है</translation>
 <translation id="3778044272390020426">खराब फ़ीडबैक देने वाले विकल्पों का मेन्यू</translation>
 <translation id="3807208219231826020">प्लेहेड को आगे-पीछे करें</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">साफ़ आवाज़</translation>
 <translation id="5234971936051226002">“इस पेज का कॉन्टेंट सुनें” प्लेयर को छोटा किया गया.</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
-<translation id="5526614127710223793">प्लेबैक मोड चुनने वाला</translation>
+<translation id="5528503854289436485">एआई प्लेबैक</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="565342223183747919">प्लेबैक मोड बदलने के लिए टैप करें</translation>
 <translation id="5694491020339060116">वीडियो चलाने की स्पीड दिखाने वाला मेन्यू</translation>
 <translation id="5965409657393819302">तकनीकी समस्या</translation>
 <translation id="6218961554829577610">आवाज़ पसंद नहीं आई</translation>
 <translation id="6315170314923504164">Voice</translation>
-<translation id="6330455646577575965">एआई ऑडियो प्लेबैक</translation>
 <translation id="6343633247422081848">मॉस</translation>
 <translation id="6550675742724504774">विकल्प</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">क्वालिटी और रिसर्च को बेहतर बनाने के लिए, कॉन्टेंट के यूआरएल को सुझाव, शिकायत या राय के साथ अपलोड किया जाएगा.</translation>
 <translation id="8481839122437406573">शांत टोन वाली आवाज़</translation>
 <translation id="8756370108715456837">तथ्यों के हिसाब से सही नहीं है</translation>
-<translation id="881960277396325853">एआई की मदद से ऑडियो जनरेट किया जा रहा है...</translation>
 <translation id="8953618380150219653">“इस पेज का कॉन्टेंट सुनें” प्लेयर पूरी स्क्रीन पर खुला है.</translation>
 <translation id="978117257931832348">कम पिच वाली आवाज़</translation>
 </translationbundle>

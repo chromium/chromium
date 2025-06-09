@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Znova spustiť a aktualizovať &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium odporúča, aby ste toto rozšírenie skontrolovali</translation>
 <translation id="1042552502243217427">Keď nejaký web požiada o súkromné prednačítanie odkazov na svojej stránke, Chromium použije servery Googlu. Týmto sa pred predinštalovaným webom skryje vaša identita, ale Google sa naučí, ktoré weby sa prednačítavajú.</translation>
+<translation id="1051793555070215510">Vyplňte tento minútový prieskum a pomôžte nám tak zlepšiť režim inkognito.</translation>
 <translation id="1065672644894730302">Vaše predvoľby sa nedajú načítať.
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
@@ -86,7 +87,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2126108037660393668">Stiahnutý súbor sa nepodarilo overiť.</translation>
 <translation id="2137162749895930932">Zavrieť obrazovku prekladu</translation>
 <translation id="215352261310130060">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný web nepoužíva zabezpečené pripojenie a v súbore mohol niekto vykonať zmeny</translation>
-<translation id="2157600032285353789">Záložky, režim čítania a ďalší obsah môžete otvoriť v ponuke prehliadača Chromium</translation>
 <translation id="2174178932569897599">Prispôsobiť Chromium</translation>
 <translation id="2174917724755363426">Inštalácia nie je dokončená. Naozaj ju chcete zrušiť?</translation>
 <translation id="2185166961232948079">Chromium – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
@@ -359,7 +359,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5987687638152509985">Ak chcete spustiť synchronizáciu, aktualizujte Chromium</translation>
 <translation id="5988505247484123880">Je bežné, že navštívené weby si pamätajú veci, ktoré vás zaujímajú, aby vám mohli prispôsobiť prostredie. Weby môžu v prehliadači Chromium ukladať aj údaje o vašich záujmoch.</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
-<translation id="6019451407441383358">Záložky, režim čítania a ďalší obsah môžete otvoriť v ponuke prehliadača Chromium vpravo hore</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6058380562449900225">Povoľte prehliadaču Chromium odstraňovať povolenia z webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje. Upozornenia sa tým nedeaktivujú.</translation>
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>

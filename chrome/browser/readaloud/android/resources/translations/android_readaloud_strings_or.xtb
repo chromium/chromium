@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">ଭଏସ ମେନୁ</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1246424317317450637">ବୋଲ୍ଡ</translation>
+<translation id="1357114957607379632">AI ପ୍ଲେବେକ ଜେନେରେଟ କରାଯାଉଛି...</translation>
 <translation id="1370273601702151510">ଥମ୍ବ ଅପ</translation>
 <translation id="1483137792530497944">ନଦୀ</translation>
 <translation id="1586836055630070874">ଶାନ୍ତିଦାୟକ</translation>
+<translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1666704368140506043">ଅପମାନଜନକ ବିଷୟବସ୍ତୁ</translation>
 <translation id="1741047078107369903">ୱାର୍ମ</translation>
 <translation id="1807863182207623884">ରୁବି</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">ଦୁର୍ଭାଗ୍ୟବଶତଃ, ଏହି ସମୟରେ ଏ ପୃଷ୍ଠା ପାଇଁ ପ୍ଲେବେକ ଉପଲବ୍ଧ ନାହିଁ। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3457812538570616687">ଥମ୍ବ ଡାଉନ</translation>
 <translation id="3493899379487634969">କଣ ତ୍ରୁଟି ହୋଇଛି?</translation>
+<translation id="3730775656877876887">AI ପ୍ଲେବେକ ଜେନେରେଟ କରାଯାଉଛି</translation>
 <translation id="3778044272390020426">ନକାରାତ୍ମକ ମତାମତ ବିକଳ୍ପ ମେନୁ</translation>
 <translation id="3807208219231826020">ପ୍ଲେବେକ ସ୍କ୍ରବ କରନ୍ତୁ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">ଉଜ୍ଜ୍ୱଳ</translation>
 <translation id="5234971936051226002">“ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ” ପ୍ଲେୟାରକୁ ଛୋଟ କରାଯାଇଛି।</translation>
 <translation id="5251803541071282808">କ୍ଲାଉଡ୍</translation>
-<translation id="5526614127710223793">ପ୍ଲେବେକ ମୋଡ ଚୟନକାରୀ</translation>
+<translation id="5528503854289436485">AI ପ୍ଲେବେକ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="565342223183747919">ପ୍ଲେବେକ ମୋଡକୁ ସ୍ୱିଚ କରିବା ପାଇଁ ଟାପ କରନ୍ତୁ</translation>
 <translation id="5694491020339060116">ପ୍ଲେବେକ ସ୍ପିଡ ମେନୁ</translation>
 <translation id="5965409657393819302">ଟେକ୍ନିକାଲ ସମସ୍ୟା</translation>
 <translation id="6218961554829577610">ଭଏସକୁ ପସନ୍ଦ କରିନାହାଁନ୍ତି</translation>
 <translation id="6315170314923504164">Voice</translation>
-<translation id="6330455646577575965">AI ଅଡିଓ ପ୍ଲେବେକ</translation>
 <translation id="6343633247422081848">ମୋସ</translation>
 <translation id="6550675742724504774">ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">ଗୁଣବତ୍ତା ଏବଂ ରିସର୍ଚ୍ଚକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ URLକୁ ମତାମତ ସହ ଅପଲୋଡ କରାଯିବ।</translation>
 <translation id="8481839122437406573">ଶାନ୍ତ</translation>
 <translation id="8756370108715456837">ତଥ୍ୟ ଅନୁସାରେ ସଠିକ ନୁହେଁ</translation>
-<translation id="881960277396325853">AI ଅଡିଓ ଜେନେରେଟ କରାଯାଉଛି...</translation>
 <translation id="8953618380150219653">ପୂର୍ଣ୍ଣ ଉଚ୍ଚତାରେ “ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ” ପ୍ଲେୟାର ଖୋଲାଯାଇଛି।</translation>
 <translation id="978117257931832348">ନିମ୍ନ-ପିଚ</translation>
 </translationbundle>

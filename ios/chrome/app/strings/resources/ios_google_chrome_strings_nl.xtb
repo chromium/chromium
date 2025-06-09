@@ -138,7 +138,6 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="4724297637870447613">Chrome overal gebruiken</translation>
 <translation id="4738647308035481133">Google Chrome-pagina</translation>
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>
-<translation id="4749294594657945639">Kies Chrome voor automatisch invullen om je opgeslagen wachtwoorden makkelijk in andere apps te gebruiken.</translation>
 <translation id="4761869838909035636">Chrome-veiligheidscheck uitvoeren</translation>
 <translation id="4798859546468762093">Als je personalisatie en andere functies wilt krijgen, neem je Chrome op in <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin. Geef deze op om Chrome-gegeve
 <translation id="6533470733797826516">Log sneller in met automatisch invullen in Chrome</translation>
 <translation id="6536544321553662809">Stel Chrome in als je standaardbrowser om links makkelijk te delen en te openen</translation>
 <translation id="6545449117344801102">Chrome neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
+<translation id="6611692150236062461">Kies Chrome voor automatisch invullen om je opgeslagen wachtwoorden makkelijk in andere apps te gebruiken.</translation>
 <translation id="6636941099779251629">Je organisatie vereist dat je inlogt om Chrome te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen.</translation>
 <translation id="6647304104688527905">Opent een nieuw tabblad in Chrome.</translation>

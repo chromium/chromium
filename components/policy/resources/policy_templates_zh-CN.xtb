@@ -3051,13 +3051,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="3211426942294667684">浏览器登录设置</translation>
-<translation id="3213872023700948990">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
-
-如果此政策已启用或未设置，则默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。
-
-如果已停用此政策，则默认情况下，滚动条无法通过键盘聚焦。
-
-此政策是一种临时的变通方案，将在 M135 中移除。</translation>
 <translation id="3216094710930835317">系统将停用允许使用更多标记的新 HTML 解析器行为。</translation>
 <translation id="3217774577897351942">我们正在 <ph name="PRODUCT_NAME" /> 中更改 <ph name="OFFSET_PARENT" /> API，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中发生的变更。此政策可用于恢复旧行为，直到 M120。
 
@@ -3144,6 +3137,15 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="3256920103934729145">禁止用户点击 SSL 警告页面</translation>
 <translation id="3257786863492892609">控制与“屏幕录制”功能相关的政策。</translation>
 <translation id="3258380413685430793">运行所有 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
+<translation id="3258754138048508776">此政策用于控制是否在“新标签页”页面上显示 Outlook 卡片。只有在启用此政策且您的组织授权在浏览器中使用 Outlook 日历数据时，此卡片才会显示在“新标签页”页面上。
+
+浏览器不会存储 Outlook 数据。
+
+Outlook 卡片会显示下一个日历活动，并提供当天其余会议的概览。此功能旨在为用户提供查看下一场会议的快捷方式，从而解决上下文切换问题并提高工作效率。
+
+Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了解如何将 Chrome“新标签页”页面卡片连接到 Outlook，请访问 https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards。
+
+如果已停用 <ph name="NTPCARDSVISIBLE" />，系统将不会显示 Outlook 卡片。如果已启用 <ph name="NTPCARDSVISIBLE" />，同时已启用此政策，且有待显示的数据，那么系统将显示 Outlook 卡片。如果未设置 <ph name="NTPCARDSVISIBLE" />，但已启用此政策，同时用户已在“自定义 Chrome”中启用 Outlook 卡片，且有待显示的数据，那么系统将显示 Outlook 卡片。</translation>
 <translation id="3261592499545947104">应在证书还差多少秒到期时触发续订操作</translation>
 <translation id="3262080895269946462">允许第三方情境下的 WebSQL 默认处于停用状态。</translation>
 <translation id="326341982850521928">启用色彩校正</translation>
@@ -4289,7 +4291,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="4164511138197196839">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用 Chrome 应用商店中处于未发布状态的扩展程序。
 此政策仅适用于那些通过 Chrome 应用商店安装和更新的扩展程序。
 
-系统会忽略并非通过 Chrome 应用商店安装的扩展程序，例如：使用开发者模式安装的未封装扩展程序，以及使用命令行开关安装的扩展程序。
+系统会忽略并非通过 Chrome 应用商店安装的扩展程序，例如：使用开发者模式安装的未打包扩展程序，以及使用命令行开关安装的扩展程序。
 系统还会忽略自主托管的强制安装扩展程序。所有已被固定了版本的扩展程序也会被忽略。
 
 如果此政策设为 <ph name="ALLOW_UNPUBLISHED" /> (0) 或未设置，系统将允许使用 Chrome 应用商店中处于未发布状态的扩展程序。
@@ -5556,6 +5558,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
 <translation id="5093603777978346818">不为锁定屏幕启用屏保。</translation>
+<translation id="5099140200662153931">在“新标签页”页面上显示 SharePoint 和 OneDrive 文件卡片</translation>
 <translation id="5099239365323299669">从 M106 开始，永久配额将不再受支持。此政策用于重新启用永久配额功能，直至 M107。
 
       如果此政策已启用，设有“永久”类型的 webkitRequestFileSystem 将使用永久配额运行。
@@ -6213,6 +6216,15 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="5511266910976210617">不允许使用“帮我写”功能。</translation>
 <translation id="5511702823008968136">启用书签栏</translation>
 <translation id="5512418063782665071">主页网址</translation>
+<translation id="5512785896190859782">此政策用于控制是否在“新标签页”页面上显示 SharePoint 和 OneDrive 文件卡片。只有在启用此政策且您的组织授权在浏览器中使用 SharePoint 和 OneDrive 文件数据时，此卡片才会显示在“新标签页”页面上。
+
+浏览器不会存储 SharePoint 和 OneDrive 数据。
+
+SharePoint 和 OneDrive 文件建议卡片会显示建议文件的列表。此功能旨在为用户提供打开最重要文档的快捷方式，从而解决上下文切换问题并提高工作效率。
+
+Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。如需详细了解如何将 Chrome“新标签页”页面卡片连接到 SharePoint，请访问 https://support.google.com/chrome/a?p=chrome_ntp_microsoft_cards。
+
+如果已停用 <ph name="NTPCARDSVISIBLE" />，系统将不会显示 SharePoint 和 OneDrive 卡片。如果已启用 <ph name="NTPCARDSVISIBLE" />，同时已启用此政策，且有待显示的数据，那么系统将显示 SharePoint 和 OneDrive 卡片。如果未设置 <ph name="NTPCARDSVISIBLE" />，但已启用此政策，同时用户已在“自定义 Chrome”中启用 SharePoint 和 OneDrive 卡片，且有待显示的数据，那么系统将显示 SharePoint 和 OneDrive 卡片。</translation>
 <translation id="5516293691820655022">完全关闭 Chrome</translation>
 <translation id="551639594034811656">此政策可指定一个百分比列表，这些百分比用于界定组织部门中每天（从首次发现相应更新的那一天起算）要更新的那部分 <ph name="PRODUCT_OS_NAME" />设备。发现时间会晚于更新发布时间，这是因为设备可能要在更新发布一段时间之后才会检查是否有更新。
 
@@ -6482,6 +6494,13 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 从 <ph name="PRODUCT_OS_NAME" /> 132 版开始支持 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 密钥算法选项。</translation>
 <translation id="5655553344896004108">允许使用已弃用的 U2F Security Key API</translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
+<translation id="5657289110555300740">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
+
+如果此政策已启用或未设置，则默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。
+
+如果此政策已停用，则默认情况下，滚动条无法通过键盘聚焦。
+
+此政策是一种临时的变通方案。自 M139 起，此政策已被弃用。</translation>
 <translation id="5657752663637568277">此政策旨在控制是否在打印预览对话框或设置页面内向用户显示 <ph name="CLOUD_PRINT_NAME" />弃用警告。
       如果此政策设为 True，系统会隐藏弃用警告。
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
@@ -6845,6 +6864,11 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="5917897389577978190">Gmail（自 135 版起受支持）</translation>
 <translation id="592036544845479336">重新启用已弃用/已移除的变更事件</translation>
 <translation id="5921713479449475707">允许通过 HTTP 自动更新下载内容</translation>
+<translation id="5923084443277419535">HTML 解析器将被更改，以允许在 &lt;select&gt; 元素中添加其他 HTML 标记。此政策允许使用旧的 HTML 解析器行为，直至 M138。
+
+如果此政策已启用或未设置，HTML 解析器将允许在 &lt;select&gt; 元素中添加其他标记。
+
+如果此政策已停用，HTML 解析器将限制可放在 &lt;select&gt; 元素中的标记。</translation>
 <translation id="5925405187134730827">此政策已被弃用，因为它控制的功能从未发布。请改用 <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> 政策。
 
 如果此政策未设置或设为 <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />（值为 0），工具栏头像旁边会显示“工作”或“学校”标签。
@@ -9487,11 +9511,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如需详细了解 Internet Explorer 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，请访问 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">不允许用户截图或录屏</translation>
 <translation id="7792796937016596423">用户将无法执行网络数据包捕获流程</translation>
-<translation id="7795648856511126914">HTML 解析器将被更改，以允许在 &lt;select&gt; 元素中添加其他 HTML 标记。此政策允许使用旧的 HTML 解析器行为，直至 M136。
-
-如果此政策已启用或未设置，HTML 解析器将允许在 &lt;select&gt; 元素中添加其他标记。
-
-如果此政策已停用，HTML 解析器将限制可放在 &lt;select&gt; 元素中的标记。</translation>
 <translation id="7798441698807517880">自 <ph name="PRODUCT_NAME" /> 89 版起，此政策已被移除，因为 <ph name="FLASH_PLUGIN_NAME" /> 已被弃用。
 
       如果此政策设为 True，在允许运行 <ph name="FLASH_PLUGIN_NAME" /> 的网站中内嵌的所有 <ph name="FLASH_PLUGIN_NAME" /> 内容（包括其他来源的或不重要的内容）都会正常运行。

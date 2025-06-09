@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">વૉઇસ મેનૂ</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1246424317317450637">ઘાટું</translation>
+<translation id="1357114957607379632">AI પ્લેબૅક જનરેટ કરી રહ્યાં છીએ...</translation>
 <translation id="1370273601702151510">થમ્બ્સ અપ</translation>
 <translation id="1483137792530497944">નદી</translation>
 <translation id="1586836055630070874">હળવોફૂલ</translation>
+<translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
 <translation id="1666704368140506043">અપમાનજનક કન્ટેન્ટ</translation>
 <translation id="1741047078107369903">ઉષ્માસભર</translation>
 <translation id="1807863182207623884">રૂબી</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">કમનસીબે, આ સમયે આ પેજ માટે પ્લેબૅક અનુપલબ્ધ છે. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3457812538570616687">થમ્બ્સ ડાઉન</translation>
 <translation id="3493899379487634969">શું ખોટું થયું?</translation>
+<translation id="3730775656877876887">AI પ્લેબૅક જનરેટ કરી રહ્યાં છીએ</translation>
 <translation id="3778044272390020426">નકારાત્મક પ્રતિસાદના વિકલ્પોનું મેનૂ</translation>
 <translation id="3807208219231826020">પ્લેબૅક સ્ક્રબ કરો</translation>
 <translation id="385051799172605136">પાછળ</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">તેજસ્વી</translation>
 <translation id="5234971936051226002">"આ પેજને સાંભળો" પ્લેયરને નાનું કર્યું.</translation>
 <translation id="5251803541071282808">મેઘ</translation>
-<translation id="5526614127710223793">પ્લેબૅક મોડનું પસંદગીકર્તા</translation>
+<translation id="5528503854289436485">AI પ્લેબૅક</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="565342223183747919">પ્લેબૅક મોડ સ્વિચ કરવા માટે ટૅપ કરો</translation>
 <translation id="5694491020339060116">પ્લેબૅકની સ્પીડનું મેનૂ</translation>
 <translation id="5965409657393819302">ટેક્નિકલ સમસ્યા</translation>
 <translation id="6218961554829577610">વૉઇસ ગમ્યો નહીં</translation>
 <translation id="6315170314923504164">અવાજ</translation>
-<translation id="6330455646577575965">AI ઑડિયો પ્લેબૅક</translation>
 <translation id="6343633247422081848">લીલ</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">ક્વૉલિટી અને રિસર્ચને બહેતર બનાવવા માટે પ્રતિસાદ સાથે તમારું URL અપલોડ કરવામાં આવશે.</translation>
 <translation id="8481839122437406573">શાંત</translation>
 <translation id="8756370108715456837">વાસ્તવિક રીતે ખોટું છે</translation>
-<translation id="881960277396325853">AI ઑડિયો જનરેટ કરી રહ્યાં છીએ...</translation>
 <translation id="8953618380150219653">"આ પેજને સાંભળો" પ્લેયર સંપૂર્ણ સ્ક્રીન પર ખૂલ્યું છે.</translation>
 <translation id="978117257931832348">ઓછી-તીવ્રતા</translation>
 </translationbundle>

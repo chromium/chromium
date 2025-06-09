@@ -138,7 +138,6 @@
 <translation id="4724297637870447613">Chrome をどこでも使用</translation>
 <translation id="4738647308035481133">Google Chrome ページ</translation>
 <translation id="4742795653798179840">Chrome データを削除しました</translation>
-<translation id="4749294594657945639">保存したパスワードを他のアプリで簡単に使用できるようするには、Chrome の自動入力を選択します。</translation>
 <translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
 <translation id="4798859546468762093">パーソナライズなどの機能を利用するには、Chrome を <ph name="FEATURE_NAME_1" /> と、<ph name="FEATURE_NAME_2" /> に追加します</translation>
 <translation id="4819268619367838612">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@
 <translation id="6533470733797826516">Chrome の自動入力機能ですばやくログイン</translation>
 <translation id="6536544321553662809">Chrome を既定のブラウザに設定すると、リンクを簡単に共有したり開いたりできます</translation>
 <translation id="6545449117344801102">Chrome では、住所を検出し、Google マップを使用して経路やローカル情報を表示しています。</translation>
+<translation id="6611692150236062461">保存したパスワードを他のアプリで簡単に使用できるようするには、Chrome の自動入力を選択します。</translation>
 <translation id="6636941099779251629">組織が、Chrome を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">ユーザーの　IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を　Google　に送信することがあります</translation>
 <translation id="6647304104688527905">Chrome で新しいタブを開きます。</translation>
@@ -230,7 +230,7 @@
 
 Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="6922332667202044570">Chrome の閲覧履歴データを削除します。</translation>
-<translation id="6924922227983877439">デフォルトで Chrome を使用してリンクを開く</translation>
+<translation id="6924922227983877439">リンクを開くデフォルトを Chrome にする</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7056826488869329999">Chrome で安全チェックを開いて実行します。</translation>
 <translation id="7061455974939528301">Chrome アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>

@@ -138,7 +138,6 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="4724297637870447613">Utiliser Chrome sur toutes les plateformes</translation>
 <translation id="4738647308035481133">Page Google Chrome</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
-<translation id="4749294594657945639">Pour obtenir facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chrome pour le remplissage automatique.</translation>
 <translation id="4761869838909035636">Effectuer une vérification de sécurité de Chrome</translation>
 <translation id="4798859546468762093">Pour bénéficier de la personnalisation et d'autres fonctionnalités, incluez Chrome dans <ph name="FEATURE_NAME_1" /> et <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utili
 <translation id="6533470733797826516">Connectez-vous plus rapidement avec le remplissage automatique de Chrome</translation>
 <translation id="6536544321553662809">Définissez Chrome comme navigateur par défaut pour partager et ouvrir facilement des liens.</translation>
 <translation id="6545449117344801102">Chrome détecte les adresses et utilise Google Maps pour vous fournir des itinéraires et des informations locales.</translation>
+<translation id="6611692150236062461">Pour obtenir facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chrome pour le remplissage automatique.</translation>
 <translation id="6636941099779251629">Votre organisation vous demande de vous connecter pour utiliser Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Envoie une partie brouillée de l'URL à Google à l'aide d'un serveur confidentiel qui masque votre adresse IP. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut aussi envoyer les URL concernées, y compris des extraits du contenu de pages, à Google.</translation>
 <translation id="6647304104688527905">Ouvre un nouvel onglet dans Chrome.</translation>

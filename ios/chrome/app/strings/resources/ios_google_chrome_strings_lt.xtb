@@ -138,7 +138,6 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="4724297637870447613">„Chrome“ naudojimas visuose įrenginiuose</translation>
 <translation id="4738647308035481133">„Google Chrome“ puslapis</translation>
 <translation id="4742795653798179840">Ištrinti „Chrome“ duomenys</translation>
-<translation id="4749294594657945639">Lengvai gaukite išsaugotus slaptažodžius kitose programose; pasirinkite „Chrome“, norėdami naudoti automatinio pildymo funkciją.</translation>
 <translation id="4761869838909035636">Paleisti „Chrome“ Saugos patikrą</translation>
 <translation id="4798859546468762093">Jei norite naudoti suasmeninimo ir kitas funkcijas, įtraukite „Chrome“ į <ph name="FEATURE_NAME_1" /> ir <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="6533470733797826516">Prisijunkite greičiau naudodami „Chrome“ automatinį pildymą</translation>
 <translation id="6536544321553662809">Nustatykite „Chrome“ kaip numatytąją naršyklę, kad galėtumėte lengvai bendrinti ir atidaryti nuorodas</translation>
 <translation id="6545449117344801102">„Chrome“ aptinka adresus ir naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
+<translation id="6611692150236062461">Lengvai gaukite išsaugotus slaptažodžius kitose programose; pasirinkite „Chrome“, jei norite naudoti automatinio pildymo funkciją.</translation>
 <translation id="6636941099779251629">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Siunčiama klaidinanti URL dalis „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, „Google“.</translation>
 <translation id="6647304104688527905">Atidaromas naujas „Chrome“ skirtukas.</translation>

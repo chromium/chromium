@@ -4,9 +4,11 @@
 <translation id="1173075331199604451">ხმის მენიუ</translation>
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1246424317317450637">მუქი</translation>
+<translation id="1357114957607379632">მიმდინარეობს AI დაკვრის გენერირება...</translation>
 <translation id="1370273601702151510">ზევით აწეული ცერი</translation>
 <translation id="1483137792530497944">მდინარე</translation>
 <translation id="1586836055630070874">დამამშვიდებელი</translation>
+<translation id="1639239467298939599">იტვირთება</translation>
 <translation id="1666704368140506043">შეურაცხმყოფელი კონტენტი</translation>
 <translation id="1741047078107369903">თბილი</translation>
 <translation id="1807863182207623884">Ruby</translation>
@@ -19,6 +21,7 @@
 <translation id="3023502830214299618">სამწუხაროდ, დაკვრა ამჟამად მიუწვდომელია ამ გვერდისთვის. ცადეთ მოგვიანებით.</translation>
 <translation id="3457812538570616687">ქვევით დაწეული ცერი</translation>
 <translation id="3493899379487634969">რა შეცდომა მოხდა?</translation>
+<translation id="3730775656877876887">AI დაკვრის გენერირება</translation>
 <translation id="3778044272390020426">უარყოფითი გამოხმაურების ვარიანტების მენიუ</translation>
 <translation id="3807208219231826020">სკრაბინგით დაკვრა</translation>
 <translation id="385051799172605136">უკან</translation>
@@ -35,14 +38,13 @@
 <translation id="5026371835667036198">მკაფიო</translation>
 <translation id="5234971936051226002">„ამ გვერდის მოსმენის“ დამკვრელი ჩაკეცილია.</translation>
 <translation id="5251803541071282808">ღრუბლოვანი</translation>
-<translation id="5526614127710223793">დაკვრის რეჟიმის ამომრჩევი</translation>
+<translation id="5528503854289436485">AI დაკვრა</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="565342223183747919">შეეხეთ დაკვრის რეჟიმის გადასართველად</translation>
 <translation id="5694491020339060116">დაკვრის სიჩქარის მენიუ</translation>
 <translation id="5965409657393819302">ტექნიკური ხარვეზი</translation>
 <translation id="6218961554829577610">არ მომეწონა ხმა</translation>
 <translation id="6315170314923504164">ხმა</translation>
-<translation id="6330455646577575965">აუდიოს AI დაკვრა</translation>
 <translation id="6343633247422081848">Moss</translation>
 <translation id="6550675742724504774">პარამეტრები</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -65,7 +67,6 @@
 <translation id="8462210863277153423">თქვენი URL აიტვირთება გამოხმაურებასთან ერთად, კვლევისა და ხარისხის გაუმჯობესების მიზნით.</translation>
 <translation id="8481839122437406573">მშვიდი</translation>
 <translation id="8756370108715456837">ფაქტობრივად არ არის სწორი</translation>
-<translation id="881960277396325853">მიმდინარეობს ხელოვნური ინტელექტით აუდიოს გენერირება...</translation>
 <translation id="8953618380150219653">„ამ გვერდის მოსმენის“ დამკვრელი გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="978117257931832348">დაბალი ტონი</translation>
 </translationbundle>

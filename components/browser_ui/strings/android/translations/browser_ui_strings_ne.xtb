@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन दिनुअघि मलाई सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2185965788978862351">तपाईंले यसो गर्नुभयो भने साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{हिजो}other{<ph name="NUM_DAYS_MANY" /> दिनअघि}}</translation>
 <translation id="2215727959747642672">फाइल सम्पादन गर्दै</translation>
 <translation id="2218389616572918761">साइटहरूले तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> लाई आफ्नो क्यामेरा प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6530703012083415527">यो सेटिङ अन भएका बेला साइटहरूले पप-अप तथा रिडिरेक्ट गर्ने सुविधा प्रयोग गर्न सक्छन्। यो सेटिङ अफ भएका बेला साइटहरूले पप-अप तथा रिडिरेक्ट गर्ने सुविधा प्रयोग गर्न सक्दैनन्।</translation>
 <translation id="6540488083026747005">तपाईंले यो साइटमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि}}</translation>
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}}</translation>
 <translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">कुनै साइटले तपाईंको माइक्रोफोन प्रयोग गर्दै छ</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7573594921350120855">साइटहरूले भिडियो च्याट जस्ता सञ्चारका सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको भिडियो क्यामेरा प्रयोग गर्छन्</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिनाअघि}other{<ph name="NUM_MONTHS_MANY" /> महिनाअघि}}</translation>
 <translation id="757524316907819857">साइटहरूलाई संरक्षित सामग्री प्ले गर्न रोक लगाउनुहोस्</translation>
 <translation id="7594634374516752650">कुनै ब्लुटुथ डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="7617547684249261169">तपाईं आफ्ना केही वा सबै हिस्ट्री, कुकी, साइट डेटा र अन्य कुरा मेटाउन सक्नुहुन्छ</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>
 <translation id="7881140103901777395">Chrome ले अधिकांश साइटहरूमा तेस्रो पक्षीय कुकी प्रयोग गर्न दिँदैन। तर यो साइटलाई आधारभूत सेवाहरू प्रदान गर्न तेस्रो पक्षीय कुकी चाहिने भएकाले यो साइटमा ती तेस्रो पक्षीय कुकी प्रयोग गर्ने अनुमति दिइएको छ।\n\n<ph name="BEGIN_LINK" />तेस्रो पक्षीय कुकीको प्रयोग व्यवस्थापन गर्न<ph name="END_LINK" /> सेटिङमा जानुहोस्।</translation>
 <translation id="7882806643839505685">निश्चित साइटको ध्वनिलाई अनुमति दिनुहोस्‌।</translation>
+<translation id="7891547341794213004">"यो ट्याब प्रयोग गर्न जारी राख्नुहोस्" कार्ड लुकाउनुहोस्</translation>
 <translation id="789180354981963912">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरू ब्लक गर्नुहोस्:</translation>
 <translation id="789722939441020330">साइटहरूलाई एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="7940722705963108451">मलाई स्मरण गराइयोस्</translation>

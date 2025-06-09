@@ -94,6 +94,7 @@
 <translation id="2182457891543959921">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
 <translation id="2185965788978862351">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಲ್ಲಿರುವ ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಸೈಟ್‌ಗಳ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ <ph name="DATASIZE" /> ರಷ್ಟು ಡೇಟಾ ಹಾಗೂ ಕುಕೀಗಳನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ.</translation>
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{ನಿನ್ನೆ}one{<ph name="NUM_DAYS_MANY" /> ದಿನಗಳ ಹಿಂದೆ}other{<ph name="NUM_DAYS_MANY" /> ದಿನಗಳ ಹಿಂದೆ}}</translation>
 <translation id="2215727959747642672">ಫೈಲ್ ಎಡಿಟ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="2218389616572918761">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಕ್ಯಾಮರಾವನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -250,7 +251,7 @@
 <translation id="3965467402665811906">ನಿಮ್ಮ ಕುರಿತು ಸೈಟ್‌ಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3981465354637804599">ಕಂಟೆಂಟ್ ಅಥವಾ ಸೇವೆಗಳನ್ನು ಶುಲ್ಕವಿಲ್ಲದೇ ಒದಗಿಸುವ ಸಲುವಾಗಿ ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ. ಆದರೆ, ಕೆಲವು ಸೈಟ್‌ಗಳು ಅನಪೇಕ್ಷಿತ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತವೆ.</translation>
-<translation id="3987993985790029246">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="3987993985790029246">ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992308058851451478">ನೀವು ಈ ಸೈಟ್‌ಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡುವಾಗ <ph name="SITE" /> ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="3992684624889376114">ಈ ಪುಟದ ಕುರಿತು</translation>
@@ -446,6 +447,7 @@
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
 <translation id="6530703012083415527">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ಪಾಪ್-ಅಪ್‌ಗಳು ಮತ್ತು ರೀಡೈರೆಕ್ಟ್‌ಗಳನ್ನು ಬಳಸಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳಿಗೆ ಪಾಪ್-ಅಪ್‌ಗಳು ಮತ್ತು ರೀಡೈರೆಕ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6540488083026747005">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದ್ದೀರಿ</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ವಾರದ ಹಿಂದೆ}one{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ}other{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ}}</translation>
 <translation id="6545864417968258051">ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6554732001434021288">ಕೊನೆಯದಾಗಿ <ph name="NUM_DAYS" /> ದಿನಗಳ ಹಿಂದೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
@@ -519,6 +521,7 @@
 <translation id="7554752735887601236">ಒಂದು ಸೈಟ್ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7561196759112975576">ಯಾವಾಗಲೂ</translation>
 <translation id="7573594921350120855">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ವೀಡಿಯೊ ಚಾಟಿಂಗ್‌ನಂತಹ ಸಂವಾದಾತ್ಮಕ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ ವೀಡಿಯೊ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ತಿಂಗಳ ಹಿಂದೆ}one{<ph name="NUM_MONTHS_MANY" /> ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{<ph name="NUM_MONTHS_MANY" /> ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="757524316907819857">ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="7594634374516752650">ಬ್ಲೂಟೂತ್ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7617547684249261169">ನಿಮ್ಮ ಡೇಟಾದ ಒಂದಷ್ಟು ಭಾಗ ಅಥವಾ ಎಲ್ಲಾ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೀವು ಅಳಿಸಬಹುದು</translation>
@@ -540,6 +543,7 @@
 <translation id="7846076177841592234">ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="7881140103901777395">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಬಳಸದಂತೆ Chrome ಸೈಟ್‌ಗಳನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ. ಆದರೆ ಈ ಸೈಟ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ಅದು ಮೂಲಭೂತ ಸೇವೆಗಳನ್ನು ಒದಗಿಸಲು ಅವುಗಳ ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿದೆ.\n\n<ph name="BEGIN_LINK" />ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ನಿರ್ವಹಿಸಲು<ph name="END_LINK" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="7882806643839505685">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ನ ಧ್ವನಿಯನ್ನು ಅನುಮತಿಸಿ.</translation>
+<translation id="7891547341794213004">ಈ ಟ್ಯಾಬ್ ಕಾರ್ಡ್ ಮೂಲಕ ಮುಂದುವರಿಯುವುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="789180354981963912">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ:</translation>
 <translation id="789722939441020330">ಅನೇಕ ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7940722705963108451">ನನಗೆ ರಿಮೈಂಡ್ ಮಾಡಿ</translation>

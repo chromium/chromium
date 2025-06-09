@@ -473,7 +473,6 @@
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
 <translation id="1312811472299082263">Ansible Playbook または Crostini のバックアップ ファイルから作成する</translation>
 <translation id="13130607084115184">保存したパスワードはこちらに表示されます。このデバイスの <ph name="BRAND" /> にパスワードをインポートするには、<ph name="BEGIN_LINK" />CSV ファイルを選択<ph name="END_LINK" />してください。</translation>
-<translation id="1313264149528821971"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" />を削除しました</translation>
 <translation id="1313405956111467313">自動プロキシ設定</translation>
 <translation id="131364520783682672">CapsLock</translation>
 <translation id="1313660246522271310">タブで表示中のサイトも含め、すべてのサイトからログアウトします</translation>
@@ -4168,6 +4167,7 @@
 <translation id="3876219572815410515">ウィンドウを上方向にサイズ変更しました</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
 <translation id="3877209288227498506">タブ マウスオーバーのプレビュー カードにメモリ使用量と画像を表示するかどうかを選択する</translation>
+<translation id="3877603629930976930">共有しない</translation>
 <translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3880513902716032002">アクセスするページの一部はプリロードされます</translation>
@@ -4593,7 +4593,6 @@
 <translation id="4190492351494485814">初期設定では、Chromebook とファイルを同期するためインターネットに接続する必要があります</translation>
 <translation id="4190828427319282529">キーボード フォーカスをハイライト表示する</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> で受信しますか？</translation>
-<translation id="4192024474038595073">{NUM_SITES,plural, =1{使用されていない 1 件のサイトの権限を削除しました}other{使用されていない {NUM_SITES} 件のサイトの権限を削除しました}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> 限定です。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />生成 AI は試験運用版で開発の初期段階のため、現時点では利用が制限されています。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">信頼できる CA</translation>
 <translation id="4193575319002689239">カードを表示</translation>
@@ -5145,7 +5144,6 @@
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
-<translation id="4588497044036650559">新しいタブページ拡張機能のオプション ページを現在のタブで開く</translation>
 <translation id="4588749726511456218">スクロールの高速化<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> と <ph name="DOMAIN" /> は関連しているようです。<ph name="DOMAIN" /> が信用できるか確認してから、パスワードを使用してください。</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
@@ -6106,6 +6104,7 @@
 <translation id="5278823018825269962">ステータス ID</translation>
 <translation id="5279600392753459966">すべてブロックする</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
+<translation id="5280303168922585051">これは組織によって設定されました。この検索エンジンを削除してもよろしいですか？</translation>
 <translation id="5280426389926346830">ショートカットを作成しますか？</translation>
 <translation id="5281013262333731149">次で開く: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android アプリをダウンロードして使用するには、まずこの必須のアップデートをインストールする必要があります。<ph name="DEVICE_TYPE" /> の更新中、ご利用いただくことはできません。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動されます。</translation>
@@ -6231,7 +6230,6 @@
 <translation id="5376931455988532197">ファイル サイズが大きすぎます</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5379140238605961210">マイクへのアクセスを引き続きブロックする</translation>
-<translation id="5380424552031517043"><ph name="PERMISSION" />を削除しました</translation>
 <translation id="5380526436444479273">数分待ってから、もう一度お試しください</translation>
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5384401776498845256">共有を許可する対象</translation>
@@ -6967,7 +6965,6 @@
 <translation id="5916664084637901428">オン</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5919305207330938913">すべてのデータは、Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に沿って使用されます。</translation>
-<translation id="5919486630433391408">ファームウェアの更新は管理者によって無効にされています。</translation>
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
 <translation id="5922963926582976524">インスタント アクセス ポイント ネットワークとの接続を解除する</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> ヘルプ</translation>
@@ -7089,7 +7086,6 @@
 <translation id="6003479444341796444">タイトルバーが表示されました</translation>
 <translation id="6003582434972667631">テーマは組織によって設定されています</translation>
 <translation id="6005045517426700202">レンガ造りの建物</translation>
-<translation id="6006392003290068688"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を削除しました</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007053304250788613">ミラーモードで除外できるディスプレイは 1 つだけです</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
@@ -8440,6 +8436,7 @@
 <translation id="69739764870135975">既定の検索エンジンが Google の場合は、コンテンツとより関連性の高い候補が表示されます</translation>
 <translation id="697508444536771064">Linux をシャットダウン</translation>
 <translation id="6978121630131642226">検索エンジン</translation>
+<translation id="6978236010531171013">このまま共有</translation>
 <translation id="6978717888677691380">ブロックしたウェブサイト</translation>
 <translation id="6979041727349121225">省エネモード</translation>
 <translation id="6979044105893951891">管理対象のゲスト セッションの開始と終了</translation>
@@ -8540,7 +8537,6 @@
 <translation id="7039912931802252762">Microsoft スマート カード ログオン</translation>
 <translation id="7039951224110875196">お子様用の Google アカウントを作成する</translation>
 <translation id="7039968672732182060">この Chromebook は、セキュリティ アップデートの提供が終了しました。最新のセキュリティとソフトウェアにアップグレードしましょう。特典の利用規約が適用されます。</translation>
-<translation id="7041405817194720353"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="COUNT" /> 個を削除しました</translation>
 <translation id="7042116641003232070">デバイスへのデータの保存を許可しました</translation>
 <translation id="7043108582968290193">完了しました。互換性のないアプリケーションは見つかりませんでした。</translation>
 <translation id="7044124535091449260">サイトアクセスの詳細</translation>
@@ -8656,6 +8652,7 @@
 <translation id="7131896909366247105"><ph name="APP_NAME" />、待機中</translation>
 <translation id="7132886488919643383">Google AI による読み取り、書き込み、作成のサポートを使用する</translation>
 <translation id="7134098520442464001">テキストを縮小する</translation>
+<translation id="7134653428559514680">このサイトからの共有は推奨されていません</translation>
 <translation id="7134951043985383439">危険なファイルをダウンロードしました</translation>
 <translation id="7135729336746831607">Bluetooth をオンにしますか？</translation>
 <translation id="7136694880210472378">デフォルトに設定</translation>
@@ -9102,6 +9099,7 @@
 <translation id="7460045493116006516">インストールした現在のテーマ</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
+<translation id="7463068149674892185">この操作は推奨されていません</translation>
 <translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">これらの機能で収集されるデータの使用方法は組織が管理しています。</translation>
 <translation id="7464645554245611385">このタブの最終更新</translation>
@@ -11002,7 +11000,7 @@
 これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システム、IP アドレスに関する情報が含まれます。</translation>
 <translation id="876956356450740926">デベロッパー ツール、IDE、エディタを実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
-<translation id="8773535891252326047">選択箇所にリンクをコピーしました</translation>
+<translation id="8773535891252326047">選択箇所のリンクをコピーしました</translation>
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>
@@ -11664,7 +11662,6 @@
 <translation id="934244546219308557">このグループに名前を付ける</translation>
 <translation id="93480724622239549">バグまたはエラー</translation>
 <translation id="9354763467503131">デバイスへのウェブアプリのインストールを要求できるサイト</translation>
-<translation id="936329857119665832">現在のタブで開く</translation>
 <translation id="936646668635477464">カメラとマイク</translation>
 <translation id="936801553271523408">システム診断データ</translation>
 <translation id="93766956588638423">拡張機能を修復</translation>

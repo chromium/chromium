@@ -5,6 +5,7 @@
 <translation id="1029669172902658969">Starta om för att uppdatera &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Du rekommenderas av Chromium att granska detta tillägg</translation>
 <translation id="1042552502243217427">När en webbplats frågar om dess länkar ska läsas in privat i förväg använder Chromium Googles servrar. Det innebär att din identitet döljs från den förinlästa webbplatsen, men Google får reda på vilka webbplatser som läses in i förväg.</translation>
+<translation id="1051793555070215510">Hjälp oss att förbättra inkognitoläget genom att svara på den här enkäten på en minut.</translation>
 <translation id="1065672644894730302">Det går inte att läsa inställningarna.
 
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
@@ -87,7 +88,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2126108037660393668">Den nedladdade filen gick inte att verifiera.</translation>
 <translation id="2137162749895930932">Stäng översättningsskärmen</translation>
 <translation id="215352261310130060">Den här nedladdningen blockerades av Chromium eftersom webbplatsen inte använder en säker anslutning och filen kan ha manipulerats</translation>
-<translation id="2157600032285353789">Du kan öppna bokmärken, läsläge och annat via Chromium-menyn</translation>
 <translation id="2174178932569897599">Anpassa Chromium</translation>
 <translation id="2174917724755363426">Installationen är inte klar. Är du säker på att du vill avbryta?</translation>
 <translation id="2185166961232948079">Chromium – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
@@ -360,7 +360,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5987687638152509985">Du måste uppdatera Chromium innan synkroniseringen kan starta</translation>
 <translation id="5988505247484123880">Det är vanligt att webbplatser du besöker kommer ihåg sådant som intresserar dig för att anpassa din upplevelse. Webbplatser kan även lagra information om dina intressen i Chromium.</translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
-<translation id="6019451407441383358">Du kan öppna bokmärken, läsläge och annat via Chromium-menyn uppe till höger</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6058380562449900225">Låt Chromium ta bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data. Detta stoppar inte aviseringar.</translation>
 <translation id="6063093106622310249">&amp;Öppna i Chromium</translation>

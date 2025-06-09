@@ -96,6 +96,7 @@
 <translation id="2182457891543959921">Сайттар айланаңыздын 3D картасын түзгөнү же камераңыздын абалын көргөнү жатканда уруксат суралсын (сунушталат)</translation>
 <translation id="2185965788978862351">Ушуну менен сайттар жана колдонмолор Башкы экраныңызда сактаган маалымат менен cookie файлдар ээлеп турган <ph name="DATASIZE" /> орун бошотулат.</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
+<translation id="2202902749237646524">{NUM_DAYS,plural, =1{Кечээ}other{<ph name="NUM_DAYS_MANY" /> күн мурун}}</translation>
 <translation id="2215727959747642672">Файл түзөтүү</translation>
 <translation id="2218389616572918761">Сайттар сиздин уруксатыңыз менен микрофонуңузду колдоно алат</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> колдонмосуна камерага кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Параметрлеринен<ph name="END_LINK" /> камераны күйгүзүңүз.</translation>
@@ -448,6 +449,7 @@
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6530703012083415527">Бул параметр күйүп турганда, сайттар калкыма терезелер менен багыттоолорду колдоно алат. Бул параметр өчүп турганда, сайттар калкыма терезелер менен багыттоолорду колдоно алышпайт.</translation>
 <translation id="6540488083026747005">Бул сайтта үчүнчү тараптын cookie файлдарына уруксат бердиңиз</translation>
+<translation id="6542770556219257399">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> апта мурун}other{<ph name="NUM_WEEKS_MANY" /> апта мурун}}</translation>
 <translation id="6545864417968258051">Bluetooth түзмөктөрүн издөө</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}}</translation>
 <translation id="6554732001434021288">Акыркы жолу <ph name="NUM_DAYS" /> күн мурун кирген</translation>
@@ -521,6 +523,7 @@
 <translation id="7554752735887601236">Сайт микрофонуңузду колдонуп жатат</translation>
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7573594921350120855">Сайттар адатта видео маек сыяктуу байланыш функциялары үчүн видеокамераңызды колдонот</translation>
+<translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай мурун}other{<ph name="NUM_MONTHS_MANY" /> ай мурун}}</translation>
 <translation id="757524316907819857">Сайттарга корголгон мазмунду ойнотууга тыюу салынсын</translation>
 <translation id="7594634374516752650">Bluetooth түзмөгүнө туташтырылды</translation>
 <translation id="7617547684249261169">Таржымалыңыздын, cookie файлдарыңыздын, сайттагы маалыматыңыздын айрымдарын же баарын өчүрө аласыз</translation>
@@ -542,6 +545,7 @@
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
 <translation id="7881140103901777395">Chrome көпчүлүк сайттардын үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн чектейт. Бирок бул сайтта үчүнчү тараптын cookie файлдарын колдонууга уруксат берилген, анткени бул негизги кызматтарды көрсөтүү үчүн керек.\n\n<ph name="BEGIN_LINK" />Үчүнчү тараптын cookie файлдарына кирүү мүмкүнчүлүгүн тескөө<ph name="END_LINK" /> үчүн параметрлерге өтүңүз.</translation>
 <translation id="7882806643839505685">Белгилүү бир сайтка добуш чыгарууга уруксат берүү.</translation>
+<translation id="7891547341794213004">Бул өтмөк картасы менен улантуу параметрин жашыруу</translation>
 <translation id="789180354981963912">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө:</translation>
 <translation id="789722939441020330">Сайттар бир нече файлды автоматтык түрдө жүктөп ала албасын</translation>
 <translation id="7940722705963108451">Эскертилсин</translation>

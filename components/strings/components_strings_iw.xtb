@@ -71,7 +71,6 @@
 <translation id="1118429183611783760">שואבי אבק וחומרי ניקיון לרצפות</translation>
 <translation id="1122714970786750095">אלקטרוניקה וחשמל</translation>
 <translation id="1123753900084781868">הכתוביות המיידיות לא זמינות עכשיו.</translation>
-<translation id="1125453215844207206">‏גרפיקה ללא תיאור. מתבצע חילוץ טקסט שמבוסס על AI מבית Google</translation>
 <translation id="112840717907525620">המטמון של המדיניות תקין</translation>
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
 <translation id="1138458427267715730">קבלת התראות כשיש הנחות באתרים באינטרנט</translation>
@@ -326,7 +325,6 @@
 <translation id="1549470594296187301">‏JavaScript צריך להיות מופעל כדי להשתמש בתכונה זו.</translation>
 <translation id="1553152622374372421">ענפי ספורט חורף</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
-<translation id="1554485704925237240">שליטה בקוראים בשם <ph name="READERNAME" /> ובכרטיסים החכמים שנקראים באמצעותם</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1555191101192706055">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם.</translation>
 <translation id="1559231233244409191">Cardboard (Triple Wall)</translation>
@@ -846,6 +844,7 @@
 <translation id="2399344929880464793">‏ה-IBAN הזה נשמר בחשבון Google, כך שאפשר להשתמש בו בכל שירותי Google.</translation>
 <translation id="2399868464369312507">‏Google Chrome מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="2400263725572336749">הוספת דרכון</translation>
+<translation id="2400271059665846158">‏ניהול כרטיסי מועדון הלקוחות ב-Google Wallet</translation>
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
 <translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
 <translation id="2413155254802890957">ישנה</translation>
@@ -952,6 +951,7 @@
 <translation id="258135245577667916">כרטיסייה נוספה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2587841377698384444">‏מזהה Directory API:</translation>
+<translation id="2588322182880276190">‏הלוגו של Chrome</translation>
 <translation id="2593272815202181319">רוחב אחיד</translation>
 <translation id="2594318783181750337">תצוגה מהירה באינטרנט:</translation>
 <translation id="2595719060046994702">המכשיר והחשבון לא מנוהלים על-ידי חברה או ארגון אחר.</translation>
@@ -1360,7 +1360,7 @@
 <translation id="3325027355611702542">קרוואנים נגררים וקרוואנים ממונעים</translation>
 <translation id="3325568918769906282">בסדר יורד</translation>
 <translation id="3325662270238538525">גישה לקובץ ולשינויים שבוצעו לאחרונה, כולל שמות קבצים, טביעות אצבע דיגיטליות של תוכן הקובץ, מקור ההורדה ומטא-נתונים</translation>
-<translation id="3329013043687509092">רווייה</translation>
+<translation id="3329013043687509092">רוויה</translation>
 <translation id="3333762389743153920">לא עומד בדרישות להגדרה ככרטיס וירטואלי</translation>
 <translation id="3336044043987989409">ניתן ללחוץ על כפתור הטעינה מחדש כדי לאפשר חיבור למכשירים או לשרתים ברשת הפרטית שלך.</translation>
 <translation id="3338095232262050444">מאובטח</translation>
@@ -1437,7 +1437,7 @@
 <translation id="3453962258458347894">מספר ניסיונות חוזרים</translation>
 <translation id="3457781733462096492">ראפ והיפ-הופ</translation>
 <translation id="3461266716147554923"><ph name="URL" /> רוצה גישה אל טקסט ותמונות שהועתקו אל לוח העריכה.</translation>
-<translation id="3461824795358126837">כלי הדגשה</translation>
+<translation id="3461824795358126837">מרקר</translation>
 <translation id="3462200631372590220">הסתרת פרטים מתקדמים</translation>
 <translation id="3465972433695735758">‏אין גישה לקובץ ה-PDF הזה. הטקסט חולץ באמצעות AI מבית Google.</translation>
 <translation id="346601286295919445">כימיה</translation>
@@ -1621,7 +1621,6 @@
 <translation id="3728173127485570463">‏דפדפן Chrome לא ידרוש יותר את טביעת האצבע שלך כדי למלא אוטומטית סיסמאות</translation>
 <translation id="3736739313435669994">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
-<translation id="3738428049780661523">תאריך היצירה: <ph name="DATE" /></translation>
 <translation id="3739842843727261045">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה</translation>
 <translation id="3740447166056383374">נדרשת בדיקה לפני ההעתקה</translation>
 <translation id="374325029554577103">מוצרי כושר טכנולוגיים</translation>
@@ -2261,6 +2260,7 @@ Del</translation>
 <translation id="4844937814014739139">גלילה ושינוי מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="484671803914931257">קבלת הנחות על מוצרים של <ph name="MERCHANT_NAME" /> ועוד</translation>
 <translation id="484988093836683706">שימוש בביטול נעילת המכשיר</translation>
+<translation id="4850669014075537160">גלילה</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="4855395119669662878">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
@@ -2827,6 +2827,7 @@ Del</translation>
 <translation id="5826507051599432481">‏שם נפוץ (CN)</translation>
 <translation id="5830698870816298009">שימוש במצלמה והזזה שלה</translation>
 <translation id="583281660410589416">לא ידוע</translation>
+<translation id="5832976493438355584">נעול</translation>
 <translation id="5837220895135257862">צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> לפני הניסיון הבא</translation>
 <translation id="5838278095973806738">אין להזין מידע רגיש באתר הזה (כמו סיסמאות או מספרי כרטיסי אשראי), מאחר שתוקפים עלולים לקבל אליו גישה.</translation>
 <translation id="5838732667866024867">אפשר לבדוק את שינויי המחירים בתרשים באמצעות החץ ימינה או החץ שמאלה.</translation>
@@ -3514,7 +3515,6 @@ Del</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979302985396162258">‏ניהול הגישה לקובצי Cookie של צד שלישי</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
-<translation id="6984270784814146224">‏תמונה ללא תווית. מתבצע חילוץ טקסט שמבוסס על AI מבית Google</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989256887001961296">התוכן הזה חסום.</translation>
 <translation id="6989763994942163495">הצגת הגדרות מתקדמות...</translation>
@@ -4809,6 +4809,7 @@ Del</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="9222403027701923763">‏בית ספר יסודי ותיכון (K-12)</translation>
+<translation id="922849469395748170">כרטיסי מועדון לקוחות</translation>
 <translation id="93020190163435405">התמחות</translation>
 <translation id="931598121743515856">סכום הרכישה חייב להיות גבוה מ-<ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>

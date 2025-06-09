@@ -138,7 +138,6 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="4724297637870447613">Bruk Chrome overalt</translation>
 <translation id="4738647308035481133">Google Chrome-side</translation>
 <translation id="4742795653798179840">Slettede Chrome-data</translation>
-<translation id="4749294594657945639">Bruk Chrome for Autofyll for å få enkel tilgang til de lagrede passordene dine i andre apper.</translation>
 <translation id="4761869838909035636">Kjør Chrome-sikkerhetssjekk</translation>
 <translation id="4798859546468762093">For å få personlig tilpasning og andre funksjoner må du inkludere Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
@@ -215,6 +214,7 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="6533470733797826516">Logg på raskere med autofyll i Chrome</translation>
 <translation id="6536544321553662809">Angi Chrome som standardnettleser for å dele og åpne linker enkelt</translation>
 <translation id="6545449117344801102">Chrome registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
+<translation id="6611692150236062461">Bruk Chrome for Autofyll for å få enkel tilgang til de lagrede passordene dine i andre apper.</translation>
 <translation id="6636941099779251629">Organisasjonen din krever at du logger på for å bruke Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google.</translation>
 <translation id="6647304104688527905">Åpner en ny fane i Chrome.</translation>
