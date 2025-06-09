@@ -291,9 +291,10 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
   // Overrides of EventLogger:Delegate.
   // This is a long-live app and doesn't actually store the next allowed time
   // for relaunch.
-  bool StoreNextAllowedAttemptTime(base::Time time) override { return true; }
-  std::optional<base::Time> GetNextAllowedAttemptTime() const override {
-    return std::nullopt;
+  void StoreNextAllowedAttemptTime(base::Time,
+                                   base::OnceClosure callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   void DoPostRequest(const std::string& request_body,
@@ -404,7 +405,9 @@ class EnterpriseCompanionEventLoggerImpl
  public:
   explicit EnterpriseCompanionEventLoggerImpl(
       std::unique_ptr<EventTelemetryLogger::Delegate> logger_delegate)
-      : impl_(EventTelemetryLogger::Create(std::move(logger_delegate))) {}
+      : impl_(EventTelemetryLogger::Create(
+            std::move(logger_delegate),
+            /*first_allowed_attempt_time=*/std::nullopt)) {}
   EnterpriseCompanionEventLoggerImpl() = delete;
   EnterpriseCompanionEventLoggerImpl(
       const EnterpriseCompanionEventLoggerImpl&) = delete;

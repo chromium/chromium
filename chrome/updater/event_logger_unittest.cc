@@ -189,21 +189,11 @@ TEST_F(EventLoggerTest, StoreNextAllowedAttemptTime) {
   static constexpr base::Time kExpectedTime =
       base::Time::FromSecondsSinceUnixEpoch(100);
 
-  delegate_->StoreNextAllowedAttemptTime(kExpectedTime);
+  base::RunLoop run_loop;
+  delegate_->StoreNextAllowedAttemptTime(kExpectedTime, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_EQ(persisted_data_->GetNextAllowedLoggingAttemptTime(), kExpectedTime);
-}
-
-TEST_F(EventLoggerTest, GetNextAllowedAttemptTime) {
-  static constexpr base::Time kExpectedTime =
-      base::Time::FromSecondsSinceUnixEpoch(100);
-  persisted_data_->SetNextAllowedLoggingAttemptTime(kExpectedTime);
-
-  EXPECT_EQ(delegate_->GetNextAllowedAttemptTime(), kExpectedTime);
-}
-
-TEST_F(EventLoggerTest, GetNextAllowedAttemptTimeNull) {
-  EXPECT_EQ(delegate_->GetNextAllowedAttemptTime(), std::nullopt);
 }
 
 TEST_F(EventLoggerTest, SerializesEvents) {

@@ -13,14 +13,17 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/telemetry_logger/proto/log_request.pb.h"
@@ -58,10 +61,33 @@ std::string GetLoggingCookieValue(base::Time now,
   return logging_cookie->value;
 }
 
+proto::Omaha4UsageStatsMetadata GetMetadata(
+    UpdaterScope scope,
+    scoped_refptr<Configurator> configurator,
+    bool is_cloud_managed) {
+  proto::Omaha4UsageStatsMetadata metadata;
+
+  metadata.set_platform(configurator->GetOSLongName());
+  metadata.set_os_version(base::SysInfo::OperatingSystemVersion());
+  metadata.set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
+  metadata.set_o4_omaha_cohort_id(
+      configurator->GetPersistedData()->GetCohort(kUpdaterAppId));
+  metadata.set_app_version(kUpdaterVersion);
+  metadata.set_is_machine(IsSystemInstall(scope));
+  metadata.set_is_cbcm_managed(is_cloud_managed);
+  std::optional<bool> externally_managed =
+      configurator->IsMachineExternallyManaged();
+  if (externally_managed.has_value()) {
+    metadata.set_is_domain_joined(*externally_managed);
+  }
+  return metadata;
+}
+
 }  // namespace
 
-using PostRequestCompleteCallback =
-    ::update_client::NetworkFetcher::PostRequestCompleteCallback;
+using HttpRequestCallback =
+    base::OnceCallback<void(std::optional<int> http_status,
+                            std::optional<std::string> response_body)>;
 using ::updater::proto::Omaha4Metric;
 using ::updater::proto::Omaha4UsageStatsExtension;
 using ::updater::proto::Omaha4UsageStatsMetadata;
@@ -72,29 +98,30 @@ RemoteLoggingDelegate::RemoteLoggingDelegate(
     bool is_cloud_managed,
     scoped_refptr<Configurator> configurator,
     std::unique_ptr<base::Clock> clock)
-    : scope_(scope),
-      event_logging_url_(event_logging_url),
-      is_cloud_managed_(is_cloud_managed),
+    : event_logging_url_(event_logging_url),
+      metadata_(::updater::GetMetadata(scope, configurator, is_cloud_managed)),
+      minimum_cooldown_(configurator->MinimumEventLoggingCooldown()),
       configurator_(configurator),
       clock_(std::move(clock)),
-      persisted_data_(configurator_->GetUpdaterPersistedData()) {}
+      persisted_data_(configurator_->GetUpdaterPersistedData()),
+      main_sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 RemoteLoggingDelegate::~RemoteLoggingDelegate() = default;
 
-bool RemoteLoggingDelegate::StoreNextAllowedAttemptTime(base::Time time) {
+void RemoteLoggingDelegate::StoreNextAllowedAttemptTime(
+    base::Time time,
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  persisted_data_->SetNextAllowedLoggingAttemptTime(time);
-  return true;
-}
-
-std::optional<base::Time> RemoteLoggingDelegate::GetNextAllowedAttemptTime()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Time time = persisted_data_->GetNextAllowedLoggingAttemptTime();
-  if (time.is_null()) {
-    return std::nullopt;
-  }
-  return time;
+  main_sequence_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<PersistedData> persisted_data, base::Time time) {
+            persisted_data->SetNextAllowedLoggingAttemptTime(time);
+          },
+          persisted_data_, time),
+      std::move(callback));
 }
 
 void RemoteLoggingDelegate::DoPostRequest(
@@ -103,57 +130,83 @@ void RemoteLoggingDelegate::DoPostRequest(
                             std::optional<std::string> response_body)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (network_fetcher_) {
-    VLOG(1) << "Refusing to perform a concurrent logging request";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::nullopt, std::nullopt));
-    return;
-  }
-
-  network_fetcher_ = configurator_->GetNetworkFetcherFactory()->Create();
-  if (!network_fetcher_) {
-    VLOG(1) << "Failed to create network fetcher for logging request";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::nullopt, std::nullopt));
-    return;
-  }
-
-  network_fetcher_->PostRequest(
-      this->event_logging_url_, request_body, "text/plain",
-      {{update_client::NetworkFetcher::kHeaderCookie,
-        base::StrCat(
-            {"NID=", GetLoggingCookieValue(clock_->Now(), persisted_data_)})}},
-      base::BindRepeating(&RemoteLoggingDelegate::ResponseStart,
-                          weak_factory_.GetWeakPtr()),
-      /*progress_callback=*/base::DoNothing(),
+  main_sequence_->PostTask(
+      FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<RemoteLoggingDelegate> weak_this,
-             base::OnceCallback<void(std::optional<int> http_status,
+          [](scoped_refptr<Configurator> configurator, const GURL& url,
+             const std::string& request_body, base::Time now,
+             base::OnceCallback<void(std::optional<int>,
                                      std::optional<std::string> response_body)>
-                 callback,
-             std::optional<std::string> response_body, int net_error,
-             const std::string& header_etag,
-             const std::string& header_x_cup_server_proof,
-             const std::string& header_set_cookie,
-             int64_t xheader_retry_after_sec) {
-            if (!weak_this) {
-              VLOG(1)
-                  << "The logging delegate destroyed before an HTTP request "
-                     "completed";
+                 callback) {
+            std::unique_ptr<update_client::NetworkFetcher> fetcher =
+                configurator->GetNetworkFetcherFactory()->Create();
+            if (!fetcher) {
+              VLOG(1) << "Failed to create network fetcher for logging request";
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
                                             std::nullopt));
               return;
             }
-            weak_this->ResponseComplete(
-                std::move(callback), response_body, net_error, header_etag,
-                header_x_cup_server_proof, header_set_cookie,
-                xheader_retry_after_sec);
+            // The fetcher and response code are retained by
+            // the completion callback.
+            auto response_code =
+                std::make_unique<std::optional<int>>(std::nullopt);
+            std::optional<int>* response_code_ptr = response_code.get();
+            update_client::NetworkFetcher* fetcher_ptr = fetcher.get();
+
+            fetcher_ptr->PostRequest(
+                url, request_body, "application/x-protobuffer",
+                {{update_client::NetworkFetcher::kHeaderCookie,
+                  base::StrCat(
+                      {"NID=",
+                       GetLoggingCookieValue(
+                           now, configurator->GetUpdaterPersistedData())})}},
+                base::BindRepeating(
+                    [](std::optional<int>* response_code_out, int response_code,
+                       int64_t content_length) {
+                      *response_code_out = response_code;
+                    },
+                    response_code_ptr),
+                /*progress_callback=*/base::DoNothing(),
+                base::BindOnce(
+                    [](base::Time now,
+                       scoped_refptr<PersistedData> persisted_data,
+                       HttpRequestCallback callback,
+                       std::unique_ptr<std::optional<int>> response_code,
+                       std::unique_ptr<update_client::NetworkFetcher> fetcher,
+                       std::optional<std::string> response_body, int net_error,
+                       const std::string& header_etag,
+                       const std::string& header_x_cup_server_proof,
+                       const std::string& header_set_cookie,
+                       int64_t xheader_retry_after_sec) {
+                      if (net_error) {
+                        VLOG(1)
+                            << "Upload failed due to net error " << net_error;
+                        VLOG_IF(1, response_code->has_value())
+                            << "HTTP response code: " << response_code->value();
+                        base::SequencedTaskRunner::GetCurrentDefault()
+                            ->PostTask(
+                                FROM_HERE,
+                                base::BindOnce(std::move(callback),
+                                               std::nullopt, std::nullopt));
+                        return;
+                      }
+                      std::optional<PersistedData::Cookie> logging_cookie =
+                          ExtractEventLoggingCookie(now, header_set_cookie);
+                      if (logging_cookie) {
+                        persisted_data->SetRemoteLoggingCookie(*logging_cookie);
+                      }
+                      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                          FROM_HERE,
+                          base::BindOnce(std::move(callback), *response_code,
+                                         response_body));
+                    },
+                    now, configurator->GetUpdaterPersistedData(),
+                    std::move(callback), std::move(response_code),
+                    std::move(fetcher)));
           },
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          configurator_, event_logging_url_, request_body, clock_->Now(),
+          base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 int RemoteLoggingDelegate::GetLogIdentifier() const {
@@ -174,67 +227,12 @@ std::string RemoteLoggingDelegate::AggregateAndSerializeEvents(
 
 base::TimeDelta RemoteLoggingDelegate::MinimumCooldownTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return configurator_->MinimumEventLoggingCooldown();
-}
-
-void RemoteLoggingDelegate::ResponseStart(int status_code,
-                                          int64_t content_length) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  http_status_code_ = status_code;
-}
-
-void RemoteLoggingDelegate::ResponseComplete(
-    base::OnceCallback<void(std::optional<int> http_status,
-                            std::optional<std::string> response_body)> callback,
-    std::optional<std::string> response_body,
-    int net_error,
-    const std::string& header_etag,
-    const std::string& header_x_cup_server_proof,
-    const std::string& header_set_cookie,
-    int64_t xheader_retry_after_sec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Reset the network fetcher to allow subsequent requests to create new ones.
-  network_fetcher_ = nullptr;
-
-  if (net_error || http_status_code_ != 200) {
-    VLOG(1) << __func__ << "Remote logging post request failed. "
-            << "net_error: " << net_error
-            << ", http_status_code: " << http_status_code_;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::nullopt, std::nullopt));
-    return;
-  }
-
-  std::optional<PersistedData::Cookie> logging_cookie =
-      ExtractEventLoggingCookie(clock_->Now(), header_set_cookie);
-  if (logging_cookie) {
-    persisted_data_->SetRemoteLoggingCookie(*logging_cookie);
-  }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), http_status_code_, response_body));
+  return minimum_cooldown_;
 }
 
 Omaha4UsageStatsMetadata RemoteLoggingDelegate::GetMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  proto::Omaha4UsageStatsMetadata metadata;
-
-  metadata.set_platform(configurator_->GetOSLongName());
-  metadata.set_os_version(base::SysInfo::OperatingSystemVersion());
-  metadata.set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
-  metadata.set_o4_omaha_cohort_id(persisted_data_->GetCohort(kUpdaterAppId));
-  metadata.set_app_version(kUpdaterVersion);
-  metadata.set_is_machine(IsSystemInstall(scope_));
-  metadata.set_is_cbcm_managed(is_cloud_managed_);
-  std::optional<bool> externally_managed =
-      configurator_->IsMachineExternallyManaged();
-  if (externally_managed.has_value()) {
-    metadata.set_is_domain_joined(*externally_managed);
-  }
-  return metadata;
+  return metadata_;
 }
 
 // Parses the NID cookie from a returned Cookie: HTTP header.

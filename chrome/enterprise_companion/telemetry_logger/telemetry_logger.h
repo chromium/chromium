@@ -36,13 +36,15 @@ template <typename T>
 class TelemetryLogger
     : public base::RefCountedDeleteOnSequence<TelemetryLogger<T>> {
  public:
-  // To be implemented by TelemetryLogger embedders.
+  // To be implemented by TelemetryLogger embedders. Methods, including the
+  // destructor, are invoked on the sequence which the TelemetryLogger runs.
+  // Callbacks must be answered on the same sequence.
   class Delegate {
    public:
     // Stores a value indicating when the next upload attempt may be made, as
     // indicated by the server.
-    virtual bool StoreNextAllowedAttemptTime(base::Time time) = 0;
-    virtual std::optional<base::Time> GetNextAllowedAttemptTime() const = 0;
+    virtual void StoreNextAllowedAttemptTime(base::Time time,
+                                             base::OnceClosure callback) = 0;
 
     // Perform an HTTP POST request with `response_body`, invoking
     // `callback` upon completion. `http_status` and `response_body` may be
@@ -76,14 +78,15 @@ class TelemetryLogger
 
   // Factory function that creates the per-process TelemetryLogger singleton.
   static scoped_refptr<TelemetryLogger> Create(
-      std::unique_ptr<Delegate> delegate) {
+      std::unique_ptr<Delegate> delegate,
+      std::optional<base::Time> first_allowed_attempt_time) {
     auto logger = base::MakeRefCounted<TelemetryLogger<T>>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::WithBaseSyncPrimitives()}),
         std::move(delegate));
     logger->owning_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&TelemetryLogger::SetInitialCooldownIfExists, logger));
+        FROM_HERE, base::BindOnce(&TelemetryLogger::SetInitialCooldownIfExists,
+                                  logger, first_allowed_attempt_time));
     return logger;
   }
 
@@ -226,8 +229,10 @@ class TelemetryLogger
                  delegate_->MinimumCooldownTime());
     VLOG(1) << "Cooldown time received from server: "
             << response.next_request_wait_millis() << " ms";
-    delegate_->StoreNextAllowedAttemptTime(base::Time::Now() + cooldown_time);
-    SetCooldown(cooldown_time);
+    delegate_->StoreNextAllowedAttemptTime(
+        base::Time::Now() + cooldown_time,
+        base::BindOnce(&TelemetryLogger::SetCooldown,
+                       base::WrapRefCounted(this), cooldown_time));
   }
 
   void SetCooldown(base::TimeDelta cooldown_time) {
@@ -245,18 +250,17 @@ class TelemetryLogger
                        base::DoNothing()));
   }
 
-  void SetInitialCooldownIfExists() {
+  void SetInitialCooldownIfExists(
+      std::optional<base::Time> first_allowed_attempt_time) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!cooldown_timer_.IsRunning());
 
-    std::optional<base::Time> next_allowed_attempt_time =
-        delegate_->GetNextAllowedAttemptTime();
-    if (!next_allowed_attempt_time) {
+    if (!first_allowed_attempt_time) {
       return;
     }
     VLOG(2) << __func__
-            << ": next allowed attempt time: " << *next_allowed_attempt_time;
-    SetCooldown(*next_allowed_attempt_time - base::Time::Now());
+            << ": next allowed attempt time: " << *first_allowed_attempt_time;
+    SetCooldown(*first_allowed_attempt_time - base::Time::Now());
   }
 
   friend class base::RefCountedDeleteOnSequence<TelemetryLogger<T>>;

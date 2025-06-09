@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -21,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -98,7 +100,7 @@ class MockServer : public base::RefCountedThreadSafe<MockServer> {
   virtual ~MockServer() {
     VLOG(1) << __func__;
     for (const auto& expected_request : expected_requests_) {
-      ADD_FAILURE() << "Expected request not recieved: " << expected_request;
+      ADD_FAILURE() << "Expected request not received: " << expected_request;
     }
     std::move(quit_callback_).Run();
   }
@@ -115,12 +117,11 @@ class TestDelegate : public TelemetryLogger<TestEvent>::Delegate {
   explicit TestDelegate(scoped_refptr<MockServer> server) : server_(server) {}
 
   // Overrides for TelemetryLogger<TestEvent>::Delegate.
-  bool StoreNextAllowedAttemptTime(base::Time time) override {
-    next_allowed_attemp_time_ = time;
-    return true;
-  }
-  std::optional<base::Time> GetNextAllowedAttemptTime() const override {
-    return next_allowed_attemp_time_;
+  void StoreNextAllowedAttemptTime(base::Time time,
+                                   base::OnceClosure callback) override {
+    next_allowed_attempt_time_ = time;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   void DoPostRequest(
@@ -144,7 +145,7 @@ class TestDelegate : public TelemetryLogger<TestEvent>::Delegate {
 
  private:
   scoped_refptr<MockServer> server_;
-  std::optional<base::Time> next_allowed_attemp_time_;
+  std::optional<base::Time> next_allowed_attempt_time_;
 };
 
 }  // namespace
@@ -170,7 +171,8 @@ TEST_F(TelemetryLoggerTest, Upload) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
     TestEvent events[] = {TestEvent(1, 2, "event 1"),
                           TestEvent(2, 2, "event 2")};
     logger->Log(events[0]);
@@ -187,7 +189,8 @@ TEST_F(TelemetryLoggerTest, LogsRetainedOnRetriableHTTPErrors) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     TestEvent events[] = {TestEvent(1, 2, "event 1")};
     std::string events_str = SerializeEvents(events);
@@ -211,7 +214,8 @@ TEST_F(TelemetryLoggerTest, LogsClearedOnDeterministicHTTPResult) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     TestEvent events[] = {TestEvent(1, 2, "event 1")};
     std::string events_str = SerializeEvents(events);
@@ -238,7 +242,8 @@ TEST_F(TelemetryLoggerTest, AutoRetry) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     TestEvent events[] = {TestEvent(1, 2, "event 1")};
     std::string events_str = SerializeEvents(events);
@@ -260,7 +265,8 @@ TEST_F(TelemetryLoggerTest, UploadCombinesPreviousEvents) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
     TestEvent events[] = {
         TestEvent(1, 3, "1st event"),
         TestEvent(2, 2, "event happened after failed upload."),
@@ -302,7 +308,8 @@ TEST_F(TelemetryLoggerTest, DelayedUpload) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
     telemetry_logger::proto::LogResponse response;
@@ -331,7 +338,8 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
     telemetry_logger::proto::LogResponse response;
@@ -378,11 +386,11 @@ TEST_F(TelemetryLoggerTest, InitialCooldownTimeFromPreviousRun) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto delegate = std::make_unique<TestDelegate>(server);
-    delegate->StoreNextAllowedAttemptTime(base::Time::Now() +
-                                          base::Seconds(60));
-    auto logger = TelemetryLogger<TestEvent>::Create(std::move(delegate));
+    auto logger = TelemetryLogger<TestEvent>::Create(
+        std::move(delegate),
+        /*first_allowed_attempt_time=*/base::Time::Now() + base::Seconds(60));
 
-    TestEvent events[] = {TestEvent(1, 0, "initia event"),
+    TestEvent events[] = {TestEvent(1, 0, "initial event"),
                           TestEvent(2, 10, "event happened after some time.")};
     logger->Log(events[0]);
 
@@ -409,7 +417,8 @@ TEST_F(TelemetryLoggerTest, FlushCallbackIsCalledOnCallerSequence) {
   {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server));
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt);
 
     // Callback is called without upload.
     {

@@ -84,17 +84,19 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
       crx_cache_(base::MakeRefCounted<update_client::CrxCache>(
           GetCrxCacheDirectory(scope))),
-      event_logger_(RemoteEventLoggingAllowed(
+      event_logger_(
+          RemoteEventLoggingAllowed(
+              scope,
+              external_constants->GetEventLoggingPermissionProvider())
+              ? UpdaterEventLogger::Create(
+                    std::make_unique<RemoteLoggingDelegate>(
                         scope,
-                        external_constants->GetEventLoggingPermissionProvider())
-                        ? UpdaterEventLogger::Create(
-                              std::make_unique<RemoteLoggingDelegate>(
-                                  scope,
-                                  external_constants->EventLoggingURL(),
-                                  IsCloudManaged(),
-                                  base::WrapRefCounted(this),
-                                  std::make_unique<base::DefaultClock>()))
-                        : nullptr),
+                        external_constants->EventLoggingURL(),
+                        IsCloudManaged(),
+                        base::WrapRefCounted(this),
+                        std::make_unique<base::DefaultClock>()),
+                    persisted_data_->GetNextAllowedLoggingAttemptTime())
+              : nullptr),
       is_managed_device_([] {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
