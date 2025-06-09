@@ -37,29 +37,21 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   // running evaluate_seed, we should ignore updates to the safe seed.
   base::Time GetFetchTime() const override;
   void SetFetchTime(const base::Time& fetch_time) override;
-
   int GetMilestone() const override;
-
   base::Time GetTimeForStudyDateChecks() const override;
-
   StoredSeed GetCompressedSeed() const override;
   void SetCompressedSeed(ValidatedSeedInfo seed_info) override;
-
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;
-
   std::string GetPermanentConsistencyCountry() const override;
   void SetPermanentConsistencyCountry(
       const std::string& permanent_consistency_country) override;
-
   std::string GetSessionConsistencyCountry() const override;
   void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) override;
-
   SeedReaderWriter* GetSeedReaderWriterForTesting() override;
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
-
   void ClearState() override;
 
  private:

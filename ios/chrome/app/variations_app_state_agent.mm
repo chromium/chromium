@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -121,15 +122,13 @@ void ActivateFieldTrialForGroup(IOSChromeVariationsGroup group) {
   }
 }
 
-// Retrieves the time the last variations seed is fetched from local state, and
-// stores it into NSUserDefaults. It should be executed every time before the
-// app shuts down, so the value could be used for the next startup, before
-// PrefService is instantiated.
-void SaveFetchTimeOfLatestSeedInLocalState() {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
+// Retrieves the fetch time of the latest variations seed, and stores it into
+// NSUserDefaults. It should be executed every time before the app shuts down,
+// so the value could be used for the next startup, before PrefService is
+// instantiated.
+void SaveFetchTimeOfLatestSeed() {
   const base::Time seed_fetch_time =
-      variations::VariationsSeedStore::GetLastFetchTimeFromPrefService(
-          local_state);
+      GetApplicationContext()->GetVariationsService()->GetLatestSeedFetchTime();
   if (!seed_fetch_time.is_null()) {
     [[NSUserDefaults standardUserDefaults]
         setDouble:seed_fetch_time.InSecondsFSinceUnixEpoch()
@@ -256,7 +255,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
       level == SceneActivationLevelBackground &&
       self.appState.initStage >
           AppInitStage::kBrowserObjectsForBackgroundHandlers) {
-    SaveFetchTimeOfLatestSeedInLocalState();
+    SaveFetchTimeOfLatestSeed();
   }
   _previousActivationLevel = level;
   [super sceneState:sceneState transitionedToActivationLevel:level];

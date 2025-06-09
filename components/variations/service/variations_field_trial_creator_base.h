@@ -214,8 +214,10 @@ class VariationsFieldTrialCreatorBase {
   // overridden.
   void OverrideVariationsPlatform(Study::Platform platform_override);
 
-  // Calculates the Seed Freshness
-  base::Time CalculateSeedFreshness();
+  // Gets the last fetch time of the seed. If using the safe seed, returns
+  // the safe seed fetch time. Otherwise, returns the last fetch time of the
+  // latest seed. Returns base::Time() if there is no seed.
+  base::Time GetSeedFetchTime();
 
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
@@ -229,6 +231,10 @@ class VariationsFieldTrialCreatorBase {
   // Returns whether the map of the cached UI strings to override is empty.
   // To be implemented by subclasses, if they have need for UI strings.
   virtual bool IsOverrideResourceMapEmpty() = 0;
+
+  // Returns the client-side time when the seed was last fetched. Returns
+  // base::Time() if there is no seed.
+  base::Time GetLatestSeedFetchTime();
 
  protected:
   // Get the platform we're running on, respecting OverrideVariationsPlatform().

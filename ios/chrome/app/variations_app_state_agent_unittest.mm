@@ -11,6 +11,8 @@
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/variations/pref_names.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/variations_seed_store.h"
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -75,7 +78,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
       mock_fetcher_ = nil;
       [mock_app_state_ stopMocking];
       mock_app_state_ = nil;
-      local_state()->ClearPref(variations::prefs::kVariationsLastFetchTime);
+      regular_seed_reader_writer()->ClearSeedInfo();
     }
   }
 
@@ -162,9 +165,17 @@ class VariationsAppStateAgentTest : public PlatformTest {
     return GetApplicationContext()->GetLocalState();
   }
 
+  variations::SeedReaderWriter* regular_seed_reader_writer() {
+    return GetApplicationContext()
+        ->GetVariationsService()
+        ->GetSeedStoreForTesting()
+        ->GetSeedReaderWriterForTesting();
+  }
+
   // Test PrefService dependencies.
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_testing_variations_service_;
 
   // VariationsAppStateAgent dependencies.
   IOSChromeVariationsSeedFetcher* mock_fetcher_;
@@ -406,8 +417,7 @@ TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
   TransitionAgentToStage(agent, stageAfterChromeInitialization);
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
-  local_state()->SetTime(variations::prefs::kVariationsLastFetchTime,
-                         last_fetch_time);
+  regular_seed_reader_writer()->SetFetchTime(last_fetch_time);
   //  Simulate backgrounding and launch again.
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelBackground];

@@ -51,7 +51,6 @@ TEST(EarlyBootSafeSeed, GetTimeForStudyDateChecks) {
   details.set_date(kFetchTimeMillisSinceWindowsEpoch);
 
   EarlyBootSafeSeed early_boot_safe_seed(details);
-
   base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Milliseconds(kFetchTimeMillisSinceWindowsEpoch));
   EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
@@ -62,6 +61,7 @@ TEST(EarlyBootSafeSeed, GetTimeForStudyDateChecks) {
       .signature = "asdf",
       .milestone = 100,
       .seed_date = base::Time::Now(),
+      .fetch_time = base::Time::Now(),
   });
   EXPECT_EQ(early_boot_safe_seed.GetTimeForStudyDateChecks(), expected_time);
   // Should not change after clearing the state.
@@ -93,6 +93,7 @@ TEST(EarlyBootSafeSeed, GetSignature) {
       .signature = "asdf",
       .milestone = 100,
       .seed_date = base::Time::Now(),
+      .fetch_time = base::Time::Now(),
   });
   EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 }
@@ -144,6 +145,7 @@ TEST(EarlyBootSafeSeed, MutatorsDontCrash) {
       .signature = "signature",
       .milestone = 100,
       .seed_date = base::Time::Now(),
+      .fetch_time = base::Time::Now(),
   });
   early_boot_safe_seed.SetLocale("locale");
   early_boot_safe_seed.SetPermanentConsistencyCountry("us");

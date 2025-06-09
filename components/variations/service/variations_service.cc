@@ -970,6 +970,10 @@ VariationsSeedStore* VariationsService::GetSeedStoreForTesting() {
   return field_trial_creator_.seed_store();
 }
 
+base::Time VariationsService::GetLatestSeedFetchTime() {
+  return field_trial_creator_.seed_store()->GetLatestSeedFetchTime();
+}
+
 std::unique_ptr<ClientFilterableState>
 VariationsService::GetClientFilterableStateForVersion() {
   const base::Version current_version(version_info::GetVersionNumber());

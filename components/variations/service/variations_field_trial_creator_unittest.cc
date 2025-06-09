@@ -547,7 +547,9 @@ TEST_P(FieldTrialCreatorFetchAndLaunchTimeTest,
       local_state(), &variations_service_client, &safe_seed_manager);
 
   // Simulate the seed being stored.
-  local_state()->SetTime(prefs::kVariationsLastFetchTime, seed_fetch_time);
+  field_trial_creator.seed_store()
+      ->GetSeedReaderWriterForTesting()
+      ->SetFetchTime(seed_fetch_time);
 
   // Simulate a seed from an earlier (i.e. valid) milestone.
   local_state()->SetInteger(prefs::kVariationsSeedMilestone,
@@ -590,8 +592,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NoLastFetchTime) {
   TestVariationsFieldTrialCreator field_trial_creator(
       local_state(), &variations_service_client, &safe_seed_manager);
 
-  // Simulate a first run by leaving |prefs::kVariationsLastFetchTime| empty.
-  EXPECT_EQ(0, local_state()->GetInt64(prefs::kVariationsLastFetchTime));
+  // Simulate a first run by leaving fetch time empty.
+  EXPECT_EQ(base::Time(), field_trial_creator.GetLatestSeedFetchTime());
 
   // Check that field trials are created from the seed. Since the test study has
   // only one experiment with 100% probability weight, we must be part of it.
@@ -629,7 +631,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NoMilestone) {
       local_state(), &variations_service_client, &safe_seed_manager);
 
   // Simulate the seed being stored.
-  local_state()->SetTime(prefs::kVariationsLastFetchTime, seed_fetch_time);
+  field_trial_creator.seed_store()
+      ->GetSeedReaderWriterForTesting()
+      ->SetFetchTime(seed_fetch_time);
 
   // Simulate the absence of a milestone by leaving
   // |prefs::kVariationsSeedMilestone| empty.
@@ -662,7 +666,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSeed) {
       local_state(), &variations_service_client, &safe_seed_manager);
   // Simulate a seed that is fetched a long time ago and should definitely
   // have expired.
-  local_state()->SetTime(prefs::kVariationsLastFetchTime, DistantPast());
+  field_trial_creator.seed_store()
+      ->GetSeedReaderWriterForTesting()
+      ->SetFetchTime(DistantPast());
 
   // Check that field trials are not created from the expired seed.
   base::HistogramTester histogram_tester;
@@ -1159,7 +1165,7 @@ SetUpFieldTrialCreatorWithValidSeed(
       std::make_unique<TestVariationsFieldTrialCreator>(
           local_state, variations_service_client, safe_seed_manager);
   // Simulate the seed being stored.
-  local_state->SetTime(prefs::kVariationsLastFetchTime, seed_fetch_time);
+  field_trial_creator->seed_store()->RecordLastFetchTime(seed_fetch_time);
   // Simulate a seed from an earlier (i.e. valid) milestone.
   local_state->SetInteger(prefs::kVariationsSeedMilestone, kTestSeedMilestone);
   return field_trial_creator;

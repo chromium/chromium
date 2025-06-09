@@ -13,8 +13,6 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-using variations::prefs::kVariationsLastFetchTime;
-
 namespace {
 
 // Returns current process start time from kernel.
@@ -43,10 +41,15 @@ base::Time GetProcessStartTime() {
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {
-  // If the pref value doesn't exist, the returned time will be 0 microseconds
+  // If there's no fetch time, the returned time will be std::nullopt.
+  base::Time lastFetchTime = GetApplicationContext()
+                                 ->GetVariationsService()
+                                 ->GetSeedStoreForTesting()
+                                 ->GetSeedReaderWriterForTesting()
+                                 ->GetSeedData()
+                                 .fetch_time;
+  // If there's no fetch time, the returned time will be 0 microseconds
   // from Windows epoch.
-  base::Time lastFetchTime = GetApplicationContext()->GetLocalState()->GetTime(
-      kVariationsLastFetchTime);
   return GetProcessStartTime() < lastFetchTime;
 }
 

@@ -234,12 +234,14 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = base::Time::Now();
   seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
       .compressed_seed_data = compressed_seed,
       .base64_seed_data = base64_compressed_seed,
       .signature = "signature",
       .milestone = 2,
       .seed_date = seed_date,
+      .fetch_time = fetch_time,
   });
 
   // Force write.
@@ -258,6 +260,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   EXPECT_EQ(seed_reader_writer.GetSeedData().signature, "signature");
   EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 2);
   EXPECT_EQ(seed_reader_writer.GetSeedData().seed_date, seed_date);
+  EXPECT_EQ(seed_reader_writer.GetSeedData().fetch_time, fetch_time);
 }
 
 // Verifies that a seed is cleared from a seed file for clients in the SeedFiles
@@ -426,12 +429,14 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = base::Time::Now();
   seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
       .compressed_seed_data = compressed_seed,
       .base64_seed_data = base64_compressed_seed,
       .signature = "signature",
       .milestone = 2,
       .seed_date = seed_date,
+      .fetch_time = fetch_time,
   });
 
   // Ensure there's no pending write.
@@ -446,6 +451,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
   EXPECT_EQ(local_state_.GetInteger(GetParam().seed_fields_prefs.milestone), 2);
   EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             seed_date);
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.fetch_time),
+            fetch_time);
 }
 
 // Verifies that a seed is cleared from Local State and that seed file is
@@ -486,6 +493,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
               IsEmpty());
   EXPECT_EQ(local_state_.GetInteger(GetParam().seed_fields_prefs.milestone), 0);
   EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
+            base::Time());
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.fetch_time),
             base::Time());
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
 }
@@ -539,12 +548,14 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, EmptySeedFilePathIsValid) {
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
   const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = base::Time::Now();
   seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
       .compressed_seed_data = compressed_seed,
       .base64_seed_data = base64_compressed_seed,
       .signature = "signature",
       .milestone = 2,
       .seed_date = seed_date,
+      .fetch_time = fetch_time,
   });
 
   // Ensure there's no pending write.
@@ -558,6 +569,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, EmptySeedFilePathIsValid) {
   EXPECT_EQ(local_state_.GetInteger(GetParam().seed_fields_prefs.milestone), 2);
   EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             seed_date);
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.fetch_time),
+            fetch_time);
 }
 
 INSTANTIATE_TEST_SUITE_P(

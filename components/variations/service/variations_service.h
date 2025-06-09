@@ -264,6 +264,10 @@ class VariationsService
   // Returns the seed store. Exposed for testing.
   VariationsSeedStore* GetSeedStoreForTesting();
 
+  // Returns the fetch time of the latest seed. Returns base::Time() if there is
+  // no seed.
+  base::Time GetLatestSeedFetchTime();
+
  protected:
   // Gets the serial number of the most recent Finch seed. Virtual for testing.
   virtual const std::string& GetLatestSerialNumber();

@@ -318,8 +318,8 @@ bool VariationsSeedStore::StoreSafeSeed(
   return true;
 }
 
-base::Time VariationsSeedStore::GetLastFetchTime() const {
-  return GetLastFetchTimeFromPrefService(local_state_);
+base::Time VariationsSeedStore::GetLatestSeedFetchTime() const {
+  return seed_reader_writer_->GetSeedData().fetch_time;
 }
 
 base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
@@ -357,8 +357,8 @@ base::Time VariationsSeedStore::GetTimeForStudyDateChecks(bool is_safe_seed) {
 }
 
 void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {
-  local_state_->SetTime(prefs::kVariationsLastFetchTime, fetch_time);
-
+  CHECK(!fetch_time.is_null()) << "Can't record null fetch time.";
+  seed_reader_writer_->SetFetchTime(fetch_time);
   // If the latest and safe seeds are identical, update the fetch time for the
   // safe seed as well.
   if (seed_reader_writer_->GetSeedData().data == kIdenticalToSafeSeedSentinel) {
@@ -417,12 +417,6 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-base::Time VariationsSeedStore::GetLastFetchTimeFromPrefService(
-    PrefService* prefs) {
-  return prefs->GetTime(prefs::kVariationsLastFetchTime);
-}
-
-// static
 VerifySignatureResult VariationsSeedStore::VerifySeedSignatureForTesting(
     const std::string& seed_bytes,
     const std::string& base64_seed_signature) {
@@ -462,7 +456,6 @@ void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
     // Seed and other related information is cleared by the SeedReaderWriter.
     seed_reader_writer_->ClearSeedInfo();
-    local_state_->ClearPref(prefs::kVariationsLastFetchTime);
     return;
   }
 
@@ -744,6 +737,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .signature = seed.base64_seed_signature,
         .milestone = milestone,
         .seed_date = date_fetched,
+        .fetch_time = base::Time::Now(),
     });
   } else {
     seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
@@ -752,6 +746,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .signature = seed.base64_seed_signature,
         .milestone = milestone,
         .seed_date = date_fetched,
+        .fetch_time = base::Time::Now(),
     });
   }
   latest_serial_number_ = seed.parsed.serial_number();
@@ -775,7 +770,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   //    |kIdenticalToSafeSeedSentinel| is stored as the latest seed value to
   //    avoid duplicating seed A in storage.
   // 4. The client is promoting seed B to safe seed.
-  auto latest_seed = seed_reader_writer_->GetSeedData();
+  const StoredSeed latest_seed = seed_reader_writer_->GetSeedData();
   if (!seed.MatchesStoredSeed(previous_safe_seed) &&
       latest_seed.data == kIdenticalToSafeSeedSentinel) {
     // For the below call to StoreValidatedSeed(), there are two possibilities
@@ -793,16 +788,18 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
         .signature = latest_seed.signature,
         .milestone = latest_seed.milestone,
         .seed_date = latest_seed.seed_date,
+        .fetch_time = latest_seed.fetch_time,
     });
   }
 
-  safe_seed_store_->SetCompressedSeed(
-      ValidatedSeedInfo{.compressed_seed_data = seed.compressed_seed_data,
-                        .base64_seed_data = seed.base64_seed_data,
-                        .signature = seed.base64_seed_signature,
-                        .milestone = seed_milestone,
-                        .seed_date = client_state.reference_date,
-                      });
+  safe_seed_store_->SetCompressedSeed(ValidatedSeedInfo{
+      .compressed_seed_data = seed.compressed_seed_data,
+      .base64_seed_data = seed.base64_seed_data,
+      .signature = seed.base64_seed_signature,
+      .milestone = seed_milestone,
+      .seed_date = client_state.reference_date,
+      .fetch_time = seed_fetch_time,
+  });
 
   safe_seed_store_->SetLocale(client_state.locale);
   safe_seed_store_->SetPermanentConsistencyCountry(
@@ -819,13 +816,13 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
         .signature = latest_seed.signature,
         .milestone = latest_seed.milestone,
         .seed_date = latest_seed.seed_date,
+        .fetch_time = latest_seed.fetch_time,
     });
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.
-    seed_fetch_time = GetLastFetchTime();
+    safe_seed_store_->SetFetchTime(latest_seed.fetch_time);
   }
-  safe_seed_store_->SetFetchTime(seed_fetch_time);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // `SendSafeSeedToPlatform` will send the safe seed at most twice and should

@@ -148,12 +148,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                              const ClientFilterableState& client_state,
                              base::Time seed_fetch_time);
 
-  // Loads the last fetch time (for the latest seed) that was persisted to the
-  // local state.
-  base::Time GetLastFetchTime() const;
+  // Loads the last fetch time (for the latest seed) that was persisted. Returns
+  // base::Time() if there is no seed.
+  base::Time GetLatestSeedFetchTime() const;
 
-  // Returns the time at which the safe seed was persisted to the local state.
-  //
+  // Returns the client-side timestamp at which the safe seed was fetched.
+  // Returns base::Time() if there is no safe seed.
   // Virtual for early-boot CrOS experiments to use a different safe seed.
   virtual base::Time GetSafeSeedFetchTime() const;
 
@@ -214,10 +214,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Registers Local State prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Loads the last fetch time (for the latest seed) that was persisted to
-  // |local_state|.
-  static base::Time GetLastFetchTimeFromPrefService(PrefService* local_state);
 
   static VerifySignatureResult VerifySeedSignatureForTesting(
       const std::string& seed_bytes,

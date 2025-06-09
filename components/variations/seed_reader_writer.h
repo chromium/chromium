@@ -53,6 +53,9 @@ struct StoredSeed {
   // timestamp until the server-provided timestamp is fetched. (See
   // ChromeFeatureListCreator::SetupInitialPrefs())
   base::Time seed_date;
+  // The time at which the seed was fetched. This is always a client-side
+  // timestamp.
+  base::Time fetch_time;
 };
 
 // Groups the data from a seed and other seed-related info that is validated
@@ -64,6 +67,7 @@ struct ValidatedSeedInfo {
   std::string_view signature;
   int milestone = 0;
   base::Time seed_date;
+  base::Time fetch_time;
 };
 
 struct SeedFieldsPrefs {
@@ -71,6 +75,7 @@ struct SeedFieldsPrefs {
   const char* signature;
   const char* milestone;
   const char* seed_date;
+  const char* fetch_time;
 };
 
 COMPONENT_EXPORT(VARIATIONS)
@@ -126,8 +131,11 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
-  // Updates the seed date.
+  // Updates the server-provided seed date that is used for study date checks.
   void SetSeedDate(base::Time server_date_fetched);
+
+  // Updates the time of the last fetch of the seed.
+  void SetFetchTime(base::Time fetch_time);
 
   // Returns true if a write is scheduled but has not yet completed.
   bool HasPendingWrite() const;
@@ -142,6 +150,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     std::string signature;
     int milestone = 0;
     base::Time seed_date;
+    base::Time fetch_time;
   };
 
   // Returns the serialized data to be written to disk. This is done

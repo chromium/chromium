@@ -532,16 +532,16 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
-base::Time VariationsFieldTrialCreatorBase::CalculateSeedFreshness() {
+base::Time VariationsFieldTrialCreatorBase::GetSeedFetchTime() {
   // TODO(crbug.com/40274989): Consider comparing the server-provided fetch time
   // with the network time.
   return seed_type_ == SeedType::kSafeSeed
              ? GetSeedStore()->GetSafeSeedFetchTime()
-             : GetSeedStore()->GetLastFetchTime();
+             : GetSeedStore()->GetLatestSeedFetchTime();
 }
 
 bool VariationsFieldTrialCreatorBase::HasSeedExpired() {
-  const base::Time fetch_time = CalculateSeedFreshness();
+  const base::Time fetch_time = GetSeedFetchTime();
   // If the fetch time is null, skip the expiry check. If the seed is a regular
   // seed (i.e. not a safe seed) and the fetch time is missing, then this must
   // be the first run of Chrome. If the seed is a safe seed, the fetch time may
@@ -715,7 +715,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     safe_seed_manager->SetActiveSeedState(
         seed_data, base64_seed_signature,
         local_state()->GetInteger(prefs::kVariationsSeedMilestone),
-        std::move(client_state), seed_store_->GetLastFetchTime());
+        std::move(client_state), seed_store_->GetLatestSeedFetchTime());
   }
 
   base::UmaHistogramCounts1M("Variations.AppliedSeed.Size", seed_data.size());
@@ -783,6 +783,10 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
 
 VariationsSeedStore* VariationsFieldTrialCreatorBase::GetSeedStore() {
   return seed_store_.get();
+}
+
+base::Time VariationsFieldTrialCreatorBase::GetLatestSeedFetchTime() {
+  return GetSeedStore()->GetLatestSeedFetchTime();
 }
 
 }  // namespace variations

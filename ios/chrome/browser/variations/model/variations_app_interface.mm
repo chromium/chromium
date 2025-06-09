@@ -26,7 +26,6 @@
       ->GetSeedReaderWriterForTesting()
       ->ClearSeedInfo();
   prefService->ClearPref(variations::prefs::kVariationsCountry);
-  prefService->ClearPref(variations::prefs::kVariationsLastFetchTime);
   prefService->ClearPref(
       variations::prefs::kVariationsPermanentConsistencyCountry);
   prefService->ClearPref(
@@ -39,7 +38,6 @@
       ->GetSeedStoreForTesting()
       ->GetSafeSeedReaderWriterForTesting()
       ->ClearSeedInfo();
-  prefService->ClearPref(variations::prefs::kVariationsSafeSeedFetchTime);
   prefService->ClearPref(variations::prefs::kVariationsSafeSeedLocale);
   prefService->ClearPref(
       variations::prefs::kVariationsSafeSeedPermanentConsistencyCountry);
@@ -78,8 +76,9 @@
           .compressed_seed_data = variations::kTestSeedData.GetCompressedData(),
           .base64_seed_data = variations::kTestSeedData.base64_compressed_data,
           .signature = variations::kTestSeedData.base64_signature,
-          .milestone = 92, // Milestone number is arbitrary.
+          .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
+          .fetch_time = base::Time::Now(),
       });
 }
 
@@ -94,8 +93,9 @@
           .base64_seed_data =
               variations::kCrashingSeedData.base64_compressed_data,
           .signature = variations::kCrashingSeedData.base64_signature,
-          .milestone = 92, // Milestone number is arbitrary.
+          .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
+          .fetch_time = base::Time::Now(),
       });
 }
 
