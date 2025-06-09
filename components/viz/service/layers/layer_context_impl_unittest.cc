@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
+#include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
@@ -95,6 +96,26 @@ const gfx::Rect kDefaultNinePatchThumbScrollbarAperture = gfx::Rect();
 const cc::UIResourceId kDefaultNinePatchThumbScrollbarThumbUIResourceId = 0;
 const cc::UIResourceId
     kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId = 0;
+
+// Default PaintedScrollbarLayer property values
+const float kDefaultPaintedScrollbarInternalContentsScale = 0.f;
+const gfx::Size kDefaultPaintedScrollbarInternalContentBounds = gfx::Size();
+const bool kDefaultPaintedScrollbarJumpOnTrackClick = false;
+const bool kDefaultPaintedScrollbarSupportsDragSnapBack = false;
+const int kDefaultPaintedScrollbarThumbThickness = 0;
+const int kDefaultPaintedScrollbarThumbLength = 0;
+const gfx::Rect kDefaultPaintedScrollbarBackButtonRect = gfx::Rect();
+const gfx::Rect kDefaultPaintedScrollbarForwardButtonRect = gfx::Rect();
+const gfx::Rect kDefaultPaintedScrollbarTrackRect = gfx::Rect();
+const cc::UIResourceId kDefaultPaintedScrollbarTrackAndButtonsUIResourceId = 0;
+const cc::UIResourceId kDefaultPaintedScrollbarThumbUIResourceId = 0;
+const bool kDefaultPaintedScrollbarUsesNinePatchTrackAndButtons = false;
+const float kDefaultPaintedScrollbarPaintedOpacity = 1.f;
+const std::optional<SkColor4f> kDefaultPaintedScrollbarThumbColor =
+    std::nullopt;
+const gfx::Size kDefaultPaintedScrollbarTrackAndButtonsImageBounds =
+    gfx::Size();
+const gfx::Rect kDefaultPaintedScrollbarTrackAndButtonsAperture = gfx::Rect();
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -317,6 +338,35 @@ class LayerContextImplTest : public testing::Test {
         extra->track_and_buttons_ui_resource_id =
             kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId;
         return mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
+            std::move(extra));
+      }
+      case cc::mojom::LayerType::kPaintedScrollbar: {
+        auto extra = mojom::PaintedScrollbarLayerExtra::New();
+        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
+        extra->internal_contents_scale =
+            kDefaultPaintedScrollbarInternalContentsScale;
+        extra->internal_content_bounds =
+            kDefaultPaintedScrollbarInternalContentBounds;
+        extra->jump_on_track_click = kDefaultPaintedScrollbarJumpOnTrackClick;
+        extra->supports_drag_snap_back =
+            kDefaultPaintedScrollbarSupportsDragSnapBack;
+        extra->thumb_thickness = kDefaultPaintedScrollbarThumbThickness;
+        extra->thumb_length = kDefaultPaintedScrollbarThumbLength;
+        extra->back_button_rect = kDefaultPaintedScrollbarBackButtonRect;
+        extra->forward_button_rect = kDefaultPaintedScrollbarForwardButtonRect;
+        extra->track_rect = kDefaultPaintedScrollbarTrackRect;
+        extra->track_and_buttons_ui_resource_id =
+            kDefaultPaintedScrollbarTrackAndButtonsUIResourceId;
+        extra->thumb_ui_resource_id = kDefaultPaintedScrollbarThumbUIResourceId;
+        extra->uses_nine_patch_track_and_buttons =
+            kDefaultPaintedScrollbarUsesNinePatchTrackAndButtons;
+        extra->painted_opacity = kDefaultPaintedScrollbarPaintedOpacity;
+        extra->thumb_color = kDefaultPaintedScrollbarThumbColor;
+        extra->track_and_buttons_image_bounds =
+            kDefaultPaintedScrollbarTrackAndButtonsImageBounds;
+        extra->track_and_buttons_aperture =
+            kDefaultPaintedScrollbarTrackAndButtonsAperture;
+        return mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
             std::move(extra));
       }
 
@@ -3122,10 +3172,8 @@ INSTANTIATE_TEST_SUITE_P(
     AllScrollbarTypes,
     LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
     testing::Values(cc::mojom::LayerType::kSolidColorScrollbar,
-                    cc::mojom::LayerType::kNinePatchThumbScrollbar
-                    // TODO(crbug.com/422778998): Add PaintedScrollbar once
-                    // its CreateDefaultLayerExtra is implemented.
-                    ),
+                    cc::mojom::LayerType::kNinePatchThumbScrollbar,
+                    cc::mojom::LayerType::kPaintedScrollbar),
     [](const testing::TestParamInfo<
         LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest::ParamType>&
            info) {
@@ -3432,6 +3480,555 @@ TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(layer_impl->thumb_ui_resource_id(), kThumbId);
   EXPECT_EQ(layer_impl->track_and_buttons_ui_resource_id(), kTrackId);
+}
+
+// Test fixture for PaintedScrollbarLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest
+    : public LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest {
+ protected:
+  cc::PaintedScrollbarLayerImpl* GetPaintedScrollbarLayerFromActiveTree(
+      int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (!layer ||
+        layer->GetLayerType() != cc::mojom::LayerType::kPaintedScrollbar) {
+      return nullptr;
+    }
+    return static_cast<cc::PaintedScrollbarLayerImpl*>(layer);
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateInternalContentsScaleAndBounds) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedInternalContentsScale = 1.5f;
+  const gfx::Size kUpdatedInternalContentBounds(15, 150);
+
+  // Initial update: Create with default values.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->internal_contents_scale(),
+            kDefaultPaintedScrollbarInternalContentsScale);
+  EXPECT_EQ(layer_impl->internal_content_bounds(),
+            kDefaultPaintedScrollbarInternalContentBounds);
+
+  // Second update: Update internal_contents_scale and internal_content_bounds.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->internal_contents_scale = kUpdatedInternalContentsScale;
+  scrollbar_extra2->internal_content_bounds = kUpdatedInternalContentBounds;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->internal_contents_scale(),
+            kUpdatedInternalContentsScale);
+  EXPECT_EQ(layer_impl->internal_content_bounds(),
+            kUpdatedInternalContentBounds);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateThumbThicknessAndLength) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr int kUpdatedThumbThickness = 5;
+  constexpr int kUpdatedThumbLength = 20;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_thickness(),
+            kDefaultPaintedScrollbarThumbThickness);
+  EXPECT_EQ(layer_impl->thumb_length(), kDefaultPaintedScrollbarThumbLength);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->thumb_thickness = kUpdatedThumbThickness;
+  scrollbar_extra2->thumb_length = kUpdatedThumbLength;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_thickness(), kUpdatedThumbThickness);
+  EXPECT_EQ(layer_impl->thumb_length(), kUpdatedThumbLength);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateButtonAndTrackRects) {
+  constexpr int kScrollbarLayerId = 2;
+  const gfx::Rect kUpdatedBackButtonRect(0, 0, 10, 10);
+  const gfx::Rect kUpdatedForwardButtonRect(0, 90, 10, 10);
+  const gfx::Rect kUpdatedTrackRect(0, 10, 10, 80);
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->back_button_rect(),
+            kDefaultPaintedScrollbarBackButtonRect);
+  EXPECT_EQ(layer_impl->forward_button_rect(),
+            kDefaultPaintedScrollbarForwardButtonRect);
+  EXPECT_EQ(layer_impl->track_rect(), kDefaultPaintedScrollbarTrackRect);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->back_button_rect = kUpdatedBackButtonRect;
+  scrollbar_extra2->forward_button_rect = kUpdatedForwardButtonRect;
+  scrollbar_extra2->track_rect = kUpdatedTrackRect;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->back_button_rect(), kUpdatedBackButtonRect);
+  EXPECT_EQ(layer_impl->forward_button_rect(), kUpdatedForwardButtonRect);
+  EXPECT_EQ(layer_impl->track_rect(), kUpdatedTrackRect);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdatePaintedOpacityAndThumbColor) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedPaintedOpacity = 0.5f;
+  const SkColor4f kUpdatedThumbColor = SkColors::kGreen;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->painted_opacity(),
+            kDefaultPaintedScrollbarPaintedOpacity);
+  EXPECT_EQ(layer_impl->thumb_color(), kDefaultPaintedScrollbarThumbColor);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->painted_opacity = kUpdatedPaintedOpacity;
+  scrollbar_extra2->thumb_color = kUpdatedThumbColor;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->painted_opacity(), kUpdatedPaintedOpacity);
+  ASSERT_TRUE(layer_impl->thumb_color().has_value());
+  EXPECT_EQ(layer_impl->thumb_color().value(), kUpdatedThumbColor);
+
+  // Third update: Clearing thumb_color is not supported by
+  // PaintedScrollbarLayerImpl. Check that it has no effect.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra3 =
+      layer_props3->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra3->thumb_color = std::nullopt;  // Explicitly clear
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_TRUE(layer_impl->thumb_color().has_value());
+  EXPECT_EQ(layer_impl->thumb_color().value(), kUpdatedThumbColor);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateJumpOnTrackClick) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr bool kUpdatedJumpOnTrackClick = true;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->jump_on_track_click(),
+            kDefaultPaintedScrollbarJumpOnTrackClick);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->jump_on_track_click = kUpdatedJumpOnTrackClick;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(layer_impl->jump_on_track_click());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateSupportsDragSnapBack) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr bool kUpdatedSupportsDragSnapBack = true;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->supports_drag_snap_back(),
+            kDefaultPaintedScrollbarSupportsDragSnapBack);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->supports_drag_snap_back = kUpdatedSupportsDragSnapBack;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(layer_impl->supports_drag_snap_back());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateUIResourceIds) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr cc::UIResourceId kThumbId = 101;
+  constexpr cc::UIResourceId kTrackId = 102;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_ui_resource_id(),
+            kDefaultPaintedScrollbarThumbUIResourceId);
+  EXPECT_EQ(layer_impl->track_and_buttons_ui_resource_id(),
+            kDefaultPaintedScrollbarTrackAndButtonsUIResourceId);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->thumb_ui_resource_id = kThumbId;
+  scrollbar_extra2->track_and_buttons_ui_resource_id = kTrackId;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_ui_resource_id(), kThumbId);
+  EXPECT_EQ(layer_impl->track_and_buttons_ui_resource_id(), kTrackId);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateUsesNinePatchTrackAndButtons) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr bool kUpdatedUsesNinePatch = true;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->uses_nine_patch_track_and_buttons(),
+            kDefaultPaintedScrollbarUsesNinePatchTrackAndButtons);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->uses_nine_patch_track_and_buttons = kUpdatedUsesNinePatch;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(layer_impl->uses_nine_patch_track_and_buttons());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateTrackAndButtonsImageBoundsAndAperture) {
+  constexpr int kScrollbarLayerId = 2;
+  const gfx::Size kUpdatedImageBounds(50, 50);
+  const gfx::Rect kUpdatedAperture(10, 10, 30, 30);
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->track_and_buttons_image_bounds(),
+            kDefaultPaintedScrollbarTrackAndButtonsImageBounds);
+  EXPECT_EQ(layer_impl->track_and_buttons_aperture(),
+            kDefaultPaintedScrollbarTrackAndButtonsAperture);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->track_and_buttons_image_bounds = kUpdatedImageBounds;
+  scrollbar_extra2->track_and_buttons_aperture = kUpdatedAperture;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->track_and_buttons_image_bounds(), kUpdatedImageBounds);
+  EXPECT_EQ(layer_impl->track_and_buttons_aperture(), kUpdatedAperture);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateScrollElementId) {
+  constexpr int kScrollbarLayerId = 2;
+  const cc::ElementId kScrollElementId1 = cc::ElementId(12345);
+  const cc::ElementId kScrollElementId2 = cc::ElementId(54321);
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        gfx::Size(10, 100));
+  auto& scrollbar_extra1 =
+      layer_props1->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra1->scrollbar_base_extra->scroll_element_id = kScrollElementId1;
+  update1->layers.push_back(std::move(layer_props1));
+  layer_order_.push_back(kScrollbarLayerId);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->scroll_element_id(), kScrollElementId1);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->scrollbar_base_extra->scroll_element_id = kScrollElementId2;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->scroll_element_id(), kScrollElementId2);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateIsWebTest) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr bool kUpdatedIsWebTest = true;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_FALSE(layer_impl->is_web_test());  // Default
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->scrollbar_base_extra->is_web_test = kUpdatedIsWebTest;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(layer_impl->is_web_test());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateThumbThicknessScaleFactor) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedThumbThicknessScaleFactor = 0.5f;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_thickness_scale_factor(), 0.f);  // Default
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->scrollbar_base_extra->thumb_thickness_scale_factor =
+      kUpdatedThumbThicknessScaleFactor;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_thickness_scale_factor(),
+            kUpdatedThumbThicknessScaleFactor);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateCurrentPosAndLengths) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedCurrentPos = 10.f;
+  constexpr float kUpdatedClipLayerLength = 100.f;
+  constexpr float kUpdatedScrollLayerLength = 200.f;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->current_pos(), 0.f);
+  EXPECT_EQ(layer_impl->clip_layer_length(), 0.f);
+  EXPECT_EQ(layer_impl->scroll_layer_length(), 0.f);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->scrollbar_base_extra->current_pos = kUpdatedCurrentPos;
+  scrollbar_extra2->scrollbar_base_extra->clip_layer_length =
+      kUpdatedClipLayerLength;
+  scrollbar_extra2->scrollbar_base_extra->scroll_layer_length =
+      kUpdatedScrollLayerLength;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->current_pos(), kUpdatedCurrentPos);
+  EXPECT_EQ(layer_impl->clip_layer_length(), kUpdatedClipLayerLength);
+  EXPECT_EQ(layer_impl->scroll_layer_length(), kUpdatedScrollLayerLength);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
+       UpdateVerticalAdjustAndHasFindInPageTickmarks) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedVerticalAdjust = 5.f;
+  constexpr bool kUpdatedHasFindInPageTickmarks = true;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kPaintedScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::PaintedScrollbarLayerImpl* layer_impl =
+      GetPaintedScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->vertical_adjust(), 0.f);
+  EXPECT_FALSE(layer_impl->has_find_in_page_tickmarks());
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId,
+                                        cc::mojom::LayerType::kPaintedScrollbar,
+                                        kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
+  scrollbar_extra2->scrollbar_base_extra->vertical_adjust =
+      kUpdatedVerticalAdjust;
+  scrollbar_extra2->scrollbar_base_extra->has_find_in_page_tickmarks =
+      kUpdatedHasFindInPageTickmarks;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->vertical_adjust(), kUpdatedVerticalAdjust);
+  EXPECT_TRUE(layer_impl->has_find_in_page_tickmarks());
 }
 
 }  // namespace viz
