@@ -57,6 +57,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_hit_test_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
@@ -6760,11 +6761,31 @@ void WebGLRenderingContextBase::setHitTestRegions(
                                exception_state)) {
       return;
     }
+
+    // TODO(vmpstr): Find a common spot for this (code duplicated in
+    // `CanvasRenderingContext2D`).
+    double width = [&]() -> double {
+      if (region->rect()->hasWidth()) {
+        return *region->rect()->width();
+      }
+      gfx::RectF bounds =
+          region->element()->GetBoundingClientRectNoLifecycleUpdate();
+      return bounds.width();
+    }();
+
+    double height = [&]() -> double {
+      if (region->rect()->hasHeight()) {
+        return *region->rect()->height();
+      }
+      gfx::RectF bounds =
+          region->element()->GetBoundingClientRectNoLifecycleUpdate();
+      return bounds.height();
+    }();
+
     result.push_back(
         MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
-            region->element(),
-            gfx::RectF(region->rect()->x(), region->rect()->y(),
-                       region->rect()->width(), region->rect()->height())));
+            region->element(), gfx::RectF(region->rect()->x(),
+                                          region->rect()->y(), width, height)));
   }
 
   canvas()->SetHitTestRegions(std::move(result));

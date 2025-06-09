@@ -58,6 +58,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_hit_test_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -717,11 +718,31 @@ void CanvasRenderingContext2D::setHitTestRegions(
     if (!IsDrawElementEligible(region->element(), exception_state)) {
       return;
     }
+
+    // TODO(vmpstr): Find a common spot for this (code duplicated in
+    // `WebGLRenderingContextBase`).
+    double width = [&]() -> double {
+      if (region->rect()->hasWidth()) {
+        return *region->rect()->width();
+      }
+      gfx::RectF bounds =
+          region->element()->GetBoundingClientRectNoLifecycleUpdate();
+      return bounds.width();
+    }();
+
+    double height = [&]() -> double {
+      if (region->rect()->hasHeight()) {
+        return *region->rect()->height();
+      }
+      gfx::RectF bounds =
+          region->element()->GetBoundingClientRectNoLifecycleUpdate();
+      return bounds.height();
+    }();
+
     result.push_back(
         MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
-            region->element(),
-            gfx::RectF(region->rect()->x(), region->rect()->y(),
-                       region->rect()->width(), region->rect()->height())));
+            region->element(), gfx::RectF(region->rect()->x(),
+                                          region->rect()->y(), width, height)));
   }
 
   HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));

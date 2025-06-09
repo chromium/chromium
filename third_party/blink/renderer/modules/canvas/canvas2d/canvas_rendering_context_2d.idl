@@ -42,9 +42,16 @@ typedef (CSSImageValue or
          OffscreenCanvas or
          VideoFrame) CanvasImageSource;
 
+dictionary CanvasHitTestRect {
+  double x;
+  double y;
+  double? width;
+  double? height;
+};
+
 dictionary CanvasElementHitTestRegion {
   Element element;
-  DOMRectReadOnly rect;
+  CanvasHitTestRect rect;
 };
 
 [

@@ -60,7 +60,7 @@ promise_test((t) => {
     ctx.setHitTestRegions([
       {
         element: target,
-        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+        rect: {x: 15, y: 35, width: 1, height: 1}
       }
     ]);
 
@@ -85,11 +85,11 @@ promise_test((t) => {
     ctx.setHitTestRegions([
       {
         element: negative,
-        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+        rect: {x: 15, y: 35, width: 1, height: 1}
       },
       {
         element: target,
-        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+        rect: {x: 15, y: 35, width: 1, height: 1}
       }
     ]);
 
@@ -114,7 +114,7 @@ promise_test((t) => {
     ctx.setHitTestRegions([
       {
         element: negative,
-        rect: DOMRect.fromRect({x: 15, y: 35, width: 1, height: 1})
+        rect: {x: 15, y: 35, width: 1, height: 1}
       },
     ]);
 
@@ -126,6 +126,30 @@ promise_test((t) => {
     requestAnimationFrame(resolve);
   });
 }, "single target miss");
+
+promise_test((t) => {
+  return new Promise(async (resolve, reject) => {
+    const controller = new AbortController();
+    t.add_cleanup(() => cleanup(controller));
+
+    const canvas = document.getElementById("canvas");
+    const canvasRect = canvas.getBoundingClientRect();
+    const target = canvas.querySelector("#target");
+    const ctx = canvas.getContext("2d");
+
+    ctx.reset();
+    ctx.setHitTestRegions([
+      {
+        element: target,
+        rect: {x: 15, y: 35}
+      }
+    ]);
+
+    target.addEventListener("pointerenter", resolve, { signal: controller.signal });
+    await movePointer(canvasRect.x + 15, canvasRect.y + 35);
+    requestAnimationFrame(() => noHit(reject, controller.signal));
+  });
+}, "single target and point");
 
 </script>
 </html>
