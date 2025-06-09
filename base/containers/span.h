@@ -33,7 +33,6 @@
 #include "base/containers/span_forward_internal.h"
 #include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/cstring_view.h"
 #include "base/types/to_address.h"
 
 // A span is a view of contiguous elements that can be accessed like an array,
@@ -263,8 +262,6 @@
 //   (non-range) objects to spans.
 // - For convenience, provides `[byte_]span_[with_nul_]from_cstring()` to
 //   convert `const char[]` literals to spans.
-// - For convenience, provides `[byte_]span_with_nul_from_cstring_view()` to
-//   convert `basic_cstring_view<T>` to spans, preserving the null terminator.
 // - For convenience, provides `as_[writable_]byte_span()` to convert
 //   spanifiable objects directly to byte spans.
 // - For safety, bans types which do not meet
@@ -716,8 +713,8 @@ class GSL_POINTER span {
   }
   constexpr auto subspan(StrictNumeric<size_type> offset,
                          StrictNumeric<size_type> count) const {
-    DCHECK(size_type{count} != dynamic_extent)
-        << "base does not allow dynamic_extent in two-arg subspan()";
+    // base does not allow dynamic_extent in two-arg subspan().
+    DCHECK(size_type{count} != dynamic_extent);
     // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
@@ -1161,8 +1158,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   }
   constexpr auto subspan(StrictNumeric<size_type> offset,
                          StrictNumeric<size_type> count) const {
-    DCHECK(size_type{count} != dynamic_extent)
-        << "base does not allow dynamic_extent in two-arg subspan()";
+    // base does not allow dynamic_extent in two-arg subspan().
+    DCHECK(size_type{count} != dynamic_extent);
     // Deliberately combine tests to minimize code size.
     CHECK(size_type{offset} <= size() &&
           size_type{count} <= size() - size_type{offset});
@@ -1528,17 +1525,6 @@ constexpr auto span_with_nul_from_cstring(
   return span(str);
 }
 
-// Converts a `basic_cstring_view` instance to a `span<const CharT>`, preserving
-// the trailing '\0'.
-//
-// (Not in `std::`; explicitly includes the trailing nul, which would be omitted
-// by calling the range constructor.)
-template <typename CharT>
-constexpr auto span_with_nul_from_cstring_view(basic_cstring_view<CharT> str) {
-  // SAFETY: It is safe to read the guaranteed null-terminator in `str`.
-  return UNSAFE_BUFFERS(span(str.data(), str.size() + 1));
-}
-
 // Like `span_from_cstring()`, but returns a byte span.
 //
 // (Not in `std::`.)
@@ -1564,15 +1550,6 @@ constexpr auto byte_span_with_nul_from_cstring(
   // do not carry through the function call, so the `ENABLE_IF_ATTR` will not be
   // satisfied.
   return as_bytes(span(str));
-}
-
-// Like `span_with_nul_from_cstring_view()`, but returns a byte span.
-//
-// (Not in `std::`.)
-template <typename CharT>
-constexpr auto byte_span_with_nul_from_cstring_view(
-    basic_cstring_view<CharT> str) {
-  return as_bytes(span_with_nul_from_cstring_view(str));
 }
 
 // Converts an object which can already explicitly convert to some kind of span
