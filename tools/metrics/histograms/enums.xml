@@ -7892,9 +7892,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="-1679839472" label="bem"/>
   <int value="-1662603770" label="es-VE"/>
   <int value="-1655091207" label="ee"/>
+  <int value="-1639240777" label="hi-IN"/>
   <int value="-1625830957" label="ln"/>
   <int value="-1621588434" label="bho"/>
   <int value="-1612285087" label="en-ZA"/>
+  <int value="-1609141189" label="ja-JP"/>
   <int value="-1589643944" label="sa"/>
   <int value="-1578396049" label="ki"/>
   <int value="-1566592213" label="hi-Latn"/>
@@ -7983,6 +7985,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="-181870943" label="bn"/>
   <int value="-119774173" label="dav"/>
   <int value="-110306666" label="sr"/>
+  <int value="-96372035" label="bn-BD"/>
   <int value="-91748674" label="tn"/>
   <int value="-91654905" label="luo"/>
   <int value="-78164291" label="kk"/>
@@ -8057,6 +8060,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1227107723" label="nyn"/>
   <int value="1228519432" label="fo"/>
   <int value="1282439493" label="es-MX"/>
+  <int value="1308353869" label="sv-SE"/>
   <int value="1311313702" label="pt"/>
   <int value="1312638242" label="pl"/>
   <int value="1327296767" label="gom"/>
