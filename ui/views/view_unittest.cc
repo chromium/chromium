@@ -7374,6 +7374,68 @@ TEST_F(ViewTest, DoNotCompleteAXCacheInitializationOnChildViewAddedWithAXOff) {
   EXPECT_FALSE(child->GetViewAccessibility().is_initialized());
 }
 
+// Tests that no widget is set on a View that is not connected to a RootView.
+TEST_F(ViewTest, NoWidgetOnViewNotConnectedToRoot) {
+  auto view = std::make_unique<TestView>();
+  view->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+
+  EXPECT_EQ(view->GetWidget(), nullptr);
+}
+
+// Tests that the RootView always has a widget.
+TEST_F(ViewTest, RootViewHasWidget) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  EXPECT_EQ(root->GetWidget(), widget.get());
+}
+
+// Tests that the widget is properly cached on the view as it get added to and
+// removed from the widget.
+TEST_F(ViewTest, WidgetCachedOnViews) {
+  auto view_1 = std::make_unique<TestView>();
+  view_1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+
+  auto view_2 = std::make_unique<TestView>();
+  view_2->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+
+  ASSERT_EQ(view_1->GetWidget(), nullptr);
+  ASSERT_EQ(view_2->GetWidget(), nullptr);
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  auto* root = AsViewClass<internal::RootView>(widget->GetRootView());
+
+  ASSERT_EQ(root->GetWidget(), widget.get());
+
+  // Adding view_2 to view_1 should not set the widget on view_2.
+  auto* added_view_2 = view_1->AddChildView(std::move(view_2));
+
+  EXPECT_EQ(added_view_2->GetWidget(), nullptr);
+
+  // Adding view_1 to the root should set the widget on view_1 and view_2.
+  auto* added_view_1 = root->AddChildView(std::move(view_1));
+  EXPECT_EQ(added_view_1->GetWidget(), widget.get());
+  EXPECT_EQ(added_view_2->GetWidget(), widget.get());
+
+  // Removing view_1 from the root should remove the widget from view_1 and
+  // view_2.
+  root->RemoveChildView(added_view_1);
+  EXPECT_EQ(added_view_1->GetWidget(), nullptr);
+  EXPECT_EQ(added_view_2->GetWidget(), nullptr);
+
+  widget->CloseNow();
+  widget.reset();
+
+  delete added_view_1;
+}
+
 using BaseActionViewInterfaceTest = ViewsTestBase;
 
 TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
