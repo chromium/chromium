@@ -16,6 +16,10 @@
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
 
 namespace tracing {
@@ -58,12 +62,168 @@ const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
                                                            "config", ""};
 
+constexpr const char* kBrowserCategoriesList[] = {
+    "accessibility",
+    "base",
+    "benchmark",
+    "blink",
+    "blink_gc",
+    "browser",
+    "cc",
+    "chromeos",
+    "device",
+    "disk_cache",
+    "dwrite",
+    "extensions",
+    "fledge",
+    "fonts",
+    "gpu",
+    "ipc",
+    "latency",
+    "latencyInfo",
+    "loading",
+    "memory",
+    "mojom",
+    "navigation",
+    "omnibox",
+    "passwords",
+    "performance_scenarios",
+    "power",
+    "renderer",
+    "renderer_host",
+    "ServiceWorker",
+    "sql",
+    "startup",
+    "sync",
+    "toplevel",
+    "toplevel.flow",
+    "ui",
+    "v8",
+    "v8.wasm",
+    "disabled-by-default-cpu_profiler",
+    "disabled-by-default-power",
+    "disabled-by-default-system_metrics",
+    "disabled-by-default-user_action_samples",
+    "disabled-by-default-v8.gc",
+    "safe_browsing",
+};
+
+constexpr const char* kHistogramSamplesFilterList[] = {
+    "Blink.Responsiveness.UserInteraction.MaxEventDuration.AllTypes",
+    "PageLoad.InteractiveTiming.InputDelay3",
+    "Event.Latency.OS2.MOUSE_WHEEL",
+    "Event.Latency.OS2.MOUSE_PRESSED",
+    "Event.Latency.OS2.KEY_PRESSED",
+    ("Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime"
+     ".All"),
+    "Omnibox.CharTypedToRepaintLatency",
+    "Browser.Tabs.TotalSwitchDuration3",
+    "Browser.MainThreadsCongestion",
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint",
+    "HangWatcher.IsThreadHung.Any",
+    "Startup.FirstWebContents.NonEmptyPaint3",
+    "Graphics.Smoothness.PercentDroppedFrames3.AllSequences",
+    "Event.ScrollJank.DelayedFramesPercentage.FixedWindow"};
+
+void SetHistogramTriggerRule(perfetto::protos::gen::TriggerRule* rule,
+                             const char* histogram_name,
+                             std::optional<int> min_value = std::nullopt,
+                             std::optional<int> max_value = std::nullopt) {
+  auto* histogram = rule->mutable_histogram();
+  histogram->set_histogram_name(histogram_name);
+  if (min_value) {
+    histogram->set_min_value(*min_value);
+  }
+  if (max_value) {
+    histogram->set_max_value(*max_value);
+  }
+}
+
+perfetto::protos::gen::ChromeFieldTracingConfig
+CreateDefaultPresetTracingScenariosConfig() {
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  auto* scenario = config.add_scenarios();
+  scenario->set_scenario_name("AlwaysOnScenario");
+  scenario->set_scenario_description(
+      "This scenario runs at all time in circular buffer mode, and captures a "
+      "trace snapshot when a user report is created, e.g. with "
+      "'Help > Report an Issue'.");
+  scenario->add_start_rules()->set_manual_trigger_name("startup");
+  scenario->add_start_rules()->set_delay_ms(1);
+  auto* nested_scenario = scenario->add_nested_scenarios();
+  nested_scenario->set_scenario_name("AlwaysOnScenario.Snapshots");
+  nested_scenario->add_start_rules()->set_delay_ms(1);
+
+  SetHistogramTriggerRule(nested_scenario->add_upload_rules(),
+                          "Feedback.RequestSource");
+  // Renderer crash count - Extension renderer crash count
+  SetHistogramTriggerRule(nested_scenario->add_upload_rules(),
+                          "Stability.Counts2", 3, 5);
+  // Renderer failed launch count - Extension renderer failed launch count
+  SetHistogramTriggerRule(nested_scenario->add_upload_rules(),
+                          "Stability.Counts2", 24, 25);
+  // GPU process crash count - Utility process crash count
+  SetHistogramTriggerRule(nested_scenario->add_upload_rules(),
+                          "Stability.Counts2", 31, 32);
+
+  auto* trace_config = scenario->mutable_trace_config();
+  {
+    auto* buffer = trace_config->add_buffers();
+    buffer->set_size_kb(64 * 1024);
+    buffer->set_fill_policy(
+        perfetto::protos::gen::TraceConfig::BufferConfig::RING_BUFFER);
+  }
+  {
+    auto* buffer = trace_config->add_buffers();
+    buffer->set_size_kb(128);
+    buffer->set_fill_policy(
+        perfetto::protos::gen::TraceConfig::BufferConfig::DISCARD);
+  }
+  {
+    auto* ds = trace_config->add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.trace_metadata2");
+    ds->set_target_buffer(1);
+  }
+  {
+    auto* ds = trace_config->add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.background_scenario_metadata");
+    ds->set_target_buffer(1);
+  }
+  trace_config->add_data_sources()->mutable_config()->set_name(
+      "org.chromium.triggers");
+  trace_config->add_data_sources()->mutable_config()->set_name(
+      "org.chromium.system_metrics");
+  trace_config->add_data_sources()->mutable_config()->set_name(
+      "org.chromium.sampler_profiler");
+  {
+    auto* ds = trace_config->add_data_sources()->mutable_config();
+    ds->set_name("org.chromium.histogram_sample");
+    perfetto::protos::gen::ChromiumHistogramSamplesConfig histogram_config;
+    for (auto* histogram : kHistogramSamplesFilterList) {
+      histogram_config.add_histograms()->set_histogram_name(histogram);
+    }
+    ds->set_chromium_histogram_samples_raw(
+        histogram_config.SerializeAsString());
+  }
+  {
+    auto* ds = trace_config->add_data_sources()->mutable_config();
+    ds->set_name("track_event");
+    perfetto::protos::gen::TrackEventConfig track_event_config;
+    track_event_config.add_disabled_categories("*");
+    for (auto* category : kBrowserCategoriesList) {
+      track_event_config.add_enabled_categories(category);
+    }
+    ds->set_track_event_config_raw(track_event_config.SerializeAsString());
+  }
+  return config;
+}
+
 }  // namespace
 
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetPresetTracingScenariosConfig() {
   if (!base::FeatureList::IsEnabled(kPresetTracing)) {
-    return std::nullopt;
+    return CreateDefaultPresetTracingScenariosConfig();
   }
   return ParseEncodedTracingScenariosConfig(kPresetTracingConfig.Get());
 }

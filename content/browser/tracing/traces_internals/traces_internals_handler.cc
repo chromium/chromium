@@ -153,7 +153,6 @@ TracesInternalsHandler::TracesInternalsHandler(
       background_tracing_manager_(background_tracing_manager),
       tracing_delegate_(tracing_delegate) {
   trace_upload_list_->OpenDatabaseIfExists();
-  MaybeSetupPresetTracingFromFieldTrial();
 }
 
 TracesInternalsHandler::~TracesInternalsHandler() = default;
