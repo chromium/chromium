@@ -8,6 +8,7 @@ source_set("page_action") {
   friend = [
     ":unit_tests",
     ":interactive_ui_tests",
+    ":test_support",
   ]
 
   public = [
@@ -54,6 +55,31 @@ source_set("page_action") {
   deps = [ "//ui/gfx" ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/fake_tab_interface.cc",
+    "test_support/fake_tab_interface.h",
+    "test_support/mock_page_action_controller.cc",
+    "test_support/mock_page_action_controller.h",
+    "test_support/mock_page_action_model.cc",
+    "test_support/mock_page_action_model.h",
+    "test_support/noop_page_action_metrics_recorder.cc",
+    "test_support/noop_page_action_metrics_recorder.h",
+    "test_support/test_page_action_properties_provider.cc",
+    "test_support/test_page_action_properties_provider.h",
+  ]
+
+  deps = [
+    ":page_action",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//testing/gmock:gmock",
+    "//ui/actions:actions_headers",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -66,18 +92,11 @@ source_set("unit_tests") {
     "page_action_observer_unittest.cc",
     "page_action_page_metrics_recorder_unittest.cc",
     "page_action_view_unittest.cc",
-    "test_support/fake_tab_interface.cc",
-    "test_support/fake_tab_interface.h",
-    "test_support/mock_page_action_model.cc",
-    "test_support/mock_page_action_model.h",
-    "test_support/noop_page_action_metrics_recorder.cc",
-    "test_support/noop_page_action_metrics_recorder.h",
-    "test_support/test_page_action_properties_provider.cc",
-    "test_support/test_page_action_properties_provider.h",
   ]
 
   deps = [
     ":page_action",
+    ":test_support",
     "//chrome/test:test_support",
     "//components/tabs:test_support",
     "//ui/events:test_support",
