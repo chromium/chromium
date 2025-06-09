@@ -278,7 +278,8 @@ class WebAppNotificationsBrowserTest_MacPermissions
  public:
   WebAppNotificationsBrowserTest_MacPermissions()
       : WebAppNotificationsBrowserTest(
-            {features::kAppShimNotificationAttribution},
+            {features::kAppShimNotificationAttribution,
+             features::kUseAdHocSigningForWebAppShims},
             {}) {}
 
   void SetUpOnMainThread() override {

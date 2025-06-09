@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #endif
 
 namespace {
@@ -249,7 +250,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   // this request, try using a OS-native permission prompt. If showing the
   // prompt fails, it will trigger the view to be recreated for the request, at
   // which point we end up in the normal code path below.
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+  if (web_app::UseNotificationAttributionForWebAppShims() &&
       !delegate->WasCurrentRequestAlreadyDisplayed() &&
       PermissionPromptNotificationsMac::CanHandleRequest(web_contents,
                                                          delegate)) {

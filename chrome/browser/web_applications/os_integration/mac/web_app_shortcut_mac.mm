@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -95,6 +96,12 @@ bool UseAdHocSigningForWebAppShims() {
   }
 
   return true;
+}
+
+bool UseNotificationAttributionForWebAppShims() {
+  return base::FeatureList::IsEnabled(
+             features::kAppShimNotificationAttribution) &&
+         UseAdHocSigningForWebAppShims();
 }
 
 namespace internals {

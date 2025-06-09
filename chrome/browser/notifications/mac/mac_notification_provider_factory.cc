@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/child_process_host_flags.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -64,8 +65,7 @@ MacNotificationProviderFactory::MacNotificationProviderFactory(
       notification_style_ == mac_notifications::NotificationStyle::kAppShim,
       web_app_id_.empty());
   if (notification_style_ == mac_notifications::NotificationStyle::kAppShim) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kAppShimNotificationAttribution));
+    CHECK(web_app::UseNotificationAttributionForWebAppShims());
   }
 }
 
