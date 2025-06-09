@@ -345,8 +345,8 @@ wheel: <
   version: "version:0.5.1"
 >
 wheel: <
-  name: "infra/python/wheels/certifi-py2_py3"
-  version: "version:2020.11.8"
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2024.7.4"
 >
 wheel: <
   name: "infra/python/wheels/chardet-py2_py3"
@@ -571,7 +571,7 @@ wheel: <
 # in via DEPS.
 wheel: <
   name: "infra/python/wheels/selenium-py3"
-  version: "version:4.1.0"
+  version: "version:4.16.0"
 >
 wheel: <
   name: "infra/python/wheels/service-identity-py3"
