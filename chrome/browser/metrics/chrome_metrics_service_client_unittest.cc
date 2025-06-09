@@ -96,7 +96,6 @@ class ChromeMetricsServiceClientTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
-         features::kK12AgeClassificationMetricsProvider,
          features::kClassManagementEnabledMetricsProvider,
          metrics::dwa::kDwaFeature},
         {});

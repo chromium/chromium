@@ -937,11 +937,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<WallpaperMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<arc::VmmMetricsProvider>());
-  if (base::FeatureList::IsEnabled(
-          ::features::kK12AgeClassificationMetricsProvider)) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<K12AgeClassificationMetricsProvider>());
-  }
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<K12AgeClassificationMetricsProvider>());
   if (base::FeatureList::IsEnabled(
           ::features::kClassManagementEnabledMetricsProvider)) {
     metrics_service_->RegisterMetricsProvider(
