@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -99,8 +100,9 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     base::test::TestFuture<bool> allowed;
+    auto* actor_service = ActorKeyedService::Get(browser()->profile());
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-                allowed.GetCallback());
+                actor_service->GetJournal(), TaskId(), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed, allowed.Get());

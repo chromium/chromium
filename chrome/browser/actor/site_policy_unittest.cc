@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -83,8 +84,10 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
     tabs::MockTabInterface tab;
     ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents()));
 
+    auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<bool> allowed;
-    MayActOnTab(tab, allowed.GetCallback());
+    MayActOnTab(tab, actor_service->GetJournal(), TaskId(),
+                allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed, allowed.Get());

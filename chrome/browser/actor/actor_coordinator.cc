@@ -146,11 +146,12 @@ void ActorCoordinator::Act(const BrowserAction& action,
   actions_.emplace(action, std::move(callback));
   action_index_ = 0;
 
-  MayActOnTab(*tab_, base::BindOnce(&ActorCoordinator::OnMayActOnTabResponse,
-                                    GetWeakPtr(), task_id,
-                                    tab_->GetContents()
-                                        ->GetPrimaryMainFrame()
-                                        ->GetLastCommittedOrigin()));
+  MayActOnTab(*tab_, *journal_, task_id,
+              base::BindOnce(&ActorCoordinator::OnMayActOnTabResponse,
+                             GetWeakPtr(), task_id,
+                             tab_->GetContents()
+                                 ->GetPrimaryMainFrame()
+                                 ->GetLastCommittedOrigin()));
 }
 
 void ActorCoordinator::OnMayActOnTabResponse(
