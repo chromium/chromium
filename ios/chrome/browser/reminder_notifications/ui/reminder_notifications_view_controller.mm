@@ -91,6 +91,10 @@ NSString* const kBellIconAccessibilityLabel =
       .active = YES;
 }
 
+- (NSDate*)date {
+  return _tableView.date;
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 // Ensures the picker is always displayed in popover overlay, instead of falling

@@ -15,6 +15,13 @@
     : ConfirmationAlertViewController <
           ReminderNotificationsDatePickerInteractionHandler>
 
+// The currently selected date and time for the reminder notification.
+// Default value is the current date and time when the picker is initialized.
+// Updates when the user selects a new date or time.
+//
+// Note: This always represents a future date as users cannot select past dates.
+@property(nonatomic, readonly) NSDate* date;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_REMINDER_NOTIFICATIONS_UI_REMINDER_NOTIFICATIONS_VIEW_CONTROLLER_H_
