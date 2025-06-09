@@ -191,7 +191,7 @@ void PermissionToggleRowView::OnToggleButtonPressed() {
 void PermissionToggleRowView::AddToggleButton(
     const std::u16string& toggle_accessible_name,
     int icon_label_spacing) {
-  // This skips adding a toggle for 'CAPTURED_SURFACE_CONTROL' pemrission type.
+  // This skips adding a toggle for 'CAPTURED_SURFACE_CONTROL' permission type.
   // We want to use the toggle inside the submenu and not here.
   if (permission_.type == ContentSettingsType::CAPTURED_SURFACE_CONTROL) {
     return;
@@ -253,7 +253,10 @@ void PermissionToggleRowView::InitForUserSource(
       auto spacer_view = std::make_unique<views::View>();
       spacer_view->SetPreferredSize(gfx::Size(icon_size, icon_size));
       spacer_view_ = row_view_->AddControl(std::move(spacer_view));
-    } else {
+    } else if (toggle_button_) {
+      // toggle_button_ could be uninitialized if this row represents
+      // 'CAPTURED_SURFACE_CONTROL' permission type and that permission type
+      // is not found in `DoesSupportTemporaryGrants`.
       toggle_button_->SetProperty(
           views::kMarginsKey, gfx::Insets::TLBR(0, icon_label_spacing, 0, 0));
     }
