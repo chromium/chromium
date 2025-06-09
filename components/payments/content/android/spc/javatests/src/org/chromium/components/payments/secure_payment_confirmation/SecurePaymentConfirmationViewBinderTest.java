@@ -5,7 +5,6 @@
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -14,9 +13,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.SpannableString;
-import android.util.Pair;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -31,9 +30,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.payments.R;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Integration tests for {@link SecurePaymentConfirmationViewBinder} */
@@ -65,9 +69,12 @@ public class SecurePaymentConfirmationViewBinderTest {
     @Before
     public void setUp() throws Exception {
         mModelBuilder = new PropertyModel.Builder(SecurePaymentConfirmationProperties.ALL_KEYS);
-        mView = new SecurePaymentConfirmationView(sActivityTestRule.getActivity());
+
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getActivity().setContentView(mView.mContentView));
+                () -> {
+                    mView = new SecurePaymentConfirmationView(sActivityTestRule.getActivity());
+                    sActivityTestRule.getActivity().setContentView(mView.mContentView);
+                });
         bind(mModelBuilder);
     }
 
@@ -138,78 +145,55 @@ public class SecurePaymentConfirmationViewBinderTest {
 
     @Test
     @SmallTest
-    public void testStoreLabel() {
-        final String storeText = "Store";
-        bind(mModelBuilder.with(SecurePaymentConfirmationProperties.STORE_LABEL, storeText));
+    public void testItemList() {
+        final BitmapDrawable icon = TEST_BITMAP;
+        final String iconLabel = "label";
+        final String primaryText = "primary text";
+        final String secondaryText = "secondary text";
 
-        assertEquals(R.id.store, mView.mStoreLabel.getId());
-        assertEquals(storeText, String.valueOf(mView.mStoreLabel.getText()));
-    }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModelList itemList = new ModelList();
+                    itemList.add(
+                            new ListItem(
+                                    /* type= */ 0,
+                                    new PropertyModel.Builder(ItemProperties.ALL_KEYS)
+                                            .with(ItemProperties.ICON, icon)
+                                            .with(ItemProperties.ICON_LABEL, iconLabel)
+                                            .with(ItemProperties.PRIMARY_TEXT, primaryText)
+                                            .with(ItemProperties.SECONDARY_TEXT, secondaryText)
+                                            .build()));
+                    SimpleRecyclerViewAdapter itemListAdapter =
+                            new SimpleRecyclerViewAdapter(itemList);
+                    itemListAdapter.registerType(
+                            /* typeId= */ 0,
+                            SecurePaymentConfirmationView::createItemView,
+                            SecurePaymentConfirmationViewBinder::bindItem);
 
-    @Test
-    @SmallTest
-    public void testPaymentIcon_withDefaultIcon() {
-        assertEquals(R.id.payment_icon, mView.mPaymentIcon.getId());
-        assertNull(mView.mPaymentIcon.getDrawable());
+                    mModel =
+                            mModelBuilder
+                                    .with(
+                                            SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER,
+                                            itemListAdapter)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            mModel, mView, SecurePaymentConfirmationViewBinder::bind);
 
-        bind(
-                mModelBuilder.with(
-                        SecurePaymentConfirmationProperties.PAYMENT_ICON,
-                        Pair.create(TEST_BITMAP, /* is_default_icon= */ true)));
+                    assertNotNull(mView.mItemList.getAdapter());
+                    assertEquals(
+                            itemList,
+                            ((SimpleRecyclerViewAdapter) mView.mItemList.getAdapter())
+                                    .getModelList());
+                });
 
-        assertEquals(View.VISIBLE, mView.mPaymentIcon.getVisibility());
-        assertSame(TEST_BITMAP, mView.mPaymentIcon.getDrawable());
-        assertEquals(LayoutParams.WRAP_CONTENT, mView.mPaymentIcon.getLayoutParams().height);
-        assertEquals(LayoutParams.WRAP_CONTENT, mView.mPaymentIcon.getLayoutParams().width);
-    }
-
-    @Test
-    @SmallTest
-    public void testPaymentIcon_withoutDefaultIcon() {
-        assertEquals(R.id.payment_icon, mView.mPaymentIcon.getId());
-        assertNull(mView.mPaymentIcon.getDrawable());
-
-        bind(
-                mModelBuilder.with(
-                        SecurePaymentConfirmationProperties.PAYMENT_ICON,
-                        Pair.create(TEST_BITMAP, /* is_default_icon= */ false)));
-
-        assertEquals(View.VISIBLE, mView.mPaymentIcon.getVisibility());
-        assertSame(TEST_BITMAP, mView.mPaymentIcon.getDrawable());
-        assertNotEquals(LayoutParams.WRAP_CONTENT, mView.mPaymentIcon.getLayoutParams().height);
-        assertNotEquals(LayoutParams.WRAP_CONTENT, mView.mPaymentIcon.getLayoutParams().width);
-    }
-
-    @Test
-    @SmallTest
-    public void testPaymentInstrumentLabel() {
-        final String paymentText = "Payment";
-        bind(
-                mModelBuilder.with(
-                        SecurePaymentConfirmationProperties.PAYMENT_INSTRUMENT_LABEL, paymentText));
-
-        assertEquals(R.id.payment, mView.mPaymentInstrumentLabel.getId());
-        assertEquals(paymentText, String.valueOf(mView.mPaymentInstrumentLabel.getText()));
-    }
-
-    @Test
-    @SmallTest
-    public void testCurrency() {
-        final String currency = "CAD";
-        bind(mModelBuilder.with(SecurePaymentConfirmationProperties.CURRENCY, currency));
-
-        assertEquals(R.id.currency, mView.mCurrency.getId());
-        assertEquals(currency, String.valueOf(mView.mCurrency.getText()));
-    }
-
-    @Test
-    @SmallTest
-    public void testTotal() {
-        final String total = "1.50";
-        bind(mModelBuilder.with(SecurePaymentConfirmationProperties.TOTAL, total));
-
-        assertEquals(R.id.total, mView.mTotal.getId());
-        assertEquals(total, String.valueOf(mView.mTotal.getText()));
+        RecyclerViewTestUtils.waitForStableRecyclerView(mView.mItemList);
+        assertEquals(1, mView.mItemList.getChildCount());
+        View itemView = mView.mItemList.getChildAt(0);
+        assertSame(icon, ((ImageView) itemView.findViewById(R.id.icon)).getDrawable());
+        assertEquals(iconLabel, itemView.findViewById(R.id.icon).getContentDescription());
+        assertEquals(primaryText, ((TextView) itemView.findViewById(R.id.primary_text)).getText());
+        assertEquals(
+                secondaryText, ((TextView) itemView.findViewById(R.id.secondary_text)).getText());
     }
 
     @Test

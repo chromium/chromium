@@ -6,16 +6,41 @@ package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
-import android.util.Pair;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** The properties of the SecurePaymentConfirmation UI, which fully describe the state of the UI. */
 @NullMarked
 /* package */ class SecurePaymentConfirmationProperties {
+    /** The properties of the item used to populate the SPC item list. */
+    public static class ItemProperties {
+        /** The icon for the UI. */
+        /* package */ static final ReadableObjectPropertyKey<Drawable> ICON =
+                new ReadableObjectPropertyKey<>();
+
+        /** The label of the icon used for a11y announcements. */
+        /* package */ static final ReadableObjectPropertyKey<String> ICON_LABEL =
+                new ReadableObjectPropertyKey<>();
+
+        /** The primary text for the UI. */
+        /* package */ static final ReadableObjectPropertyKey<String> PRIMARY_TEXT =
+                new ReadableObjectPropertyKey<>();
+
+        /** The secondary text for the UI. */
+        /* package */ static final ReadableObjectPropertyKey<String> SECONDARY_TEXT =
+                new ReadableObjectPropertyKey<>();
+
+        /* package */ static final PropertyKey[] ALL_KEYS =
+                new PropertyKey[] {ICON, ICON_LABEL, PRIMARY_TEXT, SECONDARY_TEXT};
+
+        /** Do not instantiate. */
+        private ItemProperties() {}
+    }
+
     /**
      * When true, shows the issuer and network icons (if provided) in the header instead of the
      * default header image.
@@ -35,28 +60,12 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
     /* package */ static final ReadableObjectPropertyKey<String> TITLE =
             new ReadableObjectPropertyKey<>();
 
-    /** The store value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<String> STORE_LABEL =
-            new ReadableObjectPropertyKey<>();
-
     /**
-     * The payment icon for the UI. The second parameter indicates whether this is the default
-     * payment icon or not.
+     * The item list recycler view adapter for the SPC view. Contains the Store, Payment, and Total
+     * rows.
      */
-    /* package */ static final ReadableObjectPropertyKey<Pair<Drawable, Boolean>> PAYMENT_ICON =
-            new ReadableObjectPropertyKey<>();
-
-    /** The payment value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<CharSequence> PAYMENT_INSTRUMENT_LABEL =
-            new ReadableObjectPropertyKey<>();
-
-    /** The currency value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<CharSequence> CURRENCY =
-            new ReadableObjectPropertyKey<>();
-
-    /** The total value of the UI. */
-    /* package */ static final ReadableObjectPropertyKey<CharSequence> TOTAL =
-            new ReadableObjectPropertyKey<>();
+    /* package */ static final ReadableObjectPropertyKey<SimpleRecyclerViewAdapter>
+            ITEM_LIST_ADAPTER = new ReadableObjectPropertyKey<>();
 
     /** The opt out text for the UI. If empty, the UI will be hidden. */
     /* package */ static final ReadableObjectPropertyKey<SpannableString> OPT_OUT_TEXT =
@@ -76,11 +85,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
                 ISSUER_ICON,
                 NETWORK_ICON,
                 TITLE,
-                STORE_LABEL,
-                PAYMENT_ICON,
-                PAYMENT_INSTRUMENT_LABEL,
-                CURRENCY,
-                TOTAL,
+                ITEM_LIST_ADAPTER,
                 OPT_OUT_TEXT,
                 FOOTNOTE,
                 CONTINUE_BUTTON_LABEL,

@@ -27,7 +27,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
-import android.util.Pair;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController.SpcResponseStatus;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.CurrencyFormatterJni;
 import org.chromium.components.payments.ui.InputProtector;
@@ -57,6 +57,8 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -215,26 +217,36 @@ public class SecurePaymentConfirmationControllerTest {
                         org.chromium.components.payments.R.string
                                 .secure_payment_confirmation_verify_purchase),
                 model.get(SecurePaymentConfirmationProperties.TITLE));
+        ModelList itemList =
+                model.get(SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER).getModelList();
+        assertEquals(3, itemList.size());
+        ListItem storeItem = itemList.get(0);
         assertEquals(
-                String.format(
-                        "%s (%s)",
-                        mPayeeName,
-                        UrlFormatter.formatOriginForSecurityDisplay(
-                                mPayeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS)),
-                model.get(SecurePaymentConfirmationProperties.STORE_LABEL));
+                context.getString(
+                        org.chromium.components.payments.R.string
+                                .secure_payment_confirmation_store_label),
+                storeItem.model.get(ItemProperties.ICON_LABEL));
+        assertEquals(mPayeeName, storeItem.model.get(ItemProperties.PRIMARY_TEXT));
         assertEquals(
-                Pair.create(mPaymentIcon, false),
-                model.get(SecurePaymentConfirmationProperties.PAYMENT_ICON));
+                UrlFormatter.formatOriginForSecurityDisplay(
+                        mPayeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                storeItem.model.get(ItemProperties.SECONDARY_TEXT));
+        ListItem paymentItem = itemList.get(1);
+        assertEquals(mPaymentIcon, paymentItem.model.get(ItemProperties.ICON));
+        assertEquals(mPaymentInstrumentLabel, paymentItem.model.get(ItemProperties.PRIMARY_TEXT));
+        ListItem totalItem = itemList.get(2);
         assertEquals(
-                mPaymentInstrumentLabel,
-                model.get(SecurePaymentConfirmationProperties.PAYMENT_INSTRUMENT_LABEL));
-        assertEquals(
-                mTotal.amount.currency, model.get(SecurePaymentConfirmationProperties.CURRENCY));
+                context.getString(
+                        org.chromium.components.payments.R.string
+                                .secure_payment_confirmation_total_label),
+                totalItem.model.get(ItemProperties.ICON_LABEL));
         CurrencyFormatter formatter =
                 new CurrencyFormatter(mTotal.amount.currency, Locale.getDefault());
         String totalAmountValue = formatter.format(mTotal.amount.value);
         formatter.destroy();
-        assertEquals(totalAmountValue, model.get(SecurePaymentConfirmationProperties.TOTAL));
+        assertEquals(
+                String.format("%s %s", mTotal.amount.currency, totalAmountValue),
+                totalItem.model.get(ItemProperties.PRIMARY_TEXT));
         assertNull(model.get(SecurePaymentConfirmationProperties.OPT_OUT_TEXT));
         assertSpannableStringsEqual(
                 SpanApplier.applySpans(

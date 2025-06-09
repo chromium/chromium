@@ -4,12 +4,12 @@
 
 package org.chromium.components.payments.secure_payment_confirmation;
 
-import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.payments.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -37,26 +37,10 @@ import org.chromium.ui.modelutil.PropertyModel;
                     model.get(SecurePaymentConfirmationProperties.NETWORK_ICON));
         } else if (SecurePaymentConfirmationProperties.TITLE == propertyKey) {
             view.mTitle.setText(model.get(SecurePaymentConfirmationProperties.TITLE));
-        } else if (SecurePaymentConfirmationProperties.STORE_LABEL == propertyKey) {
-            view.mStoreLabel.setText(model.get(SecurePaymentConfirmationProperties.STORE_LABEL));
-        } else if (SecurePaymentConfirmationProperties.PAYMENT_ICON == propertyKey) {
-            Pair<Drawable, Boolean> iconInfo =
-                    model.get(SecurePaymentConfirmationProperties.PAYMENT_ICON);
-            view.mPaymentIcon.setImageDrawable(iconInfo.first);
-            // We normally override the input icon's dimensions, to stop developers from passing
-            // arbitrary sized icons. However if we're using the default payment icon we should just
-            // let it use its intrinsic sizing.
-            if (iconInfo.second) {
-                view.mPaymentIcon.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                view.mPaymentIcon.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-            }
-        } else if (SecurePaymentConfirmationProperties.PAYMENT_INSTRUMENT_LABEL == propertyKey) {
-            view.mPaymentInstrumentLabel.setText(
-                    model.get(SecurePaymentConfirmationProperties.PAYMENT_INSTRUMENT_LABEL));
-        } else if (SecurePaymentConfirmationProperties.CURRENCY == propertyKey) {
-            view.mCurrency.setText(model.get(SecurePaymentConfirmationProperties.CURRENCY));
-        } else if (SecurePaymentConfirmationProperties.TOTAL == propertyKey) {
-            view.mTotal.setText(model.get(SecurePaymentConfirmationProperties.TOTAL));
+        } else if (SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER == propertyKey) {
+            view.mItemList.swapAdapter(
+                    model.get(SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER),
+                    /* removeAndRecycleExistingViews= */ true);
         } else if (SecurePaymentConfirmationProperties.OPT_OUT_TEXT == propertyKey) {
             if (model.get(SecurePaymentConfirmationProperties.OPT_OUT_TEXT) == null) {
                 view.mOptOutText.setVisibility(View.GONE);
@@ -75,6 +59,34 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL == propertyKey) {
             view.mContinueButton.setText(
                     model.get(SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL));
+        }
+    }
+
+    static void bindItem(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (SecurePaymentConfirmationProperties.ItemProperties.ICON == propertyKey) {
+            ImageView iconView = view.findViewById(R.id.icon);
+            iconView.setImageDrawable(
+                    model.get(SecurePaymentConfirmationProperties.ItemProperties.ICON));
+        } else if (SecurePaymentConfirmationProperties.ItemProperties.ICON_LABEL == propertyKey) {
+            ImageView iconView = view.findViewById(R.id.icon);
+            iconView.setContentDescription(
+                    model.get(SecurePaymentConfirmationProperties.ItemProperties.ICON_LABEL));
+        } else if (SecurePaymentConfirmationProperties.ItemProperties.PRIMARY_TEXT == propertyKey) {
+            TextView primaryTextView = view.findViewById(R.id.primary_text);
+            primaryTextView.setText(
+                    model.get(SecurePaymentConfirmationProperties.ItemProperties.PRIMARY_TEXT));
+        } else if (SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT
+                == propertyKey) {
+            TextView secondaryTextView = view.findViewById(R.id.secondary_text);
+            if (model.get(SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT)
+                    == null) {
+                secondaryTextView.setVisibility(View.GONE);
+            } else {
+                secondaryTextView.setText(
+                        model.get(
+                                SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT));
+                secondaryTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

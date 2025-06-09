@@ -10,7 +10,6 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -22,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.R;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -29,8 +29,11 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -39,6 +42,7 @@ import org.chromium.url.Origin;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * The controller of the SecurePaymentConfirmation UI, which owns the component overall, i.e.,
@@ -49,6 +53,9 @@ import java.util.Locale;
 @NullMarked
 public class SecurePaymentConfirmationController
         implements SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate {
+    /** There is only a single model/view for SPC items so only a single item type is needed. */
+    private static final int SPC_ITEM_TYPE = 0;
+
     @IntDef({
         SpcResponseStatus.UNKNOWN,
         SpcResponseStatus.ACCEPT,
@@ -82,7 +89,7 @@ public class SecurePaymentConfirmationController
      * @param payeeName The name of the payee, or null if not specified.
      * @param payeeOrigin The origin of the payee, or null if not specified.
      * @param paymentInstrumentLabel The label to display for the payment instrument.
-     * @param total The total amount of the transaction.
+     * @param paymentItem The payment item of the transaction containing total payment information.
      * @param paymentIcon The icon of the payment instrument.
      * @param issuerIcon The icon of the issuer.
      * @param networkIcon The icon of the network.
@@ -96,7 +103,7 @@ public class SecurePaymentConfirmationController
             @Nullable String payeeName,
             @Nullable Origin payeeOrigin,
             String paymentInstrumentLabel,
-            PaymentItem total,
+            PaymentItem paymentItem,
             Drawable paymentIcon,
             @Nullable Drawable issuerIcon,
             @Nullable Drawable networkIcon,
@@ -114,17 +121,92 @@ public class SecurePaymentConfirmationController
         mResponseCallback = responseCallback;
         mInputProtector.markShowTime();
 
+        ModelList itemList = new ModelList();
+        // Set the store primary and secondary text accordingly (whether only one or both are
+        // populated). Note that at least one of these must be non-null in SPC; this should be
+        // enforced by PaymentRequestService.isValidSecurePaymentConfirmationRequest().
+        assertNonNull(payeeName != null ? payeeName : payeeOrigin);
+        String storePrimaryText;
+        String storeSecondaryText = null;
+        if (payeeName == null || payeeName.isEmpty()) {
+            storePrimaryText =
+                    UrlFormatter.formatOriginForSecurityDisplay(
+                            Objects.requireNonNull(payeeOrigin), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        } else {
+            storePrimaryText = payeeName;
+            if (payeeOrigin != null) {
+                storeSecondaryText =
+                        UrlFormatter.formatOriginForSecurityDisplay(
+                                payeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+            }
+        }
+        // Add the store row.
+        itemList.add(
+                new ListItem(
+                        SPC_ITEM_TYPE,
+                        new PropertyModel.Builder(ItemProperties.ALL_KEYS)
+                                .with(
+                                        ItemProperties.ICON,
+                                        ResourcesCompat.getDrawable(
+                                                context.getResources(),
+                                                R.drawable.storefront_icon,
+                                                context.getTheme()))
+                                .with(
+                                        ItemProperties.ICON_LABEL,
+                                        context.getString(
+                                                R.string.secure_payment_confirmation_store_label))
+                                .with(ItemProperties.PRIMARY_TEXT, storePrimaryText)
+                                .with(ItemProperties.SECONDARY_TEXT, storeSecondaryText)
+                                .build()));
+
         // The instrument icon may be empty, if it couldn't be downloaded/decoded and
         // iconMustBeShown was set to false. In that case, use a default icon. The actual display
         // color is set based on the theme in OnThemeChanged.
-        boolean usingDefaultIcon = false;
         assert paymentIcon instanceof BitmapDrawable;
         if (((BitmapDrawable) paymentIcon).getBitmap() == null) {
             paymentIcon =
                     ResourcesCompat.getDrawable(
                             context.getResources(), R.drawable.credit_card, context.getTheme());
-            usingDefaultIcon = true;
         }
+        // Add the payment row.
+        itemList.add(
+                new ListItem(
+                        SPC_ITEM_TYPE,
+                        new PropertyModel.Builder(ItemProperties.ALL_KEYS)
+                                .with(ItemProperties.ICON, paymentIcon)
+                                .with(ItemProperties.PRIMARY_TEXT, paymentInstrumentLabel)
+                                .build()));
+
+        // Convert the total value to the local currency amount.
+        CurrencyFormatter currencyFormatter =
+                new CurrencyFormatter(paymentItem.amount.currency, Locale.getDefault());
+        String totalValue = currencyFormatter.format(paymentItem.amount.value);
+        currencyFormatter.destroy();
+        // Add the total row.
+        itemList.add(
+                new ListItem(
+                        SPC_ITEM_TYPE,
+                        new PropertyModel.Builder(ItemProperties.ALL_KEYS)
+                                .with(
+                                        ItemProperties.ICON,
+                                        ResourcesCompat.getDrawable(
+                                                context.getResources(),
+                                                R.drawable.payments_icon,
+                                                context.getTheme()))
+                                .with(
+                                        ItemProperties.ICON_LABEL,
+                                        context.getString(
+                                                R.string.secure_payment_confirmation_total_label))
+                                .with(
+                                        ItemProperties.PRIMARY_TEXT,
+                                        String.format(
+                                                "%s %s", paymentItem.amount.currency, totalValue))
+                                .build()));
+        SimpleRecyclerViewAdapter itemListAdapter = new SimpleRecyclerViewAdapter(itemList);
+        itemListAdapter.registerType(
+                SPC_ITEM_TYPE,
+                SecurePaymentConfirmationView::createItemView,
+                SecurePaymentConfirmationViewBinder::bindItem);
 
         SpannableString optOutText = null;
         if (showOptOut) {
@@ -180,16 +262,8 @@ public class SecurePaymentConfirmationController
                                                 R.string
                                                         .secure_payment_confirmation_verify_purchase))
                         .with(
-                                SecurePaymentConfirmationProperties.STORE_LABEL,
-                                getStoreLabel(payeeName, payeeOrigin))
-                        .with(
-                                SecurePaymentConfirmationProperties.PAYMENT_ICON,
-                                Pair.create(paymentIcon, usingDefaultIcon))
-                        .with(
-                                SecurePaymentConfirmationProperties.PAYMENT_INSTRUMENT_LABEL,
-                                paymentInstrumentLabel)
-                        .with(SecurePaymentConfirmationProperties.CURRENCY, total.amount.currency)
-                        .with(SecurePaymentConfirmationProperties.TOTAL, formatPaymentItem(total))
+                                SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER,
+                                itemListAdapter)
                         .with(SecurePaymentConfirmationProperties.OPT_OUT_TEXT, optOutText)
                         .with(SecurePaymentConfirmationProperties.FOOTNOTE, footnote)
                         .with(
@@ -258,27 +332,6 @@ public class SecurePaymentConfirmationController
         if (!mInputProtector.shouldInputBeProcessed()) return;
         hide();
         mResponseCallback.onResult(SpcResponseStatus.OPT_OUT);
-    }
-
-    private String getStoreLabel(@Nullable String payeeName, @Nullable Origin payeeOrigin) {
-        // At least one of the payeeName and payeeOrigin must be non-null in SPC; this should be
-        // enforced by PaymentRequestService.isValidSecurePaymentConfirmationRequest.
-        assert payeeName != null || payeeOrigin != null;
-
-        if (payeeOrigin == null) return assertNonNull(payeeName);
-
-        String origin =
-                UrlFormatter.formatOriginForSecurityDisplay(
-                        payeeOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        return payeeName == null ? origin : String.format("%s (%s)", payeeName, origin);
-    }
-
-    private String formatPaymentItem(PaymentItem paymentItem) {
-        CurrencyFormatter formatter =
-                new CurrencyFormatter(paymentItem.amount.currency, Locale.getDefault());
-        String result = formatter.format(paymentItem.amount.value);
-        formatter.destroy();
-        return result;
     }
 
     /*package*/ SecurePaymentConfirmationView getViewForTesting() {

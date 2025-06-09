@@ -458,6 +458,9 @@
   <message name="IDS_PAYMENTS_ORDER_SUMMARY_ACCESSIBLE_LABEL" desc="The string used to format what the screenreader reads out for the order summary section of the Payment Sheet.">
     Order Summary, <ph name="TOTAL_LABEL">$1<ex>Total, USD $10.00</ex></ph>, More Details
   </message>
+  <message name="IDS_PAYMENTS_ITEM_ICON" desc="The default content description used for payments item icons." formatter_data="android_java">
+    Payments Item Icon
+  </message>
 
   <!-- Payment Handler strings -->
   <message name="IDS_PAYMENT_HANDLER_SHEET_DESCRIPTION" desc="Accessibility string read when the payment-handler bottom sheet is opened. It describes the payment-handler where users can fill in the payment info." formatter_data="android_java">
