@@ -105,8 +105,8 @@ void CpuProbeManager::OnCpuSampleAvailable(std::optional<CpuSample> sample) {
   // by InvalidateWeakPtrs().
   CHECK(timer_.IsRunning());
   if (sample.has_value()) {
-    auto data = mojom::PressureData::New(sample.value().cpu_utilization,
-                                         /*own_pressure_estimate=*/0.0);
+    auto data = mojom::PressureData::New(
+        sample.value().cpu_utilization, mojom::kDefaultOwnContributionEstimate);
     sampling_callback_.Run(std::move(data));
   }
 }
