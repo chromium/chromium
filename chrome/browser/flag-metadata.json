@@ -8902,6 +8902,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "shopping-alternate-server",
+    "owners": ["mattsimmons@chromium.org", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "shopping-list",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 122

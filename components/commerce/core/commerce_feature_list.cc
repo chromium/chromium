@@ -226,6 +226,11 @@ BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Force traffic to alternate Chrome shopping server.
+BASE_FEATURE(kShoppingAlternateServer,
+             "ShoppingAlternateServer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/406555154): Clean up this flag when discount on clank launched.
 const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
 

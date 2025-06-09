@@ -15896,6 +15896,7 @@ from previous Chrome versions.
   <int value="739938466"
       label="WebPaymentsPerMethodCanMakePaymentQuota:disabled"/>
   <int value="740056959" label="ImeServiceConnectable:enabled"/>
+  <int value="740148650" label="ShoppingAlternateServer:enabled"/>
   <int value="740224525" label="ResponsiveToolbar:disabled"/>
   <int value="740516371" label="ViewTransitionOnNavigation:enabled"/>
   <int value="740619684" label="ExtensionsToolbarMenu:enabled"/>
@@ -16200,6 +16201,7 @@ from previous Chrome versions.
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>
   <int value="855981832" label="BatchFetchRequests:enabled"/>
   <int value="856250802" label="webtransport-developer-mode"/>
+  <int value="856414742" label="ShoppingAlternateServer:disabled"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>

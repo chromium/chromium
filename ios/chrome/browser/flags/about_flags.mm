@@ -2726,6 +2726,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserPromoPropensityModelName,
      flag_descriptions::kDefaultBrowserPromoPropensityModelDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserPromoPropensityModel)},
+    {"shopping-alternate-server",
+     commerce::flag_descriptions::kShoppingAlternateServerName,
+     commerce::flag_descriptions::kShoppingAlternateServerDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingAlternateServer)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
