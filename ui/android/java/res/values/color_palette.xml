@@ -82,6 +82,8 @@ found in the LICENSE file.
     <color name="baseline_secondary_70">#5AB3F0</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_60">#3998D3</color>
+    <color name="baseline_secondary_50">#047DB7</color>
     <color name="baseline_secondary_40">#00639B</color>
     <color name="baseline_secondary_35">#005789</color>
     <color name="baseline_secondary_30">#004A77</color>
@@ -158,6 +160,9 @@ found in the LICENSE file.
     <color name="material_primary_20">@color/baseline_primary_20</color>
     <color name="material_primary_10">@color/baseline_primary_10</color>
     <color name="material_secondary_80">@color/baseline_secondary_80</color>
+    <color name="material_secondary_70">@color/baseline_secondary_70</color>
+    <color name="material_secondary_60">@color/baseline_secondary_60</color>
+    <color name="material_secondary_50">@color/baseline_secondary_50</color>
     <color name="material_secondary_40">@color/baseline_secondary_40</color>
     <color name="material_tertiary_80">@color/baseline_tertiary_80</color>
     <color name="material_tertiary_40">@color/baseline_tertiary_40</color>

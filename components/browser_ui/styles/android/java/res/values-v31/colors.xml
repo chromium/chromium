@@ -17,4 +17,9 @@ found in the LICENSE file.
   <color name="material_primary_80">@color/material_dynamic_primary80</color>
   <color name="material_primary_90">@color/material_dynamic_primary90</color>
   <color name="material_primary_95">@color/material_dynamic_primary95</color>
+  <color name="material_secondary_40">@color/material_dynamic_secondary40</color>
+  <color name="material_secondary_50">@color/material_dynamic_secondary50</color>
+  <color name="material_secondary_60">@color/material_dynamic_secondary60</color>
+  <color name="material_secondary_70">@color/material_dynamic_secondary70</color>
+  <color name="material_secondary_80">@color/material_dynamic_secondary80</color>
 </resources>
