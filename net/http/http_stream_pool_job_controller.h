@@ -117,6 +117,10 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   std::unique_ptr<HttpStream> MaybeCreateStreamFromExistingQuicSessionInternal(
       const QuicSessionAliasKey& key);
 
+  // May start an alternative job. Returns true when an alternative job is
+  // started.
+  bool MaybeStartAlternativeJob();
+
   // Returns true when a QUIC session can be used for the request.
   bool CanUseExistingQuicSession();
 

@@ -247,29 +247,15 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
     alternative_service_disabling_jobs_.emplace(job);
   }
 
-  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
-  // this method.
+  // HttpStreamPool should check the existing QUIC/SPDY sessions and idle
+  // streams before calling this method.
   DCHECK(!CanUseExistingQuicSession());
   DCHECK(!HasAvailableSpdySession());
+  CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
 
   request_jobs_.Insert(job, job->priority());
 
   MaybeChangeServiceEndpointRequestPriority();
-
-  // Check idle streams. If found, notify the job that an HttpStream is ready.
-  std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
-  if (stream_socket) {
-    CHECK(!group_->force_quic());
-    const StreamSocketHandle::SocketReuseType reuse_type =
-        GetReuseTypeFromIdleStreamSocket(*stream_socket);
-    // It's important to create an HttpBasicStream synchronously because we
-    // already took the ownership of the idle stream socket. If we don't create
-    // an HttpBasicStream here, another call of this method might exceed the
-    // per-group limit.
-    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                   LoadTimingInfo::ConnectTiming());
-    return;
-  }
 
   if (base_ssl_config_.has_value()) {
     base_ssl_config_->allowed_bad_certs = job->allowed_bad_certs();

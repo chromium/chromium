@@ -172,6 +172,9 @@ void HttpStreamPool::JobController::HandleStreamRequest(
     return;
   }
 
+  // Check if there are existing QUIC/SPDY sessions that can be used for the
+  // request.
+
   std::unique_ptr<HttpStream> quic_http_stream =
       MaybeCreateStreamFromExistingQuicSession();
   if (quic_http_stream) {
@@ -208,14 +211,31 @@ void HttpStreamPool::JobController::HandleStreamRequest(
     return;
   }
 
-  if (alternative_.has_value()) {
-    alternative_job_ =
-        pool_
-            ->GetOrCreateGroup(alternative_->stream_key, alternative_->quic_key)
-            .CreateJob(this, alternative_->quic_version, alternative_->protocol,
-                       stream_request_->net_log());
-    alternative_job_->Start();
-  } else {
+  // Check if there is an idle stream that can be used for the request.
+  Group& origin_group =
+      pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  std::unique_ptr<StreamSocket> idle_stream_socket =
+      origin_group.GetIdleStreamSocket();
+  if (idle_stream_socket) {
+    StreamSocketHandle::SocketReuseType reuse_type =
+        idle_stream_socket->WasEverUsed()
+            ? StreamSocketHandle::SocketReuseType::kReusedIdle
+            : StreamSocketHandle::SocketReuseType::kUnusedIdle;
+    NextProto negotiated_protocol = idle_stream_socket->GetNegotiatedProtocol();
+    std::unique_ptr<HttpStream> http_stream =
+        origin_group.CreateTextBasedStream(std::move(idle_stream_socket),
+                                           reuse_type,
+                                           LoadTimingInfo::ConnectTiming());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &HttpStreamPool::JobController::CallRequestCompleteAndStreamReady,
+            weak_ptr_factory_.GetWeakPtr(), std::move(http_stream),
+            negotiated_protocol));
+    return;
+  }
+
+  if (!MaybeStartAlternativeJob()) {
     alternative_job_result_ = OK;
   }
 
@@ -223,10 +243,9 @@ void HttpStreamPool::JobController::HandleStreamRequest(
                                          alternative_job_result_.has_value() &&
                                          *alternative_job_result_ == OK;
   if (!alternative_job_succeeded) {
-    origin_job_ =
-        pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
-            .CreateJob(this, origin_quic_version_, NextProto::kProtoUnknown,
-                       stream_request_->net_log());
+    origin_job_ = origin_group.CreateJob(this, origin_quic_version_,
+                                         NextProto::kProtoUnknown,
+                                         stream_request_->net_log());
     origin_job_->Start();
   }
 }
@@ -485,6 +504,29 @@ HttpStreamPool::JobController::MaybeCreateStreamFromExistingQuicSessionInternal(
   }
 
   return nullptr;
+}
+
+bool HttpStreamPool::JobController::MaybeStartAlternativeJob() {
+  if (!alternative_.has_value()) {
+    return false;
+  }
+
+  Group& alternative_group =
+      pool_->GetOrCreateGroup(alternative_->stream_key, alternative_->quic_key);
+
+  // We never put streams that are negotiated to use HTTP/2 as idle streams.
+  // Don't start alternative job if there is an idle stream. See
+  // HttpNetworkTransactionTest.AlternativeServiceShouldNotPoolToHttp11 for a
+  // scenario where we don't want to start alternative job.
+  if (alternative_group.IdleStreamSocketCount() > 0) {
+    return false;
+  }
+
+  alternative_job_ = alternative_group.CreateJob(
+      this, alternative_->quic_version, alternative_->protocol,
+      stream_request_->net_log());
+  alternative_job_->Start();
+  return true;
 }
 
 bool HttpStreamPool::JobController::CanUseExistingQuicSession() {
