@@ -21,7 +21,7 @@ jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
   DCHECK(web_contents);
 
   return PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-             *web_contents)
+             web_contents)
       ->HadActivationlessShow();
 }
 
@@ -33,7 +33,7 @@ void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
-  PaymentRequestWebContentsManager::GetOrCreateForWebContents(*web_contents)
+  PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
       ->RecordActivationlessShow();
 }
 

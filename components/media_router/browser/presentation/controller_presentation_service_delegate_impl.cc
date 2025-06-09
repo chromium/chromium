@@ -309,16 +309,6 @@ void PresentationFrame::ListenForConnectionStateChange(
                     route_id, state_changed_cb));
 }
 
-ControllerPresentationServiceDelegateImpl*
-ControllerPresentationServiceDelegateImpl::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  // CreateForWebContents does nothing if the delegate instance already exists.
-  ControllerPresentationServiceDelegateImpl::CreateForWebContents(web_contents);
-  return ControllerPresentationServiceDelegateImpl::FromWebContents(
-      web_contents);
-}
-
 ControllerPresentationServiceDelegateImpl::
     ControllerPresentationServiceDelegateImpl(
         content::WebContents* web_contents)

@@ -102,7 +102,7 @@ protocol::Response PageHandler::SetSPCTransactionMode(
 
   auto* payment_request_manager =
       payments::PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-          *web_contents_);
+          web_contents_.get());
   payment_request_manager->SetSPCTransactionMode(spc_mode);
   return protocol::Response::Success();
 }

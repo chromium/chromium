@@ -32,18 +32,6 @@ PictureInPictureWindowController::GetOrCreateDocumentPictureInPictureController(
       GetOrCreateForWebContents(web_contents);
 }
 
-// static
-DocumentPictureInPictureWindowControllerImpl*
-DocumentPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-    WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  // This is a no-op if the controller already exists.
-  CreateForWebContents(web_contents);
-  auto* controller = FromWebContents(web_contents);
-  return controller;
-}
-
 DocumentPictureInPictureWindowControllerImpl::
     DocumentPictureInPictureWindowControllerImpl(WebContents* web_contents)
     : WebContentsUserData<DocumentPictureInPictureWindowControllerImpl>(

@@ -33,12 +33,6 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
       public WebContentsUserData<DocumentPictureInPictureWindowControllerImpl>,
       public WebContentsObserver {
  public:
-  // Gets a reference to the controller associated with |web_contents| and
-  // creates one if it does not exist. The returned pointer is guaranteed to be
-  // non-null.
-  static DocumentPictureInPictureWindowControllerImpl*
-  GetOrCreateForWebContents(WebContents* web_contents);
-
   DocumentPictureInPictureWindowControllerImpl(
       const DocumentPictureInPictureWindowControllerImpl&) = delete;
   DocumentPictureInPictureWindowControllerImpl& operator=(

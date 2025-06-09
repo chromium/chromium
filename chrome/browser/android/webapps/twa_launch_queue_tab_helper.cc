@@ -9,21 +9,6 @@
 
 namespace webapps {
 
-// static
-void TwaLaunchQueueTabHelper::Create(content::WebContents* contents) {
-  auto helper = std::make_unique<TwaLaunchQueueTabHelper>(contents);
-  contents->SetUserData(UserDataKey(), std::move(helper));
-}
-
-TwaLaunchQueueTabHelper* TwaLaunchQueueTabHelper::GetOrCreateForWebContents(
-    content::WebContents* contents) {
-  if (!webapps::TwaLaunchQueueTabHelper::FromWebContents(contents)) {
-    webapps::TwaLaunchQueueTabHelper::Create(contents);
-  }
-
-  return webapps::TwaLaunchQueueTabHelper::FromWebContents(contents);
-}
-
 TwaLaunchQueueTabHelper::~TwaLaunchQueueTabHelper() = default;
 
 LaunchQueue& TwaLaunchQueueTabHelper::EnsureLaunchQueue() {

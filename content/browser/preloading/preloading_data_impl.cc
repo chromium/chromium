@@ -159,11 +159,8 @@ PreloadingData* PreloadingData::GetForWebContents(WebContents* web_contents) {
 // static
 PreloadingDataImpl* PreloadingDataImpl::GetOrCreateForWebContents(
     WebContents* web_contents) {
-  auto* preloading_impl = PreloadingDataImpl::FromWebContents(web_contents);
-  if (!preloading_impl)
-    PreloadingDataImpl::CreateForWebContents(web_contents);
-
-  return PreloadingDataImpl::FromWebContents(web_contents);
+  return WebContentsUserData<PreloadingDataImpl>::GetOrCreateForWebContents(
+      web_contents);
 }
 
 PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(

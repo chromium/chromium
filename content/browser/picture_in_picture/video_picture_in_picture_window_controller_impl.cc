@@ -30,17 +30,6 @@ PictureInPictureWindowController::GetOrCreateVideoPictureInPictureController(
       web_contents);
 }
 
-// static
-VideoPictureInPictureWindowControllerImpl*
-VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-    WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  // This is a no-op if the controller already exists.
-  CreateForWebContents(web_contents);
-  return FromWebContents(web_contents);
-}
-
 VideoPictureInPictureWindowControllerImpl::
     ~VideoPictureInPictureWindowControllerImpl() = default;
 

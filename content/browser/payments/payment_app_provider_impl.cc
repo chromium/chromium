@@ -98,20 +98,8 @@ void CheckRegistrationSuccess(base::OnceCallback<void(bool success)> callback,
 // static
 PaymentAppProvider* PaymentAppProvider::GetOrCreateForWebContents(
     WebContents* payment_request_web_contents) {
-  return PaymentAppProviderImpl::GetOrCreateForWebContents(
+  return WebContentsUserData<PaymentAppProviderImpl>::GetOrCreateForWebContents(
       payment_request_web_contents);
-}
-
-// static
-PaymentAppProviderImpl* PaymentAppProviderImpl::GetOrCreateForWebContents(
-    WebContents* payment_request_web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* data =
-      PaymentAppProviderImpl::FromWebContents(payment_request_web_contents);
-  if (!data)
-    PaymentAppProviderImpl::CreateForWebContents(payment_request_web_contents);
-
-  return PaymentAppProviderImpl::FromWebContents(payment_request_web_contents);
 }
 
 void PaymentAppProviderImpl::InvokePaymentApp(

@@ -21,8 +21,6 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       public WebContentsUserData<PaymentAppProviderImpl> {
  public:
   ~PaymentAppProviderImpl() override;
-  static PaymentAppProviderImpl* GetOrCreateForWebContents(
-      WebContents* payment_request_web_contents);
 
   // Disallow copy and assign.
   PaymentAppProviderImpl(const PaymentAppProviderImpl& other) = delete;

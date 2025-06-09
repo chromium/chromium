@@ -20,12 +20,6 @@ class PaymentRequestWebContentsManager
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PaymentRequestWebContentsManager> {
  public:
-  // Retrieves the instance of PaymentRequestWebContentsManager that was
-  // attached to the specified WebContents.  If no instance was attached,
-  // creates one, and attaches it to the specified WebContents.
-  static PaymentRequestWebContentsManager* GetOrCreateForWebContents(
-      content::WebContents& web_contents);
-
   ~PaymentRequestWebContentsManager() override;
 
   PaymentRequestWebContentsManager(const PaymentRequestWebContentsManager&) =

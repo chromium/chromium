@@ -322,14 +322,6 @@ PageTextObserver::PageTextObserver(content::WebContents* web_contents)
       content::WebContentsUserData<PageTextObserver>(*web_contents) {}
 PageTextObserver::~PageTextObserver() = default;
 
-PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  // CreateForWebContents doesn't do anything if it has already been created
-  // for |web_contents| already.
-  PageTextObserver::CreateForWebContents(web_contents);
-  return PageTextObserver::FromWebContents(web_contents);
-}
-
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.
   if (!handle->IsInPrimaryMainFrame()) {

@@ -23,15 +23,6 @@ std::string_view GetReloadTypeString(content::ReloadType reload_type) {
 }
 }  // namespace
 
-// static
-PaymentRequestWebContentsManager*
-PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-    content::WebContents& web_contents) {
-  // CreateForWebContents does nothing if the manager instance already exists.
-  PaymentRequestWebContentsManager::CreateForWebContents(&web_contents);
-  return PaymentRequestWebContentsManager::FromWebContents(&web_contents);
-}
-
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents), WebContentsUserData(*web_contents) {}

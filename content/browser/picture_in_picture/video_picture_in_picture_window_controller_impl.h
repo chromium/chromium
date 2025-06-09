@@ -45,12 +45,6 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
       public WebContentsUserData<VideoPictureInPictureWindowControllerImpl>,
       public WebContentsObserver {
  public:
-  // Gets a reference to the controller associated with |web_contents| and
-  // creates one if it does not exist. The returned pointer is guaranteed to be
-  // non-null.
-  static VideoPictureInPictureWindowControllerImpl* GetOrCreateForWebContents(
-      WebContents* web_contents);
-
   VideoPictureInPictureWindowControllerImpl(
       const VideoPictureInPictureWindowControllerImpl&) = delete;
   VideoPictureInPictureWindowControllerImpl& operator=(

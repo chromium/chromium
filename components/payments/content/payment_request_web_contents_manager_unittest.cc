@@ -21,7 +21,7 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   PaymentRequestWebContentsManagerTest()
       : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
     manager_ = PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-        *web_contents_);
+        web_contents_);
   }
 
   ~PaymentRequestWebContentsManagerTest() override { manager_ = nullptr; }

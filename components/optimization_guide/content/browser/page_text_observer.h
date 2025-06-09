@@ -37,12 +37,6 @@ class PageTextObserver : public content::WebContentsObserver,
  public:
   ~PageTextObserver() override;
 
-  // Retrieves the instance of PageTextObserver that was attached
-  // to the specified WebContents. If no instance was attached, creates one,
-  // and attaches it to the specified WebContents.
-  static PageTextObserver* GetOrCreateForWebContents(
-      content::WebContents* web_contents);
-
   // Contains all the information that is needed to request a text dump by a
   // consumer.
   struct ConsumerTextDumpRequest {

@@ -15,20 +15,6 @@
 
 ChromePrefetchManager::~ChromePrefetchManager() = default;
 
-// static
-ChromePrefetchManager* ChromePrefetchManager::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  auto* chrome_prefetch_manager =
-      ChromePrefetchManager::FromWebContents(web_contents);
-  if (!chrome_prefetch_manager) {
-    ChromePrefetchManager::CreateForWebContents(web_contents);
-    chrome_prefetch_manager =
-        ChromePrefetchManager::FromWebContents(web_contents);
-  }
-
-  return chrome_prefetch_manager;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void ChromePrefetchManager::StartPrefetchFromCCT(
     const GURL& prefetch_url,

@@ -22,9 +22,6 @@ class ChromePrefetchManager
 
   ~ChromePrefetchManager() override;
 
-  static ChromePrefetchManager* GetOrCreateForWebContents(
-      content::WebContents* web_contents);
-
 #if BUILDFLAG(IS_ANDROID)
   void StartPrefetchFromCCT(const GURL& prefetch_url,
                             bool use_prefetch_proxy,

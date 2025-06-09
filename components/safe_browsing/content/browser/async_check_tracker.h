@@ -51,11 +51,6 @@ class AsyncCheckTracker
     virtual void OnAsyncSafeBrowsingCheckTrackerDestructed() {}
   };
 
-  static AsyncCheckTracker* GetOrCreateForWebContents(
-      content::WebContents* web_contents,
-      scoped_refptr<BaseUIManager> ui_manager,
-      bool should_sync_checker_check_allowlist);
-
   // Returns true if the main frame load is pending (i.e. the navigation has not
   // yet committed). Note that a main frame hit may not be pending, eg. 1)
   // client side detection happens after the load is committed, or 2) async Safe

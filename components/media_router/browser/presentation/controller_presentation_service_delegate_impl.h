@@ -54,12 +54,6 @@ class ControllerPresentationServiceDelegateImpl
       public content::ControllerPresentationServiceDelegate,
       public WebContentsPresentationManager {
  public:
-  // Retrieves the instance of ControllerPresentationServiceDelegateImpl that
-  // was attached to the specified WebContents.  If no instance was attached,
-  // creates one, and attaches it to the specified WebContents.
-  static ControllerPresentationServiceDelegateImpl* GetOrCreateForWebContents(
-      content::WebContents* web_contents);
-
   ControllerPresentationServiceDelegateImpl(
       const ControllerPresentationServiceDelegateImpl&) = delete;
   ControllerPresentationServiceDelegateImpl& operator=(

@@ -35,18 +35,6 @@ constexpr base::TimeDelta kNavigationTimestampExpiration = base::Seconds(180);
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AsyncCheckTracker);
 
 // static
-AsyncCheckTracker* AsyncCheckTracker::GetOrCreateForWebContents(
-    content::WebContents* web_contents,
-    scoped_refptr<BaseUIManager> ui_manager,
-    bool should_sync_checker_check_allowlist) {
-  CHECK(web_contents);
-  // CreateForWebContents does nothing if the delegate instance already exists.
-  AsyncCheckTracker::CreateForWebContents(web_contents, std::move(ui_manager),
-                                          should_sync_checker_check_allowlist);
-  return AsyncCheckTracker::FromWebContents(web_contents);
-}
-
-// static
 bool AsyncCheckTracker::IsMainPageResourceLoadPending(
     const security_interstitials::UnsafeResource& resource) {
   return IsMainPageLoadPending(resource.rfh_locator, resource.navigation_id,

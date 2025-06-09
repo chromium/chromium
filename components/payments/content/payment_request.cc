@@ -81,7 +81,7 @@ PaymentRequest::PaymentRequest(
           delegate_->GetRenderFrameHost()->GetLastCommittedOrigin()),
       spc_transaction_mode_(
           PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-              *web_contents())
+              web_contents())
               ->transaction_mode()),
       journey_logger_(delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
   CHECK(!delegate_->GetRenderFrameHost()->IsInLifecycleState(
@@ -307,7 +307,7 @@ void PaymentRequest::Show(bool wait_for_updated_details,
   if (!had_user_activation) {
     PaymentRequestWebContentsManager* manager =
         PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-            *web_contents());
+            web_contents());
     VLOG(2) << "PaymentRequest (" << *spec_->details().id
             << ").show(); manager->HadActivationlessShow(): "
             << manager->HadActivationlessShow();
