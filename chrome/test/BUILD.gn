@@ -8323,7 +8323,6 @@ test("unit_tests") {
 
     sources += [
       # Android uses different way of showing feedback page
-      "../browser/feedback/show_feedback_page_unittest.cc",
       "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/family_info_log_source_unittest.cc",
