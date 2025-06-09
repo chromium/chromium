@@ -2190,7 +2190,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios19-sdk-simulator",
+    name = "ios26-sdk-simulator",
     schedule = "0 1,5,9,13,17,21 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -2218,7 +2218,7 @@ fyi_ios_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "ios19_sdk_simulator_tests",
+            "ios26_sdk_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -2237,8 +2237,8 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS19",
-            short_name = "sdk19",
+            category = "iOS|iOS26",
+            short_name = "sdk26",
         ),
     ],
     xcode = xcode.x16betabots,
@@ -2304,7 +2304,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios19-beta-simulator",
+    name = "ios26-beta-simulator",
     schedule = "0 3,7,11,15,19,23 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -2332,7 +2332,7 @@ fyi_ios_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "ios19_beta_simulator_tests",
+            "ios26_beta_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -2354,8 +2354,8 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS19",
-            short_name = "ios19",
+            category = "iOS|iOS26",
+            short_name = "ios26",
         ),
     ],
 )

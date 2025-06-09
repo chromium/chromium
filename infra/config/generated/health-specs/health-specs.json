@@ -9342,7 +9342,7 @@
           }
         ]
       },
-      "ios19-beta-simulator": {
+      "ios26-beta-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9362,7 +9362,7 @@
           }
         ]
       },
-      "ios19-sdk-simulator": {
+      "ios26-sdk-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",

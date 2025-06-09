@@ -790,9 +790,9 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios19-beta-simulator",
-    mirrors = ["ci/ios19-beta-simulator"],
-    gn_args = "ci/ios19-beta-simulator",
+    name = "ios26-beta-simulator",
+    mirrors = ["ci/ios26-beta-simulator"],
+    gn_args = "ci/ios26-beta-simulator",
     cpu = cpu.ARM64,
 )
 
@@ -807,9 +807,9 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios19-sdk-simulator",
-    mirrors = ["ci/ios19-sdk-simulator"],
-    gn_args = "ci/ios19-sdk-simulator",
+    name = "ios26-sdk-simulator",
+    mirrors = ["ci/ios26-sdk-simulator"],
+    gn_args = "ci/ios26-sdk-simulator",
     cpu = cpu.ARM64,
     xcode = xcode.x16betabots,
 )

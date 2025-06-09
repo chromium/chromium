@@ -587,10 +587,10 @@
     #   ios-webkit-tot
     #   ios-wpt-fyi-rel
     #   ios18-beta-simulator
-    #   ios19-beta-simulator
+    #   ios26-beta-simulator
     #   ios18-sdk-device
     #   ios18-sdk-simulator
-    #   ios19-sdk-simulator
+    #   ios26-sdk-simulator
     #   Linux Viz
     #   linux-annotator-rel
     #   linux-blink-heap-verification
