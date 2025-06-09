@@ -58,6 +58,9 @@ public interface InterceptNavigationDelegateClient {
     /* Returns true if the client hosting this tab is a Browser. */
     boolean isTabInBrowser();
 
+    /* Returns true if the tab is currently detached because of an executing reparenting task. */
+    boolean isTabDetached();
+
     /** Returns whether this Activity is currently in Android desktop windowing mode. */
     boolean isInDesktopWindowingMode();
 

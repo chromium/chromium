@@ -483,7 +483,7 @@ public class LaunchIntentDispatcher {
 
         if (Intent.ACTION_VIEW.equals(newIntent.getAction())
                 && !IntentHandler.wasIntentSenderChrome(newIntent)) {
-            if (!chromeTabbedTaskExists()) {
+            if (!chromeTabbedTaskExists(mActivity)) {
                 newIntent.putExtra(IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, true);
             }
             if ((newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
@@ -555,7 +555,13 @@ public class LaunchIntentDispatcher {
         return Action.FINISH_ACTIVITY;
     }
 
-    private boolean chromeTabbedTaskExists() {
+    /**
+     * Checks if a Chrome tabbed task currently exists, either in the foreground or background.
+     *
+     * @param context The application context.
+     * @return whether a Chrome tabbed task is found (either running or in recent tasks).
+     */
+    public static boolean chromeTabbedTaskExists(Context context) {
         // Fast check for a running Chrome instance.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             if (activity instanceof ChromeTabbedActivity) return true;
@@ -564,7 +570,7 @@ public class LaunchIntentDispatcher {
         try {
             Set<RecentTaskInfo> recentTaskInfos =
                     AndroidTaskUtils.getRecentTaskInfosMatchingComponentNames(
-                            mActivity, ChromeTabbedActivity.TABBED_MODE_COMPONENT_NAMES);
+                            context, ChromeTabbedActivity.TABBED_MODE_COMPONENT_NAMES);
             return !recentTaskInfos.isEmpty();
         } catch (SecurityException ex) {
             // If we can't query task status, assume a Chrome task exists so this doesn't

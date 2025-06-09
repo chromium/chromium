@@ -322,6 +322,13 @@ public abstract class TabModelSelectorBase
             }
         }
 
+        // In case the tab needs to be closed while a reparenting task is executing. This could be
+        // the case for navigations progressing while the tab is being moved between web clients.
+        if (tab.isDetached()) {
+            tab.setDidCloseWhileDetached();
+            return true;
+        }
+
         if (getModels().isEmpty()) {
             // Tab may be destroyed here via Tab#destroy(). It is skipped for now
             // to examine its potential side effect on crbug.com/325558929.

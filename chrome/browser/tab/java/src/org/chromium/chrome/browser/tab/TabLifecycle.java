@@ -48,6 +48,15 @@ public interface TabLifecycle {
      */
     void setClosing(boolean closing);
 
+    /** Mark the Tab for closure following an async request received while the tab was detached. */
+    void setDidCloseWhileDetached();
+
+    /**
+     * Returns whether this Tab was closed following an async request received while the tab was
+     * detached.
+     */
+    boolean didCloseWhileDetached();
+
     /**
      * @return Whether or not the tab is hidden.
      */

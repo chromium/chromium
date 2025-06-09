@@ -320,7 +320,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         if (!shouldIgnore
                 && result.getResultType()
-                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER) {
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER
+                && !mClient.isTabDetached()) {
             // Reparenting task must be executed after runResultCallback has been called.
             mClient.startReparentingTask();
         }

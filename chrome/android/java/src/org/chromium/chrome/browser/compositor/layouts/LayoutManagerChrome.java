@@ -294,6 +294,12 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 && getNextLayoutType() != LayoutType.TAB_SWITCHER
                 && !XrUtils.isXrDevice()) {
             showLayout(LayoutType.TAB_SWITCHER, animate);
+        } else if (getActiveLayoutType() == LayoutType.TAB_SWITCHER
+                && getActiveLayout().isStartingToHide()
+                && showOverview
+                && getNextLayoutType() == LayoutType.BROWSING
+                && !XrUtils.isXrDevice()) {
+            showLayout(LayoutType.TAB_SWITCHER, animate);
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
     }

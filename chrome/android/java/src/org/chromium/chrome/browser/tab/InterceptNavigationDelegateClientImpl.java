@@ -10,9 +10,12 @@ import android.content.Intent;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -144,13 +147,18 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean isTabDetached() {
+        return mTab.isDetached();
+    }
+
+    @Override
     public boolean isInDesktopWindowingMode() {
         if (sIsInDesktopWindowingModeForTesting != null) {
             return sIsInDesktopWindowingModeForTesting;
         }
 
-        // TODO(crbug.com/417047079): replace the following check with desktop windowing mode
-        // as soon as https://chromium-review.googlesource.com/c/chromium/src/+/6527788 is resolved.
+        // TODO(crbug.com/417047079): Replace the following desktop windowing checks with a better
+        // approach.
         // return MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity());
         return DeviceInfo.isDesktop();
     }
@@ -165,7 +173,26 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         ContextUtils.getApplicationContext(),
                         intent,
                         /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
+                        cleanupPendingTabClosure());
+    }
+
+    private Runnable cleanupPendingTabClosure() {
+        final boolean isChromeTabbedActivityRunning =
+                LaunchIntentDispatcher.chromeTabbedTaskExists(getActivity());
+        return () -> {
+            if (mTab.didCloseWhileDetached()) {
+                PostTask.postTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            if (!isChromeTabbedActivityRunning) {
+                                getActivity().finishAndRemoveTask();
+                            } else {
+                                getActivity().moveTaskToBack(false);
+                            }
+                            closeTab();
+                        });
+            }
+        };
     }
 
     public static void setIsDesktopWindowingModeForTesting(boolean v) {
