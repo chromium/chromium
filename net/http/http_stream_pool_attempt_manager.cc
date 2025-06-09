@@ -1475,13 +1475,8 @@ size_t HttpStreamPool::AttemptManager::CalculateMaxPreconnectCount() const {
 size_t HttpStreamPool::AttemptManager::PendingCountInternal(
     size_t pending_count) const {
   CHECK_GE(tcp_based_attempts_.size(), slow_tcp_based_attempt_count_);
-  // When SPDY throttle delay passed, treat all in-flight attempts as non-slow,
-  // to avoid attempting connections more than requested.
-  // TODO(crbug.com/346835898): This behavior is tricky. Figure out a better
-  // way to handle this situation.
-  size_t slow_count =
-      spdy_throttle_delay_passed_ ? 0 : slow_tcp_based_attempt_count_;
-  size_t non_slow_count = tcp_based_attempts_.size() - slow_count;
+  const size_t non_slow_count =
+      tcp_based_attempts_.size() - slow_tcp_based_attempt_count_;
   // The number of in-flight, non-slow attempts could be larger than the number
   // of jobs (e.g. a job was cancelled in the middle of an attempt).
   if (pending_count <= non_slow_count) {
