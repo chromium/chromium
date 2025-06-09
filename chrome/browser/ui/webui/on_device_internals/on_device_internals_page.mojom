@@ -64,6 +64,8 @@ struct SupplementaryModelInfo {
 struct FeatureAdaptationInfo {
   // Name of the feature.
   string feature_name;
+  // Enum value of the feature.
+  int32 feature_key;
   // Version of this feature adaptation.
   int64 version;
   // Whether the feature was recently used.
@@ -96,6 +98,10 @@ interface PageHandler {
 
   // Returns the status of various on-device models.
   GetPageData() => (PageData page_data);
+
+  // Overrides the recently used prefs state of the given feature, with
+  // `is_recently_used`.
+  SetFeatureRecentlyUsedState(int32 feature_key, bool is_recently_used);
 
   // Decodes a bitmap from an image buffer.
   DecodeBitmap(mojo_base.mojom.BigBuffer image_buffer) =>

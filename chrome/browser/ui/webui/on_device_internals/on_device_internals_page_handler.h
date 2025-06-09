@@ -60,6 +60,8 @@ class PageHandler : public mojom::PageHandler,
   void GetDevicePerformanceInfo(
       GetDevicePerformanceInfoCallback callback) override;
   void GetPageData(GetPageDataCallback callback) override;
+  void SetFeatureRecentlyUsedState(int feature_key,
+                                   bool is_recently_used) override;
   void DecodeBitmap(mojo_base::BigBuffer image_buffer,
                     DecodeBitmapCallback callback) override;
   void ResetModelCrashCount() override;

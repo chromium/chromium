@@ -61,6 +61,13 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     this.mayRestartBrowser_ = true;
   }
 
+  protected async onFeatureUsageSetterClick_(
+      feature: number, isRecentlyUsed: boolean) {
+    await this.proxy_.handler.setFeatureRecentlyUsedState(
+        feature, isRecentlyUsed);
+    this.getPageData_();
+  }
+
   private async getPageData_() {
     this.pageData_ = (await this.proxy_.handler.getPageData()).pageData;
   }

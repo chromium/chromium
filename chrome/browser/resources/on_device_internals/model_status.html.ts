@@ -98,6 +98,7 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
           <th>Name</th>
           <th>Version</th>
           <th>Recently Used</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -106,6 +107,14 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             <td>${adaptation.featureName}</td>
             <td>${adaptation.version}</td>
             <td>${adaptation.isRecentlyUsed}</td>
+            <td>
+              <button @click=${() =>
+                this.onFeatureUsageSetterClick_(adaptation.featureKey, true)
+              }>set to true</button>
+              <button @click=${() =>
+                this.onFeatureUsageSetterClick_(adaptation.featureKey, false)
+              }>set to false</button>
+            </td>
           </tr>`)}
       </tbody>
     </table>
