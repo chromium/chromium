@@ -58,6 +58,12 @@ const SkBitmap* PaymentApp::network_bitmap() const {
   return nullptr;
 }
 
+const std::vector<PaymentApp::PaymentEntityLogo>&
+PaymentApp::GetPaymentEntitiesLogos() const {
+  static std::vector<PaymentApp::PaymentEntityLogo> empty_vector;
+  return empty_vector;
+}
+
 std::string PaymentApp::GetApplicationIdentifierToHide() const {
   return std::string();
 }

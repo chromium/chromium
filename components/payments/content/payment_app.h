@@ -109,8 +109,12 @@ class PaymentApp {
 
   // Returns the icon bitmap or null.
   virtual const SkBitmap* icon_bitmap() const;
+  // TODO(https://crbug.com/416516287): Remove issuer and network bitmap once
+  // all callers use GetPaymentEntitiesLogos() instead.
   virtual const SkBitmap* issuer_bitmap() const;
   virtual const SkBitmap* network_bitmap() const;
+  // Returns the payment entities logos to be displayed to the user.
+  virtual const std::vector<PaymentEntityLogo>& GetPaymentEntitiesLogos() const;
 
   // Returns the identifier for another payment app that should be hidden when
   // this payment app is present.

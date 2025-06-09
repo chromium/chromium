@@ -54,7 +54,8 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
       app->payment_app_->icon_bitmap(),
       static_cast<jint>(app->payment_app_->type()),
       reinterpret_cast<jlong>(app), app->payment_app_->issuer_bitmap(),
-      app->payment_app_->network_bitmap());
+      app->payment_app_->network_bitmap(),
+      app->payment_app_->GetPaymentEntitiesLogos());
 }
 
 ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
@@ -240,5 +241,12 @@ JniPaymentApp::JniPaymentApp(std::unique_ptr<PaymentApp> payment_app)
     : payment_app_(std::move(payment_app)) {}
 
 JniPaymentApp::~JniPaymentApp() = default;
+
+jni_zero::ScopedJavaLocalRef<jobject> ConvertPaymentEntityLogoToJavaObject(
+    JNIEnv* env,
+    const payments::PaymentApp::PaymentEntityLogo& logo) {
+  return Java_PaymentEntityLogoImpl_Constructor(env, logo.label,
+                                                logo.icon.get());
+}
 
 }  // namespace payments

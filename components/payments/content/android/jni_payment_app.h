@@ -92,6 +92,22 @@ class JniPaymentApp : public PaymentApp::Delegate {
   base::WeakPtrFactory<JniPaymentApp> weak_ptr_factory_{this};
 };
 
+jni_zero::ScopedJavaLocalRef<jobject> ConvertPaymentEntityLogoToJavaObject(
+    JNIEnv* env,
+    const payments::PaymentApp::PaymentEntityLogo& logo);
+
 }  // namespace payments
+
+namespace jni_zero {
+
+template <>
+inline jni_zero::ScopedJavaLocalRef<jobject>
+ToJniType<payments::PaymentApp::PaymentEntityLogo>(
+    JNIEnv* env,
+    const payments::PaymentApp::PaymentEntityLogo& logo) {
+  return payments::ConvertPaymentEntityLogoToJavaObject(env, logo);
+}
+
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_PAYMENTS_CONTENT_ANDROID_JNI_PAYMENT_APP_H_

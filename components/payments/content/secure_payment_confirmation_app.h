@@ -84,6 +84,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const SkBitmap* icon_bitmap() const override;
   const SkBitmap* issuer_bitmap() const override;
   const SkBitmap* network_bitmap() const override;
+  const std::vector<PaymentApp::PaymentEntityLogo>& GetPaymentEntitiesLogos()
+      const override;
   bool IsValidForModifier(const std::string& method) const override;
   base::WeakPtr<PaymentApp> AsWeakPtr() override;
   bool HandlesShippingAddress() const override;
@@ -101,6 +103,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
+  // TODO(https://crbug.com/416516287): Remove issuer and network label once
+  // all callers use GetPaymentEntitiesLogos() instead.
   std::u16string network_label() const;
 
   std::u16string issuer_label() const;

@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import static java.util.Collections.emptyList;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
@@ -58,6 +60,23 @@ public abstract class PaymentApp extends EditableOption {
          * @param abortSucceeded Indicates whether abort is succeed.
          */
         void onInstrumentAbortResult(boolean abortSucceeded);
+    }
+
+    /**
+     * The interface for retrieving the label and icon of a PaymentEntityLogo.
+     *
+     * <p>This is a Secure Payment Confirmation specific interface.
+     */
+    public interface PaymentEntityLogo {
+        /**
+         * @return The accessibility label for the payment entity.
+         */
+        String getLabel();
+
+        /**
+         * @return The icon for the payment entity.
+         */
+        Bitmap getIcon();
     }
 
     protected PaymentApp(String id, String label, @Nullable String sublabel, Drawable icon) {
@@ -300,5 +319,13 @@ public abstract class PaymentApp extends EditableOption {
      */
     public @Nullable Bitmap getNetworkIcon() {
         return null;
+    }
+
+    /**
+     * @return The payment entities logos, an unmodifiable {@link List} (Secure Payment Confirmation
+     *     specific).
+     */
+    public List<? extends PaymentEntityLogo> getPaymentEntitiesLogos() {
+        return emptyList();
     }
 }

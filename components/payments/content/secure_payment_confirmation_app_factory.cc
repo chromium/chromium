@@ -575,14 +575,6 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   std::u16string payment_instrument_label =
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
 
-  // We are currently migrating from the old network_info/issuer_info fields, to
-  // the new sequence of payment entity logos. Convert from the sequence to the
-  // individual fields, to set them on the payment app.
-  //
-  // TODO(crbug.com/417683819): Switch to using an array of logos in
-  // SecurePaymentConfirmationApp, and remove this conversion.
-  std::u16string network_label = u"";
-  std::unique_ptr<SkBitmap> network_icon;
   CHECK_EQ(request->mojo_request->payment_entities_logos.size(),
            request->payment_entities_logos_infos.size());
   std::vector<SecurePaymentConfirmationApp::PaymentEntityLogo>

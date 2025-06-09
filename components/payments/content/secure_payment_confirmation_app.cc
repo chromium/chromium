@@ -247,6 +247,11 @@ const SkBitmap* SecurePaymentConfirmationApp::network_bitmap() const {
   return payment_entities_logos_[0].icon.get();
 }
 
+const std::vector<PaymentApp::PaymentEntityLogo>&
+SecurePaymentConfirmationApp::GetPaymentEntitiesLogos() const {
+  return payment_entities_logos_;
+}
+
 bool SecurePaymentConfirmationApp::IsValidForModifier(
     const std::string& method) const {
   bool is_valid = false;

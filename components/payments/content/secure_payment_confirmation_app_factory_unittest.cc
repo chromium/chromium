@@ -4,6 +4,7 @@
 
 #include "components/payments/content/secure_payment_confirmation_app_factory.h"
 
+#include <string>
 #include <vector>
 
 #include "base/base64.h"
@@ -45,6 +46,9 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Matcher;
 using ::testing::Pointer;
 using ::testing::Property;
@@ -54,6 +58,7 @@ using ::testing::ReturnRef;
 constexpr std::string kRpId = "rp.example";
 constexpr char kChallengeBase64[] = "aaaa";
 constexpr char kCredentialIdBase64[] = "cccc";
+constexpr int kDefaultFakeBitmapHeight = 32;
 
 class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
  protected:
@@ -595,8 +600,8 @@ class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
   // IsSkBitmapWithHeight().
   void FakeImageDownloaded(GURL image_url,
                            bool succeeded = true,
-                           int height = 32) {
-    std::vector<gfx::Size> icon_sizes({{32, 32}});
+                           int height = kDefaultFakeBitmapHeight) {
+    std::vector<gfx::Size> icon_sizes({{32, height}});
     std::vector<SkBitmap> icon_bitmaps;
     if (succeeded) {
       icon_bitmaps.emplace_back();
@@ -615,7 +620,15 @@ class SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest
 };
 
 Matcher<const SkBitmap*> IsSkBitmapWithHeight(int height) {
-  return Pointer(Property(&SkBitmap::height, height));
+  return Pointer(Property("height", &SkBitmap::height, height));
+}
+
+Matcher<const PaymentApp::PaymentEntityLogo&> IsPaymentEntityLogo(
+    const std::u16string& label,
+    Matcher<const SkBitmap*> icon_matcher) {
+  return AllOf(Field("label", &PaymentApp::PaymentEntityLogo::label, label),
+               Field("icon", &PaymentApp::PaymentEntityLogo::icon,
+                     Pointer(icon_matcher)));
 }
 
 // Tests that when neither the network nor issuer icons are specified, they are
@@ -642,6 +655,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   ASSERT_TRUE(created_payment_app);
   EXPECT_FALSE(created_payment_app->issuer_bitmap());
   EXPECT_FALSE(created_payment_app->network_bitmap());
+  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(), IsEmpty());
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -666,13 +680,16 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
 
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kNetworkIconUrl);
+  FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/true, /*height=*/50);
 
   // This payment app should have been created with a network icon but not an
   // issuer one.
   ASSERT_TRUE(created_payment_app);
   EXPECT_TRUE(created_payment_app->network_bitmap());
   EXPECT_FALSE(created_payment_app->issuer_bitmap());
+  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
+              ElementsAre(IsPaymentEntityLogo(u"Network Name",
+                                              IsSkBitmapWithHeight(50))));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -697,13 +714,17 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
 
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kIssuerIconUrl);
+  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
 
   // This payment app should have been created with an issuer icon but not a
   // network one.
   ASSERT_TRUE(created_payment_app);
   EXPECT_FALSE(created_payment_app->network_bitmap());
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
+  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
+              ElementsAre(IsPaymentEntityLogo(u"", IsNull()),
+                          IsPaymentEntityLogo(u"Issuer Name",
+                                              IsSkBitmapWithHeight(60))));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -731,14 +752,19 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
 
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kNetworkIconUrl);
-  FakeImageDownloaded(kIssuerIconUrl);
+  FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/true, /*height=*/50);
+  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
 
   // This payment app should have been created with both a network and issuer
   // icon.
   ASSERT_TRUE(created_payment_app);
   EXPECT_TRUE(created_payment_app->network_bitmap());
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
+  EXPECT_THAT(
+      created_payment_app->GetPaymentEntitiesLogos(),
+      ElementsAre(
+          IsPaymentEntityLogo(u"Network Name", IsSkBitmapWithHeight(50)),
+          IsPaymentEntityLogo(u"Issuer Name", IsSkBitmapWithHeight(60))));
 }
 
 TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
@@ -767,13 +793,17 @@ TEST_F(SecurePaymentConfirmationAppFactoryNetworkAndIssuerIconsTest,
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
   FakeImageDownloaded(kNetworkIconUrl, /*succeeded=*/false);
-  FakeImageDownloaded(kIssuerIconUrl);
+  FakeImageDownloaded(kIssuerIconUrl, /*succeeded=*/true, /*height=*/60);
 
   // The resultant payment app should have been created with only an issuer
   // icon.
   ASSERT_TRUE(created_payment_app);
   EXPECT_FALSE(created_payment_app->network_bitmap());
   EXPECT_TRUE(created_payment_app->issuer_bitmap());
+  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
+              ElementsAre(IsPaymentEntityLogo(u"Network Name", IsNull()),
+                          IsPaymentEntityLogo(u"Issuer Name",
+                                              IsSkBitmapWithHeight(60))));
 }
 
 // Class wrapping tests relating to payment entity logos support in
@@ -830,6 +860,11 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
   ASSERT_TRUE(created_payment_app);
   EXPECT_THAT(created_payment_app->network_bitmap(), IsSkBitmapWithHeight(50));
   EXPECT_THAT(created_payment_app->issuer_bitmap(), IsSkBitmapWithHeight(60));
+  EXPECT_THAT(
+      created_payment_app->GetPaymentEntitiesLogos(),
+      ElementsAre(
+          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50)),
+          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60))));
 }
 
 // Tests that the first entry in payment_entities_logos maps to the network
@@ -856,12 +891,16 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
 
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kPaymentEntity1LogoUrl);
+  FakeImageDownloaded(kPaymentEntity1LogoUrl, /*succeeded=*/true,
+                      /*height=*/50);
 
   // The payment entity logo should have been placed into the network_bitmap.
   ASSERT_TRUE(created_payment_app);
   EXPECT_TRUE(created_payment_app->network_bitmap());
   EXPECT_FALSE(created_payment_app->issuer_bitmap());
+  EXPECT_THAT(created_payment_app->GetPaymentEntitiesLogos(),
+              ElementsAre(IsPaymentEntityLogo(u"Payment Entity 1",
+                                              IsSkBitmapWithHeight(50))));
 }
 
 // Tests that at most two PaymentEntityLogos are accepted by
@@ -892,13 +931,20 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
 
   FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
-  FakeImageDownloaded(kPaymentEntity1LogoUrl);
-  FakeImageDownloaded(kPaymentEntity2LogoUrl);
+  FakeImageDownloaded(kPaymentEntity1LogoUrl, /*succeeded=*/true,
+                      /*height=*/50);
+  FakeImageDownloaded(kPaymentEntity2LogoUrl, /*succeeded=*/true,
+                      /*height=*/60);
 
   // Even though the third entity logo was not downloaded (and was not attempted
   // to be downloaded), the first two should be sufficient and the payment app
   // should be created.
   ASSERT_TRUE(created_payment_app);
+  EXPECT_THAT(
+      created_payment_app->GetPaymentEntitiesLogos(),
+      ElementsAre(
+          IsPaymentEntityLogo(u"Payment Entity 1", IsSkBitmapWithHeight(50)),
+          IsPaymentEntityLogo(u"Payment Entity 2", IsSkBitmapWithHeight(60))));
 }
 
 class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
