@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -21,6 +22,17 @@ class BackendParamsManagerTest : public testing::Test {
   void SetUp() override { CHECK(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
+  int CountFiles() {
+    base::FileEnumerator file_enumarator(temp_dir_.GetPath(),
+                                         /* recursive=*/true,
+                                         base::FileEnumerator::FILES);
+    int file_count = 0;
+    file_enumarator.ForEach(
+        [&file_count](const base::FilePath& file_path) { ++file_count; });
+
+    return file_count;
+  }
+
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment;
 };
@@ -116,6 +128,23 @@ TEST_F(BackendParamsManagerTest, ExistingKeyTypePairQueryServedSynchronously) {
     EXPECT_TRUE(backend_params.db_file.IsValid());
     EXPECT_TRUE(backend_params.journal_file.IsValid());
   }
+}
+
+TEST_F(BackendParamsManagerTest, DeleteAllFiles) {
+  BackendParamsManager params_manager(temp_dir_.GetPath());
+
+  {
+    BackendParams params = params_manager.GetOrCreateParamsSync(
+        BackendType::kSqlite, "key",
+        BackendParamsManager::AccessRights::kReadWrite);
+    EXPECT_TRUE(params.db_file.IsValid());
+
+    // Inserting an entry should have created at least one file.
+    EXPECT_GE(CountFiles(), 1);
+  }
+
+  params_manager.DeleteAllFiles();
+  EXPECT_EQ(CountFiles(), 0);
 }
 
 }  // namespace persistent_cache

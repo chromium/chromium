@@ -54,6 +54,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // Clears out the LRU map for testing.
   void ClearForTesting();
 
+  // Deletes all files handled by the backend params manager.
+  void DeleteAllFiles();
+
  private:
   PersistentCache* GetOrCreateCache(const std::string& cache_id);
 

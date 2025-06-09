@@ -45,6 +45,16 @@ void PersistentCacheCollection::ClearForTesting() {
   persistent_caches_.Clear();
 }
 
+void PersistentCacheCollection::DeleteAllFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Delete all managed parsistent caches so they don't hold on to files or
+  // prevent their deletion.
+  persistent_caches_.Clear();
+
+  backend_params_manager_->DeleteAllFiles();
+}
+
 PersistentCache* PersistentCacheCollection::GetOrCreateCache(
     const std::string& cache_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

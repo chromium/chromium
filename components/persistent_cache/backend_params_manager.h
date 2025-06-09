@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
                                       const std::string& key,
                                       AccessRights access_rights);
 
+  // Delete all managed files.
+  void DeleteAllFiles();
+
  private:
   struct BackendParamsKey {
     BackendType backend_type;

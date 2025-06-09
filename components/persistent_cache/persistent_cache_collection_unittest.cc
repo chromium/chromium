@@ -66,5 +66,26 @@ TEST(PersistentCacheCollection, RetrievalAfterClear) {
   EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
 }
 
+TEST(PersistentCacheCollection, DeleteAllFiles) {
+  base::ScopedTempDir temp_dir;
+  CHECK(temp_dir.CreateUniqueTempDir());
+  PersistentCacheCollection collection(
+      std::make_unique<BackendParamsManager>(temp_dir.GetPath()));
+
+  std::string first_cache_id = "first_cache_id";
+  std::string first_key = "first_key";
+  constexpr const char first_content[] = "first_content";
+
+  // Inserting an entry makes it available.
+  collection.Insert(first_cache_id, first_key,
+                    base::byte_span_from_cstring(first_content));
+  EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
+
+  collection.DeleteAllFiles();
+
+  // After deletion the content is not available anymore.
+  EXPECT_EQ(collection.Find(first_cache_id, first_key), nullptr);
+}
+
 }  // namespace
 }  // namespace persistent_cache
