@@ -97,6 +97,13 @@ class LoopbackReferenceManagerCore
     // Does not require the lock because the audio stream is not started.
     sample_rate_ = params.sample_rate();
 
+    // Create an AudioLog for the new stream.
+    // TODO(crbug.com/412581642): Add a different AudioComponent for the
+    // reference loopback streams and show them in chrome://media-internals
+    audio_log_ = audio_manager_->CreateAudioLog(
+        media::AudioLogFactory::AudioComponent::kAudioInputController,
+        next_loopback_stream_id_++);
+
     // Create the stream, and return an error if we fail.
     loopback_stream_ = audio_manager_->MakeAudioInputStream(
         params, loopback_device_id,
@@ -113,13 +120,6 @@ class LoopbackReferenceManagerCore
       loopback_stream_.ExtractAsDangling()->Close();
       return MapStreamOpenOutcomeToReferenceOpenOutcome(stream_open_outcome);
     }
-
-    // Create an AudioLog for the successfully opened stream.
-    // TODO(crbug.com/412581642): Add a different AudioComponent for the
-    // reference loopback streams and show them in chrome://media-internals
-    audio_log_ = audio_manager_->CreateAudioLog(
-        media::AudioLogFactory::AudioComponent::kAudioInputController,
-        next_loopback_stream_id_++);
     audio_log_->OnCreated(params, loopback_device_id);
 
     // Add the listener and start the stream.

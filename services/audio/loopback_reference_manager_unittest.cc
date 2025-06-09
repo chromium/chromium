@@ -44,7 +44,10 @@ class MockAudioLog : public media::AudioLog {
   MOCK_METHOD0(OnError, void());
   MOCK_METHOD1(OnSetVolume, void(double));
   MOCK_METHOD1(OnProcessingStateChanged, void(const std::string&));
-  MOCK_METHOD1(OnLogMessage, void(const std::string&));
+  void OnLogMessage(const std::string& message) override {
+    logged_messages += message;
+  }
+  std::string logged_messages = "";
 };
 class MockAudioInputStream : public media::AudioInputStream {
  public:
@@ -151,6 +154,12 @@ MATCHER_P(AudioParamsMatches, expected, "") {
   return !(arg < expected) && !(expected < arg);
 }
 
+// Matcher which sends a test message on a log callback.
+MATCHER_P(RunLogCallback, test_message, "") {
+  arg.Run(test_message);
+  return true;
+}
+
 std::unique_ptr<StrictMock<MockAudioInputStream>>
 LoopbackReferenceManagerTest::ExpectCreateLoopbackStream(int component_id) {
   auto mock_input_stream = std::make_unique<StrictMock<MockAudioInputStream>>();
@@ -193,7 +202,8 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
       .WillOnce(Return(std::move(mock_audio_log)));
   EXPECT_CALL(audio_manager_,
               MakeAudioInputStream(AudioParamsMatches(loopback_params_),
-                                   loopback_device_id_, _))
+                                   loopback_device_id_,
+                                   RunLogCallback("LOG CALLBACK TEST MESSAGE")))
       .WillOnce(Return(&mock_input_stream));
   EXPECT_CALL(mock_input_stream, Open())
       .WillOnce(Return(media::AudioInputStream::OpenOutcome::kSuccess));
@@ -208,6 +218,9 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   StrictMock<MockListener> mock_listener_1;
   reference_signal_provider->StartListening(&mock_listener_1,
                                             output_device_id_);
+  EXPECT_EQ(mock_audio_log_raw_ptr->logged_messages,
+            "LOG CALLBACK TEST MESSAGE");
+
   CHECK(mock_input_stream.captured_callback_);
   AudioInputCallback* audio_callback = *(mock_input_stream.captured_callback_);
 
@@ -368,6 +381,11 @@ TEST_F(LoopbackReferenceManagerTest, StreamCreateError) {
 
   EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
       .WillOnce(Return(loopback_params_));
+  EXPECT_CALL(audio_manager_,
+              CreateAudioLog(
+                  media::AudioLogFactory::AudioComponent::kAudioInputController,
+                  1000000))
+      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
   // Fail to create the loopback stream
   EXPECT_CALL(audio_manager_,
               MakeAudioInputStream(AudioParamsMatches(loopback_params_),
@@ -391,7 +409,11 @@ void LoopbackReferenceManagerTest::TestStreamOpenError(
 
   EXPECT_CALL(audio_manager_, GetInputStreamParameters(loopback_device_id_))
       .WillOnce(Return(loopback_params_));
-  // Fail to create the loopback stream
+  EXPECT_CALL(audio_manager_,
+              CreateAudioLog(
+                  media::AudioLogFactory::AudioComponent::kAudioInputController,
+                  1000000))
+      .WillOnce(Return(std::make_unique<NiceMock<MockAudioLog>>()));
   EXPECT_CALL(audio_manager_,
               MakeAudioInputStream(AudioParamsMatches(loopback_params_),
                                    loopback_device_id_, _))
