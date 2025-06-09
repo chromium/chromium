@@ -4,6 +4,7 @@
 
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,24 @@
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/no_vary_search.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace {
+
+net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
+    const network::mojom::NoVarySearchPtr& no_vary_search_ptr) {
+  if (no_vary_search_ptr->search_variance->is_vary_params()) {
+    return net::HttpNoVarySearchData::CreateFromVaryParams(
+        no_vary_search_ptr->search_variance->get_vary_params(),
+        no_vary_search_ptr->vary_on_key_order);
+  }
+  return net::HttpNoVarySearchData::CreateFromNoVaryParams(
+      no_vary_search_ptr->search_variance->get_no_vary_params(),
+      no_vary_search_ptr->vary_on_key_order);
+}
+
+}  // namespace
 
 // static
 SearchPreloadService* SearchPreloadService::GetForProfile(Profile* profile) {
@@ -47,6 +66,55 @@ void SearchPreloadService::ClearPreloads() {
   pipeline_manager_.reset();
 }
 
+void SearchPreloadService::OnPrefetchHeadReceived(
+    const network::mojom::URLResponseHead& head) {
+  auto no_vary_search_header =
+      [&]() -> std::optional<net::HttpNoVarySearchData> {
+    // No No-Vary-Search headers
+    if (!(head.parsed_headers &&
+          head.parsed_headers->no_vary_search_with_parse_error)) {
+      return std::nullopt;
+    }
+
+    // Error
+    if (head.parsed_headers->no_vary_search_with_parse_error
+            ->is_parse_error()) {
+      return std::nullopt;
+    }
+
+    // Success
+    return ParseHttpNoVarySearchDataFromMojom(
+        head.parsed_headers->no_vary_search_with_parse_error
+            ->get_no_vary_search());
+  }();
+
+  {
+    SearchPreloadServiceNoVarySearchDataCacheUpdate update;
+    if (no_vary_search_data_cache_ == no_vary_search_header) {
+      update = SearchPreloadServiceNoVarySearchDataCacheUpdate::kUnchanged;
+    } else {
+      const bool had_value = no_vary_search_data_cache_.has_value();
+      const bool has_value = no_vary_search_header.has_value();
+      if (had_value && has_value) {
+        update = SearchPreloadServiceNoVarySearchDataCacheUpdate::kSomeToSome;
+      } else if (!had_value && has_value) {
+        update = SearchPreloadServiceNoVarySearchDataCacheUpdate::kNullToSome;
+      } else if (had_value && !has_value) {
+        update = SearchPreloadServiceNoVarySearchDataCacheUpdate::kSomeToNull;
+      } else {
+        NOTREACHED();
+      }
+    }
+    base::UmaHistogramEnumeration(
+        "Omnibox.DsePreload.Prefetch.NoVarySearchDataCacheUpdate", update);
+  }
+
+  // TODO(crbug.com/422074579): Persist it to profile.
+  if (no_vary_search_data_cache_ != no_vary_search_header) {
+    no_vary_search_data_cache_ = std::move(no_vary_search_header);
+  }
+}
+
 SearchPreloadPipelineManager&
 SearchPreloadService::GetOrCreatePipelineManagerWithLimit(
     content::WebContents& web_contents) {
@@ -79,7 +147,8 @@ void SearchPreloadService::OnAutocompleteResultChanged(
   }
 
   GetOrCreatePipelineManagerWithLimit(*web_contents)
-      .OnAutocompleteResultChanged(*profile_, result);
+      .OnAutocompleteResultChanged(*profile_, GetWeakPtr(), result,
+                                   no_vary_search_data_cache_);
 }
 
 bool SearchPreloadService::OnNavigationLikely(
@@ -92,7 +161,18 @@ bool SearchPreloadService::OnNavigationLikely(
   }
 
   return GetOrCreatePipelineManagerWithLimit(*web_contents)
-      .OnNavigationLikely(*profile_, match, navigation_predictor);
+      .OnNavigationLikely(*profile_, GetWeakPtr(), match, navigation_predictor,
+                          no_vary_search_data_cache_);
+}
+
+const std::optional<net::HttpNoVarySearchData>&
+SearchPreloadService::GetNoVarySearchDataCacheForTesting() const {
+  return no_vary_search_data_cache_;
+}
+
+void SearchPreloadService::SetNoVarySearchDataCacheForTesting(
+    std::optional<net::HttpNoVarySearchData> no_vary_search_data) {
+  no_vary_search_data_cache_ = std::move(no_vary_search_data);
 }
 
 bool SearchPreloadService::InvalidatePipelineForTesting(

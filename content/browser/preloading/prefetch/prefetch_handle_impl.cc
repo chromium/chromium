@@ -4,13 +4,44 @@
 
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 
+#include "base/functional/callback.h"
 #include "content/browser/browser_context_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
+
+PrefetchContainerObserver::PrefetchContainerObserver(
+    base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+        on_prefetch_head_received)
+    : on_prefetch_head_received_(std::move(on_prefetch_head_received)) {}
+
+PrefetchContainerObserver::~PrefetchContainerObserver() = default;
+
+void PrefetchContainerObserver::OnWillBeDestroyed(
+    PrefetchContainer& prefetch_container) {}
+
+void PrefetchContainerObserver::OnGotInitialEligibility(
+    PrefetchContainer& prefetch_container,
+    PreloadingEligibility eligibility) {}
+
+void PrefetchContainerObserver::OnDeterminedHead(
+    PrefetchContainer& prefetch_container) {
+  // This condition will be used in a callback provided in the future.
+  // See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6615559/comment/3f439d19_8c9cf99a
+  //
+  // TODO(crbug.com/400761083): Use the callback.
+  if (prefetch_container.GetNonRedirectResponseReader() &&
+      prefetch_container.GetNonRedirectResponseReader()->load_state() ==
+          PrefetchResponseReader::LoadState::kResponseReceived) {
+    on_prefetch_head_received_.Run(*prefetch_container.GetNonRedirectHead());
+  }
+}
 
 PrefetchHandleImpl::PrefetchHandleImpl(
     base::WeakPtr<PrefetchService> prefetch_service,
@@ -40,6 +71,16 @@ PrefetchHandleImpl::~PrefetchHandleImpl() {
     }
     prefetch_service_->MayReleasePrefetch(prefetch_container_);
   }
+}
+
+void PrefetchHandleImpl::SetOnPrefetchHeadReceived(
+    base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+        on_prefetch_head_received) {
+  CHECK(!prefetch_container_observer_);
+
+  prefetch_container_observer_ = std::make_unique<PrefetchContainerObserver>(
+      std::move(on_prefetch_head_received));
+  prefetch_container_->AddObserver(prefetch_container_observer_.get());
 }
 
 bool PrefetchHandleImpl::IsAlive() const {

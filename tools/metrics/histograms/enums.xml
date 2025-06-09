@@ -23827,6 +23827,17 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="SCROLLING_ON_MAIN"/>
 </enum>
 
+<!-- LINT.IfChange(SearchPreloadServiceNoVarySearchDataCacheUpdate) -->
+
+<enum name="SearchPreloadServiceNoVarySearchDataCacheUpdate">
+  <int value="0" label="kUnchanged"/>
+  <int value="1" label="kNullToSome"/>
+  <int value="2" label="kSomeToNull"/>
+  <int value="3" label="kSomeToSome"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/preloading/search_preload/search_preload_service.h:SearchPreloadServiceNoVarySearchDataCacheUpdate) -->
+
 <!-- LINT.IfChange(SecureChannelConnectionAttemptFailureReason) -->
 
 <enum name="SecureChannelConnectionAttemptFailureReason">

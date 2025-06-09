@@ -80,7 +80,9 @@ void SearchPreloadPipelineManager::EraseNotAlivePipelines() {
 
 void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     Profile& profile,
-    const AutocompleteResult& result) {
+    base::WeakPtr<SearchPreloadService> search_preload_service,
+    const AutocompleteResult& result,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
   CHECK(template_url_service);
@@ -99,8 +101,9 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
         return;
       }
 
-      OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
-                                            match);
+      OnAutocompleteResultChangedProcessOne(profile, search_preload_service,
+                                            *template_url_service, match,
+                                            no_vary_search_hint);
     }
   } else {
     if (!result.default_match()) {
@@ -113,15 +116,18 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
       return;
     }
 
-    OnAutocompleteResultChangedProcessOne(profile, *template_url_service,
-                                          match);
+    OnAutocompleteResultChangedProcessOne(profile, search_preload_service,
+                                          *template_url_service, match,
+                                          no_vary_search_hint);
   }
 }
 
 void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
     Profile& profile,
+    base::WeakPtr<SearchPreloadService> search_preload_service,
     TemplateURLService& template_url_service,
-    const AutocompleteMatch& match) {
+    const AutocompleteMatch& match,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   const bool should_prefetch = BaseSearchProvider::ShouldPrefetch(match) ||
                                BaseSearchProvider::ShouldPrerender(match);
   const bool should_prerender = BaseSearchProvider::ShouldPrerender(match);
@@ -162,8 +168,8 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
       GetPrefetchUrlFromMatch(*match.search_terms_args, template_url_service,
                               /*is_navigation_likely=*/false);
   pipelines_[canonical_url]->StartPrefetch(
-      GetWebContents(), prefetch_url,
-      chrome_preloading_predictor::kDefaultSearchEngine);
+      GetWebContents(), search_preload_service, prefetch_url,
+      chrome_preloading_predictor::kDefaultSearchEngine, no_vary_search_hint);
 
   // Trigger prerender without waiting prefetch.
   //
@@ -191,8 +197,10 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
 
 bool SearchPreloadPipelineManager::OnNavigationLikely(
     Profile& profile,
+    base::WeakPtr<SearchPreloadService> search_preload_service,
     const AutocompleteMatch& match,
-    omnibox::mojom::NavigationPredictor navigation_predictor) {
+    omnibox::mojom::NavigationPredictor navigation_predictor,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   if (!features::IsDsePreload2OnPressEnabled()) {
     return false;
   }
@@ -279,8 +287,9 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
         canonical_url, std::make_unique<SearchPreloadPipeline>(canonical_url));
   }
   pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
-  return pipelines_[canonical_url]->StartPrefetch(GetWebContents(),
-                                                  prefetch_url, predictor);
+  return pipelines_[canonical_url]->StartPrefetch(
+      GetWebContents(), search_preload_service, prefetch_url, predictor,
+      no_vary_search_hint);
 }
 
 bool SearchPreloadPipelineManager::InvalidatePipelineForTesting(

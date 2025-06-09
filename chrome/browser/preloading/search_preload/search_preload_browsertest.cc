@@ -40,12 +40,30 @@ namespace {
 // Holds //content data to avoid disallowed import.
 namespace alternative_content {
 
+// Minimal copy of content/browser/preloading/prefetch/prefetch_status.h
+enum class PrefetchStatus {
+  kPrefetchNotFinishedInTime = 10,
+};
+
 // Minimal copy of content/browser/preloading/prerender/prerender_final_status.h
 enum class PrerenderFinalStatus {
   kActivated = 0,
+  kPrerenderFailedDuringPrefetch = 86,
 };
 
 }  // namespace alternative_content
+
+std::optional<net::HttpNoVarySearchData> ParseNoVarySearchData(std::string s) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("No-Vary-Search", s);
+  auto maybe_no_vary_search_data =
+      net::HttpNoVarySearchData::ParseFromHeaders(*headers);
+  if (!maybe_no_vary_search_data.has_value()) {
+    return std::nullopt;
+  }
+  return maybe_no_vary_search_data.value();
+}
 
 // Collects requests to `EmbeddedTestServer` via RequestMonitor.
 class EmbeddedTestServerRequestCollector {
@@ -96,6 +114,35 @@ class EmbeddedTestServerRequestCollector {
   std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
 };
 
+// Injects delay for each response of `EmbeddedTestServer` via RequestMonitor.
+class EmbeddedTestServerDelayInjector {
+ public:
+  EmbeddedTestServerDelayInjector() = default;
+  ~EmbeddedTestServerDelayInjector() = default;
+
+  base::RepeatingCallback<void(const net::test_server::HttpRequest&)>
+  GetOnResourceRequest() {
+    return base::BindRepeating(
+        &EmbeddedTestServerDelayInjector::OnResourceRequest,
+        base::Unretained(this));
+  }
+
+  void SetResponseDelay(base::TimeDelta duration) {
+    response_delay_ = duration;
+  }
+
+ private:
+  void OnResourceRequest(const net::test_server::HttpRequest& request) {
+    // Called from a thread for EmbeddedTestServer.
+    CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) &&
+          !content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+
+    base::PlatformThread::Sleep(response_delay_);
+  }
+
+  base::TimeDelta response_delay_ = base::Seconds(0);
+};
+
 // Sets up testing context for the search preloading features: search prefetch
 // and search prerender.
 // These features are able to coordinate with the other: A prefetched result
@@ -130,6 +177,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     request_collector_ = std::make_unique<EmbeddedTestServerRequestCollector>();
+    delay_injector_ = std::make_unique<EmbeddedTestServerDelayInjector>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -173,6 +221,24 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  struct SetUpSearchPreloadServiceArgs {
+    std::optional<std::string> no_vary_search_data_cache;
+  };
+
+  void SetUpSearchPreloadService(SetUpSearchPreloadServiceArgs args) {
+    auto no_vary_search_data_cache =
+        [&]() -> std::optional<net::HttpNoVarySearchData> {
+      if (!args.no_vary_search_data_cache.has_value()) {
+        return std::nullopt;
+      }
+
+      return ParseNoVarySearchData(args.no_vary_search_data_cache.value());
+    }();
+
+    GetSearchPreloadService().SetNoVarySearchDataCacheForTesting(
+        std::move(no_vary_search_data_cache));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
@@ -324,6 +390,9 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
   EmbeddedTestServerRequestCollector& request_collector() {
     return *request_collector_.get();
   }
+  EmbeddedTestServerDelayInjector& delay_injector() {
+    return *delay_injector_.get();
+  }
   base::HistogramTester& histogram_tester() { return *histogram_tester_.get(); }
 
  private:
@@ -332,6 +401,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
 
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
   std::unique_ptr<EmbeddedTestServerRequestCollector> request_collector_;
+  std::unique_ptr<EmbeddedTestServerDelayInjector> delay_injector_;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
@@ -376,6 +446,9 @@ class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnAutocompleteResultChanged_TriggersPrefetch) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -425,6 +498,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnAutocompleteResultChanged_TriggeredPrefetchIsHeld) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -479,6 +555,9 @@ IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
     OnAutocompleteResultChanged_TriggersPrefetchAndPrerender) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -539,6 +618,9 @@ IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
     OnAutocompleteResultChanged_TriggersPrefetchThenPrerender) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -601,6 +683,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnNavigationLikely_TriggersPrefetch) {
   SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -642,6 +727,9 @@ IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
     OnNavigationLikely_DoesntTriggerPrefetchIfDefaultSearchProviderDoesntOptIn) {
   SetUpTemplateURLService(/*prefetch_likely_navigations=*/false);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -673,6 +761,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnAutocompleteResultChanged_Then_OnNavigationLikely) {
   SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -712,6 +803,135 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
 }
 
+// Scenario:
+//
+// - A user inputs "he".
+// - Autocomplete suggests to prefetch "hello".
+// - `SearchPreloadService` starts prefetch with query "?q=hello&pf=cs..."
+//   without No-Vary-Search hint.
+// - A user navigates to a page with query "?q=hello&..."
+//   - Prefetch matching fails due to lack of No-Vary-Search hint and "pf=cs"
+//     param.
+// - Prefetch is not used.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
+                       TriggersPrefetchButMatchingFailsDueToNoVarySearchHint) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  // Inject delay to keep `PrefetchContainer` waiting for a response header, so
+  // that prefetch matching fail because the prefetch has query parameter
+  // "pf=cs" but navigation doesn't and No-Vary-Search hint is not set. If we
+  // don't do this, No-Vary-Search header is used and prefetch matching succeed.
+  delay_injector().SetResponseDelay(base::Seconds(1));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kDisabled);
+
+    // Navigate.
+    ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
+  }
+
+  // Prefetch isn't used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  // No-Vary-Search data cache is updated.
+  histogram_tester().ExpectUniqueSample(
+      "Omnibox.DsePreload.Prefetch.NoVarySearchDataCacheUpdate",
+      SearchPreloadServiceNoVarySearchDataCacheUpdate::kNullToSome, 1);
+
+  ASSERT_EQ(GetSearchPreloadService().GetNoVarySearchDataCacheForTesting(),
+            ParseNoVarySearchData(R"(key-order, params, except=("q"))"));
+}
+
+// Scenario:
+//
+// - A user inputs "he".
+// - Autocomplete suggests to prerender "hello".
+// - `SearchPreloadService` starts prefetch with query "?q=hello&pf=cs..."
+//   without No-Vary-Search hint.
+// - `SearchPreloadService` starts prerender with query "?q=hello...".
+//   - Prefetch matching fails due to lack of No-Vary-Search hint and "pf=cs"
+//     param
+//   - `PrerenderURLLoaderThrottle` cancels the prerender.
+// - A user navigates to a page with query "?q=hello&..."
+//   - Prefetch matching fails due to lack of No-Vary-Search hint and "pf=cs"
+//     param.
+// - Prefetch is not used.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest,
+    TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint) {
+  SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  // Inject delay to keep `PrefetchContainer` waiting for a response header, so
+  // that prefetch matching fail because the prefetch has query parameter
+  // "pf=cs" but navigation doesn't and No-Vary-Search hint is not set. If we
+  // don't do this, No-Vary-Search header is used and prefetch matching succeed.
+  delay_injector().SetResponseDelay(base::Seconds(1));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+    content::test::PrerenderHostObserver prerender_host_observer(
+        GetWebContents(), urls.prerender);
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kEnabled);
+
+    prerender_host_observer.WaitForDestroyed();
+
+    // Navigate.
+    ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), urls.navigation));
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_suggest);
+  }
+
+  // Prefetch nor prerender aren't used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      alternative_content::PrerenderFinalStatus::kPrerenderFailedDuringPrefetch,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "Embedder_DefaultSearchEngine",
+      alternative_content::PrefetchStatus::kPrefetchNotFinishedInTime, 1);
+
+  // No-Vary-Search data cache is updated.
+  histogram_tester().ExpectUniqueSample(
+      "Omnibox.DsePreload.Prefetch.NoVarySearchDataCacheUpdate",
+      SearchPreloadServiceNoVarySearchDataCacheUpdate::kNullToSome, 1);
+
+  ASSERT_EQ(GetSearchPreloadService().GetNoVarySearchDataCacheForTesting(),
+            ParseNoVarySearchData(R"(key-order, params, except=("q"))"));
+}
+
 class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
   void InitFeatures(
       base::test::ScopedFeatureList& scoped_feature_list) override {
@@ -744,6 +964,9 @@ class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
                        OnAutocompleteResultChanged_PrefetchIsLimited) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -785,6 +1008,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
                        OnNavigationLikely_PrefetchIsLimited) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
@@ -833,6 +1059,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
                        OnAutocompleteResultChanged_PrerenderIsLimited) {
   SetUpTemplateURLService();
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
 
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_HANDLE_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_HANDLE_IMPL_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -15,6 +16,35 @@ namespace content {
 
 enum class PrefetchStatus;
 
+// Currently, it must be visible from `PrefetchResponseReader` for `friend`.
+//
+// TODO(crbug.com/400761083): Put it into `namespace prefetch_handle`.
+class PrefetchContainerObserver final : public PrefetchContainer::Observer {
+ public:
+  explicit PrefetchContainerObserver(
+      base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+          on_prefetch_head_received);
+  ~PrefetchContainerObserver() override;
+
+  // Not movable nor copyable.
+  PrefetchContainerObserver(PrefetchContainerObserver&& other) = delete;
+  PrefetchContainerObserver& operator=(PrefetchContainerObserver&& other) =
+      delete;
+  PrefetchContainerObserver(const PrefetchContainerObserver&) = delete;
+  PrefetchContainerObserver& operator=(const PrefetchContainerObserver&) =
+      delete;
+
+  // Implements `PrefetchContainer::Observer`.
+  void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
+  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override;
+  void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
+
+ private:
+  base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+      on_prefetch_head_received_;
+};
+
 class PrefetchHandleImpl final : public PrefetchHandle {
  public:
   PrefetchHandleImpl(base::WeakPtr<PrefetchService> prefetch_service,
@@ -22,6 +52,9 @@ class PrefetchHandleImpl final : public PrefetchHandle {
   ~PrefetchHandleImpl() override;
 
   // `PrefetchHandle` implementations
+  void SetOnPrefetchHeadReceived(
+      base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+          on_prefetch_head_received) override;
   bool IsAlive() const override;
 
   // TODO(crbug.com/390329781): The following methods are tentative interface
@@ -37,6 +70,7 @@ class PrefetchHandleImpl final : public PrefetchHandle {
  private:
   base::WeakPtr<PrefetchService> prefetch_service_;
   base::WeakPtr<PrefetchContainer> prefetch_container_;
+  std::unique_ptr<PrefetchContainerObserver> prefetch_container_observer_;
   std::optional<PrefetchStatus> prefetch_status_on_release_started_prefetch_;
 };
 

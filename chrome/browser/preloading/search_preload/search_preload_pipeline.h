@@ -10,6 +10,8 @@
 #include "content/public/browser/prerender_handle.h"
 #include "url/gurl.h"
 
+class SearchPreloadService;
+
 namespace content {
 class WebContents;
 }
@@ -32,9 +34,12 @@ class SearchPreloadPipeline {
   //
   // Returns true iff prefetch is triggered, i.e. `WebContents::StartPrefetch()`
   // is called.
-  bool StartPrefetch(content::WebContents& web_contents,
-                     const GURL& prefetch_url,
-                     content::PreloadingPredictor predictor);
+  bool StartPrefetch(
+      content::WebContents& web_contents,
+      base::WeakPtr<SearchPreloadService> search_preload_service,
+      const GURL& prefetch_url,
+      content::PreloadingPredictor predictor,
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
   // Starts prerender if not triggered yet and prefetch is alive.
   void StartPrerender(content::WebContents& web_contents,
                       const GURL& prerernder_url,

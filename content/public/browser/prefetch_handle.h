@@ -5,6 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PREFETCH_HANDLE_H_
 #define CONTENT_PUBLIC_BROWSER_PREFETCH_HANDLE_H_
 
+#include "base/functional/callback_forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+
 namespace content {
 
 // The interface to control prefetch resources associated with this.
@@ -20,6 +23,13 @@ class PrefetchHandle {
   PrefetchHandle& operator=(const PrefetchHandle& other) = delete;
   PrefetchHandle(PrefetchHandle&& other) = default;
   PrefetchHandle& operator=(PrefetchHandle&& other) = default;
+
+  // Sets a callback called when non-redirect header is successfully received.
+  //
+  // Panics when called multiple times.
+  virtual void SetOnPrefetchHeadReceived(
+      base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+          on_prefetch_head_received) = 0;
 
   // Returns true if the underlying `PrefetchContainer` is alive.
   virtual bool IsAlive() const = 0;

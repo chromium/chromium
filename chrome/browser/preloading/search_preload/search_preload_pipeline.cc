@@ -7,6 +7,7 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
@@ -45,18 +46,12 @@ void SearchPreloadPipeline::UpdateConfidence(content::WebContents& web_contents,
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
-net::HttpNoVarySearchData CreateNoVarySearchHint() {
-  // TODO(crbug.com/408989409): Get NVS hint from
-  // //components/search_engines/prepopulated_engines.json
-  return net::HttpNoVarySearchData::CreateFromVaryParams(
-      {"q"},
-      /*vary_on_key_order=*/true);
-}
-
 bool SearchPreloadPipeline::StartPrefetch(
     content::WebContents& web_contents,
+    base::WeakPtr<SearchPreloadService> search_preload_service,
     const GURL& prefetch_url,
-    content::PreloadingPredictor predictor) {
+    content::PreloadingPredictor predictor,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   // Don't trigger prefetch if already triggered and is alive.
   //
   // TODO(crbug.com/394213503): Reconsider the behavior when prefetch is already
@@ -83,7 +78,6 @@ bool SearchPreloadPipeline::StartPrefetch(
       /*triggering_primary_page_source_id=*/
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  net::HttpNoVarySearchData no_vary_search_hint = CreateNoVarySearchHint();
   // TODO(crbug.com/379140429): Create `preloading_utils` and move common
   // preloading histograms suffixes to it.
   prefetch_handle_ = web_contents.StartPrefetch(
@@ -91,9 +85,12 @@ bool SearchPreloadPipeline::StartPrefetch(
       /*use_prefetch_proxy=*/false,
       prerender_utils::kDefaultSearchEngineMetricSuffix,
       blink::mojom::Referrer(),
-      /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
-      pipeline_info_, attempt->GetWeakPtr(),
+      /*referring_origin=*/std::nullopt, no_vary_search_hint, pipeline_info_,
+      attempt->GetWeakPtr(),
       /*holdback_status_override=*/std::nullopt);
+  CHECK(prefetch_handle_);
+  prefetch_handle_->SetOnPrefetchHeadReceived(base::BindRepeating(
+      &SearchPreloadService::OnPrefetchHeadReceived, search_preload_service));
 
   return true;
 }

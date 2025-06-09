@@ -13,6 +13,7 @@
 
 class AutocompleteResult;
 class Profile;
+class SearchPreloadService;
 class TemplateURLService;
 struct AutocompleteMatch;
 
@@ -49,8 +50,11 @@ class SearchPreloadPipelineManager
   void ClearPreloads();
 
   // Called when autocomplete is updated.
-  void OnAutocompleteResultChanged(Profile& profile,
-                                   const AutocompleteResult& result);
+  void OnAutocompleteResultChanged(
+      Profile& profile,
+      base::WeakPtr<SearchPreloadService> search_preload_service,
+      const AutocompleteResult& result,
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
 
   // Called when a user is likely to navigate to the match.
   //
@@ -59,8 +63,10 @@ class SearchPreloadPipelineManager
   // triggered.
   bool OnNavigationLikely(
       Profile& profile,
+      base::WeakPtr<SearchPreloadService> search_preload_service,
       const AutocompleteMatch& match,
-      omnibox::mojom::NavigationPredictor navigation_predictor);
+      omnibox::mojom::NavigationPredictor navigation_predictor,
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
 
   // Invalidates a pipeline with `canonical_url`.
   //
@@ -76,8 +82,10 @@ class SearchPreloadPipelineManager
 
   void OnAutocompleteResultChangedProcessOne(
       Profile& profile,
+      base::WeakPtr<SearchPreloadService> search_preload_service,
       TemplateURLService& template_url_service,
-      const AutocompleteMatch& match);
+      const AutocompleteMatch& match,
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
 
   // Manages pipeline per canonical URL.
   base::flat_map<GURL, std::unique_ptr<SearchPreloadPipeline>> pipelines_;
