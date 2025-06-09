@@ -273,7 +273,7 @@ BASE_FEATURE(kWebGPUUseTintIR,
 
 BASE_FEATURE(kWebGPUUseVulkanMemoryModel,
              "WebGPUUseVulkanMemoryModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
