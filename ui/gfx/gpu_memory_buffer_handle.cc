@@ -12,7 +12,7 @@
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace gfx {
 
@@ -98,21 +98,21 @@ GpuMemoryBufferHandle::GpuMemoryBufferHandle(DXGIHandle handle)
       dxgi_handle_(std::move(handle)) {
   CHECK(dxgi_handle_.IsValid());
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE)
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(
     NativePixmapHandle native_pixmap_handle)
     : type(GpuMemoryBufferType::NATIVE_PIXMAP),
       native_pixmap_handle_(std::move(native_pixmap_handle)) {}
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_ANDROID)
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(
     base::android::ScopedHardwareBufferHandle handle)
     : type(GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER),
       android_hardware_buffer(std::move(handle)) {}
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/40584691): Reset |type| and possibly the handles on the
 // moved-from object.
@@ -130,7 +130,7 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   handle.id = id;
   handle.offset = offset;
   handle.stride = stride;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE)
   handle.native_pixmap_handle_ = CloneHandleForIPC(native_pixmap_handle_);
 #elif BUILDFLAG(IS_APPLE)
   handle.io_surface = io_surface;

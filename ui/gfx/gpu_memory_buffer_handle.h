@@ -16,7 +16,7 @@
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/gfx/native_pixmap_handle.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
@@ -47,14 +47,11 @@ enum GpuMemoryBufferType {
   SHARED_MEMORY_BUFFER,
 #if BUILDFLAG(IS_APPLE)
   IO_SURFACE_BUFFER,
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_OZONE)
   NATIVE_PIXMAP,
-#endif
-#if BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DXGI_SHARED_HANDLE,
-#endif
-#if BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   ANDROID_HARDWARE_BUFFER,
 #endif
 };
@@ -131,7 +128,7 @@ class COMPONENT_EXPORT(GFX) DXGIHandle {
   DXGIHandleToken token_;
   base::UnsafeSharedMemoryRegion region_;
 };
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/40584691): Convert this to a proper class to ensure the state
 // is always consistent, particularly that the only one handle is set at the
@@ -143,11 +140,9 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   explicit GpuMemoryBufferHandle(base::UnsafeSharedMemoryRegion region);
 #if BUILDFLAG(IS_WIN)
   explicit GpuMemoryBufferHandle(DXGIHandle handle);
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_OZONE)
   explicit GpuMemoryBufferHandle(gfx::NativePixmapHandle native_pixmap_handle);
-#endif
-#if BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   explicit GpuMemoryBufferHandle(
       base::android::ScopedHardwareBufferHandle handle);
 #endif
@@ -186,7 +181,7 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
     return std::move(region_);
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE)
   const NativePixmapHandle& native_pixmap_handle() const& {
     CHECK_EQ(type, NATIVE_PIXMAP);
     return native_pixmap_handle_;
@@ -196,7 +191,7 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
     type = EMPTY_BUFFER;
     return std::move(native_pixmap_handle_);
   }
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
   const DXGIHandle& dxgi_handle() const& {
@@ -218,9 +213,11 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 
 #if BUILDFLAG(IS_APPLE)
   ScopedIOSurface io_surface;
-#elif BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   friend mojo::UnionTraits<mojom::GpuMemoryBufferPlatformHandleDataView,
@@ -230,9 +227,9 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // goal is to make `this` an encapsulated class.
   base::UnsafeSharedMemoryRegion region_;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE)
   NativePixmapHandle native_pixmap_handle_;
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
   DXGIHandle dxgi_handle_;
