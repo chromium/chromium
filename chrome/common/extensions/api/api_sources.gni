@@ -35,6 +35,7 @@ uncompiled_sources_ = [
   "action.json",
   "browsing_data.json",
   "extension.json",
+  "top_sites.json",
 ]
 
 # Some APIs (e.g. cookies) rely on types and headers from other APIs.
@@ -149,7 +150,6 @@ if (enable_extensions) {
     "browser_action.json",
     "idltest.idl",
     "page_action.json",
-    "top_sites.json",
   ]
 
   if (is_chromeos) {
