@@ -25,7 +25,6 @@
 #include <span>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -559,8 +558,33 @@ class GSL_POINTER span {
       // unspecified behavior, which would halt compilation. Instead,
       // unconditionally use a separate buffer in the constexpr context. This
       // would be inefficient at runtime, but that's irrelevant.
-      std::vector<element_type> vec(other.begin(), other.end());
-      std::ranges::copy(vec, begin());
+
+      // operator[] does not exist if extent == 0.
+      if constexpr (extent > 0) {
+        // Hold each value to be copied in a union so `element_type` does not
+        // need to be default constructible.
+        union Holder {
+          constexpr Holder() {}
+          constexpr ~Holder() {}
+          element_type value;
+        };
+        // std::unique_ptr<T[]> isn't constexpr enough prior to C++23; another
+        // alternative is std::vector, but that requires including <vector> just
+        // for this edge case.
+        Holder* buffer = new Holder[extent];
+        for (size_t i = 0; i < extent; ++i) {
+          // SAFETY: `buffers` is allocated with `extent` elements, and the loop
+          // body only executes if `i < extent`.
+          UNSAFE_BUFFERS(buffer[i]).value = other[i];
+        }
+        for (size_t i = 0; i < extent; ++i) {
+          // SAFETY: `buffers` is allocated with `extent` elements, and the loop
+          // body only executes if `i < extent`.
+          (*this)[i] = UNSAFE_BUFFERS(buffer[i]).value;
+          UNSAFE_BUFFERS(buffer[i]).value.~element_type();
+        }
+        delete[] buffer;
+      }
     } else {
       // Using `<=` to compare pointers to different allocations is UB, but
       // using `std::less_equal` is well-defined ([comparisons.general]).
@@ -1048,8 +1072,30 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       // unspecified behavior, which would halt compilation. Instead,
       // unconditionally use a separate buffer in the constexpr context. This
       // would be inefficient at runtime, but that's irrelevant.
-      std::vector<element_type> vec(other.begin(), other.end());
-      std::ranges::copy(vec, begin());
+
+      // Hold each value to be copied in a union so `element_type` does not
+      // need to be default constructible.
+      union Holder {
+        constexpr Holder() {}
+        constexpr ~Holder() {}
+        element_type value;
+      };
+      // std::unique_ptr<T[]> isn't constexpr enough prior to C++23; another
+      // alternative is std::vector, but that requires including <vector> just
+      // for this edge case.
+      Holder* buffer = new Holder[other.size()];
+      for (size_t i = 0; i < other.size(); ++i) {
+        // SAFETY: `buffers` is allocated with `other.size()` elements, and the
+        // loop body only executes if `i < other.size()`.
+        UNSAFE_BUFFERS(buffer[i]).value = other[i];
+      }
+      for (size_t i = 0; i < other.size(); ++i) {
+        // SAFETY: `buffers` is allocated with `other.size()` elements, and the
+        // loop body only executes if `i < other.size()`.
+        (*this)[i] = UNSAFE_BUFFERS(buffer[i]).value;
+        UNSAFE_BUFFERS(buffer[i]).value.~element_type();
+      }
+      delete[] buffer;
     } else {
       // Using `<=` to compare pointers to different allocations is UB, but
       // using `std::less_equal` is well-defined ([comparisons.general]).

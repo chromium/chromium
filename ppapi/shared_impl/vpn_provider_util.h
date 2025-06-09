@@ -6,6 +6,7 @@
 #define PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
