@@ -4,13 +4,13 @@
 
 #include "third_party/nearby/src/internal/platform/implementation/crypto.h"
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
-#include "crypto/sha2.h"
-
-#include <vector>
-
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 namespace nearby {
 
 void Crypto::Init() {}
@@ -28,7 +28,8 @@ ByteArray Crypto::Sha256(std::string_view input) {
   if (input.empty())
     return ByteArray();
 
-  return ByteArray(crypto::SHA256HashString(std::string(input)));
+  return ByteArray(
+      std::string(base::as_string_view(crypto::hash::Sha256(input))));
 }
 
 }  // namespace nearby
