@@ -1,4 +1,6 @@
 // META: title=Language Model Create Multimodal
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/utils.js
 // META: timeout=long
 
@@ -20,7 +22,7 @@ promise_test(async () => {
                        {type: 'text', languages: ['en']}] },
   ];
   for (const options of kSupportedCreateOptions) {
-    assert_true(!!await LanguageModel.create(options), JSON.stringify(options));
+    assert_true(!!await createLanguageModel(options), JSON.stringify(options));
   }
 }, 'LanguageModel.create() succeeds with supported multimodal type and language options');
 
@@ -36,7 +38,7 @@ promise_test(async () => {
   ];
   for (const options of kSupportedCreateOptions) {
     // TODO(crbug.com/419599702): Ensure the model actually gets initialPrompts.
-    assert_true(!!await LanguageModel.create(options), JSON.stringify(options));
+    assert_true(!!await createLanguageModel(options), JSON.stringify(options));
   }
 }, 'LanguageModel.create() succeeds with supported multimodal initialPrompts');
 
@@ -49,6 +51,6 @@ promise_test(async t => {
     { expectedInputs: [{type: 'image'}], initialPrompts: [{role: 'user', content: [audioContent]}] },
   ];
   for (const options of kUnsupportedCreateOptions) {
-    await promise_rejects_dom(t, 'NotSupportedError', LanguageModel.create(options), JSON.stringify(options));
+    await promise_rejects_dom(t, 'NotSupportedError', createLanguageModel(options), JSON.stringify(options));
   }
 }, 'LanguageModel.create() fails with unsupported multimodal initialPrompts');

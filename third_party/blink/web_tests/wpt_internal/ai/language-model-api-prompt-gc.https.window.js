@@ -1,4 +1,6 @@
 // META: title=Language Model Prompt GC
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/utils.js
 // META: timeout=long
 
@@ -8,7 +10,7 @@ promise_test(async () => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await LanguageModel.create();
+  const session = await createLanguageModel();
   // Test the prompt API.
   const promptPromise = session.prompt(kTestPrompt);
   // Run GC.

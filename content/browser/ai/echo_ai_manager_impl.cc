@@ -123,7 +123,9 @@ void EchoAIManagerImpl::CanCreateLanguageModel(
   }
 
   std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+      model_downloaded_
+          ? blink::mojom::ModelAvailabilityCheckResult::kAvailable
+          : blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 void EchoAIManagerImpl::CreateLanguageModel(
@@ -176,15 +178,19 @@ void EchoAIManagerImpl::CreateLanguageModel(
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
                      std::move(options->sampling_params), enabled_input_types);
 
-  // In order to test the model download progress handling, the
-  // `EchoAIManagerImpl` will always start from the `after-download` state, and
-  // we simulate the downloading time by posting a delayed task.
-  content::GetUIThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(return_language_model_callback)),
-      base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
+  if (!model_downloaded_) {
+    // In order to test the model download progress handling, the
+    // `EchoAIManagerImpl` will always start from the `after-download` state,
+    // and we simulate the downloading time by posting a delayed task.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(return_language_model_callback)),
+        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
+  } else {
+    std::move(return_language_model_callback).Run();
+  }
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
@@ -321,6 +327,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType>
         enabled_input_types) {
+  model_downloaded_ = true;
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
   auto model_sampling_params =
       sampling_params

@@ -1,4 +1,6 @@
 // META: title=Language Model Prompt Monitor Callback Exception
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/utils.js
 // META: timeout=long
 
@@ -11,7 +13,7 @@ promise_test(async t => {
   const availability = await LanguageModel.availability();
   if (availability === "downloadable") {
     const error = new Error("test");
-    const sessionPromise = LanguageModel.create({
+    const sessionPromise = createLanguageModel({
       // Start a new session with callback that will throw error.
       monitor(m) {
         throw error;

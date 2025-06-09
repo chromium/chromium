@@ -4,6 +4,11 @@ const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
 const kTestPrompt = 'Please write a sentence in English.';
 
+async function createLanguageModel(options = {}) {
+  await test_driver.bless();
+  return LanguageModel.create(options);
+}
+
 // Takes an array of dictionaries mapping keys to value arrays, e.g.:
 //   [ {Shape: ["Square", "Circle", undefined]}, {Count: [1, 2]} ]
 // Returns an array of dictionaries with all value combinations, i.e.:
@@ -91,7 +96,7 @@ const testPromptAPI = async () => {
     isDownloadProgressEventTriggered = false;
     let isWaitingForModelDownload = availability === 'after-download';
 
-    const session = await LanguageModel.create({
+    const session = await createLanguageModel({
       topK: 3,
       temperature: 0.8,
       initialPrompts: [{role: 'system', content: 'Let\'s talk in English.'}],

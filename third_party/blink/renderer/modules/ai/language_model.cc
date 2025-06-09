@@ -426,7 +426,26 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     return promise;
   }
 
-  MakeGarbageCollected<LanguageModelCreateClient>(resolver, options)->Create();
+  auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
+  if (!sampling_params_or_exception.has_value()) {
+    switch (sampling_params_or_exception.error()) {
+      case SamplingParamsOptionError::kOnlyOneOfTopKAndTemperatureIsProvided:
+        resolver->Reject(DOMException::Create(
+            kExceptionMessageInvalidTemperatureAndTopKFormat,
+            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+        break;
+      case SamplingParamsOptionError::kInvalidTopK:
+        resolver->RejectWithRangeError(kExceptionMessageInvalidTopK);
+        break;
+      case SamplingParamsOptionError::kInvalidTemperature:
+        resolver->RejectWithRangeError(kExceptionMessageInvalidTemperature);
+        break;
+    }
+    return promise;
+  }
+
+  MakeGarbageCollected<LanguageModelCreateClient>(
+      resolver, options, std::move(sampling_params_or_exception.value()));
   return promise;
 }
 
@@ -448,14 +467,35 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
-  mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
   auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
   if (!sampling_params_or_exception.has_value()) {
     resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
     return promise;
   }
-  sampling_params = std::move(sampling_params_or_exception.value());
 
+  ExecuteAvailability(
+      AIInterfaceProxy::GetAIManagerRemote(
+          ExecutionContext::From(script_state)),
+      std::move(options), std::move(sampling_params_or_exception.value()),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<V8Availability>* resolver,
+             mojom::blink::ModelAvailabilityCheckResult result) {
+            Availability availability = HandleModelAvailabilityCheckResult(
+                resolver->GetExecutionContext(),
+                AIMetrics::AISessionType::kLanguageModel, result);
+            resolver->Resolve(AvailabilityToV8(availability));
+          },
+          WrapPersistent(resolver)));
+  return promise;
+}
+
+// static
+void LanguageModel::ExecuteAvailability(
+    HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
+    const LanguageModelCreateCoreOptions* options,
+    mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params,
+    base::OnceCallback<void(mojom::blink::ModelAvailabilityCheckResult)>
+        callback) {
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options && options->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options->expectedInputs());
@@ -465,23 +505,11 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   }
 
   Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
-  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
-      AIInterfaceProxy::GetAIManagerRemote(
-          ExecutionContext::From(script_state));
   ai_manager_remote->CanCreateLanguageModel(
       mojom::blink::AILanguageModelCreateOptions::New(
-          std::move(sampling_params), std::move(initial_prompts),
+          std::move(resolved_sampling_params), std::move(initial_prompts),
           std::move(expected_in), std::move(expected_out)),
-      WTF::BindOnce(
-          [](ScriptPromiseResolver<V8Availability>* resolver,
-             mojom::blink::ModelAvailabilityCheckResult check_result) {
-            Availability availability = HandleModelAvailabilityCheckResult(
-                resolver->GetExecutionContext(),
-                AIMetrics::AISessionType::kLanguageModel, check_result);
-            resolver->Resolve(AvailabilityToV8(availability));
-          },
-          WrapPersistent(resolver)));
-  return promise;
+      std::move(callback));
 }
 
 // static

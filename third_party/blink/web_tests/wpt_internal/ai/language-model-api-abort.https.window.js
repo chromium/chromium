@@ -1,4 +1,6 @@
 // META: title=Language Model Abort
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/utils.js
 // META: timeout=long
 
@@ -6,14 +8,14 @@
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
-    return LanguageModel.create({
+    return createLanguageModel({
       signal: signal
     });
   });
 }, "Aborting LanguageModel.create().");
 
 promise_test(async t => {
-  const session = await LanguageModel.create();
+  const session = await createLanguageModel();
   await testAbortPromise(t, signal => {
     return session.clone({
       signal: signal
@@ -22,14 +24,14 @@ promise_test(async t => {
 }, "Aborting LanguageModel.clone().");
 
 promise_test(async t => {
-  const session = await LanguageModel.create();
+  const session = await createLanguageModel();
   await testAbortPromise(t, signal => {
     return session.prompt(kTestPrompt, { signal: signal });
   });
 }, "Aborting LanguageModel.prompt().");
 
 promise_test(async t => {
-  const session = await LanguageModel.create();
+  const session = await createLanguageModel();
   await testAbortReadableStream(t, signal => {
     return session.promptStreaming(
       kTestPrompt, { signal: signal }

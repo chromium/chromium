@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -93,6 +94,12 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
                                      ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
+  static void ExecuteAvailability(
+      HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
+      const LanguageModelCreateCoreOptions* options,
+      mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params,
+      base::OnceCallback<void(mojom::blink::ModelAvailabilityCheckResult)>
+          callback);
   HeapMojoRemote<mojom::blink::AILanguageModel>& GetAILanguageModelRemote();
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 

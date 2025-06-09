@@ -1,4 +1,6 @@
 // META: title=Language Model Measure Input Usage
+// META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=resources/utils.js
 // META: timeout=long
 
@@ -8,7 +10,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await LanguageModel.create();
+  const session = await createLanguageModel();
 
   // Test the measureInputUsage() API.
   let result = await session.measureInputUsage("This is a prompt.");
