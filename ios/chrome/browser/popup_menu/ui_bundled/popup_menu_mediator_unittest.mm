@@ -132,8 +132,9 @@ class PopupMenuMediatorTest : public PlatformTest {
     popup_menu_ = OCMClassMock([PopupMenuTableViewController class]);
     popup_menu_strict_ =
         OCMStrictClassMock([PopupMenuTableViewController class]);
-    OCMExpect([popup_menu_strict_ setPopupMenuItems:[OCMArg any]]);
-    OCMExpect([popup_menu_strict_ setDelegate:[OCMArg any]]);
+    // TODO(crbug.com/422439645): Change back to expect or delete the stub.
+    OCMStub([popup_menu_strict_ setPopupMenuItems:[OCMArg any]]);
+    OCMStub([popup_menu_strict_ setDelegate:[OCMArg any]]);
 
     // Set up the TestBrowser.
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -180,6 +181,8 @@ class PopupMenuMediatorTest : public PlatformTest {
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
     browser_.reset();
+    EXPECT_OCMOCK_VERIFY((id)popup_menu_);
+    EXPECT_OCMOCK_VERIFY((id)popup_menu_strict_);
 
     PlatformTest::TearDown();
   }
