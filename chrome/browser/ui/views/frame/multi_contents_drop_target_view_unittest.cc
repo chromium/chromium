@@ -57,6 +57,8 @@ TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
       &(drop_target_view()->animation_for_testing()));
+  auto scoped_mode = animation.SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
@@ -83,6 +85,8 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
       &(drop_target_view()->animation_for_testing()));
+  auto scoped_mode = animation.SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   view->Show();
 
