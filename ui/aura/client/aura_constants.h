@@ -16,6 +16,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -189,9 +190,11 @@ AURA_EXPORT extern const WindowProperty<int>* const kTopViewInset;
 // A property key to store the window icon, typically 16x16 for title bars.
 AURA_EXPORT extern const WindowProperty<gfx::ImageSkia*>* const kWindowIconKey;
 
-// The corner radius of a window in DIPs. Currently only used for shadows.
-// Default is -1, meaning "unspecified". 0 Ensures corners are square.
-AURA_EXPORT extern const WindowProperty<int>* const kWindowCornerRadiusKey;
+// Defines the roundness of window corners in DIPs. An empty value ensures
+// square corners. If unspecified, the window server may determines corner
+// roundness.
+AURA_EXPORT extern const WindowProperty<gfx::RoundedCornersF*>* const
+    kWindowRoundedCornersKey;
 
 // A property key to indicate a desk index of a workspace this window belongs
 // to. The default value is kWindowWorkspaceUnassignedWorkspace.

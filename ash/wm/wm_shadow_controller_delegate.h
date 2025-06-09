@@ -29,6 +29,7 @@ class WmShadowControllerDelegate : public wm::ShadowControllerDelegate {
                                                 const void* key,
                                                 intptr_t old) override;
   void ApplyColorThemeToWindowShadow(aura::Window* window) override;
+  bool ShouldRoundShadowForWindow(const aura::Window* window) override;
 };
 
 }  // namespace ash

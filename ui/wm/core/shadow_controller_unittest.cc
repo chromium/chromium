@@ -328,6 +328,10 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
   }
 
   void ApplyColorThemeToWindowShadow(aura::Window* window) override {}
+
+  bool ShouldRoundShadowForWindow(const aura::Window* window) override {
+    return true;
+  }
 };
 
 }  // namespace

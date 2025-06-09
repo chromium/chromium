@@ -24,6 +24,7 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -221,6 +222,7 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams(
     params.bounds = browser->create_params().initial_bounds;
   }
   params.display_id = browser->create_params().display_id;
+  params.rounded_corners = chromeos::GetWindowRoundedCorners();
 
   return params;
 }

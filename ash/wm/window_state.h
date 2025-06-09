@@ -25,6 +25,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace chromeos {
 enum class WindowPinType;
@@ -122,6 +123,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Returns the WindowState for the active window, null if there is no active
   // window.
   static WindowState* ForActiveWindow();
+
+  static bool ShouldWindowStateHaveRoundedCorners(
+      chromeos::WindowStateType window_state);
 
   WindowState(const WindowState&) = delete;
   WindowState& operator=(const WindowState&) = delete;
@@ -297,6 +301,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool CanSnap();
   bool CanSnapOnDisplay(display::Display display) const;
   bool CanActivate() const;
+
+  bool ShouldWindowHaveRoundedCorners() const;
+  gfx::RoundedCornersF GetWindowRoundedCorners() const;
 
   // Returns true if the window has restore bounds.
   bool HasRestoreBounds() const;
@@ -541,8 +548,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // is side snapped. It is called for workspace events.
   void AdjustSnappedBoundsForDisplayWorkspaceChange(gfx::Rect* bounds);
 
-  // Updates the window properties(show state, pin type) according to the
-  // current window state type.
+  // Updates the window properties(show state, pin type, rounded corners)
+  // according to the current window state type.
   // Note that this does not update the window bounds.
   void UpdateWindowPropertiesFromStateType();
 

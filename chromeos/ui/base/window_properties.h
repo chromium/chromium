@@ -139,6 +139,12 @@ extern const ui::ClassProperty<WindowStateType>* const kWindowStateTypeKey;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<std::u16string*>* const kWindowOverviewTitleKey;
 
+// A property key to indicate if a window should have rounded corners. On
+// ChromeOS, window corner styles (rounded or square) can vary depending on the
+// window's current state.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kWindowHasRoundedCornersKey;
+
 }  // namespace chromeos
 
 // Declare template specializations introduced by ChromeOS here to make sure

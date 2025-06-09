@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_
 #define CHROMEOS_UI_FRAME_HIGHLIGHT_BORDER_OVERLAY_H_
 
+#include <memory>
+
+#include "chromeos/ui/frame/highlight_border_overlay_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
@@ -28,9 +31,13 @@ class Widget;
 class HighlightBorderOverlay : public aura::WindowObserver,
                                public display::DisplayObserver {
  public:
-  explicit HighlightBorderOverlay(views::Widget* widget);
+  HighlightBorderOverlay(
+      views::Widget* widget,
+      std::unique_ptr<HighlightBorderOverlayDelegate> delegate);
+
   HighlightBorderOverlay(const HighlightBorderOverlay&) = delete;
   HighlightBorderOverlay& operator=(const HighlightBorderOverlay&) = delete;
+
   ~HighlightBorderOverlay() override;
 
   // Calculate image source size according to rounded corner radius and border
@@ -65,6 +72,8 @@ class HighlightBorderOverlay : public aura::WindowObserver,
   raw_ptr<views::Widget> widget_;
   raw_ptr<aura::Window> window_;
   int rounded_corner_radius_ = 0;
+
+  std::unique_ptr<HighlightBorderOverlayDelegate> delegate_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

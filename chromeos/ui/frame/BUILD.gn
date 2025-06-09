@@ -34,6 +34,7 @@ source_set("frame") {
     "header_view.h",
     "highlight_border_overlay.cc",
     "highlight_border_overlay.h",
+    "highlight_border_overlay_delegate.h",
     "immersive/immersive_context.cc",
     "immersive/immersive_context.h",
     "immersive/immersive_focus_watcher.cc",

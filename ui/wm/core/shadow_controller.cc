@@ -22,6 +22,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/wm/core/shadow_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
@@ -187,10 +189,10 @@ void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
                          static_cast<ui::mojom::WindowShowState>(old);
   }
 
-  if (key == aura::client::kWindowCornerRadiusKey) {
+  if (key == aura::client::kWindowRoundedCornersKey) {
     shadow_will_change =
-        window->GetProperty(aura::client::kWindowCornerRadiusKey) !=
-        static_cast<int>(old);
+        *window->GetProperty(aura::client::kWindowRoundedCornersKey) !=
+        static_cast<gfx::RoundedCornersF>(old);
   }
 
   shadow_will_change |=
@@ -278,14 +280,19 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
   ui::Shadow* shadow = GetShadowForWindow(window);
   CHECK(shadow);
 
-  const int corner_radius =
-      window->GetProperty(aura::client::kWindowCornerRadiusKey);
+  if (delegate_ && !delegate_->ShouldRoundShadowForWindow(window)) {
+    shadow->SetRoundedCornerRadius(0);
+    return;
+  }
 
-  // `aura::client::kWindowCornerRadiusKey` default value is -1, meaning
+  gfx::RoundedCornersF* rounded_corners =
+      window->GetProperty(aura::client::kWindowRoundedCornersKey);
+
+  // If `aura::client::kWindowRoundedCornersKey` is not set, it means
   // unspecified radius. i.e window server may want to apply rounded corners
   // implicitly.
-  if (corner_radius >= 0) {
-    shadow->SetRoundedCornerRadius(corner_radius);
+  if (rounded_corners) {
+    shadow->SetRoundedCornerRadius(rounded_corners->upper_left());
   }
 }
 

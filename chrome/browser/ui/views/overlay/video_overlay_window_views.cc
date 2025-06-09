@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -56,6 +57,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/resize_utils.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -63,8 +65,6 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -309,11 +309,11 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     // check.
     ui::Layer* root_view_layer = GetWidget()->GetRootView()->layer();
     if (root_view_layer) {
-      aura::Window* window = GetWidget()->GetNativeWindow();
-      window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                          chromeos::kPipRoundedCornerRadius);
-      ash::SetCornerRadius(window, root_view_layer,
-                           chromeos::kPipRoundedCornerRadius);
+      const gfx::RoundedCornersF window_radii(
+          chromeos::kPipRoundedCornerRadius);
+
+      root_view_layer->SetRoundedCornerRadius(window_radii);
+      root_view_layer->SetIsFastRoundedCorner(true);
     }
   }
 #endif
@@ -392,6 +392,8 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 #if BUILDFLAG(IS_CHROMEOS)
   params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
                                                chromeos::AppType::BROWSER);
+  params.rounded_corners =
+      gfx::RoundedCornersF(chromeos::kPipRoundedCornerRadius);
 #endif
 
   overlay_window->Init(std::move(params));
@@ -1449,7 +1451,8 @@ void VideoOverlayWindowViews::SetUpViews() {
 void VideoOverlayWindowViews::OnRootViewReady() {
 #if BUILDFLAG(IS_CHROMEOS)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
-  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
+  highlight_border_overlay_ =
+      std::make_unique<HighlightBorderOverlay>(this, nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);

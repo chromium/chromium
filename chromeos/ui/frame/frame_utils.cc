@@ -9,6 +9,7 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -111,16 +112,7 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   }
 }
 
-gfx::RoundedCornersF GetWindowRadii(const aura::Window* window) {
-  if (!ShouldWindowHaveRoundedCorners(window)) {
-    return gfx::RoundedCornersF();
-  }
-
-  const WindowStateType window_state = window->GetProperty(kWindowStateTypeKey);
-  if (window_state == WindowStateType::kPip) {
-    return gfx::RoundedCornersF(kPipRoundedCornerRadius);
-  }
-
+gfx::RoundedCornersF GetWindowRoundedCorners() {
   const int corner_radius = features::IsRoundedWindowsEnabled()
                                 ? features::RoundedWindowsRadius()
                                 : kTopCornerRadiusWhenRestored;
@@ -131,29 +123,9 @@ gfx::RoundedCornersF GetWindowRadii(const aura::Window* window) {
                               rounded_bottom_corners ? corner_radius : 0);
 }
 
-bool CanPropertyEffectWindowRadius(const void* class_property_key) {
-  return class_property_key == kIsShowingInOverviewKey ||
-         class_property_key == kWindowStateTypeKey;
-}
-
-bool ShouldWindowStateHaveRoundedCorners(WindowStateType type) {
-  return IsNormalWindowStateType(type) || type == WindowStateType::kFloated ||
-         type == WindowStateType::kPip;
-}
-
-bool ShouldWindowHaveRoundedCorners(const aura::Window* window) {
-  const WindowStateType window_state = window->GetProperty(kWindowStateTypeKey);
-
-  // In overview mode, the native window is displayed in `ash::WindowMiniView`
-  // with its own `ash::WindowMiniViewHeaderView`. This mini view has its own
-  // rounded corners. Therefore we do not need to round the native window.
-  // Apart from redundant rounding, rounding the native frame is problematic for
-  // browsers. For packaged apps, we hide the frame header but for browsers, we
-  // still show the header since the tab strip is rendered over the header. In
-  // overview mode, the header becomes a part of contents of WindowMiniView and
-  // rounding the header ends up rounding the top corners of the contents.
-  const bool in_overview = window->GetProperty(kIsShowingInOverviewKey);
-  return ShouldWindowStateHaveRoundedCorners(window_state) && !in_overview;
+bool CanPropertyEffectWindowRoundedCorners(const void* class_property_key) {
+  return class_property_key == kWindowHasRoundedCornersKey ||
+         class_property_key == aura::client::kWindowRoundedCornersKey;
 }
 
 }  // namespace chromeos

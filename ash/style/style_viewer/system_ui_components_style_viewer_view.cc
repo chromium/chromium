@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -212,6 +213,7 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   params.parent =
       desks_util::GetActiveDeskContainerForRoot(Shell::GetPrimaryRootWindow());
   params.delegate = viewer_view;
+  params.rounded_corners = chromeos::GetWindowRoundedCorners();
 
   // The widget is owned by the native widget.
   g_instance = new views::Widget(std::move(params));

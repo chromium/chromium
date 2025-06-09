@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura_ash.h"
 
+#include <optional>
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/utility/wm_util.h"
+#include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
@@ -88,10 +90,16 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
     DCHECK(GetWidget());
 
     aura::Window* window = GetWidget()->GetNativeWindow();
+    auto* window_state = ash::WindowState::Get(window);
 
-    const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
-    window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                        window_radii.upper_left());
+    // For certain windows, we do not window state associated with them. (See
+    // `ash::WindowState::Get()` for details)
+    if (!window_state) {
+      return;
+    }
+
+    const gfx::RoundedCornersF window_radii =
+        window_state->GetWindowRoundedCorners();
 
     if (draw_frame()) {
       SetFrameCornerRadius(window_radii.upper_left());
@@ -104,10 +112,10 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    // Windows in ChromeOS are rounded for certain window states. If these
-    // states change, we need to update the rounded corners accordingly. See
-    // `chromeos::ShouldWindowHaveRoundedCorners()` for more details.
-    if (chromeos::CanPropertyEffectWindowRadius(key)) {
+    // ChromeOS has rounded windows for certain window states. If these states
+    // changes, we need to update the rounded corners of the frame associate
+    // with the `window`accordingly.
+    if (key == chromeos::kWindowHasRoundedCornersKey) {
       UpdateWindowRoundedCorners();
     }
   }
@@ -196,11 +204,14 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
     views::Widget* widget) {
   ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(create_params, init_params,
                                                      widget);
+  init_params->rounded_corners = chromeos::GetWindowRoundedCorners();
+
   // Some windows need to be placed in special containers, for example to make
   // them visible at the login or lock screen.
   std::optional<int> container_id;
   if (create_params.is_ime_window) {
     container_id = ash::kShellWindowId_ImeWindowParentContainer;
+    init_params->rounded_corners = std::nullopt;
   }
 
   if (container_id.has_value()) {
@@ -269,13 +280,17 @@ void ChromeNativeAppWindowViewsAuraAsh::EnsureAppIconCreated() {
 }
 
 gfx::RoundedCornersF ChromeNativeAppWindowViewsAuraAsh::GetWindowRadii() const {
-  if (!GetNativeWindow() || !chromeos::features::IsRoundedWindowsEnabled()) {
+  if (!GetNativeWindow()) {
     return gfx::RoundedCornersF();
   }
 
-  const int corner_radius =
-      GetNativeWindow()->GetProperty(aura::client::kWindowCornerRadiusKey);
-  return gfx::RoundedCornersF(corner_radius);
+  auto* window_radii =
+      GetNativeWindow()->GetProperty(aura::client::kWindowRoundedCornersKey);
+  if (!window_radii) {
+    return gfx::RoundedCornersF();
+  }
+
+  return *window_radii;
 }
 
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {

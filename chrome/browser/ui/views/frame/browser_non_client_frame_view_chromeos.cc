@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 
-#include <algorithm>
+#include <memory>
+#include <optional>
 
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_highlight_border_overlay_delegate.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
@@ -518,13 +521,13 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
     min_height = min_height + caption_button_container_->size().height();
   }
 
-  const int window_corner_radius = frame()->GetNativeWindow()->GetProperty(
-      aura::client::kWindowCornerRadiusKey);
-  if (chromeos::features::IsRoundedWindowsEnabled() &&
-      window_corner_radius > 0) {
-    // Include bottom rounded corners region. See b/294588040.
-    min_height = min_height + window_corner_radius;
-  }
+  // Include bottom rounded corners region. See b:294588040.
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  const gfx::RoundedCornersF window_radii =
+      ash::WindowState::Get(window)->GetWindowRoundedCorners();
+  CHECK_EQ(window_radii.lower_left(), window_radii.lower_right());
+
+  min_height = min_height + window_radii.lower_left();
 
   return gfx::Size(min_width, min_height);
 }
@@ -704,10 +707,10 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  // ChromeOS has rounded windows for certain window states. If these
-  // states changes, we need to update the rounded corners accordingly. See
-  // `chromeos::GetWindowCornerRadius()` for more details.
-  if (chromeos::CanPropertyEffectWindowRadius(key)) {
+  // ChromeOS has rounded windows for certain window states. If these states
+  // changes, we need to update the rounded corners of the frame associate with
+  // the `window`accordingly.
+  if (key == chromeos::kWindowHasRoundedCornersKey) {
     UpdateWindowRoundedCorners();
   }
 
@@ -851,8 +854,8 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
     return;
   }
 
-  highlight_border_overlay_ =
-      std::make_unique<HighlightBorderOverlay>(GetWidget());
+  highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
+      GetWidget(), std::make_unique<ash::WmHighlightBorderOverlayDelegate>());
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
@@ -1033,12 +1036,19 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   DCHECK(GetWidget());
 
   aura::Window* window = GetWidget()->GetNativeWindow();
+  auto* window_state = ash::WindowState::Get(window);
 
-  const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
-  window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                      window_radii.upper_left());
+  // For certain windows, we do not window state associated with them. (See
+  // `ash::WindowState::Get()` for details)
+  if (!window_state) {
+    return;
+  }
+
+  const gfx::RoundedCornersF window_radii =
+      window_state->GetWindowRoundedCorners();
 
   if (frame_header_) {
+    CHECK_EQ(window_radii.upper_left(), window_radii.upper_right());
     frame_header_->SetHeaderCornerRadius(window_radii.upper_left());
   }
 

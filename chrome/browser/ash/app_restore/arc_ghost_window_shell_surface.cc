@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_state.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
@@ -137,7 +138,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     DCHECK_NE(window_state, chromeos::WindowStateType::kPip);
 
     const int window_corner_radius =
-        chromeos::ShouldWindowStateHaveRoundedCorners(window_state)
+        ash::WindowState::ShouldWindowStateHaveRoundedCorners(window_state)
             ? chromeos::features::RoundedWindowsRadius()
             : 0;
 

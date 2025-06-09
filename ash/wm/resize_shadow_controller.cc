@@ -11,10 +11,13 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_state.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace ash {
 namespace {
@@ -123,7 +126,7 @@ void ResizeShadowController::OnWindowPropertyChanged(aura::Window* window,
   // If the resize shadow is being shown, ensure that shadow is configured
   // correctly for either a rounded window or squared window.
   if (ShouldShowShadowForWindow(window) &&
-      key == aura::client::kWindowCornerRadiusKey) {
+      chromeos::CanPropertyEffectWindowRoundedCorners(key)) {
     RecreateShadowIfNeeded(window);
     UpdateShadowVisibility(window, window->IsVisible());
     return;
@@ -156,10 +159,11 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
   ResizeShadow* shadow = GetShadowForWindow(window);
   const ash::ResizeShadowType type =
       window->GetProperty(ash::kResizeShadowTypeKey);
-  const int window_corner_radius =
-      window->GetProperty(aura::client::kWindowCornerRadiusKey);
+  const gfx::RoundedCornersF window_radii =
+      ash::WindowState::Get(window)->GetWindowRoundedCorners();
+  const int corner_radius = window_radii.upper_left();
   const bool has_large_rounded_corners =
-      window_corner_radius > kLargeRoundedCornerThreshold;
+      corner_radius > kLargeRoundedCornerThreshold;
 
   // If the `window` has a resize shadow with the requested type and the shadow
   // is configured for small/large rounded corners, no need to recreate it.
@@ -184,7 +188,7 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
   // corners.
   if (has_large_rounded_corners) {
     params.thickness = 6;
-    params.window_corner_radius = window_corner_radius;
+    params.window_corner_radius = corner_radius;
     params.shadow_corner_radius = 16;
     params.is_for_large_rounded_corners = true;
   }

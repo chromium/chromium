@@ -4,6 +4,8 @@
 
 #include "ash/wm/drag_window_controller.h"
 
+#include <optional>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -11,6 +13,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -69,16 +72,23 @@ float GetDragWindowOpacity(aura::Window* root_window,
          dragged_window_bounds.size().GetArea();
 }
 
-float GetDragWindowCornerRadius(const aura::Window* original_window) {
+std::optional<gfx::RoundedCornersF> GetDragWindowRoundedCorners(
+    const aura::Window* original_window) {
   // In overview mode, the `original_window` is square. Therefore,
-  // `kWindowCornerRadiusKey` is zero for the `original_window`.
+  // `kWindowRoundedCornersKey` is zero for the `original_window`.
   // However the mini-window view has rounded corners and the shadow
   // associated with the mini-window should be rounded as well.
   if (original_window->GetProperty(kIsOverviewItemKey)) {
-    return kWindowMiniViewCornerRadius;
+    return gfx::RoundedCornersF(kWindowMiniViewCornerRadius);
   }
 
-  return original_window->GetProperty(aura::client::kWindowCornerRadiusKey);
+  const auto window_radii =
+      original_window->GetProperty(aura::client::kWindowRoundedCornersKey);
+  if (window_radii) {
+    return *window_radii;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace
@@ -141,8 +151,7 @@ class DragWindowController::DragWindowDetails {
       params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     }
 
-    params.rounded_corners =
-        gfx::RoundedCornersF(GetDragWindowCornerRadius(original_window));
+    params.rounded_corners = GetDragWindowRoundedCorners(original_window);
 
     widget_ = std::make_unique<views::Widget>();
     widget_->set_focus_on_creation(false);

@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view_ash.h"
 
 #include "ash/wm/splitview/layout_divider_controller.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/background.h"
@@ -31,10 +33,8 @@ PictureInPictureBrowserFrameViewAsh::~PictureInPictureBrowserFrameViewAsh() =
 
 void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
   aura::Window* window = GetWidget()->GetNativeWindow();
-  const gfx::RoundedCornersF window_radii{chromeos::kPipRoundedCornerRadius};
-
-  window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                      window_radii.upper_left());
+  const gfx::RoundedCornersF window_radii =
+      ash::WindowState::Get(window)->GetWindowRoundedCorners();
 
   const gfx::RoundedCornersF radii(window_radii.upper_left(),
                                    window_radii.upper_right(), 0, 0);
@@ -48,7 +48,7 @@ void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (chromeos::CanPropertyEffectWindowRadius(key)) {
+  if (key == chromeos::kWindowHasRoundedCornersKey) {
     UpdateWindowRoundedCorners();
   }
 }

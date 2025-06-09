@@ -120,11 +120,8 @@ bool WmShadowControllerDelegate::ShouldUpdateShadowOnWindowPropertyChange(
     const aura::Window* window,
     const void* key,
     intptr_t old) {
-  return (key == chromeos::kIsShowingInOverviewKey &&
-          window->GetProperty(chromeos::kIsShowingInOverviewKey) != old) ||
-         (key == chromeos::kWindowStateTypeKey &&
-          window->GetProperty(chromeos::kWindowStateTypeKey) !=
-              static_cast<chromeos::WindowStateType>(old));
+  return (key == chromeos::kWindowHasRoundedCornersKey &&
+          window->GetProperty(chromeos::kWindowHasRoundedCornersKey) != old);
 }
 
 void WmShadowControllerDelegate::ApplyColorThemeToWindowShadow(
@@ -135,6 +132,12 @@ void WmShadowControllerDelegate::ApplyColorThemeToWindowShadow(
         kShadowColorizerKey,
         std::make_unique<ShadowColorizer>(window, color_provider_source));
   }
+}
+
+bool WmShadowControllerDelegate::ShouldRoundShadowForWindow(
+    const aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  return window_state ? window_state->ShouldWindowHaveRoundedCorners() : true;
 }
 
 }  // namespace ash

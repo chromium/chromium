@@ -46,6 +46,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/drag_utils.h"
@@ -241,8 +242,8 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   RegisterNativeWidgetForWindow(this, window_);
   window_->SetType(GetAuraWindowTypeForWidgetType(params.type));
   if (params.rounded_corners) {
-    window_->SetProperty(aura::client::kWindowCornerRadiusKey,
-                         params.rounded_corners->upper_left());
+    window_->SetProperty(aura::client::kWindowRoundedCornersKey,
+                         params.rounded_corners.value());
   }
   window_->SetProperty(aura::client::kShowStateKey, params.show_state);
 

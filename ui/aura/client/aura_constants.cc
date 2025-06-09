@@ -10,6 +10,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, aura::client::FocusClient*)
@@ -19,6 +20,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::NativeViewAccessible)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::Rect*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::Size*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::SizeF*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::RoundedCornersF*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, int64_t)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, std::string*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, ui::mojom::ModalType)
@@ -74,7 +76,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTopViewInset, 0)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kWindowIconKey)
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kWindowCornerRadiusKey, -1)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::RoundedCornersF,
+                                   kWindowRoundedCornersKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int,
                              kWindowWorkspaceKey,
                              kWindowWorkspaceUnassignedWorkspace)

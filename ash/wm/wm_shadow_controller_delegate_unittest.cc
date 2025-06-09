@@ -22,8 +22,8 @@ TEST_F(WmShadowControllerDelegateTest,
        UpdateShadowRoundedCornersEnterExitOverview) {
   auto window = CreateTestWindow();
 
-  const int window_corner_radius =
-      window->GetProperty(aura::client::kWindowCornerRadiusKey);
+  auto* window_rounded_corner =
+      window->GetProperty(aura::client::kWindowRoundedCornersKey);
 
   auto* shadow_controller = Shell::Get()->shadow_controller();
   shadow_controller->UpdateShadowForWindow(window.get());
@@ -31,7 +31,9 @@ TEST_F(WmShadowControllerDelegateTest,
   // Before entering Overview, the shadow should have a same rounded corner
   // radius with its window.
   auto* shadow = shadow_controller->GetShadowForWindow(window.get());
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), window_corner_radius);
+  EXPECT_TRUE(window_rounded_corner);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+            window_rounded_corner->upper_left());
 
   // Enter Overview, the shadow's rounded corner radius becomes 0.
   ToggleOverview();
@@ -40,7 +42,8 @@ TEST_F(WmShadowControllerDelegateTest,
   // Exit Overview, the shadow's rounded corner radius is reset to window
   // rounded corner radius.
   ToggleOverview();
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), window_corner_radius);
+  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+            window_rounded_corner->upper_left());
 }
 
 TEST_F(WmShadowControllerDelegateTest,

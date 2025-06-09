@@ -45,6 +45,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -60,6 +62,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
@@ -298,11 +301,26 @@ void SaveWindowForWindowRestore(WindowState* window_state) {
     controller->SaveWindow(window_state);
 }
 
+bool ShouldWindowHaveRoundedCornersForWindowState(
+    const WindowState* window_state) {
+  // In overview mode, the native window is displayed in `ash::WindowMiniView`
+  // with its own `ash::WindowMiniViewHeaderView`. This mini view has its own
+  // rounded corners. Therefore we do not need to round the native window.
+  // Apart from redundant rounding, rounding the native frame is problematic for
+  // browsers. For packaged apps, we hide the frame header but for browsers, we
+  // still show the header since the tab strip is rendered over the header. In
+  // overview mode, the header becomes a part of contents of WindowMiniView and
+  // rounding the header ends up rounding the top corners of the contents.
+  const bool in_overview =
+      window_state->window()->GetProperty(chromeos::kIsShowingInOverviewKey);
+  return !in_overview && WindowState::ShouldWindowStateHaveRoundedCorners(
+                             window_state->GetStateType());
+}
+
 bool ShouldSetExplicitOpaqueRegionsForOcclusion(WindowState* window_state) {
   // If the window manager manages the window opacity, set the opaque regions
   // explicitly if the window must be transparent (e.g. has rounded corners).
-  return chromeos::ShouldWindowStateHaveRoundedCorners(
-             window_state->GetStateType()) &&
+  return ShouldWindowHaveRoundedCornersForWindowState(window_state) &&
          window_state->window()->GetProperty(
              ash::kWindowManagerManagesOpacityKey);
 }
@@ -469,6 +487,23 @@ bool WindowState::CanResize() const {
 
 bool WindowState::CanActivate() const {
   return wm::CanActivateWindow(window_);
+}
+
+bool WindowState::ShouldWindowHaveRoundedCorners() const {
+  return window_->GetProperty(chromeos::kWindowHasRoundedCornersKey);
+}
+
+gfx::RoundedCornersF WindowState::GetWindowRoundedCorners() const {
+  if (!ShouldWindowHaveRoundedCorners()) {
+    return gfx::RoundedCornersF();
+  }
+
+  auto radii = window_->GetProperty(aura::client::kWindowRoundedCornersKey);
+  if (radii) {
+    return *radii;
+  }
+
+  return gfx::RoundedCornersF();
 }
 
 bool WindowState::CanSnap() {
@@ -944,6 +979,15 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
   }
 
+  const bool should_round_window =
+      ShouldWindowHaveRoundedCornersForWindowState(this);
+  if (window_->GetProperty(chromeos::kWindowHasRoundedCornersKey) !=
+      should_round_window) {
+    base::AutoReset<bool> resetter(&ignore_property_change_, true);
+    window_->SetProperty(chromeos::kWindowHasRoundedCornersKey,
+                         should_round_window);
+  }
+
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     const gfx::Size& size = window_->bounds().size();
     if (ShouldSetExplicitOpaqueRegionsForOcclusion(this)) {
@@ -1297,6 +1341,14 @@ WindowState* WindowState::ForActiveWindow() {
   return active ? WindowState::Get(active) : nullptr;
 }
 
+// static
+bool WindowState::ShouldWindowStateHaveRoundedCorners(
+    chromeos::WindowStateType state_type) {
+  return IsNormalWindowStateType(state_type) ||
+         state_type == WindowStateType::kFloated ||
+         state_type == WindowStateType::kPip;
+}
+
 void WindowState::OnWindowPropertyChanged(aura::Window* window,
                                           const void* key,
                                           intptr_t old) {
@@ -1325,6 +1377,15 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
+
+  if (key == chromeos::kIsShowingInOverviewKey ||
+      key == aura::client::kWindowRoundedCornersKey) {
+    if (!ignore_property_change_) {
+      UpdateWindowPropertiesFromStateType();
+    }
+    return;
+  }
+
   if (key == aura::client::kWindowWorkspaceKey ||
       key == aura::client::kDeskUuidKey) {
     // Save the window for window restore purposes unless
