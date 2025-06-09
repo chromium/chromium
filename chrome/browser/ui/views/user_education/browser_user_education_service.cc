@@ -1346,8 +1346,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 const GURL final_url(chrome::kChromeUIWebAppSettingsURL +
                                      *app_id);
-                if (web_contents &&
-                    web_contents->GetURL() != browser->GetNewTabURL()) {
+                if (web_contents) {
                   NavigateParams params(browser->profile(), final_url,
                                         ui::PAGE_TRANSITION_LINK);
                   params.disposition =
@@ -1390,8 +1389,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 const GURL final_url(chrome::kChromeUIWebAppSettingsURL +
                                      *app_id);
-                if (web_contents &&
-                    web_contents->GetURL() != browser->GetNewTabURL()) {
+                if (web_contents) {
                   NavigateParams params(browser->profile(), final_url,
                                         ui::PAGE_TRANSITION_LINK);
                   params.disposition =
