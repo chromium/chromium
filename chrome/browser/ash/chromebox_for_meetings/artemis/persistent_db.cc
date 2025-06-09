@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
 
+#include <ostream>
+
 #include "base/check.h"
 
 namespace ash::cfm {
