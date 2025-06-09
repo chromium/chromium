@@ -19,9 +19,8 @@
   self = [super init];
   if (self) {
     _configurationID = [NSString
-        stringWithFormat:@"%ld_%@",
-                         HomeCustomizationBackgroundPickerType::
-                             HomeCustomizationPickerTypePresetGallery,
+        stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
+                         HomeCustomizationBackgroundStyle::kPreset,
                          base::SysUTF8ToNSString(
                              base::NumberToString(collectionImage.asset_id))];
     _thumbnailURL = collectionImage.thumbnail_image_url;
@@ -34,11 +33,20 @@
   self = [super init];
   if (self) {
     _configurationID =
-        [NSString stringWithFormat:@"%ld_%@",
-                                   HomeCustomizationBackgroundPickerType::
-                                       HomeCustomizationPickerTypeColor,
+        [NSString stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
+                                   HomeCustomizationBackgroundStyle::kColor,
                                    backgroundColor.description];
     _backgroundColor = backgroundColor;
+  }
+  return self;
+}
+
+- (instancetype)initWithNoBackground {
+  self = [super init];
+  if (self) {
+    _configurationID =
+        [NSString stringWithFormat:@"%@_%ld", kBackgroundCellIdentifier,
+                                   HomeCustomizationBackgroundStyle::kDefault];
   }
   return self;
 }

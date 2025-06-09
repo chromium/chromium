@@ -25,6 +25,10 @@ class GURL;
 // with the provided background color.
 - (instancetype)initWithBackgroundColor:(UIColor*)backgroundColor;
 
+// Initializes a new instance of the background customization configuration
+/// with no background.
+- (instancetype)initWithNoBackground;
+
 // A unique identifier for the background configuration.
 @property(readonly, nonatomic, copy) NSString* configurationID;
 

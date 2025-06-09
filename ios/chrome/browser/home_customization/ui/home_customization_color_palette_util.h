@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_UTIL_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_UTIL_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_configuration.h"
+@class HomeCustomizationColorPaletteConfiguration;
 
 // Creates and returns a color palette configuration from a seed color.
 HomeCustomizationColorPaletteConfiguration*
-CreateColorPaletteConfigurationFromSeedColor(UIColor* seedColor);
+CreateColorPaletteConfigurationFromSeedColor(UIColor* seed_color);
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_COLOR_PALETTE_UTIL_H_

@@ -111,13 +111,16 @@ enum class CustomizationLinkType : NSInteger {
   kLearnMore,
 };
 
-// The type of background customization picker to present.
-enum class HomeCustomizationBackgroundPickerType : NSInteger {
-  // Background color picker.
-  HomeCustomizationPickerTypeColor,
+// Represents the background style used for home customization.
+enum class HomeCustomizationBackgroundStyle : NSInteger {
+  // No background (default appearance).
+  kDefault,
 
-  // Preset gallery picker.
-  HomeCustomizationPickerTypePresetGallery,
+  // Solid background color.
+  kColor,
+
+  // Background chosen from preset gallery.
+  kPreset,
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

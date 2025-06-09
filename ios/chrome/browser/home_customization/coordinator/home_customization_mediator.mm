@@ -76,12 +76,20 @@
         backgroundCustomizationConfigurationMap =
             [NSMutableDictionary dictionary];
 
+    // Create and add a background configuration with no background applied.
+    BackgroundCustomizationConfiguration* defaultConfig =
+        [[BackgroundCustomizationConfiguration alloc] initWithNoBackground];
+    backgroundCustomizationConfigurationMap[defaultConfig.configurationID] =
+        defaultConfig;
+
     // TODO(crbug.com/408243803): fetch background customization
     // configurations and fill the `backgroundCustomizationConfigurationMap` and
     // `selectedBackgroundId`.
-    [self.mainPageConsumer populateBackgroundCustomizationConfigurations:
-                               backgroundCustomizationConfigurationMap
-                                                    selectedBackgroundId:nil];
+    [self.mainPageConsumer
+        populateBackgroundCustomizationConfigurations:
+            backgroundCustomizationConfigurationMap
+                                 selectedBackgroundId:defaultConfig
+                                                          .configurationID];
   }
 }
 

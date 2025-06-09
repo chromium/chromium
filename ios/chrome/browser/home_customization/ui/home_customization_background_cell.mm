@@ -211,9 +211,13 @@ const CGFloat kFeedsWidth = 70.0;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Change the tint of the logo based on the background.
-  logoView.tintColor = imageBackground ? [UIColor whiteColor]
-                       : colorPalette  ? colorPalette.darkColor
-                                       : logoView.tintColor;
+  if (imageBackground) {
+    logoView.tintColor = [UIColor whiteColor];
+  } else if (colorPalette) {
+    logoView.tintColor = colorPalette.darkColor;
+  } else {
+    logoView.tintColor = logoView.tintColor;
+  }
 
   // Insert the logo view right after the spacer.
   [self.innerContentView insertArrangedSubview:logoView atIndex:1];

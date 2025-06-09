@@ -97,9 +97,8 @@ CGFloat const kSheetCornerRadius = 30;
           l10n_util::GetNSStringWithFixup(
               IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE)
                 action:^{
-                  [weakSelf presentPickerWithType:
-                                HomeCustomizationBackgroundPickerType::
-                                    HomeCustomizationPickerTypePresetGallery];
+                  [weakSelf presentPickerWithStyle:
+                                HomeCustomizationBackgroundStyle::kPreset];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -116,9 +115,8 @@ CGFloat const kSheetCornerRadius = 30;
             l10n_util::GetNSStringWithFixup(
                 IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE)
                   action:^{
-                    [weakSelf presentPickerWithType:
-                                  HomeCustomizationBackgroundPickerType::
-                                      HomeCustomizationPickerTypeColor];
+                    [weakSelf presentPickerWithStyle:
+                                  HomeCustomizationBackgroundStyle::kColor];
                   }
                    style:UIAlertActionStyleDefault];
 
@@ -161,17 +159,17 @@ CGFloat const kSheetCornerRadius = 30;
 #pragma mark - Private functions
 
 // Presents the background customization picker based on the given type.
-- (void)presentPickerWithType:
-    (HomeCustomizationBackgroundPickerType)pickerType {
-  switch (pickerType) {
-    case HomeCustomizationBackgroundPickerType::
-        HomeCustomizationPickerTypeColor:
+- (void)presentPickerWithStyle:(HomeCustomizationBackgroundStyle)pickerStyle {
+  switch (pickerStyle) {
+    case HomeCustomizationBackgroundStyle::kDefault:
+      // Do nothing.
+      break;
+    case HomeCustomizationBackgroundStyle::kColor:
       _mainViewController = [self createColorPickerViewController];
       _backgroundColorPickerMediator.consumer = (id)_mainViewController;
       [_backgroundColorPickerMediator configureColorPalettes];
       break;
-    case HomeCustomizationBackgroundPickerType::
-        HomeCustomizationPickerTypePresetGallery:
+    case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];
       _backgroundPresetGalleryPickerMediator.consumer = (id)_mainViewController;
       [_backgroundPresetGalleryPickerMediator loadBackgroundConfigurations];
@@ -214,8 +212,7 @@ CGFloat const kSheetCornerRadius = 30;
 
   // The preset gallery can be expanded full screen and therefore a grabber is
   // shown.
-  if (pickerType == HomeCustomizationBackgroundPickerType::
-                        HomeCustomizationPickerTypePresetGallery) {
+  if (pickerStyle == HomeCustomizationBackgroundStyle::kPreset) {
     presentationController.prefersGrabberVisible = YES;
     [detents addObject:[UISheetPresentationControllerDetent largeDetent]];
   }
