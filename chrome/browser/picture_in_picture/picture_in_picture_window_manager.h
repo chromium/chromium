@@ -129,6 +129,18 @@ class PictureInPictureWindowManager {
   // document PiP window.
   static bool IsChildWebContents(content::WebContents*);
 
+  // When a website requests size `requested_size` for a document
+  // picture-in-picture window (either when creating the window or when resizing
+  // the window via resizeTo()/resizeBy() APIs), we restrict the maximum size
+  // we'll make the pip window (this is a smaller maximum than the maximum size
+  // the user can manually resize to). If the given `requested_size` is small
+  // enough, this just returns the requested size. Otherwise, this shrinks the
+  // requested size to fit within the constraints, and attempts to keep the
+  // aspect ratio the same.
+  static gfx::Size AdjustRequestedSizeIfNecessary(
+      const gfx::Size& requested_size,
+      const display::Display& display);
+
   // Returns the window bounds of the video picture-in-picture or the document
   // picture-in-picture if either of them is present.
   std::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
@@ -314,6 +326,12 @@ class PictureInPictureWindowManager {
   // existence. If at least one exists, then picture-in-picture windows will be
   // blocked.
   uint32_t number_of_existing_scoped_disallow_picture_in_pictures_ = 0;
+
+  // True if we're currently calculating document pip's initial size. Used to
+  // determine whether we should record the
+  // `Media.DocumentPictureInPicture.RequestedLargeInitialSize` metric and
+  // should be removed when that metric is removed.
+  bool is_calculating_initial_document_pip_size_ = false;
 
   std::unique_ptr<PictureInPictureWindowManagerUmaHelper> uma_helper_;
 #endif  //! BUILDFLAG(IS_ANDROID)

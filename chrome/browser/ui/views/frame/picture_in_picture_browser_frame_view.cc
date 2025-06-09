@@ -891,14 +891,42 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
 }
 
 void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
+  gfx::Rect adjusted_bounds(bounds);
+  gfx::Rect current_bounds = GetWidget()->GetWindowBoundsInScreen();
+  bool did_adjust_size = false;
+
+  // If the website is requesting that the window increases in size, then ensure
+  // that it's not increasing beyond the site-requested maximum.
+  if (bounds.size().width() > current_bounds.size().width() ||
+      bounds.size().height() > current_bounds.size().height()) {
+    auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+        GetWidget()->GetNativeWindow());
+    gfx::Size adjusted_new_size =
+        PictureInPictureWindowManager::AdjustRequestedSizeIfNecessary(
+            bounds.size(), display);
+
+    // If so, then use the adjusted size centered on the current location rather
+    // than centered on the new location (as we only ever expect size to change,
+    // and a large requested size could incidentally move the window).
+    if (adjusted_new_size != bounds.size()) {
+      adjusted_bounds = current_bounds;
+      adjusted_bounds.ClampToCenteredSize(adjusted_new_size);
+      did_adjust_size = true;
+    }
+  }
+
+  base::UmaHistogramBoolean(
+      "Media.DocumentPictureInPicture.RequestedLargeResize", did_adjust_size);
+
   if (!base::FeatureList::IsEnabled(
           media::kDocumentPictureInPictureAnimateResize) ||
       !gfx::Animation::ShouldRenderRichAnimation()) {
-    BrowserNonClientFrameView::SetFrameBounds(bounds);
+    BrowserNonClientFrameView::SetFrameBounds(adjusted_bounds);
     return;
   }
   bounds_change_animation_ =
-      std::make_unique<BrowserFrameBoundsChangeAnimation>(*frame(), bounds);
+      std::make_unique<BrowserFrameBoundsChangeAnimation>(*frame(),
+                                                          adjusted_bounds);
   bounds_change_animation_->Start();
 }
 

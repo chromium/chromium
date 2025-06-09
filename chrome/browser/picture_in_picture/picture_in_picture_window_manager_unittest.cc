@@ -132,32 +132,6 @@ class PictureInPictureWindowManagerTest
 
 }  // namespace
 
-TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
-  // The max window size should be 80% of the screen.
-  display::Display display(/*id=*/1, gfx::Rect(0, 0, 1000, 1000));
-  EXPECT_EQ(gfx::Size(800, 800),
-            PictureInPictureWindowManager::GetMaximumWindowSize(display));
-
-  // The initial bounds of the PiP window should respect that.
-  blink::mojom::PictureInPictureWindowOptions pip_options;
-  pip_options.width = 900;
-  pip_options.height = 900;
-  EXPECT_EQ(
-      gfx::Size(800, 800),
-      PictureInPictureWindowManager::GetInstance()
-          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-          .size());
-
-  // The minimum size should also be respected.
-  pip_options.width = 100;
-  pip_options.height = 500;
-  EXPECT_EQ(
-      gfx::Size(240, 500),
-      PictureInPictureWindowManager::GetInstance()
-          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
-          .size());
-}
-
 TEST_F(PictureInPictureWindowManagerTest,
        ExitPictureInPictureReturnsFalseWhenThereIsNoWindow) {
   EXPECT_FALSE(
@@ -184,6 +158,74 @@ TEST_F(PictureInPictureWindowManagerTest, OnEnterVideoPictureInPicture) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
+  // The max window size should be 80% of the screen.
+  display::Display display(/*id=*/1, gfx::Rect(0, 0, 1000, 1000));
+  EXPECT_EQ(gfx::Size(800, 800),
+            PictureInPictureWindowManager::GetMaximumWindowSize(display));
+
+  // The initial bounds of the PiP window should respect that.
+  blink::mojom::PictureInPictureWindowOptions pip_options;
+  pip_options.width = 900;
+  pip_options.height = 100;
+  EXPECT_EQ(
+      gfx::Size(800, 100),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+
+  // Additionally, even if the given size is less than the absolute max, it
+  // should be forced to respect the maximum allowed area.
+  pip_options.width = 800;
+  pip_options.height = 800;
+  EXPECT_EQ(
+      gfx::Size(500, 500),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+
+  // Additionally, even if the given size is less than the absolute max, it
+  // should be forced to respect the maximum allowed area.
+  pip_options.width = 800;
+  pip_options.height = 400;
+  EXPECT_EQ(
+      gfx::Size(707, 353),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+
+  // If the requested width is so much larger than the height that maintaining
+  // the aspect ratio isn't possible within the min/max bounds, then it should
+  // keep the minimum height and expand the width to the maximum size.
+  pip_options.width = 10000;
+  pip_options.height = 400;
+  EXPECT_EQ(
+      gfx::Size(800, 52),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+
+  // If the requested height is so much larger than the width that maintaining
+  // the aspect ratio isn't possible within the min/max bounds, then it should
+  // keep the minimum width and expand the height to the maximum size.
+  pip_options.width = 400;
+  pip_options.height = 10000;
+  EXPECT_EQ(
+      gfx::Size(240, 800),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+
+  // The minimum size should also be respected.
+  pip_options.width = 100;
+  pip_options.height = 500;
+  EXPECT_EQ(
+      gfx::Size(240, 500),
+      PictureInPictureWindowManager::GetInstance()
+          ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
+          .size());
+}
+
 TEST_F(PictureInPictureWindowManagerTest, OnEnterDocumentPictureInPicture) {
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
