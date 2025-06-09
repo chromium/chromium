@@ -14,6 +14,9 @@ namespace net {
 
 TwoQwacCertBindingBuilder::TwoQwacCertBindingBuilder()
     : cert_chain_(CertBuilder::CreateSimpleChain(2)) {
+  GetLeafBuilder()->SetCertificatePolicies({"0.4.0.194112.1.6"});  // QNCP-w-gen
+  GetLeafBuilder()->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
+  GetLeafBuilder()->SetExtendedKeyUsages({bssl::der::Input(kIdKpTlsBinding)});
   GenerateKeyForSigAlg();
   // set bound_certs_ to two bogus values
   bound_certs_ = {"one", "two"};

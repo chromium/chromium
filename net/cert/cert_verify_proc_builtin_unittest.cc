@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/revocation_builder.h"
+#include "net/test/two_qwac_cert_binding_builder.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -371,6 +372,20 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
                        hostname, ocsp_response, sct_list, flags, verify_result,
                        out_source),
         std::move(callback));
+  }
+
+  scoped_refptr<X509Certificate> Verify2QwacBinding(
+      std::string_view binding,
+      const std::string& hostname,
+      base::span<const uint8_t> tls_cert,
+      NetLogSource* out_source) {
+    // 2-QWAC verification does not do any blocking calls, so the unittest does
+    // not need to run it on a worker thread.
+    NetLogWithSource net_log(NetLogWithSource::Make(
+        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
+    *out_source = net_log.source();
+    return verify_proc_->Verify2QwacBinding(binding, hostname, tls_cert,
+                                            net_log);
   }
 
   int Verify2Qwac(scoped_refptr<X509Certificate> cert,
@@ -2807,6 +2822,112 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesValidityDate) {
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
   }
+}
+
+class CertVerifyProcBuiltin2QwacBindingTest : public CertVerifyProcBuiltinTest {
+ public:
+  void ExpectHistogramSample(const base::HistogramTester& histograms,
+                             Verify2QwacResult result) {
+    histograms.ExpectUniqueSample("Net.CertVerifier.Qwac.2Qwac", result, 1u);
+  }
+};
+
+TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestValidBinding) {
+  auto [tls_leaf, tls_root] = CertBuilder::CreateSimpleChain2();
+
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({tls_leaf->GetDER()});
+  std::string jws = binding_builder.GetJWS();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
+
+  base::HistogramTester histograms;
+  NetLogSource verify_net_log_source;
+  scoped_refptr<X509Certificate> verified_2qwac = Verify2QwacBinding(
+      jws, "www.example.com", base::as_byte_span(tls_leaf->GetDER()),
+      &verify_net_log_source);
+  ASSERT_TRUE(verified_2qwac);
+  EXPECT_TRUE(verified_2qwac->EqualsIncludingChain(
+      binding_builder.GetLeafBuilder()->GetX509CertificateFullChain().get()));
+  ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
+  // TODO(crbug.com/392931070): test Verify2QwacBinding histograms and netlogs
+  // once they are added.
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingFailsParsing) {
+  auto [tls_leaf, tls_root] = CertBuilder::CreateSimpleChain2();
+
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({tls_leaf->GetDER()});
+  std::string jws = "invalid" + binding_builder.GetJWS();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
+
+  base::HistogramTester histograms;
+  NetLogSource verify_net_log_source;
+  EXPECT_FALSE(Verify2QwacBinding(jws, "www.example.com",
+                                  base::as_byte_span(tls_leaf->GetDER()),
+                                  &verify_net_log_source));
+  histograms.ExpectTotalCount("Net.CertVerifier.Qwac.2Qwac", 0);
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingInvalidSignature) {
+  auto [tls_leaf, tls_root] = CertBuilder::CreateSimpleChain2();
+
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({tls_leaf->GetDER()});
+  std::string jws = binding_builder.GetJWSWithInvalidSignature();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
+
+  base::HistogramTester histograms;
+  NetLogSource verify_net_log_source;
+  EXPECT_FALSE(Verify2QwacBinding(jws, "www.example.com",
+                                  base::as_byte_span(tls_leaf->GetDER()),
+                                  &verify_net_log_source));
+  histograms.ExpectTotalCount("Net.CertVerifier.Qwac.2Qwac", 0);
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacBindingTest,
+       TestBinding2QwacFailsVerification) {
+  auto [tls_leaf, tls_root] = CertBuilder::CreateSimpleChain2();
+
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({tls_leaf->GetDER()});
+  std::string jws = binding_builder.GetJWS();
+
+  // The qwac root is not added to the EUTL, so cert verification of the 2-QWAC
+  // certificate should fail.
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  base::HistogramTester histograms;
+  NetLogSource verify_net_log_source;
+  EXPECT_FALSE(Verify2QwacBinding(jws, "www.example.com",
+                                  base::as_byte_span(tls_leaf->GetDER()),
+                                  &verify_net_log_source));
+  ExpectHistogramSample(histograms, Verify2QwacResult::kAuthorityInvalid);
+}
+
+TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestTlsCertIsNotBound) {
+  auto [bound_leaf, bound_root] = CertBuilder::CreateSimpleChain2();
+  auto [tls_leaf, tls_root] = CertBuilder::CreateSimpleChain2();
+
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_leaf->GetDER()});
+  std::string jws = binding_builder.GetJWS();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+  AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
+
+  base::HistogramTester histograms;
+  NetLogSource verify_net_log_source;
+  EXPECT_FALSE(Verify2QwacBinding(jws, "www.example.com",
+                                  base::as_byte_span(tls_leaf->GetDER()),
+                                  &verify_net_log_source));
+  ExpectHistogramSample(histograms, Verify2QwacResult::kValid2Qwac);
 }
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

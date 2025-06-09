@@ -58,7 +58,18 @@ class TwoQwacCertBindingBuilder {
     return cert_chain_[0].get();
   }
 
+  // Returns a pointer to the root net::CertBuilder. See comment for
+  // `GetLeafBuilder` for restrictions on modifying the returned CertBuilder.
+  net::CertBuilder* GetRootBuilder() {
+    Invalidate();
+    return cert_chain_.back().get();
+  }
+
   std::string GetJWS() { return GetHeader() + ".." + GetSignature(); }
+
+  std::string GetJWSWithInvalidSignature() {
+    return GetHeader() + ".." + GetInvalidSignature();
+  }
 
   const std::string& GetHeader() {
     if (!header_b64_.has_value()) {
@@ -72,6 +83,17 @@ class TwoQwacCertBindingBuilder {
       GenerateSignature();
     }
     return *signature_b64_;
+  }
+
+  const std::string GetInvalidSignature() {
+    std::string signature = GetSignature();
+    // Mess with the base64url-encoded signature to make it invalid.
+    if (signature[0] != 'A') {
+      signature[0] = 'A';
+    } else {
+      signature[0] = 'B';
+    }
+    return signature;
   }
 
  private:

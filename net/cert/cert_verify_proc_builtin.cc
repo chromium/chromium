@@ -42,6 +42,7 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/time_conversions.h"
+#include "net/cert/two_qwac.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
@@ -984,6 +985,11 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  scoped_refptr<X509Certificate> Verify2QwacBinding(
+      std::string_view binding,
+      const std::string& hostname,
+      base::span<const uint8_t> tls_cert,
+      const NetLogWithSource& net_log) override;
   int Verify2Qwac(X509Certificate* input_cert,
                   const std::string& hostname,
                   CertVerifyResult* verify_result,
@@ -1664,6 +1670,32 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// TODO(crbug.com/392931070): add histograms
+// TODO(crbug.com/392931070): add netlogs
+scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
+    std::string_view binding,
+    const std::string& hostname,
+    base::span<const uint8_t> tls_cert,
+    const NetLogWithSource& net_log) {
+  auto parsed_binding = TwoQwacCertBinding::Parse(binding);
+  if (!parsed_binding.has_value()) {
+    return nullptr;
+  }
+  if (!parsed_binding->VerifySignature()) {
+    return nullptr;
+  }
+  CertVerifyResult verify_result;
+  int verify_rv = Verify2Qwac(parsed_binding->header().two_qwac_cert.get(),
+                              hostname, &verify_result, net_log);
+  if (verify_rv != OK) {
+    return nullptr;
+  }
+  if (!parsed_binding->BindsTlsCert(tls_cert)) {
+    return nullptr;
+  }
+  return std::move(verify_result.verified_cert);
+}
+
 int CertVerifyProcBuiltin::Verify2Qwac(X509Certificate* cert,
                                        const std::string& hostname,
                                        CertVerifyResult* verify_result,

@@ -480,29 +480,11 @@ TEST(VerifyTwoQwacCertBinding, InvalidEcdsaCurve) {
 
 TEST(VerifyTwoQwacCertBinding, InvalidSignature) {
   TwoQwacCertBindingBuilder binding_builder;
-  const auto& header = binding_builder.GetHeader();
-  std::string signature = binding_builder.GetSignature();
 
-  // Build the JWS from the header and signature and confirm the signature is
-  // valid.
-  std::string jws = header + ".." + signature;
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
-  ASSERT_TRUE(cert_binding.has_value());
-  EXPECT_TRUE(cert_binding->VerifySignature());
-
-  // Mess with the base64url-encoded signature to make it invalid.
-  if (signature[0] != 'A') {
-    signature[0] = 'A';
-  } else {
-    signature[0] = 'B';
-  }
-
-  // rebuild the JWS with the invalid signature, and check that the signature
+  // Build a JWS with an invalid signature, and check that the signature
   // is invalid.
-  std::string jws_bad_sig = header + ".." + signature;
   std::optional<TwoQwacCertBinding> cert_binding_bad_sig =
-      TwoQwacCertBinding::Parse(jws_bad_sig);
+      TwoQwacCertBinding::Parse(binding_builder.GetJWSWithInvalidSignature());
   ASSERT_TRUE(cert_binding_bad_sig.has_value());
   EXPECT_FALSE(cert_binding_bad_sig->VerifySignature());
 }

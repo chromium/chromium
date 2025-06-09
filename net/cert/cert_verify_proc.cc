@@ -598,6 +598,14 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   return rv;
 }
 
+scoped_refptr<X509Certificate> CertVerifyProc::Verify2QwacBinding(
+    std::string_view binding,
+    const std::string& hostname,
+    base::span<const uint8_t> tls_cert,
+    const NetLogWithSource& net_log) {
+  return nullptr;
+}
+
 int CertVerifyProc::Verify2Qwac(X509Certificate* cert,
                                 const std::string& hostname,
                                 CertVerifyResult* verify_result,
