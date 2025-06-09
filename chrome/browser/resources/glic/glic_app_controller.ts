@@ -30,6 +30,11 @@ const kMaxWaitTimeMs = loadTimeData.getInteger('maxLoadingTimeMs');
 // the --enable-features=GlicDebugWebview command-line flag.
 const kEnableDebug = loadTimeData.getBoolean('enableDebug');
 
+// Whether additional web client unresponsiveness tracking metrics should be
+// recorded.
+const kEnableUnresponsiveMetrics =
+    loadTimeData.getBoolean('enableWebClientUnresponsiveMetrics');
+
 interface PageElementTypes {
   panelContainer: HTMLElement;
   loadingPanel: HTMLElement;
@@ -157,6 +162,10 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   }
 
   trackUnresponsiveState(newState: WebClientUnresponsiveState): void {
+    if (!kEnableUnresponsiveMetrics) {
+      return;
+    }
+
     // Track and record unresponsive state duration.
     if (newState === WebClientUnresponsiveState.ENTERED_FROM_WEBVIEW_EVENT ||
         newState === WebClientUnresponsiveState.ENTERED_FROM_CUSTOM_HEARTBEAT) {
@@ -175,6 +184,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         console.error('Unresponsive state exited without an entering timestamp');
       }
     }
+
     // Record unresponsive state detections and transitions.
     chrome.metricsPrivate.recordEnumerationValue(
         'Glic.Host.WebClientUnresponsiveState', newState,
