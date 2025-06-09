@@ -142,14 +142,25 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
 
  private:
   struct TabState {
-    explicit TabState(content::WebContents* web_contents) : weak_factory(&tab) {
-      ON_CALL(tab, GetWeakPtr)
-          .WillByDefault(::testing::Return(weak_factory.GetWeakPtr()));
+    explicit TabState(content::WebContents* web_contents) {
       ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents));
+      ON_CALL(tab, RegisterWillDetach)
+          .WillByDefault([this](tabs::TabInterface::WillDetach callback) {
+            return will_detach_callback_list_.Add(std::move(callback));
+          });
     }
 
+    ~TabState() {
+      will_detach_callback_list_.Notify(
+          &tab, tabs::TabInterface::DetachReason::kDelete);
+    }
+
+    using WillDetachCallbackList =
+        base::RepeatingCallbackList<void(tabs::TabInterface*,
+                                         tabs::TabInterface::DetachReason)>;
+    WillDetachCallbackList will_detach_callback_list_;
+
     tabs::MockTabInterface tab;
-    base::WeakPtrFactory<tabs::MockTabInterface> weak_factory;
   };
   std::optional<TabState> tab_state_;
 

@@ -77,10 +77,14 @@ ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_scoped_actions_deprecated_(true),
-      tab_(tab->GetWeakPtr()) {
+      tab_(tab) {
   CHECK(profile_);
   // Idempotent. Enables the action blocklist if it isn't already enabled.
   InitActionBlocklist(profile_.get());
+
+  CHECK(tab_);
+  tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+      &ActorCoordinator::OnTabWillDetach, base::Unretained(this)));
 }
 
 ActorCoordinator::~ActorCoordinator() {
@@ -103,7 +107,7 @@ void ActorCoordinator::CancelOngoingActions(mojom::ActionResultCode reason) {
 }
 
 tabs::TabInterface* ActorCoordinator::GetTabOfCurrentTask() const {
-  return tab_.get();
+  return tab_;
 }
 
 bool ActorCoordinator::HasTask() const {
@@ -169,14 +173,9 @@ void ActorCoordinator::OnMayActOnTabResponse(
     return;
   }
 
-  if (tab_scoped_actions_deprecated_ && !tab_.get()) {
-    journal_->Log(
-        LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
-        "Unable to perform action: Tab closed while checking site policy");
-    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
-                               "Tab closed while checking site policy"));
-    return;
-  }
+  // TODO(https://crbug.com/411462297): tabs should not be required for all
+  // actions.
+  CHECK(tab_);
 
   if (!evaluated_origin.IsSameOriginWith(tab_->GetContents()
                                              ->GetPrimaryMainFrame()
@@ -228,10 +227,6 @@ void ActorCoordinator::PerformOneAction(
   // TODO(https://crbug.com/411462297): tabs should not be required for all
   // actions.
   if (!tab_) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
-                  "The tab is no longer present");
-    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
-                               "The tab is no longer present."));
     return;
   }
 
@@ -280,6 +275,23 @@ void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   PostTaskForActCallback(std::move(actions_->callback), std::move(result));
   actions_.reset();
   action_index_ = 0;
+}
+
+void ActorCoordinator::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    CHECK_EQ(tab, tab_);
+    tab_ = nullptr;
+
+    if (tab_scoped_actions_deprecated_ && actions_) {
+      journal_->Log(LastCommittedURLOfCurrentTask(),
+                    TaskId(actions_->proto.task_id()), "Act Failed",
+                    "The tab is no longer present");
+      CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                                 "The tab is no longer present."));
+    }
+  }
 }
 
 void ActorCoordinator::DidObserveContext(

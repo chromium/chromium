@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
@@ -108,6 +109,9 @@ class ActorCoordinator {
   // Fires the callback and clears `actions`.
   void CompleteActions(mojom::ActionResultPtr result);
 
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
   const GURL& LastCommittedURLOfCurrentTask();
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
@@ -133,7 +137,8 @@ class ActorCoordinator {
   // TODO(crbug.com/411462297): This assumes all tasks are scoped to a tab,
   // which is not true. This should eventually be removed.
   bool tab_scoped_actions_deprecated_ = false;
-  base::WeakPtr<tabs::TabInterface> tab_;
+  raw_ptr<tabs::TabInterface> tab_;
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   // Owns `this`.
   raw_ptr<ActorTask> task_;
