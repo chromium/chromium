@@ -1087,13 +1087,6 @@
       base_feature: "none",
     },
     {
-     // crbug.com/40258893
-     // Update UA styles for lists to match HTML spec. This was added in M135
-     // and can be removed after M138.
-     name: "CorrectStylesForLists",
-     status: "stable",
-    },
-    {
       // Corrects the handling of <form> elements nested within <template> tags
       // in HTML parsing. See https://crbug.com/352896478 for details.
       name: "CorrectTemplateFormParsing",
