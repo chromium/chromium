@@ -46,7 +46,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mIsIncognito;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
-        super(context, attrs, R.layout.location_bar_base);
+        super(context, attrs, R.layout.location_bar);
     }
 
     @Override
