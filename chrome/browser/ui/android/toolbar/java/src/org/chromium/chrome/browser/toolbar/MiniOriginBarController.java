@@ -460,7 +460,7 @@ public class MiniOriginBarController implements Observer {
         float scale = 1.0f - minimizationProgress / LOCATION_BAR_SCALE_DENOMINATOR;
         mLocationBar.getContainerView().setScaleX(scale);
         mLocationBar.getContainerView().setScaleY(scale);
-        mLocationBar.getContainerView().setPivotY(0.5f);
+        mLocationBar.getContainerView().setPivotY(mLocationBar.getUrlBarHeight() / 2);
         mLocationBar.getContainerView().setPivotX(0.5f);
     }
 

@@ -376,6 +376,11 @@ public class LocationBarCoordinator
         // and can be instantiated on phones *or* tablets.
     }
 
+    @Override
+    public float getUrlBarHeight() {
+        return mUrlBar.getHeight();
+    }
+
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
