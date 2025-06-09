@@ -668,6 +668,8 @@ GROUP BY
 CREATE PERFETTO TABLE chrome_scroll_update_info (
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
+  -- Id of the scroll this scroll update belongs to.
+  scroll_id LONG,
   -- Id (`LatencyInfo.ID`) of the previous input in this scroll.
   previous_input_id LONG,
   -- Id (`display_trace_id`) of the aggregated frame which this scroll update
@@ -820,6 +822,7 @@ CREATE PERFETTO TABLE chrome_scroll_update_info (
 ) AS
 SELECT
   input.id,
+  input.scroll_id,
   lag(input.id) OVER (PARTITION BY input.scroll_id ORDER BY input.generation_ts) AS previous_input_id,
   frame.display_trace_id AS frame_display_id,
   -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
@@ -955,6 +958,8 @@ iif(
 CREATE PERFETTO TABLE chrome_scroll_frame_info (
   -- Id (frame's display_trace_id) for the given frame.
   id LONG,
+  -- Id of the scroll this scroll update belongs to.
+  scroll_id LONG,
   -- Id (LatencyInfo.ID) of the last input before this frame.
   last_input_before_this_frame_id LONG,
   -- Vsync interval (in milliseconds).
@@ -1094,6 +1099,7 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info (
 ) AS
 SELECT
   frame_display_id AS id,
+  info.scroll_id,
   previous_input_id AS last_input_before_this_frame_id,
   vsync_interval_ms,
   cast_int!(vsync_interval_ms * 1e6) AS vsync_interval_dur,
