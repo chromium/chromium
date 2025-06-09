@@ -12,7 +12,35 @@ load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
 
+def __clang_modulemap(ctx, cmd):
+    """Fixes inputs for clang compile actions with modulemap.
+
+    But this is simplified implementation to parse current modulemap.
+    https://clang.llvm.org/docs/Modules.html#module-map-file
+    """
+
+    inputs = []
+    for arg in cmd.args:
+        module_config = arg.removeprefix("-fmodule-map-file=")
+        if arg == module_config:
+            continue
+        module_config = ctx.fs.canonpath(module_config)
+        module_dir = path.dir(module_config)
+        for line in str(ctx.fs.read(module_config)).split("\n"):
+            # Remove one line comment.
+            line = line.split("//")[0]
+
+            # Extract a quoted path if any.
+            quoted_paths = line.split("\"")
+            if len(quoted_paths) > 2:
+                include_path = quoted_paths[1]
+                include_path = path.join(module_dir, include_path)
+                inputs.append(include_path)
+
+    ctx.actions.fix(tool_inputs = cmd.tool_inputs + inputs)
+
 def __clang_compile_coverage(ctx, cmd):
+    __clang_modulemap(ctx, cmd)
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
     ctx.actions.fix(args = clang_command)
 
@@ -74,6 +102,7 @@ def __clang_link(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
+    "clang_modulemap": __clang_modulemap,
     "clang_compile_coverage": __clang_compile_coverage,
     "clang_link": __clang_link,
 }
@@ -200,6 +229,7 @@ def __rules(ctx):
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
             "exclude_input_patterns": ["*.stamp"],
+            "handler": "clang_modulemap",
             "remote": True,
             "input_root_absolute_path": input_root_absolute_path,
             "canonicalize_dir": canonicalize_dir,
