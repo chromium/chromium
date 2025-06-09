@@ -16,13 +16,11 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupsExistCondition;
 import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
@@ -34,7 +32,8 @@ import java.util.List;
  *
  * @param <HostStationT> the type of station this is scoped to.
  */
-public class TabGroupListBottomSheetFacility<HostStationT extends Station<ChromeTabbedActivity>>
+public class TabGroupListBottomSheetFacility<
+                HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends BottomSheetFacility<HostStationT> {
     private final List<Token> mTabGroupIds;
     public final ViewElement<View> titleElement;
@@ -74,12 +73,8 @@ public class TabGroupListBottomSheetFacility<HostStationT extends Station<Chrome
 
     @Override
     public void declareExtraElements() {
-        ChromeTabbedActivity activity = mHostStation.getActivity();
-        boolean isIncognito = activity.getCurrentTabModel().isIncognitoBranded();
-        Supplier<TabModelSelector> tabModelSelectorSupplier =
-                activity.getTabModelSelectorSupplier();
         declareEnterCondition(
-                new TabGroupsExistCondition(isIncognito, mTabGroupIds, tabModelSelectorSupplier));
+                new TabGroupsExistCondition(mTabGroupIds, mHostStation.tabGroupModelFilterElement));
     }
 
     /** Clicks the "New tab group" row to initialize the UI flow for creating a new tab group. */

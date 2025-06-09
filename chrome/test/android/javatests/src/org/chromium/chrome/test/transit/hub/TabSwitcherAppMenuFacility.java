@@ -62,13 +62,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
             int tabCount =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () ->
-                                    mHostStation
-                                            .getActivity()
-                                            .getTabModelSelector()
-                                            .getModel(/* incognito= */ false)
-                                            .getCount());
+                    ThreadUtils.runOnUiThreadBlocking(() -> mHostStation.getTabModel().getCount());
             if (tabCount > 0) {
                 mCloseAllTabs = declareStubMenuItem(items, CLOSE_ALL_TABS_ID);
                 mSelectTabs =

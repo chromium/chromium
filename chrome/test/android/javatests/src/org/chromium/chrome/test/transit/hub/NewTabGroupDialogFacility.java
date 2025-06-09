@@ -28,7 +28,6 @@ import org.hamcrest.Matcher;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -53,7 +53,8 @@ import java.util.List;
  *
  * @param <HostStationT> the type of station this is scoped to.
  */
-public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbedActivity>>
+public class NewTabGroupDialogFacility<
+                HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends Facility<HostStationT> {
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
     private final SoftKeyboardFacility mSoftKeyboard;
@@ -137,20 +138,14 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
     }
 
     private void initTabGroupCreatedCondition() {
-        ChromeTabbedActivity activity = mHostStation.getActivity();
-        boolean isIncognito = activity.getCurrentTabModel().isIncognitoBranded();
-        TabGroupModelFilter filter =
-                activity.getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
         Element<Token> tabGroupIdElement =
                 declareEnterConditionAsElement(
-                        new TabGroupCreatedCondition(
-                                isIncognito, activity.getTabModelSelectorSupplier()));
+                        new TabGroupCreatedCondition(mHostStation.tabGroupModelFilterElement));
 
         declareElementFactory(
                 tabGroupIdElement,
                 delayedElements -> {
+                    TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.get();
                     List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupIdElement.get());
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
@@ -204,7 +199,7 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
+        TabModel currentModel = mHostStation.getTabModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,
@@ -221,10 +216,9 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
         return mHostStation.swapFacilitySync(
                 this,
-                new TabGroupDialogFacility<>(mTabIdsToGroup, currentModel.isIncognitoBranded()),
+                new TabGroupDialogFacility<>(mTabIdsToGroup),
                 doneButtonElement.getClickTrigger());
     }
 
@@ -255,7 +249,7 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
+        TabModel currentModel = mHostStation.getTabModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,

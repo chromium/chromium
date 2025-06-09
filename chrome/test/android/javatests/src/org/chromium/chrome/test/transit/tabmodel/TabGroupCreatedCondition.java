@@ -11,34 +11,30 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Set;
 
 /** Checks that one new tab group was created. */
 public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
-    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final boolean mIncognito;
+    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private Set<Token> mOriginalTabGroupIds;
 
-    public TabGroupCreatedCondition(
-            boolean incognito, Supplier<TabModelSelector> tabModelSelectorSupplier) {
+    public TabGroupCreatedCondition(Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         super(/* isRunOnUiThread= */ true);
-        mTabModelSelectorSupplier = dependOnSupplier(tabModelSelectorSupplier, "TabModelSelector");
-        mIncognito = incognito;
+        mTabGroupModelFilterSupplier =
+                dependOnSupplier(tabGroupModelFilterSupplier, "TabGroupModelFilter");
     }
 
     @Override
     public void onStartMonitoring() {
         super.onStartMonitoring();
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
+        TabGroupModelFilter tabGroupModelFilter = mTabGroupModelFilterSupplier.get();
         mOriginalTabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
     }
 
     @Override
     protected ConditionStatusWithResult<Token> resolveWithSuppliers() throws Exception {
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
-        Set<Token> newTabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        Set<Token> newTabGroupIds = mTabGroupModelFilterSupplier.get().getAllTabGroupIds();
         newTabGroupIds.removeAll(mOriginalTabGroupIds);
 
         int changeInTabGroupCount = newTabGroupIds.size();
@@ -55,13 +51,6 @@ public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
 
     @Override
     public String buildDescription() {
-        return "Tab group model filter to be monitored for tab group creation: " + mIncognito;
-    }
-
-    private TabGroupModelFilter getTabGroupModelFilter() {
-        return mTabModelSelectorSupplier
-                .get()
-                .getTabGroupModelFilterProvider()
-                .getTabGroupModelFilter(mIncognito);
+        return String.format("Tab group created");
     }
 }

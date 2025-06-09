@@ -10,7 +10,6 @@ import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -316,7 +315,7 @@ public class Journeys {
      * @param station the station to begin the flow from.
      * @param trigger The trigger used to begin the flow.
      */
-    public static <HostStationT extends Station<ChromeTabbedActivity>>
+    public static <HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
             NewTabGroupDialogFacility<HostStationT> beginNewTabGroupUiFlow(
                     HostStationT station, Trigger trigger) {
         assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());

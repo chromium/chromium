@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -41,7 +41,8 @@ import java.util.List;
  * @param <HostStationT> the station where the Tab Group Dialog is opened from. Should be
  *     TabSwitcherStation or PageStation.
  */
-public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedActivity>>
+public class TabGroupDialogFacility<
+                HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends Facility<HostStationT> {
     public static final ViewSpec<View> TABS_LIST =
             viewSpec(
@@ -50,7 +51,6 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
 
     private final List<Integer> mTabIdsInGroup;
     private final String mTitle;
-    private final boolean mIsIncognito;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
     public ViewElement<View> toolbarElement;
     public ViewElement<View> shareButtonElement;
@@ -65,24 +65,21 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
      * Constructor. The expected title is "n tabs", where n is the number of tabs in the group.
      * Expects no particular color.
      */
-    public TabGroupDialogFacility(List<Integer> tabIdsInGroup, boolean isIncognito) {
+    public TabGroupDialogFacility(List<Integer> tabIdsInGroup) {
         this(
                 tabIdsInGroup,
                 TabGroupUtil.getNumberOfTabsString(tabIdsInGroup.size()),
-                /* selectedColor= */ null,
-                isIncognito);
+                /* selectedColor= */ null);
     }
 
     /** Constructor. Expects a specific title and selected color. */
     public TabGroupDialogFacility(
             List<Integer> tabIdsInGroup,
             String title,
-            @Nullable @TabGroupColorId Integer selectedColor,
-            boolean isIncognito) {
+            @Nullable @TabGroupColorId Integer selectedColor) {
         mTabIdsInGroup = tabIdsInGroup;
         mTitle = title;
         mSelectedColor = selectedColor;
-        mIsIncognito = isIncognito;
 
         toolbarElement = declareView(withId(R.id.tab_group_toolbar));
         tabsListElement = declareView(TABS_LIST);
@@ -122,14 +119,9 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
     }
 
     private boolean isAllowedToShare() {
-        if (mIsIncognito) return false;
+        if (mHostStation.isIncognito()) return false;
 
-        Profile profile =
-                mHostStation
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getModel(mIsIncognito)
-                        .getProfile();
+        Profile profile = mHostStation.getTabModel().getProfile();
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         CollaborationServiceFactory.getForProfile(profile)
@@ -141,14 +133,13 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
     public TabGroupDialogFacility<HostStationT> inputName(String newTabGroupName) {
         return mHostStation.swapFacilitySync(
                 this,
-                new TabGroupDialogFacility<>(
-                        mTabIdsInGroup, newTabGroupName, mSelectedColor, mIsIncognito),
+                new TabGroupDialogFacility<>(mTabIdsInGroup, newTabGroupName, mSelectedColor),
                 titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
     }
 
     /** Create a new tab and transition to the associated RegularNewTabPageStation. */
     public RegularNewTabPageStation openNewRegularTab() {
-        assert !mIsIncognito;
+        assert !mHostStation.isIncognito();
 
         RegularNewTabPageStation page =
                 RegularNewTabPageStation.newBuilder()
@@ -160,7 +151,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
 
     /** Create a new incognito tab and transition to the associated IncognitoNewTabPageStation. */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
-        assert mIsIncognito;
+        assert mHostStation.isIncognito();
 
         IncognitoNewTabPageStation page =
                 IncognitoNewTabPageStation.newBuilder()
