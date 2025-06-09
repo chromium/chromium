@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -219,6 +221,8 @@ public class PageInfoDiscoverabilityTest {
                 () -> {
                     mModel = new PropertyModel(StatusProperties.ALL_KEYS);
                     mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
+                    mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+                    TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     mMediator =
                             new StatusMediator(
                                     mModel,
@@ -228,11 +232,10 @@ public class PageInfoDiscoverabilityTest {
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mTemplateUrlServiceSupplier,
-                                    () -> mProfile,
+                                    new ObservableSupplierImpl(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     null);
-                    mTemplateUrlServiceSupplier.set(mTemplateUrlService);
                 });
     }
 
