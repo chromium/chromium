@@ -54,6 +54,10 @@ GURL InfoBarDelegate::GetLinkURL() const {
   return GURL();
 }
 
+std::optional<std::u16string> InfoBarDelegate::GetLinkAccessibleText() const {
+  return std::nullopt;
+}
+
 bool InfoBarDelegate::EqualsDelegate(InfoBarDelegate* delegate) const {
   return false;
 }

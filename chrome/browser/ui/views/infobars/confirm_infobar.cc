@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -66,7 +67,8 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
                                 kCancelButtonElementId);
   }
 
-  link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
+  link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText(),
+                                  delegate_ptr->GetLinkAccessibleText()));
 }
 
 ConfirmInfoBar::~ConfirmInfoBar() = default;

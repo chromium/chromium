@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INFOBARS_CORE_INFOBAR_DELEGATE_H_
 #define COMPONENTS_INFOBARS_CORE_INFOBAR_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -250,6 +251,10 @@ class InfoBarDelegate {
 
   // Returns the URL the link should navigate to.
   virtual GURL GetLinkURL() const;
+
+  // Returns the accessible text of the link to give more context to the screen
+  // reader. Otherwise returns std::nullopt.
+  virtual std::optional<std::u16string> GetLinkAccessibleText() const;
 
   // Returns true if the supplied |delegate| is equal to this one. Equality is
   // left to the implementation to define. This function is called by the

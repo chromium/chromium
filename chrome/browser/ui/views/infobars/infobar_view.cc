@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -259,12 +261,18 @@ std::unique_ptr<views::Label> InfoBarView::CreateLabel(
 }
 
 std::unique_ptr<views::Link> InfoBarView::CreateLink(
-    const std::u16string& text) {
+    const std::u16string& text,
+    const std::optional<std::u16string>& accessible_text) {
   auto link = std::make_unique<views::Link>(
       text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(link.get());
   link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
+
+  if (accessible_text.has_value()) {
+    link->SetAccessibleName(accessible_text.value());
+  }
+
   return link;
 }
 
