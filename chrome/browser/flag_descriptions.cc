@@ -6251,6 +6251,12 @@ const char kUseAngleGL[] = "OpenGL";
 
 #if BUILDFLAG(IS_ANDROID)
 
+const char kAndroidDocumentPictureInPictureName[] =
+    "Enable Document Picture-In-Picture in desktop windowing on Android.";
+const char kAndroidDocumentPictureInPictureDescription[] =
+    "Enables Document Picture-In-Picture API allowing websites to open "
+    "new floating always-on-top window with arbitrary HTML content.";
+
 const char kAndroidMinimalUiLargeScreenName[] =
     "Enable new minimal ui in desktop windowing";
 const char kAndroidMinimalUiLargeScreenDescription[] =

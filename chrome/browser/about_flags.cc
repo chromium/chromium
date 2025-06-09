@@ -12344,6 +12344,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdTopicsContentParity)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-document-picture-in-picture",
+     flag_descriptions::kAndroidDocumentPictureInPictureName,
+     flag_descriptions::kAndroidDocumentPictureInPictureDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kDocumentPictureInPictureAPI)},
+
     {"enable-android-mininal-ui-large-screen",
      flag_descriptions::kAndroidMinimalUiLargeScreenName,
      flag_descriptions::kAndroidMinimalUiLargeScreenDescription, kOsAndroid,

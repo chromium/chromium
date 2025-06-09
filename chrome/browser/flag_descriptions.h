@@ -3663,6 +3663,9 @@ extern const char kUseAngleGL[];
 
 #if BUILDFLAG(IS_ANDROID)
 
+extern const char kAndroidDocumentPictureInPictureName[];
+extern const char kAndroidDocumentPictureInPictureDescription[];
+
 extern const char kAndroidMinimalUiLargeScreenName[];
 extern const char kAndroidMinimalUiLargeScreenDescription[];
 

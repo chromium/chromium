@@ -2716,6 +2716,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-android-document-picture-in-picture",
+    "owners": [
+      "kkaplon@google.com",
+      "cros-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-android-gamepad-vibration",
     "owners": [ "deviceapi-team@google.com" ],
     "expiry_milestone": 130

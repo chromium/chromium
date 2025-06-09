@@ -9489,6 +9489,7 @@ from previous Chrome versions.
   <int value="-1646338362" label="LensOverlayTranslateLanguages:enabled"/>
   <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
+  <int value="-1645619731" label="AndroidDocumentPictureInPicture:disabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
@@ -16825,6 +16826,7 @@ from previous Chrome versions.
   <int value="1100244809" label="MacSystemMediaPermissionsInfoUI:disabled"/>
   <int value="1101062411" label="Rar2Fs:disabled"/>
   <int value="1101421005" label="DownloadLater:disabled"/>
+  <int value="1101579966" label="AndroidDocumentPictureInPicture:enabled"/>
   <int value="1102035446"
       label="AutofillUpstreamAuthenticatePreflightCall:enabled"/>
   <int value="1102164603" label="AllowTabClosingUponMinimization:enabled"/>
