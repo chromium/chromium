@@ -13,7 +13,6 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
@@ -69,11 +68,12 @@ URLRow GeneratePopularURLRow() {
 
 using StringPieces = std::vector<std::string_view>;
 
-StringPieces AllPrefixes(const std::string& str) {
+StringPieces AllPrefixes(std::string_view str) {
   std::vector<std::string_view> res;
   res.reserve(str.size());
-  for (auto char_it = str.begin(); char_it != str.end(); ++char_it)
-    res.push_back(base::MakeStringPiece(str.begin(), char_it));
+  for (size_t i = 0; i < str.size(); ++i) {
+    res.push_back(str.substr(0, i));
+  }
   return res;
 }
 
