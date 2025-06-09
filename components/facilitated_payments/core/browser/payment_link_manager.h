@@ -66,19 +66,18 @@ class PaymentLinkManager {
  private:
   friend class PaymentLinkManagerTestApi;
 
+  // Performs various specific pre-checks for the eWallet flow.
+  bool CanTriggerEwalletPaymentFlow(const GURL& page_url);
+
+  // Determines and populates the list of supported eWallets for a payment link.
+  void RetrieveSupportedEwallets(const GURL& payment_link_url);
+
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The
   // PaymentLinkManager owns this API client. This method can return
   // `nullptr` if the API client fails to initialize, e.g., if the
   // `RenderFrameHost` has been destroyed.
   FacilitatedPaymentsApiClient* GetApiClient();
-
-  // Called after checking whether the facilitated payment API is available. If
-  // the API is not available, the user should not be prompted to make a
-  // payment.  The call to check the availability of API was made at
-  // `start_time`.
-  void OnApiAvailabilityReceived(base::TimeTicks start_time,
-                                 bool is_api_available);
 
   // Called when user selects the eWallet account to pay with.
   void OnEwalletAccountSelected(int64_t selected_instrument_id);
@@ -145,14 +144,13 @@ class PaymentLinkManager {
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
   //
-  // This vector is populated in TriggerEwalletPushPayment() by filtering the
+  // This vector is populated in RetrieveSupportedEwallets() by filtering the
   // available eWallets based on their support for the given payment link.
   //
   // It will be empty:
-  //  * Before TriggerPaymentLinkPushPayment() is called.
+  //  * Before RetrieveSupportedEwallets() is called.
   //  * If TriggerPaymentLinkPushPayment() is called with an invalid or
-  //  unsupported
-  //    payment link.
+  //  unsupported payment link.
   //  * After a call to Reset().
   std::vector<autofill::Ewallet> supported_ewallets_;
 

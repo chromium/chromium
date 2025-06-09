@@ -58,45 +58,15 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   ukm_source_id_ = ukm_source_id;
   LogPaymentLinkDetected(ukm_source_id_);
 
-  if (optimization_guide_decider_->CanApplyOptimization(
-          page_url, optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST,
-          /*optimization_metadata=*/nullptr) !=
-      optimization_guide::OptimizationGuideDecision::kTrue) {
-    // The merchant is not part of the allowlist, ignore the eWallet push
-    // payment.
-    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNotInAllowlist);
-    return;
-  }
-
   scheme_ = PaymentLinkValidator().GetScheme(payment_link_url);
   if (scheme_ == PaymentLinkValidator::Scheme::kInvalid) {
     LogEwalletFlowExitedReason(EwalletFlowExitedReason::kLinkIsInvalid);
     return;
   }
 
-  // Ewallet payment flow can't be completed in the landscape mode as the
-  // Payments server doesn't support it yet.
-  if (client_->IsInLandscapeMode()) {
-    LogEwalletFlowExitedReason(
-        EwalletFlowExitedReason::kLandscapeScreenOrientation, scheme_);
-    return;
-  }
-
   if (client_->IsFoldable()) {
     LogEwalletFlowExitedReason(EwalletFlowExitedReason::kFoldableDevice,
                                scheme_);
-    return;
-  }
-
-  autofill::PaymentsDataManager* payments_data_manager =
-      client_->GetPaymentsDataManager();
-  if (!payments_data_manager) {
-    // Payments data manager can be null only in tests.
-    return;
-  }
-
-  if (!payments_data_manager->IsFacilitatedPaymentsEwalletUserPrefEnabled()) {
-    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kUserOptedOut, scheme_);
     return;
   }
 
@@ -107,8 +77,79 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
     }
   }
 
+  initiate_payment_request_details_ =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  initiate_payment_request_details_->merchant_payment_page_hostname_ =
+      page_url.host();
+  initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
+
+  client_->SetUiEventListener(base::BindRepeating(
+      &PaymentLinkManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+
+  if (CanTriggerEwalletPaymentFlow(page_url)) {
+    RetrieveSupportedEwallets(payment_link_url);
+  }
+
+  ShowEwalletPaymentPrompt(
+      supported_ewallets_,
+      base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool PaymentLinkManager::CanTriggerEwalletPaymentFlow(const GURL& page_url) {
+  if (optimization_guide_decider_->CanApplyOptimization(
+          page_url, optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    // The merchant is not part of the allowlist, ignore the eWallet push
+    // payment.
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNotInAllowlist);
+    return false;
+  }
+
+  // Ewallet payment flow can't be completed in the landscape mode as the
+  // Payments server doesn't support it yet.
+  if (client_->IsInLandscapeMode()) {
+    LogEwalletFlowExitedReason(
+        EwalletFlowExitedReason::kLandscapeScreenOrientation, scheme_);
+    return false;
+  }
+
+  base::TimeTicks api_availability_check_start_time = base::TimeTicks::Now();
+  bool is_api_available =
+      GetApiClient() != nullptr && GetApiClient()->IsAvailableSync();
+  LogApiAvailabilityCheckResultAndLatency(
+      kPaymentsType, is_api_available,
+      (base::TimeTicks::Now() - api_availability_check_start_time), scheme_);
+
+  if (!is_api_available) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kApiClientNotAvailable,
+                               scheme_);
+    return false;
+  }
+
+  autofill::PaymentsDataManager* payments_data_manager =
+      client_->GetPaymentsDataManager();
+  if (!payments_data_manager) {
+    // Payments data manager can be null only in tests.
+    return false;
+  }
+
+  initiate_payment_request_details_->billing_customer_number_ =
+      autofill::payments::GetBillingCustomerId(*payments_data_manager);
+
+  if (!payments_data_manager->IsFacilitatedPaymentsEwalletUserPrefEnabled()) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kUserOptedOut, scheme_);
+    return false;
+  }
+
+  return true;
+}
+
+void PaymentLinkManager::RetrieveSupportedEwallets(
+    const GURL& payment_link_url) {
   base::span<const autofill::Ewallet> ewallet_accounts =
-      payments_data_manager->GetEwalletAccounts();
+      client_->GetPaymentsDataManager()->GetEwalletAccounts();
   supported_ewallets_.reserve(ewallet_accounts.size());
   std::ranges::copy_if(
       ewallet_accounts, std::back_inserter(supported_ewallets_),
@@ -121,23 +162,6 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
                                scheme_);
     return;
   }
-
-  if (!GetApiClient()) {
-    return;
-  }
-
-  initiate_payment_request_details_ =
-      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
-  initiate_payment_request_details_->merchant_payment_page_hostname_ =
-      page_url.host();
-  initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
-
-  client_->SetUiEventListener(base::BindRepeating(
-      &PaymentLinkManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
-
-  GetApiClient()->IsAvailable(
-      base::BindOnce(&PaymentLinkManager::OnApiAvailabilityReceived,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void PaymentLinkManager::Reset() {
@@ -156,27 +180,6 @@ FacilitatedPaymentsApiClient* PaymentLinkManager::GetApiClient() {
   }
 
   return api_client_.get();
-}
-
-void PaymentLinkManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
-                                                   bool is_api_available) {
-  LogApiAvailabilityCheckResultAndLatency(kPaymentsType, is_api_available,
-                                          (base::TimeTicks::Now() - start_time),
-                                          scheme_);
-  if (!is_api_available) {
-    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kApiClientNotAvailable,
-                               scheme_);
-    return;
-  }
-
-  initiate_payment_request_details_->billing_customer_number_ =
-      autofill::payments::GetBillingCustomerId(
-          *client_->GetPaymentsDataManager());
-
-  ShowEwalletPaymentPrompt(
-      supported_ewallets_,
-      base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentLinkManager::OnEwalletAccountSelected(
@@ -368,6 +371,10 @@ void PaymentLinkManager::DismissPrompt() {
 void PaymentLinkManager::ShowEwalletPaymentPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
+  if (ewallet_suggestions.size() == 0) {
+    return;
+  }
+
   ui_state_ = UiState::kFopSelector;
   client_->ShowEwalletPaymentPrompt(std::move(ewallet_suggestions),
                                     std::move(on_ewallet_account_selected));

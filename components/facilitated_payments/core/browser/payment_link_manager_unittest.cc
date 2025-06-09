@@ -88,6 +88,8 @@ class PaymentLinkManagerTest : public testing::Test {
                 testing::A<optimization_guide::OptimizationMetadata*>()))
         .WillByDefault(testing::Return(
             optimization_guide::OptimizationGuideDecision::kTrue));
+    ON_CALL(GetApiClient(), IsAvailableSync())
+        .WillByDefault(testing::Return(true));
     test_api(*payment_link_manager_)
         .set_scheme(PaymentLinkValidator::Scheme::kShopeePay);
 
@@ -148,8 +150,8 @@ TEST_F(PaymentLinkManagerTest, LogPaymentLinkDetected) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PaymentLinkDetected"), true);
 }
 
-// The manager checks for API availability after payment link validation.
-TEST_F(PaymentLinkManagerTest, ApiClientCheckedForAvailability) {
+// Ewallet payment prompt is shown.
+TEST_F(PaymentLinkManagerTest, EwalletPaymentPromptShown) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -162,17 +164,17 @@ TEST_F(PaymentLinkManagerTest, ApiClientCheckedForAvailability) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
-// API availability is not invoked if payment link is not supported by available
-// eWallet accounts.
+// Ewallet payment prompt is not shown if payment link is not supported by
+// available eWallet accounts.
 TEST_F(PaymentLinkManagerTest,
-       Unsupported_payment_link_ApiClientNotCheckedForAvailability) {
+       UnsupportedPaymentLink_EwalletPaymentPromptNotShown) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -184,16 +186,16 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       unsupported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
-// API availability is not invoked if payment link is invalid.
+// Ewallet payment prompt is not shown if payment link is invalid.
 TEST_F(PaymentLinkManagerTest,
-       InvalidPaymentLink_ApiClientNotCheckedForAvailability) {
+       InvalidPaymentLink_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -205,7 +207,7 @@ TEST_F(PaymentLinkManagerTest,
                         /*is_fido_enrolled=*/true));
   GURL invalidPaymentLink("invalid://payment");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       invalidPaymentLink, GURL("https://www.example.com"),
@@ -221,15 +223,14 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/0);
 }
 
-// API availability is not invoked if there is no linked account.
-TEST_F(PaymentLinkManagerTest,
-       NoEwalletAccount_ApiClientNotCheckedForAvailability) {
+// Ewallet payment prompt is not shown if there is no linked account.
+TEST_F(PaymentLinkManagerTest, NoEwalletAccount_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -245,9 +246,8 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// API availability is not invoked if in landscape mode.
-TEST_F(PaymentLinkManagerTest,
-       InLandscapeMode_ApiClientNotCheckedForAvailability) {
+// Ewallet payment prompt is not shown if in landscape mode.
+TEST_F(PaymentLinkManagerTest, InLandscapeMode_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -264,7 +264,7 @@ TEST_F(PaymentLinkManagerTest,
   EXPECT_CALL(client_, IsInLandscapeMode)
       .Times(1)
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -280,9 +280,10 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// API availability is not invoked if payments data manager is not available.
+// Ewallet payment prompt is not shown if payments data manager is not
+// available.
 TEST_F(PaymentLinkManagerTest,
-       PaymentsDataManagerUnavailable_ApiClientNotCheckedForAvailability) {
+       PaymentsDataManagerUnavailable_EwalletPaymentPromptNotShown) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -298,17 +299,16 @@ TEST_F(PaymentLinkManagerTest,
   EXPECT_CALL(client_, GetPaymentsDataManager)
       .Times(1)
       .WillOnce(testing::Return(nullptr));
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
-// API availability is not invoked if the user has opted out of the eWallet
+// Ewallet payment prompt is not shown if the user has opted out of the eWallet
 // flow.
-TEST_F(PaymentLinkManagerTest,
-       UserOptedOut_ApiClientNotCheckedForAvailability) {
+TEST_F(PaymentLinkManagerTest, UserOptedOut_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -324,7 +324,7 @@ TEST_F(PaymentLinkManagerTest,
   // Turn off eWallet pref.
   autofill::prefs::SetFacilitatedPaymentsEwallet(pref_service_.get(), false);
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -340,8 +340,8 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// API availability is not invoked if in foldable devices.
-TEST_F(PaymentLinkManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
+// Ewallet payment prompt is not shown if in foldable devices.
+TEST_F(PaymentLinkManagerTest, IsFoldable_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -356,7 +356,7 @@ TEST_F(PaymentLinkManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
   EXPECT_CALL(client_, IsFoldable).Times(1).WillOnce(testing::Return(true));
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -372,42 +372,66 @@ TEST_F(PaymentLinkManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
       /*expected_bucket_count=*/1);
 }
 
-// If the facilitated payment API is available, then the manager shows the
-// eWallet payment prompt.
 TEST_F(PaymentLinkManagerTest,
-       ShowsEwalletPaymentPromptWhenApiClientAvailable) {
+       ApiClientAvailable_ApiClientAvailabilityCheckLatencyLogged) {
   base::HistogramTester histogram_tester;
-  autofill::Ewallet ewallet(
-      /*instrument_id=*/100, u"nickname",
-      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
-      u"account_display_name",
-      /*supported_payment_link_uris=*/
-      {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
-       u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
-      /*is_fido_enrolled=*/true);
-  payments_data_manager_.AddEwalletForTest(ewallet);
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailableSync)
+      .Times(1)
+      .WillOnce(testing::Invoke([&]() {
+        FastForwardBy(base::Seconds(2));
+        return true;
+      }));
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
-  EXPECT_CALL(client_,
-              ShowEwalletPaymentPrompt(
-                  testing::UnorderedElementsAreArray({ewallet}), testing::_));
-
-  test_api(*payment_link_manager_)
-      .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
-                                 /*is_api_available=*/true);
-
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.IsApiAvailable.Success.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentLinkManagerTest,
+       ApiClientNotAvailable_ApiClientAvailabilityCheckLatencyLogged) {
+  base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailableSync)
+      .Times(1)
+      .WillOnce(testing::Invoke([&]() {
+        FastForwardBy(base::Seconds(2));
+        return false;
+      }));
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.IsApiAvailable.Success.Latency.ShopeePay",
+      "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }
@@ -415,21 +439,28 @@ TEST_F(PaymentLinkManagerTest,
 // If the facilitated payment API is not available, then the manager doesn't
 // show the eWallet payment prompt.
 TEST_F(PaymentLinkManagerTest,
-       NotShowEwalletPaymentPromptWhenApiClientNotAvailable) {
+       ApiClientNotAvailable_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(GetApiClient(), IsAvailableSync)
+      .Times(1)
+      .WillOnce(testing::Return(false));
   EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
-  test_api(*payment_link_manager_)
-      .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
-                                 false);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency.ShopeePay",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -820,9 +851,9 @@ TEST_F(PaymentLinkManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that API availability is invoked for websites in the allowlist.
+// Test that eWalet payment prompt is shown for websites in the allowlist.
 TEST_F(PaymentLinkManagerTest,
-       TriggerPaymentLinkPushPayment_UrlInAllowlist_ApiAvailabilityInvoked) {
+       TriggerPaymentLinkPushPayment_UrlInAllowlist_EwalletPaymentPromptShown) {
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -844,17 +875,17 @@ TEST_F(PaymentLinkManagerTest,
               testing::Eq(nullptr))))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
-  EXPECT_CALL(GetApiClient(), IsAvailable);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
-// Test that API availability is not invoked for webpages not in the
+// Test that Ewallet payment prompt is not shown for webpages not in the
 // allowlist.
 TEST_F(
     PaymentLinkManagerTest,
-    TriggerPaymentLinkPushPayment_UrlNotInAllowlist_ApiAvailabilityNotInvoked) {
+    TriggerPaymentLinkPushPayment_UrlNotInAllowlist_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
@@ -878,7 +909,7 @@ TEST_F(
               testing::Eq(nullptr))))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kFalse));
-  EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
@@ -893,7 +924,7 @@ TEST_F(
       /*expected_bucket_count=*/0);
 }
 
-// Test that API availability is not invoked if the allowlist is not
+// Test that Ewallet payment prompt is not shown if the allowlist is not
 // yet available
 TEST_F(
     PaymentLinkManagerTest,
@@ -920,7 +951,7 @@ TEST_F(
               testing::Eq(nullptr))))
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kUnknown));
-  EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
@@ -1227,7 +1258,7 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
@@ -1256,7 +1287,7 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
@@ -1293,7 +1324,7 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
@@ -1418,9 +1449,11 @@ TEST_F(PaymentLinkManagerTest,
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kErrorScreen);
 }
 
-// Test that API availability is invoked if strike limitation is not reached.
-TEST_F(PaymentLinkManagerTest,
-       TriggerPaymentLinkPushPayment_NotEnoughStrike_ApiAvailabilityInvoked) {
+// Test that eWallet payment prompt is shown if strike limitation is not
+// reached.
+TEST_F(
+    PaymentLinkManagerTest,
+    TriggerPaymentLinkPushPayment_NotEnoughStrike_EwalletPaymentPromptShown) {
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -1436,15 +1469,16 @@ TEST_F(PaymentLinkManagerTest,
       PaymentLinkSuggestionStrikeDatabase(test_strike_database_.get());
   strike_database.AddStrikes(1);
 
-  EXPECT_CALL(GetApiClient(), IsAvailable);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
-// Test that API availability is not invoked if strike limitation is reached.
+// Test that Ewallet payment prompt is not shown if strike limitation is
+// reached.
 TEST_F(PaymentLinkManagerTest,
-       TriggerPaymentLinkPushPayment_MaxStrike_ApiAvailabilityNotInvoked) {
+       TriggerPaymentLinkPushPayment_MaxStrike_EwalletPaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
@@ -1462,7 +1496,7 @@ TEST_F(PaymentLinkManagerTest,
       PaymentLinkSuggestionStrikeDatabase(test_strike_database_.get());
   strike_database.AddStrikes(5);
 
-  EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
+  EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());

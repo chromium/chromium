@@ -49,12 +49,6 @@ class PaymentLinkManagerTestApi {
     return payment_link_manager_->GetApiClient();
   }
 
-  void OnApiAvailabilityReceived(base::TimeTicks start_time,
-                                 bool is_api_available) {
-    payment_link_manager_->OnApiAvailabilityReceived(start_time,
-                                                     is_api_available);
-  }
-
   void OnEwalletAccountSelected(int64_t selected_instrument_id) {
     payment_link_manager_->OnEwalletAccountSelected(selected_instrument_id);
   }
