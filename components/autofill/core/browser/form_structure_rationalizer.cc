@@ -772,12 +772,7 @@ void FormStructureRationalizer::RationalizeFormatStrings(
             field.GetAutofillAiServerTypePredictions()) {
           return nullptr;
         }
-        // TODO(crbug.com/396325496): Remove the separator comparisons when
-        // AutofillDisallowSlashDotLabels is cleaned up.
-        if (successor.label() != field.label() &&
-            successor.label() != match.separator(0) &&
-            successor.label() != match.separator(1) &&
-            !successor.label().empty()) {
+        if (successor.label() != field.label() && !successor.label().empty()) {
           return nullptr;
         }
         return &successor;

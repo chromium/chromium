@@ -459,14 +459,11 @@ std::map<FieldGlobalId, DatesAndFormats> ExtractDatesInFields(
 
   // Cheap check if the three fields' values might together contain a year,
   // month and day.
-  // TODO(crbug.com/396325496): Remove the label / separator comparisons when
-  // AutofillDisallowSlashDotLabels is cleaned up.
   auto may_be_split_date =
       [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
         return std::ranges::all_of(group, may_be_part_of_date) &&
                (group[0]->label() == group[1]->label() ||
-                std::ranges::all_of(group[1]->label(),
-                                    data_util::IsDateSeparatorChar)) &&
+                group[1]->label().empty()) &&
                group[1]->label() == group[2]->label();
       };
 

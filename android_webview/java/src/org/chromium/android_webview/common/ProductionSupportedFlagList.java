@@ -266,9 +266,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
                 "Reduces city field false positive classifications"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_DISALLOW_SLASH_DOT_LABELS,
-                "Disallows labels that only contain slashes, dots and other special characters."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_OPTIMIZE_FORM_EXTRACTION,
                 "Makes Autofill spend less time on extracting forms."),
         Flag.baseFeature(

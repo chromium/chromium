@@ -28,8 +28,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillEnableLoyaltyCardsFilling;
     case RegexFeature::kAutofillImproveCityFieldClassification:
       return &features::kAutofillImproveCityFieldClassification;
-    case RegexFeature::kAutofillDisallowSlashDotLabels:
-      return &features::kAutofillDisallowSlashDotLabels;
   }
   NOTREACHED();
 }

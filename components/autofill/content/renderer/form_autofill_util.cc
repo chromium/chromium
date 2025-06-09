@@ -2227,12 +2227,8 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
     return !base::Contains(kInvalidChars, c) &&
            !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
   };
-  auto is_slash_or_dot = [](char16_t c) { return c == u'/' || c == u'.'; };
   // LINT.ThenChange(/components/autofill/ios/form_util/resources/fill_element_inference_util.ts:InvalidLabelCriteria)
-  if (std::ranges::any_of(label, is_valid_label_character) ||
-      (std::ranges::any_of(label, is_slash_or_dot) &&
-       !base::FeatureList::IsEnabled(
-           features::kAutofillDisallowSlashDotLabels))) {
+  if (std::ranges::any_of(label, is_valid_label_character)) {
     base::TrimWhitespace(label, base::TRIM_ALL, &label);
     return InferredLabel{std::move(label), source};
   }
