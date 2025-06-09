@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    margin: 0;
+  }
+  body {
+    background: yellow;
+    margin: 0;
+  }
+  .fakeMargin {
+    position: absolute;
+    background: white;
+  }
+</style>
+<div style="margin:108px 100px 50px 58px;">
+  There should be a white margin around this page. It should be larger on the
+  top and on the right.
+</div>
+<div class="fakeMargin" style="left:0; top:0; bottom:0; width:50px;"></div>
+<div class="fakeMargin" style="left:0; top:0; right:0; height:100px;"></div>
+<div class="fakeMargin" style="right:0; top:0; bottom:0; width:100px;"></div>
+<div class="fakeMargin" style="left:0; bottom:0; right:0; height:50px;"></div>

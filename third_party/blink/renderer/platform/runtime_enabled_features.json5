@@ -1469,6 +1469,10 @@
       status: "stable"
     },
     {
+      name: "CSSSafePrintableInset",
+      status: "experimental",
+    },
+    {
       // The "@import scope(...)" syntax.
       // https://github.com/w3c/csswg-drafts/issues/7348
       name: "CSSScopeImport",

@@ -74,7 +74,14 @@ enum class UADefinedVariable {
   kContextMenuInsetRight,
 
   // The text scale as chosen by the user in the OS accessibility settings.
-  kPreferredTextScale
+  kPreferredTextScale,
+
+  // Largest unprintable area inset along the four paper edges. Due to a
+  // printer's paper handling mechanism, there's usually a small region along
+  // the paper edges that the printer isn't capable of marking reliably.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11395
+  kSafePrintableInset,
 };
 
 enum class UADefinedTwoDimensionalVariable {

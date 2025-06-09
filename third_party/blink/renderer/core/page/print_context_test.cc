@@ -1360,4 +1360,32 @@ TEST_P(PrintContextTest, WhiteRootBackgroundWithShouldPrintBackgroundEnabled) {
   PrintSinglePage(canvas);
 }
 
+// Test env(safe-printable-inset).
+TEST_P(PrintContextFrameTest, SafePrintableInset) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="target" style="height:env(safe-printable-inset);"></div>
+)HTML");
+  gfx::SizeF page_size(400, 400);
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  WebPrintParams params(page_size);
+  // top, right, bottom, left insets: 20px, 50px, 0, 10px (see page_size).
+  params.printable_area_in_css_pixels = gfx::RectF(10, 20, 340, 380);
+
+  // Test that it only works when printing.
+  EXPECT_EQ(target->OffsetHeight(), 0);
+  GetDocument().GetFrame()->StartPrinting(params);
+  EXPECT_EQ(target->OffsetHeight(), 50);
+  GetDocument().GetFrame()->EndPrinting();
+  EXPECT_EQ(target->OffsetHeight(), 0);
+
+  // Test n-up printing (multiple pages per sheet). The printing code makes sure
+  // that the pages steer clear of any unprintable area near the paper edges, so
+  // env(safe-printable-inset) should just be 0.
+  params.pages_per_sheet = 4;
+  GetDocument().GetFrame()->StartPrinting(params);
+  EXPECT_EQ(target->OffsetHeight(), 0);
+  GetDocument().GetFrame()->EndPrinting();
+}
+
 }  // namespace blink

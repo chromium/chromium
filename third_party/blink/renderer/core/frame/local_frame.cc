@@ -1425,6 +1425,28 @@ void LocalFrame::StartPrinting(const WebPrintParams& print_params,
     }
   }
 
+  if (IsMainFrame() && RuntimeEnabledFeatures::CSSSafePrintableInsetEnabled()) {
+    float inset = 0;
+    // If there's more than one page per sheet, the unprintable area will be
+    // accounted for by the printing code, so that the collection of pages will
+    // be inset appropriately.
+    if (print_params.pages_per_sheet == 1) {
+      inset = print_params_.printable_area_in_css_pixels.x();
+      inset = std::max(inset, print_params_.printable_area_in_css_pixels.y());
+      inset = std::max(inset,
+                       print_params_.default_page_description.size.width() -
+                           print_params_.printable_area_in_css_pixels.right());
+      inset = std::max(inset,
+                       print_params_.default_page_description.size.height() -
+                           print_params_.printable_area_in_css_pixels.bottom());
+    }
+
+    DocumentStyleEnvironmentVariables& vars =
+        GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+    vars.SetVariable(UADefinedVariable::kSafePrintableInset,
+                     StyleEnvironmentVariables::FormatFloatPx(inset));
+  }
+
   SetPrinting(true, maximum_shrink_ratio);
 }
 
@@ -1446,6 +1468,12 @@ void LocalFrame::StartPrintingSubLocalFrame() {
 void LocalFrame::EndPrinting() {
   RestoreScrollOffsets();
   SetPrinting(false, 0);
+
+  if (IsMainFrame()) {
+    DocumentStyleEnvironmentVariables& vars =
+        GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+    vars.RemoveVariable(UADefinedVariable::kSafePrintableInset);
+  }
 }
 
 void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {

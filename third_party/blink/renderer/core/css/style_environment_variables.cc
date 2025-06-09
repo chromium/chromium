@@ -120,6 +120,8 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("context-menu-inset-right");
     case UADefinedVariable::kPreferredTextScale:
       return AtomicString("preferred-text-scale");
+    case UADefinedVariable::kSafePrintableInset:
+      return AtomicString("safe-printable-inset");
     default:
       break;
   }

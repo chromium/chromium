@@ -137,6 +137,11 @@ class TestRunner {
   // applies to all four sides of the page.
   int GetPrintingMargin() const;
 
+  // Returns printable safe inset. Printers usually have unprintable areas near
+  // the paper edges, due to the paper handling mechanism. This is the larger
+  // inset of those areas.
+  int GetSafePrintableInset() const;
+
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
   // tag is found, print all pages.
@@ -480,6 +485,7 @@ class TestRunner {
                            WebFrameTestProxy& source);
   void SetPrintingSize(int width, int height, WebFrameTestProxy& source);
   void SetPrintingMargin(int size, WebFrameTestProxy& source);
+  void SetSafePrintableInset(int inset, WebFrameTestProxy& source);
   void SetShouldCenterAndShrinkToFitPaper(bool b) {
     should_center_and_shrink_to_fit_paper_ = b;
   }

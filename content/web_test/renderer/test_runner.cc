@@ -370,6 +370,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetPrintingForFrame(const std::string& frame_name);
   void SetPrintingSize(int width, int height);
   void SetPrintingMargin(int);
+  void SetSafePrintableInset(int);
   void SetShouldCenterAndShrinkToFitPaper(bool);
   void SetPrintingScaleFactor(float);
   void SetShouldGeneratePixelResults(bool);
@@ -797,6 +798,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetPrintingForFrame)
       .SetMethod("setPrintingSize", &TestRunnerBindings::SetPrintingSize)
       .SetMethod("setPrintingMargin", &TestRunnerBindings::SetPrintingMargin)
+      .SetMethod("setSafePrintableInset",
+                 &TestRunnerBindings::SetSafePrintableInset)
       .SetMethod("setShouldCenterAndShrinkToFitPaper",
                  &TestRunnerBindings::SetShouldCenterAndShrinkToFitPaper)
       .SetMethod("setPrintingScaleFactor",
@@ -1787,6 +1790,13 @@ void TestRunnerBindings::SetPrintingMargin(int margin) {
     return;
   }
   runner_->SetPrintingMargin(margin, *frame_);
+}
+
+void TestRunnerBindings::SetSafePrintableInset(int inset) {
+  if (!frame_) {
+    return;
+  }
+  runner_->SetSafePrintableInset(inset, *frame_);
 }
 
 void TestRunnerBindings::SetShouldCenterAndShrinkToFitPaper(bool b) {
@@ -2800,6 +2810,10 @@ int TestRunner::GetPrintingMargin() const {
   return web_test_runtime_flags_.printing_margin();
 }
 
+int TestRunner::GetSafePrintableInset() const {
+  return web_test_runtime_flags_.safe_printable_inset();
+}
+
 static std::string GetPageRangesStringFromMetadata(
     blink::WebLocalFrame* frame) {
   blink::WebElementCollection meta_iter =
@@ -2878,13 +2892,16 @@ printing::PageRanges TestRunner::GetPrintingPageRanges(
 
 SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   // Page size and margins are in CSS pixels.
-  auto print_params =
-      blink::WebPrintParams(gfx::SizeF(GetPrintingPageSize(frame)));
+  gfx::SizeF page_size = gfx::SizeF(GetPrintingPageSize(frame));
+  auto print_params = blink::WebPrintParams(page_size);
   int default_margin = GetPrintingMargin();
   print_params.default_page_description.margin_top = default_margin;
   print_params.default_page_description.margin_right = default_margin;
   print_params.default_page_description.margin_bottom = default_margin;
   print_params.default_page_description.margin_left = default_margin;
+  gfx::RectF printable_area(page_size);
+  printable_area.Inset(GetSafePrintableInset());
+  print_params.printable_area_in_css_pixels = printable_area;
   print_params.scale_factor = printing_scale_factor_;
   print_params.print_scaling_option =
       should_center_and_shrink_to_fit_paper_
@@ -3591,6 +3608,11 @@ void TestRunner::SetPrintingSize(int width,
 
 void TestRunner::SetPrintingMargin(int size, WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_printing_margin(size);
+  OnWebTestRuntimeFlagsChanged(source);
+}
+
+void TestRunner::SetSafePrintableInset(int inset, WebFrameTestProxy& source) {
+  web_test_runtime_flags_.set_safe_printable_inset(inset);
   OnWebTestRuntimeFlagsChanged(source);
 }
 
