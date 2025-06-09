@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "content/public/common/drop_data.h"
 #include "ui/views/view_class_properties.h"
 
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
-    views::View& drop_target_view)
+    MultiContentsDropTargetView& drop_target_view)
     : drop_target_view_(drop_target_view) {
   CHECK_NE(nullptr, drop_target_view.parent());
 }
@@ -51,5 +52,5 @@ void MultiContentsViewDropTargetController::UpdateDropTargetTimer(
 }
 
 void MultiContentsViewDropTargetController::ShowDropTarget() {
-  drop_target_view_->SetVisible(true);
+  drop_target_view_->Show();
 }

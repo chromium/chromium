@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
@@ -325,12 +326,11 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesToMinWidth) {
       // Artificially lower min width so that testing on smaller devices does
       // not affect results.
       SetMinWidth(60),
-      CheckResize(10000,
-                  base::BindRepeating([](double start_width, double end_width) {
-                    // On large window, uses flat min width.
-                    return end_width ==
-                           60 - MultiContentsView::kSplitViewContentInset;
-                  })));
+      CheckResize(
+          10000, base::BindRepeating([](double start_width, double end_width) {
+            // On large window, uses flat min width.
+            return end_width == 60 - MultiContentsView::kSplitViewContentInset;
+          })));
 }
 
 // TODO(crbug.com/399212996): Flaky on linux_chromium_asan_rel_ng, linux-rel
@@ -665,7 +665,8 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
     // Note, both branches of AnyOf end with WaitForShow to ensure that the
     // only way this step terminates successfully is if the view is shown.
     return AnyOf(
-        RunSubsequence(WaitForShow(kMultiContentsViewDropTargetElementId)),
+        RunSubsequence(WaitForShow(
+            MultiContentsDropTargetView::kMultiContentsDropTargetElementId)),
         RunSubsequence(
             Steps(
                 // Programmatically generate a list of mouse movement steps.
@@ -698,7 +699,8 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
                 }()),
             // This branch also waits for visibility to prevent it from exiting
             // prematurely.
-            WaitForShow(kMultiContentsViewDropTargetElementId)));
+            WaitForShow(MultiContentsDropTargetView::
+                            kMultiContentsDropTargetElementId)));
   }
 
  private:
@@ -730,7 +732,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
       MoveMouseTo(kNewTab, DeepQuery{"#button"}),
       DragMouseToWithoutWait(MultiContentsView::kMultiContentsViewElementId,
                              PointForDropTarget()),
-      WaitForHide(kMultiContentsViewDropTargetElementId));
+      WaitForHide(
+          MultiContentsDropTargetView::kMultiContentsDropTargetElementId));
 }
 
 class MultiContentsViewBookmarkDragEntrypointsUiTest

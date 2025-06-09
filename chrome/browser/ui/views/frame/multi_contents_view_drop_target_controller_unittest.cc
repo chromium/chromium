@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -31,8 +32,8 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
 
   void SetUp() override {
     multi_contents_view_ = std::make_unique<views::View>();
-    drop_target_view_ =
-        multi_contents_view_->AddChildView(std::make_unique<views::View>());
+    drop_target_view_ = multi_contents_view_->AddChildView(
+        std::make_unique<MultiContentsDropTargetView>());
     drop_target_view_->SetVisible(false);
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
         *drop_target_view_);
@@ -48,7 +49,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
 
   MultiContentsViewDropTargetController& controller() { return *controller_; }
 
-  views::View& drop_target_view() { return *drop_target_view_; }
+  MultiContentsDropTargetView& drop_target_view() { return *drop_target_view_; }
 
   // Fast forwards by an arbitrary time to ensure timed events are executed.
   void FastForward() { task_environment_.FastForwardBy(base::Seconds(60)); }
@@ -61,7 +62,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
  private:
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
-  raw_ptr<views::View> drop_target_view_;
+  raw_ptr<MultiContentsDropTargetView> drop_target_view_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

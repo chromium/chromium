@@ -38,6 +38,9 @@ constexpr int kAnimationDurationMs = 450;
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsDropTargetView,
+                                      kMultiContentsDropTargetElementId);
+
 MultiContentsDropTargetView::MultiContentsDropTargetView()
     : views::AnimationDelegateViews(this) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())

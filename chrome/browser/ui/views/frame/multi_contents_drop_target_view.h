@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_DROP_TARGET_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -22,6 +23,8 @@ class MultiContentsDropTargetView : public views::View,
   METADATA_HEADER(MultiContentsDropTargetView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsDropTargetElementId);
+
   MultiContentsDropTargetView();
   MultiContentsDropTargetView(const MultiContentsDropTargetView&) = delete;
   MultiContentsDropTargetView& operator=(const MultiContentsDropTargetView&) =
