@@ -21035,7 +21035,8 @@
                         "IPH_ScalableIphUnlockedBasedSix",
                         "IPH_ScalableIphUnlockedBasedTen",
                         "IPH_ScalableIphUnlockedBasedThree",
-                        "IPH_ScalableIphUnlockedBasedTwo"
+                        "IPH_ScalableIphUnlockedBasedTwo",
+                        "ScalableIph"
                     ],
                     "disable_features": [
                         "ShelfLauncherNudge"
@@ -21181,7 +21182,8 @@
                         "IPH_ScalableIphHelpAppBasedSix",
                         "IPH_ScalableIphHelpAppBasedTen",
                         "IPH_ScalableIphHelpAppBasedThree",
-                        "IPH_ScalableIphHelpAppBasedTwo"
+                        "IPH_ScalableIphHelpAppBasedTwo",
+                        "ScalableIph"
                     ],
                     "disable_features": [
                         "ShelfLauncherNudge"
@@ -21394,7 +21396,8 @@
                         "IPH_ScalableIphTimerBasedSix",
                         "IPH_ScalableIphTimerBasedTen",
                         "IPH_ScalableIphTimerBasedThree",
-                        "IPH_ScalableIphTimerBasedTwo"
+                        "IPH_ScalableIphTimerBasedTwo",
+                        "ScalableIph"
                     ],
                     "disable_features": [
                         "ShelfLauncherNudge"
@@ -21604,7 +21607,8 @@
                         "IPH_ScalableIphUnlockedBasedSix",
                         "IPH_ScalableIphUnlockedBasedTen",
                         "IPH_ScalableIphUnlockedBasedThree",
-                        "IPH_ScalableIphUnlockedBasedTwo"
+                        "IPH_ScalableIphUnlockedBasedTwo",
+                        "ScalableIph"
                     ],
                     "disable_features": [
                         "ShelfLauncherNudge"

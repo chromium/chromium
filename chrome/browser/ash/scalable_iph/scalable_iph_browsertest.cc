@@ -225,6 +225,18 @@ class CupsPrintJobManagerWaiter : public ash::CupsPrintJobManager::Observer {
   int job_id_;
 };
 
+class ScalableIphBrowserTestFlagOff
+    : public ash::CustomizableTestEnvBrowserTestBase {
+ public:
+  ScalableIphBrowserTestFlagOff() {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kScalableIph);
+    scalable_iph::ScalableIph::ForceEnableIphFeatureForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 class ScalableIphBrowserTestNoIph
     : public ash::CustomizableTestEnvBrowserTestBase {
  public:
@@ -241,7 +253,8 @@ class ScalableIphBrowserTestNoIph
       disabled_features_refs.push_back(base::test::FeatureRef(*feature));
     }
 
-    scoped_feature_list_.InitWithFeatures({}, disabled_features_refs);
+    scoped_feature_list_.InitWithFeatures({ash::features::kScalableIph},
+                                          disabled_features_refs);
   }
 
  private:
@@ -266,6 +279,16 @@ class ScalableIphBrowserTestGameMultiUser : public ScalableIphBrowserTestGame {
 class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
  public:
   ScalableIphBrowserTestDebugOff() { enable_scalable_iph_debug_ = false; }
+};
+
+class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestFeatureOffDebugOn() {
+    enable_scalable_iph_ = false;
+    setup_scalable_iph_ = false;
+    CHECK(enable_scalable_iph_debug_)
+        << "Debug feature is on by default for ScalableIphBrowserTest";
+  }
 };
 
 // Preinstalled apps only deploy on Google Chrome branded builds of Chromium.
@@ -295,11 +318,14 @@ class ScalableIphBrowserTestHelpApp
     AppendVersionNumber(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
     base::test::FeatureRefAndParams help_app_feature(
         ash::features::kHelpAppWelcomeTips, {});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {help_app_feature, test_config}, {});
+        {scalable_iph_feature, help_app_feature, test_config}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -410,8 +436,11 @@ class ScalableIphBrowserTestMultipleIphs : public ScalableIphBrowserTest {
     base::test::FeatureRefAndParams test_config_two(kScalableIphTestTwo,
                                                     params_two);
 
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {test_config_one, test_config_two}, {});
+        {scalable_iph_feature, test_config_one, test_config_two}, {});
   }
 };
 
@@ -425,11 +454,13 @@ class ScalableIphBrowserTestCustomConditionBase
     AppendCustomCondition(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
     base::test::FeatureRefAndParams scalable_iph_debug_feature(
         ash::features::kScalableIphDebug, {});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {scalable_iph_debug_feature, test_config}, {});
+        {scalable_iph_feature, scalable_iph_debug_feature, test_config}, {});
   }
 
   virtual void AppendCustomCondition(base::FieldTrialParams& params) = 0;
@@ -663,7 +694,11 @@ class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
     AppendFakeUiParamsBubble(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
-    scoped_feature_list_.InitWithFeaturesAndParameters({test_config}, {});
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
   }
 };
 
@@ -679,7 +714,11 @@ class ScalableIphBrowserTestNotificationInvalidConfig
                           scalable_iph::kCustomNotificationIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
-    scoped_feature_list_.InitWithFeaturesAndParameters({test_config}, {});
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
   }
 };
 
@@ -694,13 +733,25 @@ class ScalableIphBrowserTestBubbleInvalidConfig
                           scalable_iph::kCustomBubbleIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
-    scoped_feature_list_.InitWithFeaturesAndParameters({test_config}, {});
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
   }
 };
 
 }  // namespace
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, ScalableIphOff) {
+  ASSERT_FALSE(ash::features::IsScalableIphEnabled());
+  ASSERT_TRUE(scalable_iph::ScalableIph::IsAnyIphFeatureEnabled());
+
+  EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNoIph, NoIphFeatureFlagOn) {
+  ASSERT_TRUE(ash::features::IsScalableIphEnabled());
   ASSERT_FALSE(scalable_iph::ScalableIph::IsAnyIphFeatureEnabled());
 
   EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
@@ -1170,6 +1221,20 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
   // Last response head is nullptr if there is no response. See the comment
   // of `RenderFrameHost::GetLastResponseHead` for details.
   EXPECT_FALSE(render_frame_host->GetLastResponseHead());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFeatureOffDebugOn,
+                       LogPageAvailable) {
+  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+      browser(), GURL(kScalableIphDebugLogTextUrl));
+  ASSERT_TRUE(render_frame_host);
+  const network::mojom::URLResponseHead* head =
+      render_frame_host->GetLastResponseHead();
+  ASSERT_TRUE(head);
+  ASSERT_TRUE(head->headers);
+  EXPECT_EQ(net::HTTP_OK, head->headers->response_code())
+      << "Debug log page is expected to be available even if ScalableIph "
+         "feature itself is off.";
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {

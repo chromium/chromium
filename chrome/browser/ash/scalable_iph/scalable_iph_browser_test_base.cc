@@ -196,6 +196,10 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
     return;
   }
 
+  CHECK(enable_scalable_iph_)
+      << "ScalableIph feature flag must be intended to be enabled to set up "
+         "fakes and mocks of ScalableIph";
+
   SetUpMocks();
 }
 
@@ -266,6 +270,14 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
   std::vector<base::test::FeatureRef> disabled_features;
 
   AppendTestSpecificFeatures(enabled_features, disabled_features);
+
+  if (enable_scalable_iph_) {
+    enabled_features.push_back(
+        base::test::FeatureRefAndParams(ash::features::kScalableIph, {}));
+  } else {
+    disabled_features.push_back(
+        base::test::FeatureRef(ash::features::kScalableIph));
+  }
 
   if (enable_scalable_iph_debug_) {
     enabled_features.push_back(

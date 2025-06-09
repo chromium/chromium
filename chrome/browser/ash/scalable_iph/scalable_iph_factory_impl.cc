@@ -272,6 +272,11 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
   // TODO(b/286604737): Do not return a ScalableIph services if multi-user
   // sign-in is used.
 
+  if (!ash::features::IsScalableIphEnabled()) {
+    SCALABLE_IPH_LOG(logger) << "ScalableIph flag is off.";
+    return nullptr;
+  }
+
   if (!scalable_iph::ScalableIph::IsAnyIphFeatureEnabled()) {
     SCALABLE_IPH_LOG(logger) << "No iph feature is enabled.";
     return nullptr;
