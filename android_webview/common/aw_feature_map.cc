@@ -62,6 +62,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewWebauthn,
     &features::kWebViewXRequestedWithHeaderControl,
+    &features::kWebViewConnectToComponentProviderInBackground,
 };
 
 // static

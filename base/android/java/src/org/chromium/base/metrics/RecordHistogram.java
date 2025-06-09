@@ -235,6 +235,43 @@ public class RecordHistogram {
     }
 
     /**
+     * Records a sample in a histogram of microsecond times. Useful for recording very short
+     * durations. This is the Java equivalent of the UMA_HISTOGRAM_MICRO_TIMES C++ macro.
+     *
+     * <p>Note that (like UMA_HISTOGRAM_MICRO_TIMES) this is measured up to 1 second, not 10 seconds
+     * like the base::UmaHistogramMicrosecondsTimes function.
+     *
+     * @param name name of the histogram
+     * @param durationMicros duration to be recorded in microseconds
+     */
+    public static void recordMicroTimesHistogram(String name, long durationMicros) {
+        recordCustomMicroTimesHistogram(name, durationMicros, 1, 1_000_000, 50);
+    }
+
+    /**
+     * Records a sample in a histogram of microsecond times with custom buckets. This is the Java
+     * equivalent of the UMA_HISTOGRAM_CUSTOM_MICRO_TIMES C++ macro.
+     *
+     * @param name name of the histogram
+     * @param durationMicros duration to be recorded in microseconds; expected to fall in range
+     *     {@code [min, max)}
+     * @param min the smallest expected sample value; at least 1
+     * @param max the smallest sample value that will be recorded in overflow bucket
+     * @param numBuckets the number of buckets including underflow ({@code [0, min)}) and overflow
+     *     ({@code [max, inf)}) buckets; at most 100
+     */
+    public static void recordCustomMicroTimesHistogram(
+            String name, long durationMicros, long min, long max, int numBuckets) {
+        UmaRecorderHolder.get()
+                .recordExponentialHistogram(
+                        name,
+                        clampToInt(durationMicros),
+                        clampToInt(min),
+                        clampToInt(max),
+                        numBuckets);
+    }
+
+    /**
      * Records a sample in a histogram of sizes in KB. This is the Java equivalent of the
      * UMA_HISTOGRAM_MEMORY_KB C++ macro.
      *

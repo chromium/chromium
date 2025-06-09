@@ -6306,6 +6306,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ComponentUpdater.BindServiceTime.{Result}"
+    units="microseconds" expires_after="2025-12-06">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time taken by the bindService() call to bind to the component provider
+    service in EmbeddedComponentLoader.doConnect() (via the connect() method),
+    where the bind was {Result}.
+
+    The doConnect() call may happen on the UI thread or the thread pool, which
+    may have different thread priorities. WebView backgrounds to the thread pool
+    if the WebViewConnectToComponentProviderInBackground feature is enabled.
+
+    Only emitted for Android WebView, emitted at most once per session during
+    Chromium startup. Neither a failure or success histogram will be emitted if
+    there are no active component loader policies.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="unsuccessful"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
 <histogram name="Android.WebView.ComponentUpdater.CPSDirectorySize" units="KB"
     expires_after="2025-10-15">
   <owner>pbirk@chromium.org</owner>
@@ -6345,6 +6368,56 @@ chromium-metrics-reviews@google.com.
     Logs the result of ComponentsProviderService getFilesForComponent request.
     This method retrieves FileDescriptors for an installed component. This is
     logged once for every request the service receives.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ComponentUpdater.ProviderConnectUiTime"
+    units="microseconds" expires_after="2025-12-06">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Immediate UI thread time spent running or posting
+    EmbeddedComponentLoader.doConnect() (via the connect() method).
+
+    Does not measure any other UI thread component loading work outside of the
+    doConnect() call. However, the doConnect() call may perform synchronous
+    invocation of callbacks if backgrounding is disabled and service binding
+    fails.
+
+    If backgrounding is enabled, binding is offloaded to a background thread and
+    this histogram will only measure the cost of posting a task. Even if service
+    binding fails, callbacks posted back onto the UI thread are not measured.
+
+    Comparing background vs non-background only indicates the amount of
+    synchronous work immediately shifted off of the UI thread during connect(),
+    but is not a direct indication of overall performance improvement or UI
+    thread work reduction.
+
+    Only emitted for Android WebView, emitted at most once per session during
+    Chromium startup. Backgrounding in WebView is enabled via the
+    WebViewConnectToComponentProviderInBackground feature. This histogram will
+    not be emitted if there are no active component loader policies.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ComponentUpdater.ResultsReceived" units="ms"
+    expires_after="2025-12-06">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time between calling EmbeddedComponentLoader.connect() and the final
+    component result being received, at which point the component provider
+    service is unbound.
+
+    Note that this time will not be dedicated to components processing.
+    Additionally, as components are processed sequentially on the UI thread,
+    this will include processing time for earlier components, but not the last
+    component.
+
+    Only emitted for Android WebView, emitted at most once per session during
+    Chromium startup. This histogram will not be emitted if there are no active
+    component loader policies or some failure occurs before the last result is
+    received.
   </summary>
 </histogram>
 

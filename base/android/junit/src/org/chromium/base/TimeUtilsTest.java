@@ -35,20 +35,20 @@ public class TimeUtilsTest {
         mFakeTime.advanceMillis(1000);
         assertEquals(1000, uptimeTimer.getElapsedMillis());
         assertEquals(1000, realtimeTimer.getElapsedMillis());
-        assertEquals(
-                1000 * TimeUtils.NANOSECONDS_PER_MILLISECOND, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(1_000_000_000L, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(1_000_000L, realtimeTimerNanos.getElapsedMicros());
         assertEquals(1000, threadTimeTimer.getElapsedMillis());
         mFakeTime.deepSleepMillis(1000);
         assertEquals(1000, uptimeTimer.getElapsedMillis());
         assertEquals(2000, realtimeTimer.getElapsedMillis());
-        assertEquals(
-                2000 * TimeUtils.NANOSECONDS_PER_MILLISECOND, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(2_000_000_000L, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(2_000_000L, realtimeTimerNanos.getElapsedMicros());
         assertEquals(1000, threadTimeTimer.getElapsedMillis());
         mFakeTime.sleepMillis(1000);
         assertEquals(2000, uptimeTimer.getElapsedMillis());
         assertEquals(3000, realtimeTimer.getElapsedMillis());
-        assertEquals(
-                3000 * TimeUtils.NANOSECONDS_PER_MILLISECOND, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(3_000_000_000L, realtimeTimerNanos.getElapsedNanos());
+        assertEquals(3_000_000L, realtimeTimerNanos.getElapsedMicros());
         assertEquals(1000, threadTimeTimer.getElapsedMillis());
     }
 }

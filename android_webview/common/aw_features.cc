@@ -298,4 +298,10 @@ const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum{
 const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     "WebViewCodeCacheSizeLimitMultiplier", 0.5};
+
+// Connect to the non-embedded components provider from a background thread.
+BASE_FEATURE(kWebViewConnectToComponentProviderInBackground,
+             "WebViewConnectToComponentProviderInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

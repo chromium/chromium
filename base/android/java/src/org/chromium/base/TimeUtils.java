@@ -53,6 +53,10 @@ public class TimeUtils {
         public long getElapsedNanos() {
             return elapsedRealtimeNanos() - mStart;
         }
+
+        public long getElapsedMicros() {
+            return (elapsedRealtimeNanos() - mStart) / NANOSECONDS_PER_MICROSECOND;
+        }
     }
 
     /**

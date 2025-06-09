@@ -34,6 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 
 import java.io.ByteArrayInputStream;
@@ -49,8 +50,8 @@ import java.util.concurrent.TimeUnit;
  * <p>Some test assertion are made in test/browser/embedded_component_loader_test_helper.cc
  */
 @RunWith(Parameterized.class)
-@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @JNINamespace("component_updater")
 public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
     private static final CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
@@ -103,16 +104,22 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
     @Test
     @MediumTest
     public void testLoadComponentsFromMockComponentsProviderService() throws Exception {
-        loadComponents(MockComponentsProviderService.class);
+        loadComponents(MockComponentsProviderService.class, false);
     }
 
     @Test
     @MediumTest
     public void testLoadComponents() throws Exception {
-        loadComponents(ComponentsProviderService.class);
+        loadComponents(ComponentsProviderService.class, false);
     }
 
-    private void loadComponents(Class serviceClass) throws Exception {
+    @Test
+    @MediumTest
+    public void testLoadComponentsBackground() throws Exception {
+        loadComponents(ComponentsProviderService.class, true);
+    }
+
+    private void loadComponents(Class serviceClass, boolean background) throws Exception {
         int onComponentLoadedCallCount = sOnComponentLoadedHelper.getCallCount();
         int onComponentLoadFailedCallCount = sOnComponentLoadFailedHelper.getCallCount();
 
@@ -128,11 +135,18 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.WebView.ComponentUpdater.BindServiceTime.Success")
+                        .expectAnyRecord("Android.WebView.ComponentUpdater.ProviderConnectUiTime")
+                        .expectAnyRecord("Android.WebView.ComponentUpdater.ResultsReceived")
+                        .build();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EmbeddedComponentLoader mLoader =
                             EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();
-                    mLoader.connect(intent);
+                    mLoader.connect(intent, background);
                 });
 
         // Should be called once for AvailableComponentLoaderPolicy.
@@ -149,6 +163,8 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 1,
                 AwActivityTestRule.WAIT_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
+
+        histogramWatcher.assertExpected();
     }
 
     @CalledByNative

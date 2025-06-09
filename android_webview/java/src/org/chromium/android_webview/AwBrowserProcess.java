@@ -614,7 +614,10 @@ public final class AwBrowserProcess {
             intent.setClassName(
                     getWebViewPackageName(),
                     EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
-            loader.connect(intent);
+            loader.connect(
+                    intent,
+                    AwFeatureMap.isEnabled(
+                            AwFeatures.WEBVIEW_CONNECT_TO_COMPONENT_PROVIDER_IN_BACKGROUND));
         }
     }
 
