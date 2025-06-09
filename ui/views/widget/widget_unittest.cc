@@ -4960,57 +4960,13 @@ TEST_F(DesktopWidgetTest, MAYBE_DeleteInSetFullscreen) {
   w->SetFullscreen(true);
 }
 
-namespace {
-
-class FullscreenAwareFrame : public views::NonClientFrameView {
-  METADATA_HEADER(FullscreenAwareFrame, views::NonClientFrameView)
-
- public:
-  explicit FullscreenAwareFrame(views::Widget* widget) : widget_(widget) {}
-
-  FullscreenAwareFrame(const FullscreenAwareFrame&) = delete;
-  FullscreenAwareFrame& operator=(const FullscreenAwareFrame&) = delete;
-
-  ~FullscreenAwareFrame() override = default;
-
-  // views::NonClientFrameView overrides:
-  gfx::Rect GetBoundsForClientView() const override { return gfx::Rect(); }
-  gfx::Rect GetWindowBoundsForClientBounds(
-      const gfx::Rect& client_bounds) const override {
-    return gfx::Rect();
-  }
-  int NonClientHitTest(const gfx::Point& point) override { return HTNOWHERE; }
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
-  void ResetWindowControls() override {}
-  void UpdateWindowIcon() override {}
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
-
-  // views::View overrides:
-  void Layout(PassKey) override {
-    if (widget_->IsFullscreen()) {
-      fullscreen_layout_called_ = true;
-    }
-  }
-
-  bool fullscreen_layout_called() const { return fullscreen_layout_called_; }
-
- private:
-  raw_ptr<views::Widget> widget_;
-  bool fullscreen_layout_called_ = false;
-};
-
-BEGIN_METADATA(FullscreenAwareFrame)
-END_METADATA
-
-}  // namespace
-
 // Tests that frame Layout is called when a widget goes fullscreen without
 // changing its size or title.
 TEST_F(WidgetTest, FullscreenFrameLayout) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
-  auto frame_view = std::make_unique<FullscreenAwareFrame>(widget.get());
-  FullscreenAwareFrame* frame = frame_view.get();
+
+  auto frame_view = std::make_unique<ConfigurableTestFrameView>(widget.get());
+  ConfigurableTestFrameView* frame = frame_view.get();
   widget->non_client_view()->SetFrameView(std::move(frame_view));
 
   widget->Maximize();

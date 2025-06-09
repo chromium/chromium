@@ -32,6 +32,12 @@ int ConfigurableTestFrameView::NonClientHitTest(const gfx::Point& point) {
   return NativeFrameView::NonClientHitTest(point);
 }
 
+void ConfigurableTestFrameView::Layout(PassKey) {
+  if (GetWidget() && GetWidget()->IsFullscreen()) {
+    fullscreen_layout_caled_ = true;
+  }
+}
+
 BEGIN_METADATA(ConfigurableTestFrameView);
 END_METADATA
 }  // namespace views::test

@@ -23,6 +23,7 @@ namespace test {
 // custom hit-test result.
 class ConfigurableTestFrameView : public NativeFrameView {
   METADATA_HEADER(ConfigurableTestFrameView, NativeFrameView)
+
  public:
   explicit ConfigurableTestFrameView(Widget* frame);
   ~ConfigurableTestFrameView() override;
@@ -33,16 +34,19 @@ class ConfigurableTestFrameView : public NativeFrameView {
 
   void SetMinimumSize(const gfx::Size& size) { minimum_size_ = size; }
   void SetHitTestResult(int result) { hit_test_result_ = result; }
+  bool fullscreen_layout_called() { return fullscreen_layout_caled_; }
 
   // Views
   gfx::Size GetMinimumSize() const override;
 
   // NativeFrameView
   int NonClientHitTest(const gfx::Point& point) override;
+  void Layout(PassKey) override;
 
  private:
   std::optional<gfx::Size> minimum_size_;
   std::optional<int> hit_test_result_;
+  bool fullscreen_layout_caled_ = false;
 };
 
 }  // namespace test
