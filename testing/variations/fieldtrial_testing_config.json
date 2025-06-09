@@ -10225,6 +10225,21 @@
             ]
         }
     ],
+    "FullscreenSigninPromoManagerMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenSigninPromoManagerMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "FusedLocationProviderTuning": [
         {
             "platforms": [
