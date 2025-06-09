@@ -65,7 +65,6 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   void SetUp() override { environment_.SetUp(local_state_); }
 
   void TearDown() override {
-    base::PowerMonitor::GetInstance()->ShutdownForTesting();
     environment_.TearDown();
   }
 

@@ -114,6 +114,7 @@ void TestUserPerformanceTuningManagerEnvironment::TearDown() {
   user_performance_tuning_manager_.reset();
   battery_saver_mode_manager_.reset();
   battery_sampler_.reset();
+  power_monitor_source_ = nullptr;
   base::PowerMonitor::GetInstance()->ShutdownForTesting();
 #if BUILDFLAG(IS_CHROMEOS)
   if (tear_down_power_manager_client_) {
