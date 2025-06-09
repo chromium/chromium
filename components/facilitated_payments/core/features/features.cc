@@ -38,4 +38,13 @@ BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
              "SupportMultipleServerRequestsForPixPayments",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Chrome will offer an app list when a supported payment link is
+// detected. Users can choose the payment app they want to
+// use and be redirected to the chosen app to complete the payment flow.
+BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
+             "kFacilitatedPaymentsEnableA2APayment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace payments::facilitated
