@@ -4738,13 +4738,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/396607231
-      // Update strong, b elements default to be font-weight: bolder
-      // Enabled by default on M135. Remove flag on or after M138.
-      name: "StrongBolder",
-      status: "stable",
-    },
-    {
       name: "StylusHandwriting",
       base_feature: "none",
     },

@@ -1306,12 +1306,7 @@ abbr[title], acronym[title] {
 }
 
 strong, b {
-    @supports blink-feature(StrongBolder) {
-      font-weight: bolder;
-    }
-    @supports not blink-feature(StrongBolder) {
-     font-weight: bold;
-    }
+    font-weight: bolder;
 }
 
 i, cite, em, var, address, dfn {
