@@ -66,7 +66,10 @@ std::unique_ptr<BloomFilter> ProcessBloomFilter(
       features::MaxServerBloomFilterByteSize() * 8) {
     DLOG(ERROR) << "Bloom filter data exceeds maximum size of "
                 << optimization_guide::features::MaxServerBloomFilterByteSize()
-                << " bytes";
+                << " bytes. Actual size for type "
+                << proto::OptimizationType_Name(
+                       optimization_filter.optimization_type())
+                << " is " << (bloom_filter_proto.num_bits() / 8.0) << " bytes.";
     PopulateOptimizationFilterStatusIfSet(
         OptimizationFilterStatus::kFailedServerFilterTooBig, out_status);
     return nullptr;
