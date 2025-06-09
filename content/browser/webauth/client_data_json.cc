@@ -173,7 +173,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   } else if (params.payment_options &&
              params.payment_options->browser_bound_public_key.has_value() &&
              params.type == ClientDataRequestType::kWebAuthnCreate) {
-    ret.append(R"(","payment":{"browserBoundPublicKey":)");
+    ret.append(R"(,"payment":{"browserBoundPublicKey":)");
     ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
         *params.payment_options->browser_bound_public_key)));
     ret.append("}");

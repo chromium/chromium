@@ -5,9 +5,13 @@
 package org.chromium.content_public.browser;
 
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import static org.chromium.base.test.util.Matchers.containsString;
+
+import android.util.JsonReader;
+import android.util.JsonToken;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,6 +29,9 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 import org.chromium.url.mojom.Url;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 /** Unit tests for ClientDataJson */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -57,6 +64,7 @@ public class ClientDataJsonTest {
                         RELYING_PARTY_ID,
                         TOP_ORIGIN);
 
+        assertParsesJson(output);
         // Test that the output has the expected fields.
         assertThat(output, containsString("\"type\":\"payment.get\""));
         assertThat(output, containsString("\"challenge\":\"AAAA\""));
@@ -94,6 +102,8 @@ public class ClientDataJsonTest {
                         payment,
                         RELYING_PARTY_ID,
                         TOP_ORIGIN);
+
+        assertParsesJson(output);
         assertThat(output, containsString("\"type\":\"webauthn.create\""));
         assertThat(output, containsString("\"challenge\":\"AAAA\""));
         assertThat(output, containsString(String.format("\"origin\":\"%s\"", ORIGIN)));
@@ -116,6 +126,7 @@ public class ClientDataJsonTest {
                         RELYING_PARTY_ID,
                         TOP_ORIGIN);
 
+        assertParsesJson(output);
         assertThat(output, containsString("\"paymentEntitiesLogos\":[]"));
     }
 
@@ -138,6 +149,7 @@ public class ClientDataJsonTest {
                         RELYING_PARTY_ID,
                         TOP_ORIGIN);
 
+        assertParsesJson(output);
         assertThat(
                 output,
                 containsString(
@@ -165,10 +177,26 @@ public class ClientDataJsonTest {
                         RELYING_PARTY_ID,
                         TOP_ORIGIN);
 
+        assertParsesJson(output);
         assertThat(
                 output,
                 containsString(
                         "\"paymentEntitiesLogos\":[{\"url\":\"https://www.example.test/logo_one.png\",\"label\":\"logo_one_label\"},{\"url\":\"https://www.example.test/logo_two.png\",\"label\":\"logo_two_label\"}]"));
+    }
+
+    private void assertParsesJson(String serializedJson) {
+        try {
+            JsonReader jsonReader = new JsonReader(new StringReader(serializedJson));
+            // skipValue() throws a subclass of IOException when the serializedJson cannot be
+            // parsed.
+            jsonReader.skipValue();
+            assertEquals(
+                    "There is more than one value in the serialized json: " + serializedJson,
+                    JsonToken.END_DOCUMENT,
+                    jsonReader.peek());
+        } catch (IOException e) {
+            throw new AssertionError("Could not parse the serialized json: " + serializedJson, e);
+        }
     }
 
     private PaymentOptions createSamplePaymentOptions() {
