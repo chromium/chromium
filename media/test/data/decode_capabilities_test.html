@@ -250,31 +250,69 @@ function testAudioConfigWithKeySystem(
     runTest(configuration, /* is_key_system_specified= */ true);
 }
 
-function testAudioAndVideoConfig(audioContentType, queryType, videoContentType) {
-  // Clear previous test result from title.
-  document.title = '';
+function testAudioAndVideoConfig(
+  audioContentType,
+  queryType,
+  videoContentType) {
+    // Clear previous test result from title.
+    document.title = '';
 
-  log("Testing combined audio/video configuration:");
-  log("- Video content type: " + videoContentType);
-  log("- Audio content type: " + audioContentType);
+    log("Testing combined audio/video configuration:");
+    log("- Video content type: " + videoContentType);
+    log("- Audio content type: " + audioContentType);
 
-  const configuration = {
-    type: queryType,
-    video: {
-      contentType: videoContentType,
+    const configuration = {
+      type: queryType,
+      video: {
+        contentType: videoContentType,
 
-      // Any reasonable value will do.
-      width: 640,
-      height: 480,
-      bitrate: 10000,
-      framerate: 30
-    },
-    audio: {
-      contentType: audioContentType
-    }
-  };
+        // Any reasonable value will do.
+        width: 640,
+        height: 480,
+        bitrate: 10000,
+        framerate: 30
+      },
+      audio: {
+        contentType: audioContentType
+      }
+    };
 
-  runTest(configuration);
+    runTest(configuration);
+}
+
+function testAudioAndVideoConfigWithKeySystem(
+  audioContentType,
+  keySystem,
+  queryType,
+  videoContentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing combined audio/video configuration:");
+    log("- Video content type: " + videoContentType);
+    log("- Audio content type: " + audioContentType);
+    log("- With Key System: " + keySystem)
+
+    const configuration = {
+      type: queryType,
+      video: {
+        contentType: videoContentType,
+
+        // Any reasonable value will do.
+        width: 640,
+        height: 480,
+        bitrate: 10000,
+        framerate: 30
+      },
+      audio: {
+        contentType: audioContentType
+      },
+      keySystemConfiguration: {
+              keySystem: keySystem,
+      }
+    };
+
+    runTest(configuration, /* is_key_system_specified= */ true);
 }
 
 </script>
