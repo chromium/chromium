@@ -1123,6 +1123,10 @@ class TabStripModel {
   void RemoveSplitImpl(split_tabs::SplitTabId split_id,
                        SplitTabChange::SplitTabRemoveReason reason);
 
+  void UpdateActiveTabInSplitImpl(split_tabs::SplitTabId split_id,
+                                  int update_index,
+                                  SplitUpdateType update_type);
+
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.
   void AddToNewGroupImpl(

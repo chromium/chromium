@@ -16,9 +16,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -325,6 +328,38 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   EXPECT_EQ(tabs::TabInterface::DetachReason::kDelete,
             removed_observer.tab_detach_reason());
   tab_strip_model->AppendWebContents(std::move(extracted_contents), true);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
+                       ReplaceActiveTabWhenDeletesGroupShowsDeletionDialog) {
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  AddTabs(4);
+  EXPECT_EQ(tab_strip_model->count(), 5);
+
+  // Enter a zero state split. This adds a new tab.
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->ExecuteContextMenuCommand(0,
+                                             TabStripModel::CommandAddToSplit);
+
+  // Add tab at index 4 to a group.
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({4});
+  tab_strip_model->ActivateTabAt(1);
+
+  tab_strip_model->UpdateActiveTabInSplit(
+      tab_strip_model->GetTabAtIndex(0)->GetSplit().value(), 4,
+      TabStripModel::SplitUpdateType::kReplace);
+
+  // Make sure the dialog is shown, and fake clicking the button.
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+  EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
+
+  // Pull the dialog state and call the OnDialogOk method.
+  deletion_dialog_controller->SimulateOkButtonForTesting();
+
+  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
 }
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with

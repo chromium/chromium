@@ -205,6 +205,10 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<TestTabSearchPageHandler>(
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
     EXPECT_CALL(page_, HostWindowChanged()).Times(1);
+    feature_list_.InitWithFeatures(
+        {features::kTabstripDeclutter, features::kTabstripDedupe,
+         features::kSideBySide},
+        {});
 
     // Wait for the TabGroupSyncService to properly initialize before making any
     // changes to tab groups.
@@ -305,6 +309,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<Profile, DanglingUntriaged> profile2_;
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;
@@ -964,10 +969,8 @@ TEST_F(TabSearchPageHandlerTest,
 
 class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
  public:
-  TabSearchPageHandlerDeclutterTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabstripDeclutter, features::kTabstripDedupe}, {});
-  }
+  TabSearchPageHandlerDeclutterTest() = default;
+  ~TabSearchPageHandlerDeclutterTest() override = default;
 
   void SetUp() override {
     TabSearchPageHandlerTest::SetUp();
@@ -1020,7 +1023,6 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
