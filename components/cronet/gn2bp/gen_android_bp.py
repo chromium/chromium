@@ -3196,6 +3196,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       concatenated_hdrs_module.host_supported = (arch_name == 'host'
                                                  or (arch_name == 'common'
                                                      and module.host_supported))
+      # Disable cross host support for concatenated headers. By default all cc_genrule
+      # modules disables this. However, this module is created manually which follows
+      # a different codepath.
+      if concatenated_hdrs_module.host_supported:
+        concatenated_hdrs_module.host_cross_supported = False
       module.variant(arch_name).generated_headers.add(
           concatenated_hdrs_module.name)
 
