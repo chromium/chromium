@@ -57,6 +57,7 @@ class CustomizeButtonsHandler
   void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
+  void SetCustomizeChromeEntryChangedCallback(tabs::TabInterface* tab);
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
