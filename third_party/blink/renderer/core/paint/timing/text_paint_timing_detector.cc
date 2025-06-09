@@ -289,9 +289,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }
 
-    if (ltp_manager_ && (record->recorded_size > 0u) &&
-        !(record->node_ &&
-          ltp_manager_->IsUnrelatedSoftNavigationPaint(*(record->node_)))) {
+    if (ltp_manager_ && (record->recorded_size > 0u)) {
       ltp_manager_->MaybeUpdateLargestText(record);
     }
     keys_to_be_removed.push_back(key);

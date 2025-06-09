@@ -180,13 +180,8 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
-  PaintTimingDetector& paint_timing_detector =
-      frame_view->GetPaintTimingDetector();
-  if (paint_timing_detector.IsUnrelatedSoftNavigationPaint(node)) {
-    return false;
-  }
   ImagePaintTimingDetector& image_paint_timing_detector =
-      paint_timing_detector.GetImagePaintTimingDetector();
+      frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
   if (!image_paint_timing_detector.IsRecordingLargestImagePaint()) {
     return false;
   }
@@ -228,10 +223,6 @@ bool PaintTimingDetector::NotifyImagePaint(
   }
 
   Node* image_node = object.GetNode();
-  if (image_node &&
-      paint_timing_detector.IsUnrelatedSoftNavigationPaint(*image_node)) {
-    return false;
-  }
   HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
 
   if (element) {
@@ -523,10 +514,6 @@ void PaintTimingDetector::ReportIgnoredContent() {
 const LargestContentfulPaintDetails&
 PaintTimingDetector::LatestLcpDetailsForTest() {
   return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
-}
-
-bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
-  return false;
 }
 
 ScopedPaintTimingDetectorBlockPaintHook*

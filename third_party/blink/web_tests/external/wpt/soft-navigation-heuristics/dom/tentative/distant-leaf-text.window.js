@@ -2,6 +2,9 @@
 // META: script=/resources/testdriver-vendor.js
 // META: script=../../resources/soft-navigation-test-helper.js
 
+// This test is very similar to distant-leaf-text.window.js, but the leaf
+// node is text instead of an image.
+//
 // This test is intended to verify that when a distant leaf of a
 // deeply nested div element is attached to the DOM, its painting can
 // trigger a soft navigation.
@@ -37,11 +40,12 @@ promise_test(async (t) => {
       /*type=*/ 'soft-navigation',
       /*includeSoftNavigationObservations=*/ false,
       /*minNumEntries=*/ 1,
-  );
+      /*timeout=*/ 3000
+    );
   assert_equals(entries.length, 1, 'Expected exactly one soft navigation.');
   assert_equals(
       entries[0].name.replace(/.*\//, ''),
       'greeting',
       'URL ends with \'greeting\'.',
   );
-}, 'DOM: Distant leaf satisfies Soft Navigation paint criterion.');
+}, 'DOM: Distant leaf (text) satisfies Soft Navigation paint criterion.');

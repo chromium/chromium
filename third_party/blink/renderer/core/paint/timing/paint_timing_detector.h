@@ -134,7 +134,6 @@ class CORE_EXPORT PaintTimingDetector
   void ReportIgnoredContent();
 
   std::optional<PaintTimingVisualizer>& Visualizer() { return visualizer_; }
-  bool IsUnrelatedSoftNavigationPaint(const Node&);
 
   void Trace(Visitor* visitor) const;
 
