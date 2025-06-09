@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileDeserializationError"
-    enum="JsonDeserializationError" expires_after="2025-10-12">
+    enum="JsonDeserializationError" expires_after="2025-11-16">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>1456342</component>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
-    enum="BooleanSuccess" expires_after="2025-02-04">
+    enum="BooleanSuccess" expires_after="2025-11-16">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>1456342</component>
@@ -122,6 +122,8 @@ chromium-metrics-reviews@google.com.
     As of M102 for desktop and iOS and M103 for Android Chrome, any client may
     emit this metric. Prior to this, the metric was emitted by only clients in
     an enabled group that used the beacon file.
+
+    Expired 02/2025. Revived M139.
   </summary>
 </histogram>
 
@@ -281,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.InvalidStudyReason"
-    enum="VariationsInvalidStudyReason" expires_after="2025-06-22">
+    enum="VariationsInvalidStudyReason" expires_after="2025-11-16">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -292,7 +294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.LimitedEntropy.SeedRejectionReason"
     enum="VariationsLimitedEntropySeedRejectionReason"
-    expires_after="2025-09-28">
+    expires_after="2025-11-16">
   <owner>yulunz@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
