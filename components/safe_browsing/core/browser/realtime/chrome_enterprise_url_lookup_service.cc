@@ -81,10 +81,10 @@ ChromeEnterpriseRealTimeUrlLookupService::
                                    cache_manager,
                                    get_user_population_callback,
                                    referrer_chain_provider,
+                                   std::move(token_fetcher),
                                    pref_service,
                                    webui_delegate),
       connectors_service_(connectors_service),
-      token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       management_service_(management_service),
@@ -148,37 +148,6 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   return CanCheckSafeBrowsingDb() && !CanPerformFullURLLookup();
 }
 
-void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
-    const GURL& url,
-    RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info) {
-  token_fetcher_->Start(base::BindOnce(
-      &ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken,
-      weak_factory_.GetWeakPtr(), url, std::move(response_callback),
-      std::move(callback_task_runner), base::TimeTicks::Now(), tab_id,
-      std::move(referring_app_info)));
-}
-
-void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
-    const GURL& url,
-    RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::TimeTicks get_token_start_time,
-    SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info,
-    const std::string& access_token) {
-  if (shutting_down()) {
-    return;
-  }
-
-  MaybeSendRequest(url, access_token, std::move(response_callback),
-                   std::move(callback_task_runner),
-                   /* is_sampled_report */ false, tab_id,
-                   std::move(referring_app_info));
-}
-
 std::optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   DCHECK(connectors_service_);
@@ -236,11 +205,6 @@ ChromeEnterpriseRealTimeUrlLookupService::GetTrafficAnnotationTag() const {
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Enterprise";
-}
-
-void ChromeEnterpriseRealTimeUrlLookupService::Shutdown() {
-  RealTimeUrlLookupServiceBase::Shutdown();
-  token_fetcher_.reset();
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {

@@ -71,54 +71,15 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
                                    cache_manager,
                                    get_user_population_callback,
                                    referrer_chain_provider,
+                                   std::move(token_fetcher),
                                    pref_service,
                                    delegate),
       pref_service_(pref_service),
-      token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
       is_off_the_record_(is_off_the_record),
       variations_service_getter_(variations_service_getter),
       min_allowed_timestamp_for_referrer_chains_getter_(
           min_allowed_timestamp_for_referrer_chains_getter) {}
-
-void RealTimeUrlLookupService::GetAccessToken(
-    const GURL& url,
-    RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info) {
-  token_fetcher_->Start(base::BindOnce(
-      &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
-      url, std::move(response_callback), std::move(callback_task_runner),
-      base::TimeTicks::Now(), tab_id, std::move(referring_app_info)));
-}
-
-void RealTimeUrlLookupService::OnGetAccessToken(
-    const GURL& url,
-    RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    base::TimeTicks get_token_start_time,
-    SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info,
-    const std::string& access_token) {
-  if (shutting_down()) {
-    return;
-  }
-
-  base::UmaHistogramTimes("SafeBrowsing.RT.GetToken.Time",
-                          base::TimeTicks::Now() - get_token_start_time);
-  base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
-                            !access_token.empty());
-  MaybeSendRequest(url, access_token, std::move(response_callback),
-                   std::move(callback_task_runner),
-                   /* is_sampled_report */ false, tab_id,
-                   std::move(referring_app_info));
-}
-
-void RealTimeUrlLookupService::OnResponseUnauthorized(
-    const std::string& invalid_access_token) {
-  token_fetcher_->OnInvalidAccessToken(invalid_access_token);
-}
 
 RealTimeUrlLookupService::~RealTimeUrlLookupService() = default;
 
@@ -187,7 +148,6 @@ void RealTimeUrlLookupService::Shutdown() {
 
   // Clear state that was potentially bound to the lifetime of other
   // KeyedServices by the embedder.
-  token_fetcher_.reset();
   client_token_config_callback_ = ClientConfiguredForTokenFetchesCallback();
 }
 

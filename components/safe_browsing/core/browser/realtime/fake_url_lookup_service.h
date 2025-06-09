@@ -52,12 +52,6 @@ class FakeRealTimeUrlLookupService
   bool CanPerformFullURLLookupWithToken() const override;
   int GetReferrerUserGestureLimit() const override;
   bool CanSendPageLoadToken() const override;
-  void GetAccessToken(
-      const GURL& url,
-      safe_browsing::RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info) override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()

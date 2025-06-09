@@ -17,6 +17,7 @@ FakeRealTimeUrlLookupService::FakeRealTimeUrlLookupService()
             return safe_browsing::ChromeUserPopulation();
           }),
           /*referrer_chain_provider=*/nullptr,
+          /*token_fetcher=*/nullptr,
           /*pref_service=*/nullptr,
           /*webui_delegate=*/nullptr) {}
 
@@ -92,13 +93,6 @@ int FakeRealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
 bool FakeRealTimeUrlLookupService::CanSendPageLoadToken() const {
   return false;
 }
-
-void FakeRealTimeUrlLookupService::GetAccessToken(
-    const GURL& url,
-    safe_browsing::RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID session_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info) {}
 
 std::optional<std::string> FakeRealTimeUrlLookupService::GetDMTokenString()
     const {

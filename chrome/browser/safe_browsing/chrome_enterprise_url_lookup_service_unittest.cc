@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -40,8 +41,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/platform_test.h"
 
+using base::test::RunOnceClosure;
 using ::testing::_;
 using testing::DoAll;
 using testing::Return;
@@ -311,6 +314,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmTokenAndAccessToken) {
+  base::HistogramTester histogram_tester;
   EnableLocalIpAddressInEvents();
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -367,6 +371,46 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   // Check the response is cached.
   EXPECT_NE(nullptr, GetCachedRealTimeUrlVerdict(url));
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.RT.HasAccessTokenFromFetcher", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.RT.HasAccessTokenFromFetcher.Enterprise", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("SafeBrowsing.RT.GetToken.TimeTaken",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.RT.GetToken.TimeTaken.Enterprise", /*expected_count=*/1);
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestStartLookup_OnInvalidAccessTokenCalledResponseCodeUnauthorized) {
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+
+  test_url_loader_factory_.ClearResponses();
+  auto head = network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED);
+  network::URLLoaderCompletionStatus status(net::OK);
+  test_url_loader_factory_.AddResponse(GURL(kRealTimeLookupUrl),
+                                       std::move(head), "", status);
+
+  GURL url("http://example.test/");
+  base::MockCallback<RTLookupResponseCallback> response_callback;
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+
+  EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
+  FulfillAccessTokenRequest("invalid_token_string");
+  EXPECT_CALL(*raw_token_fetcher(),
+              OnInvalidAccessToken("invalid_token_string"))
+      .Times(1);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
+                                     /* is_cached_response */ false, _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,

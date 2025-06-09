@@ -90,7 +90,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
   std::unique_ptr<enterprise_connectors::ClientMetadata> GetClientMetadata()
       const override;
   std::string GetMetricSuffix() const override;
-  void Shutdown() override;
   bool CanCheckUrl(const GURL& url) override;
 
  private:
@@ -100,22 +99,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanPerformFullURLLookupWithToken() const override;
   int GetReferrerUserGestureLimit() const override;
   bool CanSendPageLoadToken() const override;
-  void GetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info) override;
-
-  // Called when the access token is obtained from |token_fetcher_|.
-  void OnGetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::TimeTicks get_token_start_time,
-      SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info,
-      const std::string& access_token);
 
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
@@ -125,9 +108,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
   // Unowned pointer to ConnectorsService, used to get a DM token.
   raw_ptr<enterprise_connectors::ConnectorsServiceBase, DanglingUntriaged>
       connectors_service_;
-
-  // The token fetcher used for getting access token.
-  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;

@@ -878,6 +878,15 @@ TEST_F(RealTimeUrlLookupServiceTest,
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 1,
                                 /* expected_count */ 1);
+  histograms.ExpectUniqueSample("SafeBrowsing.RT.HasAccessTokenFromFetcher",
+                                /*sample=*/true, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "SafeBrowsing.RT.HasAccessTokenFromFetcher.Consumer", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount("SafeBrowsing.RT.GetToken.TimeTaken",
+                              /*expected_count=*/1);
+  histograms.ExpectTotalCount("SafeBrowsing.RT.GetToken.TimeTaken.Consumer",
+                              /*expected_count=*/1);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,

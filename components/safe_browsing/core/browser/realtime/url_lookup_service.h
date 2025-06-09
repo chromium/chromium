@@ -112,15 +112,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookupWithToken() const override;
   int GetReferrerUserGestureLimit() const override;
   bool CanSendPageLoadToken() const override;
-  void GetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info) override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
-  void OnResponseUnauthorized(const std::string& invalid_access_token) override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
   void MaybeLogLastProtegoPingTimeToPrefs(bool sent_with_token) override;
@@ -131,21 +124,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const internal::ReferringAppInfo& referring_app_info,
       RTLookupRequest& request) override;
 
-  // Called when the access token is obtained from |token_fetcher_|.
-  void OnGetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::TimeTicks get_token_start_time,
-      SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info,
-      const std::string& access_token);
-
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
-
-  // The token fetcher used for getting access token.
-  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
   // The callback via which the client of this component indicates whether they
   // are configured to support token fetches.
