@@ -186,6 +186,11 @@ export class RegionSelectionElement extends PolymerElement {
     this.isSelecting = false;
   }
 
+  handlePostSelectionCleared(): void {
+    this.hasSelected = false;
+    this.isSelecting = false;
+  }
+
   cancelGesture() {
     this.clearCanvas();
 
