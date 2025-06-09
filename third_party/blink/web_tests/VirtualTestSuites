@@ -2908,7 +2908,7 @@
     ],
     "args": ["--enable-features=SelectParserRelaxation",
              "--disable-features=CustomizableSelect"],
-    "expires": "Aug 1, 2025",
+    "expires": "Oct 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   "This verifies that the origin trial opt-out for select-parser-relaxation",
@@ -2923,7 +2923,7 @@
       "external/wpt/html/syntax/parsing"
     ],
     "args": ["--enable-features=SelectParserRelaxationOptOut,SelectParserRelaxation,CustomizableSelect,SelectListBoxSlotAnything,InputClosesSelect"],
-    "expires": "Jun 1, 2025",
+    "expires": "Oct 1, 2025",
     "owners": ["masonf@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -2948,7 +2948,7 @@
       "html5lib/generated"
     ],
     "args": ["--disable-features=CustomizableSelect,SelectParserRelaxation"],
-    "expires": "Aug 1, 2025",
+    "expires": "Oct 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -2956,7 +2956,7 @@
     "platforms": ["Linux"],
     "bases": [],
     "args": ["--disable-features=CustomizableSelectInPage", "--enable-features=CustomizableSelect"],
-    "expires": "Aug 1, 2025",
+    "expires": "Aug 1, 2026",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -2966,7 +2966,7 @@
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html"
     ],
     "args": ["--enable-features=InputClosesSelect,SelectParserRelaxation"],
-    "expires": "Aug 1, 2025",
+    "expires": "Aug 1, 2026",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
