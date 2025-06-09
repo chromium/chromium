@@ -10,6 +10,8 @@ static void* kObservingContext = &kObservingContext;
 
 @implementation RenderWidgetUIView
 
+#pragma mark - Public
+
 - (instancetype)initWithWidget:
     (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
   self = [self init];
@@ -21,19 +23,33 @@ static void* kObservingContext = &kObservingContext;
   return self;
 }
 
-- (void)layoutSubviews {
-  CHECK(_view);
-  [super layoutSubviews];
-  _view->UpdateScreenInfo();
-
-  // TODO(dtapuska): This isn't correct, we need to figure out when the window
-  // gains/loses focus.
-  _view->SetActive(true);
+- (void)updateView:(UIScrollView*)view {
+  [view addSubview:self];
+  view.scrollEnabled = NO;
+  // Remove all existing gestureRecognizers since the header might be reused.
+  for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
+    [view removeGestureRecognizer:recognizer];
+  }
+  [view addObserver:self
+         forKeyPath:NSStringFromSelector(@selector(contentInset))
+            options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+            context:kObservingContext];
 }
+
+- (void)removeView {
+  UIScrollView* view = (UIScrollView*)[self superview];
+  [view removeObserver:self
+            forKeyPath:NSStringFromSelector(@selector(contentInset))];
+  [self removeFromSuperview];
+}
+
+#pragma mark - CALayerFrameSinkProvider
 
 - (ui::CALayerFrameSink*)frameSink {
   return _view.get();
 }
+
+#pragma mark - NSObject
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
@@ -50,24 +66,16 @@ static void* kObservingContext = &kObservingContext;
   }
 }
 
-- (void)removeView {
-  UIScrollView* view = (UIScrollView*)[self superview];
-  [view removeObserver:self
-            forKeyPath:NSStringFromSelector(@selector(contentInset))];
-  [self removeFromSuperview];
-}
+#pragma mark - UIView
 
-- (void)updateView:(UIScrollView*)view {
-  [view addSubview:self];
-  view.scrollEnabled = NO;
-  // Remove all existing gestureRecognizers since the header might be reused.
-  for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
-    [view removeGestureRecognizer:recognizer];
-  }
-  [view addObserver:self
-         forKeyPath:NSStringFromSelector(@selector(contentInset))
-            options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-            context:kObservingContext];
+- (void)layoutSubviews {
+  CHECK(_view);
+  [super layoutSubviews];
+  _view->UpdateScreenInfo();
+
+  // TODO(dtapuska): This isn't correct, we need to figure out when the window
+  // gains/loses focus.
+  _view->SetActive(true);
 }
 
 @end
