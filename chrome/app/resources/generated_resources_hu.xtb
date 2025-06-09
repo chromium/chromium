@@ -275,7 +275,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="117916940443676133">Biztonsági hardverkulcsát nem védi PIN-kód. A bejelentkezési adatok kezeléséhez előbb hozzon létre PIN-kódot.</translation>
 <translation id="1179400851034021914">Az IBAN érvénytelen</translation>
-<translation id="1179902906564467236">Kövesse a telefonon megjelenő utasításokat, vagy használja a Fényképezőgép alkalmazást</translation>
+<translation id="1179902906564467236">Kövesse a telefonon megjelenő utasításokat, vagy használja a Kamera alkalmazást</translation>
 <translation id="1180117276105724040">Ablakok visszaállítása az előző munkamenetből…</translation>
 <translation id="118057123461613219">Hatalmas megtakarítás</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
@@ -6990,7 +6990,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="59174027418879706">Engedélyezve</translation>
 <translation id="5919305207330938913">Az összes gyűjtött adat felhasználása a <ph name="BEGIN_LINK" />Google Adatvédelmi irányelveinek<ph name="END_LINK" /> megfelelően történik.</translation>
-<translation id="5919486630433391408">A firmware-frissítéseket a rendszergazda letiltotta.</translation>
 <translation id="5920543303088087579">A hálózathoz való csatlakozást letiltotta a rendszergazda</translation>
 <translation id="5922963926582976524">Leválás az azonnali hotspot hálózatáról</translation>
 <translation id="5924047253200400718">Kérjen segítséget <ph name="SCANNING_STATUS" /></translation>

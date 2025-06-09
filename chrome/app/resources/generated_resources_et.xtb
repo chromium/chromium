@@ -6982,7 +6982,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="59174027418879706">Lubatud</translation>
 <translation id="5919305207330938913">Kõiki kogutud andmeid kasutatakse kooskõlas Google’i <ph name="BEGIN_LINK" />privaatsuseeskirjadega<ph name="END_LINK" />.</translation>
-<translation id="5919486630433391408">Administraator on püsivaravärskendused keelanud.</translation>
 <translation id="5920543303088087579">Administraator on selle võrguga ühenduse loomise keelanud</translation>
 <translation id="5922963926582976524">Vahetu kuumkoha võrgu ühenduse katkestamine</translation>
 <translation id="5924047253200400718">Hankige abi<ph name="SCANNING_STATUS" /></translation>
@@ -9967,7 +9966,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8037801708772278989">Kontrolliti just praegu</translation>
 <translation id="8038111231936746805">(vaikimisi)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Ühte faili kopeeritakse teenusesse <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} faili kopeeritakse teenusesse <ph name="CLOUD_PROVIDER" />}}</translation>
-<translation id="8039525676147630657">See Chrome'i rakendus lõpetab pärast ChromeOS-i versiooni värskendamist töötamise. Salvestage rakenduse andmed, mida soovite säilitada. Valikute kohta lisateabe saamiseks võtke ühendust rakenduse arendaja või IT-tugitiimiga.</translation>
+<translation id="8039525676147630657">See Chrome'i rakendus lõpetab pärast ChromeOS-i versiooni värskendamist töötamise. Salvestage rakenduse andmed, mida soovite säilitada. Valikute kohta lisateabe saamiseks võtke ühendust rakenduse arendaja või enda IT-tugitiimiga.</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8041093619605951337">Rõõmus</translation>
 <translation id="8041267120753677077">Teie telefoni rakenduste voogesitamine</translation>

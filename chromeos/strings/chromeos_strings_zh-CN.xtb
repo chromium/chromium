@@ -221,7 +221,6 @@
 <translation id="181434555916624618">目前，系统不会显示包含某个人的结果。请试试其他提示。</translation>
 <translation id="1815850098929213707">所选按键为 <ph name="KEYS" />。点按按钮即可修改控件</translation>
 <translation id="1818174214124933000">选择发送后，系统会将您的反馈和内容（如下所示）发送给 Google 供人工审核。我们会根据<ph name="LINK_POLICY_BEGIN" />《隐私权政策》<ph name="LINK_POLICY_END" />和<ph name="LINK_TERMS_OF_SERVICE_BEGIN" />《Google 服务条款》<ph name="LINK_TERMS_OF_SERVICE_END" />使用这些信息训练或改进我们的产品和服务。</translation>
-<translation id="1821075635029692203">老师发送了某个不受支持的资源，请提醒老师。</translation>
 <translation id="1823120442877418684">物体</translation>
 <translation id="1827738518074806965">画廊</translation>
 <translation id="183287940576828840">令人反感/不安全</translation>
@@ -1053,7 +1052,7 @@
 <translation id="5655283760733841251">调高键盘亮度</translation>
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="5655776422854483175">无打印作业</translation>
-<translation id="5659593005791499971">电子邮件</translation>
+<translation id="5659593005791499971">邮箱</translation>
 <translation id="5662240986744577912">使用切换开关可启用或停用隐私保护屏幕</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -1815,7 +1814,7 @@
 <translation id="9003499805101629690">披萨</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="9017411601860840405">霓虹灯</translation>
-<translation id="901834265349196618">电子邮件</translation>
+<translation id="901834265349196618">邮箱</translation>
 <translation id="9022897536196898720">花朵</translation>
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9025198690966128418">用作个人设备</translation>

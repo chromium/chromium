@@ -5638,7 +5638,7 @@ Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens wor
 
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5151099177901233471">Rapportage van tijdzone-informatie van apparaat aanzetten</translation>
-<translation id="5151163911478747031">Toeschrijving van extensie in NTP-voettekst uitzetten</translation>
+<translation id="5151163911478747031">Toeschrijving van extensie in de voettekst van de pagina Nieuw tabblad uitzetten</translation>
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
@@ -10964,7 +10964,7 @@ Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangez
 Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
 
 Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
-<translation id="883025651704099882">Toeschrijving van extensie in NTP-voettekst aanzetten</translation>
+<translation id="883025651704099882">Toeschrijving van extensie in de voettekst van de pagina Nieuw tabblad aanzetten</translation>
 <translation id="8830717323204407209">Hiermee kan de promotie voor de extensie voor inloggegevensproviders worden getoond aan gebruikers</translation>
 <translation id="8832829916385857156">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>

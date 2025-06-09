@@ -2735,7 +2735,7 @@
 <translation id="5651323159439184939">牵引送纸</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
 <translation id="5654965123204121933">下述网址未包含必需的替换字符串“<ph name="SEARCH_TERMS_REPLACEMENT" />”：<ph name="SEARCH_URL" /></translation>
-<translation id="5659593005791499971">电子邮件</translation>
+<translation id="5659593005791499971">邮箱</translation>
 <translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="5667827081946850877">有声读物</translation>
@@ -4639,7 +4639,7 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建议：<ph name="MARKUP_2" />确保有数据网络连接<ph name="MARKUP_3" />稍后重新加载此网页<ph name="MARKUP_4" />检查您输入的地址是否正确<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">您的本地文件将在 <ph name="HOURS" /> 小时后被删除</translation>
-<translation id="8968766641738584599">保存卡</translation>
+<translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8971063699422889582">服务器的证书已过期。</translation>
 <translation id="8975012916872825179">包括电话号码、电子邮件地址和送货地址等信息</translation>
@@ -4664,7 +4664,7 @@
 <translation id="9012194306129927220">现在，您可以使用 Affirm 或 Zip 分期付款</translation>
 <translation id="9014705027639070815">您访问的网站可请求 Chrome 提供相关信息，以便衡量各自的广告效果。Chrome 允许网站收集有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
 <translation id="9018120810758822233">输入“<ph name="CREDIT_CARD" />”的安全码</translation>
-<translation id="901834265349196618">电子邮件</translation>
+<translation id="901834265349196618">邮箱</translation>
 <translation id="90196294733273307">显示了信用卡详细信息的对话框</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可通过分享链接、创建二维码、投放等操作分享此标签页</translation>

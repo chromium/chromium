@@ -249,7 +249,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2145315049852051678">Chrome thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo nếu có nội dung cần được xem xét.</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2158408438301413340">Chrome không thể kiểm tra một số mật khẩu</translation>
-<translation id="2163089732491971196">Nhập cụm mật khẩu của bạn để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
+<translation id="2163089732491971196">Để sử dụng và lưu dữ liệu Chrome vào Tài khoản Google của bạn, hãy nhập cụm mật khẩu</translation>
 <translation id="2166228530126694506">Phiên bản <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">Tính năng mô tả hình ảnh đang tắt</translation>
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
@@ -648,7 +648,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3976396876660209797">Xóa và tạo lại lối tắt này</translation>
 <translation id="3985022125189960801">Thêm lại một trang web nếu bạn muốn thêm trang này vào nhóm những trang web có thể đoán sở thích của bạn</translation>
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
-<translation id="3987993985790029246">Sao chép liên kết</translation>
+<translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ trong Tài khoản Google của bạn}other{# mật khẩu bị lộ trong Tài khoản Google của bạn}}</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
