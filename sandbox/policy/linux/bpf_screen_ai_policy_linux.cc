@@ -72,8 +72,14 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
 #if defined(__arm__) || defined(__aarch64__)
     case __NR_prctl: {
       const Arg<int> option(0);
-      return If(option == PR_SVE_GET_VL, Allow())
-          .Else(BPFBasePolicy::EvaluateSyscall(system_call_number));
+      return Switch(option)
+          .Cases({PR_SVE_GET_VL,
+#if defined(__aarch64__)
+                  PR_SME_GET_VL
+#endif
+                 },
+                 Allow())
+          .Default(BPFBasePolicy::EvaluateSyscall(system_call_number));
     }
 #endif
 

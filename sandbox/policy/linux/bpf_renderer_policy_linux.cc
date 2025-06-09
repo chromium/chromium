@@ -33,6 +33,7 @@ using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::Error;
 using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
+using sandbox::bpf_dsl::Switch;
 
 namespace sandbox {
 namespace policy {
@@ -119,8 +120,14 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
 #if defined(__arm__) || defined(__aarch64__)
     case __NR_prctl: {
       const Arg<int> option(0);
-      return If(option == PR_SVE_GET_VL, Allow())
-          .Else(BPFBasePolicy::EvaluateSyscall(sysno));
+      return Switch(option)
+          .Cases({PR_SVE_GET_VL,
+#if defined(__aarch64__)
+                  PR_SME_GET_VL
+#endif
+                 },
+                 Allow())
+          .Default(BPFBasePolicy::EvaluateSyscall(sysno));
     }
 #endif
     case __NR_prlimit64:
