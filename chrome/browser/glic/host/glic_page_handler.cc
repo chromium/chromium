@@ -660,16 +660,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
-    glic_service_->metrics()->OnUserInputSubmitted(mode);
+    glic_service_->OnUserInputSubmitted(mode);
   }
 
-  void OnResponseStarted() override {
-    glic_service_->metrics()->OnResponseStarted();
-  }
+  void OnRequestStarted() override { glic_service_->OnRequestStarted(); }
 
-  void OnResponseStopped() override {
-    glic_service_->metrics()->OnResponseStopped();
-  }
+  void OnResponseStarted() override { glic_service_->OnResponseStarted(); }
+
+  void OnResponseStopped() override { glic_service_->OnResponseStopped(); }
 
   void OnSessionTerminated() override {
     glic_service_->metrics()->OnSessionTerminated();

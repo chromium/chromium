@@ -208,6 +208,11 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
+  void OnRequestStarted();
+  void OnResponseStarted();
+  void OnResponseStopped();
+
   // Returns true if the associated ActorCoordinator is active on the given
   // `tab`. This can be used by callers to customize certain behaviour that
   // might interfere with the ActorCoordinator.

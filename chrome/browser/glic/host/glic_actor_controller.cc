@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/ui/browser.h"
@@ -76,6 +77,13 @@ void OnGetContextFromFocusedTab(
 }
 
 }  // namespace
+
+// A wrapper class around actor::AggregatedJournal::PendingAsyncEntry for
+// dependency purposes.
+class GlicActorController::OngoingRequest {
+ public:
+  std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry_;
+};
 
 GlicActorController::GlicActorController(Profile* profile) : profile_(profile) {
   CHECK(profile_);
@@ -188,6 +196,38 @@ void GlicActorController::ResumeTask(
 
   glic::FetchPageContext(tab_of_resumed_task, context_options,
                          /*include_actionable_data=*/true, std::move(callback));
+}
+
+void GlicActorController::OnUserInputSubmitted() {
+  current_request_ = std::make_unique<OngoingRequest>();
+  current_request_->journal_entry_ =
+      actor::ActorKeyedService::Get(profile_.get())
+          ->GetJournal()
+          .CreatePendingAsyncEntry(/*url=*/std::string(), actor::TaskId(),
+                                   "Request", /*details=*/"User Input");
+}
+
+void GlicActorController::OnRequestStarted() {
+  auto& journal = actor::ActorKeyedService::Get(profile_.get())->GetJournal();
+
+  if (!current_request_) {
+    current_request_ = std::make_unique<OngoingRequest>();
+    current_request_->journal_entry_ =
+        journal.CreatePendingAsyncEntry(/*url=*/std::string(), actor::TaskId(),
+                                        "Request", /*details=*/"Multi-turn");
+  } else {
+    journal.Log(/*url=*/GURL(), actor::TaskId(), "Request", "Request Started");
+  }
+}
+
+void GlicActorController::OnResponseStarted() {
+  actor::ActorKeyedService::Get(profile_.get())
+      ->GetJournal()
+      .Log(/*url=*/GURL(), actor::TaskId(), "Request", "Response Started");
+}
+
+void GlicActorController::OnResponseStopped() {
+  current_request_.reset();
 }
 
 bool GlicActorController::IsActorCoordinatorActingOnTab(

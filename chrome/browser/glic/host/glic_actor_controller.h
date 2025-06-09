@@ -59,6 +59,13 @@ class GlicActorController {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
+  // These may not be necessarily generate actor tasks, but they are
+  // useful for recording in the ActorJournal.
+  void OnUserInputSubmitted();
+  void OnRequestStarted();
+  void OnResponseStarted();
+  void OnResponseStopped();
+
   bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
 
   actor::ActorCoordinator& GetActorCoordinatorForTesting(
@@ -89,12 +96,15 @@ class GlicActorController {
   base::WeakPtr<const GlicActorController> GetWeakPtr() const;
   base::WeakPtr<GlicActorController> GetWeakPtr();
 
+  class OngoingRequest;
+
   raw_ptr<Profile> profile_;
   // The most recently created task, or nullptr if no task has ever been
   // created.
   raw_ptr<actor::ActorTask> actor_task_ = nullptr;
   // True if and only if a task is in the process of being started.
   bool starting_task_ = false;
+  std::unique_ptr<OngoingRequest> current_request_;
   base::WeakPtrFactory<GlicActorController> weak_ptr_factory_{this};
 };
 

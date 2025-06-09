@@ -501,6 +501,9 @@ interface WebClientHandler {
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
 
+  // Called when the web client starts a request.
+  OnRequestStarted();
+
   // Called when the web client starts to respond.
   OnResponseStarted();
 

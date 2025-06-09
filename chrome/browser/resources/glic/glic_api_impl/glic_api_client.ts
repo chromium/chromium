@@ -543,6 +543,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.sender.requestNoResponse('glicBrowserOnUserInputSubmitted', {mode});
   }
 
+  onRequestStarted(): void {
+    this.sender.requestNoResponse('glicBrowserOnRequestStarted', undefined);
+  }
+
   onResponseStarted(): void {
     this.sender.requestNoResponse('glicBrowserOnResponseStarted', undefined);
   }

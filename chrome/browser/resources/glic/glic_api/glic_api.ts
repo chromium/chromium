@@ -556,9 +556,11 @@ export declare interface CreateTabOptions {
  * Provides measurement-related functionality to the Glic web client.
  *
  * The typical sequence of events should be either:
- *  onUserInputSubmitted -> onResponseStarted -> onResponseStopped -> (repeat)
+ *  (onUserInputSubmitted -> (onRequestStarted -> onResponseStarted ->
+ *                            onResponseStopped)*
+ *  )*
  * or
- *  onUserInputSubmitted -> onResponseStopped -> (repeat)
+ *  onUserInputSubmitted -> onResponseStopped -> * (repeat)
  *
  * This is the core flow for metrics and the web client should do its best to
  * provide accurate and timely callbacks.
@@ -569,6 +571,12 @@ export declare interface CreateTabOptions {
 export declare interface GlicBrowserHostMetrics {
   /** Called when the user has submitted input via the web client. */
   onUserInputSubmitted?(mode: WebClientMode): void;
+
+  /**
+   * Called when the web client has submitted a request to the server
+   * awaiting a response.
+   */
+  onRequestStarted?(): void;
 
   /**
    * Called when the web client has sufficiently processed the input such that

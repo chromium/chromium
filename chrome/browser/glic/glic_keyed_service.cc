@@ -415,6 +415,33 @@ void GlicKeyedService::ResumeActorTask(
   actor_controller_->ResumeTask(task_id, context_options, std::move(callback));
 }
 
+void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
+  metrics_->OnUserInputSubmitted(mode);
+  if (actor_controller_) {
+    actor_controller_->OnUserInputSubmitted();
+  }
+}
+
+void GlicKeyedService::OnRequestStarted() {
+  if (actor_controller_) {
+    actor_controller_->OnRequestStarted();
+  }
+}
+
+void GlicKeyedService::OnResponseStarted() {
+  metrics_->OnResponseStarted();
+  if (actor_controller_) {
+    actor_controller_->OnResponseStarted();
+  }
+}
+
+void GlicKeyedService::OnResponseStopped() {
+  metrics_->OnResponseStarted();
+  if (actor_controller_) {
+    actor_controller_->OnResponseStopped();
+  }
+}
+
 bool GlicKeyedService::IsActorCoordinatorActingOnTab(
     const content::WebContents* tab) const {
   return actor_controller_ &&
