@@ -2082,7 +2082,7 @@
   {
     "name": "default-angle-vulkan",
     "owners": ["syoussefi@chromium.org"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "default-browser-banner-promo",
@@ -10096,7 +10096,7 @@
   {
     "name": "vulkan-from-angle",
     "owners": [ "syoussefi@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
