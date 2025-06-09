@@ -321,3 +321,34 @@ void EnclaveAuthenticatorTestBase::SetTrustedVaultSlowAndCacheCallback() {
           ->GetPrimaryMainFrame(),
       std::move(connection));
 }
+
+void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
+    const std::string& pin_value) {
+  EnclaveManager* enclave_manager =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+          browser()->profile());
+  ASSERT_TRUE(enclave_manager);
+
+  if (!enclave_manager->is_loaded()) {
+    base::test::TestFuture<void> load_future;
+    enclave_manager->Load(load_future.GetCallback());
+    ASSERT_TRUE(load_future.Wait());
+  }
+
+  enclave_manager->StoreKeys(
+      kSyncGaiaId,
+      {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                            std::end(kSecurityDomainSecret))},
+      /*last_key_version=*/0);
+
+  base::test::TestFuture<bool> add_device_future;
+  enclave_manager->AddDeviceAndPINToAccount(
+      "123456",
+      /*previous_pin_public_key=*/std::nullopt,
+      add_device_future.GetCallback());
+  ASSERT_TRUE(add_device_future.Wait()) << "AddDeviceAndPINToAccount timed out";
+  ASSERT_TRUE(add_device_future.Get()) << "AddDeviceAndPINToAccount failed";
+
+  ASSERT_TRUE(enclave_manager->is_ready());
+  ASSERT_TRUE(enclave_manager->has_wrapped_pin());
+}

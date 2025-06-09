@@ -21,6 +21,8 @@ class CombinedSelectorSheetView : public AuthenticatorRequestSheetView,
   METADATA_HEADER(CombinedSelectorSheetView, AuthenticatorRequestSheetView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCombinedSelectorSheetViewId);
+
   explicit CombinedSelectorSheetView(
       std::unique_ptr<CombinedSelectorSheetModel> model);
 

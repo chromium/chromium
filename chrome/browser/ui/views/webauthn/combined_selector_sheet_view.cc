@@ -29,9 +29,14 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CombinedSelectorSheetView,
+                                      kCombinedSelectorSheetViewId);
+
 CombinedSelectorSheetView::CombinedSelectorSheetView(
     std::unique_ptr<CombinedSelectorSheetModel> model)
-    : AuthenticatorRequestSheetView(std::move(model)) {}
+    : AuthenticatorRequestSheetView(std::move(model)) {
+  SetProperty(views::kElementIdentifierKey, kCombinedSelectorSheetViewId);
+}
 
 CombinedSelectorSheetView::~CombinedSelectorSheetView() = default;
 

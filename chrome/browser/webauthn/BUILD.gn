@@ -37,6 +37,7 @@ if (!is_android) {
       "//crypto:test_support",
       "//device/fido:fido",
       "//device/fido:test_support",
+      "//google_apis",
       "//net:net",
       "//testing/gmock",
       "//testing/gtest",
