@@ -74,7 +74,6 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   // implies we should (opera doesn't either)
   Member<SVGPoint> from_point_;
   Member<SVGPoint> to_point_;
-  Member<SVGPoint> to_point_at_end_of_duration_;
 
   Path path_;
   Path animation_path_;

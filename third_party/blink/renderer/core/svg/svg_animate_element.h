@@ -124,7 +124,6 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   Member<SVGPropertyBase> from_property_;
   Member<SVGPropertyBase> to_property_;
-  Member<SVGPropertyBase> to_at_end_of_duration_property_;
 
  protected:
   Member<const SVGAnimatedPropertyBase> target_property_;

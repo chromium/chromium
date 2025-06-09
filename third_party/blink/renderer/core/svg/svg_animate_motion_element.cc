@@ -199,7 +199,6 @@ void SVGAnimateMotionElement::CalculateFromAndToValues(
     const String& to_string) {
   from_point_ = ParsePoint(from_string);
   to_point_ = ParsePoint(to_string);
-  to_point_at_end_of_duration_ = to_point_;
 }
 
 void SVGAnimateMotionElement::CalculateFromAndByValues(
@@ -211,7 +210,6 @@ void SVGAnimateMotionElement::CalculateFromAndByValues(
   // of (0,0).
   to_point_->SetValue(to_point_->Value() +
                       from_point_->Value().OffsetFromOrigin());
-  to_point_at_end_of_duration_ = to_point_;
 }
 
 void SVGAnimateMotionElement::CalculateValues(
@@ -219,9 +217,6 @@ void SVGAnimateMotionElement::CalculateValues(
     HeapVector<Member<SVGPropertyBase>>& out_values) {
   for (const auto& value : values) {
     out_values.push_back(ParsePoint(value));
-  }
-  if (!out_values.empty()) {
-    to_point_at_end_of_duration_ = &To<SVGPoint>(*out_values.back());
   }
 }
 
@@ -233,10 +228,15 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   PointAndTangent position;
   if (GetAnimationMode() != kPathAnimation) {
+    // Values-animation accumulates using the last values entry corresponding to
+    // the end of duration time.
+    const SVGPropertyBase* to_point_at_end_of_duration_value =
+        GetAnimationMode() == kValuesAnimation ? ValueAtEndOfDuration()
+                                               : to_point_.Get();
     const gfx::PointF& from_point = from_point_->Value();
     const gfx::PointF& to_point = to_point_->Value();
     const gfx::PointF& to_point_at_end_of_duration =
-        to_point_at_end_of_duration_->Value();
+        To<SVGPoint>(*to_point_at_end_of_duration_value).Value();
     position.point =
         gfx::PointF(ComputeAnimatedNumber(parameters, percentage, repeat_count,
                                           from_point.x(), to_point.x(),
@@ -313,7 +313,6 @@ AnimationMode SVGAnimateMotionElement::CalculateAnimationMode() {
 void SVGAnimateMotionElement::Trace(Visitor* visitor) const {
   visitor->Trace(from_point_);
   visitor->Trace(to_point_);
-  visitor->Trace(to_point_at_end_of_duration_);
   SVGAnimationElement::Trace(visitor);
 }
 

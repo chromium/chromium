@@ -600,12 +600,7 @@ void SVGAnimateElement::CalculateAnimationValue(
   if (GetCalcMode() == kCalcModeDiscrete)
     percentage = percentage < 0.5 ? 0 : 1;
 
-  // Values-animation accumulates using the last values entry corresponding to
-  // the end of duration time.
   SVGPropertyBase* animated_value = animation_value.property_value;
-  SVGPropertyBase* to_at_end_of_duration_value =
-      to_at_end_of_duration_property_ ? to_at_end_of_duration_property_
-                                      : to_property_;
   SVGPropertyBase* from_value = GetAnimationMode() == kToAnimation
                                     ? animated_value
                                     : from_property_.Get();
@@ -622,6 +617,12 @@ void SVGAnimateElement::CalculateAnimationValue(
         GetAnimationMode(), percentage, from_value, to_value);
     return;
   }
+
+  // Values-animation accumulates using the last values entry corresponding to
+  // the end of duration time.
+  SVGPropertyBase* to_at_end_of_duration_value =
+      GetAnimationMode() == kValuesAnimation ? ValueAtEndOfDuration()
+                                             : to_property_.Get();
 
   SMILAnimationEffectParameters parameters = ComputeEffectParameters();
   animated_value->CalculateAnimatedValue(
@@ -691,9 +692,6 @@ void SVGAnimateElement::CalculateValues(
     out_values.push_back(ParseValue(value));
     values_is_inherit_.push_back(
         PropertyValueType(IsAnimatingCSSProperty(), value) == kInheritValue);
-  }
-  if (!out_values.empty()) {
-    to_at_end_of_duration_property_ = out_values.back();
   }
 }
 
@@ -802,7 +800,6 @@ void SVGAnimateElement::WillChangeAnimatedType() {
   InvalidateValues();
   from_property_.Clear();
   to_property_.Clear();
-  to_at_end_of_duration_property_.Clear();
 }
 
 void SVGAnimateElement::DidChangeAnimatedType() {
@@ -847,7 +844,6 @@ void SVGAnimateElement::SetAttributeType(
 void SVGAnimateElement::Trace(Visitor* visitor) const {
   visitor->Trace(from_property_);
   visitor->Trace(to_property_);
-  visitor->Trace(to_at_end_of_duration_property_);
   visitor->Trace(target_property_);
   SVGAnimationElement::Trace(visitor);
 }

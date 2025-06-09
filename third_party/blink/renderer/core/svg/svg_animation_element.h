@@ -112,6 +112,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   void WillChangeAnimationTarget() override;
   void AnimationAttributeChanged();
   void InvalidateValues();
+  SVGPropertyBase* ValueAtEndOfDuration() const { return values_.back(); }
 
   struct Keyframe {
     wtf_size_t from_index = kNotFound;
