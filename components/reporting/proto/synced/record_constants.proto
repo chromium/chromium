@@ -143,6 +143,9 @@ enum Destination {
   // the desktop status report.
   DESKTOP_INTERMEDIATE_STATUS_REPORT = 37;
 
+  // |DATA_LOST_ACTIVITY| is for reporting data lost activity.
+  DATA_LOST_ACTIVITY = 38;
+
   reserved 8;
 }
 
