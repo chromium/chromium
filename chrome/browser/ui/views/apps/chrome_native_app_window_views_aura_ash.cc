@@ -121,21 +121,21 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
       frame_window_observation_{this};
 };
 
-class ChromeNativeAppNonClientView : public views::ClientView {
+class ChromeNativeAppClientView : public views::ClientView {
  public:
-  ChromeNativeAppNonClientView(views::Widget* frame,
-                               ChromeNativeAppWindowViewsAuraAsh* app_window,
-                               bool has_non_standard_frame,
-                               bool draw_non_standard_frame)
+  ChromeNativeAppClientView(views::Widget* frame,
+                            ChromeNativeAppWindowViewsAuraAsh* app_window,
+                            bool has_non_standard_frame,
+                            bool draw_non_standard_frame)
       : views::ClientView(frame, app_window),
         has_non_standard_frame_(has_non_standard_frame),
         draw_non_standard_frame_(draw_non_standard_frame) {}
 
-  ChromeNativeAppNonClientView(const ChromeNativeAppNonClientView&) = delete;
-  ChromeNativeAppNonClientView& operator=(const ChromeNativeAppNonClientView&) =
+  ChromeNativeAppClientView(const ChromeNativeAppClientView&) = delete;
+  ChromeNativeAppClientView& operator=(const ChromeNativeAppClientView&) =
       delete;
 
-  ~ChromeNativeAppNonClientView() override = default;
+  ~ChromeNativeAppClientView() override = default;
 
   // views::ClientView:
   void UpdateWindowRoundedCorners(
@@ -385,7 +385,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
 
 views::ClientView* ChromeNativeAppWindowViewsAuraAsh::CreateClientView(
     views::Widget* widget) {
-  return new ChromeNativeAppNonClientView(
+  return new ChromeNativeAppClientView(
       widget, this,
       /*has_non_standard_frame=*/IsFrameless(),
       /*draw_non_standard_frame=*/HasFrameColor());
