@@ -51,6 +51,7 @@ build_webui("build") {
     "shared_style.css",
     "shared_style_lit.css",
     "shared_vars.css",
+    "side_bar.css",
     "synced_device_card.css",
     "synced_device_manager.css",
   ]

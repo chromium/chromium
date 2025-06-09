@@ -657,7 +657,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * Update sign in state of synced device manager after user logs in or out.
    */
   private onHasOtherFormsChanged_(hasOtherForms: boolean) {
-    this.set('footerInfo.otherFormsOfHistory', hasOtherForms);
+    this.footerInfo = Object.assign(
+        {}, this.footerInfo, {otherFormsOfHistory: hasOtherForms});
   }
 
   private syncedTabsSelected_(_selectedPage: string): boolean {

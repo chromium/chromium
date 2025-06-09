@@ -114,12 +114,14 @@ import {navigateTo} from './test_util.js';
 
       sidebar.$.syncedTabs.click();
       await eventToPromise('iron-select', sidebar.$.menu);
+      await microtasksFinished();
       assertEquals('syncedTabs', sidebar.$.menu.selected);
       assertEquals('chrome://history/syncedTabs', window.location.href);
 
       // Currently selected history view is preserved in sidebar menu item.
       keyDownOn(sidebar.$.history, 0, [], ' ');
       await eventToPromise('iron-select', sidebar.$.menu);
+      await microtasksFinished();
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
@@ -135,12 +137,14 @@ import {navigateTo} from './test_util.js';
 
         keyDownOn(sidebar.$.syncedTabs, 0, [], ' ');
         await eventToPromise('iron-select', sidebar.$.menu);
+        await microtasksFinished();
         assertEquals('syncedTabs', sidebar.$.menu.selected);
         assertEquals('chrome://history/syncedTabs', window.location.href);
 
         // Currently selected history view is preserved in sidebar menu item.
         keyDownOn(sidebar.$.history, 0, [], ' ');
         await eventToPromise('iron-select', sidebar.$.menu);
+        await microtasksFinished();
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
 
@@ -179,6 +183,7 @@ import {navigateTo} from './test_util.js';
 
           sidebar.$.syncedTabs.click();
           await eventToPromise('iron-select', sidebar.$.menu);
+          await microtasksFinished();
           assertEquals('syncedTabs', sidebar.$.menu.selected);
           assertEquals(searchTerm, app.$.toolbar.searchTerm);
           assertEquals(
@@ -187,6 +192,7 @@ import {navigateTo} from './test_util.js';
 
           sidebar.$.history.click();
           await eventToPromise('iron-select', sidebar.$.menu);
+          await microtasksFinished();
           assertEquals('history', sidebar.$.menu.selected);
           assertEquals(searchTerm, app.$.toolbar.searchTerm);
           assertEquals(
