@@ -1,6 +1,8 @@
+AriaProperties changed on role=textbox, name=search
 AutomationFocusChanged on role=textbox, name=search
 StructureChanged/ChildAdded on role=group
 StructureChanged/ChildrenReordered on role=document
+StructureChanged/ChildrenReordered on role=textbox, name=search
 Text_TextChanged on role=textbox, name=search
 Text_TextSelectionChanged on role=textbox, name=search
 ValueValue changed on role=textbox, name=search

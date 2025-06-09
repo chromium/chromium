@@ -298,6 +298,7 @@ struct PendingStructureChanges {
       : destroy_subtree_count(0),
         destroy_node_count(0),
         create_node_count(0),
+        // This tracks whether the node previously existed on construction.
         node_exists(!!node),
         parent_node_id((node && node->parent())
                            ? std::make_optional<AXNodeID>(node->parent()->id())
@@ -336,7 +337,7 @@ struct PendingStructureChanges {
 
   // Returns true if this node would exist in the tree as of the last pending
   // update that was processed, and the node has not been provided node data.
-  bool DoesNodeRequireInit() const { return node_exists && !last_known_data; }
+  bool NeedsLastKnownData() const { return node_exists && !last_known_data; }
 
   // Keep track of the number of times the subtree rooted at this node
   // will be destroyed.
@@ -366,6 +367,9 @@ struct PendingStructureChanges {
 
   // Keep track of whether this node exists in the tree as of the last pending
   // update that was processed.
+  //
+  // This value gets set to true whenever a node will be created and to false
+  // whenever a node will be destroyed or cleared via node_id_to_clear.
   bool node_exists;
 
   // Keep track of the parent id for this node as of the last pending
@@ -421,14 +425,23 @@ struct AXTreeUpdateState {
     return reparenting_node_ids.contains(node_id);
   }
 
-  // Returns true if the node should exist in the tree but doesn't have
-  // any node data yet.
-  bool DoesPendingNodeRequireInit(AXNodeID node_id) const {
+  // Returns true if the node should exist in the tree, and does not have node
+  // data set.
+  //
+  // The node should exist if it previously existed in the tree (and isn't
+  // marked for destruction), will be created, or will be re-created after being
+  // cleared via node_id_to_clear. There may be no node data set if the node
+  // wasn't in the tree previously, it will be destroyed, or it was cleared via
+  // node_id_to_clear.
+  //
+  // Together, a true return value indicates the node will be either created or
+  // re-created but has yet to have a pointer to node data set.
+  bool NeedsLastKnownData(AXNodeID node_id) const {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
     PendingStructureChanges* data = GetPendingStructureChanges(node_id);
-    return data && data->DoesNodeRequireInit();
+    return data && data->NeedsLastKnownData();
   }
 
   // Returns the parent node id for the pending node.
@@ -1853,15 +1866,30 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
     new_child_id_set.insert(new_child_id);
   }
 
-  // If the node has not been initialized yet then its node data has either been
+  // Get the existing node in the tree.
+  AXNode* node = GetFromId(new_data.id);
+
+  // Determine whether `node` was cleared via node_id_to_clear.
+  bool cleared_via_node_id_to_clear = false;
+
+  // If the node has no last known data yet then its node data has either been
   // cleared when handling |node_id_to_clear|, or it's a new node.
   // In either case, all children must be created.
-  if (update_state->DoesPendingNodeRequireInit(new_data.id)) {
+  if (update_state->NeedsLastKnownData(new_data.id)) {
+    // The node should be either created or re-created (cleared via
+    // node_id_to_clear).
+
     update_state->invalidate_unignored_cached_values_ids.insert(new_data.id);
 
-    // If this node has been cleared via |node_id_to_clear| or is a new node,
+    // If this node has been cleared via `node_id_to_clear` or is a new node,
     // the last-known parent's unignored cache needs to be updated.
     update_state->InvalidateParentNodeUnignoredCacheValues(new_data.id);
+
+    if (node) {
+      // If this node has been cleared via `node_id_to_clear`, `node` should
+      // exist already in the tree.
+      cleared_via_node_id_to_clear = true;
+    }
 
     for (AXNodeID child_id : new_child_id_set) {
       // If a |child_id| is already pending for creation, then it must be a
@@ -1880,12 +1908,27 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
     }
 
     update_state->SetLastKnownPendingNodeData(&new_data);
-    return true;
+
+    if (!cleared_via_node_id_to_clear) {
+      // This means the node is a newly created one. No need to continue below
+      // which diffs old and new data.
+      return true;
+    }
   }
 
+  // Grab the previous data to compare with the new incoming `new_data`. This
+  // codepath does allow for the data to be the same, which would result in a
+  // no-op below.
   const AXNodeData& old_data =
-      update_state->GetLastKnownPendingNodeData(new_data.id);
+      cleared_via_node_id_to_clear
+          ?
+          // The old data is contained in a pre-existing tree node.
+          node->data()
+          :
+          // The data was saved in a PendingStructureChanges.
+          update_state->GetLastKnownPendingNodeData(new_data.id);
 
+  // This computes changes in ignored state.
   AXTreeData* old_tree_data = update_state->old_tree_data
                                   ? &update_state->old_tree_data.value()
                                   : nullptr;
@@ -1895,6 +1938,12 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
   if (ComputeNodeIsIgnoredChanged(old_tree_data, old_data, new_tree_data,
                                   new_data)) {
     update_state->ignored_state_changed_ids.insert(new_data.id);
+  }
+
+  if (cleared_via_node_id_to_clear) {
+    // Node id to clear already marked descendants for destruction in
+    // ComputePendingChanges.
+    return true;
   }
 
   // Create a set of old child ids so we can use it to find the nodes that

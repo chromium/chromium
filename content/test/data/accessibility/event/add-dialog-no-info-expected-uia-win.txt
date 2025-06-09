@@ -1,2 +1,5 @@
+AriaProperties changed on role=textbox
 StructureChanged/ChildAdded on role=dialog
+StructureChanged/ChildAdded on role=textbox
 StructureChanged/ChildrenReordered on role=document
+StructureChanged/ChildrenReordered on role=textbox

@@ -1,8 +1,16 @@
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuClosed 
+MenuClosed 
 === Start Continuation ===
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
 === Start Continuation ===
+MenuClosed 
+MenuClosed 
 === Start Continuation ===

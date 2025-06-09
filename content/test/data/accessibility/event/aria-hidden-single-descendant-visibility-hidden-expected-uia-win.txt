@@ -1,5 +1,8 @@
 === Start Continuation ===
 === Start Continuation ===
+AriaProperties changed on role=document
+StructureChanged/ChildRemoved on role=document
 StructureChanged/ChildRemoved on role=document
 === Start Continuation ===
+AriaProperties changed on role=button, name=expect visible subtree
 StructureChanged/ChildAdded on role=group

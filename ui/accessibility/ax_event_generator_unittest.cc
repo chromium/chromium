@@ -3082,4 +3082,65 @@ TEST(AXEventGenerator, ParsingUnknownEvent) {
   EXPECT_EQ(event, AXEventGenerator::Event::CARET_BOUNDS_CHANGED);
 }
 
+TEST(AXEventGeneratorTest, UnignoredWithNodeCleared) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  {
+    AXNodeData data;
+    data.id = 1;
+    data.role = ax::mojom::Role::kRootWebArea;
+    data.child_ids = {2};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 2;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {3};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 3;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kIgnored);
+    data.child_ids = {4};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 4;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update;
+  update.node_id_to_clear = 3;
+  {
+    AXNodeData data;
+    data.id = 3;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {4};
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 4;
+    data.role = ax::mojom::Role::kGenericContainer;
+    update.nodes.push_back(data);
+  }
+
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(
+                  HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 2),
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 3),
+                  HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 3)));
+}
+
 }  // namespace ui
