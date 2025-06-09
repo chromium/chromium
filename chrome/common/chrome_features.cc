@@ -279,7 +279,7 @@ BASE_FEATURE(kDesktopPWAsTabStripSettings,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDisplayEdgeToEdgeFullscreen,
              "DisplayEdgeToEdgeFullscreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
