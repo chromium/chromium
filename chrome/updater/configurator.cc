@@ -95,7 +95,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                         IsCloudManaged(),
                         base::WrapRefCounted(this),
                         std::make_unique<base::DefaultClock>()),
-                    persisted_data_->GetNextAllowedLoggingAttemptTime())
+                    persisted_data_->GetNextAllowedLoggingAttemptTime(),
+                    /*auto_flush=*/false)
               : nullptr),
       is_managed_device_([] {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

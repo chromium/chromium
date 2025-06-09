@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/enterprise_companion/telemetry_logger/proto/log_request.pb.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
 #include "net/http/http_status_code.h"
@@ -138,7 +139,7 @@ class TestDelegate : public TelemetryLogger<TestEvent>::Delegate {
   }
 
   base::TimeDelta MinimumCooldownTime() const override {
-    return base::Milliseconds(5000);
+    return base::Seconds(0);
   }
 
   int GetLogIdentifier() const override { return 1234; }
@@ -158,8 +159,17 @@ class TelemetryLoggerTest : public testing::Test {
     while (server->has_unmet_requests()) {
       VLOG(1) << "Still wait for more requests.";
       environment_.FastForwardBy(fast_forward_interval);
-      base::PlatformThread::Sleep(base::Milliseconds(0));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
+  }
+
+  void FlushSync(scoped_refptr<TelemetryLogger<TestEvent>> logger) {
+    // If it should expire, ensure that the logger's internal cooldown timer is
+    // no longer running.
+    environment_.RunUntilIdle();
+    base::RunLoop loop;
+    logger->Flush(loop.QuitClosure());
+    loop.Run();
   }
 
   base::test::TaskEnvironment environment_{
@@ -172,14 +182,14 @@ TEST_F(TelemetryLoggerTest, Upload) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
     TestEvent events[] = {TestEvent(1, 2, "event 1"),
                           TestEvent(2, 2, "event 2")};
     logger->Log(events[0]);
     logger->Log(events[1]);
     server->ExpectRequest(SerializeEvents(events),
                           std::make_pair(net::HTTP_OK, ""));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
   }
   run_loop.Run();
 }
@@ -190,7 +200,7 @@ TEST_F(TelemetryLoggerTest, LogsRetainedOnRetriableHTTPErrors) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
 
     TestEvent events[] = {TestEvent(1, 2, "event 1")};
     std::string events_str = SerializeEvents(events);
@@ -201,7 +211,7 @@ TEST_F(TelemetryLoggerTest, LogsRetainedOnRetriableHTTPErrors) {
           net::HTTP_BAD_GATEWAY, net::HTTP_SERVICE_UNAVAILABLE,
           net::HTTP_NETWORK_AUTHENTICATION_REQUIRED, net::HTTP_OK}) {
       server->ExpectRequest(events_str, std::make_pair(http_status, ""));
-      logger->Flush(base::DoNothing());
+      FlushSync(logger);
       WaitForExpectedRequests(server);
     }
     logger->CancelCooldownTimer();
@@ -215,7 +225,7 @@ TEST_F(TelemetryLoggerTest, LogsClearedOnDeterministicHTTPResult) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
 
     TestEvent events[] = {TestEvent(1, 2, "event 1")};
     std::string events_str = SerializeEvents(events);
@@ -229,33 +239,10 @@ TEST_F(TelemetryLoggerTest, LogsClearedOnDeterministicHTTPResult) {
           net::HTTP_TOO_MANY_REQUESTS}) {
       logger->Log(events[0]);
       server->ExpectRequest(events_str, std::make_pair(http_status, ""));
-      logger->Flush(base::DoNothing());
+      FlushSync(logger);
       WaitForExpectedRequests(server);
       environment_.AdvanceClock(base::Seconds(10));
     }
-  }
-  run_loop.Run();
-}
-
-TEST_F(TelemetryLoggerTest, AutoRetry) {
-  base::RunLoop run_loop;
-  {
-    auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
-    auto logger = TelemetryLogger<TestEvent>::Create(
-        std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
-
-    TestEvent events[] = {TestEvent(1, 2, "event 1")};
-    std::string events_str = SerializeEvents(events);
-    logger->Log(events[0]);
-    for (net::HttpStatusCode http_status :
-         {net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_INTERNAL_SERVER_ERROR,
-          net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_OK}) {
-      server->ExpectRequest(events_str, std::make_pair(http_status, ""));
-    }
-
-    logger->Flush(base::DoNothing());
-    WaitForExpectedRequests(server);
   }
   run_loop.Run();
 }
@@ -266,7 +253,7 @@ TEST_F(TelemetryLoggerTest, UploadCombinesPreviousEvents) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
     TestEvent events[] = {
         TestEvent(1, 3, "1st event"),
         TestEvent(2, 2, "event happened after failed upload."),
@@ -275,28 +262,28 @@ TEST_F(TelemetryLoggerTest, UploadCombinesPreviousEvents) {
     logger->Log(events[0]);
     server->ExpectRequest(SerializeEvents(base::span(events).first<1>()),
                           std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, ""));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     logger->Log(events[1]);
     server->ExpectRequest(SerializeEvents(base::span(events).first<2>()),
                           std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, ""));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     logger->Log(events[2]);
     server->ExpectRequest(SerializeEvents(events),
                           std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, ""));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     server->ExpectRequest(SerializeEvents(events),
                           std::make_pair(net::HTTP_OK, ""));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     // Successfully uploaded logs should not be retransmitted.
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
     logger->CancelCooldownTimer();
   }
@@ -309,7 +296,7 @@ TEST_F(TelemetryLoggerTest, DelayedUpload) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
     telemetry_logger::proto::LogResponse response;
@@ -318,7 +305,7 @@ TEST_F(TelemetryLoggerTest, DelayedUpload) {
         SerializeEvents(event_batch1),
         std::make_pair(net::HTTP_OK, response.SerializeAsString()));
     logger->Log(event_batch1[0]);
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     TestEvent event_batch2[] = {TestEvent(1, 2, "event 1"),
@@ -328,7 +315,11 @@ TEST_F(TelemetryLoggerTest, DelayedUpload) {
         std::make_pair(net::HTTP_OK, response.SerializeAsString()));
     logger->Log(event_batch2[0]);
     logger->Log(event_batch2[1]);
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
+
+    EXPECT_TRUE(server->has_unmet_requests());
+    environment_.AdvanceClock(base::Seconds(20));
+    FlushSync(logger);
   }
   run_loop.Run();
 }
@@ -339,7 +330,7 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
 
     TestEvent event_batch1[] = {TestEvent(1, 0, "e1")};
     telemetry_logger::proto::LogResponse response;
@@ -348,7 +339,7 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
         SerializeEvents(event_batch1),
         std::make_pair(net::HTTP_OK, response.SerializeAsString()));
     logger->Log(event_batch1[0]);
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     // Upload won't happen during cool down period.
@@ -357,12 +348,12 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
         TestEvent(333, 20, "an event with a long description.")};
     logger->Log(event_batch2[0]);
     logger->Log(event_batch2[1]);
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     // Advance the clock but still in cool down period.
     environment_.AdvanceClock(base::Milliseconds(400));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     // Cooldown time exhausted, events are uploaded.
@@ -370,12 +361,12 @@ TEST_F(TelemetryLoggerTest, CooldownTime) {
         SerializeEvents(event_batch2),
         std::make_pair(net::HTTP_OK, response.SerializeAsString()));
     environment_.AdvanceClock(base::Milliseconds(12000));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
 
     // Cooldown time exhausted, but nothing to upload.
     environment_.AdvanceClock(base::Milliseconds(5500));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
     WaitForExpectedRequests(server);
   }
   run_loop.Run();
@@ -388,25 +379,28 @@ TEST_F(TelemetryLoggerTest, InitialCooldownTimeFromPreviousRun) {
     auto delegate = std::make_unique<TestDelegate>(server);
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::move(delegate),
-        /*first_allowed_attempt_time=*/base::Time::Now() + base::Seconds(60));
+        /*first_allowed_attempt_time=*/base::Time::Now() + base::Seconds(60),
+        /*auto_flush=*/false);
 
     TestEvent events[] = {TestEvent(1, 0, "initial event"),
                           TestEvent(2, 10, "event happened after some time.")};
+    server->ExpectRequest(SerializeEvents(events),
+                          std::make_pair(net::HTTP_OK, ""));
+
     logger->Log(events[0]);
 
     // No upload during the initial cool period.
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
+    EXPECT_TRUE(server->has_unmet_requests());
 
     environment_.FastForwardBy(base::Seconds(30));
-    logger->Flush(base::DoNothing());
+    FlushSync(logger);
+    EXPECT_TRUE(server->has_unmet_requests());
 
     // Events are uploaded after the initial cool down period.
     logger->Log(events[1]);
-    server->ExpectRequest(SerializeEvents(events),
-                          std::make_pair(net::HTTP_OK, ""));
-    environment_.FastForwardBy(base::Seconds(10));
-    logger->Flush(base::DoNothing());
-    logger->Flush(base::DoNothing());
+    environment_.FastForwardBy(base::Seconds(30));
+    FlushSync(logger);
   }
   run_loop.Run();
 }
@@ -418,7 +412,7 @@ TEST_F(TelemetryLoggerTest, FlushCallbackIsCalledOnCallerSequence) {
     auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
     auto logger = TelemetryLogger<TestEvent>::Create(
         std::make_unique<TestDelegate>(server),
-        /*first_allowed_attempt_time=*/std::nullopt);
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
 
     // Callback is called without upload.
     {
@@ -443,6 +437,49 @@ TEST_F(TelemetryLoggerTest, FlushCallbackIsCalledOnCallerSequence) {
       }));
       inner_run_loop.Run();
     }
+  }
+  run_loop.Run();
+}
+
+TEST_F(TelemetryLoggerTest, AutoFlush) {
+  base::RunLoop run_loop;
+  {
+    auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
+    auto logger = TelemetryLogger<TestEvent>::Create(
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/base::Time::Now() + base::Seconds(10),
+        /*auto_flush=*/true);
+    TestEvent events[] = {TestEvent(1, 2, "event 1"),
+                          TestEvent(2, 2, "event 2")};
+    logger->Log(events[0]);
+    logger->Log(events[1]);
+    server->ExpectRequest(SerializeEvents(events),
+                          std::make_pair(net::HTTP_OK, ""));
+    environment_.FastForwardBy(base::Seconds(20));
+    WaitForExpectedRequests(server);
+  }
+  run_loop.Run();
+}
+
+TEST_F(TelemetryLoggerTest, AutoFlushRetriesHttpErrors) {
+  base::RunLoop run_loop;
+  {
+    auto server = base::MakeRefCounted<MockServer>(run_loop.QuitClosure());
+    auto logger = TelemetryLogger<TestEvent>::Create(
+        std::make_unique<TestDelegate>(server),
+        /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/true);
+
+    TestEvent events[] = {TestEvent(1, 2, "event 1")};
+    std::string events_str = SerializeEvents(events);
+    logger->Log(events[0]);
+    for (net::HttpStatusCode http_status :
+         {net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_INTERNAL_SERVER_ERROR,
+          net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_OK}) {
+      server->ExpectRequest(events_str, std::make_pair(http_status, ""));
+    }
+
+    FlushSync(logger);
+    WaitForExpectedRequests(server);
   }
   run_loop.Run();
 }

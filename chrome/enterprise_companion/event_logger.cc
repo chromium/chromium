@@ -407,7 +407,8 @@ class EnterpriseCompanionEventLoggerImpl
       std::unique_ptr<EventTelemetryLogger::Delegate> logger_delegate)
       : impl_(EventTelemetryLogger::Create(
             std::move(logger_delegate),
-            /*first_allowed_attempt_time=*/std::nullopt)) {}
+            /*first_allowed_attempt_time=*/std::nullopt,
+            /*auto_flush=*/true)) {}
   EnterpriseCompanionEventLoggerImpl() = delete;
   EnterpriseCompanionEventLoggerImpl(
       const EnterpriseCompanionEventLoggerImpl&) = delete;

@@ -68,22 +68,27 @@ class TelemetryLogger
   };
 
   TelemetryLogger(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  std::unique_ptr<Delegate> delegate)
+                  std::unique_ptr<Delegate> delegate,
+                  bool auto_flush)
       : base::RefCountedDeleteOnSequence<TelemetryLogger<T>>(task_runner),
-        delegate_(std::move(delegate)) {
+        delegate_(std::move(delegate)),
+        auto_flush_(auto_flush) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
   TelemetryLogger(const TelemetryLogger&) = delete;
   TelemetryLogger& operator=(const TelemetryLogger&) = delete;
 
-  // Factory function that creates the per-process TelemetryLogger singleton.
+  // Factory function that creates the per-process TelemetryLogger singleton. If
+  // `auto_flush` is set, the instance will periodically transmit buffered
+  // events. Otherwise, the caller is responsible for calling `Flush`.
   static scoped_refptr<TelemetryLogger> Create(
       std::unique_ptr<Delegate> delegate,
-      std::optional<base::Time> first_allowed_attempt_time) {
+      std::optional<base::Time> first_allowed_attempt_time,
+      bool auto_flush) {
     auto logger = base::MakeRefCounted<TelemetryLogger<T>>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::WithBaseSyncPrimitives()}),
-        std::move(delegate));
+        std::move(delegate), auto_flush);
     logger->owning_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&TelemetryLogger::SetInitialCooldownIfExists,
                                   logger, first_allowed_attempt_time));
@@ -246,8 +251,10 @@ class TelemetryLogger
             << "ms, " << base::Time::Now() + cooldown_time;
     cooldown_timer_.Start(
         FROM_HERE, cooldown_time,
-        base::BindOnce(&TelemetryLogger::Transmit, base::WrapRefCounted(this),
-                       base::DoNothing()));
+        auto_flush_
+            ? base::BindOnce(&TelemetryLogger::Transmit,
+                             base::WrapRefCounted(this), base::DoNothing())
+            : base::DoNothing());
   }
 
   void SetInitialCooldownIfExists(
@@ -268,6 +275,7 @@ class TelemetryLogger
 
   bool is_transmitting_ = false;
   std::unique_ptr<Delegate> delegate_;
+  const bool auto_flush_;
   std::vector<T> events_;
   std::vector<T> upload_queue_;
   base::OneShotTimer cooldown_timer_;
