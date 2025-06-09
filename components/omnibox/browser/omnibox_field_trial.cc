@@ -694,6 +694,8 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteUrlCutoffParam[] =
     "OmniboxDynamicMaxAutocompleteUrlCutoff";
 const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
     "OmniboxDynamicMaxAutocompleteIncreasedLimit";
+const char OmniboxFieldTrial::kSuppressPsuggestBackfillWithMIAParam[] =
+    "SuppressPsuggestBackfillWithMIA";
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";

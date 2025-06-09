@@ -382,6 +382,9 @@ extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 // optionally subdomains) in the steady state.
 extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
+// Parameter names used by MIA experiments.
+extern const char kSuppressPsuggestBackfillWithMIAParam[];
+
 // `FeatureParam`s
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
