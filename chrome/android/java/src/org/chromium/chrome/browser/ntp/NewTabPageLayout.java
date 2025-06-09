@@ -473,7 +473,6 @@ public class NewTabPageLayout extends LinearLayout
                         mActivity,
                         activityLifecycleDispatcher,
                         mMvTilesContainerLayout,
-                        mWindowAndroid,
                         () -> mSnapshotTileGridChanged = true,
                         () -> {
                             if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;

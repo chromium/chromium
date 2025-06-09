@@ -67,7 +67,6 @@ import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
 
@@ -102,7 +101,6 @@ public class MostVisitedTilesLayoutTest {
                     .build();
 
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock WindowAndroid mWindowAndroid;
     @Mock TouchEnabledDelegate mTouchEnabledDelegate;
 
     private static final String[] FAKE_MOST_VISITED_URLS =
@@ -363,12 +361,7 @@ public class MostVisitedTilesLayoutTest {
 
         MostVisitedTilesCoordinator coordinator =
                 new MostVisitedTilesCoordinator(
-                        activity,
-                        mActivityLifecycleDispatcher,
-                        containerLayout,
-                        mWindowAndroid,
-                        null,
-                        null);
+                        activity, mActivityLifecycleDispatcher, containerLayout, null, null);
         coordinator.initWithNative(profile, uiDelegate, delegate, mTouchEnabledDelegate);
     }
 }

@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -36,7 +35,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MostVisitedTilesMediator mMediator;
-    private final WindowAndroid mWindowAndroid;
     private final UiConfig mUiConfig;
     private TileRenderer mRenderer;
     private ContextMenuManager mContextMenuManager;
@@ -48,7 +46,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      *     e.g.configuration changes. We need this to adjust the paddings and margins of the tile
      *     views.
      * @param mvTilesContainerLayout The container view of most visited tiles layout.
-     * @param windowAndroid The current {@link WindowAndroid}
      * @param snapshotTileGridChangedRunnable The runnable called when the snapshot tile grid is
      *     changed.
      * @param tileCountChangedRunnable The runnable called when the tile count is changed.
@@ -57,12 +54,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             Activity activity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View mvTilesContainerLayout,
-            WindowAndroid windowAndroid,
             @Nullable Runnable snapshotTileGridChangedRunnable,
             @Nullable Runnable tileCountChangedRunnable) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mWindowAndroid = windowAndroid;
 
         ((ViewStub) mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout_stub)).inflate();
         MostVisitedTilesLayout tilesLayout =
@@ -126,7 +121,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         touchEnabledDelegate,
                         mActivity::closeContextMenu,
                         CONTEXT_MENU_USER_ACTION_PREFIX);
-        mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
         mOfflinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         mMediator.initWithNative(
@@ -144,12 +138,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
         if (mOfflinePageBridge != null) mOfflinePageBridge = null;
         if (mRenderer != null) mRenderer = null;
-
-        if (mWindowAndroid != null) {
-            mWindowAndroid.removeContextMenuCloseListener(mContextMenuManager);
-            mContextMenuManager = null;
-        }
-
         if (mMediator != null) mMediator.destroy();
     }
 

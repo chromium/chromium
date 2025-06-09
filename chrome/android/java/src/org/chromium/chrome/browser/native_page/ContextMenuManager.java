@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -16,12 +12,10 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -38,11 +32,11 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Takes care of creating, closing a context menu and triaging the item clicks.
  *
- * Menus created contains options for opening in new window, new tab, new incognito tab,
- * download, remove, and learn more. Clients control which items are shown using
- * {@link Delegate#isItemSupported(int)}.
+ * <p>Menus created contains options for opening in new window, new tab, new incognito tab,
+ * download, remove, and learn more. Clients control which items are shown using {@link
+ * Delegate#isItemSupported(int)}.
  */
-public class ContextMenuManager implements OnCloseContextMenuListener {
+public class ContextMenuManager {
     @IntDef({
         ContextMenuItemId.SEARCH,
         ContextMenuItemId.OPEN_IN_NEW_TAB,
@@ -182,9 +176,9 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
     /**
      * @param navigationDelegate The {@link NativePageNavigationDelegate} for handling navigation
-     *                           events.
+     *     events.
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *                             events are allowed.
+     *     events are allowed.
      * @param closeContextMenuCallback The callback for closing the context menu.
      * @param userActionPrefix Prefix used to record user actions.
      */
@@ -197,67 +191,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         mTouchEnabledDelegate = touchEnabledDelegate;
         mCloseContextMenuCallback = closeContextMenuCallback;
         mUserActionPrefix = userActionPrefix;
-    }
-
-    /**
-     * Populates the context menu.
-     *
-     * @param menu The menu to populate.
-     * @param associatedView The view that requested a context menu.
-     * @param delegate Delegate that defines the configuration of the menu and what to do when items
-     *            are tapped.
-     */
-    public void createContextMenu(ContextMenu menu, View associatedView, Delegate delegate) {
-        OnMenuItemClickListener listener = new ItemClickListener(delegate);
-        boolean hasItems = false;
-
-        for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
-            if (!shouldShowItem(itemId, delegate)) continue;
-
-            // TODO(crbug.com/409799465): Remove when launching the feature. The id order is already
-            // updated assuming as if the feature will launch.
-            if (itemId == ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP) {
-                continue;
-            } else if (itemId == ContextMenuItemId.OPEN_IN_NEW_TAB) {
-                if (ChromeFeatureList.sSwapNewTabAndNewTabInGroupAndroid.isEnabled()) {
-                    addMenuItem(menu, ContextMenuItemId.OPEN_IN_NEW_TAB, listener);
-                    addMenuItem(menu, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, listener);
-                } else {
-                    addMenuItem(menu, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, listener);
-                    addMenuItem(menu, ContextMenuItemId.OPEN_IN_NEW_TAB, listener);
-                }
-                hasItems = true;
-                continue;
-            }
-
-            addMenuItem(menu, itemId, listener);
-            hasItems = true;
-        }
-
-        // No item added. We won't show the menu, so we can skip the rest.
-        if (!hasItems) return;
-
-        // Touch events must be disabled on the outer view while the context menu is open. This is
-        // to prevent the user long pressing to get the context menu then on the same press
-        // scrolling or swiping to dismiss an item (eg. https://crbug.com/638854,
-        // https://crbug.com/638555, https://crbug.com/636296).
-        mTouchEnabledDelegate.setTouchEnabled(false);
-        mAnchorView = associatedView;
-        mAnchorView.addOnAttachStateChangeListener(
-                new View.OnAttachStateChangeListener() {
-                    @Override
-                    public void onViewAttachedToWindow(View view) {}
-
-                    @Override
-                    public void onViewDetachedFromWindow(View view) {
-                        if (view == mAnchorView) {
-                            mCloseContextMenuCallback.run();
-                            view.removeOnAttachStateChangeListener(this);
-                        }
-                    }
-                });
-
-        notifyContextMenuShown(delegate);
     }
 
     /**
@@ -338,13 +271,6 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         if (mListContextMenu != null) {
             mListContextMenu.dismiss();
         }
-    }
-
-    @Override
-    public void onContextMenuClosed() {
-        if (mAnchorView == null) return;
-        mAnchorView = null;
-        mTouchEnabledDelegate.setTouchEnabled(true);
     }
 
     /** Given currently focused view this function retrieves associated Delegate. */
@@ -435,6 +361,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
     /**
      * Performs an action corresponding to menu item selected by user.
+     *
      * @param itemId Id of menu item selected by user.
      * @param delegate Delegate of an element, for which context menu was shown.
      * @return true if user selection was handled.
@@ -482,25 +409,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         }
     }
 
-    private void addMenuItem(ContextMenu menu, int itemId, OnMenuItemClickListener listener) {
-        menu.add(Menu.NONE, itemId, Menu.NONE, getResourceIdForMenuItem(itemId))
-                .setOnMenuItemClickListener(listener);
-    }
-
     public ListMenuHost getListMenuForTesting() {
         return mListContextMenu;
-    }
-
-    private class ItemClickListener implements OnMenuItemClickListener {
-        private final Delegate mDelegate;
-
-        ItemClickListener(Delegate delegate) {
-            mDelegate = delegate;
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            return handleMenuItemClick(item.getItemId(), mDelegate);
-        }
     }
 }

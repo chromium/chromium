@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
-import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -151,7 +150,6 @@ public class NewTabPage
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsTablet;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ContextMenuManager mContextMenuManager;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private final BottomSheetController mBottomSheetController;
     private FeedSurfaceProvider mFeedSurfaceProvider;
@@ -636,16 +634,6 @@ public class NewTabPage
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
 
-        // TODO(twellington): Move this somewhere it can be shared with NewTabPageView?
-        Runnable closeContextMenuCallback = activity::closeContextMenu;
-        mContextMenuManager =
-                new ContextMenuManager(
-                        mNewTabPageManager.getNavigationDelegate(),
-                        mFeedSurfaceProvider.getTouchEnabledDelegate(),
-                        closeContextMenuCallback,
-                        NewTabPage.CONTEXT_MENU_USER_ACTION_PREFIX);
-        windowAndroid.addContextMenuCloseListener(mContextMenuManager);
-
         mNewTabPageLayout.initialize(
                 mNewTabPageManager,
                 activity,
@@ -1068,7 +1056,6 @@ public class NewTabPage
             mOmniboxStub.removeUrlFocusChangeListener(feedReliabilityLogger);
         }
         mFeedSurfaceProvider.destroy();
-        mTab.getWindowAndroid().removeContextMenuCloseListener(mContextMenuManager);
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.removeObserver(this);
         }

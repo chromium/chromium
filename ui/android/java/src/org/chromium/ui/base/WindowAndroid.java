@@ -160,12 +160,6 @@ public class WindowAndroid
 
     private ProgressBarConfig.@Nullable Provider mProgressBarConfigProvider;
 
-    /** An interface to notify listeners that a context menu is closed. */
-    public interface OnCloseContextMenuListener {
-        /** Called when a context menu has been closed. */
-        void onContextMenuClosed();
-    }
-
     /** An interface to notify listeners of the changes in activity state. */
     public interface ActivityStateObserver {
         /** Called when the activity goes into paused state. */
@@ -203,9 +197,6 @@ public class WindowAndroid
     public @Nullable View getReadbackView() {
         return null;
     }
-
-    private final ObserverList<OnCloseContextMenuListener> mContextMenuCloseListeners =
-            new ObserverList<>();
 
     private @Nullable ModalDialogManager mModalDialogManagerForTesting;
 
@@ -993,30 +984,6 @@ public class WindowAndroid
      */
     public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
         return mApplicationBottomInsetSupplier;
-    }
-
-    /** Adds a listener that will be notified whenever a ContextMenu is closed. */
-    public void addContextMenuCloseListener(OnCloseContextMenuListener listener) {
-        mContextMenuCloseListeners.addObserver(listener);
-    }
-
-    /**
-     * Removes a listener from the list of listeners that will be notified when a
-     * ContextMenu is closed.
-     */
-    public void removeContextMenuCloseListener(OnCloseContextMenuListener listener) {
-        mContextMenuCloseListeners.removeObserver(listener);
-    }
-
-    /**
-     * This hook is called whenever the context menu is being closed (either by
-     * the user canceling the menu with the back/menu button, or when an item is
-     * selected).
-     */
-    public void onContextMenuClosed() {
-        for (OnCloseContextMenuListener listener : mContextMenuCloseListeners) {
-            listener.onContextMenuClosed();
-        }
     }
 
     /**
