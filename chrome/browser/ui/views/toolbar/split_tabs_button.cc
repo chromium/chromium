@@ -37,6 +37,8 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -53,15 +55,20 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabsToolbarButton,
 
 SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
     : ToolbarButton(
-          base::BindRepeating(&SplitTabsToolbarButton::ButtonPressed,
-                              base::Unretained(this)),
+          views::Button::PressedCallback(),
           std::make_unique<PinnedActionToolbarButtonMenuModel>(browser,
                                                                kActionSplitTab),
-          nullptr),
+          nullptr,
+          false),
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarSplitTabsToolbarButtonElementId);
   set_menu_identifier(kUpdatePinStateMenu);
+  SetButtonController(std::make_unique<views::MenuButtonController>(
+      this,
+      base::BindRepeating(&SplitTabsToolbarButton::ButtonPressed,
+                          base::Unretained(this)),
+      std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS));
   pin_state_.Init(
@@ -151,8 +158,13 @@ bool SplitTabsToolbarButton::IsActiveTabInSplit() {
 
 void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
   if (IsActiveTabInSplit()) {
-    ShowMenuForModel(ui::GetMenuSourceTypeForEvent(event),
-                     split_tab_menu_.get());
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS);
+    menu_runner_->RunMenuAt(
+        GetWidget(),
+        static_cast<views::MenuButtonController*>(button_controller()),
+        GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
+        ui::GetMenuSourceTypeForEvent(event));
   } else {
     chrome::NewSplitTab(browser_);
   }
@@ -163,6 +175,7 @@ void SplitTabsToolbarButton::UpdateButtonVisibility() {
   UpdateButtonIcon();
   UpdateStatusIndicator(is_active_tab_in_split);
   SetVisible(pin_state_.GetValue() || is_active_tab_in_split);
+  UpdateAccessibilityRole(is_active_tab_in_split);
 }
 
 void SplitTabsToolbarButton::UpdateButtonIcon() {
@@ -192,6 +205,19 @@ void SplitTabsToolbarButton::UpdateStatusIndicator(bool show_status_indicator) {
   } else {
     status_indicator_->Hide();
   }
+}
+
+void SplitTabsToolbarButton::UpdateAccessibilityRole(bool has_menu) {
+  auto role =
+      has_menu ? ax::mojom::Role::kPopUpButton : ax::mojom::Role::kButton;
+
+  if (role == GetViewAccessibility().GetCachedRole()) {
+    return;
+  }
+
+  GetViewAccessibility().SetRole(role);
+  GetViewAccessibility().SetHasPopup(has_menu ? ax::mojom::HasPopup::kMenu
+                                              : ax::mojom::HasPopup::kFalse);
 }
 
 BEGIN_METADATA(SplitTabsToolbarButton)

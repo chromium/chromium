@@ -23,6 +23,7 @@ class SimpleMenuModel;
 }
 
 namespace views {
+class MenuRunner;
 class View;
 class ViewObserver;
 }  // namespace views
@@ -62,6 +63,7 @@ class SplitTabsToolbarButton : public ToolbarButton,
   void UpdateButtonVisibility();
   void UpdateButtonIcon();
   void UpdateStatusIndicator(bool show_status_indicator);
+  void UpdateAccessibilityRole(bool has_menu);
 
   BooleanPrefMember pin_state_;
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -69,6 +71,7 @@ class SplitTabsToolbarButton : public ToolbarButton,
   raw_ptr<Browser> browser_;
   raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_;
   std::unique_ptr<ui::SimpleMenuModel> split_tab_menu_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_SPLIT_TABS_BUTTON_H_
