@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"

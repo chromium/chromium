@@ -5,6 +5,8 @@
 #ifndef CRYPTO_KEYPAIR_H_
 #define CRYPTO_KEYPAIR_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 #include "crypto/subtle_passkey.h"

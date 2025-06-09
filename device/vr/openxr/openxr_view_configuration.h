@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_VIEW_CONFIGURATION_H_
 #define DEVICE_VR_OPENXR_OPENXR_VIEW_CONFIGURATION_H_
 
+#include <array>
 #include <vector>
 
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
