@@ -15,14 +15,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -43,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -55,11 +52,9 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -78,7 +73,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
     @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
     @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;
-    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
 
     @Mock TrustedWebActivityBrowserControlsVisibilityManager mController;
 
@@ -108,86 +102,12 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         assertFalse(getLastCloseButtonVisibility());
     }
 
-    /** Browser controls should be shown for WebAPKs with 'minimal-ui' display mode. */
+    /** Browser controls should not be shown for WebAPKs with 'minimal-ui' display mode. */
     @Test
     public void testMinimalUiDisplayMode() {
         mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
         mController.updateIsInAppMode(true);
-        assertEquals(BrowserControlsState.BOTH, getLastBrowserControlsState());
-        assertFalse(getLastCloseButtonVisibility());
-    }
-
-    @Test
-    public void testMinimalUiInitInDesktopWindowing_HideBrowserControls() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
-        mController.updateIsInAppMode(true);
         assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
-        assertTrue(
-                "Close button should be visible for future layout", getLastCloseButtonVisibility());
-    }
-
-    @Test
-    public void testMinimalUiEnterDesktopWindowing_HideBrowserControls() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
-        mController.updateIsInAppMode(true);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
-        assertTrue(
-                "Close button should be visible for future layout", getLastCloseButtonVisibility());
-    }
-
-    @Test
-    public void testMinimalUiEnterDesktopWindowingNotInAppMode_NoVisibilityChanges() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
-        mController.updateIsInAppMode(false);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        verifyNoInteractions(mToolbarCoordinator);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testMinimalUiExitDesktopWindowingInAppMode_ShowBrowserControls() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
-        mController.updateIsInAppMode(true);
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        assertEquals(
-                "Browser controls should be shown",
-                BrowserControlsState.BOTH,
-                getLastBrowserControlsState());
-        assertFalse("Close button should be hidden in minimal ui", getLastCloseButtonVisibility());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testMinUiExitDwAndEnterAppMode_KeepBrowserControlsHidden() {
-        // navigate out of scope in DW
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.MINIMAL_UI));
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-        mController.updateIsInAppMode(false);
-        assertEquals(
-                "Browser controls should be visible",
-                BrowserControlsState.BOTH,
-                getLastBrowserControlsState());
-
-        // exit DW and navigate back into the web app scope
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        mController.updateIsInAppMode(true);
-        assertEquals(
-                "Should keep browser controls visible",
-                BrowserControlsState.BOTH,
-                getLastBrowserControlsState());
     }
 
     /**
@@ -198,17 +118,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     public void testStandaloneDisplayMode() {
         mController = buildController(buildWebApkIntentDataProvider(DisplayMode.STANDALONE));
         mController.updateIsInAppMode(true);
-        assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
-    }
-
-    @Test
-    public void testStandaloneEnterDesktopWindowingInAppMode_NoVisibilityChanges() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        mController = buildController(buildWebApkIntentDataProvider(DisplayMode.STANDALONE));
-        mController.updateIsInAppMode(true);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
         assertEquals(BrowserControlsState.HIDDEN, getLastBrowserControlsState());
     }
 
@@ -268,43 +177,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
                 "Close button should be visible for future layout", getLastCloseButtonVisibility());
     }
 
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testTwaMinimalUiEnterDesktopWindowing_KeepBrowserControlsHidden() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        var intent = buildTwaIntent();
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
-        mController = buildController(buildCustomTabIntentProvider(intent));
-        mController.updateIsInAppMode(true);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        assertEquals(
-                "Browser controls should be hidden",
-                BrowserControlsState.HIDDEN,
-                getLastBrowserControlsState());
-        assertTrue(
-                "Close button should be visible for future layout", getLastCloseButtonVisibility());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
-    public void testTwaMinimalUiEnterDesktopWindowingNotInAppMode_DoNotUpdateAnything() {
-        setupDesktopWindowing(/* isInDesktopWindow= */ false);
-        var intent = buildTwaIntent();
-        intent.putExtra(
-                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
-                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
-        mController = buildController(buildCustomTabIntentProvider(intent));
-        mController.updateIsInAppMode(false);
-        setupDesktopWindowing(/* isInDesktopWindow= */ true);
-
-        mController.onDesktopWindowingModeChanged(mAppHeaderState.isInDesktopWindow());
-        verifyNoInteractions(mToolbarCoordinator);
-    }
-
     private void setTabSecurityLevel(int securityLevel) {
         doReturn(securityLevel).when(mController).getSecurityLevel(any());
     }
@@ -337,7 +209,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
                         mTabProvider,
                         mToolbarCoordinator,
                         mCloseButtonVisibilityManager,
-                        mDesktopWindowStateManager,
                         intentDataProvider));
     }
 
@@ -357,11 +228,5 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         verify(mCloseButtonVisibilityManager, atLeast(1))
                 .setVisibility(lastCloseButtonVisiblity.capture());
         return lastCloseButtonVisiblity.getValue();
-    }
-
-    private void setupDesktopWindowing(final boolean isInDesktopWindow) {
-        mAppHeaderState =
-                new AppHeaderState(APP_WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, isInDesktopWindow);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 }
