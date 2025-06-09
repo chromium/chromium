@@ -1254,6 +1254,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.CandidateAddressType"
+    enum="IpAddressType" expires_after="2026-06-03">
+  <owner>hta@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Counts the different address types used in ICE candidates. Recorded when
+    adding a candidate.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.CandidatePairType{IPProtocolType}"
     enum="IceCandidatePairTypes" expires_after="2024-08-18">
   <owner>hta@chromium.org</owner>
@@ -1676,6 +1687,21 @@ chromium-metrics-reviews@google.com.
     backward compability with deployed software. Recorded during the first DTLS
     connection establishment.
   </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.{ServerType}.ServerAddressType"
+    enum="IpAddressType" expires_after="2026-06-03">
+  <owner>hta@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Counts the different address types used in STUN/TURN servers. Recorded
+    before attempting to connect to the server.
+  </summary>
+  <token key="ServerType">
+    <variant name="Stun"/>
+    <variant name="Turn"/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.ReceivedAudioTrackDuration" units="ms"

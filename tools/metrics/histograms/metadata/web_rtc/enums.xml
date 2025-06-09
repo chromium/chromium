@@ -155,6 +155,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="IceconnectionClosed"/>
 </enum>
 
+<enum name="IpAddressType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Any"/>
+  <int value="2" label="Loopback"/>
+  <int value="3" label="Private"/>
+  <int value="4" label="Public"/>
+</enum>
+
 <enum name="PeerConnectionBundlePolicy">
   <int value="0" label="balanced"/>
   <int value="1" label="max-bundle"/>
