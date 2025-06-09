@@ -249,6 +249,7 @@ source_set("policy_specific_browser_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//build:android_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser/media/webrtc",
