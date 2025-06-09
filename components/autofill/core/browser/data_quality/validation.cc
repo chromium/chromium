@@ -104,8 +104,7 @@ bool IsSSN(std::u16string_view text) {
   }
 
   int area;
-  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin(),
-                                                 number_string.begin() + 3),
+  if (!base::StringToInt(std::u16string_view(number_string).substr(0, 3),
                          &area)) {
     return false;
   }
@@ -114,16 +113,14 @@ bool IsSSN(std::u16string_view text) {
   }
 
   int group;
-  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 3,
-                                                 number_string.begin() + 5),
+  if (!base::StringToInt(std::u16string_view(number_string).substr(3, 2),
                          &group) ||
       group == 0) {
     return false;
   }
 
   int serial;
-  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 5,
-                                                 number_string.begin() + 9),
+  if (!base::StringToInt(std::u16string_view(number_string).substr(5, 4),
                          &serial) ||
       serial == 0) {
     return false;

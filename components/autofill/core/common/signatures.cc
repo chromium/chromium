@@ -40,7 +40,7 @@ std::string StripDigitsIfRequired(std::string_view input) {
     // If `input[i]` is a digit, find the range of consecutive digits starting
     // at `i`. If this range is shorter than 5 characters append it to `result`.
     auto end_it = std::ranges::find_if_not(input.substr(i), IsDigit);
-    std::string_view digits = base::MakeStringPiece(input.begin() + i, end_it);
+    std::string_view digits = std::string_view(input.begin() + i, end_it);
     DCHECK(std::ranges::all_of(digits, IsDigit));
     if (digits.size() < 5)
       base::StrAppend(&result, {digits});
