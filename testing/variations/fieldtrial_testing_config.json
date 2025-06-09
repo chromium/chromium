@@ -9814,25 +9814,6 @@
             ]
         }
     ],
-    "FeedbackIncludeVariations": [
-        {
-            "platforms": [
-                "android",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FeedbackIncludeVariations"
-                    ]
-                }
-            ]
-        }
-    ],
     "FencedFramesEnableCredentialsForAutomaticBeacons": [
         {
             "platforms": [
