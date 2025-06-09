@@ -77,10 +77,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
-    const std::u16string& network_label,
-    std::unique_ptr<SkBitmap> network_icon,
-    const std::u16string& issuer_label,
-    std::unique_ptr<SkBitmap> issuer_icon)
+    std::vector<PaymentEntityLogo> payment_entities_logos)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
@@ -97,10 +94,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       passkey_browser_binder_(std::move(passkey_browser_binder)),
       device_supports_browser_bound_keys_in_hardware_(
           device_supports_browser_bound_keys_in_hardware),
-      network_label_(network_label),
-      network_icon_(std::move(network_icon)),
-      issuer_label_(issuer_label),
-      issuer_icon_(std::move(issuer_icon)) {
+      payment_entities_logos_(std::move(payment_entities_logos)) {
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
 }
 
@@ -225,12 +219,32 @@ const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {
   return payment_instrument_icon_.get();
 }
 
+std::u16string SecurePaymentConfirmationApp::issuer_label() const {
+  if (payment_entities_logos_.size() < 2) {
+    return u"";
+  }
+  return payment_entities_logos_[1].label;
+}
+
 const SkBitmap* SecurePaymentConfirmationApp::issuer_bitmap() const {
-  return issuer_icon_.get();
+  if (payment_entities_logos_.size() < 2) {
+    return nullptr;
+  }
+  return payment_entities_logos_[1].icon.get();
+}
+
+std::u16string SecurePaymentConfirmationApp::network_label() const {
+  if (payment_entities_logos_.empty()) {
+    return u"";
+  }
+  return payment_entities_logos_[0].label;
 }
 
 const SkBitmap* SecurePaymentConfirmationApp::network_bitmap() const {
-  return network_icon_.get();
+  if (payment_entities_logos_.empty()) {
+    return nullptr;
+  }
+  return payment_entities_logos_[0].icon.get();
 }
 
 bool SecurePaymentConfirmationApp::IsValidForModifier(

@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
+#include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
@@ -582,24 +583,16 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   // SecurePaymentConfirmationApp, and remove this conversion.
   std::u16string network_label = u"";
   std::unique_ptr<SkBitmap> network_icon;
-  if (!request->mojo_request->payment_entities_logos.empty()) {
-    network_label = base::UTF8ToUTF16(
-        request->mojo_request->payment_entities_logos[0]->label);
-    if (!request->payment_entities_logos_infos[0].icon.drawsNothing()) {
-      network_icon = std::make_unique<SkBitmap>(
-          request->payment_entities_logos_infos[0].icon);
-    }
-  }
-
-  std::u16string issuer_label = u"";
-  std::unique_ptr<SkBitmap> issuer_icon;
-  if (request->mojo_request->payment_entities_logos.size() > 1) {
-    issuer_label = base::UTF8ToUTF16(
-        request->mojo_request->payment_entities_logos[1]->label);
-    if (!request->payment_entities_logos_infos[1].icon.drawsNothing()) {
-      issuer_icon = std::make_unique<SkBitmap>(
-          request->payment_entities_logos_infos[1].icon);
-    }
+  CHECK_EQ(request->mojo_request->payment_entities_logos.size(),
+           request->payment_entities_logos_infos.size());
+  std::vector<SecurePaymentConfirmationApp::PaymentEntityLogo>
+      payment_entities_logos;
+  for (size_t i = 0; i < request->payment_entities_logos_infos.size(); i++) {
+    SkBitmap& bitmap = request->payment_entities_logos_infos[i].icon;
+    payment_entities_logos.emplace_back(
+        base::UTF8ToUTF16(
+            request->mojo_request->payment_entities_logos[i]->label),
+        bitmap.drawsNothing() ? nullptr : std::make_unique<SkBitmap>(bitmap));
   }
 
   if (!request->authenticator || !request->credential) {
@@ -620,8 +613,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
             url::Origin::Create(request->delegate->GetTopOrigin()),
             request->delegate->GetSpec()->AsWeakPtr(),
             std::move(request->mojo_request), /*authenticator=*/nullptr,
-            network_label, std::move(network_icon), issuer_label,
-            std::move(issuer_icon)));
+            std::move(payment_entities_logos)));
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -653,8 +645,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),
-          network_label, std::move(network_icon), issuer_label,
-          std::move(issuer_icon)));
+          std::move(payment_entities_logos)));
 
   request->delegate->OnDoneCreatingPaymentApps();
 }

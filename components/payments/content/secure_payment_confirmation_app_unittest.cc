@@ -44,6 +44,8 @@
 namespace payments {
 namespace {
 
+// Arbitrary change.
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
@@ -156,8 +158,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       /*device_supports_browser_bound_keys_in_hardware=*/true,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   std::vector<uint8_t> expected_bytes =
       std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
@@ -363,8 +364,7 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       GetParam().device_supports_browser_bound_keys_in_hardware,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
       browser_bound_key_id, public_key_as_cose_key, signature,
       GetParam().algorithm_identifier, client_data_json,
@@ -446,8 +446,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -489,8 +488,7 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -522,8 +520,7 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(RunOnceCallback<1>(
@@ -557,8 +554,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), /*authenticator=*/nullptr,
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   EXPECT_FALSE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), "spc");
@@ -577,8 +573,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(),
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),
-      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
-      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+      /*payment_entities_logos=*/{});
 
   EXPECT_TRUE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), base::Base64Encode(credential_id));

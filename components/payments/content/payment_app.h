@@ -59,6 +59,22 @@ class PaymentApp {
     virtual void OnInstrumentDetailsError(const std::string& error_message) = 0;
   };
 
+  // Describes a PaymentEntityLogo composed of the accessibility label, and the
+  // icon.
+  struct PaymentEntityLogo {
+    std::u16string label;
+    std::unique_ptr<SkBitmap> icon;
+    PaymentEntityLogo(std::u16string string, std::unique_ptr<SkBitmap> icon);
+
+    // PaymentEntityLogo is a move-only type:
+    PaymentEntityLogo(const PaymentEntityLogo&) = delete;
+    PaymentEntityLogo& operator=(const PaymentEntityLogo&) = delete;
+    PaymentEntityLogo(PaymentEntityLogo&&);
+    PaymentEntityLogo& operator=(PaymentEntityLogo&&);
+
+    ~PaymentEntityLogo();
+  };
+
   PaymentApp(const PaymentApp&) = delete;
   PaymentApp& operator=(const PaymentApp&) = delete;
 

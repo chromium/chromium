@@ -63,10 +63,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
       std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
-      const std::u16string& network_label,
-      std::unique_ptr<SkBitmap> network_icon,
-      const std::u16string& issuer_label,
-      std::unique_ptr<SkBitmap> issuer_icon);
+      std::vector<PaymentApp::PaymentEntityLogo> payment_entities_logos);
   ~SecurePaymentConfirmationApp() override;
 
   SecurePaymentConfirmationApp(const SecurePaymentConfirmationApp& other) =
@@ -104,9 +101,9 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  std::u16string network_label() const { return network_label_; }
+  std::u16string network_label() const;
 
-  std::u16string issuer_label() const { return issuer_label_; }
+  std::u16string issuer_label() const;
 
   PasskeyBrowserBinder* GetPasskeyBrowserBinderForTesting();
 
@@ -142,10 +139,14 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   std::string challenge_;
   blink::mojom::GetAssertionAuthenticatorResponsePtr response_;
 
-  const std::u16string network_label_;
-  const std::unique_ptr<SkBitmap> network_icon_;
-  const std::u16string issuer_label_;
-  const std::unique_ptr<SkBitmap> issuer_icon_;
+  // This contains the logos of the entities facilitating the transaction. There
+  // may be up to 2 logos.
+  //
+  // Payment entities can be of any type. However, when the
+  // SecurePaymentConfirmationNetworkAndIssuerIcons feature flag is enabled and
+  // network and issuer icons are provided by the page, this list will contain
+  // the network logo followed by the issuer logo.
+  std::vector<PaymentEntityLogo> payment_entities_logos_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };
