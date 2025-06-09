@@ -255,6 +255,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                addTarget:self
                   action:@selector(handlePageActionMenuEntrypointTapped)
         forControlEvents:UIControlEventTouchUpInside];
+    [self.layoutGuideCenter referenceView:_pageActionMenuEntrypointView
+                                underName:kPageActionMenuEntrypointGuide];
   } else if (IsLensOverlayAvailable(_profilePrefs)) {
     _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
         initWithProfilePrefs:_profilePrefs];
@@ -427,7 +429,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)attemptShowingLensOverlayIPH {
-  if (IsLensOverlayAvailable(_profilePrefs) &&
+  if (IsLensOverlayAvailable(_profilePrefs) && !IsPageActionMenuEnabled() &&
       !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
     [self.helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];

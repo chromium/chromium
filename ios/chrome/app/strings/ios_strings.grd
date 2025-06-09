@@ -1038,6 +1038,9 @@
       <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Text for the BWG Consent primary button.">
         Yes, I'm in
       </message>
+      <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
+        You can open Gemini here
+      </message>
       <message name="IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the BWG First Run secondary button.">
         No thanks
       </message>

@@ -49146,6 +49146,7 @@ should be able to be added at any place in this file.
              chip."/>
   <suffix name="iOSAddressPromoDesktop"
       label="For iOSAddressPromoDesktop feature"/>
+  <suffix name="IOSBWGPromoFeature" label="For IOSBWGPromoFeature feature"/>
   <suffix name="iOSChoiceScreen"
       label="(obsolete) For iOSChoiceScreen feature"/>
   <suffix name="iOSContextualPanelPriceInsights"
@@ -49171,7 +49172,6 @@ should be able to be added at any place in this file.
       label="For iOSFeedSwipeAnimatedFeature feature"/>
   <suffix name="iOSFeedSwipeStaticFeature"
       label="For iOSFeedSwipeStaticFeature feature"/>
-  <suffix name="IOSGLICPromoFeature" label="For IOSGLICPromoFeature feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"
@@ -49182,6 +49182,7 @@ should be able to be added at any place in this file.
       label="For iOSLensOverlayEscapeHatchTip IPH feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
+  <suffix name="IOSPageActionMenu" label="For IOSPageActionMenu IPH"/>
   <suffix name="iOSPageInfoRevamp"
       label="For Page Info Revamp new badge IPH feature. (obsolete)"/>
   <suffix name="iOSParcelTrackingFeature"

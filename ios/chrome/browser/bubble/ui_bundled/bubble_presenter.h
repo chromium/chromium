@@ -143,6 +143,11 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble.
 - (void)presentFeedSwipeBubble;
 
+// Optionally present a bubble associated with the page action menu icon in the
+// Omnibox. The eligibility is based off if the BWG Promo was shown and
+// dismissed.
+- (void)presentPageActionMenuBubble;
+
 // Delegate method to be invoked when the user has performed a swipe on the
 // toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
 - (void)handleToolbarSwipeGesture;

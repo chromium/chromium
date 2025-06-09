@@ -75,6 +75,9 @@ extern GuideName* const kFakeboxLensIconGuide;
 // A guide that is constrained to match the frame of the lens overlay
 // entrypoint.
 extern GuideName* const kLensOverlayEntrypointGuide;
+// A guide that is constrained to match the frame of the PageActionMenu
+// entrypoint.
+extern GuideName* const kPageActionMenuEntrypointGuide;
 // A guide that is constrained to match the frame of the identity disc button on
 // the New Tab page.
 extern GuideName* const kNTPIdentityDiscButtonGuide;

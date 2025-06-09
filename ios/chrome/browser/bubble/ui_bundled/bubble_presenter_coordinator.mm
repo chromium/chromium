@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -189,6 +190,11 @@
     }
     case InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc: {
       [_presenter presentSwitchAccountsWithNTPAccountParticleDiscBubble];
+      break;
+    }
+    case InProductHelpType::kPageActionMenu: {
+      CHECK(IsPageActionMenuEnabled());
+      [_presenter presentPageActionMenuBubble];
       break;
     }
   }

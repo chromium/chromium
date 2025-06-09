@@ -300,6 +300,8 @@ chromium-metrics-reviews@google.com.
       summary="IOS Lens overlay Escape Hatch"/>
   <variant name="IPH_iOSOverflowMenuCustomization"
       summary="overflow menu customization"/>
+  <variant name="IPH_iOSPageActionMenu"
+      summary="shows users an IPH for PageActionMenu"/>
   <variant name="IPH_iOSPageInfoRevamp"
       summary="(obsolete) showing the Page Info Revamp new badge IPH on the
                overflow menu carousel"/>

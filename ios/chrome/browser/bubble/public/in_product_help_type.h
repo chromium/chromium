@@ -45,6 +45,8 @@ enum class InProductHelpType : NSInteger {
   /// Help bubble for account switching via the account particle disc on the New
   /// Tab page.
   kSwitchAccountsWithNTPAccountParticleDisc,
+  /// Help bubble for page action menu.
+  kPageActionMenu,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

@@ -112,6 +112,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter*
       _switchAccountWithNTPIdentityDiscBubblePresenter;
   BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
+  BubbleViewControllerPresenter* _pageActionMenuBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -180,6 +181,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_lensKeyboardPresenter dismissAnimated:NO];
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
+  [_pageActionMenuBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -736,6 +738,47 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 }
 
+- (void)presentPageActionMenuBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_BWG_IPH_TEXT);
+
+  CGPoint pageActionMenuEntrypointAnchor =
+      [self anchorPointToGuide:kPageActionMenuEntrypointGuide
+                     direction:arrowDirection];
+  // To prevent the bubble from extending beyond the screen's edge, an offset is
+  // added, with the anchor point positioned at the top left corner.
+  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
+  // are fixed.
+  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
+
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::kIPHIOSPageActionMenu
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x +
+                                                anchorXOffset,
+                                            pageActionMenuEntrypointAnchor.y)];
+
+  if (presenter) {
+    _pageActionMenuBubblePresenter = presenter;
+  }
+}
+
 #pragma mark - GestureInProductHelpViewDelegate
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
@@ -983,8 +1026,10 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
            feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature.name ||
        feature.name ==
            feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name);
+  BOOL isPageActionMenuIPH =
+      feature.name == feature_engagement::kIPHIOSPageActionMenu.name;
   bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
-      shouldDisablePanRecognizer && isLensOverlayIPH;
+      (shouldDisablePanRecognizer && isLensOverlayIPH) || isPageActionMenuIPH;
 
   return bubbleViewControllerPresenter;
 }

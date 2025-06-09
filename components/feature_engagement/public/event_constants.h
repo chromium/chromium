@@ -320,11 +320,17 @@ extern const char kIOSWelcomeBackPromoTrigger[];
 // The Welcome Back promo was used.
 extern const char kIOSWelcomeBackPromoUsed[];
 
-// The GLIC promo was triggered.
-extern const char kIOSGLICPromoTrigger[];
+// The BWG promo was triggered.
+extern const char kIOSBWGPromoTrigger[];
 
-// The GLIC promo was used.
-extern const char kIOSGLICPromoUsed[];
+// The BWG promo was used.
+extern const char kIOSBWGPromoUsed[];
+
+// The page action menu IPH(In-Product Help) was triggered.
+extern const char kIOSPageActionMenuIPHTrigger[];
+
+// The page action menu IPH(In-Product Help) was used.
+extern const char kIOSPageActionMenuIPHUsed[];
 
 // The entry point of the import Safari data workflow has been displayed.
 extern const char kIOSSafariImportRemindMeLater[];

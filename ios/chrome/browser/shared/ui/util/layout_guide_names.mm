@@ -32,5 +32,7 @@ GuideName* const kContextualPanelLargeEntrypointGuide =
     @"kContextualPanelLargeEntrypointGuide";
 GuideName* const kFakeboxLensIconGuide = @"kFakeboxLensIconGuide";
 GuideName* const kLensOverlayEntrypointGuide = @"kLensOverlayEntrypointGuide";
+GuideName* const kPageActionMenuEntrypointGuide =
+    @"kPageActionMenuEntrypointGuide";
 GuideName* const kNTPIdentityDiscButtonGuide = @"kNTPIdentityDiscButtonGuide";
 GuideName* const kSelectedRegularCellGuide = @"kSelectedRegularCellGuide";

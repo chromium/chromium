@@ -167,10 +167,12 @@ const char kIOSScrolledOnFeed[] = "ios_scrolled_on_feed";
 const char kIOSActionOnFeed[] = "ios_action_on_feed";
 const char kIOSWelcomeBackPromoTrigger[] = "welcome_back_promo_trigger";
 const char kIOSWelcomeBackPromoUsed[] = "welcome_back_promo_used";
-const char kIOSGLICPromoTrigger[] = "glic_half_screen_promo_trigger";
-const char kIOSGLICPromoUsed[] = "glic_half_screen_promo_used";
+const char kIOSBWGPromoTrigger[] = "bwg_half_screen_promo_trigger";
+const char kIOSBWGPromoUsed[] = "bwg_half_screen_promo_used";
 const char kIOSSafariImportRemindMeLater[] =
     "ios_safari_import_entry_point_remind_me_later";
+const char kIOSPageActionMenuIPHTrigger[] = "page_action_menu_iph_trigger";
+const char kIOSPageActionMenuIPHUsed[] = "page_action_menu_iph_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

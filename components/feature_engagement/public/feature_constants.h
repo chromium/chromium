@@ -339,6 +339,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSFeedSwipeAnimatedFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSWelcomeBackFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHIOSBWGPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSSafariImportFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHIOSPageActionMenu);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET
