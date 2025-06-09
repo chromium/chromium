@@ -25,3 +25,9 @@ include_rules = [
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common",
 ]
+
+specific_include_rules = {
+  "echo_private_apitest\\.cc": [
+    "+chrome/test/base/mixin_based_in_process_browser_test.h",
+  ]
+}
