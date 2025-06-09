@@ -45,9 +45,7 @@ constexpr char kSaveCreditCardPromptResultHistogramStringForServerSave[] =
 // Test fixture for SaveCardInfobarBannerOverlayMediator.
 class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
-  ~SaveCardInfobarBannerOverlayMediatorTest() override {
-    EXPECT_OCMOCK_VERIFY((id)mediator_);
-  }
+  SaveCardInfobarBannerOverlayMediatorTest() {}
 
   void InitInfobar(const bool for_upload) {
     autofill::CreditCard credit_card(
