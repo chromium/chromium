@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -64,6 +65,24 @@ const bool kDefaultHasPointerEventsNone = false;
 const bool kDefaultIsReflection = false;
 const bool kDefaultWillDrawNeedsReset = false;
 const bool kDefaultOverrideChildPaintFlags = false;
+
+// Default ScrollbarLayerBaseExtra property values
+const cc::ElementId kDefaultScrollElementId = cc::ElementId();
+const bool kDefaultIsOverlayScrollbar = false;
+const bool kDefaultIsWebTest = false;
+const float kDefaultThumbThicknessScaleFactor = 0.f;
+const float kDefaultCurrentPos = 0.f;
+const float kDefaultClipLayerLength = 0.f;
+const float kDefaultScrollLayerLength = 0.f;
+const float kDefaultVerticalAdjust = 0.f;
+const bool kDefaultHasFindInPageTickmarks = false;
+const bool kDefaultIsHorizontalOrientation = false;
+const bool kDefaultIsLeftSideVerticalScrollbar = false;
+
+// Default SolidColorScrollbarLayer property values
+const SkColor4f kDefaultSolidColorScrollbarColor = SkColors::kTransparent;
+const int kDefaultSolidColorScrollbarThumbThickness = 0;
+const int kDefaultSolidColorScrollbarTrackStart = 0;
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -244,6 +263,29 @@ class LayerContextImplTest : public testing::Test {
         extra->will_draw_needs_reset = kDefaultWillDrawNeedsReset;
         extra->override_child_paint_flags = kDefaultOverrideChildPaintFlags;
         return mojom::LayerExtra::NewSurfaceLayerExtra(std::move(extra));
+      }
+      case cc::mojom::LayerType::kSolidColorScrollbar: {
+        auto extra = mojom::SolidColorScrollbarLayerExtra::New();
+        auto base_extra = mojom::ScrollbarLayerBaseExtra::New();
+        base_extra->scroll_element_id = kDefaultScrollElementId;
+        base_extra->is_overlay_scrollbar = kDefaultIsOverlayScrollbar;
+        base_extra->is_web_test = kDefaultIsWebTest;
+        base_extra->thumb_thickness_scale_factor =
+            kDefaultThumbThicknessScaleFactor;
+        base_extra->current_pos = kDefaultCurrentPos;
+        base_extra->clip_layer_length = kDefaultClipLayerLength;
+        base_extra->scroll_layer_length = kDefaultScrollLayerLength;
+        base_extra->vertical_adjust = kDefaultVerticalAdjust;
+        base_extra->has_find_in_page_tickmarks = kDefaultHasFindInPageTickmarks;
+        base_extra->is_horizontal_orientation = kDefaultIsHorizontalOrientation;
+        base_extra->is_left_side_vertical_scrollbar =
+            kDefaultIsLeftSideVerticalScrollbar;
+        extra->scrollbar_base_extra = std::move(base_extra);
+        extra->color = kDefaultSolidColorScrollbarColor;
+        extra->thumb_thickness = kDefaultSolidColorScrollbarThumbThickness;
+        extra->track_start = kDefaultSolidColorScrollbarTrackStart;
+        return mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
+            std::move(extra));
       }
 
       default:
@@ -2687,6 +2729,519 @@ TEST_F(LayerContextImplUpdateDisplayTreeSurfaceLayerTest,
       GetSurfaceLayerFromActiveTree(kSurfaceLayerId);
   ASSERT_NE(nullptr, layer_impl2);
   EXPECT_TRUE(layer_impl2->will_draw_needs_reset());
+}
+
+// Test fixture for ScrollbarLayerImplBase specific property updates,
+// parameterized by scrollbar layer type.
+class LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest
+    : public LayerContextImplLayerLifecycleTest,
+      public testing::WithParamInterface<cc::mojom::LayerType> {
+ protected:
+  cc::ScrollbarLayerImplBase* GetScrollbarLayerBaseFromActiveTree(
+      int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (layer && layer->IsScrollbarLayer()) {
+      return static_cast<cc::ScrollbarLayerImplBase*>(layer);
+    }
+    return nullptr;
+  }
+
+  mojom::ScrollbarLayerBaseExtra* GetScrollbarBaseExtra(
+      mojom::LayerExtra& layer_extra) {
+    switch (GetParam()) {
+      case cc::mojom::LayerType::kSolidColorScrollbar:
+        return layer_extra.get_solid_color_scrollbar_layer_extra()
+            ->scrollbar_base_extra.get();
+      case cc::mojom::LayerType::kPaintedScrollbar:
+        return layer_extra.get_painted_scrollbar_layer_extra()
+            ->scrollbar_base_extra.get();
+      case cc::mojom::LayerType::kNinePatchThumbScrollbar:
+        return layer_extra.get_nine_patch_thumb_scrollbar_layer_extra()
+            ->scrollbar_base_extra.get();
+      default:
+        NOTREACHED();
+    }
+  }
+
+  const gfx::Size kDefaultScrollbarLayerBounds = gfx::Size(10, 100);
+};
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       InitialIsHorizontalOrientation) {
+  constexpr int kScrollbarLayerId1 = 2;
+  constexpr int kScrollbarLayerId2 = 3;
+
+  // Test 1: Initial is_horizontal_orientation setting is respected.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+
+  GetScrollbarBaseExtra(*layer_props1->layer_extra)->is_horizontal_orientation =
+      false;
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)->is_horizontal_orientation =
+      true;
+
+  update1->layers.push_back(std::move(layer_props1));
+  update1->layers.push_back(std::move(layer_props2));
+  layer_order_.push_back(kScrollbarLayerId1);
+  layer_order_.push_back(kScrollbarLayerId2);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl1 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId1);
+  cc::ScrollbarLayerImplBase* layer_impl2 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId2);
+  ASSERT_NE(nullptr, layer_impl1);
+  ASSERT_NE(nullptr, layer_impl2);
+  EXPECT_EQ(layer_impl1->orientation(), cc::ScrollbarOrientation::kVertical);
+  EXPECT_EQ(layer_impl2->orientation(), cc::ScrollbarOrientation::kHorizontal);
+
+  // Test 2: Updating the is_horizontal_orientation property on an
+  // existing layer has no effect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props4 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+
+  // Try to swap the values
+  GetScrollbarBaseExtra(*layer_props3->layer_extra)->is_horizontal_orientation =
+      true;
+  GetScrollbarBaseExtra(*layer_props4->layer_extra)->is_horizontal_orientation =
+      false;
+
+  update2->layers.push_back(std::move(layer_props3));
+  update2->layers.push_back(std::move(layer_props4));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_EQ(layer_impl1->orientation(), cc::ScrollbarOrientation::kVertical);
+  EXPECT_EQ(layer_impl2->orientation(), cc::ScrollbarOrientation::kHorizontal);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       InitialIsLeftSideVerticalScrollbar) {
+  constexpr int kScrollbarLayerId1 = 2;
+  constexpr int kScrollbarLayerId2 = 3;
+
+  // Test 1: Initial is_left_side_vertical_scrollbar setting is respected.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props1->layer_extra)
+      ->is_left_side_vertical_scrollbar = false;
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)
+      ->is_left_side_vertical_scrollbar = true;
+
+  update1->layers.push_back(std::move(layer_props1));
+  update1->layers.push_back(std::move(layer_props2));
+  layer_order_.push_back(kScrollbarLayerId1);
+  layer_order_.push_back(kScrollbarLayerId2);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl1 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId1);
+  cc::ScrollbarLayerImplBase* layer_impl2 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId2);
+  ASSERT_NE(nullptr, layer_impl1);
+  ASSERT_NE(nullptr, layer_impl2);
+  EXPECT_EQ(layer_impl1->is_left_side_vertical_scrollbar(), false);
+  EXPECT_EQ(layer_impl2->is_left_side_vertical_scrollbar(), true);
+
+  // Test 2: Updating the is_left_side_vertical_scrollbar property on an
+  // existing layer has no effect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props4 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+
+  // Try to swap the values.
+  GetScrollbarBaseExtra(*layer_props3->layer_extra)
+      ->is_left_side_vertical_scrollbar = true;
+  GetScrollbarBaseExtra(*layer_props4->layer_extra)
+      ->is_left_side_vertical_scrollbar = false;
+
+  update2->layers.push_back(std::move(layer_props3));
+  update2->layers.push_back(std::move(layer_props4));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_EQ(layer_impl1->is_left_side_vertical_scrollbar(), false);
+  EXPECT_EQ(layer_impl2->is_left_side_vertical_scrollbar(), true);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       InitialIsOverlayScrollbar) {
+  constexpr int kScrollbarLayerId1 = 2;
+  constexpr int kScrollbarLayerId2 = 3;
+
+  // Test 1: Initial is_overlay_scrollbar setting is respected.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+
+  GetScrollbarBaseExtra(*layer_props1->layer_extra)->is_overlay_scrollbar =
+      false;
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)->is_overlay_scrollbar =
+      true;
+
+  update1->layers.push_back(std::move(layer_props1));
+  update1->layers.push_back(std::move(layer_props2));
+  layer_order_.push_back(kScrollbarLayerId1);
+  layer_order_.push_back(kScrollbarLayerId2);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl1 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId1);
+  cc::ScrollbarLayerImplBase* layer_impl2 =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId2);
+  ASSERT_NE(nullptr, layer_impl1);
+  ASSERT_NE(nullptr, layer_impl2);
+
+  EXPECT_FALSE(layer_impl1->is_overlay_scrollbar());
+  EXPECT_TRUE(layer_impl2->is_overlay_scrollbar());
+
+  // Test 2: Updating is_overlay_scrollbar mode is respected.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId1, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  auto layer_props4 = CreateManualLayer(kScrollbarLayerId2, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+
+  // Try to swap the values
+  GetScrollbarBaseExtra(*layer_props3->layer_extra)->is_overlay_scrollbar =
+      true;
+  GetScrollbarBaseExtra(*layer_props4->layer_extra)->is_overlay_scrollbar =
+      false;
+
+  update2->layers.push_back(std::move(layer_props3));
+  update2->layers.push_back(std::move(layer_props4));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_TRUE(layer_impl1->is_overlay_scrollbar());
+  EXPECT_FALSE(layer_impl2->is_overlay_scrollbar());
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       UpdateScrollElementId) {
+  constexpr int kScrollbarLayerId = 2;
+  const cc::ElementId kInitialScrollElementId = kDefaultScrollElementId;
+  const cc::ElementId kUpdatedScrollElementId1 = cc::ElementId(12345);
+  const cc::ElementId kUpdatedScrollElementId2 = cc::ElementId(54321);
+
+  // Initial update: Create with default scroll_element_id.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), GetParam(), kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->scroll_element_id(), kInitialScrollElementId);
+
+  // Second update: Update scroll_element_id.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)->scroll_element_id =
+      kUpdatedScrollElementId1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->scroll_element_id(), kUpdatedScrollElementId1);
+
+  // Third update: Update scroll_element_id again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props3->layer_extra)->scroll_element_id =
+      kUpdatedScrollElementId2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->scroll_element_id(), kUpdatedScrollElementId2);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       UpdateIsWebTest) {
+  constexpr int kScrollbarLayerId = 2;
+
+  // Initial update: Create with default is_web_test (false).
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), GetParam(), kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->is_web_test(), kDefaultIsWebTest);
+
+  // Second update: Set is_web_test to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)->is_web_test = true;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_TRUE(layer_impl->is_web_test());
+
+  // Third update: Set is_web_test back to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props3->layer_extra)->is_web_test = false;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_FALSE(layer_impl->is_web_test());
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       UpdateThumbThicknessScaleFactor) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedFactor = 0.5f;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), GetParam(), kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_thickness_scale_factor(),
+            kDefaultThumbThicknessScaleFactor);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  GetScrollbarBaseExtra(*layer_props2->layer_extra)
+      ->thumb_thickness_scale_factor = kUpdatedFactor;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_thickness_scale_factor(), kUpdatedFactor);
+}
+
+TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+       UpdateCurrentPosAndLengthsAndVerticalAdjustAndTickmarks) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr float kUpdatedCurrentPos = 10.f;
+  constexpr float kUpdatedClipLayerLength = 100.f;
+  constexpr float kUpdatedScrollLayerLength = 200.f;
+  constexpr float kUpdatedVerticalAdjust = 5.f;
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), GetParam(), kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ScrollbarLayerImplBase* layer_impl =
+      GetScrollbarLayerBaseFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->current_pos(), kDefaultCurrentPos);
+  EXPECT_EQ(layer_impl->clip_layer_length(), kDefaultClipLayerLength);
+  EXPECT_EQ(layer_impl->scroll_layer_length(), kDefaultScrollLayerLength);
+  EXPECT_EQ(layer_impl->vertical_adjust(), kDefaultVerticalAdjust);
+  EXPECT_EQ(layer_impl->has_find_in_page_tickmarks(),
+            kDefaultHasFindInPageTickmarks);
+
+  // Second update.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kScrollbarLayerId, GetParam(),
+                                        kDefaultScrollbarLayerBounds);
+  mojom::ScrollbarLayerBaseExtra* base_extra2 =
+      GetScrollbarBaseExtra(*layer_props2->layer_extra);
+  base_extra2->current_pos = kUpdatedCurrentPos;
+  base_extra2->clip_layer_length = kUpdatedClipLayerLength;
+  base_extra2->scroll_layer_length = kUpdatedScrollLayerLength;
+  base_extra2->vertical_adjust = kUpdatedVerticalAdjust;
+  base_extra2->has_find_in_page_tickmarks = true;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->current_pos(), kUpdatedCurrentPos);
+  EXPECT_EQ(layer_impl->clip_layer_length(), kUpdatedClipLayerLength);
+  EXPECT_EQ(layer_impl->scroll_layer_length(), kUpdatedScrollLayerLength);
+  EXPECT_EQ(layer_impl->vertical_adjust(), kUpdatedVerticalAdjust);
+  EXPECT_TRUE(layer_impl->has_find_in_page_tickmarks());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllScrollbarTypes,
+    LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
+    testing::Values(cc::mojom::LayerType::kSolidColorScrollbar
+                    // TODO(crbug.com/422778998): Add PaintedScrollbar and
+                    // NinePatchThumbScrollbar once their
+                    // CreateDefaultLayerExtra is implemented.
+                    ),
+    [](const testing::TestParamInfo<
+        LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest::ParamType>&
+           info) {
+      switch (info.param) {
+        case cc::mojom::LayerType::kSolidColorScrollbar:
+          return "SolidColorScrollbar";
+        case cc::mojom::LayerType::kPaintedScrollbar:
+          return "PaintedScrollbar";
+        case cc::mojom::LayerType::kNinePatchThumbScrollbar:
+          return "NinePatchThumbScrollbar";
+        default:
+          return "UnknownScrollbarType";
+      }
+    });
+
+// Test fixture for SolidColorScrollbarLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest
+    : public LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest {
+ protected:
+  cc::SolidColorScrollbarLayerImpl* GetSolidColorScrollbarLayerFromActiveTree(
+      int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (!layer ||
+        layer->GetLayerType() != cc::mojom::LayerType::kSolidColorScrollbar) {
+      return nullptr;
+    }
+    return static_cast<cc::SolidColorScrollbarLayerImpl*>(layer);
+  }
+
+  const gfx::Size kDefaultScrollbarLayerBounds = gfx::Size(10, 100);
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest,
+       InitialThumbThickness) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr int kInitialThumbThickness = 5;
+  constexpr int kUpdatedThumbThickness = 10;
+
+  // Test 1: Create SolidColorScrollbarLayer with a specific
+  // thumb_thickness.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kSolidColorScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra1 =
+      layer_props1->layer_extra->get_solid_color_scrollbar_layer_extra();
+  scrollbar_extra1->thumb_thickness = kInitialThumbThickness;
+  update1->layers.push_back(std::move(layer_props1));
+  // AddDefaultLayerToUpdate normally handles this. Since we used
+  // CreateManualLayer, update the layer_order here.
+  layer_order_.push_back(kScrollbarLayerId);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::SolidColorScrollbarLayerImpl* layer_impl =
+      GetSolidColorScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_thickness(), kInitialThumbThickness);
+
+  // Test 2: Updating the thumb_thickness should have no effect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kSolidColorScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_solid_color_scrollbar_layer_extra();
+  scrollbar_extra2->thumb_thickness = kUpdatedThumbThickness;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_EQ(layer_impl->thumb_thickness(), kInitialThumbThickness);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest,
+       InitialTrackStart) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr int kInitialTrackStart = 2;
+  constexpr int kUpdatedTrackStart = 4;
+
+  // Test 1: Create SolidColorScrollbarLayer with a specific track_start.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kSolidColorScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra1 =
+      layer_props1->layer_extra->get_solid_color_scrollbar_layer_extra();
+  scrollbar_extra1->track_start = kInitialTrackStart;
+  update1->layers.push_back(std::move(layer_props1));
+  // AddDefaultLayerToUpdate normally handles this. Since we used
+  // CreateManualLayer, update the layer_order here.
+  layer_order_.push_back(kScrollbarLayerId);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::SolidColorScrollbarLayerImpl* layer_impl =
+      GetSolidColorScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->track_start(), kInitialTrackStart);
+
+  // Test 2: Updating the track_start should have no effect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kSolidColorScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_solid_color_scrollbar_layer_extra();
+  scrollbar_extra2->track_start = kUpdatedTrackStart;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->track_start(), kInitialTrackStart);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest,
+       UpdateColor) {
+  constexpr int kScrollbarLayerId = 2;
+  const SkColor4f kUpdatedScrollbarColor = SkColors::kRed;
+
+  // Initial update: Create SolidColorScrollbarLayer with default color.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kSolidColorScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::SolidColorScrollbarLayerImpl* layer_impl =
+      GetSolidColorScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->color(), kDefaultSolidColorScrollbarColor);  // Default
+
+  // Second update: Update color.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kSolidColorScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_solid_color_scrollbar_layer_extra();
+  scrollbar_extra2->color = kUpdatedScrollbarColor;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->color(), kUpdatedScrollbarColor);
 }
 
 }  // namespace viz

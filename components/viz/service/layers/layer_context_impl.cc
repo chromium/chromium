@@ -575,6 +575,9 @@ void UpdateSolidColorScrollbarLayerExtra(
   UpdateScrollbarLayerBaseExtra(
       extra->scrollbar_base_extra,
       static_cast<cc::ScrollbarLayerImplBase&>(layer));
+  layer.set_color(extra->color);
+  // thumb_thickness has no update method in SolidColorScrollbarLayerImpl
+  // so it is intentionally ignored here.
 }
 
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
