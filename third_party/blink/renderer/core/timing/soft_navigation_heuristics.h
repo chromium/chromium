@@ -136,6 +136,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
   uint64_t CalculateRequiredPaintArea() const;
+  uint64_t CalculateViewportArea() const;
 
   Member<LocalDOMWindow> window_;
 

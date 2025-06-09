@@ -54,6 +54,8 @@ class CORE_EXPORT SoftNavigationContext
   // check for sufficient paints to emit a soft-nav entry.
   bool HasDomModification() const { return num_modified_dom_nodes_ > 0; }
 
+  uint64_t PaintedArea() const { return painted_area_; }
+
   // Reports a new contentful paint area to this context, and the Node painted.
   // Returns true if we update the total attributed area (meaning this context
   // was involved in modifying this dom node, and we grew the painted region).

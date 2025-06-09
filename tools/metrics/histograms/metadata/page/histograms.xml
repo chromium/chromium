@@ -225,6 +225,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".RTTBelow200" summary="RTT less than 200ms"/>
 </variants>
 
+<variants name="SoftNavigationStatus">
+  <variant name="Emitted" summary="Emitted"/>
+  <variant name="NotEmittedInsufficientPaint"
+      summary="Not Emitted due to Insufficient Paint"/>
+  <variant name="NotEmittedUrlEmpty"
+      summary="Not Emitted because the URL was empty (normal interaction)"/>
+</variants>
+
 <variants name="TabInitializationStatus">
   <variant name="" summary="any"/>
   <variant name=".FromNewTabPage" summary="navigation from new tab page"/>
@@ -3714,6 +3722,33 @@ chromium-metrics-reviews@google.com.
     PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics.
   </summary>
   <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
+</histogram>
+
+<histogram name="PageLoad.Internal.SoftNavigation.TotalPaintArea.{Status}"
+    units="pixels" expires_after="2026-06-05">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the total paint area in pixels for a soft navigation. Recorded when
+    the soft navigation context is exhausted. This metric is only recorded when
+    the soft navigation was {Status}.
+  </summary>
+  <token key="Status" variants="SoftNavigationStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Internal.SoftNavigation.TotalPaintAreaPoints.{Status}"
+    units="Points" expires_after="2026-06-05">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the total paint area as a percentage of the required paint area for
+    a soft navigation, multiplied by 100 as &quot;points&quot;. The
+    multiplication is to increase precision, which will be needed in the lowest
+    values especially. Recorded when the soft navigation context is exhausted.
+    This metric is only recorded when the soft navigation was {Status}.
+  </summary>
+  <token key="Status" variants="SoftNavigationStatus"/>
 </histogram>
 
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"

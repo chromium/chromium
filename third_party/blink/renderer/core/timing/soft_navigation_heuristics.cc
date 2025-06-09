@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -34,6 +35,25 @@ namespace {
 const char kPageLoadInternalSoftNavigationOutcome[] =
     "PageLoad.Internal.SoftNavigationOutcome";
 
+const char kPageLoadInternalSoftNavigationEmittedTotalPaintArea[] =
+    "PageLoad.Internal.SoftNavigation.Emitted.TotalPaintArea";
+const char kPageLoadInternalSoftNavigationEmittedTotalPaintAreaPoints[] =
+    "PageLoad.Internal.SoftNavigation.Emitted.TotalPaintAreaPoints";
+
+const char kPageLoadInternalSoftNavigationNotEmittedUrlEmptyTotalPaintArea[] =
+    "PageLoad.Internal.SoftNavigation.NotEmittedUrlEmpty.TotalPaintArea";
+const char
+    kPageLoadInternalSoftNavigationNotEmittedUrlEmptyTotalPaintAreaPoints[] =
+        "PageLoad.Internal.SoftNavigation.NotEmittedUrlEmpty."
+        "TotalPaintAreaPoints";
+const char
+    kPageLoadInternalSoftNavigationNotEmittedInsufficientPaintTotalPaintArea[] =
+        "PageLoad.Internal.SoftNavigation.NotEmittedInsufficientPaint."
+        "TotalPaintArea";
+const char
+    kPageLoadInternalSoftNavigationNotEmittedInsufficientPaintTotalPaintAreaPercentage
+        [] = "PageLoad.Internal.SoftNavigation.NotEmittedInsufficientPaint."
+             "TotalPaintAreaPoints";
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
 // "SoftNavigationOutcome" in tools/metrics/histograms/enums.xml. Note also that
@@ -58,6 +78,7 @@ enum SoftNavigationOutcome {
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
 
 void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
+                                         uint64_t viewport_area,
                                          uint64_t required_paint_area) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("loading"),
@@ -67,6 +88,16 @@ void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
   // Don't bother to log if the URL was never set.  That means it was just a
   // normal interaction.
   if (!context.HasUrl()) {
+    uint64_t total_paint_area = context.PaintedArea();
+    base::UmaHistogramCounts1M(
+        kPageLoadInternalSoftNavigationNotEmittedUrlEmptyTotalPaintArea,
+        total_paint_area);
+
+    // viewport_area is guaranteed to be >= 1.
+    uint64_t points_val = (total_paint_area * 10000ULL) / viewport_area;
+    base::UmaHistogramCounts100000(
+        kPageLoadInternalSoftNavigationNotEmittedUrlEmptyTotalPaintAreaPoints,
+        base::saturated_cast<int>(points_val));
     return;
   }
 
@@ -76,14 +107,32 @@ void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
   if (context.WasEmitted()) {
     // We already report this outcome eagerly, as part of
     // `ReportSoftNavigationToMetrics`, so don't report again here.
-    // However, if we ever report total painted area, or largest paint size, we
-    // should do it here, lazily, in order to wait for the final sizes.
+    // However, we can report the final paint area metrics here.
+    uint64_t total_paint_area = context.PaintedArea();
+    base::UmaHistogramCounts1M(
+        kPageLoadInternalSoftNavigationEmittedTotalPaintArea, total_paint_area);
+
+    // viewport_area is guaranteed to be >= 1.
+    uint64_t points_val = (total_paint_area * 10000ULL) / viewport_area;
+    base::UmaHistogramCounts100000(
+        kPageLoadInternalSoftNavigationEmittedTotalPaintAreaPoints,
+        base::saturated_cast<int>(points_val));
   } else if (!context.HasDomModification()) {
     base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
                                   SoftNavigationOutcome::kNoDomModification);
   } else if (!context.SatisfiesSoftNavPaintCriteria(required_paint_area)) {
     base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
                                   SoftNavigationOutcome::kInsufficientPaints);
+    uint64_t total_paint_area = context.PaintedArea();
+    base::UmaHistogramCounts1M(
+        kPageLoadInternalSoftNavigationNotEmittedInsufficientPaintTotalPaintArea,
+        total_paint_area);
+
+    // viewport_area is guaranteed to be >= 1.
+    uint64_t points_val = (total_paint_area * 10000ULL) / viewport_area;
+    base::UmaHistogramCounts100000(
+        kPageLoadInternalSoftNavigationNotEmittedInsufficientPaintTotalPaintAreaPercentage,
+        base::saturated_cast<int>(points_val));
   }
 }
 
@@ -159,9 +208,11 @@ SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
 void SoftNavigationHeuristics::Shutdown() {
   task_attribution_tracker_ = nullptr;
 
+  const auto viewport_area = CalculateViewportArea();
   const auto required_paint_area = CalculateRequiredPaintArea();
   for (const auto& context : potential_soft_navigations_) {
-    OnSoftNavigationContextWasExhausted(*context.Get(), required_paint_area);
+    OnSoftNavigationContextWasExhausted(*context.Get(), viewport_area,
+                                        required_paint_area);
   }
   potential_soft_navigations_.clear();
 }
@@ -478,7 +529,8 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   const auto required_paint_area = CalculateRequiredPaintArea();
   WTF::EraseIf(potential_soft_navigations_, [&](const auto& context) {
     if (!info.IsHeapObjectAlive(context)) {
-      OnSoftNavigationContextWasExhausted(*context.Get(), required_paint_area);
+      OnSoftNavigationContextWasExhausted(
+          *context.Get(), CalculateViewportArea(), required_paint_area);
       return true;
     }
     return false;
@@ -623,21 +675,24 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
   // after a click event handler is done, to reduce potential cycles.
 }
 
-uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
-  static constexpr uint64_t kMinRequiredArea = 1;
-
+uint64_t SoftNavigationHeuristics::CalculateViewportArea() const {
+  static constexpr uint64_t kMinViewportArea = 1;
   LocalFrame* frame = window_->GetFrame();
   CHECK(frame);
   LocalFrameView* local_frame_view = frame->View();
   if (!local_frame_view) {
-    return kMinRequiredArea;
+    return kMinViewportArea;
   }
-
-  constexpr int kSoftNavigationPaintAreaPercentageInPoints = 1;  // 0.01%
   uint64_t viewport_area = local_frame_view->GetLayoutSize().Area64();
+  return std::max(viewport_area, kMinViewportArea);
+}
+
+uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
+  static constexpr uint64_t kMinRequiredArea = 1;
+  constexpr int kSoftNavigationPaintAreaPercentageInPoints = 1;  // 0.01%
+  uint64_t viewport_area = CalculateViewportArea();
   uint64_t required_paint_area =
       (viewport_area * kSoftNavigationPaintAreaPercentageInPoints) / 10000;
-
   if (required_paint_area > kMinRequiredArea) {
     return required_paint_area;
   }
