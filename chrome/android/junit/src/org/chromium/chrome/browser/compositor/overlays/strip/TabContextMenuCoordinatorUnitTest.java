@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -483,7 +484,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.close_tab, TAB_ID, COLLABORATION_ID, listViewTouchTracker);
         verify(mTabRemover, times(1))
                 .closeTabs(
-                        TabClosureParams.closeTab(mTab1).allowUndo(shouldAllowUndo).build(),
+                        TabClosureParams.closeTab(mTab1)
+                                .allowUndo(shouldAllowUndo)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
                         /* allowDialog= */ true);
     }
 

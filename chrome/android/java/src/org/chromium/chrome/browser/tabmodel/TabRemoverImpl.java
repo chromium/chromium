@@ -349,6 +349,7 @@ public class TabRemoverImpl implements TabRemover {
                     .recommendedNextTab(params.recommendedNextTab)
                     .uponExit(params.uponExit && !createdPlaceholders)
                     .allowUndo(params.allowUndo && !preventUndo)
+                    .tabClosingSource(params.tabClosingSource)
                     .withUndoRunnable(undoRunnable)
                     .build();
         }
@@ -356,6 +357,7 @@ public class TabRemoverImpl implements TabRemover {
                 .allowUndo(params.allowUndo && !preventUndo)
                 .hideTabGroups(params.hideTabGroups)
                 .saveToTabRestoreService(params.saveToTabRestoreService)
+                .tabClosingSource(params.tabClosingSource)
                 .withUndoRunnable(undoRunnable)
                 .build();
     }

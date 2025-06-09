@@ -65,6 +65,7 @@ public class TabClosureParams {
         private final Tab mTab;
         private boolean mAllowUndo = true;
         private boolean mUponExit;
+        private @TabClosingSource int mTabClosingSource = TabClosingSource.UNKNOWN;
         private @Nullable Tab mRecommendedNextTab;
         private @Nullable Runnable mUndoRunnable;
 
@@ -90,6 +91,12 @@ public class TabClosureParams {
             return this;
         }
 
+        /** Set the tab closing source. Default is unknown. */
+        public CloseTabBuilder tabClosingSource(@TabClosingSource int tabClosingSource) {
+            mTabClosingSource = tabClosingSource;
+            return this;
+        }
+
         /** Sets the undo runnable. */
         public CloseTabBuilder withUndoRunnable(Runnable undoRunnable) {
             mUndoRunnable = undoRunnable;
@@ -106,6 +113,7 @@ public class TabClosureParams {
                     mAllowUndo,
                     /* hideTabGroups= */ false,
                     /* saveToTabRestoreService= */ true,
+                    mTabClosingSource,
                     TabCloseType.SINGLE,
                     mUndoRunnable,
                     /* isTabGroup= */ false);
@@ -119,6 +127,7 @@ public class TabClosureParams {
         private boolean mHideTabGroups;
         private boolean mSaveToTabRestoreService = true;
         private boolean mIsTabGroup;
+        private @TabClosingSource int mTabClosingSource;
         private @Nullable Runnable mUndoRunnable;
 
         private CloseTabsBuilder(List<Tab> tabs) {
@@ -140,6 +149,12 @@ public class TabClosureParams {
         /** Set whether to allow saving to the Tab Restore Service. Default is true. */
         public CloseTabsBuilder saveToTabRestoreService(boolean saveToTabRestoreService) {
             mSaveToTabRestoreService = saveToTabRestoreService;
+            return this;
+        }
+
+        /** Set the tab closing source. Default is unknown. */
+        public CloseTabsBuilder tabClosingSource(@TabClosingSource int tabClosingSource) {
+            mTabClosingSource = tabClosingSource;
             return this;
         }
 
@@ -171,6 +186,7 @@ public class TabClosureParams {
                     mAllowUndo,
                     mHideTabGroups,
                     mSaveToTabRestoreService,
+                    mTabClosingSource,
                     TabCloseType.MULTIPLE,
                     mUndoRunnable,
                     mIsTabGroup);
@@ -182,6 +198,7 @@ public class TabClosureParams {
         private boolean mUponExit;
         private boolean mAllowUndo = true;
         private boolean mHideTabGroups;
+        private @TabClosingSource int mTabClosingSource = TabClosingSource.UNKNOWN;
         private @Nullable Runnable mUndoRunnable;
 
         private CloseAllTabsBuilder() {}
@@ -204,6 +221,12 @@ public class TabClosureParams {
             return this;
         }
 
+        /** Set the tab closing source. Default is unknown. */
+        public CloseAllTabsBuilder tabClosingSource(@TabClosingSource int tabClosingSource) {
+            mTabClosingSource = tabClosingSource;
+            return this;
+        }
+
         /** Sets the undo runnable. */
         public CloseAllTabsBuilder withUndoRunnable(Runnable undoRunnable) {
             mUndoRunnable = undoRunnable;
@@ -220,6 +243,7 @@ public class TabClosureParams {
                     mAllowUndo,
                     mHideTabGroups,
                     /* saveToTabRestoreService= */ true,
+                    mTabClosingSource,
                     TabCloseType.ALL,
                     mUndoRunnable,
                     /* isTabGroup= */ false);
@@ -235,6 +259,7 @@ public class TabClosureParams {
     public final boolean allowUndo;
     public final boolean hideTabGroups;
     public final boolean saveToTabRestoreService;
+    public final @TabClosingSource int tabClosingSource;
     public final @TabCloseType int tabCloseType;
     public final @Nullable Runnable undoRunnable;
     public final boolean isTabGroup;
@@ -247,6 +272,7 @@ public class TabClosureParams {
             boolean allowUndo,
             boolean hideTabGroups,
             boolean saveToTabRestoreService,
+            @TabClosingSource int tabClosingSource,
             @TabCloseType int tabCloseType,
             @Nullable Runnable undoRunnable,
             boolean isTabGroup) {
@@ -257,6 +283,7 @@ public class TabClosureParams {
         this.allowUndo = allowUndo;
         this.hideTabGroups = hideTabGroups;
         this.saveToTabRestoreService = saveToTabRestoreService;
+        this.tabClosingSource = tabClosingSource;
         this.tabCloseType = tabCloseType;
         this.undoRunnable = undoRunnable;
         this.isTabGroup = isTabGroup;
@@ -274,6 +301,7 @@ public class TabClosureParams {
                     && this.allowUndo == otherParams.allowUndo
                     && this.hideTabGroups == otherParams.hideTabGroups
                     && this.saveToTabRestoreService == otherParams.saveToTabRestoreService
+                    && this.tabClosingSource == otherParams.tabClosingSource
                     && this.tabCloseType == otherParams.tabCloseType
                     && Objects.equals(this.undoRunnable, otherParams.undoRunnable)
                     && this.isTabGroup == otherParams.isTabGroup;
@@ -291,6 +319,7 @@ public class TabClosureParams {
                 this.allowUndo,
                 this.hideTabGroups,
                 this.saveToTabRestoreService,
+                this.tabClosingSource,
                 this.tabCloseType,
                 this.undoRunnable,
                 this.isTabGroup);
@@ -312,6 +341,8 @@ public class TabClosureParams {
                 + this.hideTabGroups
                 + "\nsaveToTabRestoreService "
                 + this.saveToTabRestoreService
+                + "\ntabClosingSource "
+                + this.tabClosingSource
                 + "\ntabCloseType "
                 + this.tabCloseType
                 + "\nundoRunnable "

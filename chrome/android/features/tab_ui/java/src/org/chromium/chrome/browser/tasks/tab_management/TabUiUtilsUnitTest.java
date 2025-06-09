@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -139,6 +140,7 @@ public class TabUiUtilsUnitTest {
         TabUiUtils.closeTabGroup(
                 mFilter,
                 Tab.INVALID_TAB_ID,
+                TabClosingSource.UNKNOWN,
                 /* allowUndo= */ true,
                 /* hideTabGroups= */ false,
                 mDidCloseTabsCallback);
@@ -160,6 +162,7 @@ public class TabUiUtilsUnitTest {
         TabUiUtils.closeTabGroup(
                 mFilter,
                 TAB_ID,
+                TabClosingSource.UNKNOWN,
                 shouldAllowUndo,
                 /* hideTabGroups= */ false,
                 /* didCloseCallback= */ null);
@@ -180,7 +183,12 @@ public class TabUiUtilsUnitTest {
         boolean hideTabGroups = false;
 
         TabUiUtils.closeTabGroup(
-                mFilter, TAB_ID, /* allowUndo= */ true, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                TAB_ID,
+                TabClosingSource.TABLET_TAB_STRIP,
+                /* allowUndo= */ true,
+                hideTabGroups,
+                mDidCloseTabsCallback);
 
         verify(mTabRemover)
                 .closeTabs(
@@ -188,6 +196,7 @@ public class TabUiUtilsUnitTest {
                                 TabClosureParams.forCloseTabGroup(mFilter, TAB_GROUP_ID)
                                         .hideTabGroups(hideTabGroups)
                                         .allowUndo(true)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build()),
                         eq(true),
                         mTabModelActionListenerCaptor.capture());
@@ -225,7 +234,12 @@ public class TabUiUtilsUnitTest {
         boolean hideTabGroups = true;
 
         TabUiUtils.closeTabGroup(
-                mFilter, TAB_ID, /* allowUndo= */ true, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                TAB_ID,
+                TabClosingSource.TABLET_TAB_STRIP,
+                /* allowUndo= */ true,
+                hideTabGroups,
+                mDidCloseTabsCallback);
 
         verify(mTabRemover)
                 .closeTabs(
@@ -233,6 +247,7 @@ public class TabUiUtilsUnitTest {
                                 TabClosureParams.forCloseTabGroup(mFilter, TAB_GROUP_ID)
                                         .hideTabGroups(hideTabGroups)
                                         .allowUndo(true)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build()),
                         eq(true),
                         mTabModelActionListenerCaptor.capture());

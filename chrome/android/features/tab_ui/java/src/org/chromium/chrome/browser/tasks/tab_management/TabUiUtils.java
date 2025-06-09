@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -66,6 +67,7 @@ public class TabUiUtils {
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param tabId The ID of one of the tabs in the tab group.
+     * @param tabClosingSource The tab closing source, e.g. the tablet tab strip.
      * @param allowUndo Whether to allow undo of the tab group closure.
      * @param hideTabGroups Whether to hide or delete the tab group.
      * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
@@ -73,6 +75,7 @@ public class TabUiUtils {
     public static void closeTabGroup(
             TabGroupModelFilter filter,
             int tabId,
+            @TabClosingSource int tabClosingSource,
             boolean allowUndo,
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
@@ -89,7 +92,10 @@ public class TabUiUtils {
             return;
         }
         TabClosureParams closureParams =
-                builder.hideTabGroups(hideTabGroups).allowUndo(allowUndo).build();
+                builder.hideTabGroups(hideTabGroups)
+                        .allowUndo(allowUndo)
+                        .tabClosingSource(tabClosingSource)
+                        .build();
 
         @Nullable TabModelActionListener listener = buildMaybeDidCloseTabListener(didCloseCallback);
         tabModel.getTabRemover().closeTabs(closureParams, /* allowDialog= */ true, listener);

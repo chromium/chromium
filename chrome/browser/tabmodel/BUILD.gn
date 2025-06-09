@@ -32,6 +32,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/SupportsTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCloseType.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCloser.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosingSource.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",

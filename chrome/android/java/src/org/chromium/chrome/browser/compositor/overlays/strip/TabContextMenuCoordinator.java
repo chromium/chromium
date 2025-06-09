@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -152,7 +153,10 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 tabModel.getTabRemover()
                         .closeTabs(
-                                TabClosureParams.closeTab(tab).allowUndo(allowUndo).build(),
+                                TabClosureParams.closeTab(tab)
+                                        .allowUndo(allowUndo)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                        .build(),
                                 /* allowDialog= */ true);
                 RecordUserAction.record("MobileToolbarTabMenu.CloseTab");
             }

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -194,6 +195,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
+                        TabClosingSource.TABLET_TAB_STRIP,
                         allowUndo,
                         /* hideTabGroups= */ true,
                         /* didCloseCallback= */ null);
@@ -203,6 +205,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
+                        TabClosingSource.TABLET_TAB_STRIP,
                         allowUndo,
                         /* hideTabGroups= */ false,
                         /* didCloseCallback= */ null);

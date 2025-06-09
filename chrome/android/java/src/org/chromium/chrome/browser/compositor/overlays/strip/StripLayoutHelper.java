@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -725,6 +726,8 @@ public class StripLayoutHelper
                                     .closeTabs(
                                             TabClosureParams.closeAllTabs()
                                                     .hideTabGroups(true)
+                                                    .tabClosingSource(
+                                                            TabClosingSource.TABLET_TAB_STRIP)
                                                     .build(),
                                             /* allowDialog= */ true);
                             RecordUserAction.record("MobileToolbarCloseAllTabs");
@@ -3015,7 +3018,11 @@ public class StripLayoutHelper
                 };
 
         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(motionEventButtonState);
-        TabClosureParams params = TabClosureParams.closeTab(realTab).allowUndo(allowUndo).build();
+        TabClosureParams params =
+                TabClosureParams.closeTab(realTab)
+                        .allowUndo(allowUndo)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                        .build();
         mTabGroupModelFilter
                 .getTabModel()
                 .getTabRemover()
@@ -3152,6 +3159,7 @@ public class StripLayoutHelper
                                 .forceCloseTabs(
                                         TabClosureParams.closeTab(tab)
                                                 .allowUndo(allowUndo)
+                                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                                 .build());
                     }
 
