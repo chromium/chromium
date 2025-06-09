@@ -160,8 +160,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_background_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_background_color));
-    progress_bar_background_layer_->SetRoundedCorner(
-        gfx::RoundedCornersF(0.f, corner_radius, corner_radius, 0.f));
+    progress_bar_background_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
 
     progress_bar_end_circle_layer_->SetPosition(
         gfx::PointF(progress_bar_end_indicator_x, progress_bar_end_indicator_y));
@@ -181,8 +180,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_color));
-    progress_bar_layer_->SetRoundedCorner(
-        gfx::RoundedCornersF(corner_radius, 0.f, 0.f, corner_radius));
+    progress_bar_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
   }
 }
 
