@@ -622,21 +622,6 @@ targets.mixin(
     ),
 )
 
-# TODO(crbug.com/416556639): Remove this after the migration is done.
-targets.mixin(
-    name = "chromium_pixel_2_pie_or_q",
-    generate_pyl_entry = False,
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "PQ3A.190801.002|QQ1A.191205.008",
-            "device_os_flavor": "google",
-            "device_type": "walleye",
-            "os": "Android",
-            "pool": "chromium.tests",
-        },
-    ),
-)
-
 targets.mixin(
     name = "chromium_pixel_2_q",
     # We always need this entry to be generated since it is used by
