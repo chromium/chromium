@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/geo/subkey_requester.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -101,9 +102,9 @@ void OnSubKeysReceived(base::android::ScopedJavaGlobalRef<jobject> jdelegate,
 
 SubKeyRequester::SubKeyRequester(std::unique_ptr<Source> source,
                                  std::unique_ptr<Storage> storage,
-                                 const std::string& language)
+                                 std::string_view language)
     : address_validator_(std::move(source), std::move(storage), this),
-      language_(language) {}
+      language_(std::string(language)) {}
 
 SubKeyRequester::~SubKeyRequester() = default;
 
