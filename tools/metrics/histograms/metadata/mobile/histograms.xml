@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.Messages.Passwords.Modal.Present{Mobile_Messages_Password_Type}"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2025-06-20">
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2026-06-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2025-06-20">
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2026-06-20">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2025-06-20">
+    enum="MobileMessagesTranslateModalPresent" expires_after="2026-06-20">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
