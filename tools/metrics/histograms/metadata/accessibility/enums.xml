@@ -1681,8 +1681,7 @@ Unknown properties are collapsed to zero. -->
       label="Switch which row of the top controls (tab strip, toolbar,
              bookmarks bar) is keyboard-focused"/>
   <int value="24"
-      label="Open the context menu for the keyboard-focused tab strip item
-             (not implemented)"/>
+      label="Open the context menu for the keyboard-focused tab strip item"/>
   <int value="25"
       label="Reorder the keyboard-focused tab strip item to the left (not
              implemented)"/>

@@ -84,7 +84,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
+        KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT,
@@ -160,7 +160,7 @@ public class KeyboardShortcuts {
         int KEYBOARD_FOCUS_TOOLBAR = 21;
         int KEYBOARD_FOCUS_BOOKMARKS = 22;
         int KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
-        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
+        int FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
         int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
         int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
         int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT = 27;
@@ -696,7 +696,7 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_F6, NO_MODIFIER));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning
-                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
+                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
                 new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning
@@ -1126,7 +1126,7 @@ public class KeyboardShortcuts {
                         return false;
                     }
                 case KeyboardShortcutsSemanticMeaning
-                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
+                        .FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU:
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
                         return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                                 R.id.open_tab_strip_context_menu, /* fromMenu= */ false);
