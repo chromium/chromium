@@ -264,6 +264,9 @@
       <message name="IDS_IOS_AI_HUB_BWG_LABEL" translateable="false" desc="The button label for the Gemini entry point of the AI hub.">
         Ask Me
       </message>
+      <message name="IDS_IOS_AI_HUB_HIDE_READER_MODE_LABEL" desc="The button label for hiding Reader mode when it's active from the AI hub.">
+        Hide Reader
+      </message>
       <message name="IDS_IOS_AI_HUB_LENS_LABEL" desc="The button label for the Lens entry point of the AI hub.">
         Search screen
       </message>

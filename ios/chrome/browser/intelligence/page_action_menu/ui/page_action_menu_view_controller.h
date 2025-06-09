@@ -10,9 +10,20 @@
 @protocol BWGCommands;
 @protocol LensOverlayCommands;
 @protocol PageActionMenuCommands;
+@protocol ReaderModeCommands;
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController : UIViewController
+
+// Initializes the view controller adapted to whether Reader Mode is currently
+// active.
+- (instancetype)initWithReaderModeActive:(BOOL)readerModeActive
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 // The handler for sending BWG commands.
 @property(nonatomic, weak) id<BWGCommands> BWGHandler;
@@ -22,6 +33,9 @@
 
 // The handler for sending lens overlay commands.
 @property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;
+
+// The handler for sending reader mode commands.
+@property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
 
 @end
 

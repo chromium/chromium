@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/reader_mode/model/features.h",
+  "+ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h",
+]
