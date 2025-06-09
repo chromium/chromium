@@ -87,6 +87,7 @@ inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
 inline constexpr char kFocusedSrpWebCount[] = "omnibox.focused_srp_web_count";
 inline constexpr char kAIModeSearchSuggestSettings[] =
     "omnibox.ai_mode_search_suggest_settings";
+inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 
 // Many of the prefs defined above are registered locally where they're used.
 // New prefs should be added here and ordered the same as they're defined above.

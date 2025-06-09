@@ -1030,7 +1030,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());
 
+  // TODO(crbug.com/422744656): Remove `kAIModeSearchSuggestSettings` pref once
+  // `kAIModeSettings` is implemented.
   registry->RegisterIntegerPref(omnibox::kAIModeSearchSuggestSettings, 0);
+  registry->RegisterIntegerPref(omnibox::kAIModeSettings, 0);
 
   // Deprecated 09/2024 (migrated to localState prefs).
   registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);

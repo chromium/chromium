@@ -1,0 +1,38 @@
+caption: Settings for Google's AI Mode integrations in the address bar and New Tab page search box.
+
+desc: |-
+  This policy controls Google's AI Mode integrations in the address bar and the New Tab page search box.
+
+  To access this feature, Google must be set as the user's default search engine.
+
+  0/unset = The feature will be available to users.
+
+  1 = The feature will not be available to users.
+
+  If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow AI Mode integrations.
+  name: Allowed
+  value: 0
+- caption: Do not allow AI Mode integrations.
+  name: Disabled
+  value: 1
+owners:
+- file://components/omnibox/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- android:138-
+- ios:138-
+- chrome.*:138-
+- chrome_os:138-
+tags: []
+type: int-enum

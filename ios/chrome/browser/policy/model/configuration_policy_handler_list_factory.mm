@@ -172,6 +172,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kAIModeSearchSuggestSettings,
     omnibox::kAIModeSearchSuggestSettings,
     base::Value::Type::INTEGER },
+  { policy::key::kAIModeSettings,
+    omnibox::kAIModeSettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 
@@ -250,6 +253,10 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   gen_ai_default_policies.emplace_back(
       policy::key::kAIModeSearchSuggestSettings,
       omnibox::kAIModeSearchSuggestSettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
+  gen_ai_default_policies.emplace_back(
+      policy::key::kAIModeSettings, omnibox::kAIModeSettings,
       policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
   handlers->AddHandler(
