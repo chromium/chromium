@@ -130,12 +130,12 @@ class TtyTest(RegularTest):
 
     def test_bytestream(self):
         self.meter.write('German umlauts: \xe4\xf6\xfc')
-        self.meter.write(u'German umlauts: \xe4\xf6\xfc')
+        self.meter.write('German umlauts: \xe4\xf6\xfc')
         if six.PY2:
             # TODO(preethim) : self.stream.getvalue() was giving unicode error.
             # continued with buflist for now.
             self.assertEqual(self.stream.buflist, [
-                'German umlauts: \xe4\xf6\xfc', u'German umlauts: \xe4\xf6\xfc'
+                'German umlauts: \xe4\xf6\xfc', 'German umlauts: \xe4\xf6\xfc'
             ])
 
         else:

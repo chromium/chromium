@@ -101,7 +101,7 @@ class ExecutiveTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             executive.run_command('echo')
         with self.assertRaises(AssertionError):
-            executive.run_command(u'echo')
+            executive.run_command('echo')
         executive.run_command(command_line('echo', 'foo'))
         executive.run_command(tuple(command_line('echo', 'foo')))
 
@@ -120,11 +120,11 @@ class ExecutiveTest(unittest.TestCase):
         # non-ascii unicode characters by encoding with 'unicode_escape'. This
         # results in an extra \ on non-Win platforms.
         if sys.platform == 'win32' and six.PY2:
-            expected_result = u'echo 1 a\xac'
+            expected_result = 'echo 1 a\xac'
         else:
-            expected_result = u'echo 1 a\\xac'
+            expected_result = 'echo 1 a\\xac'
         self.assertEqual(expected_result,
-                         executive.command_for_printing(['echo', 1, u'a\xac']))
+                         executive.command_for_printing(['echo', 1, 'a\xac']))
 
     def test_popen_args(self):
         executive = Executive()
@@ -140,7 +140,7 @@ class ExecutiveTest(unittest.TestCase):
         # TODO(crbug/1306209): Needs more investigation. skipping for now.
         if sys.platform == 'win32' and six.PY3:
             return
-        unicode_tor_input = u"WebKit \u2661 Tor Arne Vestb\u00F8!"
+        unicode_tor_input = "WebKit \u2661 Tor Arne Vestb\u00F8!"
         if sys.platform == 'win32' and six.PY2:
             encoding = 'mbcs'
         else:

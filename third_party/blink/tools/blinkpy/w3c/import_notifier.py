@@ -371,7 +371,7 @@ class ImportNotifier:
         commit_list = ''
         for sha, subject in imported_commits:
             # subject is a Unicode string and can contain non-ASCII characters.
-            line = u'{}: {}'.format(subject, GITHUB_COMMIT_PREFIX + sha)
+            line = '{}: {}'.format(subject, GITHUB_COMMIT_PREFIX + sha)
             if self.local_wpt.is_commit_affecting_directory(
                     sha, path_from_wpt):
                 line += ' [affecting this directory]'

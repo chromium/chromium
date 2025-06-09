@@ -957,7 +957,7 @@ def check_for_unicode_replacement_characters(lines, error):
       error: The function to call with any errors found.
     """
     for line_number, line in enumerate(lines):
-        if u'\ufffd' in line:
+        if '\ufffd' in line:
             error(
                 line_number, 'readability/utf8', 5,
                 'Line contains invalid UTF-8 (or Unicode replacement character).'

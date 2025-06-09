@@ -487,7 +487,7 @@ class ImportNotifierTest(unittest.TestCase):
         imported_commits = [
             ('SHA1', 'Subject 1'),
             # Use non-ASCII chars to really test Unicode handling.
-            ('SHA2', u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ')
+            ('SHA2', 'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ')
         ]
 
         def _is_commit_affecting_directory(commit, directory):
@@ -499,8 +499,8 @@ class ImportNotifierTest(unittest.TestCase):
         self.assertEqual(
             self.notifier.format_commit_list(
                 imported_commits, MOCK_WEB_TESTS + 'external/wpt/foo'),
-            u'Subject 1: https://github.com/web-platform-tests/wpt/commit/SHA1 [affecting this directory]\n'
-            u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
+            'Subject 1: https://github.com/web-platform-tests/wpt/commit/SHA1 [affecting this directory]\n'
+            'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
         )
 
     def test_find_directory_for_bug_non_virtual(self):

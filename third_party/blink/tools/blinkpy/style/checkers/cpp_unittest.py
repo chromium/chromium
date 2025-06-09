@@ -468,8 +468,8 @@ class CppStyleTest(CppStyleTestBase):
     # Test get line width.
     def test_get_line_width(self):
         self.assertEqual(0, cpp_style.get_line_width(''))
-        self.assertEqual(10, cpp_style.get_line_width(u'x' * 10))
-        self.assertEqual(16, cpp_style.get_line_width(u'都|道|府|県|支庁'))
+        self.assertEqual(10, cpp_style.get_line_width('x' * 10))
+        self.assertEqual(16, cpp_style.get_line_width('都|道|府|県|支庁'))
 
     def test_find_next_multi_line_comment_start(self):
         self.assertEqual(1,
@@ -1374,7 +1374,7 @@ class CppStyleTest(CppStyleTestBase):
         do_test(self, b'\xe9\x8e\xbd\n', False)
         do_test(self, b'\xe9x\x8e\xbd\n', True)
         # This is the encoding of the replacement character itself (which
-        # you can see by evaluating codecs.getencoder('utf8')(u'\ufffd')).
+        # you can see by evaluating codecs.getencoder('utf8')('\ufffd')).
         do_test(self, b'\xef\xbf\xbd\n', True)
 
     def test_is_blank_line(self):

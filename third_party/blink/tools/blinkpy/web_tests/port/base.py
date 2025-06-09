@@ -2973,12 +2973,12 @@ class Port(object):
         if stdout:
             stdout_lines = stdout.decode('utf8', 'replace').splitlines()
         else:
-            stdout_lines = [u'<empty>']
+            stdout_lines = ['<empty>']
 
         if stderr:
             stderr_lines = stderr.decode('utf8', 'replace').splitlines()
         else:
-            stderr_lines = [u'<empty>']
+            stderr_lines = ['<empty>']
 
         return (stderr,
                 ('crash log for %s (pid %s):\n%s\n%s\n' %

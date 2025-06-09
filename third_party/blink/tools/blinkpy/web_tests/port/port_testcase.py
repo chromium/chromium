@@ -295,9 +295,9 @@ class PortTestCase(LoggingTestCase):
         self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
-            u'crash log for foo (pid 1234):\n'
-            u'STDOUT: foo\ufffdbar\n'
-            u'STDERR: foo\ufffdbar\n')
+            'crash log for foo (pid 1234):\n'
+            'STDOUT: foo\ufffdbar\n'
+            'STDERR: foo\ufffdbar\n')
         self.assertIsNone(crash_site)
 
     def test_get_crash_log_newer_than(self):
@@ -310,9 +310,9 @@ class PortTestCase(LoggingTestCase):
         self.assertEqual(stderr, b'foo\xa6bar')
         self.assertEqual(
             details.decode('utf8', 'replace'),
-            u'crash log for foo (pid 1234):\n'
-            u'STDOUT: foo\ufffdbar\n'
-            u'STDERR: foo\ufffdbar\n')
+            'crash log for foo (pid 1234):\n'
+            'STDOUT: foo\ufffdbar\n'
+            'STDERR: foo\ufffdbar\n')
         self.assertIsNone(crash_site)
 
     def test_get_crash_log_crash_site(self):

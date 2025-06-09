@@ -222,7 +222,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         with fs.mkdtemp(prefix='filesystem_unittest_') as d:
             self.assertEqual(fs.listdir(d), [])
             new_file = os.path.join(d, 'foo')
-            fs.write_text_file(new_file, u'foo')
+            fs.write_text_file(new_file, 'foo')
             self.assertEqual(fs.listdir(d), ['foo'])
             os.remove(new_file)
 
@@ -231,7 +231,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         with fs.mkdtemp(prefix='filesystem_unittest_') as d:
             self.assertEqual(list(fs.walk(d)), [(d, [], [])])
             new_file = os.path.join(d, 'foo')
-            fs.write_text_file(new_file, u'foo')
+            fs.write_text_file(new_file, 'foo')
             self.assertEqual(list(fs.walk(d)), [(d, [], ['foo'])])
             os.remove(new_file)
 
@@ -283,7 +283,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         fs = FileSystem()
         text_path = None
 
-        unicode_text_string = u'\u016An\u012Dc\u014Dde\u033D'
+        unicode_text_string = '\u016An\u012Dc\u014Dde\u033D'
         try:
             text_path = tempfile.mktemp(prefix='tree_unittest_')
             file = fs.open_text_file_for_writing(text_path)
@@ -304,7 +304,7 @@ class RealFileSystemTest(unittest.TestCase, GenericFileSystemTests):
         text_path = None
         binary_path = None
 
-        unicode_text_string = u'\u016An\u012Dc\u014Dde\u033D'
+        unicode_text_string = '\u016An\u012Dc\u014Dde\u033D'
         hex_equivalent = b'\xC5\xAA\x6E\xC4\xAD\x63\xC5\x8D\x64\x65\xCC\xBD'
         try:
             text_path = tempfile.mktemp(prefix='tree_unittest_')
