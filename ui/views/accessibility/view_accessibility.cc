@@ -24,7 +24,6 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
-#include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"

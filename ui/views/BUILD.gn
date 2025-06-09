@@ -88,7 +88,6 @@ component("views") {
     "accessibility/ax_virtual_view.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
-    "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "actions/action_view_controller.h",
     "actions/action_view_interface.h",
@@ -829,9 +828,6 @@ component("views") {
       "widget/window_reorderer.cc",
       "windows_stationarity_monitor_aura.cc",
     ]
-    if (!is_chromeos) {
-      sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
-    }
     deps += [
       "//components/crash/core/common:crash_key",
       "//ui/aura",
