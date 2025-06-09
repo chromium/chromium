@@ -601,6 +601,10 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, KeyProviderTest) {
       // Re-encryption should always change the encrypted value, because the
       // underlying encryption schemes use random IVs, nonces or salts.
       EXPECT_NE(prefs.GetString(kPrefName), encrypted_key);
+      // Verify the encrypted key pref (base64, with the header "APPB") is long
+      // enough to be a valid encrypted key, and not just empty or truncated. A
+      // truncated key will be 'QVBQQg==' which is base64 for 'APPB'.
+      EXPECT_GT(prefs.GetString(kPrefName).length(), 10u);
     } else {
       EXPECT_EQ(prefs.GetString(kPrefName), encrypted_key);
     }
