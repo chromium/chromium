@@ -8,6 +8,8 @@
 // that MACRO for example. It is sometimes not possible to spanify correctly.
 // This documents a case where the spanification is aborted.
 
+#include "base/containers/span.h"
+
 #define ASSIGN(num) assign(x, num);
 void assign(int* x, int num) {
   *x = num;
@@ -29,3 +31,26 @@ void test_with_macro() {
     ASSIGN(0);  // Sets the integer pointed to by x to 0;
   }
 }
+
+// No function body so that the argument type won't get spanified.
+void take_ptr1(int* arg);
+
+// A macro that expects a pointer as the argument.
+#define TAKE_PTR1(arg) (take_ptr1(arg))
+
+void test_take_ptr1_macro() {
+  int array[3] = {1, 2, 3};
+  // Expected rewrite:
+  // base::span<int> buf = array;
+  base::span<int> buf = array;
+  buf[0] = 0;
+  // Expected rewrite:
+  // TAKE_PTR1(buf.data());
+  TAKE_PTR1(buf.data());
+}
+
+// TODO(yukishiino): Support static_cast and C style cast.
+// #define TAKE_PTR2(arg) ((char*)(arg))
+
+// TODO(yukishiino): Support binary + operator.
+// #define TAKE_PTR3(arg) (arg + 1)
