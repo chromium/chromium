@@ -1082,6 +1082,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
       !base::FeatureList::IsEnabled(features::kSideBySide)) {
+    new_tab_footer_web_view_separator_ =
+        contents_container->AddChildView(std::make_unique<ContentsSeparator>());
+    new_tab_footer_web_view_separator_->SetProperty(
+        views::kElementIdentifierKey, kFooterWebViewSeparatorElementId);
+
     new_tab_footer_web_view_ =
         contents_container->AddChildView(std::move(new_tab_footer_web_view));
   }
@@ -1126,12 +1131,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
       lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_,
-      new_tab_footer_web_view_));
+      new_tab_footer_web_view_separator_, new_tab_footer_web_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
       lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_,
-      new_tab_footer_web_view_));
+      new_tab_footer_web_view_separator_, new_tab_footer_web_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1272,6 +1277,7 @@ BrowserView::~BrowserView() {
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
   new_tab_footer_web_view_ = nullptr;
+  new_tab_footer_web_view_separator_ = nullptr;
   contents_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;

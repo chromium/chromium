@@ -131,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open extension NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      // Ensure footer is visible.
-      Steps(WaitForShow(kNtpFooterId)));
+      // Ensure footer and footer separator are visible.
+      Steps(WaitForShow(kNtpFooterId),
+            EnsurePresent(kFooterWebViewSeparatorElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
