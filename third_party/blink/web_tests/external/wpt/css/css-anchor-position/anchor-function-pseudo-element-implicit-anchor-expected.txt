@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] The implicit anchor element of a pseudo-element is its originating element
+  assert_equals: expected "150px" but got "50px"
+[FAIL] Anchored position after moving
+  assert_equals: expected "300px" but got "200px"
+Harness: the test ran to completion.
+

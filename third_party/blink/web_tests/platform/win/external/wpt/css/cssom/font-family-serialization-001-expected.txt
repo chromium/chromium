@@ -1,5 +1,9 @@
 This is a testharness.js-based test.
+[FAIL] Serialization of <generic-family>
+  assert_equals: expected "generic(fangsong)" but got "\\"Times New Roman\\""
 [FAIL] Serialization of quoted "<generic-family>"
-  assert_equals: expected "\\"emoji\\"" but got "emoji"
+  assert_equals: expected "\\"ui-serif\\"" but got "ui-serif"
+[FAIL] Serialization of prefixed -webkit-<generic-family>
+  assert_equals: expected "-webkit-generic(fangsong)" but got "\\"Times New Roman\\""
 Harness: the test ran to completion.
 

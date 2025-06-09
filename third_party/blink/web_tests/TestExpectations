@@ -2741,6 +2741,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Android ] external/wpt/webdriver/tests/classic/accept_alert/accept.py [ Failure ]
 crbug.com/422832549 [ Win10.20h2 ] external/wpt/css/css-contain/contain-body-dir-004.html [ Timeout ]
 crbug.com/422814959 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cache.window.html [ Crash ]
 crbug.com/422790249 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-location-set.https.html [ Crash ]
@@ -2923,7 +2924,7 @@ crbug.com/411459672 external/wpt/css/css-sizing/min-content-le-max-content.tenta
 
 crbug.com/411576891 [ Linux ] external/wpt/webdriver/tests/classic/minimize_window/minimize.py [ Failure ]
 crbug.com/409809138 [ Win11 ] external/wpt/custom-elements/revamped-scoped-registry/ShadowRoot-init-customElementRegistry.tentative.html [ Pass Timeout ]
-crbug.com/409850360 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Timeout ]
+crbug.com/409850360 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/beforeunload.py [ Timeout ]
 crbug.com/408838124 [ Mac12 ] external/wpt/css/css-overflow/scroll-target-group-005.html [ Failure ]
 crbug.com/408539325 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/408039461 [ Win11-arm64 ] external/wpt/css/css-text/white-space/control-chars-01D.html [ Failure ]

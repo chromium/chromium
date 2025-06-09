@@ -3441,6 +3441,13 @@
         {}
        ]
       ],
+      "float-becomes-spanner-remove-child.html": [
+       "db485e191fa858b3a1ee0ede27318e0459e5f90f",
+       [
+        null,
+        {}
+       ]
+      ],
       "float-becomes-spanner.html": [
        "90a4c9079c4fa6c64c094c56e36efbfe413b850c",
        [
@@ -20786,7 +20793,7 @@
      ]
     ],
     "SpeechRecognition-phrases-manual.https.html": [
-     "2d0b19ab46ce3c41610b298750cbb0ca85832513",
+     "0f596a88015a1e7384618fa0e734e0683ff2b98e",
      [
       null,
       {}
@@ -135225,6 +135232,19 @@
         {}
        ]
       ],
+      "grid-gap-decorations-045.html": [
+       "a90d45df4423225f78c9dda739640ac2cebcae40",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-045-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-046.html": [
        "64ca1cdddffc856803726ec361a624a64572f1b7",
        [
@@ -171371,6 +171391,19 @@
        [
         [
          "/css/css-multicol/multicol-span-float-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "multicol-span-float-004.html": [
+      "aa74e436fed4ebc29184a67bf811a5fd705a3384",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -211519,6 +211552,19 @@
         ],
         {}
        ]
+      ],
+      "text-autospace-zh-001.html": [
+       "e8afdca931044d59ec56a05e72c9c9ce0dae58e8",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-autospace/text-autospace-zh-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "text-encoding": {
@@ -223672,7 +223718,7 @@
       ]
      ],
      "text-emphasis-punctuation-2.html": [
-      "1a48f9d32cb27be5cf2cd77832569e402d489b6f",
+      "53d261e9c8c11ae33642c893b8f3e098fb4c3e8c",
       [
        null,
        [
@@ -257378,6 +257424,19 @@
           ]
          ]
         }
+       ]
+      ],
+      "group-children-sizing-with-border.html": [
+       "cb0cf819b428ed19b2e9c0071ce8ea2304aca0bf",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/group-children-sizing-with-border-ref.html",
+          "=="
+         ]
+        ],
+        {}
        ]
       ],
       "group-children-sizing.html": [
@@ -299961,6 +300020,112 @@
        ]
       },
       "the-select-element": {
+       "customizable-select": {
+        "min-height-in-flex.html": [
+         "628c7ec51f4ec4ecc1c22964ecd89b4b6226b6f6",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-height-in-flex-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-001-ref.html": [
+         "1c37e12b0bc4662faf2157216a5945490340e290",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-001-ref2.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-001-ref2.html": [
+         "69170af04b552602820d645c2df00aa217fdbe09",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-001-notref.html",
+            "!="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-001.html": [
+         "fd5cc4a0d022fff91f2edd294d68ceb034bfd4d6",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-001-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-002-ref.html": [
+         "c9e2d2333e7262fdcf043b68f6094cf0f70c169d",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-002-ref2.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-002-ref2.html": [
+         "dfbbbcac53308279e4b61e51f46e00db0d22df64",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-002-notref.html",
+            "!="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-size-empty-002.html": [
+         "b6256c93b28939abee4617eba29db8e75797ec7e",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-size-empty-002-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "min-width-in-flex.html": [
+         "f3510a295856a988cb8a7a3e54db3e1d60c97b5a",
+         [
+          null,
+          [
+           [
+            "/html/rendering/replaced-elements/the-select-element/customizable-select/min-width-in-flex-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       },
        "select-1-block-size-001-ref.html": [
         "3d30c2bd9d0a105595ca6b1c75448fcdb801b101",
         [
@@ -304548,8 +304713,8 @@
        ]
       ],
       "permission-icon": {
-       "icon-hidden-reftest.html": [
-        "79055da1badfc827e5cc02ed3be7db3842b49855",
+       "icon-css-property-fill-reftest.html": [
+        "130849e79ba0b572d453dbaf1e92764ae7d9acfe",
         [
          null,
          [
@@ -304561,8 +304726,125 @@
          {}
         ]
        ],
+       "icon-css-property-height-reftest.html": [
+        "9f52fd754797d1726b9d3ae04628861935b58c9d",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-margin-inline-end-reftest.html": [
+        "b4edffbf00bc4544070d3f452c2dce6f5fcb236e",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-max-height-reftest.html": [
+        "45abc0ffd471f9e78679578a8d35539a44779524",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/icon-css-property-max-height-reftest-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-min-height-reftest.html": [
+        "d1fe8d0724c1204c7f5d1dce0834a75bd5bb98f7",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-stroke-reftest.html": [
+        "9d0ff75c3d8da9a74178d9a91a55a5f17887e72e",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-stroke-width-reftest.html": [
+        "a268e3c5fba911cabab1d8ac59f95b2542a62788",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/icon-css-property-stroke-width-reftest-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-different-for-precise-location-reftest.html": [
+        "bf58fdf93e5f45a439c6ba92c4ed99bfe071affc",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-hidden-reftest.html": [
+        "a5b5bb61d2b9de0499de45648a10597dc3a08f70",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-restricted-css-no-effect-reftest.html": [
+        "5c0ea13fde75c98796b1d034c1e3c3e082934d7a",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/standard-location-permission-element-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "icon-unique-per-type-reftest.html": [
-        "d51b1c4d398a42c8e59f047c0e457c533eae16ee",
+        "162a785852cea4410d9a824d2fa2b097d1027752",
         [
          null,
          [
@@ -334299,6 +334581,10 @@
       "3791ea205c53053c9d6894003f60ea5a25b38328",
       []
      ],
+     "anchor-function-pseudo-element-implicit-anchor-expected.txt": [
+      "4343e9e262cc932ae5e4e0943ecf8d5ad3c465b7",
+      []
+     ],
      "anchor-name-multicol-003-expected.txt": [
       "6ac93ee7a49bb2d31902ed9afdc0f4f4bd432f09",
       []
@@ -334359,6 +334645,10 @@
      ],
      "position-area-inline-container-ref.html": [
       "ecf54f1a9ac2d756cb78f4d2c0690c1ac8b65916",
+      []
+     ],
+     "position-area-pseudo-element-implicit-anchor-expected.txt": [
+      "cff32e04e2bfb7eca2bd2c40d9738e47be10381e",
       []
      ],
      "position-area-scroll-adjust-ref.html": [
@@ -344890,7 +345180,7 @@
       []
      ],
      "generic-family-keywords-001-expected.txt": [
-      "c72447561c28b600ebda92c13e8de1351cfcf4b6",
+      "5a73d43875d7a96f3bf411f7ba9553af9294e3c2",
       []
      ],
      "hiragana-katakana-kerning-notref.html": [
@@ -345373,7 +345663,7 @@
        []
       ],
       "font-family-keywords.js": [
-       "09bcf85c9fa5ef4f151785cdb5f477eb16040af8",
+       "db30af841097d2b7fe5dcb5e9337c9b8b2444052",
        []
       ],
       "font-weight-bolder-001-ref.png": [
@@ -351968,6 +352258,10 @@
       ],
       "grid-gap-decorations-042-ref.html": [
        "ed44f7a2de37d31d57391731b2b8d7f7886790ad",
+       []
+      ],
+      "grid-gap-decorations-045-ref.html": [
+       "b002cf0fb3a3481e476ee6fc5adfed14b8d19f79",
        []
       ]
      },
@@ -368267,6 +368561,10 @@
       "text-autospace-vs-001-ref.html": [
        "b02b4f7a20deeffd4f72b8ed8aa5103e3e2e6518",
        []
+      ],
+      "text-autospace-zh-001-ref.html": [
+       "266a69b298e458e0d8d431a6c3a1f13bcf9d2b07",
+       []
       ]
      },
      "text-encoding": {
@@ -370526,7 +370824,7 @@
       []
      ],
      "text-emphasis-punctuation-2-ref.html": [
-      "503e999788c55edf915b1e54ed8627fd22f39c41",
+      "6d824e73d560940249715614a0fa6872e675980b",
       []
      ],
      "text-emphasis-punctuation-3-ref.html": [
@@ -375742,6 +376040,10 @@
      "nested": {
       "group-children-sizing-ref.html": [
        "4f994bd03f67c7e73b03bb58b8eec220cb7720c5",
+       []
+      ],
+      "group-children-sizing-with-border-ref.html": [
+       "f1a484400e77b69372808af4d40c376c9a00aa14",
        []
       ],
       "nested-opacity-ref.html": [
@@ -383462,7 +383764,7 @@
       []
      ],
      "attributes-expected.txt": [
-      "06affc323bd53e336ad142b03a7fda04780732fd",
+      "b62a4beaa30e9ec080f918ebb65722518f0365f4",
       []
      ],
      "attributes.js": [
@@ -404201,6 +404503,24 @@
        ]
       },
       "the-select-element": {
+       "customizable-select": {
+        "min-height-in-flex-ref.html": [
+         "04c000ad5ada7efadc135bb504c0a4deaa48f2b0",
+         []
+        ],
+        "min-size-empty-001-notref.html": [
+         "422f187dc69483030a213974aedbd5ca9694b46a",
+         []
+        ],
+        "min-size-empty-002-notref.html": [
+         "0500b54b75869ab1b1e509c5b8d513557fa91bba",
+         []
+        ],
+        "min-width-in-flex-ref.html": [
+         "33df77bd0f14c62891e7df494b892df28a1145a0",
+         []
+        ]
+       },
        "select-1-block-size-001-ref-2.html": [
         "52461231862cfc998ccdb7ce9423d54b59d9e17e",
         []
@@ -407339,8 +407659,16 @@
        []
       ],
       "permission-icon": {
+       "icon-css-property-max-height-reftest-ref.html": [
+        "abda1adc1d88d6eb05c8daa49e5328158113159f",
+        []
+       ],
+       "icon-css-property-stroke-width-reftest-ref.html": [
+        "5ed8af57313a89d99644325bc3e2548b2c48416d",
+        []
+       ],
        "standard-location-permission-element-ref.html": [
-        "15ffe751c51b3f8caeaa8b93f1286a3950c9a815",
+        "d9f55b345f74aef0b5d1879e2919ea7f2bc0ae32",
         []
        ]
       },
@@ -414374,7 +414702,7 @@
     }
    },
    "lint.ignore": [
-    "1577148944730684c159516870128c11605f151e",
+    "cf83e458213668188c73dc0b98048be24c31ffe4",
     []
    ],
    "loading": {
@@ -427492,14 +427820,6 @@
     }
    },
    "soft-navigation-heuristics": {
-    "dom": {
-     "tentative": {
-      "insert-image-div-before.window-expected.txt": [
-       "01bec66df0449ae62c20462e15642ca80c6cbf9f",
-       []
-      ]
-     }
-    },
     "resources": {
      "empty.html": [
       "5fa1cdf5e66008396ab71673dbb9386066d7cc5f",
@@ -495834,6 +496154,13 @@
        {}
       ]
      ],
+     "anchor-function-pseudo-element-implicit-anchor.html": [
+      "443093eb79670cb5059c2303192ac089f7799ab8",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-getComputedStyle-001.html": [
       "7c2cbbb67955db11eef9874744d333e07bc45172",
       [
@@ -496785,6 +497112,13 @@
      ],
      "position-area-parsing.html": [
       "e6de6d7e2696266c02c41919a10c136ce621e90d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-area-pseudo-element-implicit-anchor.html": [
+      "3b876cbd8aff4c392e324f08cf2fc1f8511a877f",
       [
        null,
        {}
@@ -524924,7 +525258,7 @@
         ]
        ],
        "css-text-line-break-zh-in-loose.html": [
-        "56fec0bd3edba1ee681a0dc6ae906120f28c6677",
+        "54ce3c15735fd74f607029639e103ec5cd2c1b23",
         [
          null,
          {}
@@ -545713,7 +546047,7 @@
       ]
      },
      "name-validation.tentative.html": [
-      "a6b12d1ef20c3abf8e2902f868cc802d15acc52c",
+      "ca5e9c118248990c6ea629eafa41a331d79539a6",
       [
        null,
        {
@@ -677826,7 +678160,7 @@
       ]
      ],
      "navigate-form-userInitiated.html": [
-      "246e028a0dbf241f1667c380a0255396d13b1553",
+      "d237b52ac1ee07d8c455792f39e81a46e68d44a8",
       [
        null,
        {
@@ -714983,7 +715317,7 @@
     "detection": {
      "tentative": {
       "racing-soft-navigations.html": [
-       "d485f90813471704ffa62ce362b3d4517e41bec1",
+       "b513ff4f99bf8d3714fc8b6f12909747ca4fd549",
        [
         null,
         {
@@ -715246,7 +715580,7 @@
      ]
     ],
     "popstate-multiple-backs.tentative.html": [
-     "a17cf53f534334c00a67426d84a9f7b2a10cc339",
+     "a460b922eb798f61825b18e2802560056722628c",
      [
       null,
       {
@@ -799340,7 +799674,7 @@
      ]
     ],
     "RTCRtpSender-getParameters.html": [
-     "6c47153c8365aff1a0c93740635ef87c6b589b26",
+     "3b48ee60da69d41ab89067e5fbf34460adcf8fac",
      [
       null,
       {}
