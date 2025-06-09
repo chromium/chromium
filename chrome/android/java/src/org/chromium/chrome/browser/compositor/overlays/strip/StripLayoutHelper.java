@@ -4281,10 +4281,6 @@ public class StripLayoutHelper
         return mReorderDelegate.getInReorderMode();
     }
 
-    public float getStripStartMarginForReorderForTesting() {
-        return mScrollDelegate.getReorderStartMargin();
-    }
-
     public void startReorderModeAtIndexForTesting(int index) {
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
