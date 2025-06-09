@@ -7,7 +7,10 @@
 #include <string>
 
 #include "extensions/browser/api/content_settings/content_settings_helpers.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace helpers = content_settings_helpers;

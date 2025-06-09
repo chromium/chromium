@@ -15,7 +15,10 @@
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

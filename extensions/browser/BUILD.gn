@@ -847,6 +847,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "api/alarms/alarms_api_unittest.cc",
+    "api/api_resource_manager_unittest.cc",
+    "api/content_settings/content_settings_store_unittest.cc",
+    "api/content_settings/content_settings_unittest.cc",
     "api/declarative/declarative_rule_unittest.cc",
     "api/declarative/deduping_factory_unittest.cc",
     "api/declarative/rules_registry_unittest.cc",
@@ -857,11 +860,14 @@ source_set("unit_tests") {
     "api/declarative_net_request/indexed_ruleset_format_version_unittest.cc",
     "api/declarative_net_request/prefs_helper_unittest.cc",
     "api/declarative_net_request/ruleset_matcher_unittest.cc",
+    "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
+    "api/declarative_webrequest/webrequest_condition_unittest.cc",
     "api/file_handlers/app_file_handler_util_unittest.cc",
     "api/file_handlers/directory_util_unittest.cc",
     "api/file_handlers/mime_util_unittest.cc",
     "api/idle/idle_api_unittest.cc",
     "api/power/power_api_unittest.cc",
+    "api/runtime/restart_after_delay_api_unittest.cc",
     "api/storage/session_storage_manager_unittest.cc",
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
@@ -956,6 +962,7 @@ source_set("unit_tests") {
     "//extensions:extensions_browser_resources",
     "//extensions:test_support",
     "//extensions/browser/api:extensions_api_client",
+    "//extensions/browser/api/content_settings",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
@@ -983,16 +990,10 @@ source_set("unit_tests") {
   # in the desktop-android build when the related APIs are enabled.
   if (enable_extensions) {
     sources += [
-      "api/api_resource_manager_unittest.cc",
       "api/bluetooth/bluetooth_event_router_unittest.cc",
       "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
-      "api/content_settings/content_settings_store_unittest.cc",
-      "api/content_settings/content_settings_unittest.cc",
-      "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
-      "api/declarative_webrequest/webrequest_condition_unittest.cc",
       "api/feedback_private/feedback_service_unittest.cc",
       "api/mime_handler_private/mime_handler_private_unittest.cc",
-      "api/runtime/restart_after_delay_api_unittest.cc",
       "api/socket/mojo_data_pump_unittest.cc",
       "api/sockets_tcp/sockets_tcp_api_unittest.cc",
       "api/sockets_udp/sockets_udp_api_unittest.cc",
@@ -1001,7 +1002,6 @@ source_set("unit_tests") {
 
     deps += [
       "//components/storage_monitor:test_support",
-      "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
       "//extensions/shell:app_shell_lib",
     ]
