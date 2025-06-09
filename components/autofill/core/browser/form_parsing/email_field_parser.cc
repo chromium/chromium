@@ -43,9 +43,7 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
   // this is launched and they support placeholders.
   const AutofillField* field = scanner->Cursor();
   if ((IsValidEmailAddress(field->placeholder()) ||
-       IsValidEmailAddress(field->label())) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillParseEmailLabelAndPlaceholder)) {
+       IsValidEmailAddress(field->label()))) {
     scanner->Advance();
     // Since this is either a placeholder or a label match, it's technically not
     // necessarily a high quality label match. However, since this logic

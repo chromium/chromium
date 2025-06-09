@@ -496,14 +496,6 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, we check whether a field's label or placeholder has the format
-// of a valid email address. If it does, we use that as a signal that the field
-// is of type EMAIL_ADDRESS.
-// TODO(crbug.com/361560365): Clean up when launched.
-BASE_FEATURE(kAutofillParseEmailLabelAndPlaceholder,
-             "AutofillParseEmailLabelAndPlaceholder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If the feature is enabled, before triggering suggestion acceptance, the row
 // view checks that a substantial portion of its content was visible for some
 // minimum required period.
