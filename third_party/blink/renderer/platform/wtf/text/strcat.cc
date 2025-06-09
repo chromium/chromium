@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -61,4 +61,4 @@ String StrCat(std::initializer_list<StringView> pieces) {
   return StrCat(base::span(pieces));
 }
 
-}  // namespace WTF
+}  // namespace blink

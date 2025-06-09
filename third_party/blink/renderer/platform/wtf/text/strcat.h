@@ -12,13 +12,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // StrCat is a function to perform concatenation on a sequence of strings.
 // It is preferable to a sequence of "a + b + c" because it is both faster and
 // generates less code.
 //
-//   String result = WTF::StrCat({"foo ", result, "\nfoo ", bar});
+//   String result = StrCat({"foo ", result, "\nfoo ", bar});
 //
 // It's a Blink-variant of base::StrCat() and absl::StrCat().
 //
@@ -26,6 +26,11 @@ namespace WTF {
 [[nodiscard]] WTF_EXPORT String
 StrCat(std::initializer_list<StringView> pieces);
 
+}  // namespace blink
+
+// TODO(crbug.com/422768753): Remove this `using` directive.
+namespace WTF {
+using blink::StrCat;
 }  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRCAT_H_

@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(StrCatTest, Only8Bit) {
   const String src8("8bit 8bit");
@@ -52,4 +52,4 @@ TEST(StrCatTest, StringSelfSubstitution) {
   EXPECT_EQ(" after", view);
 }
 
-}  // namespace WTF
+}  // namespace blink
