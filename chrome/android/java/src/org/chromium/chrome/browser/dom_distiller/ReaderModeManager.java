@@ -743,9 +743,14 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         TabDistillabilityProvider.get(tabToObserve).addObserver(mDistillabilityObserver);
     }
 
-    // Returns whether reader mode should trigger through messages. This happens for CCTs and
-    // incognito tabs.
-    private boolean shouldUseReaderModeMessages(Tab tab) {
+    /**
+     * Returns whether reader mode should trigger through messages. This happens for CCTs and
+     * incognito tabs.
+     *
+     * @param tab The tab where Reader Mode is active.
+     * @return Whether reader mode should trigger through messages.
+     */
+    public static boolean shouldUseReaderModeMessages(Tab tab) {
         return tab != null && (tab.isCustomTab() || tab.isIncognito());
     }
 
