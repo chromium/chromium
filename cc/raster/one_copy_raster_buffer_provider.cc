@@ -290,7 +290,9 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   if (!staging_buffer->client_shared_image) {
     staging_buffer->client_shared_image = sii_->CreateSharedImage(
         {format, staging_buffer->size, dst_color_space,
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "OneCopyRasterStaging"},
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+             gpu::SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE,
+         "OneCopyRasterStaging"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
     if (!staging_buffer->client_shared_image) {
       LOG(ERROR) << "Creation of StagingBuffer's SharedImage failed.";

@@ -109,15 +109,18 @@ enum SharedImageUsage : uint32_t {
   // Image will be used as a WebNN shared tensor
   SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 26,
 
+  // Image will be used by one copy raster for raster source access.
+  SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE = 1 << 27,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
   // image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 27,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 28,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
