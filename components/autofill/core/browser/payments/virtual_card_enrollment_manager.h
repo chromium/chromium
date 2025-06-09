@@ -181,7 +181,7 @@ class VirtualCardEnrollmentManager {
   // reached the limit of strikes or if the required delay time since last
   // strike has not passed yet. Does nothing if the strike database is not
   // available.
-  bool ShouldBlockVirtualCardEnrollment(
+  virtual bool ShouldBlockVirtualCardEnrollment(
       const std::string& instrument_id,
       VirtualCardEnrollmentSource virtual_card_enrollment_source) const;
 
@@ -342,6 +342,10 @@ class VirtualCardEnrollmentManager {
   bool IsValidGetDetailsForEnrollmentResponseDetails(
       const payments::GetDetailsForEnrollmentResponseDetails&
           get_details_for_enrollment_response_details);
+
+  // Logs UI-related latency metrics. This is not applicable for virtual card
+  // enrollment from the settings page.
+  void LogUiLatencyMetrics();
 
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest, Enroll);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,

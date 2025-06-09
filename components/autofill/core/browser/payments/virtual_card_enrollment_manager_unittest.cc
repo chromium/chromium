@@ -807,6 +807,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
   payments_data_manager().SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>("123456"));
+  // Ignore strike database to avoid its required delay cooldown.
+  virtual_card_enrollment_manager_->set_ignore_strike_database(true);
 
   // Making sure there is no existing strike for the card.
   ASSERT_EQ(
@@ -821,8 +823,10 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
                               ->GetMaxStrikesLimit() -
                           1;
        i++) {
-    // Show the bubble and ensures VirtualCardEnrollmentFields is set correctly.
-    virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+    // Start enrollment and ensures VirtualCardEnrollmentFields is set
+    // correctly.
+    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+        *card_, VirtualCardEnrollmentSource::kDownstream);
     EXPECT_FALSE(state->virtual_card_enrollment_fields.last_show);
     // Reject the bubble and log strike.
     virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
@@ -832,9 +836,10 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
         /*sample=*/i + 1, /*count=*/1);
   }
 
-  // Show the bubble for the last time and ensures VirtualCardEnrollmentFields
-  // is set correctly.
-  virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
+  // Start enrollment and ensures VirtualCardEnrollmentFields is set
+  // correctly.
+  virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+      *card_, VirtualCardEnrollmentSource::kDownstream);
   EXPECT_TRUE(state->virtual_card_enrollment_fields.last_show);
 }
 

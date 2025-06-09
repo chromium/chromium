@@ -391,39 +391,7 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
 
 void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   DCHECK(autofill_client_);
-  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
-          VirtualCardEnrollmentSource::kUpstream &&
-      save_card_bubble_accepted_timestamp_.has_value()) {
-    LogVirtualCardEnrollBubbleLatencySinceUpstream(
-        base::Time::Now() - save_card_bubble_accepted_timestamp_.value());
-    save_card_bubble_accepted_timestamp_.reset();
-  } else if (state_.virtual_card_enrollment_fields
-                     .virtual_card_enrollment_source ==
-                 VirtualCardEnrollmentSource::kDownstream &&
-             server_retrieved_eligible_card_extraction_timestamp_.has_value()) {
-    LogVirtualCardEnrollBubbleLatencySinceDownstream(
-        base::Time::Now() -
-        server_retrieved_eligible_card_extraction_timestamp_.value());
-    server_retrieved_eligible_card_extraction_timestamp_.reset();
-  }
-
-  // Check in StrikeDatabase whether enrollment has been offered for this card
-  // and got declined before and whether this is the last time this offer is
-  // shown before previous records expire.
-  state_.virtual_card_enrollment_fields.previously_declined = false;
-  state_.virtual_card_enrollment_fields.last_show = false;
-  if (GetVirtualCardEnrollmentStrikeDatabase()) {
-    std::string card_instrument_id = base::NumberToString(
-        state_.virtual_card_enrollment_fields.credit_card.instrument_id());
-    if (GetVirtualCardEnrollmentStrikeDatabase()->GetStrikes(
-            card_instrument_id) > 0) {
-      state_.virtual_card_enrollment_fields.previously_declined = true;
-    }
-    if (GetVirtualCardEnrollmentStrikeDatabase()->IsLastOffer(
-            card_instrument_id)) {
-      state_.virtual_card_enrollment_fields.last_show = true;
-    }
-  }
+  LogUiLatencyMetrics();
 
   autofill_client_->GetPaymentsAutofillClient()->ShowVirtualCardEnrollDialog(
       state_.virtual_card_enrollment_fields,
@@ -633,6 +601,24 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
 
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       virtual_card_enrollment_source;
+
+  // Check in StrikeDatabase whether enrollment has been offered for this card
+  // and got declined before and whether this is the last time this offer is
+  // shown before previous records expire.
+  state_.virtual_card_enrollment_fields.previously_declined = false;
+  state_.virtual_card_enrollment_fields.last_show = false;
+  if (GetVirtualCardEnrollmentStrikeDatabase()) {
+    std::string card_instrument_id = base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id());
+    if (GetVirtualCardEnrollmentStrikeDatabase()->GetStrikes(
+            card_instrument_id) > 0) {
+      state_.virtual_card_enrollment_fields.previously_declined = true;
+    }
+    if (GetVirtualCardEnrollmentStrikeDatabase()->IsLastOffer(
+            card_instrument_id)) {
+      state_.virtual_card_enrollment_fields.last_show = true;
+    }
+  }
 }
 
 bool VirtualCardEnrollmentManager::
@@ -646,6 +632,24 @@ bool VirtualCardEnrollmentManager::
     return false;
 
   return true;
+}
+
+void VirtualCardEnrollmentManager::LogUiLatencyMetrics() {
+  if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
+          VirtualCardEnrollmentSource::kUpstream &&
+      save_card_bubble_accepted_timestamp_.has_value()) {
+    LogVirtualCardEnrollBubbleLatencySinceUpstream(
+        base::Time::Now() - save_card_bubble_accepted_timestamp_.value());
+    save_card_bubble_accepted_timestamp_.reset();
+  } else if (state_.virtual_card_enrollment_fields
+                     .virtual_card_enrollment_source ==
+                 VirtualCardEnrollmentSource::kDownstream &&
+             server_retrieved_eligible_card_extraction_timestamp_.has_value()) {
+    LogVirtualCardEnrollBubbleLatencySinceDownstream(
+        base::Time::Now() -
+        server_retrieved_eligible_card_extraction_timestamp_.value());
+    server_retrieved_eligible_card_extraction_timestamp_.reset();
+  }
 }
 
 }  // namespace autofill
