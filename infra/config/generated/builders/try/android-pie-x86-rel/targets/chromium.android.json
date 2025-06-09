@@ -3881,49 +3881,6 @@
       },
       {
         "args": [
-          "BrowserMinidumpTest",
-          "--browser=android-chromium-monochrome",
-          "-v",
-          "--passthrough",
-          "--retry-limit=2",
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_monochrome_minidump_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_28_google_apis_x86"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_perf_unittests_android_monochrome",
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
-      },
-      {
-        "args": [
           "--extra-browser-args=--enable-crashpad",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--browser=android-chromium"

@@ -2675,10 +2675,6 @@ ci.builder(
                 ci_only = True,
             ),
             # If you change this, make similar changes in android-x86-code-coverage
-            "telemetry_monochrome_minidump_unittests": targets.mixin(
-                ci_only = True,
-            ),
-            # If you change this, make similar changes in android-x86-code-coverage
             "telemetry_perf_unittests_android_chrome": targets.mixin(
                 # For whatever reason, automatic browser selection on this bot chooses
                 # webview instead of the full browser, so explicitly specify it here.
@@ -3008,7 +3004,7 @@ ci.builder(
             targets.bundle(
                 targets = [
                     "android_10_emulator_gtests",
-                    "q_isolated_scripts",
+                    "android_10_isolated_scripts",
                 ],
                 mixins = targets.mixin(
                     args = [
@@ -3030,19 +3026,24 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
+            # If you change this, make similar changes in android-x86-code-coverage
             "android_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
                 ],
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 9,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "android_sync_integration_tests": targets.mixin(
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 2,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
@@ -3052,19 +3053,34 @@ ci.builder(
                         # use 8-core to shorten runtime
                         "cores": "8",
                     },
+                    shards = 75,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,
                 ),
             ),
-            "content_browsertests": targets.remove(
-                reason = "crbug.com/392124787",
+            # If you change this, make similar changes in android-x86-code-coverage
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--gtest-also-run-pre-tests",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        # use 8-core to shorten runtime
+                        "cores": "8",
+                    },
+                    shards = 75,
+                ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_crash_test": targets.remove(
                 reason = "crbug.com/1084353",
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_test_apk": targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
@@ -3078,34 +3094,48 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_unittests.filter",
                 ],
+                ci_only = True,
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.gl_tests.filter",
                 ],
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "perfetto_unittests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40201873): Fix the failed test
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
                 ],
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.media_unittests.filter",
                 ],
+                ci_only = True,
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "services_unittests": targets.mixin(
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 3,
                 ),
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "system_webview_shell_layout_test_apk": targets.mixin(
                 args = [
                     # TODO(crbug.com/390676579): Fix the failed test
                     "--gtest_filter=-org.chromium.webview_shell.test.WebViewLayoutTest.*",
                 ],
+                ci_only = True,
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
+            "telemetry_chromium_minidump_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "telemetry_perf_unittests_android_chrome": targets.mixin(
                 # For whatever reason, automatic browser selection on this bot chooses
                 # webview instead of the full browser, so explicitly specify it here.
@@ -3114,10 +3144,26 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
+            # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
+                    "--use-persistent-shell",
                 ],
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            # If you change this, make similar changes in android-x86-code-coverage
+            "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                # Only multiple process tests run in CQ.
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
             ),
         },
     ),

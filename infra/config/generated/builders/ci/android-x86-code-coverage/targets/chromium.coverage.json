@@ -7,7 +7,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -37,13 +37,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -54,7 +54,8 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.android_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -85,13 +86,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -104,7 +105,7 @@
         "args": [
           "--test-launcher-batch-limit=1",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -135,13 +136,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -153,7 +154,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -183,13 +184,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -201,7 +202,7 @@
         "args": [
           "-v",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -223,13 +224,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -241,7 +242,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -271,13 +272,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -288,7 +289,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -318,13 +319,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -335,7 +336,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -365,13 +366,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -383,7 +384,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -418,13 +419,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -435,7 +436,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -465,13 +466,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -482,7 +483,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -512,13 +513,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -530,7 +531,7 @@
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -560,13 +561,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -577,7 +578,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -607,13 +608,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -624,7 +625,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -654,13 +655,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -670,61 +671,8 @@
       },
       {
         "args": [
-          "--git-revision=${got_revision}",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_java_test_wpr_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_java_test_wpr_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_java_test_wpr_tests",
-        "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_wpr_tests/"
-      },
-      {
-        "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -754,13 +702,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -772,7 +720,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -808,13 +756,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -827,8 +775,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -863,13 +810,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -881,7 +828,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -911,13 +858,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -929,7 +876,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -959,13 +906,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -977,8 +924,9 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gtest-also-run-pre-tests",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1008,13 +956,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1025,58 +973,8 @@
       },
       {
         "args": [
-          "--gtest_filter=QuicConnectionMigrationTest.*",
-          "--emulator-enable-network",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "content_browsertests_with_emulator_network"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "content_browsertests_with_emulator_network",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "idempotent": false,
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1106,13 +1004,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1124,7 +1022,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1154,13 +1052,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1172,7 +1070,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1202,13 +1100,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1219,7 +1117,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1249,13 +1147,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1266,7 +1164,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1296,13 +1194,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1313,7 +1211,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1343,13 +1241,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1360,7 +1258,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1391,13 +1289,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1408,7 +1306,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1438,13 +1336,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1455,7 +1353,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1485,13 +1383,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1502,7 +1400,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1532,13 +1430,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1549,7 +1447,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1579,13 +1477,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1596,7 +1494,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1626,13 +1524,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1644,7 +1542,7 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1675,13 +1573,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1692,7 +1590,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1722,13 +1620,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1739,7 +1637,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1769,13 +1667,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1786,7 +1684,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1816,13 +1714,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1833,7 +1731,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1863,13 +1761,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1880,7 +1778,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1910,13 +1808,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1927,7 +1825,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1957,13 +1855,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1975,7 +1873,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/layer_list_mode.cc_unittests.filter",
           "--enable-features=UseLayerListsByDefault",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2005,13 +1903,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2022,7 +1920,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2053,13 +1951,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2070,7 +1968,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2100,13 +1998,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2117,7 +2015,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2147,13 +2045,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2164,10 +2062,12 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -2194,13 +2094,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2211,7 +2111,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2241,13 +2141,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2258,7 +2158,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2288,13 +2188,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2305,7 +2205,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2335,13 +2235,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2352,101 +2252,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "monochrome_public_bundle_smoke_test"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "monochrome_public_bundle_smoke_test",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "monochrome_public_bundle_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:monochrome_public_bundle_smoke_test/"
-      },
-      {
-        "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "monochrome_public_smoke_test"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "monochrome_public_smoke_test",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "monochrome_public_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:monochrome_public_smoke_test/"
-      },
-      {
-        "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2476,13 +2282,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2494,7 +2300,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2525,13 +2331,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2542,7 +2348,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2572,13 +2378,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2589,11 +2395,11 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -2620,13 +2426,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2638,7 +2444,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2668,13 +2474,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2685,7 +2491,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2715,13 +2521,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2732,7 +2538,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2762,13 +2568,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2779,7 +2585,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2809,13 +2615,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2826,10 +2632,12 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gtest_filter=-org.chromium.webview_shell.test.WebViewLayoutTest.*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -2856,13 +2664,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2873,7 +2681,54 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "trichrome_chrome_bundle_smoke_test"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "trichrome_chrome_bundle_smoke_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_29_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "trichrome_chrome_bundle_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:trichrome_chrome_bundle_smoke_test/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2903,13 +2758,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2920,7 +2775,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2950,13 +2805,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2967,7 +2822,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2997,13 +2852,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3014,7 +2869,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3044,13 +2899,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3062,7 +2917,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3092,13 +2947,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3109,7 +2964,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3139,13 +2994,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3156,7 +3011,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3186,13 +3041,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3203,7 +3058,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3233,13 +3088,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3250,65 +3105,10 @@
       },
       {
         "args": [
-          "--store-tombstones",
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_cts_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "webview_cts_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
-            }
-          ],
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/"
-      },
-      {
-        "args": [
           "--webview-process-mode=multiple",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3339,13 +3139,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3358,11 +3158,12 @@
         "args": [
           "--webview-process-mode=single",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3389,13 +3190,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3406,8 +3207,124 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_cts_tests full_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_cts_tests full_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
+            }
+          ],
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_29_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
+        "variant_id": "full_mode"
+      },
+      {
+        "args": [
+          "--store-tombstones",
+          "--exclude-annotation",
+          "AppModeFull",
+          "--test-apk-as-instant",
+          "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_cts_tests instant_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_cts_tests instant_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive/cipd",
+              "revision": "8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC"
+            }
+          ],
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_29_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webview_trichrome_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
+        "variant_id": "instant_mode"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3437,13 +3354,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3454,7 +3371,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3484,13 +3401,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3501,7 +3418,7 @@
       {
         "args": [
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3531,13 +3448,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3701,7 +3618,7 @@
         "args": [
           "--gtest-benchmark-name=components_perftests",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3726,13 +3643,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3892,47 +3809,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "monochrome_public_apk_checker",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_os_flavor": null,
-            "device_playstore_version": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "monochrome_public_apk_checker",
-        "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
-      },
-      {
-        "args": [
           "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
@@ -4064,7 +3940,7 @@
           "--passthrough",
           "--retry-limit=2",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -4087,13 +3963,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -4103,54 +3979,9 @@
       },
       {
         "args": [
-          "BrowserMinidumpTest",
-          "--browser=android-chromium-monochrome",
-          "-v",
-          "--passthrough",
-          "--retry-limit=2",
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
-        ],
-        "ci_only": true,
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_monochrome_minidump_unittests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android26"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "telemetry_perf_unittests_android_monochrome",
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
-      },
-      {
-        "args": [
           "--extra-browser-args=--enable-crashpad",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--browser=android-chromium"
         ],
         "ci_only": true,
@@ -4175,13 +4006,13 @@
           "idempotent": false,
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_29_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

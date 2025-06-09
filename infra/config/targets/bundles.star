@@ -38,7 +38,19 @@ targets.bundle(
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
         "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_10_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
     ],
 )
 
@@ -6380,17 +6392,6 @@ targets.bundle(
     ],
 )
 
-targets.bundle(
-    name = "q_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
 # Rust tests run on all targets.
 targets.bundle(
     name = "rust_common_gtests",
@@ -6619,7 +6620,6 @@ targets.bundle(
     name = "telemetry_android_minidump_unittests_isolated_scripts",
     targets = [
         "telemetry_chromium_minidump_unittests",
-        "telemetry_monochrome_minidump_unittests",
     ],
 )
 

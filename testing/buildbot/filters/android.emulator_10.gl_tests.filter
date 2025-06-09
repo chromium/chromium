@@ -18,5 +18,6 @@
 -AHardwareBufferImageBackingFactoryTest.CannotWriteWhileReading/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.ConcurrentReadWrite/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.InitialData/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.GLWriteSkiaRead/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.OnlyOneWriter/GaneshGL
 -AHardwareBufferImageBackingFactoryTest.Overlay/GaneshGL
