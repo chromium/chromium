@@ -77,6 +77,12 @@ void DisplayEventsObserver::FillDisplayStatus(
   if (display_info->refresh_rate) {
     display_status.set_refresh_rate(display_info->refresh_rate->value);
   }
+  if (display_info->serial_number) {
+    display_status.set_serial_number(display_info->serial_number->value);
+  }
+  if (display_info->edid_version) {
+    display_status.set_edid_version(display_info->edid_version.value());
+  }
 }
 
 }  // namespace reporting

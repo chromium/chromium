@@ -153,6 +153,14 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
             internal_dp_out->set_refresh_rate(
                 embedded_display_info->refresh_rate->value);
           }
+          if (embedded_display_info->serial_number) {
+            internal_dp_out->set_serial_number(
+                embedded_display_info->serial_number->value);
+          }
+          if (embedded_display_info->edid_version) {
+            internal_dp_out->set_edid_version(
+                embedded_display_info->edid_version.value());
+          }
           if (display_info->external_displays) {
             for (const auto& current_external_display :
                  *display_info->external_displays) {
@@ -176,6 +184,14 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
               if (current_external_display->refresh_rate) {
                 external_dp_out->set_refresh_rate(
                     current_external_display->refresh_rate->value);
+              }
+              if (current_external_display->serial_number) {
+                external_dp_out->set_serial_number(
+                    current_external_display->serial_number->value);
+              }
+              if (current_external_display->edid_version) {
+                external_dp_out->set_edid_version(
+                    current_external_display->edid_version.value());
               }
             }
           }

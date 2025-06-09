@@ -32,6 +32,8 @@ static constexpr int32_t kResolutionHorizontal = 600;
 static constexpr int32_t kResolutionVertical = 500;
 static constexpr char kTestDisplayName[] = "TestDisplayName";
 static constexpr double kTestRefreshRate = 60.0;
+static constexpr uint32_t kTestSerialNumber = 2048123;
+static constexpr char kTestEdidVersion[] = "v2.0";
 
 static constexpr int kExpectedDisplayStatusSize = 1;
 static constexpr int kIndexOfDisplayStatus = 0;
@@ -54,7 +56,7 @@ class DisplayEventsObserverTest : public ::testing::Test {
         /*display_width=*/1920, /*display_height=*/1080, kResolutionHorizontal,
         kResolutionVertical, kTestRefreshRate, "TestManufacturer",
         /*model_id=*/12345, /*manufacture_year=*/2020, kTestDisplayName,
-        /*edid_version=*/"v2.0", /*serial_number=*/2048123);
+        kTestEdidVersion, kTestSerialNumber);
   }
 
   void VerifyDisplayStatus(const DisplayStatus& display_status) {
@@ -63,6 +65,8 @@ class DisplayEventsObserverTest : public ::testing::Test {
     EXPECT_EQ(display_status.resolution_vertical(), kResolutionVertical);
     EXPECT_EQ(display_status.refresh_rate(), kTestRefreshRate);
     EXPECT_THAT(display_status.display_name(), StrEq(kTestDisplayName));
+    EXPECT_EQ(display_status.serial_number(), kTestSerialNumber);
+    EXPECT_THAT(display_status.edid_version(), StrEq(kTestEdidVersion));
   }
 
   void RunExternalDisplayOnEventCommon(
