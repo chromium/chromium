@@ -14,6 +14,8 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "headless/lib/browser/headless_window.h"
+#include "headless/lib/browser/headless_window_delegate.h"
 #include "headless/lib/browser/headless_window_tree_host.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
@@ -33,7 +35,8 @@ namespace headless {
 class HeadlessBrowserImpl;
 
 // Exported for tests.
-class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
+class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents,
+                                                public HeadlessWindowDelegate {
  public:
   HeadlessWebContentsImpl(const HeadlessWebContentsImpl&) = delete;
   HeadlessWebContentsImpl& operator=(const HeadlessWebContentsImpl&) = delete;
@@ -66,10 +69,14 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
     return window_tree_host_.get();
   }
   int window_id() const { return window_id_; }
-  HeadlessWindowState window_state() const { return window_state_; }
 
-  // Set the WebContent's platform window state and visibility.
+  // Set the WebContent's platform window visibility.
+  void SetVisible(bool visible);
+
+  // Set the WebContent's platform window state.
   void SetWindowState(HeadlessWindowState window_state);
+
+  HeadlessWindowState GetWindowState() const;
 
   // Set bounds of WebContent's platform window.
   void SetBounds(const gfx::Rect& bounds);
@@ -89,6 +96,10 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
                   bool capture_screenshot,
                   FrameFinishedCallback frame_finished_callback);
 
+  // HeadlessWindowDelegate:
+  void OnVisibilityChanged() override;
+  void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+
  private:
   explicit HeadlessWebContentsImpl(
       std::unique_ptr<content::WebContents> web_contents);
@@ -103,8 +114,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
   class Delegate;
   std::unique_ptr<Delegate> web_contents_delegate_;
   std::unique_ptr<HeadlessWindowTreeHost> window_tree_host_;
+  std::unique_ptr<HeadlessWindow> headless_window_;
   int window_id_ = 0;
-  HeadlessWindowState window_state_ = HeadlessWindowState::kNormal;
   std::unique_ptr<content::WebContents> const web_contents_;
 
   class PendingFrame;

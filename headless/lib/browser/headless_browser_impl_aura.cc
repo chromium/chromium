@@ -62,9 +62,7 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
   }
 
   // Update RootWindow.
-  HeadlessWindowTreeHost* host = web_contents->window_tree_host();
-  host->window()->SetBounds(bounds);
-  host->SetBoundsInPixels(bounds);
+  web_contents->window_tree_host()->SetBoundsInPixels(bounds);
 }
 
 ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(

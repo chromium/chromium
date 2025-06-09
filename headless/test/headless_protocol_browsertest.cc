@@ -798,4 +798,21 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     " workAreaLeft=10 workAreaRight=90"
     " workAreaTop=20 workAreaBottom=80}")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowStateTransitions,
+    "sanity/window-state-transitions.js",
+    "--screen-info={1600x1200}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowZoomOnSecondaryScreen,
+    "sanity/window-zoom-on-secondary-screen.js",
+    "--screen-info={1600x1200}{1200x1600}")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowZoomSizeMatchesWorkArea,
+    "sanity/window-zoom-size-matches-work-area.js",
+    "--screen-info={800x600 "
+    " workAreaLeft=10 workAreaRight=90"
+    " workAreaTop=20 workAreaBottom=80}")
+
 }  // namespace headless

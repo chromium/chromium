@@ -26,7 +26,7 @@ std::unique_ptr<Browser::Bounds> CreateBrowserBounds(
       .SetTop(bounds.y())
       .SetWidth(bounds.width())
       .SetHeight(bounds.height())
-      .SetWindowState(GetProtocolWindowState(web_contents->window_state()))
+      .SetWindowState(GetProtocolWindowState(web_contents->GetWindowState()))
       .Build();
 }
 
@@ -88,16 +88,9 @@ Response BrowserHandler::SetWindowBounds(
   if (!web_contents)
     return Response::ServerError("Browser window not found");
 
-  gfx::Rect bounds = web_contents->web_contents()->GetContainerBounds();
   const bool set_bounds = window_bounds->HasLeft() || window_bounds->HasTop() ||
                           window_bounds->HasWidth() ||
                           window_bounds->HasHeight();
-  if (set_bounds) {
-    bounds.set_x(window_bounds->GetLeft(bounds.x()));
-    bounds.set_y(window_bounds->GetTop(bounds.y()));
-    bounds.set_width(window_bounds->GetWidth(bounds.width()));
-    bounds.set_height(window_bounds->GetHeight(bounds.height()));
-  }
 
   std::optional<HeadlessWindowState> headless_window_state;
   if (window_bounds->HasWindowState()) {
@@ -107,6 +100,7 @@ Response BrowserHandler::SetWindowBounds(
       return Response::InvalidParams("Invalid window state: " +
                                      protocol_window_state);
     }
+
     if (set_bounds && headless_window_state != HeadlessWindowState::kNormal) {
       return Response::InvalidParams(
           "The 'minimized', 'maximized' and 'fullscreen' states cannot be "
@@ -115,15 +109,28 @@ Response BrowserHandler::SetWindowBounds(
   }
 
   if (set_bounds &&
-      web_contents->window_state() != HeadlessWindowState::kNormal) {
+      web_contents->GetWindowState() != HeadlessWindowState::kNormal) {
     return Response::InvalidParams(
         "To resize minimized/maximized/fullscreen window, restore it to normal "
         "state first.");
   }
 
+  // Set the requested or normal window state. Note that this will update window
+  // position according to the requested window state if necessary.
   web_contents->SetWindowState(
       headless_window_state.value_or(HeadlessWindowState::kNormal));
-  web_contents->SetBounds(bounds);
+
+  if (set_bounds) {
+    gfx::Rect bounds = web_contents->web_contents()->GetContainerBounds();
+
+    bounds.set_x(window_bounds->GetLeft(bounds.x()));
+    bounds.set_y(window_bounds->GetTop(bounds.y()));
+    bounds.set_width(window_bounds->GetWidth(bounds.width()));
+    bounds.set_height(window_bounds->GetHeight(bounds.height()));
+
+    web_contents->SetBounds(bounds);
+  }
+
   return Response::Success();
 }
 
