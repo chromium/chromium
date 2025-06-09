@@ -605,3 +605,15 @@ While data can be exfiltrated through reporting, the data is aggregated, so it
 can’t be traced back to any one frame or reliably joined to build a profile of
 the user. No data can be infiltrated into the fenced frame using this API, nor
 can this API be used as a fingerprinting vector.
+
+### 🔻🔺🖐️ Local Network Access: infiltration/exfiltration/fingerprinting risk
+*Feature: kLocalNetworkAccess*
+
+A colluding server hosted on the local network can be used as a proxy to pass
+information from a fenced frame to its embedder. One side can make a request to
+write data to the server, and the other side can read what data was set in the
+server.
+
+A site can make arbitrary local network requests, scanning for HTTP hosts and
+building a fingerprint of how the network (or device if checking for localhost
+connections) is set up.
