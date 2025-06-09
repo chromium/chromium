@@ -12,6 +12,10 @@ import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
 import("//testing/test.gni")
 
+if (is_win) {
+  import("//third_party/icu/config.gni")
+}
+
 # Run 'gn check out\Default --check-generated //chrome/updater/*' every time
 # dependencies are modified until a presubmit is written to automatically
 # check that the C++ includes match the build dependency graph.
@@ -805,10 +809,10 @@ if (is_win || is_mac || is_linux) {
           deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
         }
       } else if (is_win) {
-        inputs = [
-          "$root_build_dir/enterprise_companion_test.exe",
-          "$root_out_dir/icudtl.dat",
-        ]
+        inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
+        if (icu_use_data_file) {
+          inputs += [ "$root_out_dir/icudtl.dat" ]
+        }
         deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
       }
       key = "//chrome/updater/test/data/selfupdate_test_key.der"

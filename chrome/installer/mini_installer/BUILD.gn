@@ -224,8 +224,6 @@ action("mini_installer_archive") {
 
   if (icu_use_data_file) {
     inputs += [ "$root_out_dir/icudtl.dat" ]
-  } else {
-    inputs += [ "$root_out_dir/icudt.dll" ]
   }
 
   if (v8_use_external_startup_data) {

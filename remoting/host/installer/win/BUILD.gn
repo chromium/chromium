@@ -6,6 +6,7 @@ import("//remoting/build/config/remoting_build.gni")
 import("//remoting/host/installer/credits.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
 import("//remoting/host/installer/win/wix_path.gni")
+import("//third_party/icu/config.gni")
 
 remoting_credits("credits") {
   gn_target = "//remoting/host/installer/win:remoting_me2me_host_archive"
@@ -79,8 +80,10 @@ action("remoting_me2me_host_archive") {
     "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
     "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
-    "$root_out_dir/icudtl.dat",
   ]
+  if (icu_use_data_file) {
+    inputs += [ "$root_out_dir/icudtl.dat" ]
+  }
 
   _generated_files = rebase_path(inputs, root_build_dir)
   _generated_files +=
@@ -112,9 +115,11 @@ action("remoting_me2me_host_archive") {
     "files/com.google.chrome.remote_desktop.json",
     "files/com.google.chrome.remote_desktop-firefox.json",
     "files/com.google.chrome.remote_webauthn.json",
-    "files/icudtl.dat",
-    "files/chromoting.ico",
   ]
+  if (icu_use_data_file) {
+    _generated_dst_files += [ "files/icudtl.dat" ]
+  }
+  _generated_dst_files += [ "files/chromoting.ico" ]
 
   args = [
            rebase_path("$root_gen_dir/remoting_installation", root_build_dir),
