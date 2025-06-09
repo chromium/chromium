@@ -22,6 +22,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -120,6 +121,14 @@ void PhishingClassifierDelegate::DidCommitProvisionalLoad(
 }
 
 void PhishingClassifierDelegate::DidFinishSameDocumentNavigation() {
+  // We do not cancel classification because the purpose of this observer is to
+  // make sure the page_text_ that will be updated through PageCaptured will not
+  // dereference the page text pointer in the classifier, which will cause the
+  // crash if not handled properly.
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionOnlyExtractVisualFeatures)) {
+    return;
+  }
   // TODO(bryner): We shouldn't need to cancel classification if the navigation
   // is within the same document.  However, if we let classification continue in
   // this case, we need to properly deal with the fact that PageCaptured will
@@ -146,9 +155,17 @@ void PhishingClassifierDelegate::PageCaptured(
   //
   // Note: Currently, if the url hasn't changed, we won't restart
   // classification in this case.  We may want to adjust this.
-  CancelPendingClassification();
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionOnlyExtractVisualFeatures)) {
+    CancelPendingClassification();
+    // This is only set to pass onto the classifier as part of the parameter,
+    // but
+    // for kClientSideDetectionOnlyExtractVisualFeatures enabled users, they
+    // will not use it.
+    classifier_page_text_ = std::move(page_text);
+  }
+
   last_finished_load_url_ = render_frame()->GetWebFrame()->GetDocument().Url();
-  classifier_page_text_ = std::move(page_text);
 
   GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   // Check if toplevel URL has changed.
@@ -263,7 +280,15 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     return;
   }
 
-  if (!classifier_page_text_) {
+  // This will not be used for kClientSideDetectionOnlyExtractVisualFeatures
+  // enabled users because page text is extracted for DOM extraction. This
+  // should be removed once kClientSideDetectionOnlyExtractVisualFeatures
+  // feature is fully launched and cleaned up. At the time of
+  // classifier_page_text_ population, last_finished_load_url_ is also set, so
+  // the observer state condition is still met for classification.
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionOnlyExtractVisualFeatures) &&
+      !classifier_page_text_) {
     RecordEvent(SBPhishingClassifierEvent::kPageTextNotLoaded);
     return;
   }

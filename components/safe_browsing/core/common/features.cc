@@ -58,6 +58,10 @@ BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionOnlyExtractVisualFeatures,
+             "ClientSideDetectionOnlyExtractVisualFeatures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo,
              "ClientSideDetectionSendLlamaForcedTriggerInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);

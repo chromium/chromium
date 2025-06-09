@@ -195,7 +195,8 @@ class ClientSideDetectionService
   GetVisualTfLiteModelThresholds();
 
   // Compare the scores from classification to TFLite model thresholds
-  void ClassifyPhishingThroughThresholds(ClientPhishingRequest* verdict);
+  virtual void ClassifyPhishingThroughThresholds(
+      ClientPhishingRequest* verdict);
 
   // Overrides the SharedURLLoaderFactory
   void SetURLLoaderFactoryForTesting(
