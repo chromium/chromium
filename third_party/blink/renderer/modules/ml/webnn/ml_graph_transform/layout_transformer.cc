@@ -154,11 +154,13 @@ std::optional<std::array<uint32_t, 4>> GetConvTranspose2DFilterPermutation(
 template <typename MLConv2dOptionsType>
 void UpdateConv2dInputLayout(webnn::ContextProperties context_properties,
                              MLConv2dOptionsType* options) {
-  if (context_properties.input_operand_layout ==
-      webnn::InputOperandLayout::kNchw) {
-    options->setInputLayout(blink::V8MLInputOperandLayout::Enum::kNchw);
-  } else {
-    options->setInputLayout(blink::V8MLInputOperandLayout::Enum::kNhwc);
+  switch (context_properties.input_operand_layout) {
+    case webnn::InputOperandLayout::kNchw:
+      options->setInputLayout(blink::V8MLInputOperandLayout::Enum::kNchw);
+      break;
+    case webnn::InputOperandLayout::kNhwc:
+      options->setInputLayout(blink::V8MLInputOperandLayout::Enum::kNhwc);
+      break;
   }
 }
 
@@ -218,11 +220,13 @@ void UpdateConvTranspose2dFilterLayout(
 
 void UpdatePool2dInputLayout(webnn::ContextProperties context_properties,
                              MLPool2dOptions* options) {
-  if (context_properties.input_operand_layout ==
-      webnn::InputOperandLayout::kNchw) {
-    options->setLayout(blink::V8MLInputOperandLayout::Enum::kNchw);
-  } else {
-    options->setLayout(blink::V8MLInputOperandLayout::Enum::kNhwc);
+  switch (context_properties.input_operand_layout) {
+    case webnn::InputOperandLayout::kNchw:
+      options->setLayout(blink::V8MLInputOperandLayout::Enum::kNchw);
+      break;
+    case webnn::InputOperandLayout::kNhwc:
+      options->setLayout(blink::V8MLInputOperandLayout::Enum::kNhwc);
+      break;
   }
 }
 
@@ -629,7 +633,6 @@ MLOperand* LayoutTransformer::HandlePool2d(MLOperator* pool2d) {
   webnn::ContextProperties context_properties =
       graph_builder_->GetContext()->GetProperties();
   ExceptionState exception_state = GetExceptionState();
-  // const MLOperand* pool2d_input_operand = pool2d->Inputs()[0].Get();
 
   auto original_layout = options->layout().AsEnum();
 

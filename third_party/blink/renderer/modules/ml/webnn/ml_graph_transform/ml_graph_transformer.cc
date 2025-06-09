@@ -70,6 +70,23 @@ void MLGraphTransformer::SwapInput(MLOperator* op,
 }
 
 // static
+void MLGraphTransformer::RemoveUnaryOperator(MLOperator* op) {
+  CHECK_EQ(op->inputs_.size(), 1u);
+  CHECK_EQ(op->outputs_.size(), 1u);
+
+  MLOperand* input_operand = op->inputs_[0].Get();
+  MLOperand* output_operand = op->outputs_[0].Get();
+
+  Disconnect(input_operand, op, 0);
+
+  auto dep_operators = output_operand->DependentOperators();
+
+  for (auto& dep : dep_operators) {
+    SwapInput(dep.Get(), output_operand, input_operand);
+  }
+}
+
+// static
 MLOperand* MLGraphTransformer::CloneOperandAndResetShape(
     const MLOperand* operand,
     const Vector<uint32_t>& shape) {

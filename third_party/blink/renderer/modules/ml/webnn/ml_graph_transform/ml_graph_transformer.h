@@ -43,6 +43,8 @@ class MODULES_EXPORT MLGraphTransformer
                         MLOperand* old_input,
                         MLOperand* new_input);
 
+  static void RemoveUnaryOperator(MLOperator* op);
+
   // The reshaped operand should have the same number of elements as the
   // original operand
   static MLOperand* ReplaceOperandWithNewShape(
