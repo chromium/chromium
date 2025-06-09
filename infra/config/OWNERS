@@ -20,6 +20,7 @@ per-file luci-bisection*=nqmtuan@google.com
 # For Code Coverage configs
 per-file subprojects/chromium/ci/chromium.coverage.star=jeffyoon@google.com
 per-file subprojects/chromium/ci/chromium.coverage.star=pasthana@google.com
+per-file subprojects/chromium/ci/chromium.coverage.star=wnwen@google.com
 
 # Dawn owners
 per-file subprojects/chromium/ci/chromium.dawn.star=file://infra/config/groups/sheriff-rotations/DAWN_OWNERS
