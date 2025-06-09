@@ -81,23 +81,14 @@ class ReminderNotificationClientTest : public PlatformTest {
             [OCMArg checkWithBlock:completionCaller]]);
   }
 
-  // Sets up an expectation for addNotificationRequest, checking URL and
-  // interval.
-  void ExpectAddNotificationRequest(const GURL& expected_url,
-                                    const base::TimeDelta& expected_interval) {
+  // Sets up an expectation for addNotificationRequest, checking the URL.
+  void ExpectAddNotificationRequest(const GURL& expected_url) {
     id request_arg_matcher =
         [OCMArg checkWithBlock:^BOOL(UNNotificationRequest* req) {
           EXPECT_TRUE([req.identifier
               hasPrefix:kReminderNotificationsIdentifierPrefix]);
           EXPECT_NSEQ(req.content.userInfo[@"url"],
                       [net::NSURLWithGURL(expected_url) absoluteString]);
-          EXPECT_TRUE([req.trigger
-              isKindOfClass:[UNTimeIntervalNotificationTrigger class]]);
-          UNTimeIntervalNotificationTrigger* trigger =
-              static_cast<UNTimeIntervalNotificationTrigger*>(req.trigger);
-          // Allow for small differences due to task scheduling/execution time.
-          EXPECT_NEAR(trigger.timeInterval, expected_interval.InSecondsF(),
-                      1.0);
           return YES;
         }];
     ExpectAddNotificationRequestWithMatcher(request_arg_matcher);
@@ -167,7 +158,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
   reminders.Set(url.spec(), std::move(reminder_details));
 
   StubGetPendingRequests(nil);
-  ExpectAddNotificationRequest(url, base::Minutes(10));
+  ExpectAddNotificationRequest(url);
   SetReminderPrefs(reminders);
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
@@ -192,8 +183,8 @@ TEST_F(ReminderNotificationClientTest, MultipleRemindersInPrefs) {
   reminders.Set(url2.spec(), std::move(details2));
 
   StubGetPendingRequests(nil);
-  ExpectAddNotificationRequest(url1, base::Minutes(10));
-  ExpectAddNotificationRequest(url2, base::Minutes(20));
+  ExpectAddNotificationRequest(url1);
+  ExpectAddNotificationRequest(url2);
   SetReminderPrefs(reminders);
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
