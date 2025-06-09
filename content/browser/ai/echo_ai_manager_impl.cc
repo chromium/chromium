@@ -173,10 +173,10 @@ void EchoAIManagerImpl::CreateLanguageModel(
     }
   }
 
-  auto return_language_model_callback =
-      base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
-                     std::move(options->sampling_params), enabled_input_types);
+  auto return_language_model_callback = base::BindOnce(
+      &EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
+      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+      std::move(options->sampling_params), enabled_input_types, initial_size);
 
   if (!model_downloaded_) {
     // In order to test the model download progress handling, the
@@ -325,8 +325,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote,
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-    base::flat_set<blink::mojom::AILanguageModelPromptType>
-        enabled_input_types) {
+    base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types,
+    uint32_t initial_input_usage) {
   model_downloaded_ = true;
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
   auto model_sampling_params =
@@ -337,15 +337,15 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
                 optimization_guide::features::
                     GetOnDeviceModelDefaultTemperature());
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<EchoAILanguageModel>(model_sampling_params->Clone(),
-                                            enabled_input_types),
-      language_model.InitWithNewPipeAndPassReceiver());
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(
+                                  model_sampling_params->Clone(),
+                                  enabled_input_types, initial_input_usage),
+                              language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
-          kMaxContextSizeInTokens,
-          /*current_tokens=*/0, std::move(model_sampling_params),
+          kMaxContextSizeInTokens, initial_input_usage,
+          std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
               enabled_input_types.begin(), enabled_input_types.end())));
 }

@@ -29,8 +29,11 @@ constexpr char kResponsePrefix[] =
 
 EchoAILanguageModel::EchoAILanguageModel(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-    base::flat_set<blink::mojom::AILanguageModelPromptType> input_types)
-    : sampling_params_(std::move(sampling_params)), input_types_(input_types) {}
+    base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
+    uint32_t initial_tokens_size)
+    : current_tokens_(initial_tokens_size),
+      sampling_params_(std::move(sampling_params)),
+      input_types_(input_types) {}
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
 
@@ -127,9 +130,10 @@ void EchoAILanguageModel::Fork(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
 
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(
-                                  sampling_params_.Clone(), input_types_),
-                              language_model.InitWithNewPipeAndPassReceiver());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<EchoAILanguageModel>(sampling_params_.Clone(),
+                                            input_types_, current_tokens_),
+      language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(

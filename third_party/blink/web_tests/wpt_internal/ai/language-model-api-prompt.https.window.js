@@ -26,3 +26,15 @@ promise_test(async (t) => {
       await session.prompt([{role: 'system', content: 'shorthand'}]),
       /shorthand/);
 }, 'Check Shorthand');
+
+promise_test(async () => {
+  const options = {
+    initialPrompts:
+        [{role: 'user', content: [{type: 'text', value: 'message'}]}]
+  };
+  await ensureLanguageModel(options);
+  const session = await LanguageModel.create(options);
+  const tokenLength = await session.measureInputUsage(options.initialPrompts);
+  assert_greater_than(tokenLength, 0);
+  assert_equals(session.inputUsage, tokenLength);
+}, 'Test that initialPrompt counts towards session inputUsage');

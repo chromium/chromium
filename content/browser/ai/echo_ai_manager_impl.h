@@ -90,7 +90,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
           client_remote,
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
       base::flat_set<blink::mojom::AILanguageModelPromptType>
-          enabled_input_types);
+          enabled_input_types,
+      uint32_t initial_input_usage);
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 

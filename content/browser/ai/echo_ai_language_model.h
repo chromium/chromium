@@ -19,7 +19,8 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
  public:
   explicit EchoAILanguageModel(
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-      base::flat_set<blink::mojom::AILanguageModelPromptType> input_types);
+      base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
+      uint32_t initial_tokens_size);
   EchoAILanguageModel(const EchoAILanguageModel&) = delete;
   EchoAILanguageModel& operator=(const EchoAILanguageModel&) = delete;
 

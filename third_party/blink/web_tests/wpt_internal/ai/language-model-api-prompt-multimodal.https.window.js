@@ -62,6 +62,19 @@ promise_test(async (t) => {
 }, 'Prompt image without `image` expectedInput');
 
 promise_test(async () => {
+  const blob = await (await fetch(kValidImagePath)).blob();
+  const options = {
+    expectedInputs: [{type: 'image'}],
+    initialPrompts: messageWithContent(kPrompt, 'image', blob)
+  };
+  await ensureLanguageModel(options);
+  const session = await LanguageModel.create(options);
+  const tokenLength = await session.measureInputUsage(options.initialPrompts);
+  assert_greater_than(tokenLength, 0);
+  assert_equals(session.inputUsage, tokenLength);
+}, 'Test Image initialPrompt');
+
+promise_test(async () => {
   await ensureLanguageModel(kImageOptions);
   const blob = await (await fetch(kValidImagePath)).blob();
   const session = await createLanguageModel(kImageOptions);
@@ -214,6 +227,19 @@ promise_test(async (t) => {
       t, 'NotSupportedError',
       session.prompt(messageWithContent(kPrompt, 'audio', blob)));
 }, 'Prompt audio without `audio` expectedInput');
+
+promise_test(async () => {
+  const blob = await (await fetch(kValidAudioPath)).blob();
+  const options = {
+    expectedInputs: [{type: 'audio'}],
+    initialPrompts: messageWithContent(kPrompt, 'audio', blob)
+  };
+  await ensureLanguageModel(options);
+  const session = await LanguageModel.create(options);
+  const tokenLength = await session.measureInputUsage(options.initialPrompts);
+  assert_greater_than(tokenLength, 0);
+  assert_equals(session.inputUsage, tokenLength);
+}, 'Test Audio initialPrompt');
 
 promise_test(async () => {
   await ensureLanguageModel(kAudioOptions);
