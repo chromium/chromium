@@ -102,16 +102,16 @@ process and other details can be found at
 
 Updated crates:
 
-* updated_crate: 2.0.1 => 2.0.2
-  (https://docs.rs/crate/updated_crate/2.0.2)
+* updated_crate: 2.0.1 => 2.0.2;
+  https://docs.rs/crate/updated_crate/2.0.2
 
 New crates:
 
-* added@5.0.1 (https://docs.rs/crate/added/5.0.1)
+* added@5.0.1; https://docs.rs/crate/added/5.0.1
 
 Removed crates:
 
-* deleted@3.0.1
+* deleted@3.0.1; https://docs.rs/crate/deleted/3.0.1
 
 Bug: None
 Cq-Include-Trybots: chromium/try:android-rust-arm32-rel

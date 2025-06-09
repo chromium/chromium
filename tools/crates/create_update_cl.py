@@ -312,13 +312,13 @@ def CreateCommitTitleForBreakingUpdate(diff: CratesDiff) -> str:
 def FormatCrateUpdateForClDescriptionBody(update: UpdatedCrate) -> str:
     name = crate_utils.ConvertCrateIdToCrateName(update.new_crate_id)
     new_version = crate_utils.ConvertCrateIdToCrateVersion(update.new_crate_id)
-    return (f"{update} (https://docs.rs/crate/{name}/{new_version})")
+    return (f"{update}; https://docs.rs/crate/{name}/{new_version}")
 
 
 def FormatCrateIdForClDescriptionBody(crate_id: str) -> str:
     name = crate_utils.ConvertCrateIdToCrateName(crate_id)
     version = crate_utils.ConvertCrateIdToCrateVersion(crate_id)
-    return f"{crate_id} (https://docs.rs/crate/{name}/{version})"
+    return f"{crate_id}; https://docs.rs/crate/{name}/{version}"
 
 
 def CreateCommitDescription(title: str, diff: CratesDiff) -> str:
@@ -333,7 +333,8 @@ process and other details can be found at
         map(FormatCrateUpdateForClDescriptionBody, diff.updates))
     new_crate_descriptions = SortedMarkdownList(
         map(FormatCrateIdForClDescriptionBody, diff.added_crate_ids))
-    removed_crate_descriptions = SortedMarkdownList(diff.removed_crate_ids)
+    removed_crate_descriptions = SortedMarkdownList(
+        map(FormatCrateIdForClDescriptionBody, diff.removed_crate_ids))
     assert (update_descriptions)
     description += f"\nUpdated crates:\n\n{update_descriptions}\n"
     if new_crate_descriptions:
