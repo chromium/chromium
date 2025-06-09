@@ -273,12 +273,11 @@ android_resources("devui_resources") {
   ]
 }
 
-android_resources("devui_launcher_icon_resources") {
-  sources = []
-  android_manifest = "java/DeveloperUiLauncherManifest.xml"
+java_group("devui_launcher_icon_resources") {
+  mergeable_android_manifests = [ "java/DeveloperUiLauncherManifest.xml" ]
 }
 
-android_resources("monochrome_devui_launcher_icon_resources") {
-  sources = []
-  android_manifest = "java/MonochromeDeveloperUiLauncherManifest.xml"
+java_group("monochrome_devui_launcher_icon_resources") {
+  mergeable_android_manifests =
+      [ "java/MonochromeDeveloperUiLauncherManifest.xml" ]
 }

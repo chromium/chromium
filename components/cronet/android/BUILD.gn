@@ -667,7 +667,6 @@ android_resources("cronet_sample_apk_resources") {
     "sample/res/values/strings.xml",
     "sample/res/values/styles.xml",
   ]
-  android_manifest = "sample/AndroidManifest.xml"
   deps = [
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

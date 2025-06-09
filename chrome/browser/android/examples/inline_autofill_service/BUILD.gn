@@ -42,7 +42,6 @@ android_resources("inline_autofill_service_example_apk_resources") {
     "src/res/values/themes.xml",
     "src/res/xml/autofill_service_config.xml",
   ]
-  android_manifest = "src/AndroidManifest.xml"
   deps = [ "//third_party/android_deps:material_design_java" ]
 }
 

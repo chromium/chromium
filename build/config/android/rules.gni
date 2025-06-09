@@ -719,7 +719,6 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("android_resources") {
     forward_variables_from(invoker, [ "testonly" ])
-
     _base_path = "$target_gen_dir/$target_name"
     if (defined(invoker.v14_skip)) {
       not_needed(invoker, [ "v14_skip" ])
@@ -770,8 +769,6 @@ if (!is_robolectric && enable_java_templates) {
 
       forward_variables_from(invoker,
                              [
-                               "android_manifest",
-                               "android_manifest_dep",
                                "custom_package",
                                "mergeable_android_manifests",
                                "resource_overlay",
@@ -4416,11 +4413,8 @@ if (!is_robolectric && enable_java_templates) {
                                  "strip_drawables",
                                ])
         deps = _common_deps
-        if (_should_process_manifest) {
-          android_manifest_dep = ":$_unpack_target_name"
-          android_manifest = "${_output_path}/AndroidManifest.xml"
-        } else if (defined(_scanned_files.manifest_package) &&
-                   !defined(custom_package)) {
+        if (defined(_scanned_files.manifest_package) &&
+            !defined(custom_package)) {
           custom_package = _scanned_files.manifest_package
         }
 
@@ -4568,6 +4562,9 @@ if (!is_robolectric && enable_java_templates) {
       }
       if (defined(_assets_target_name)) {
         deps += [ ":$_assets_target_name" ]
+      }
+      if (_should_process_manifest) {
+        mergeable_android_manifests = [ "${_output_path}/AndroidManifest.xml" ]
       }
     }
   }

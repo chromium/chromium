@@ -32,42 +32,37 @@ foreach(device_type, android_device_types) {
   }
 }
 
-common_resources = [
-  "apk/res-values/values-v17/styles.xml",
-  "apk/res-values/values/colors.xml",
-  "apk/res-values/values/strings.xml",
-]
-
-extra_resources = [
-  "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
-  "apk/res/drawable-hdpi/ic_notification_cast.png",
-  "apk/res/drawable-hdpi/ic_settings_cast.png",
-  "apk/res/drawable-mdpi/ic_notification_cast.png",
-  "apk/res/drawable-mdpi/ic_settings_cast.png",
-  "apk/res/drawable-nodpi/ic_cast_vector.xml",
-  "apk/res/drawable-xhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xhdpi/ic_settings_cast.png",
-  "apk/res/drawable-xxhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xxhdpi/ic_settings_cast.png",
-  "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
-  "apk/res/layout/cast_web_contents_activity.xml",
-]
-
-android_resources("cast_shell_android_resources") {
-  android_manifest = cast_shell_android_manifest
-  android_manifest_dep = ":cast_shell_manifest"
-  sources = common_resources + extra_resources
+java_group("cast_shell_android_resources") {
+  deps = [
+    ":cast_browser_android_resources",
+    ":cast_shell_android_stub_resources",
+  ]
 }
 
 android_resources("cast_browser_android_resources") {
-  sources = extra_resources
+  sources = [
+    "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
+    "apk/res/drawable-hdpi/ic_notification_cast.png",
+    "apk/res/drawable-hdpi/ic_settings_cast.png",
+    "apk/res/drawable-mdpi/ic_notification_cast.png",
+    "apk/res/drawable-mdpi/ic_settings_cast.png",
+    "apk/res/drawable-nodpi/ic_cast_vector.xml",
+    "apk/res/drawable-xhdpi/ic_notification_cast.png",
+    "apk/res/drawable-xhdpi/ic_settings_cast.png",
+    "apk/res/drawable-xxhdpi/ic_notification_cast.png",
+    "apk/res/drawable-xxhdpi/ic_settings_cast.png",
+    "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
+    "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
+    "apk/res/layout/cast_web_contents_activity.xml",
+  ]
 }
 
 android_resources("cast_shell_android_stub_resources") {
-  android_manifest = cast_shell_android_manifest
-  android_manifest_dep = ":cast_shell_manifest"
-  sources = common_resources
+  sources = [
+    "apk/res-values/values-v17/styles.xml",
+    "apk/res-values/values/colors.xml",
+    "apk/res-values/values/strings.xml",
+  ]
 }
 
 android_library("cast_command_line_helper_java") {
@@ -205,6 +200,7 @@ android_library("cast_shell_java") {
 
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
+  mergeable_android_manifests = [ cast_shell_android_manifest ]
   deps = common_android_library_deps + [
            ":cast_shell_android_resources",
            ":cast_shell_manifest",

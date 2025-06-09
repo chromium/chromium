@@ -37,5 +37,4 @@ android_resources("spnego_authenticator_apk_assets") {
     "res/xml/spnego_account_preferences.xml",
     "res/xml/spnego_authenticator.xml",
   ]
-  android_manifest = "AndroidManifest.xml"
 }
