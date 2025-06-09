@@ -600,19 +600,38 @@ const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableOpenInBrowser[] = {
     {"open_in_browser", "true"},
     {"voice", "false"},
     {"default_variant", "0"},
-    {"contextual_only", "false"}};
+    {"contextual_only", "false"},
+    {"remove_find_in_page_menu_item", "false"},
+    {"remove_desktop_site_menu_item", "false"},
+    {"show_open_in_browser_menu_top", "false"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonOpenInBrowserDefault[] = {
+    {"open_in_browser", "true"},
+    {"voice", "false"},
+    {"default_variant", "15"},
+    {"contextual_only", "false"},
+    {"remove_find_in_page_menu_item", "false"},
+    {"remove_desktop_site_menu_item", "false"},
+    {"show_open_in_browser_menu_top", "false"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableVoice[] = {
     {"open_in_browser", "false"},
     {"voice", "true"},
     {"default_variant", "0"},
-    {"contextual_only", "false"}};
+    {"contextual_only", "false"},
+    {"remove_find_in_page_menu_item", "false"},
+    {"remove_desktop_site_menu_item", "false"},
+    {"show_open_in_browser_menu_top", "false"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableBoth[] = {
     {"open_in_browser", "true"},
     {"voice", "true"},
     {"default_variant", "0"},
-    {"contextual_only", "false"}};
+    {"contextual_only", "false"},
+    {"remove_find_in_page_menu_item", "false"},
+    {"remove_desktop_site_menu_item", "false"},
+    {"show_open_in_browser_menu_top", "false"}};
 const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
     {"(+ open in browser)", kCCTAdaptiveButtonEnableOpenInBrowser,
+     std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},
+    {"(+ open in browser as default)", kCCTAdaptiveButtonOpenInBrowserDefault,
      std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},
     {"(+ voice)", kCCTAdaptiveButtonEnableVoice,
      std::size(kCCTAdaptiveButtonEnableVoice), nullptr},

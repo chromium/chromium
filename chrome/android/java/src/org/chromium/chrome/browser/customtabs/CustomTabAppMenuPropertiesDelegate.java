@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -49,7 +50,12 @@ import java.util.Map;
 /** App menu properties delegate for {@link CustomTabActivity}. */
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
-
+    private static final String SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM =
+            "show_open_in_browser_menu_top";
+    private static final String REMOVE_FIND_IN_PAGE_MENU_ITEM_PARAM =
+            "remove_find_in_page_menu_item";
+    private static final String REMOVE_DESKTOP_SITE_MENU_ITEM_PARAM =
+            "remove_desktop_site_menu_item";
     private final Verifier mVerifier;
     private final @CustomTabsUiType int mUiType;
     private final boolean mShowShare;
@@ -132,6 +138,20 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
         boolean readerModePrefsVisible = false;
 
+        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                    REMOVE_FIND_IN_PAGE_MENU_ITEM_PARAM,
+                    false)) {
+                findInPageVisible = false;
+            }
+            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                    REMOVE_DESKTOP_SITE_MENU_ITEM_PARAM,
+                    false)) {
+                requestDesktopSiteVisible = false;
+            }
+        }
         if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
             // Most of the menu items don't make sense when viewing media.
             iconRowVisible = false;
@@ -273,6 +293,16 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                             buildModelForDivider(R.id.divider_line_id)));
         }
 
+        // --- Open in browser ---
+        boolean showOpenInBrowserAtTop =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
+                        SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM,
+                        false);
+        if (openInChromeItemVisible && showOpenInBrowserAtTop) {
+            addOpenInChrome(modelList, /* showIcon= */ true);
+        }
+
         // --- Read Aloud ---
         if (tryAddingReadAloud) {
             // Set visibility of Read Aloud menu item. The entrypoint will be visible iff the tab
@@ -350,22 +380,29 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             modelList.add(buildOpenWithItem(currentTab, false));
         }
 
-        // --- Open in browser ---
-        if (openInChromeItemVisible) {
-            String title =
-                    mIsOffTheRecord
-                            ? ContextUtils.getApplicationContext()
-                                    .getString(R.string.menu_open_in_incognito_chrome)
-                            : DefaultBrowserInfo.getTitleOpenInDefaultBrowser(mIsOpenedByChrome);
-
-            modelList.add(
-                    new MVCListAdapter.ListItem(
-                            AppMenuHandler.AppMenuItemType.STANDARD,
-                            buildBaseModelForTextItem(R.id.open_in_browser_id)
-                                    .with(AppMenuItemProperties.TITLE, title)
-                                    .build()));
+        // --- Open in Browser ---
+        if (openInChromeItemVisible && !showOpenInBrowserAtTop) {
+            addOpenInChrome(modelList, /* showIcon= */ false);
         }
         return modelList;
+    }
+
+    private void addOpenInChrome(MVCListAdapter.ModelList modelList, boolean showIcon) {
+        String title =
+                mIsOffTheRecord
+                        ? ContextUtils.getApplicationContext()
+                                .getString(R.string.menu_open_in_incognito_chrome)
+                        : DefaultBrowserInfo.getTitleOpenInDefaultBrowser(mIsOpenedByChrome);
+        PropertyModel model =
+                buildBaseModelForTextItem(R.id.open_in_browser_id)
+                        .with(AppMenuItemProperties.TITLE, title)
+                        .build();
+        if (showIcon) {
+            model.set(
+                    AppMenuItemProperties.ICON,
+                    AppCompatResources.getDrawable(mContext, R.drawable.ic_open_in_new_white_24dp));
+        }
+        modelList.add(new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
     }
 
     /**

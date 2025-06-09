@@ -3727,6 +3727,30 @@
             ]
         }
     ],
+    "CCTAdaptiveButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "params": {
+                        "contextual_only": "false",
+                        "default_variant": "0",
+                        "open_in_browser": "false",
+                        "remove_desktop_site_menu_item": "false",
+                        "remove_find_in_page_menu_item": "false",
+                        "show_open_in_browser_menu_top": "false",
+                        "voice": "false"
+                    },
+                    "disable_features": [
+                        "CCTAdaptiveButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTEarlyNav": [
         {
             "platforms": [
