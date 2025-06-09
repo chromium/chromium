@@ -7,7 +7,8 @@
 
 #include <optional>
 #include <string>
-#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -84,12 +85,11 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   RetrieveEncryptedKey();
   void HandleEncryptedKey(ReadWriteKeyData decrypted_key,
                           KeyCallback callback,
-                          const OptionalReadOnlyKeyData& encrypted_key);
+                          OptionalReadOnlyKeyData encrypted_key);
   void StoreAndReplyWithKey(
       KeyCallback callback,
-      base::expected<
-          std::tuple<ReadWriteKeyData, const OptionalReadOnlyKeyData&>,
-          KeyProvider::KeyError> key_pair);
+      base::expected<std::pair<ReadWriteKeyData, OptionalReadOnlyKeyData>,
+                     KeyProvider::KeyError> key_pair);
   void StoreKey(base::span<const uint8_t> encrypted_key);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);

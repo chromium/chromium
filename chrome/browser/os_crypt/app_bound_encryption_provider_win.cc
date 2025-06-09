@@ -6,9 +6,10 @@
 
 #include <optional>
 #include <string>
-#include <tuple>
+#include <utility>
 
 #include "base/base64.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -120,7 +121,7 @@ class AppBoundEncryptionProviderWin::COMWorker {
     return ReadOnlyKeyData(ciphertext.cbegin(), ciphertext.cend());
   }
 
-  base::expected<std::tuple<ReadWriteKeyData, OptionalReadOnlyKeyData>,
+  base::expected<std::pair<ReadWriteKeyData, OptionalReadOnlyKeyData>,
                  KeyProvider::KeyError>
   DecryptKey(ReadOnlyKeyData& encrypted_key) {
     DWORD last_error;
@@ -158,13 +159,13 @@ class AppBoundEncryptionProviderWin::COMWorker {
     ::SecureZeroMemory(decrypted_key_string.data(),
                        decrypted_key_string.size());
 
-    OptionalReadOnlyKeyData maybe_new_ciphertext_data;
+    std::optional<std::vector<uint8_t>> maybe_new_ciphertext_data;
     if (maybe_new_ciphertext) {
       maybe_new_ciphertext_data.emplace(maybe_new_ciphertext->cbegin(),
                                         maybe_new_ciphertext->cend());
     }
-    return std::make_tuple(std::move(data),
-                           std::move(maybe_new_ciphertext_data));
+    return std::make_pair(std::move(data),
+                          std::move(maybe_new_ciphertext_data));
   }
 };
 
@@ -285,12 +286,11 @@ AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
 void AppBoundEncryptionProviderWin::StoreKey(
     base::span<const uint8_t> encrypted_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ReadWriteKeyData key(sizeof(kCryptAppBoundKeyPrefix) + encrypted_key.size());
-  // Add header indicating this key is encrypted with App Bound provider.
-  key.insert(key.cbegin(), std::begin(kCryptAppBoundKeyPrefix),
-             std::end(kCryptAppBoundKeyPrefix));
-  key.insert(key.cbegin() + sizeof(kCryptAppBoundKeyPrefix),
-             encrypted_key.cbegin(), encrypted_key.cend());
+  auto key = base::HeapArray<uint8_t>::Uninit(sizeof(kCryptAppBoundKeyPrefix) +
+                                              encrypted_key.size());
+  key.copy_prefix_from(base::span(kCryptAppBoundKeyPrefix));
+  key.subspan(sizeof(kCryptAppBoundKeyPrefix))
+      .copy_from_nonoverlapping(encrypted_key);
   std::string base64_key = base::Base64Encode(key);
   // Store key.
   local_state_->SetString(kEncryptedKeyPrefName, base64_key);
@@ -299,7 +299,7 @@ void AppBoundEncryptionProviderWin::StoreKey(
 void AppBoundEncryptionProviderWin::HandleEncryptedKey(
     ReadWriteKeyData decrypted_key,
     KeyCallback callback,
-    const OptionalReadOnlyKeyData& encrypted_key) {
+    OptionalReadOnlyKeyData encrypted_key) {
   if (!encrypted_key) {
     ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
     // Failure here means encryption failed, which is considered a permanent
@@ -312,12 +312,12 @@ void AppBoundEncryptionProviderWin::HandleEncryptedKey(
 
   StoreAndReplyWithKey(
       std::move(callback),
-      std::make_tuple(std::move(decrypted_key), encrypted_key));
+      std::make_pair(std::move(decrypted_key), std::move(encrypted_key)));
 }
 
 void AppBoundEncryptionProviderWin::StoreAndReplyWithKey(
     KeyCallback callback,
-    base::expected<std::tuple<ReadWriteKeyData, const OptionalReadOnlyKeyData&>,
+    base::expected<std::pair<ReadWriteKeyData, OptionalReadOnlyKeyData>,
                    KeyProvider::KeyError> key_pair) {
   if (!key_pair.has_value()) {
     // This can only happen in the decrypt path.
