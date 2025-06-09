@@ -173,9 +173,7 @@ bool FakePlusAddressService::IsFieldEligibleForPlusAddress(
     return true;
   }
 
-  return base::FeatureList::IsEnabled(
-             features::kPlusAddressSuggestionsOnUsernameFields) &&
-         (field.server_type() == autofill::FieldType::USERNAME ||
+  return (field.server_type() == autofill::FieldType::USERNAME ||
           field.server_type() == autofill::FieldType::SINGLE_USERNAME) &&
          field.heuristic_type() == autofill::FieldType::EMAIL_ADDRESS;
 }

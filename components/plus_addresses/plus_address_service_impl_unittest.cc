@@ -298,8 +298,6 @@ TEST_F(PlusAddressServiceTest, ShouldShowManualFallbackNoServer) {
 }
 
 TEST_F(PlusAddressServiceTest, IsEligibleForPlusAddress) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kPlusAddressSuggestionsOnUsernameFields};
   autofill::AutofillField field;
   InitService();
 
