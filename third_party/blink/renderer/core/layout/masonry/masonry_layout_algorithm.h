@@ -15,6 +15,7 @@ namespace blink {
 class GridItems;
 class GridLineResolver;
 class GridSizingTrackCollection;
+class MasonryRunningPositions;
 enum class SizingConstraint;
 struct GridItemData;
 
@@ -31,9 +32,12 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   // This places all the items stored in `masonry_items` and adjusts
   // `intrinsic_block_size_` based on the placement of the items. Placement of
-  // the items is finalized within this method.
+  // the items is finalized within this method. `running_positions` is an output
+  // parameter that can be used to find the intrinsic inline size when the
+  // stacking axis is the inline axis.
   void PlaceMasonryItems(const GridLayoutTrackCollection& track_collection,
-                         GridItems& masonry_items);
+                         GridItems& masonry_items,
+                         MasonryRunningPositions& running_positions);
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
