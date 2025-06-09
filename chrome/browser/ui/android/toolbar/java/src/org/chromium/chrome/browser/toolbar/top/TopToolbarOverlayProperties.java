@@ -12,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties associated with the top toolbar's composited layer. */
@@ -53,6 +54,8 @@ public class TopToolbarOverlayProperties {
     public static final WritableObjectPropertyKey<OffsetTag> TOOLBAR_OFFSET_TAG =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableLongPropertyKey CAPTURE_RESOURCE_ID = new WritableLongPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ANONYMIZE,
@@ -65,6 +68,7 @@ public class TopToolbarOverlayProperties {
                 VISIBLE,
                 X_OFFSET,
                 CONTENT_OFFSET,
-                TOOLBAR_OFFSET_TAG
+                TOOLBAR_OFFSET_TAG,
+                CAPTURE_RESOURCE_ID
             };
 }

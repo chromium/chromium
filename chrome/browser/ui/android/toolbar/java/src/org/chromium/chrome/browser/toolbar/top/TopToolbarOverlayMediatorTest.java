@@ -64,6 +64,7 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private Tab mTab;
 
     @Mock private Tab mTab2;
+    @Mock private ObservableSupplier<Tab> mTabSupplier;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -71,14 +72,13 @@ public class TopToolbarOverlayMediatorTest {
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
 
     @Captor private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutObserverCaptor;
-
-    @Mock private ObservableSupplier<Tab> mTabSupplier;
-
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
             new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<Long> mCaptureResourceIdSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void beforeTest() {
@@ -112,7 +112,8 @@ public class TopToolbarOverlayMediatorTest {
                         mBottomToolbarControlsOffsetSupplier,
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
-                        false);
+                        /* manualVisibilityControl= */ false,
+                        mCaptureResourceIdSupplier);
 
         mMediator.setIsAndroidViewVisible(true);
 
@@ -121,9 +122,7 @@ public class TopToolbarOverlayMediatorTest {
         setTabSupplierTab(mTab);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
-
         verify(mBrowserControlsStateProvider).addObserver(mBrowserControlsObserverCaptor.capture());
-
         verify(mLayoutStateProvider).addObserver(mLayoutObserverCaptor.capture());
 
         mLayoutObserverCaptor.getValue().onStartedShowing(LayoutType.BROWSING);
@@ -243,7 +242,8 @@ public class TopToolbarOverlayMediatorTest {
                         mBottomToolbarControlsOffsetSupplier,
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
-                        false);
+                        /* manualVisibilityControl= */ false,
+                        mCaptureResourceIdSupplier);
         mMediator.setIsAndroidViewVisible(true);
 
         if (isBcivEnabled()) {
@@ -482,6 +482,7 @@ public class TopToolbarOverlayMediatorTest {
         verify(mLayoutStateProvider, never()).removeObserver(mLayoutObserverCaptor.getValue());
         verify(mBrowserControlsStateProvider, never())
                 .removeObserver(mBrowserControlsObserverCaptor.getValue());
+        assertTrue(mCaptureResourceIdSupplier.hasObservers());
 
         mMediator.destroy();
 
@@ -490,5 +491,14 @@ public class TopToolbarOverlayMediatorTest {
         verify(mLayoutStateProvider).removeObserver(mLayoutObserverCaptor.getValue());
         verify(mBrowserControlsStateProvider)
                 .removeObserver(mBrowserControlsObserverCaptor.getValue());
+        assertFalse(mCaptureResourceIdSupplier.hasObservers());
+    }
+
+    @Test
+    public void testCaptureResourceId() {
+        long captureResourceId = 1234;
+        mCaptureResourceIdSupplier.set(captureResourceId);
+        assertEquals(
+                captureResourceId, mModel.get(TopToolbarOverlayProperties.CAPTURE_RESOURCE_ID));
     }
 }

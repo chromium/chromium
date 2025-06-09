@@ -137,6 +137,8 @@ public class ToolbarSwipeLayout extends Layout {
 
         mLeftTabSupplier = new ObservableSupplierImpl<>();
         mRightTabSupplier = new ObservableSupplierImpl<>();
+        // No new captures should be taken mid swipe, so this shouldn't matter.
+        ObservableSupplier<Long> captureResourceIdSupplier = new ObservableSupplierImpl<>();
 
         if (mMoveToolbar) {
             mLeftToolbarOverlay =
@@ -151,7 +153,8 @@ public class ToolbarSwipeLayout extends Layout {
                             bottomControlsOffsetSupplier,
                             new ObservableSupplierImpl<>(false),
                             LayoutType.TOOLBAR_SWIPE,
-                            true);
+                            /* isVisibilityManuallyControlled= */ true,
+                            captureResourceIdSupplier);
             mLeftToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mLeftToolbarOverlay);
 
@@ -167,7 +170,8 @@ public class ToolbarSwipeLayout extends Layout {
                             bottomControlsOffsetSupplier,
                             new ObservableSupplierImpl<>(false),
                             LayoutType.TOOLBAR_SWIPE,
-                            true);
+                            /* isVisibilityManuallyControlled= */ true,
+                            captureResourceIdSupplier);
             mRightToolbarOverlay.setManualVisibility(true);
             layoutManager.addSceneOverlay(mRightToolbarOverlay);
         }

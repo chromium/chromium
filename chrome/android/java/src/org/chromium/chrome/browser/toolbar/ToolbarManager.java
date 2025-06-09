@@ -207,6 +207,8 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.resources.Resource;
+import org.chromium.ui.resources.dynamics.DynamicResourceSnapshot;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -251,6 +253,8 @@ public class ToolbarManager
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
             new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<Long> mCaptureResourceIdSupplier =
+            new ObservableSupplierImpl<>();
     private TabModelSelector mTabModelSelector;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -1660,6 +1664,17 @@ public class ToolbarManager
             mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);
         }
 
+        mControlContainer
+                .getToolbarResourceAdapter()
+                .addOnResourceReadyCallback(
+                        (Resource r) -> {
+                            // {@link DynamicResourceSnapshot} saves an id to return for
+                            // createNativeResource. Otherwise this might be creating a new native
+                            // resource, which we wouldn't want.
+                            assert r instanceof DynamicResourceSnapshot;
+                            mCaptureResourceIdSupplier.set(r.createNativeResource());
+                        });
+
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
@@ -2197,7 +2212,8 @@ public class ToolbarManager
                 mTopUiThemeColorProvider,
                 mBottomToolbarControlsOffsetSupplier,
                 mSuppressToolbarSceneLayerSupplier,
-                onProgressInfoUpdate);
+                onProgressInfoUpdate,
+                mCaptureResourceIdSupplier);
         mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =

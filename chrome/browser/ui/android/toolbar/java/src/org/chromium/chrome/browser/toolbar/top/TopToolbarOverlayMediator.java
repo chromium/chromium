@@ -45,6 +45,8 @@ public class TopToolbarOverlayMediator {
             this::onBottomToolbarControlsOffsetChanged;
     private final Callback<Boolean> mOnSuppressToolbarSceneLayerChanged =
             this::onSuppressToolbarSceneLayerChanged;
+    private final Callback<Long> mOnCaptureResourceIdSupplierChange =
+            this::onCaptureResourceIdSupplierChange;
 
     /** An Android Context. */
     private final Context mContext;
@@ -91,6 +93,7 @@ public class TopToolbarOverlayMediator {
     private boolean mIsOnValidLayout;
 
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final ObservableSupplier<Long> mCaptureResourceIdSupplier;
     private float mViewportHeight;
 
     private @Nullable OffsetTag mTopControlsOffsetTag;
@@ -108,7 +111,8 @@ public class TopToolbarOverlayMediator {
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
-            boolean manualVisibilityControl) {
+            boolean manualVisibilityControl,
+            ObservableSupplier<Long> captureResourceIdSupplier) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
@@ -123,6 +127,8 @@ public class TopToolbarOverlayMediator {
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         mTabSupplier = tabSupplier;
         mControlsPosition = mBrowserControlsStateProvider.getControlsPosition();
+        mCaptureResourceIdSupplier = captureResourceIdSupplier;
+        mCaptureResourceIdSupplier.addObserver(mOnCaptureResourceIdSupplierChange);
         updateVisibility();
 
         mSceneChangeObserver =
@@ -356,6 +362,7 @@ public class TopToolbarOverlayMediator {
         mSuppressToolbarSceneLayerSupplier.removeObserver(mOnSuppressToolbarSceneLayerChanged);
         mLayoutStateProvider.removeObserver(mSceneChangeObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
+        mCaptureResourceIdSupplier.removeObserver(mOnCaptureResourceIdSupplierChange);
     }
 
     /** Update the visibility of the overlay. */
@@ -459,6 +466,10 @@ public class TopToolbarOverlayMediator {
 
     private void onSuppressToolbarSceneLayerChanged(Boolean ignored) {
         updateVisibility();
+    }
+
+    private void onCaptureResourceIdSupplierChange(Long captureResourceId) {
+        mModel.set(TopToolbarOverlayProperties.CAPTURE_RESOURCE_ID, captureResourceId);
     }
 
     static void setIsTabletForTesting(Boolean isTablet) {

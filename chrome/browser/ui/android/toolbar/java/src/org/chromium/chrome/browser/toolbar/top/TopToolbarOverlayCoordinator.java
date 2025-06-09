@@ -57,7 +57,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
-            boolean isVisibilityManuallyControlled) {
+            boolean isVisibilityManuallyControlled,
+            ObservableSupplier<Long> captureResourceIdSupplier) {
         // If BCIV is enabled, we always show the hairline on the composited
         // toolbar, and let renderer+viz control the visibility during scrolls.
         mContext = context;
@@ -92,7 +93,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         bottomToolbarControlsOffsetSupplier,
                         suppressToolbarSceneLayerSupplier,
                         layoutsToShowOn,
-                        isVisibilityManuallyControlled);
+                        isVisibilityManuallyControlled,
+                        captureResourceIdSupplier);
     }
 
     /**
