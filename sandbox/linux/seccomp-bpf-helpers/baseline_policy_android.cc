@@ -41,14 +41,6 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
 
-#ifndef SOCK_CLOEXEC
-#define SOCK_CLOEXEC O_CLOEXEC
-#endif
-
-#ifndef SOCK_NONBLOCK
-#define SOCK_NONBLOCK O_NONBLOCK
-#endif
-
 #ifndef UFFDIO_MOVE
 #define _UFFDIO_MOVE (0x05)
 struct uffdio_move {
