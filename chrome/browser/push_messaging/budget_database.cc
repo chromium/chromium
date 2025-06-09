@@ -51,7 +51,8 @@ BudgetDatabase::BudgetInfo::BudgetInfo(const BudgetInfo&& other)
 BudgetDatabase::BudgetInfo::~BudgetInfo() = default;
 
 BudgetDatabase::BudgetDatabase(Profile* profile)
-    : profile_(profile), clock_(base::WrapUnique(new base::DefaultClock)) {
+    : profile_(profile->GetWeakPtr()),
+      clock_(base::WrapUnique(new base::DefaultClock)) {
   auto* protodb_provider =
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   // In incognito mode the provider service is not created.
@@ -383,6 +384,6 @@ double BudgetDatabase::GetSiteEngagementScoreForOrigin(
   if (profile_->IsOffTheRecord())
     return 0;
 
-  return site_engagement::SiteEngagementService::Get(profile_)->GetScore(
-      origin.GetURL());
+  return site_engagement::SiteEngagementService::Get(profile_.get())
+      ->GetScore(origin.GetURL());
 }

@@ -166,7 +166,7 @@ class BudgetDatabase {
   // score of zero when |profile_| is off the record.
   double GetSiteEngagementScoreForOrigin(const url::Origin& origin) const;
 
-  raw_ptr<Profile> profile_;
+  base::WeakPtr<Profile> profile_;
 
   // The database for storing budget information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<budget_service::Budget>> db_;
