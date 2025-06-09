@@ -111,7 +111,8 @@ GURL GetSidePanelNewTabUrl(const GURL& side_panel_url, std::string vsrid);
 
 // Builds the appropriate translate service URL for fetching supported
 // languages.
-GURL BuildTranslateLanguagesURL(std::string country, std::string language);
+GURL BuildTranslateLanguagesURL(std::string_view country,
+                                std::string_view language);
 
 // Returns whether |lens_selection_type| should be considered as a text-only
 // selection type.

@@ -170,9 +170,8 @@ LensOverlayLanguagesController::InitializeURLLoader() {
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   locale_ = g_browser_process->GetApplicationLocale();
-  const auto country = l10n_util::GetCountry(locale_);
-  const auto language = l10n_util::GetLanguage(locale_);
-  resource_request->url = BuildTranslateLanguagesURL(country, language);
+  resource_request->url = BuildTranslateLanguagesURL(
+      l10n_util::GetCountry(locale_), l10n_util::GetLanguage(locale_));
 
   google_apis::AddDefaultAPIKeyToRequest(*resource_request,
                                          chrome::GetChannel());

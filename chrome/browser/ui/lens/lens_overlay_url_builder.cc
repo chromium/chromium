@@ -522,7 +522,8 @@ GURL GetSidePanelNewTabUrl(const GURL& side_panel_url, std::string vsrid) {
                                             kRequestIdParameterKey, vsrid);
 }
 
-GURL BuildTranslateLanguagesURL(std::string country, std::string language) {
+GURL BuildTranslateLanguagesURL(std::string_view country,
+                                std::string_view language) {
   GURL url = GURL(lens::features::GetLensOverlayTranslateEndpointURL());
   url =
       net::AppendOrReplaceQueryParameter(url, kCountryQueryParameter, country);
