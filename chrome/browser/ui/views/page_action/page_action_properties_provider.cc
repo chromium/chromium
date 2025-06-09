@@ -22,7 +22,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionSidePanelShowLensOverlayResults,
               {
                   .histogram_name = "LensOverlay",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kLensOverlay,
               },
           },
@@ -30,7 +29,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionShowTranslate,
               {
                   .histogram_name = "Translate",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kTranslate,
               },
           },
@@ -38,7 +36,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionShowMemorySaverChip,
               {
                   .histogram_name = "MemorySaver",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kMemorySaver,
                   .element_identifier = kMemorySaverChipElementId,
               },
@@ -47,7 +44,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionShowIntentPicker,
               {
                   .histogram_name = "IntentPicker",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kIntentPicker,
               },
           },
@@ -55,7 +51,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionZoomNormal,
               {
                   .histogram_name = "Zoom",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kZoom,
                   .element_identifier = kActionItemZoomElementId,
               },
@@ -64,7 +59,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionOffersAndRewardsForPage,
               {
                   .histogram_name = "PaymentsOfferNotification",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kPaymentsOfferNotification,
                   .element_identifier = kOfferNotificationChipElementId,
               },
@@ -73,7 +67,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionShowFileSystemAccess,
               {
                   .histogram_name = "ShowFileSystemAccess",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kFileSystemAccess,
               },
           },
@@ -81,7 +74,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionInstallPwa,
               {
                   .histogram_name = "PwaInstall",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kPwaInstall,
               },
           },
@@ -89,7 +81,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionCommercePriceInsights,
               {
                   .histogram_name = "PriceInsights",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kPriceInsights,
                   .element_identifier = kPriceInsightsChipElementId,
               },
@@ -98,7 +89,6 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               kActionShowPasswordsBubbleOrPage,
               {
                   .histogram_name = "ManagePasswords",
-                  .is_ephemeral = true,
                   .type = PageActionIconType::kManagePasswords,
               },
           },

@@ -62,7 +62,6 @@ static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
         kTestPageActionId,
         PageActionProperties{
             .histogram_name = "Test",
-            .is_ephemeral = true,
         },
     },
 };

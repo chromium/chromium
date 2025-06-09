@@ -40,14 +40,12 @@ static const PageActionPropertiesMap kTestProperties =
                                 kFirstActionItemId,
                                 PageActionProperties{
                                     .histogram_name = "Test0",
-                                    .is_ephemeral = true,
                                 },
                             },
                             {
                                 kSecondActionItemId,
                                 PageActionProperties{
                                     .histogram_name = "Test1",
-                                    .is_ephemeral = true,
                                 },
                             }};
 
@@ -111,14 +109,12 @@ class PageActionControllerTest : public testing::Test {
                                         /*action_id=*/0,
                                         PageActionProperties{
                                             .histogram_name = "Test0",
-                                            .is_ephemeral = true,
                                         },
                                     },
                                     {
                                         /*action_id=*/1,
                                         PageActionProperties{
                                             .histogram_name = "Test1",
-                                            .is_ephemeral = true,
                                         },
                                     }}) {}
 
