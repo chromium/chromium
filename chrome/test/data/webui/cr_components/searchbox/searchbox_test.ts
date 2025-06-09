@@ -2271,6 +2271,90 @@ suite('NewTabPageRealboxTest', () => {
       });
 
 
+  test('search aggregator people matches use fallback icons', async () => {
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const fallbackIconPath =
+        '//resources/cr_components/searchbox/icons/google_agentspace_logo.svg';
+    const matches = [
+      createUrlMatch({
+        iconPath: fallbackIconPath,
+        isEnterpriseSearchAggregatorPeopleType: true,
+      }),
+      createUrlMatch({
+        iconUrl: 'https://helloworld-2.com/url.png',
+        iconPath: fallbackIconPath,
+        isEnterpriseSearchAggregatorPeopleType: true,
+        contents: stringToMojoString16('helloworld-2.com'),
+        destinationUrl: {url: 'https://helloworld-2.com/'},
+        fillIntoEdit: stringToMojoString16('https://helloworld-2.com'),
+      }),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    assertEquals(2, matchEls.length);
+
+    // Test initial icon state for the first match: Google Agentspace logo set
+    // as background image.
+    assertStyle(
+        matchEls[0]!.$.icon.$.icon, 'background-image',
+        `url("chrome:${fallbackIconPath}")`);
+    assertStyle(matchEls[0]!.$.icon.$.icon, '-webkit-mask-image', 'none');
+
+    // Test initial icon state for the second match: Google Agentspace logo set
+    // as background image.
+    assertStyle(
+        matchEls[1]!.$.icon.$.icon, 'background-image',
+        `url("chrome:${fallbackIconPath}")`);
+    assertStyle(matchEls[1]!.$.icon.$.icon, '-webkit-mask-image', 'none');
+
+    // Select the first match.
+    let arrowDownEvent = arrowDown(realbox);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    // Input is updated.
+    assertEquals('https://helloworld.com', realbox.$.input.value);
+    // Realbox icon is updated.
+    assertStyle(
+        realbox.$.icon.$.icon, 'background-image',
+        `url("chrome:${fallbackIconPath}")`);
+    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
+    assertFalse(realbox.$.icon.$.icon.hidden);
+    assertTrue(realbox.$.icon.$.iconImg.hidden);
+
+    // Select the second match.
+    arrowDownEvent = arrowDown(realbox);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // Second match is selected.
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    // Input is updated.
+    assertEquals('https://helloworld-2.com', realbox.$.input.value);
+    // Realbox icon is updated.
+    assertStyle(
+        realbox.$.icon.$.icon, 'background-image',
+        `url("chrome:${fallbackIconPath}")`);
+    assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
+    assertFalse(realbox.$.icon.$.icon.hidden);
+    assertTrue(realbox.$.icon.$.iconImg.hidden);
+
+    // Mock icon image finishing loading for the the realbox
+    // itself. The icon image should be used and the logo should be hidden.
+    realbox.$.icon.$.iconImg.dispatchEvent(new Event('load'));
+    assertTrue(realbox.$.icon.$.icon.hidden);
+    assertFalse(realbox.$.icon.$.iconImg.hidden);
+  });
+
   test('lens searchboxes always use default icons in searchbox', async () => {
     // Arrange.
     loadTimeData.overrideValues({

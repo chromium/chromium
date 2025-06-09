@@ -84,6 +84,8 @@ constexpr char kExtensionAppIconResourceName[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] =
     "//resources/cr_components/searchbox/icons/calendar.svg";
+constexpr char kGoogleAgentspaceIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/google_agentspace_logo.svg";
 const char* kGoogleGIconResourceName =
     "//resources/cr_components/searchbox/icons/google_g.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
@@ -288,15 +290,21 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     mojom_match->icon_path =
         SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
             match.GetVectorIcon(is_bookmarked, turl));
+    // For enterprise search aggregator people suggestions, use branded icon if
+    // branded build.
+    if (match.enterprise_search_aggregator_type ==
+        AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
+      mojom_match->is_enterprise_search_aggregator_people_type = true;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      mojom_match->icon_path = kGoogleAgentspaceIconResourceName;
+#endif
+    }
     mojom_match->icon_url = match.icon_url.spec();
     mojom_match->image_dominant_color = match.image_dominant_color;
     mojom_match->image_url = match.image_url.spec();
     mojom_match->fill_into_edit = match.fill_into_edit;
     mojom_match->inline_autocompletion = match.inline_autocompletion;
     mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
-    mojom_match->is_enterprise_search_aggregator_people_type =
-        match.enterprise_search_aggregator_type ==
-        AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
     mojom_match->swap_contents_and_description =
         match.swap_contents_and_description;
     mojom_match->type = AutocompleteMatchType::ToString(match.type);

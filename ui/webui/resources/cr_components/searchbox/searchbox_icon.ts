@@ -198,18 +198,17 @@ export class SearchboxIconElement extends PolymerElement {
 
   private computeBackgroundImage_(): string {
     if (this.match && !this.match.isSearchType) {
-      if (this.match.type !== DOCUMENT_MATCH_TYPE &&
-          this.match.type !== HISTORY_CLUSTER_MATCH_TYPE &&
-          this.match.type !== PEDAL) {
+      if (this.match.type === DOCUMENT_MATCH_TYPE ||
+          this.match.type === PEDAL ||
+          this.match.isEnterpriseSearchAggregatorPeopleType) {
+        return `url(${this.match.iconPath})`;
+      }
+
+      if (this.match.type !== HISTORY_CLUSTER_MATCH_TYPE) {
         return getFaviconForPageURL(
             this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
             /* remoteIconUrlForUma= */ '', /* size= */ 16,
             /* forceLightMode= */ true);
-      }
-
-      if (this.match.type === DOCUMENT_MATCH_TYPE ||
-          this.match.type === PEDAL) {
-        return `url(${this.match.iconPath})`;
       }
     }
 
@@ -288,6 +287,7 @@ export class SearchboxIconElement extends PolymerElement {
       'drive_sheets',
       'drive_slides',
       'drive_video',
+      'google_agentspace_logo',
       'google_g',
       'google_g_gradient',
       'note',
