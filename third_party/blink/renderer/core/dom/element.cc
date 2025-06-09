@@ -1703,12 +1703,7 @@ void Element::DefaultEventHandler(Event& event) {
 }
 
 Element* Element::anchorElement() const {
-  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
-  // elements, so that we can remove the hack below.
   if (!RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
-    return nullptr;
-  }
-  if (!IsInTreeScope()) {
     return nullptr;
   }
   return GetElementAttributeResolvingReferenceTarget(html_names::kAnchorAttr);
@@ -1717,14 +1712,7 @@ Element* Element::anchorElement() const {
 // For JavaScript binding, return the anchor element without resolving the
 // reference target, to avoid exposing shadow root content to JS.
 Element* Element::anchorElementForBinding() const {
-  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
-  // elements, so that we can remove the hack below.
-  if (!RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
-    return nullptr;
-  }
-  if (!IsInTreeScope()) {
-    return nullptr;
-  }
+  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
   return GetElementAttribute(html_names::kAnchorAttr);
 }
 
