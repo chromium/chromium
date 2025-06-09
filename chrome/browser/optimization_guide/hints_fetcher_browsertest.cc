@@ -1902,7 +1902,7 @@ class ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest
 };
 
 // TODO(crbug.com/423415283): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_HintsFetcherDoesNotFetchAccessToken \
   DISABLED_HintsFetcherDoesNotFetchAccessToken
 #else
