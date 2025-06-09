@@ -22519,6 +22519,21 @@
             ]
         }
     ],
+    "ShareDefaultBrowserStatus": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShareDefaultBrowserStatus"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShareInWebContextMenuIOS": [
         {
             "platforms": [
