@@ -2579,9 +2579,6 @@ BASE_FEATURE(kResetShortcutCustomizations,
              "ResetShortcutCustomizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables ChromeOS scalable IPH.
-BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables debug feature of ChromeOS Scalable Iph.
 BASE_FEATURE(kScalableIphDebug,
              "ScalableIphDebug",
@@ -3324,8 +3321,7 @@ bool AreDesksTemplatesEnabled() {
 }
 
 bool AreHelpAppWelcomeTipsEnabled() {
-  return base::FeatureList::IsEnabled(kHelpAppWelcomeTips) &&
-         base::FeatureList::IsEnabled(kScalableIph);
+  return false;
 }
 
 bool ArePromiseIconsEnabled() {
@@ -4476,10 +4472,6 @@ bool IsResetShortcutCustomizationsEnabled() {
 
 bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
-}
-
-bool IsScalableIphEnabled() {
-  return base::FeatureList::IsEnabled(kScalableIph);
 }
 
 bool IsScalableIphDebugEnabled() {

@@ -59,8 +59,7 @@ const variations::FieldTrialTestingExperiment* FindExperiment(
 
 const base::Feature* GetFeature(const std::string_view& feature_name) {
   static const base::NoDestructor<std::vector<const base::Feature*>>
-      supported_features({&ash::features::kScalableIph,
-                          &ash::features::kHelpAppWelcomeTips,
+      supported_features({&ash::features::kHelpAppWelcomeTips,
                           &ash::features::kShelfLauncherNudge});
   for (const base::Feature* feature : *supported_features) {
     if (feature->name == feature_name) {
