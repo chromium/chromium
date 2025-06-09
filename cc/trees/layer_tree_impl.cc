@@ -1495,12 +1495,26 @@ void LayerTreeImpl::SetLocalSurfaceIdFromParent(
 
 void LayerTreeImpl::RequestNewLocalSurfaceId() {
   new_local_surface_id_request_ = true;
+  if (settings().TreesInVizInClientProcess()) {
+    // |new_local_surface_id_request_| will be cleared before
+    // preparing LayerTreeImpl mojo data, but the flag
+    // needs to be passed to the viz process, so LayerTreeImpl
+    // on the viz side will generate its LocalSurfaceId.
+    new_local_surface_id_request_for_viz_process_ = true;
+  }
 }
 
 bool LayerTreeImpl::TakeNewLocalSurfaceIdRequest() {
   bool new_local_surface_id_request = new_local_surface_id_request_;
   new_local_surface_id_request_ = false;
   return new_local_surface_id_request;
+}
+
+bool LayerTreeImpl::TakeNewLocalSurfaceIdRequestForVizProcess() {
+  bool new_local_surface_id_request_for_viz_process =
+      new_local_surface_id_request_for_viz_process_;
+  new_local_surface_id_request_for_viz_process_ = false;
+  return new_local_surface_id_request_for_viz_process;
 }
 
 void LayerTreeImpl::SetScreenshotDestinationToken(

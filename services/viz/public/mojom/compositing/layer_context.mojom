@@ -90,6 +90,10 @@ struct LayerTreeUpdate {
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
   LocalSurfaceId? local_surface_id_from_parent;
 
+  // If a new LocalSurfaceId needs to be generated for LayerTreeImpl in viz
+  // process.
+  bool new_local_surface_id_request;
+
   // The background color with which to fill any space not covered by layers
   // within the tree's content rect.
   skia.mojom.SkColor4f background_color;

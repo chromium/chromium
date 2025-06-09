@@ -1167,6 +1167,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
+  update->new_local_surface_id_request =
+      tree.TakeNewLocalSurfaceIdRequestForVizProcess();
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();
