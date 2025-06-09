@@ -23,7 +23,7 @@ if (is_chrome_branded && enable_glic_internal_resources) {
   }
 }
 
-grit("browser_resources") {
+grit("grit") {
   if (is_chrome_branded && enable_glic_internal_resources) {
     deps = [ ":check_grds" ]
     source = "internal/browser_resources.grd"
@@ -35,4 +35,13 @@ grit("browser_resources") {
     "glic_browser_resources.pak",
     "grit/glic_browser_resources.h",
   ]
+}
+
+source_set("browser_resources") {
+  sources = [
+    "glic_resources.cc",
+    "glic_resources.h",
+  ]
+  public_deps = [ ":grit" ]
+  deps = [ "//base" ]
 }

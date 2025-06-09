@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -41,9 +42,10 @@ namespace {
 gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
 #if BUILDFLAG(IS_WIN)
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      native_theme->ShouldUseDarkColorsForSystemIntegratedUI()
-          ? IDR_GLIC_STATUS_ICON_DARK
-          : IDR_GLIC_STATUS_ICON_LIGHT);
+      glic::GetResourceID(
+          native_theme->ShouldUseDarkColorsForSystemIntegratedUI()
+              ? IDR_GLIC_STATUS_ICON_DARK
+              : IDR_GLIC_STATUS_ICON_LIGHT));
 #else
   // On Mac and Linux, theming is handled by the system and does not require
   // different images for light/dark mode.

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -44,6 +45,8 @@ class VectorIconData {
 // static
 const gfx::VectorIcon& GlicVectorIconManager::GetVectorIcon(int id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  id = GetResourceID(id);
+
   // Ensure that the storage backing the vector icon persists so that the
   // vended gfx::VectorIcon references will remain valid.
   static base::NoDestructor<

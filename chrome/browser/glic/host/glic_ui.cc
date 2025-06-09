@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -103,7 +104,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
   source->AddBoolean("simulateNoConnection", simulate_no_connection_);
 
-  source->AddResourcePath("glic_logo.svg", IDR_GLIC_LOGO);
+  source->AddResourcePath("glic_logo.svg", GetResourceID(IDR_GLIC_LOGO));
 
   // Set up guest api source.
   // This comes from 'glic_api_injection' in
