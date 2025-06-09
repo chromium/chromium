@@ -230,7 +230,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleCancelMode() override;
   void HandleCaptureLost() override;
   void HandleClose() override;
-  void HandleRequestClose() override;
   bool HandleCommand(int command) override;
   void HandleAccelerator(const ui::Accelerator& accelerator) override;
   void HandleCreate() override;
