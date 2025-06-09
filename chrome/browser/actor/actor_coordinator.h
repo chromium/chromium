@@ -92,19 +92,32 @@ class ActorCoordinator {
   const optimization_guide::proto::AnnotatedPageContent*
   GetLastObservedPageContent();
 
+  // Invalidated anytime `actions_` is reset.
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
  private:
   class NewTabWebContentsObserver;
 
-  void OnMayActOnTabResponse(TaskId task_id,
-                             const url::Origin& evaluated_origin,
-                             bool may_act);
+  // If there are no actions remaining, calls CompleteActions.
+  // Otherwise, calls SafetyChecksForNextAction().
+  void KickOffNextAction(mojom::ActionResultPtr previous_action_result);
 
-  // Kicks off one action from actions. If no actions are left, finishes.
-  void PerformOneAction(TaskId task_id,
-                        mojom::ActionResultPtr previous_action_result);
-  void FinishOneAction(TaskId task_id, mojom::ActionResultPtr result);
+  // Performs safety checks for next action. This is asynchronous.
+  void SafetyChecksForNextAction();
+
+  // Performs synchronous safety checks for the next action. If everything
+  // passes calls tool_controller_.Invoke().
+  void DidFinishAsyncSafetyChecks(const url::Origin& evaluated_origin,
+                                  bool may_act);
+
+  // Synchronously executes the next action. There are several types of actions,
+  // including renderer-scoped actions, tab-scoped actions, and global actions.
+  void ExecuteNextAction();
+  void ExecuteFrameScopedAction(
+      const optimization_guide::proto::ActionInformation& action);
+
+  // Called each time an action finishes.
+  void FinishOneAction(mojom::ActionResultPtr result);
 
   // Fires the callback and clears `actions`.
   void CompleteActions(mojom::ActionResultPtr result);
@@ -153,7 +166,11 @@ class ActorCoordinator {
   int action_index_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<ActorCoordinator> weak_ptr_factory_{this};
+
+  // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is
+  // destroyed. However, this class invalidates WeakPtrs anytime a new set of
+  // actions is passed in. This effectively cancels any ongoing async actions.
+  base::WeakPtrFactory<ActorCoordinator> actions_weak_ptr_factory_{this};
 };
 
 }  // namespace actor

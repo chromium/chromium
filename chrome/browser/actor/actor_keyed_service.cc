@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -60,6 +61,7 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 TaskId ActorKeyedService::AddTask(std::unique_ptr<ActorTask> task) {
   TaskId task_id = next_task_id_.GenerateNextId();
+  task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   tasks_[task_id] = std::move(task);
   return task_id;
 }

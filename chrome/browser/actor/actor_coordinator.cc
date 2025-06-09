@@ -154,24 +154,55 @@ void ActorCoordinator::Act(const BrowserAction& action,
   actions_.emplace(action, std::move(callback));
   action_index_ = 0;
 
-  MayActOnTab(*tab_, *journal_, task_id,
-              base::BindOnce(&ActorCoordinator::OnMayActOnTabResponse,
-                             GetWeakPtr(), task_id,
-                             tab_->GetContents()
-                                 ->GetPrimaryMainFrame()
-                                 ->GetLastCommittedOrigin()));
+  // Kick off the first action.
+  KickOffNextAction(/*previous_action_result=*/MakeOkResult());
 }
 
-void ActorCoordinator::OnMayActOnTabResponse(
-    TaskId task_id,
+void ActorCoordinator::KickOffNextAction(
+    mojom::ActionResultPtr previous_action_result) {
+  BrowserAction& proto = actions_->proto;
+
+  // All actions finished.
+  if (proto.action_information_size() <= action_index_) {
+    CompleteActions(std::move(previous_action_result));
+    return;
+  }
+
+  SafetyChecksForNextAction();
+}
+
+void ActorCoordinator::SafetyChecksForNextAction() {
+  // TODO: populate this properly with either tab_ or the action's tab.
+  tabs::TabInterface* tab = tab_;
+  // TODO: not all actions require a tab.
+  bool action_requires_tab = true;
+
+  if (action_requires_tab && !tab) {
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
+                  "The tab is no longer present");
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "The tab is no longer present."));
+    return;
+  }
+
+  // TODO: support non-tab actions.
+  CHECK(action_requires_tab);
+
+  // Asynchronously check if we can act on the tab.
+  MayActOnTab(
+      *tab, *journal_, task_->id(),
+      base::BindOnce(
+          &ActorCoordinator::DidFinishAsyncSafetyChecks, GetWeakPtr(),
+          tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+}
+
+void ActorCoordinator::DidFinishAsyncSafetyChecks(
     const url::Origin& evaluated_origin,
     bool may_act) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(actions_);
 
-  // The actions have already completed or canceled.
-  if (!actions_) {
-    return;
-  }
+  auto task_id = task_->id();
 
   // TODO(https://crbug.com/411462297): tabs should not be required for all
   // actions.
@@ -199,58 +230,48 @@ void ActorCoordinator::OnMayActOnTabResponse(
     return;
   }
 
-  // We intentionally allow an empty array of actions, since the model may use
-  // this to get APC.
-  PerformOneAction(task_id, /*previous_action_result=*/MakeOkResult());
+  ExecuteNextAction();
 }
 
-void ActorCoordinator::PerformOneAction(
-    TaskId task_id,
-    mojom::ActionResultPtr previous_action_result) {
-  // Something else has reset actions_.
-  if (!actions_) {
-    return;
-  }
+void ActorCoordinator::ExecuteNextAction() {
+  CHECK(actions_);
 
-  BrowserAction& proto = actions_->proto;
-
-  // All actions finished.
-  if (proto.action_information_size() <= action_index_) {
-    CompleteActions(std::move(previous_action_result));
-    return;
-  }
-
-  // Kick off the next action, and increment action_index.
+  // Grab the next action, and increment action_index.
   const ActionInformation& action =
-      proto.action_information().at(action_index_++);
+      actions_->proto.action_information().at(action_index_++);
 
+  ExecuteFrameScopedAction(action);
+}
+
+void ActorCoordinator::ExecuteFrameScopedAction(
+    const ActionInformation& action) {
   // TODO(https://crbug.com/411462297): tabs should not be required for all
   // actions.
   if (!tab_) {
+    journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
+                  "The tab is no longer present");
+    CompleteActions(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                               "The tab is no longer present."));
     return;
   }
 
   RenderFrameHost* target_frame = FindTargetFrame(*tab_->GetContents(), action);
 
   if (!target_frame) {
-    journal_->Log(LastCommittedURLOfCurrentTask(), task_id, "Act Failed",
+    journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                   "The target frame is no longer present in the tab.");
     CompleteActions(
         MakeResult(mojom::ActionResultCode::kFrameWentAway,
                    "The target frame is no longer present in the tab."));
     return;
   }
-  tool_controller_.Invoke(action, *journal_, task_id, *target_frame,
-                          base::BindOnce(&ActorCoordinator::FinishOneAction,
-                                         GetWeakPtr(), task_id));
+  tool_controller_.Invoke(
+      action, *journal_, task_->id(), *target_frame,
+      base::BindOnce(&ActorCoordinator::FinishOneAction, GetWeakPtr()));
 }
 
-void ActorCoordinator::FinishOneAction(TaskId task_id,
-                                       mojom::ActionResultPtr result) {
-  // The task is no longer relevant.
-  if (!actions_) {
-    return;
-  }
+void ActorCoordinator::FinishOneAction(mojom::ActionResultPtr result) {
+  CHECK(actions_);
 
   // The current action errored out. Stop the chain.
   if (!IsOk(*result)) {
@@ -258,7 +279,7 @@ void ActorCoordinator::FinishOneAction(TaskId task_id,
     return;
   }
 
-  PerformOneAction(task_id, std::move(result));
+  KickOffNextAction(std::move(result));
 }
 
 void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
@@ -275,6 +296,9 @@ void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   PostTaskForActCallback(std::move(actions_->callback), std::move(result));
   actions_.reset();
   action_index_ = 0;
+  actions_weak_ptr_factory_.InvalidateWeakPtrs();
+  // TODO(crbug.com/409559623): Conceptually this should also reset
+  // `last_observed_page_content_`.
 }
 
 void ActorCoordinator::OnTabWillDetach(
@@ -305,7 +329,7 @@ const AnnotatedPageContent* ActorCoordinator::GetLastObservedPageContent() {
 }
 
 base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+  return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
 const GURL& ActorCoordinator::LastCommittedURLOfCurrentTask() {

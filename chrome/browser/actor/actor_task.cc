@@ -20,6 +20,10 @@ ActorTask::ActorTask(std::unique_ptr<ActorCoordinator> actor_coordinator)
 }
 ActorTask::~ActorTask() = default;
 
+void ActorTask::SetId(base::PassKey<ActorKeyedService>, TaskId id) {
+  id_ = id;
+}
+
 ActorCoordinator* ActorTask::GetActorCoordinator() const {
   return actor_coordinator_.get();
 }
