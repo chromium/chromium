@@ -25,7 +25,11 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 /** The History pane station. */
 public class HistoryPaneStation extends HubBaseStation {
     public HistoryPaneStation(boolean regularTabsExist, boolean incognitoTabsExist) {
-        super(regularTabsExist, incognitoTabsExist, /* hasMenuButton= */ false);
+        super(
+                /* isIncognito= */ false,
+                regularTabsExist,
+                incognitoTabsExist,
+                /* hasMenuButton= */ false);
     }
 
     @Override

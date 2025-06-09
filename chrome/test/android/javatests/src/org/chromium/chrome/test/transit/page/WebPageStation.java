@@ -79,14 +79,14 @@ public class WebPageStation extends PageStation {
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
-        assert !mIncognito;
+        assert !mIsIncognito;
         return enterFacilitySync(
                 new RegularWebPageAppMenuFacility(), menuButtonElement.getClickTrigger());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
-        assert mIncognito;
+        assert mIsIncognito;
         return enterFacilitySync(
                 new IncognitoWebPageAppMenuFacility(), menuButtonElement.getClickTrigger());
     }
@@ -108,7 +108,7 @@ public class WebPageStation extends PageStation {
     public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
             FakeOmniboxSuggestions fakeSuggestions) {
         OmniboxFacility omniboxFacility =
-                new OmniboxFacility(/* incognito= */ mIncognito, fakeSuggestions);
+                new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         enterFacilitiesSync(
                 List.of(omniboxFacility, softKeyboard), urlBarElement.getClickTrigger());

@@ -25,7 +25,11 @@ public class TabGroupPaneStation extends HubBaseStation {
     public @Nullable ViewElement<View> newTabGroupButtonElement;
 
     public TabGroupPaneStation(boolean regularTabsExist, boolean incognitoTabsExist) {
-        super(regularTabsExist, incognitoTabsExist, /* hasMenuButton= */ false);
+        super(
+                /* isIncognito= */ false,
+                regularTabsExist,
+                incognitoTabsExist,
+                /* hasMenuButton= */ false);
 
         // TODO(crbug.com/413652567): Handle empty state case.
         recyclerViewElement =

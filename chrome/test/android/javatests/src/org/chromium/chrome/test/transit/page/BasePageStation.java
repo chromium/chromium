@@ -15,16 +15,13 @@ import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.transit.tabmodel.TabModelCondition;
-import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
+import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -41,7 +38,8 @@ import java.util.function.Function;
  *
  * @param <HostActivity> The type of activity this station is associate to.
  */
-public class BasePageStation<HostActivity extends ChromeActivity> extends Station<HostActivity> {
+public class BasePageStation<HostActivity extends ChromeActivity>
+        extends ChromeActivityTabModelBoundStation<HostActivity> {
 
     /** Configuration for all BasePageStation subclasses. */
     public static class Config {
@@ -107,7 +105,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
 
         public Config initFrom(BasePageStation<?> previousStation) {
             if (mIncognito == null) {
-                mIncognito = previousStation.mIncognito;
+                mIncognito = previousStation.mIsIncognito;
             }
             if (mNumTabsBeingOpened == null) {
                 mNumTabsBeingOpened = 0;
@@ -188,18 +186,12 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
         }
     }
 
-    protected final boolean mIncognito;
-
-    public final Element<TabModelSelector> tabModelSelectorElement;
-    public final Element<TabModel> tabModelElement;
     public final Element<Tab> activityTabElement;
     public final Element<Tab> loadedTabElement;
 
     protected BasePageStation(Class<HostActivity> activityClass, Config config) {
-        super(activityClass);
-
         // incognito is optional and defaults to false
-        mIncognito = config.mIncognito == null ? false : config.mIncognito;
+        super(activityClass, config.mIncognito == null ? false : config.mIncognito);
 
         // mNumTabsBeingOpened is required
         assert config.mNumTabsBeingOpened != null
@@ -223,12 +215,6 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
                 addInitialFacility(facility);
             }
         }
-
-        tabModelSelectorElement =
-                declareEnterConditionAsElement(new TabModelSelectorCondition(mActivityElement));
-        tabModelElement =
-                declareEnterConditionAsElement(
-                        new TabModelCondition(tabModelSelectorElement, mIncognito));
 
         if (config.mNumTabsBeingOpened > 0) {
             declareEnterCondition(
@@ -262,7 +248,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
         }
         loadedTabElement =
                 declareEnterConditionAsElement(
-                        new PageLoadedCondition(activityTabElement, mIncognito));
+                        new PageLoadedCondition(activityTabElement, mIsIncognito));
 
         declareEnterCondition(new PageInteractableOrHiddenCondition(loadedTabElement));
 
@@ -281,20 +267,6 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
     /** Convenience method for |loadedTabElement.get()|. */
     public Tab getTab() {
         return loadedTabElement.get();
-    }
-
-    /** Convenience method for |tabModelElement.get()|. */
-    public TabModel getTabModel() {
-        return tabModelElement.get();
-    }
-
-    /** Convenience method for |tabModelSelectorElement.get()|. */
-    public TabModelSelector getTabModelSelector() {
-        return tabModelSelectorElement.get();
-    }
-
-    public boolean isIncognito() {
-        return mIncognito;
     }
 
     /** Loads a |url| in the same tab and waits to transition. */
