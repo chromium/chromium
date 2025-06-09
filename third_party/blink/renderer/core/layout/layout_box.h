@@ -744,7 +744,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return rare_data_ ? rare_data_->spanner_placeholder_.Get() : nullptr;
   }
 
-  bool IsValidColumnSpanner() const final;
+  bool IsValidColumnSpanner() const final {
+    NOT_DESTROYED();
+    return IsValidColumnSpanner(StyleRef());
+  }
+
+  // Provide a ComputedStyle argument, so that this function may be used
+  // reliably during style changes.
+  bool IsValidColumnSpanner(const ComputedStyle&) const;
 
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,

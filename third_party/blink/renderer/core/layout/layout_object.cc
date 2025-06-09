@@ -3278,6 +3278,9 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout()) {
     // If the in-flow state of an element is changed, disable scroll
     // anchoring on the containing scroller.
+    //
+    // TODO(layout-dev): Move this code down to LayoutBox. Only those can become
+    // out-of-flow or spanners.
     if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
       SetScrollAnchorDisablingStyleChangedOnAncestor();
       MarkParentForSpannerOrOutOfFlowPositionedChange();
@@ -3287,7 +3290,11 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
               box->DisplayLocksAffectedByAnchors(), nullptr);
         }
       }
-    } else if (old_style->GetColumnSpan() != style_->GetColumnSpan()) {
+    } else if (IsBox() &&
+               ((!RuntimeEnabledFeatures::FlowThreadLessEnabled() &&
+                 old_style->GetColumnSpan() != style_->GetColumnSpan()) ||
+                To<LayoutBox>(this)->IsValidColumnSpanner(*old_style) !=
+                    To<LayoutBox>(this)->IsValidColumnSpanner(*style_))) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }
 
