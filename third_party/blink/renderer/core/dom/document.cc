@@ -8400,7 +8400,7 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   element->SetIsInTopLayer(false);
   display_lock_document_state_->ElementRemovedFromTopLayer(element);
   if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-    if (html_element->HasPopoverAttribute()) {
+    if (html_element->IsPopover()) {
       html_element->SetImplicitAnchor(nullptr);
     }
   }
@@ -8454,7 +8454,7 @@ HTMLElement* Document::TopmostPopoverOrHint() const {
   return nullptr;
 }
 void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
-  DCHECK(!popover || popover->HasPopoverAttribute());
+  DCHECK(!popover || popover->IsPopover());
   popover_pointerdown_target_ = popover;
 }
 

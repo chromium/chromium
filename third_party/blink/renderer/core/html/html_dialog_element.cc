@@ -353,7 +353,7 @@ bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
 
   // Dialog actions conflict with popovers. We should avoid trying do anything
   // with a dialog that is an open popover.
-  if (HasPopoverAttribute() && popoverOpen()) {
+  if (IsPopover() && popoverOpen()) {
     AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
                       mojom::blink::ConsoleMessageLevel::kError,
                       "Dialog commands are ignored on open popovers.");
@@ -536,7 +536,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state,
         DOMExceptionCode::kInvalidStateError,
         "The element is not in a Document.");
   }
-  if (HasPopoverAttribute() && popoverOpen()) {
+  if (IsPopover() && popoverOpen()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The dialog is already open as a Popover, and therefore cannot be "
@@ -699,8 +699,7 @@ bool HTMLDialogElement::DispatchToggleEvents(bool opening,
     if (IsOpen()) {
       return false;
     }
-    if (asModal &&
-        (!isConnected() || (HasPopoverAttribute() && popoverOpen()))) {
+    if (asModal && (!isConnected() || (IsPopover() && popoverOpen()))) {
       return false;
     }
   }

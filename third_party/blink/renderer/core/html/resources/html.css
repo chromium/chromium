@@ -1659,6 +1659,14 @@ slot {
   display:none;
 }
 
+@supports blink-feature(MenuElements) {
+    /* TODO(crbug.com/422803239): This should be combined with the [popover]
+     * rule above when we remove this flag. */
+    menulist:not(:popover-open) {
+      display: none;
+    }
+}
+
 /* The UA stylesheet has a rule like dialog{display:none}, so <dialog popover>
    needs this to be visible when it is open as a popover. */
 dialog:popover-open {

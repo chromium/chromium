@@ -255,6 +255,19 @@ CommandEventType HTMLButtonElement::GetCommandEventType(
     return CommandEventType::kRequestClose;
   }
 
+  // Menu Cases
+  if (RuntimeEnabledFeatures::MenuElementsEnabled()) {
+    if (EqualIgnoringASCIICase(action, keywords::kToggleMenu)) {
+      return CommandEventType::kToggleMenu;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kShowMenu)) {
+      return CommandEventType::kShowMenu;
+    }
+    if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
+      return CommandEventType::kHideMenu;
+    }
+  }
+
   // V2 commands go below this point
 
   if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {

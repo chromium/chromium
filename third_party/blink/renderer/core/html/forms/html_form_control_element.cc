@@ -381,7 +381,7 @@ HTMLFormControlElement::popoverTargetElement() {
     return no_element;
   }
   auto* target_popover = DynamicTo<HTMLElement>(target_element);
-  if (!target_popover || !target_popover->HasPopoverAttribute()) {
+  if (!target_popover || !target_popover->IsPopover()) {
     return no_element;
   }
   // The default action is "toggle".

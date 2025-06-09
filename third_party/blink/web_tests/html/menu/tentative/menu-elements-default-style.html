@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
 <link rel=author href=mailto:dom@chromium.org>
-<link rel=match href=menu-elements-default-style-ref.html>
 <link rel=help href=https://open-ui.org/components/menu.explainer>
 
 <menubar>
@@ -17,3 +16,8 @@
   <menuitem>Item B</menuitem>
   <menuitem>Item C</menuitem>
 </menulist>
+
+<script>
+const menulist = document.querySelector("menulist");
+menulist.showPopover();
+</script>

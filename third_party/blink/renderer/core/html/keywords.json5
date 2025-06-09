@@ -87,15 +87,19 @@
     // command for number input
     "step-up",
     "step-down",
-    // invokeaction for fullscreen
+    // command for fullscreen
     "toggle-fullscreen",
     "request-fullscreen",
     "exit-fullscreen",
-    // invokeaction for audio and video
+    // command for audio and video
     "play-pause",
     "pause",
     "play",
     "toggle-muted",
+    // command for menu elements
+    "toggle-menu",
+    "hide-menu",
+    "show-menu",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

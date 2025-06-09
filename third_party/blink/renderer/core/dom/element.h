@@ -237,6 +237,10 @@ enum class CommandEventType {
   kPause,
   kPlay,
   kToggleMuted,
+  // Menu
+  kToggleMenu,
+  kHideMenu,
+  kShowMenu,
 };
 
 typedef HeapVector<Member<Attr>> AttrNodeList;

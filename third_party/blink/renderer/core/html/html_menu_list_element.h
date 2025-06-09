@@ -14,6 +14,9 @@ class HTMLMenuListElement final : public HTMLElement {
 
  public:
   explicit HTMLMenuListElement(Document&);
+
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
 };
 
 }  // namespace blink

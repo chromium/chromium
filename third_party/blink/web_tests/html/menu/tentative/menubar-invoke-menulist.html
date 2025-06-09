@@ -8,7 +8,7 @@
   <menuitem>Command 3</menuitem>
 </menubar>
 
-<menulist id="more" popover>
+<menulist id="more">
  <menuitem id="menulistitem" disabled>Command 1</menuitem>
  <menuitem>Command 2</menuitem>
 </menulist>
@@ -73,10 +73,20 @@ test(() => {
     'The menulist should be able to open successfully.');
 
  menulist.hidePopover();
-}, "Menuitem with command/commandfor can invoke menulist popover.");
+
+ menubaritem.setAttribute("command", "show-menu");
+ menubaritem.click();
+ assert_true(menulist.matches(':popover-open'));
+
+ menubaritem.setAttribute("command", "hide-menu");
+ menubaritem.click();
+ assert_false(menulist.matches(':popover-open'));
+
+ menulist.hidePopover();
+}, "Menuitem with valid command/commandfor can invoke menulist popover.");
 
 test(() => {
- menubaritem.setAttribute("command", "toggle-popover");
+ menubaritem.setAttribute("command", "toggle-menu");
  menubaritem.setAttribute("commandfor", "dne");
  menubaritem.click();
  assert_false(menulist.matches(':popover-open'),

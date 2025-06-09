@@ -105,6 +105,16 @@ CommandEventType HTMLMenuItemElement::GetCommandEventType(
   if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
     return CommandEventType::kHidePopover;
   }
+  // Menu specific cases.
+  if (EqualIgnoringASCIICase(action, keywords::kToggleMenu)) {
+    return CommandEventType::kToggleMenu;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kShowMenu)) {
+    return CommandEventType::kShowMenu;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
+    return CommandEventType::kHideMenu;
+  }
   return CommandEventType::kNone;
 }
 

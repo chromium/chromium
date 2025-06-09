@@ -244,7 +244,9 @@ class CORE_EXPORT HTMLElement : public Element {
 
   // Popover API related functions.
   void UpdatePopoverAttribute(const AtomicString&);
-  bool HasPopoverAttribute() const;
+  // IsPopover returns true if the element has popover data (i.e. has the
+  // popover attribute or is the menulist element).
+  bool IsPopover() const;
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
   // IsPopoverReady returns true if the popover is in a state where it can be

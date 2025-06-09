@@ -11118,7 +11118,7 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source,
       auto* target_popover = DynamicTo<HTMLElement>(target);
       bool might_need_partial_interest =
           source == InterestTargetSource::kFocus && target_popover &&
-          target_popover->HasPopoverAttribute() &&
+          target_popover->IsPopover() &&
           !RuntimeEnabledFeatures::HTMLInterestTargetNoPartialInterestEnabled(
               GetExecutionContext());
       ScheduleInterestGainedTask(might_need_partial_interest

@@ -2452,7 +2452,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoPopoverInTopLayer:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->HasPopoverAttribute()) {
+          html_element && html_element->IsPopover()) {
         // When the popover is open and is not transitioning to closed,
         // popoverOpen will return true.
         if (html_element->popoverOpen()) {
@@ -2472,7 +2472,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoPopoverOpen:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
-          html_element && html_element->HasPopoverAttribute()) {
+          html_element && html_element->IsPopover()) {
         return html_element->popoverOpen();
       }
       return false;
