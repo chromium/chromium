@@ -330,10 +330,11 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleSearch) {
   }
 }
 
-TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
+TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchMetrics) {
   // Contextual search suggestion shown, but not selected.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     AutocompleteMatch match =
         BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST);
@@ -351,6 +352,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
+    log.ukm_source_id = ukm::NoURLSourceId();
+
     RecordContextualSearchPrecisionRecallUsage(log);
 
     // Verify the UMA histograms.
@@ -373,11 +376,27 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
     histogram_tester.ExpectBucketCount(
         "Omnibox.ContextualSearchSuggestion.Usage", false,
         /*expected_count=*/1);
+
+    RecordMetrics(log);
+
+    // Verify the UKM event and the full set of metrics.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+    auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   true);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        false);
   }
 
   // Contextual search suggestion shown and selected.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     AutocompleteMatch match =
         BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST);
@@ -395,6 +414,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1,
                                      /*session_data=*/session);
+    log.ukm_source_id = ukm::NoURLSourceId();
+
     RecordContextualSearchPrecisionRecallUsage(log);
 
     // Verify the UMA histograms.
@@ -416,11 +437,27 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
         /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
         "Omnibox.ContextualSearchSuggestion.Usage", true, /*expected_count=*/1);
+
+    RecordMetrics(log);
+
+    // Verify the UKM event and the full set of metrics.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+    auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   true);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        false);
   }
 
   // Google Lens action shown, but not selected.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     AutocompleteMatch match =
         BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST);
@@ -437,6 +474,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
+    log.ukm_source_id = ukm::NoURLSourceId();
+
     RecordContextualSearchPrecisionRecallUsage(log);
 
     // Verify the UMA histograms.
@@ -451,11 +490,27 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
     histogram_tester.ExpectTotalCount("Omnibox.LensAction.Usage", 1);
     histogram_tester.ExpectBucketCount("Omnibox.LensAction.Usage", false,
                                        /*expected_count=*/1);
+
+    RecordMetrics(log);
+
+    // Verify the UKM event and the full set of metrics.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+    auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   false);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        true);
   }
 
   // Google Lens action shown and selected.
   {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     AutocompleteMatch match =
         BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST);
@@ -472,6 +527,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1,
                                      /*session_data=*/session);
+    log.ukm_source_id = ukm::NoURLSourceId();
+
     RecordContextualSearchPrecisionRecallUsage(log);
 
     // Verify the UMA histograms.
@@ -486,6 +543,21 @@ TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
     histogram_tester.ExpectTotalCount("Omnibox.LensAction.Usage", 1);
     histogram_tester.ExpectBucketCount("Omnibox.LensAction.Usage", true,
                                        /*expected_count=*/1);
+
+    RecordMetrics(log);
+
+    // Verify the UKM event and the full set of metrics.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+    auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   false);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        true);
   }
 }
 
@@ -591,6 +663,14 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixUrlShownName,
         false);
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   false);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        false);
   }
   {
     base::HistogramTester histogram_tester;
@@ -693,6 +773,14 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixUrlShownName,
         true);
+    ukm_recorder.ExpectEntryMetric(entry,
+                                   ukm::builders::Omnibox_SuggestionUsed::
+                                       kZeroPrefixContextualSearchShownName,
+                                   false);
+    ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::Omnibox_SuggestionUsed::kZeroPrefixLensActionShownName,
+        false);
   }
 }
 
