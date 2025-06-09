@@ -65,8 +65,8 @@ public class IncognitoTabModelTest {
     @Before
     public void setUp() throws InterruptedException {
         mPage = mActivityTestRule.startOnBlankPage();
-        mRegularTabModel = mPage.getActivity().getTabModelSelectorSupplier().get().getModel(false);
-        mIncognitoTabModel = mPage.getActivity().getTabModelSelectorSupplier().get().getModel(true);
+        mRegularTabModel = mPage.getTabModelSelector().getModel(false);
+        mIncognitoTabModel = mPage.getTabModelSelector().getModel(true);
     }
 
     private class CloseAllDuringAddTabTabModelObserver implements TabModelObserver {

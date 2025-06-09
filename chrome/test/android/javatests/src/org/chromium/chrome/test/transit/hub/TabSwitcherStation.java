@@ -151,7 +151,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      */
     public <T extends TabSwitcherStation> T closeTabAtIndex(
             int index, Class<T> expectedDestination) {
-        TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = tabModelSelectorElement.get();
         boolean incognitoModelSelected = tabModelSelector.isOffTheRecordModelSelected();
         int expectedIncognitoTabs = tabModelSelector.getModel(/* incognito= */ true).getCount();
         int expectedRegularTabs = tabModelSelector.getModel(/* incognito= */ false).getCount();

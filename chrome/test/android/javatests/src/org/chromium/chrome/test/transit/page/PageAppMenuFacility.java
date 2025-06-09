@@ -101,12 +101,7 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
 
     protected TabGroupListBottomSheetFacility<HostPageStationT>
             createTabGroupListBottomSheetFacility() {
-        TabGroupModelFilter tabGroupModelFilter =
-                mHostStation
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter();
+        TabGroupModelFilter tabGroupModelFilter = mHostStation.getTabGroupModelFilter();
         Set<Token> tabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
         return new TabGroupListBottomSheetFacility<>(
                 new ArrayList<>(tabGroupIds), /* isNewTabGroupRowVisible= */ true);

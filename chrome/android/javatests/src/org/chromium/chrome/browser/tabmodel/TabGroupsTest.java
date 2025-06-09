@@ -75,13 +75,8 @@ public class TabGroupsTest {
     @Before
     public void setUp() {
         mPage = mActivityTestRule.startOnBlankPage();
-        mTabModel = mPage.getActivity().getTabModelSelector().getModel(false);
-        mTabGroupModelFilter =
-                (TabGroupModelFilterImpl)
-                        mPage.getActivity()
-                                .getTabModelSelector()
-                                .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(false);
+        mTabModel = mPage.getTabModel();
+        mTabGroupModelFilter = (TabGroupModelFilterImpl) mPage.getTabGroupModelFilter();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.addObserver(mTabGroupModelFilterObserver);

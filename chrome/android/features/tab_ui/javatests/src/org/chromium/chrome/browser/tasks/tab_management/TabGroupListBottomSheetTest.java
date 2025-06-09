@@ -164,19 +164,12 @@ public class TabGroupListBottomSheetTest {
     }
 
     private static void assertTabGroupsExist(PageStation pageStation) {
-        int tabGroupCount =
-                pageStation
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter()
-                        .getTabGroupCount();
+        int tabGroupCount = pageStation.getTabGroupModelFilter().getTabGroupCount();
         assertTrue(tabGroupCount > 0);
     }
 
     private static void assertCurrentTabIsNotInGroup(PageStation pageStation) {
-        Tab currentTab =
-                pageStation.getActivity().getCurrentTabModel().getCurrentTabSupplier().get();
+        Tab currentTab = pageStation.getTab();
         assertNull(currentTab.getTabGroupId());
     }
 }

@@ -61,11 +61,11 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void validIndexAfterRestored_FromColdStart() {
-        TabModel normalTabModel = mPage.getActivity().getTabModelSelector().getModel(false);
+        TabModel normalTabModel = mPage.getTabModelSelector().getModel(false);
         assertEquals(1, normalTabModel.getCount());
         assertNotEquals(TabModel.INVALID_TAB_INDEX, normalTabModel.index());
 
-        TabModel incognitoTabModel = mPage.getActivity().getTabModelSelector().getModel(true);
+        TabModel incognitoTabModel = mPage.getTabModelSelector().getModel(true);
         assertEquals(0, incognitoTabModel.getCount());
         assertEquals(TabModel.INVALID_TAB_INDEX, incognitoTabModel.index());
     }

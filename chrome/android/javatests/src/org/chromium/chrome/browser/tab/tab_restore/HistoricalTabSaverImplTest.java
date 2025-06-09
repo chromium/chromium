@@ -81,8 +81,8 @@ public class HistoricalTabSaverImplTest {
     public void setUp() {
         mInitialPage = mActivityTestRule.startOnBlankPage();
         mActivity = mInitialPage.getActivity();
-        mTabModelSelector = mActivity.getTabModelSelector();
-        mTabModel = mTabModelSelector.getModel(false);
+        mTabModelSelector = mInitialPage.getTabModelSelector();
+        mTabModel = mInitialPage.getTabModel();
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
         mTab = mInitialPage.loadedTabElement.get();
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);

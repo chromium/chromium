@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit;
 import static org.junit.Assert.assertTrue;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
@@ -171,9 +170,7 @@ public class Journeys {
             Supplier<PageStation.Builder<T>> pageStationFactory,
             boolean captureThumbnails) {
         assert urlsForRegularTabs.size() >= 1;
-        TabModelSelector tabModelSelector =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> startingStation.getActivity().getTabModelSelector());
+        TabModelSelector tabModelSelector = startingStation.getTabModelSelector();
         int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
         int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
         assert currentTabCount == 1;
@@ -213,7 +210,7 @@ public class Journeys {
             boolean captureThumbnails) {
         assert !urls.isEmpty();
 
-        TabModelSelector tabModelSelector = startingPage.getActivity().getTabModelSelector();
+        TabModelSelector tabModelSelector = startingPage.getTabModelSelector();
 
         PageStation currentPage = startingPage;
         for (int i = 0; i < urls.size(); i++) {
