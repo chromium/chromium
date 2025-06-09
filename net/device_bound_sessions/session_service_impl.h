@@ -72,6 +72,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   std::optional<DeferralParams> ShouldDefer(
       URLRequest* request,
+      HttpRequestHeaders* extra_headers,
       const FirstPartySetMetadata& first_party_set_metadata) override;
 
   void DeferRequestForRefresh(URLRequest* request,
@@ -195,6 +196,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Whether the site has exceeded its refresh quota.
   bool RefreshQuotaExceeded(const SchemefulSite& site);
+
+  // Add a header to `request` indicating which sessions should have
+  // applied, but did not due to error conditions.
+  void AddDebugHeader(URLRequest* request);
 
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;

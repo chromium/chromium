@@ -50,6 +50,47 @@ bool SessionMatchesFilter(
   return true;
 }
 
+class DebugHeaderBuilder {
+ public:
+  void AddSkippedSession(SessionKey key, SessionService::RefreshResult result) {
+    structured_headers::Item item;
+    switch (result) {
+      case SessionService::RefreshResult::kRefreshed:
+      case SessionService::RefreshResult::kFatalError:
+        return;
+      case SessionService::RefreshResult::kInitializedService:
+        NOTREACHED();
+      case SessionService::RefreshResult::kUnreachable:
+        item = structured_headers::Item("unreachable",
+                                        structured_headers::Item::kTokenType);
+        break;
+      case SessionService::RefreshResult::kServerError:
+        item = structured_headers::Item("server_error",
+                                        structured_headers::Item::kTokenType);
+        break;
+      case SessionService::RefreshResult::kQuotaExceeded:
+        item = structured_headers::Item("quota_exceeded",
+                                        structured_headers::Item::kTokenType);
+        break;
+    }
+
+    structured_headers::Parameters params = {
+        {"session_identifier", structured_headers::Item(key.id.value())}};
+    skipped_sessions_.emplace_back(std::move(item), std::move(params));
+  }
+
+  std::optional<std::string> Build() {
+    if (skipped_sessions_.empty()) {
+      return std::nullopt;
+    }
+
+    return structured_headers::SerializeList(std::move(skipped_sessions_));
+  }
+
+ private:
+  structured_headers::List skipped_sessions_;
+};
+
 }  // namespace
 
 DeferredURLRequest::DeferredURLRequest(
@@ -164,23 +205,34 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     URLRequest* request,
+    HttpRequestHeaders* extra_headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
   if (pending_initialization_) {
     return DeferralParams();
   }
   SchemefulSite site(request->url());
-  const base::flat_set<SessionKey>& previous_deferrals =
+  DebugHeaderBuilder debug_header_builder;
+  const base::flat_map<SessionKey, RefreshResult>& previous_deferrals =
       request->device_bound_session_deferrals();
   for (const auto& [_, session] : GetSessionsForSite(site)) {
-    if (previous_deferrals.find({site, session->id()}) !=
-        previous_deferrals.end()) {
-      continue;
-    }
     if (session->ShouldDeferRequest(request, first_party_set_metadata)) {
+      auto previous_deferrals_it =
+          previous_deferrals.find({site, session->id()});
+      if (previous_deferrals_it != previous_deferrals.end()) {
+        debug_header_builder.AddSkippedSession(previous_deferrals_it->first,
+                                               previous_deferrals_it->second);
+        continue;
+      }
+
       NotifySessionAccess(request->device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, site, *session);
       return DeferralParams(session->id());
     }
+  }
+
+  std::optional<std::string> debug_header = debug_header_builder.Build();
+  if (debug_header.has_value()) {
+    extra_headers->SetHeader("Secure-Session-Skipped", *debug_header);
   }
 
   return std::nullopt;

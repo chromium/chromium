@@ -143,8 +143,10 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -159,8 +161,10 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   // session_id is empty, so should not be valid
   EXPECT_FALSE(maybe_deferral);
 }
@@ -183,8 +187,10 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   // NullFetcher, so should not be valid
   EXPECT_FALSE(maybe_deferral);
 }
@@ -233,7 +239,8 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  HttpRequestHeaders extra_headers;
+  service().ShouldDefer(request.get(), &extra_headers, FirstPartySetMetadata());
 
   EXPECT_GT(session->expiry_date(), base::Time::Now() + base::Days(399));
 }
@@ -288,7 +295,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
   base::test::TestFuture<SessionAccess> future;
   request->SetDeviceBoundSessionAccessCallback(
       future.GetRepeatingCallback<const SessionAccess&>());
-  service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  HttpRequestHeaders extra_headers;
+  service().ShouldDefer(request.get(), &extra_headers, FirstPartySetMetadata());
 
   SessionAccess access = future.Take();
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
@@ -448,8 +456,10 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -493,8 +503,10 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -539,8 +551,10 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -586,8 +600,10 @@ TEST_F(SessionServiceImplTest, TestDeferRequestArbitrary) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl2));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_FALSE(maybe_deferral);
 
   // Defer the request any way.
@@ -625,8 +641,10 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -679,8 +697,10 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
@@ -863,7 +883,9 @@ TEST_F(SessionServiceImplTest, SessionBackoff) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(service().ShouldDefer(request.get(), FirstPartySetMetadata()));
+  HttpRequestHeaders extra_headers;
+  EXPECT_TRUE(service().ShouldDefer(request.get(), &extra_headers,
+                                    FirstPartySetMetadata()));
 
   // Do four failing refreshes.
   for (size_t i = 0; i < 4; i++) {
@@ -894,18 +916,82 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_FALSE(maybe_deferral->is_pending_initialization);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
 
   request->AddDeviceBoundSessionDeferral(
-      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)});
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)},
+      SessionService::RefreshResult::kRefreshed);
 
-  maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+  maybe_deferral = service().ShouldDefer(request.get(), &extra_headers,
+                                         FirstPartySetMetadata());
   EXPECT_FALSE(maybe_deferral);
+}
+
+TEST_F(SessionServiceImplTest, AddsDebugHeader) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId2, kRefreshUrlString, kOrigin}});
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Simulate failed refresh for two different sessions
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)},
+      SessionService::RefreshResult::kUnreachable);
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId2)},
+      SessionService::RefreshResult::kQuotaExceeded);
+
+  HttpRequestHeaders extra_headers;
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
+
+  std::optional<std::string> debug_header =
+      extra_headers.GetHeader("Secure-Session-Skipped");
+  EXPECT_TRUE(debug_header.has_value());
+  EXPECT_EQ(*debug_header,
+            "unreachable;session_identifier=\"SessionId\", "
+            "quota_exceeded;session_identifier=\"SessionId2\"");
+}
+
+TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+
+  // The request needs to be samesite for it to be considered
+  // candidate for deferral.
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Simulate success refresh.
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)},
+      SessionService::RefreshResult::kRefreshed);
+
+  HttpRequestHeaders extra_headers;
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
+
+  std::optional<std::string> debug_header =
+      extra_headers.GetHeader("Secure-Session-Skipped");
+  EXPECT_FALSE(debug_header.has_value());
 }
 
 }  // namespace
@@ -1018,8 +1104,10 @@ TEST_F(SessionServiceImplWithStoreTest, RequestsWaitForSessionsToLoad) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_TRUE(maybe_deferral->is_pending_initialization);
 
@@ -1078,8 +1166,10 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
+  HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(request.get(), FirstPartySetMetadata());
+      service().ShouldDefer(request.get(), &extra_headers,
+                            FirstPartySetMetadata());
   ASSERT_TRUE(maybe_deferral);
   EXPECT_EQ(**maybe_deferral->session_id, kSessionId);
 

@@ -22,6 +22,7 @@ class FirstPartySetMetadata;
 class IsolationInfo;
 class URLRequest;
 class URLRequestContext;
+class HttpRequestHeaders;
 }
 
 namespace net::device_bound_sessions {
@@ -107,8 +108,11 @@ class NET_EXPORT SessionService {
   // `DeferralParams` containing the session id if the request should be
   // deferred due to a session, and returns std::nullopt if the request
   // does not need to be deferred.
+  // If sessions are skipped without deferring, they will be added to
+  // the Secure-Session-Skipped header in `extra_headers`.
   virtual std::optional<DeferralParams> ShouldDefer(
       URLRequest* request,
+      HttpRequestHeaders* extra_headers,
       const FirstPartySetMetadata& first_party_set_metadata) = 0;
 
   // Defer a request and maybe refresh the corresponding session.

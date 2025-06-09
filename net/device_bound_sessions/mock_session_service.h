@@ -34,6 +34,7 @@ class SessionServiceMock : public SessionService {
   MOCK_METHOD(std::optional<SessionService::DeferralParams>,
               ShouldDefer,
               (URLRequest * request,
+               HttpRequestHeaders* extra_headers,
                const FirstPartySetMetadata& first_party_set_metadata),
               (override));
   MOCK_METHOD(void,
