@@ -33,6 +33,8 @@ void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
                              IDR_CONTROLLED_FRAME_IMPL_JS);
   source_map->RegisterSource("controlledFrameInternal",
                              IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS);
+  source_map->RegisterSource("controlledFrameWebRequest",
+                             IDR_CONTROLLED_FRAME_WEB_REQUEST_JS);
 }
 
 void ControlledFrameExtensionsRendererAPIProvider::

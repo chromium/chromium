@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 const WebViewEvents = require('webViewEvents').WebViewEvents;
+const ControlledFrameWebRequest = require('controlledFrameWebRequest').ControlledFrameWebRequest;
 
 class ControlledFrameEvents extends WebViewEvents {
   getEvents() {
     const webViewEvents = super.getEvents();
     delete webViewEvents['findupdate'];
     return webViewEvents;
+  }
+
+  createWebRequestEvents() {
+    return new ControlledFrameWebRequest(super.createWebRequestEvents());
   }
 }
 

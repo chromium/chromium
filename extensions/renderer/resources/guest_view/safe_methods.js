@@ -22,6 +22,7 @@ function makeCallable(prototypeMethod) {
 }
 
 function saveMethods(original, safe, methods) {
+  safe.self = original;
   for (var method of methods) {
     safe[method] = makeCallable(original.prototype[method]);
   }
@@ -45,6 +46,7 @@ var SafeMethods = {
   $EventTarget: {},
   $HTMLElement: {},
   $HTMLIFrameElement: {},
+  $Headers: {},
   $MutationObserver: MutationObserver,
   $Node: {},
   $getComputedStyle: window.getComputedStyle,
@@ -87,6 +89,11 @@ saveMethods(HTMLElement, SafeMethods.$HTMLElement, [
 saveAccessors(HTMLElement, SafeMethods.$HTMLElement, [
   'style',
   'innerText',
+]);
+
+saveMethods(Headers, SafeMethods.$Headers, [
+  'append',
+  'forEach',
 ]);
 
 saveAccessors(HTMLIFrameElement, SafeMethods.$HTMLIFrameElement, [

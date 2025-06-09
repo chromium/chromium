@@ -70,39 +70,37 @@ async function testEventHanders(controlledFrame, events) {
 
 // The list of WebRequest events.
 const WebRequestEvents = [
-  'onBeforeRequest',
-  'onBeforeSendHeaders',
-  'onSendHeaders',
-  'onAuthRequired',
-  'onBeforeRedirect',
-  'onHeadersReceived',
-  'onResponseStarted',
-  'onCompleted',
+  'authrequired',
+  'beforeredirect',
+  'beforerequest',
+  'beforesendheaders',
+  'completed',
+  'headersreceived',
+  'responsestarted',
+  'sendheaders',
 ];
 
 function addWebRequestListeners(controlledframe, targetUrl) {
   window.events = [];
 
-  const filter = {
-    urls: [targetUrl],
-    types: ['main_frame', 'xmlhttprequest'],
-  };
+  const interceptor = controlledframe.request.createWebRequestInterceptor({
+    urlPatterns: [targetUrl],
+    resourceTypes: ['main-frame', 'xmlhttprequest'],
+  });
   for (const eventName of WebRequestEvents) {
-    const eventCounter = function(details) {
+    interceptor.addEventListener(eventName, (e) => {
       window.events.push(eventName);
-    };
-
-    controlledframe.request[eventName].addListener(eventCounter, filter);
+    });
   }
 
   // Temporarily add special case for onErrorOccurred here to monitor it being
   // triggered in the CI.
   // TODO(crbug.com/386380410): clean up.
   window.occurredErrors = [];
-  controlledframe.request.onErrorOccurred.addListener(function(details) {
-    window.events.push('onErrorOccurred');
-    window.occurredErrors.push(details.error);
-  }, filter);
+  interceptor.addEventListener('erroroccurred', (e) => {
+    window.events.push('erroroccurred');
+    window.occurredErrors.push(e.error);
+  });
 }
 
 function verifyWebRequestEvents(expected) {

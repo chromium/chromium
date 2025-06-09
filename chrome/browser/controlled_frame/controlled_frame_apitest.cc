@@ -185,22 +185,23 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
       if (!frame || !frame.request) {
         return 'FAIL: frame or frame.request is undefined';
       }
-      frame.request.onBeforeRequest.addListener(() => {
-        return { cancel: true };
-      }, { urls: ['https://*/controlled_frame_cancel.html'] }, ['blocking']);
-      frame.request.onBeforeRequest.addListener(() => {
-        return { cancel: false };
-      }, { urls: ['https://*/controlled_frame_success.html'] }, ['blocking']);
-      frame.request.onBeforeRequest.addListener(() => {
-        return {
-          redirectUrl: 'https://' + $1 + '/controlled_frame_redirect_target.html'
-        };
-      }, { urls: ['https://*/controlled_frame_redirect.html'] }, ['blocking']);
+      frame.request.createWebRequestInterceptor({
+        urlPatterns: ['<all_urls>'],
+        resourceTypes: ['main-frame'],
+        blocking: true,
+      }).addEventListener('beforerequest', (e) => {
+        if (e.request.url.endsWith('cancel.html')) {
+          e.preventDefault();
+        }
+        if (e.request.url.endsWith('redirect.html')) {
+          e.redirect('https://' + $1 + '/controlled_frame_redirect_target.html');
+        }
+      });
       return 'SUCCESS';
     })();
   )",
                                                           kServerHostPort)));
-  EXPECT_EQ(3u, web_request_event_router->GetListenerCountForTesting(
+  EXPECT_EQ(1u, web_request_event_router->GetListenerCountForTesting(
                     profile(), kWebRequestOnBeforeRequestEventName));
 
   auto* web_view_guest = GetWebViewGuest(app_frame);
@@ -279,14 +280,15 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
 
       const expectedUsername = 'test';
       const expectedPassword = 'pass';
-      frame.request.onAuthRequired.addListener(() => {
-        return {
-          authCredentials: {
-            username: expectedUsername,
-            password: expectedPassword
-          }
-        };
-      }, { urls: [`https://*/auth-basic*`] }, ['blocking']);
+      frame.request.createWebRequestInterceptor({
+        urlPatterns: [`https://*/auth-basic*`],
+        blocking: true,
+      }).addEventListener('authrequired', (e) => {
+        e.setCredentials({
+          username: expectedUsername,
+          password: expectedPassword
+        });
+      });
       return true;
     })();
   )"));
@@ -620,6 +622,34 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
               content::EvalJsResult::IsOk());
 }
 
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsWebRequest) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  GURL url = embedded_https_test_server().GetURL("/index.html");
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const frame = document.savedCreateElement('controlledframe');
+      frame.src = $1;
+      frame.savedAddEventListener('loadabort', reject);
+      frame.savedAddEventListener('loadstop', () => {
+        frame.request.createWebRequestInterceptor({
+          urlPatterns: ['<all_urls>'],
+          includeHeaders: 'cross-origin',
+        }).addEventListener('completed', (e) => {
+          resolve();
+        });
+        frame.reload();
+      });
+      document.body.savedAppendChild(frame);
+    });
+  )",
+                                                   url)),
+              content::EvalJsResult::IsOk());
+}
+
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage_Partition) {
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
@@ -779,9 +809,13 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
       if (!frame || !frame.request) {
         return false;
       }
-      frame.request.onBeforeRequest.addListener(() => {
-        return { cancel: true };
-      }, { urls: ['ws://*/*'] }, ['blocking']);
+
+      frame.request.createWebRequestInterceptor({
+        urlPatterns: ['ws://*/*'],
+        blocking: true,
+      }).addEventListener('beforerequest', (e) => {
+        e.preventDefault();
+      });
       return true;
     })();
   )"));
@@ -865,10 +899,12 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
       if (!frame || !frame.request) {
         return false;
       }
-      const onBeforeRequestHandler =
-      frame.request.onBeforeRequest.addListener(() => {
-        return { cancel: true };
-      }, { urls: ['https://localhost/*'] }, ['blocking']);
+      frame.request.createWebRequestInterceptor({
+        urlPatterns: ['https://localhost/*'],
+        blocking: true,
+      }).addEventListener('beforerequest', (e) => {
+        e.preventDefault();
+      });
       return true;
     })();
   )"));
