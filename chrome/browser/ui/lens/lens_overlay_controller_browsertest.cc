@@ -266,7 +266,8 @@ constexpr char kPaintWorkaroundFunction[] =
 
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
-constexpr char kStartTimeQueryParamKey[] = "qsubts";
+constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
+constexpr char kUserPerceivedStateTimeQueryParameter[] = "pqsubts";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
 constexpr char kTextQueryParamKey[] = "q";
@@ -890,10 +891,18 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     GURL processed_url = url_to_process;
     std::string actual_start_time;
     bool has_start_time = net::GetValueForKeyInQuery(
-        GURL(url_to_process), kStartTimeQueryParamKey, &actual_start_time);
+        GURL(url_to_process), kUserPerceivedStateTimeQueryParameter,
+        &actual_start_time);
     EXPECT_TRUE(has_start_time);
     processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kStartTimeQueryParamKey, std::nullopt);
+        processed_url, kUserPerceivedStateTimeQueryParameter, std::nullopt);
+    std::string actual_submission_time;
+    bool has_submission_time = net::GetValueForKeyInQuery(
+        GURL(url_to_process), kQuerySubmissionTimeQueryParameter,
+        &actual_submission_time);
+    EXPECT_TRUE(has_submission_time);
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kQuerySubmissionTimeQueryParameter, std::nullopt);
     std::string actual_viewport_width;
     bool has_viewport_width = net::GetValueForKeyInQuery(
         GURL(url_to_process), kViewportWidthQueryParamKey,
@@ -5574,15 +5583,16 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
 
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return fake_query_controller->last_sent_page_content_payload()
-        .content()
-        .content_data().size() == 1; }));
-        auto content_data = fake_query_controller->last_sent_page_content_payload()
-        .content()
-        .content_data()[0];
-  ASSERT_EQ(content_data.content_type(),
-            lens::ContentData::CONTENT_TYPE_PDF);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->last_sent_page_content_payload()
+               .content()
+               .content_data()
+               .size() == 1;
+  }));
+  auto content_data = fake_query_controller->last_sent_page_content_payload()
+                          .content()
+                          .content_data()[0];
+  ASSERT_EQ(content_data.content_type(), lens::ContentData::CONTENT_TYPE_PDF);
 
   // Verify the searchbox was shown.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
@@ -5645,7 +5655,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(base::test::RunUntil(
-    [&]() { return fake_query_controller->last_sent_page_url() == url; }));
+      [&]() { return fake_query_controller->last_sent_page_url() == url; }));
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -7878,12 +7888,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
 
-  ASSERT_TRUE(base::test::RunUntil([&]() { return fake_query_controller->last_sent_page_content_payload()
-    .content()
-    .content_data().size() == 1; }));
-   auto content_data = fake_query_controller->last_sent_page_content_payload()
-  .content()
-  .content_data();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->last_sent_page_content_payload()
+               .content()
+               .content_data()
+               .size() == 1;
+  }));
+  auto content_data = fake_query_controller->last_sent_page_content_payload()
+                          .content()
+                          .content_data();
 
   // Verify the bytes are actually what we expect them to be.
   ASSERT_EQ(
@@ -7919,8 +7932,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(base::test::RunUntil(
-    [&]() { return fake_query_controller->last_sent_page_url() == expected_url; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->last_sent_page_url() == expected_url;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
@@ -8235,8 +8249,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlWithInnerTextAndApc,
       static_cast<lens::TestLensOverlayQueryController*>(
           controller->get_lens_overlay_query_controller_for_testing());
   // Run until the page content is sent.
-  ASSERT_TRUE(base::test::RunUntil(
-    [&]() { return fake_query_controller->last_sent_page_content_payload().content().content_data().size() == 3; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->last_sent_page_content_payload()
+               .content()
+               .content_data()
+               .size() == 3;
+  }));
 
   // Expect the old content data fields to be empty.
   EXPECT_TRUE(fake_query_controller->last_sent_page_content_payload()
