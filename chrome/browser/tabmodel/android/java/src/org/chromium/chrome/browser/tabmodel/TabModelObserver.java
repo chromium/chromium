@@ -49,6 +49,18 @@ public interface TabModelObserver {
     default void onFinishingTabClosure(Tab tab) {}
 
     /**
+     * Called right before {@code tab} will be destroyed. Called for each tab.
+     *
+     * @param tab The {@link Tab} that was closed.
+     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
+     *     the instance manager if there are no remaining tabs.
+     */
+    // TODO(crbug.com/423043174): Update all call sites to take in this new param.
+    default void onFinishingTabClosure(Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
+        onFinishingTabClosure(tab);
+    }
+
+    /**
      * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
      * committed. Will be called per closure event i.e. {@link TabModel#closeTab()}, {@link
      * TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger one event
@@ -99,6 +111,20 @@ public interface TabModelObserver {
      * @param pendingToken The token that can be used to commit or undo the tab closure.
      */
     default void tabPendingClosure(Tab tab) {}
+
+    /**
+     * Called when a tab is pending closure, i.e. the user has just closed it, but it can still be
+     * undone. At this point, the Tab has been removed from the TabModel and can only be accessed
+     * via {@link TabModel#getComprehensiveModel()}.
+     *
+     * @param tab The tab that is pending closure.
+     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
+     *     the instance manager if there are no remaining tabs.
+     */
+    // TODO(crbug.com/423043174): Update all call sites to take in this new param.
+    default void tabPendingClosure(Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
+        tabPendingClosure(tab);
+    }
 
     /**
      * Called when multiple tabs are pending closure.

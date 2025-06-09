@@ -199,51 +199,6 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    public void testGridTabSwitcherOnNoNextTab_WithoutRestart() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        ensureHubLayout();
-
-        checkHubLayout(cta, /* isInitialized= */ true);
-        checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
-        checkTabSwitcherViewHolder(cta, /* exists= */ true);
-
-        // Assert the grid tab switcher is not yet showing.
-        checkTabSwitcherViewHolderVisibility(false);
-
-        // Close the only tab through the tab strip.
-        closeTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId());
-
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-
-        // Assert the grid tab switcher is shown automatically, since there is no next tab.
-        checkTabSwitcherViewHolderVisibility(true);
-    }
-
-    @Test
-    @MediumTest
-    @RequiresRestart
-    @DisabledTest(message = "crbug.com/342983248")
-    public void testGridTabSwitcherOnNoNextTab_WithRestart() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        checkHubLayout(cta, /* isInitialized= */ false);
-        checkTabSwitcherViewHolderStub(cta, /* exists= */ true);
-        checkTabSwitcherViewHolder(cta, /* exists= */ false);
-
-        // Close the only tab through the tab strip.
-        closeTab(false, sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId());
-
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-
-        // Assert the grid tab switcher is shown automatically, since there is no next tab.
-        checkTabSwitcherViewHolderVisibility(true);
-
-        checkHubLayout(cta, /* isInitialized= */ true);
-        checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
-        checkTabSwitcherViewHolder(cta, /* exists= */ true);
-    }
-
-    @Test
-    @MediumTest
     public void testGridTabSwitcherOnCloseAllTabs_WithoutRestart() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         ensureHubLayout();

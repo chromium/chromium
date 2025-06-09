@@ -145,7 +145,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         @Override
         public void finalizeClosure(Tab tab) {
-            finalizeTabClosure(tab, true);
+            finalizeTabClosure(tab, true, /* shouldRemoveWindowWithZeroTabs= */ false);
         }
 
         @Override
@@ -514,6 +514,8 @@ public class TabModelImpl extends TabModelJniBridge {
      *     true}, observers will be notified of the pending closure. Observers will still be
      *     notified of a committed/cancelled closure even if they are not notified of a pending
      *     closure to start with.
+     * @param tabClosingSource Used to identify where the close action originated, e.g. the tablet
+     *     tab strip.
      * @param tabCloseType Used to notify observers that this tab is closing by itself for {@link
      *     TabModelObserver#onFinishingMultipleTabClosure} if the closure cannot be undone and for
      *     {@link TabModelObserver#willCloseTab}. This should be {@code TabCloseType.SINGLE} if
@@ -529,6 +531,7 @@ public class TabModelImpl extends TabModelJniBridge {
             boolean uponExit,
             boolean allowUndo,
             boolean notifyPending,
+            @TabClosingSource int tabClosingSource,
             @TabCloseType int tabCloseType,
             @Nullable Runnable undoRunnable) {
         if (tabToClose == null) {
@@ -547,14 +550,23 @@ public class TabModelImpl extends TabModelJniBridge {
         if (notifyPending && allowUndo) {
             mPendingTabClosureManager.addTabClosureEvent(
                     Collections.singletonList(tabToClose), undoRunnable);
-            for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
+            for (TabModelObserver obs : mObservers) {
+                obs.tabPendingClosure(
+                        tabToClose,
+                        /* shouldRemoveWindowWithZeroTabs= */ tabClosingSource
+                                == TabClosingSource.TABLET_TAB_STRIP);
+            }
         }
         if (!allowUndo) {
             if (tabCloseType == TabCloseType.SINGLE) {
                 notifyOnFinishingMultipleTabClosure(
                         Collections.singletonList(tabToClose), /* saveToTabRestoreService= */ true);
             }
-            finalizeTabClosure(tabToClose, false);
+            finalizeTabClosure(
+                    tabToClose,
+                    /* notifyTabClosureCommitted= */ false,
+                    /* shouldRemoveWindowWithZeroTabs= */ tabClosingSource
+                            == TabClosingSource.TABLET_TAB_STRIP);
         }
         return true;
     }
@@ -563,6 +575,7 @@ public class TabModelImpl extends TabModelJniBridge {
             List<Tab> tabs,
             boolean allowUndo,
             boolean saveToTabRestoreService,
+            @TabClosingSource int tabClosingSource,
             @Nullable Runnable undoRunnable) {
         assert (!allowUndo || saveToTabRestoreService)
                 : "saveToTabRestoreService == false is ignored if allowUndo == true.";
@@ -584,10 +597,11 @@ public class TabModelImpl extends TabModelJniBridge {
             // event.
             closeTab(
                     tab,
-                    null,
-                    false,
+                    /* recommendedNextTab= */ null,
+                    /* uponExit= */ false,
                     allowUndo,
-                    false,
+                    /* notifyPending= */ false,
+                    tabClosingSource,
                     TabCloseType.MULTIPLE,
                     /* undoRunnable= */ null);
         }
@@ -598,14 +612,21 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     private void closeAllTabs(
-            boolean uponExit, boolean allowUndo, @Nullable Runnable undoRunnable) {
+            boolean uponExit,
+            boolean allowUndo,
+            @TabClosingSource int tabClosingSource,
+            @Nullable Runnable undoRunnable) {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         // Force close immediately if:
         // 1. the tabs are to be closed upon app exit,
-        // 2. the operation doesn't allow undo, or
-        // 3. Chrome needs to close with a zero-state.
-        if (uponExit || !allowUndo || HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
+        // 2. the operation doesn't allow undo,
+        // 3. the operation is triggered from tablet tab strip, or
+        // 4. Chrome needs to close with a zero-state.
+        if (uponExit
+                || !allowUndo
+                || tabClosingSource == TabClosingSource.TABLET_TAB_STRIP
+                || HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
             commitAllTabClosures();
 
             for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
@@ -616,10 +637,11 @@ public class TabModelImpl extends TabModelJniBridge {
                 // event.
                 closeTab(
                         tab,
-                        null,
+                        /* recommendedNextTab= */ null,
                         uponExit,
-                        false,
-                        false,
+                        /* allowUndo= */ false,
+                        /* notifyPending= */ false,
+                        tabClosingSource,
                         TabCloseType.ALL,
                         /* undoRunnable= */ null);
             }
@@ -636,7 +658,15 @@ public class TabModelImpl extends TabModelJniBridge {
             Tab tab = getTabAt(0);
             // Pass a null undoRunnable here as we want to attach it to the latter tab closure
             // event.
-            closeTab(tab, null, false, true, false, TabCloseType.ALL, /* undoRunnable= */ null);
+            closeTab(
+                    tab,
+                    /* recommendedNextTab= */ null,
+                    /* uponExit= */ false,
+                    /* allowUndo= */ true,
+                    /* notifyPending= */ false,
+                    tabClosingSource,
+                    TabCloseType.ALL,
+                    /* undoRunnable= */ null);
         }
 
         if (supportsPendingClosures()) {
@@ -684,6 +714,7 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.uponExit,
                         tabClosureParams.allowUndo,
                         notifyPending,
+                        tabClosureParams.tabClosingSource,
                         tabClosureParams.tabCloseType,
                         tabClosureParams.undoRunnable);
             case TabCloseType.MULTIPLE:
@@ -691,12 +722,14 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.tabs,
                         tabClosureParams.allowUndo,
                         tabClosureParams.saveToTabRestoreService,
+                        tabClosureParams.tabClosingSource,
                         tabClosureParams.undoRunnable);
                 return true;
             case TabCloseType.ALL:
                 closeAllTabs(
                         tabClosureParams.uponExit,
                         tabClosureParams.allowUndo,
+                        tabClosureParams.tabClosingSource,
                         tabClosureParams.undoRunnable);
                 return true;
             default:
@@ -893,14 +926,20 @@ public class TabModelImpl extends TabModelJniBridge {
 
     /**
      * Actually closes and cleans up {@code tab}.
+     *
      * @param tab The {@link Tab} to close.
      * @param notifyTabClosureCommitted If true then observers will receive a tabClosureCommitted
      *     notification.
+     * @param shouldRemoveWindowWithZeroTabs Whether the window should be closed and removed from
+     *     the instance manager if there are no remaining tabs.
      */
-    private void finalizeTabClosure(Tab tab, boolean notifyTabClosureCommitted) {
+    private void finalizeTabClosure(
+            Tab tab, boolean notifyTabClosureCommitted, boolean shouldRemoveWindowWithZeroTabs) {
         mTabContentManager.removeTabThumbnail(tab.getId());
 
-        for (TabModelObserver obs : mObservers) obs.onFinishingTabClosure(tab);
+        for (TabModelObserver obs : mObservers) {
+            obs.onFinishingTabClosure(tab, shouldRemoveWindowWithZeroTabs);
+        }
         if (notifyTabClosureCommitted) {
             for (TabModelObserver obs : mObservers) obs.tabClosureCommitted(tab);
         }

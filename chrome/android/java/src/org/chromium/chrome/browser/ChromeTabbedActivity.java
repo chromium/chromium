@@ -741,8 +741,9 @@ public class ChromeTabbedActivity extends ChromeActivity
             mTabModelObserver =
                     new TabModelSelectorTabModelObserver(mTabModelSelector) {
                         @Override
-                        public void onFinishingTabClosure(Tab tab) {
-                            closeIfNoTabsAndHomepageEnabled(false);
+                        public void onFinishingTabClosure(
+                                Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
+                            closeIfNoTabsAndHomepageEnabled(false, shouldRemoveWindowWithZeroTabs);
 
                             // On XR Devices when the last tab is closed then the Chrome instance is
                             // also closed.
@@ -752,25 +753,32 @@ public class ChromeTabbedActivity extends ChromeActivity
                         }
 
                         @Override
-                        public void tabPendingClosure(Tab tab) {
-                            closeIfNoTabsAndHomepageEnabled(true);
+                        public void tabPendingClosure(
+                                Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
+                            closeIfNoTabsAndHomepageEnabled(true, shouldRemoveWindowWithZeroTabs);
                         }
 
                         @Override
                         public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                            closeIfNoTabsAndHomepageEnabled(true);
+                            closeIfNoTabsAndHomepageEnabled(
+                                    true, /* shouldRemoveWindowWithZeroTabs= */ false);
                         }
 
                         @Override
                         public void tabRemoved(Tab tab) {
-                            closeIfNoTabsAndHomepageEnabled(false);
+                            closeIfNoTabsAndHomepageEnabled(
+                                    false, /* shouldRemoveWindowWithZeroTabs= */ false);
                         }
 
-                        private void closeIfNoTabsAndHomepageEnabled(boolean isPendingClosure) {
+                        private void closeIfNoTabsAndHomepageEnabled(
+                                boolean isPendingClosure, boolean shouldRemoveWindowWithZeroTabs) {
                             if (getTabModelSelector().getTotalTabCount() == 0) {
-                                // If the last tab is closed, and homepage is enabled, then exit
-                                // Chrome.
-                                if (HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
+                                if (shouldRemoveWindowWithZeroTabs) {
+                                    finishAndRemoveTask();
+                                } else if (HomepageManager.getInstance()
+                                        .shouldCloseAppWithZeroTabs()) {
+                                    // If the last tab is closed, and homepage is enabled, then exit
+                                    // Chrome.
                                     finish();
                                 } else if (isPendingClosure) {
                                     NewTabPageUma.recordNtpImpression(
