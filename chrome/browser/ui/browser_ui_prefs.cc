@@ -51,6 +51,9 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       installer_downloader::prefs::kInstallerDownloaderInfobarShowCount, 0);
   registry->RegisterBooleanPref(
+      installer_downloader::prefs::kInstallerDownloaderPreventFutureDisplay,
+      false);
+  registry->RegisterBooleanPref(
       installer_downloader::prefs::kInstallerDownloaderBypassEligibilityCheck,
       false);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -146,9 +146,15 @@ void InstallerDownloaderModelImpl::StartDownload(
   download_manager.DownloadUrl(std::move(params));
 }
 
-bool InstallerDownloaderModelImpl::IsMaxShowCountReached() const {
-  return g_browser_process->local_state()->GetInteger(
-             prefs::kInstallerDownloaderInfobarShowCount) >= kMaxShowCount;
+bool InstallerDownloaderModelImpl::CanShowInfobar() const {
+  const PrefService* local_state = g_browser_process->local_state();
+  if (local_state->GetBoolean(
+          prefs::kInstallerDownloaderPreventFutureDisplay)) {
+    return false;
+  }
+
+  return local_state->GetInteger(prefs::kInstallerDownloaderInfobarShowCount) <
+         kMaxShowCount;
 }
 
 void InstallerDownloaderModelImpl::IncrementShowCount() {
@@ -156,6 +162,11 @@ void InstallerDownloaderModelImpl::IncrementShowCount() {
   local_state->SetInteger(
       prefs::kInstallerDownloaderInfobarShowCount,
       local_state->GetInteger(prefs::kInstallerDownloaderInfobarShowCount) + 1);
+}
+
+void InstallerDownloaderModelImpl::PreventFutureDisplay() {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kInstallerDownloaderPreventFutureDisplay, true);
 }
 
 bool InstallerDownloaderModelImpl::ShouldByPassEligibilityCheck() const {

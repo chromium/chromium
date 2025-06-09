@@ -12,7 +12,12 @@ namespace installer_downloader::prefs {
 inline constexpr char kInstallerDownloaderInfobarShowCount[] =
     "installer_downloader.infobar_show_count";
 
-// Bool browser locate state that indicates whether the installer downloader
+// Bool browser local state that indicates any future infobar display should be
+// prevented even if the max show count is not reached.
+inline constexpr char kInstallerDownloaderPreventFutureDisplay[] =
+    "installer_downloader.prevent_future_display";
+
+// Bool browser local state that indicates whether the installer downloader
 // eligibility check should be by-passed.
 inline constexpr char kInstallerDownloaderBypassEligibilityCheck[] =
     "installer_downloader.bypass_eligibility_check_for_testing";
