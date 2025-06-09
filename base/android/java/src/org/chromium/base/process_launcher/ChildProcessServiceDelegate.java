@@ -6,10 +6,10 @@ package org.chromium.base.process_launcher;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.SparseArray;
 
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
@@ -55,18 +55,19 @@ public interface ChildProcessServiceDelegate {
     /**
      * Takes the shared memory region containing read-only relocations, to save memory after loading
      * the native library in the child process.
-     * @param bundle potentially holds the description of the shared memory region transferred
-     * between processes from one {@link org.chromium.base.library_loader.Linker} to another.
+     *
+     * @param libInfo potentially holds the description of the shared memory region transferred
+     *     between processes from one {@link org.chromium.base.library_loader.Linker} to another.
      */
-    void consumeRelroBundle(Bundle bundle);
+    void consumeRelroLibInfo(IRelroLibInfo libInfo);
 
     /**
-     * Should return a map that associatesfile descriptors' IDs to keys.
-     * This is needed as at the moment we use 2 different stores for the FDs in native code:
-     * base::FileDescriptorStore which associates FDs with string identifiers (the key), and
-     * base::GlobalDescriptors which associates FDs with int ids.
-     * FDs for which the returned map contains a mapping are added to base::FileDescriptorStore with
-     * the associated key, all others are added to base::GlobalDescriptors.
+     * Should return a map that associatesfile descriptors' IDs to keys. This is needed as at the
+     * moment we use 2 different stores for the FDs in native code: base::FileDescriptorStore which
+     * associates FDs with string identifiers (the key), and base::GlobalDescriptors which
+     * associates FDs with int ids. FDs for which the returned map contains a mapping are added to
+     * base::FileDescriptorStore with the associated key, all others are added to
+     * base::GlobalDescriptors.
      */
     SparseArray<String> getFileDescriptorsIdsToKeys();
 

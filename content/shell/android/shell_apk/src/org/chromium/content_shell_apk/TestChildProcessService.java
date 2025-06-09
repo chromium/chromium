@@ -15,6 +15,7 @@ import android.util.SparseArray;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessService;
@@ -136,7 +137,7 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void consumeRelroBundle(Bundle bundle) {}
+        public void consumeRelroLibInfo(IRelroLibInfo libInfo) {}
     }
 
     private ChildProcessService mService;

@@ -42,6 +42,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.ArrayList;
@@ -216,10 +217,7 @@ public class ChildProcessConnectionTest {
 
     private void sendPid(int pid) throws RemoteException {
         mConnectionParentProcess.finishSetupConnection(
-                pid,
-                /* zygotePid= */ 0,
-                /* zygoteStartupTimeMillis= */ -1,
-                /* relroBundle= */ null);
+                pid, /* zygotePid= */ 0, /* zygoteStartupTimeMillis= */ -1, /* relroInfo= */ null);
     }
 
     @Test
@@ -438,7 +436,7 @@ public class ChildProcessConnectionTest {
                 456
                 /* zygotePid= */ ,
                 /* zygoteStartupTimeMillis= */ 789,
-                /* relroBundle= */ null);
+                /* relroInfo= */ null);
         assertTrue(connection.hasUsableZygoteInfo());
         assertEquals(456, connection.getZygotePid());
     }
@@ -463,7 +461,7 @@ public class ChildProcessConnectionTest {
                 /* pid= */ 125,
                 /* zygotePid= */ 0,
                 /* zygoteStartupTimeMillis= */ -1,
-                /* relroBundle= */ null);
+                /* relroInfo= */ null);
 
         // Allow the following setupConnection() to create a new service connection for
         // |connection2|.
@@ -488,7 +486,7 @@ public class ChildProcessConnectionTest {
                 126,
                 /* zygotePid= */ 300,
                 /* zygoteStartupTimeMillis= */ -1,
-                /* relroBundle= */ null);
+                /* relroInfo= */ null);
         assertTrue(connection2.hasUsableZygoteInfo());
         assertEquals(300, connection2.getZygotePid());
         assertFalse(connection1.hasUsableZygoteInfo());
@@ -510,23 +508,23 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
 
-        Bundle relroBundle = new Bundle();
+        IRelroLibInfo relroInfo = new IRelroLibInfo();
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 123,
                 456
                 /* zygotePid= */ ,
                 /* zygoteStartupTimeMillis= */ 789,
-                relroBundle);
+                relroInfo);
         assertTrue(connection.hasUsableZygoteInfo());
         assertEquals(456, connection.getZygotePid());
-        verify(mZygoteInfoCallback, times(1)).onReceivedZygoteInfo(connection, relroBundle);
+        verify(mZygoteInfoCallback, times(1)).onReceivedZygoteInfo(connection, relroInfo);
 
-        connection.consumeZygoteBundle(relroBundle);
-        verify(mIChildProcessService, times(1)).consumeRelroBundle(relroBundle);
+        connection.consumeRelroLibInfo(relroInfo);
+        verify(mIChildProcessService, times(1)).consumeRelroLibInfo(relroInfo);
     }
 
     @Test
-    public void testConsumeZygoteBundle() throws RemoteException {
+    public void testConsumeRelroLibInfo() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
         connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
@@ -540,17 +538,17 @@ public class ChildProcessConnectionTest {
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         ShadowLooper.runUiThreadTasks();
         assertNotNull(mConnectionParentProcess);
-        Bundle relroBundle = new Bundle();
+        IRelroLibInfo relroInfo = new IRelroLibInfo();
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 123,
                 456
                 /* zygotePid= */ ,
                 /* zygoteStartupTimeMillis= */ 789,
-                relroBundle);
+                relroInfo);
 
-        verify(mIChildProcessService, never()).consumeRelroBundle(any());
-        connection.consumeZygoteBundle(relroBundle);
-        verify(mIChildProcessService, times(1)).consumeRelroBundle(relroBundle);
+        verify(mIChildProcessService, never()).consumeRelroLibInfo(any());
+        connection.consumeRelroLibInfo(relroInfo);
+        verify(mIChildProcessService, times(1)).consumeRelroLibInfo(relroInfo);
     }
 
     @Test

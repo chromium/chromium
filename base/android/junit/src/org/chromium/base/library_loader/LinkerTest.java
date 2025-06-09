@@ -4,7 +4,7 @@
 
 package org.chromium.base.library_loader;
 
-import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 
 import androidx.test.filters.SmallTest;
 
@@ -21,6 +21,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
 import org.chromium.base.library_loader.Linker.PreferAddress;
 import org.chromium.base.metrics.RecordHistogram;
@@ -28,9 +32,26 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link Linker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {LinkerTest.ShadowParcelFileDescriptorForLibInfo.class})
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
+    // This shadow is required for calling LibInfo.to/from Aidl. Since we don't actually have real
+    // FDs underpining anything, we have to fake the functions LibInfo is calling.
+    @Implements(ParcelFileDescriptor.class)
+    public static class ShadowParcelFileDescriptorForLibInfo extends ShadowParcelFileDescriptor {
+        @Implementation
+        public static ParcelFileDescriptor fromFd(int fd) {
+            return Shadow.newInstanceOf(ParcelFileDescriptor.class);
+        }
+
+        @Implementation
+        public int detachFd() {
+            return 1023;
+        }
+    }
+
     @Mock Linker.Natives mNativeMock;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -161,15 +182,13 @@ public class LinkerTest {
         // Set a fake RELRO FD so that it is not silently ignored when taking the LibInfo from the
         // (simulated) outside.
         libInfo.mRelroFd = 1023;
-        // Create the bundle following the _internal_ format of the Linker. Not great, but shorter
-        // than factoring out this logic from the Linker only for testing.
-        Bundle relros = libInfo.toBundle();
+        IRelroLibInfo relros = libInfo.toAidl();
 
         // Exercise.
         linker.ensureInitialized(
                 /* asRelroProducer= */ false, PreferAddress.RESERVE_HINT, someAddress);
         linker.pretendLibraryIsLoadedForTesting();
-        linker.takeSharedRelrosFromBundle(relros);
+        linker.takeSharedRelrosFromAidl(relros);
 
         // Verify.
         Assert.assertEquals(

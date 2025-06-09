@@ -4,6 +4,8 @@
 
 package org.chromium.base.process_launcher;
 
+import org.chromium.base.library_loader.IRelroLibInfo;
+
 interface IParentProcess {
     // Sends the child pid and information from the app zygote (if any) to the
     // parent process. This will be called before any third-party code is
@@ -13,7 +15,7 @@ interface IParentProcess {
     // or its app zygote did not produce a usable shared region containing
     // linker relocations (RELRO FD).
     oneway void finishSetupConnection(int pid, int zygotePid,
-        long zygoteStartupTimeMillis, in Bundle relroBundle);
+        long zygoteStartupTimeMillis, in IRelroLibInfo relroInfo);
 
     // Reports exception before calling into native main method. This is before
     // crash reporting is initialized, which means this exception would

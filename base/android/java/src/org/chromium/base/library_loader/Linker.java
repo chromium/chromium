@@ -8,9 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
-import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -23,6 +21,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -43,9 +42,10 @@ import javax.annotation.concurrent.GuardedBy;
  * some system libraries, but these are very rare in practice.
  *
  * In order to establish usage of the same shared region in different processes, the Linker can
- * serialize/deserialize the relevant information to/from a Bundle. Providing the RELRO shared
- * memory region is done by loading the library normally, then replacing the virtual address mapping
- * behind the RELRO section with the one backed by the shared memory, with identical contents.
+ * serialize/deserialize the relevant information to/from an AIDL-defined parcelable
+ * (IRelroLibInfo.aidl). Providing the RELRO shared memory region is done by loading the library
+ * normally, then replacing the virtual address mapping behind the RELRO section with the one
+ * backed by the shared memory, with identical contents.
  *
  * Security considerations:
  *
@@ -67,9 +67,9 @@ import javax.annotation.concurrent.GuardedBy;
  *   initialization runs implicitly as part of loading the library. In this case the behaviour is of
  *   a producer.
  *
- * - After loading the native library as a RELRO producer, the getSharedRelroBundle() becomes
- *   available to then send the Bundle to Linkers in other processes, consumed
- *   by takeSharedRelrosFromBundle().
+ * - After loading the native library as a RELRO producer, the getSharedRelrosAidl() becomes
+ *   available to then send the parcelable to Linkers in other processes, consumed
+ *   by takeSharedRelrosFromAidl().
  */
 @NullMarked
 class Linker {
@@ -332,7 +332,7 @@ class Linker {
             //
             // TODO(pasko): There is no need to check for |mLoadAddress| here because in the worst
             // case the zero address will be ignored on the native side of the
-            // atomicReplaceRelroLocked(). The takeSharedRelrosFromBundle() relies on zero addresses
+            // atomicReplaceRelroLocked(). The takeSharedRelrosFromAidl() relies on zero addresses
             // being ignored in native anyway. It seems the only effect of removing this check here
             // will be extra added samples to the RelroSharingStatus2 histogram. This will be a tiny
             // bit smoother to do after M99.
@@ -404,19 +404,19 @@ class Linker {
      *
      * @param args The IChildProcessArgs to serialize to.
      */
-    @Nullable Bundle getSharedRelrosBundle() {
-        Bundle relros = null;
+    @Nullable IRelroLibInfo getSharedRelrosAidl() {
+        IRelroLibInfo relros = null;
         synchronized (mLock) {
-            if (DEBUG) Log.i(TAG, "getSharedRelrosBundle: state=%d", mState);
+            if (DEBUG) Log.i(TAG, "getSharedRelrosAidl: state=%d", mState);
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
-                relros = assumeNonNull(mLocalLibInfo).toBundle();
+                relros = assumeNonNull(mLocalLibInfo).toAidl();
             }
             if (DEBUG && relros != null) {
                 assert mLocalLibInfo != null;
                 Log.i(
                         TAG,
-                        "getSharedRelrosBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
+                        "getSharedRelrosAidl() puts mLoadAddress=0x%x, mLoadSize=%d, "
                                 + "mRelroFd=%d",
                         mLocalLibInfo.mLoadAddress,
                         mLocalLibInfo.mLoadSize,
@@ -428,15 +428,15 @@ class Linker {
 
     /**
      * Deserializes the RELRO region information that was marshalled by {@link
-     * #putLoadAddressToBundle(Bundle)} and wakes up the threads waiting for it to replace the RELRO
-     * section in this process with shared memory.
+     * #getSharedRelrosAidl()} and wakes up the threads waiting for it to replace the RELRO section
+     * in this process with shared memory.
      *
-     * @param bundle The Bundle to extract the information from.
+     * @param relros The IRelroLibInfo to extract the information from.
      */
-    void takeSharedRelrosFromBundle(Bundle relros) {
-        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromBundle(%s)", relros);
+    void takeSharedRelrosFromAidl(IRelroLibInfo relros) {
+        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromAidl(%s)", relros);
         if (relros == null) return;
-        LibInfo newRemote = LibInfo.fromBundle(relros);
+        LibInfo newRemote = LibInfo.fromAidl(relros);
         if (newRemote == null) return;
         synchronized (mLock) {
             if (mRemoteLibInfo != null && mRemoteLibInfo.mRelroFd != -1) {
@@ -640,30 +640,31 @@ class Linker {
      * Holds the information for a given native library or the address range for the future library
      * load. Owns the shared RELRO file descriptor.
      *
-     * Native code accesses the fields of this class by name. Renaming should be done on C++ size as
-     * well.
+     * <p>Native code accesses the fields of this class by name. Renaming should be done on C++ size
+     * as well.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    static class LibInfo implements Parcelable {
-        private static final String EXTRA_LINKER_LIB_INFO = "libinfo";
-
+    static class LibInfo {
         LibInfo() {}
 
         // from Parcelable
-        LibInfo(Parcel in) {
+        LibInfo(IRelroLibInfo info) {
             // See below in writeToParcel() for the serialization protocol.
-            mLibFilePath = in.readString();
-            mLoadAddress = in.readLong();
-            mLoadSize = in.readLong();
-            mRelroStart = in.readLong();
-            mRelroSize = in.readLong();
-            boolean hasRelroFd = in.readInt() != 0;
-            if (hasRelroFd) {
-                ParcelFileDescriptor fd = ParcelFileDescriptor.CREATOR.createFromParcel(in);
-                // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will be
-                // null.
-                if (fd != null) {
-                    mRelroFd = fd.detachFd();
+            mLibFilePath = info.libFilePath;
+            mLoadAddress = info.loadAddress;
+            mLoadSize = info.loadSize;
+            mRelroStart = info.relroStart;
+            mRelroSize = info.relroSize;
+            if (info.fd != null) {
+                try {
+                    ParcelFileDescriptor fd = info.fd.dup();
+                    // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will
+                    // be null.
+                    if (fd != null) {
+                        mRelroFd = fd.detachFd();
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create LibInfo from aidl.", e);
                 }
             } else {
                 mRelroFd = -1;
@@ -677,56 +678,27 @@ class Linker {
             }
         }
 
-        public static @Nullable LibInfo fromBundle(Bundle bundle) {
-            bundle.setClassLoader(Linker.class.getClassLoader());
-            return bundle.getParcelable(EXTRA_LINKER_LIB_INFO);
+        public static LibInfo fromAidl(IRelroLibInfo aidlInfo) {
+            return new LibInfo(aidlInfo);
         }
 
-        public Bundle toBundle() {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(EXTRA_LINKER_LIB_INFO, this);
-            return bundle;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeString(mLibFilePath);
-            out.writeLong(mLoadAddress);
-            out.writeLong(mLoadSize);
-            out.writeLong(mRelroStart);
-            out.writeLong(mRelroSize);
-            // Parcel#writeBoolean() is API level 29, so use an int instead.
-            // We use this as a flag as we cannot serialize an invalid fd.
-            out.writeInt(mRelroFd >= 0 ? 1 : 0);
+        public IRelroLibInfo toAidl() {
+            IRelroLibInfo info = new IRelroLibInfo();
+            info.libFilePath = mLibFilePath;
+            info.loadAddress = mLoadAddress;
+            info.loadSize = mLoadSize;
+            info.relroStart = mRelroStart;
+            info.relroSize = mRelroSize;
             if (mRelroFd >= 0) {
                 try {
-                    ParcelFileDescriptor fd = ParcelFileDescriptor.fromFd(mRelroFd);
-                    fd.writeToParcel(out, 0);
-                    fd.close();
+                    info.fd = ParcelFileDescriptor.fromFd(mRelroFd);
                 } catch (java.io.IOException e) {
-                    Log.e(TAG, "Can't write LibInfo file descriptor to parcel", e);
+                    Log.e(TAG, "Can't write LibInfo file descriptor to aidl parcelable", e);
                 }
             }
+
+            return info;
         }
-
-        @Override
-        public int describeContents() {
-            return Parcelable.CONTENTS_FILE_DESCRIPTOR;
-        }
-
-        // From Parcelable
-        public static final Parcelable.Creator<LibInfo> CREATOR =
-                new Parcelable.Creator<LibInfo>() {
-                    @Override
-                    public LibInfo createFromParcel(Parcel in) {
-                        return new LibInfo(in);
-                    }
-
-                    @Override
-                    public LibInfo[] newArray(int size) {
-                        return new LibInfo[size];
-                    }
-                };
 
         public @Nullable String mLibFilePath;
 

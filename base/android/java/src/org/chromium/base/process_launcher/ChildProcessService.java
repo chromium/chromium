@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -36,6 +35,7 @@ import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
@@ -189,7 +189,7 @@ public class ChildProcessService {
                     int pid = Process.myPid();
                     int zygotePid = 0;
                     long startupTimeMillis = -1;
-                    Bundle relroBundle = null;
+                    IRelroLibInfo relroInfo = null;
                     if (LibraryLoader.getInstance().isLoadedByZygote()) {
                         zygotePid = sZygotePid;
                         startupTimeMillis = sZygoteStartupTimeMillis;
@@ -198,13 +198,13 @@ public class ChildProcessService {
                         m.initInChildProcess();
                         // In a number of cases the app zygote decides not to produce a RELRO FD.
                         // The bundle will tell the receiver to silently ignore it.
-                        relroBundle = m.getSharedRelrosBundle();
+                        relroInfo = m.getSharedRelrosAidl();
                     }
                     // After finishSetupConnection() the parent process will stop accepting
-                    // |relroBundle| from this process to ensure that another FD to shared memory
+                    // |relroInfo| from this process to ensure that another FD to shared memory
                     // is not sent later.
                     parentProcess.finishSetupConnection(
-                            pid, zygotePid, startupTimeMillis, relroBundle);
+                            pid, zygotePid, startupTimeMillis, relroInfo);
                     mParentProcess = parentProcess;
                     processConnectionArgs(args, callbacks, binderBox);
                 }
@@ -269,8 +269,8 @@ public class ChildProcessService {
                 }
 
                 @Override
-                public void consumeRelroBundle(Bundle bundle) {
-                    mDelegate.consumeRelroBundle(bundle);
+                public void consumeRelroLibInfo(IRelroLibInfo libInfo) {
+                    mDelegate.consumeRelroLibInfo(libInfo);
                 }
             };
 

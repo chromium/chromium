@@ -33,6 +33,7 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.memory.SelfFreezeCallback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -101,15 +102,16 @@ public class ChildProcessConnection {
         /**
          * Called after the connection has been established, only once per process being connected
          * to.
+         *
          * @param connection the connection object to the child process. Must hold the zygote PID
-         *                   that the child process was spawned from
-         * @param relroBundle the bundle potentially containing the information making it possible
-         *                    to replace the current RELRO address range to memory shared with the
-         *                    zpp zygote. Needs to be passed to the library loader in order to take
-         *                    effect. Can be done before or after the LibraryLoader loads the
-         *                    library.
+         *     that the child process was spawned from
+         * @param relroInfo the IRelroLibInfo potentially containing the information making it
+         *     possible to replace the current RELRO address range to memory shared with the zpp
+         *     zygote. Needs to be passed to the library loader in order to take effect. Can be done
+         *     before or after the LibraryLoader loads the library.
          */
-        void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle);
+        void onReceivedZygoteInfo(
+                ChildProcessConnection connection, @Nullable IRelroLibInfo relroInfo);
     }
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -791,10 +793,13 @@ public class ChildProcessConnection {
     }
 
     private void onSetupConnectionResultOnLauncherThread(
-            int pid, int zygotePid, long zygoteStartupTimeMillis, Bundle relroBundle) {
+            int pid,
+            int zygotePid,
+            long zygoteStartupTimeMillis,
+            @Nullable IRelroLibInfo relroInfo) {
         assert isRunningOnLauncherThread();
 
-        // The RELRO bundle should be accepted only when establishing the connection. This is to
+        // The RELRO parcel should be accepted only when establishing the connection. This is to
         // prevent untrusted code from controlling shared memory regions in other processes. Make
         // further IPCs a noop.
         if (mPid != 0) {
@@ -809,7 +814,7 @@ public class ChildProcessConnection {
 
         // Newly arrived zygote info sometimes needs to be broadcast to a number of processes.
         if (mZygoteInfoCallback != null) {
-            mZygoteInfoCallback.onReceivedZygoteInfo(this, relroBundle);
+            mZygoteInfoCallback.onReceivedZygoteInfo(this, relroInfo);
         }
         mZygoteInfoCallback = null;
 
@@ -830,11 +835,11 @@ public class ChildProcessConnection {
         mConnectionCallback = null;
     }
 
-    /** Passes the zygote bundle to the service. */
-    public void consumeZygoteBundle(Bundle zygoteBundle) {
+    /** Passes the zygote parcel to the service. */
+    public void consumeRelroLibInfo(IRelroLibInfo relroInfo) {
         if (mService == null) return;
         try {
-            mService.consumeRelroBundle(zygoteBundle);
+            mService.consumeRelroLibInfo(relroInfo);
         } catch (RemoteException e) {
             // Ignore.
         }
@@ -858,14 +863,11 @@ public class ChildProcessConnection {
                                 int pid,
                                 int zygotePid,
                                 long zygoteStartupTimeMillis,
-                                Bundle relroBundle) {
+                                IRelroLibInfo relroInfo) {
                             mLauncherHandler.post(
                                     () -> {
                                         onSetupConnectionResultOnLauncherThread(
-                                                pid,
-                                                zygotePid,
-                                                zygoteStartupTimeMillis,
-                                                relroBundle);
+                                                pid, zygotePid, zygoteStartupTimeMillis, relroInfo);
                                     });
                         }
 

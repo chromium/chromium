@@ -5255,8 +5255,18 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/StreamUtil.java" ]
   }
 
+  android_aidl("relro_aidl") {
+    import_include = [ "android/java/src" ]
+    sources = [
+      "android/java/src/org/chromium/base/library_loader/IRelroLibInfo.aidl",
+    ]
+  }
+
   android_library("library_loader_java") {
-    srcjar_deps = [ ":library_loader_java_enums_srcjar" ]
+    srcjar_deps = [
+      ":library_loader_java_enums_srcjar",
+      ":relro_aidl",
+    ]
     sources = [
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
       "android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",

@@ -26,6 +26,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
@@ -90,7 +91,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
         mCpuFeatures = args.cpuFeatures;
         assert mCpuCount > 0;
 
-        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(args.relroBundle);
+        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromAidl(args.relroInfo);
     }
 
     @Override
@@ -125,11 +126,11 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     }
 
     @Override
-    public void consumeRelroBundle(Bundle bundle) {
+    public void consumeRelroLibInfo(IRelroLibInfo libInfo) {
         // Does not block, but may jank slightly. If the library has not been loaded yet, the bundle
         // will be unpacked and saved for the future. If the library is loaded, the RELRO region
         // will be replaced, which involves mmap(2) of shared memory and memcpy+memcmp of a few MB.
-        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(bundle);
+        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromAidl(libInfo);
     }
 
     @Override

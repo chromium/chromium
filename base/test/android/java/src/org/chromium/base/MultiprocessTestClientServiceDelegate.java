@@ -5,11 +5,11 @@ package org.chromium.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.SparseArray;
 
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
@@ -90,5 +90,5 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     }
 
     @Override
-    public void consumeRelroBundle(Bundle bundle) {}
+    public void consumeRelroLibInfo(IRelroLibInfo libInfo) {}
 }

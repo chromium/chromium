@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -77,15 +78,18 @@ public class ChildProcessLauncher {
         /**
          * Called as part of establishing the connection. Saves the bundle for transferring to other
          * processes that did not inherit from the App Zygote.
+         *
          * @param connection the new connection
-         * @param relroBundle the bundle potentially containing useful information for relocation
-         * sharing across processes.
+         * @param relroInfo the IRelroLibInfo potentially containing useful information for
+         *     relocation sharing across processes.
          */
-        public void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle) {}
+        public void onReceivedZygoteInfo(
+                ChildProcessConnection connection, @Nullable IRelroLibInfo relroInfo) {}
 
         /**
          * Called when a connection has been disconnected. Only invoked if onConnectionEstablished
          * was called, meaning the connection was already established.
+         *
          * @param connection the connection that got disconnected.
          */
         public void onConnectionLost(ChildProcessConnection connection) {}
@@ -252,8 +256,8 @@ public class ChildProcessLauncher {
                 new ChildProcessConnection.ZygoteInfoCallback() {
                     @Override
                     public void onReceivedZygoteInfo(
-                            ChildProcessConnection connection, Bundle relroBundle) {
-                        mDelegate.onReceivedZygoteInfo(connection, relroBundle);
+                            ChildProcessConnection connection, @Nullable IRelroLibInfo relroInfo) {
+                        mDelegate.onReceivedZygoteInfo(connection, relroInfo);
                     }
                 };
         ChildProcessConnection.ConnectionCallback connectionCallback =
