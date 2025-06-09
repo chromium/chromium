@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.animation.RunOnNextLayout;
+import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 import org.chromium.ui.animation.ViewCurvedMotionAnimatorFactory;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -33,7 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Host view for the new background tab animation. */
-public class NewBackgroundTabAnimationHostView extends FrameLayout {
+public class NewBackgroundTabAnimationHostView extends FrameLayout implements RunOnNextLayout {
     /* package */ static final long CROSS_FADE_DURATION_MS = 150L;
     private static final long PATH_ARC_DURATION_MS = 400L;
     private static final long LINK_SCALE_DURATION_MS = 192L;
@@ -55,6 +57,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         int NTP_FULL_SCROLL = 3;
     }
 
+    private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
+
     private NewBackgroundTabFakeTabSwitcherButton mFakeTabSwitcherButton;
     private ImageView mLinkIcon;
     private @AnimationType int mAnimationType;
@@ -66,6 +70,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     public NewBackgroundTabAnimationHostView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAnimationType = AnimationType.UNINITIALIZED;
+        mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
     }
 
     @Override
@@ -244,6 +249,22 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      */
     private void setLinkIconTint(@ColorInt int color) {
         mLinkIcon.setImageTintList(ColorStateList.valueOf(color));
+    }
+
+    @Override
+    public void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        runOnNextLayoutRunnables();
+    }
+
+    @Override
+    public void runOnNextLayout(Runnable runnable) {
+        mRunOnNextLayoutDelegate.runOnNextLayout(runnable);
+    }
+
+    @Override
+    public void runOnNextLayoutRunnables() {
+        mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
     }
 
     /* package */ @AnimationType

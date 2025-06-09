@@ -211,6 +211,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mAnimationHostView.getWidth()).thenReturn(40);
         when(mAnimationHostView.getHeight()).thenReturn(40);
         mNewTabAnimationLayout.onFinishNativeInitialization();
+        mNewTabAnimationLayout.setRunOnNextLayoutImmediatelyForTesting(true);
     }
 
     @After
