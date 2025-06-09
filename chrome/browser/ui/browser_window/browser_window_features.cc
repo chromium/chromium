@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -212,6 +213,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<BrowserLocationBarModelDelegate>(tab_strip_model_);
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
+
+  reading_list_side_panel_coordinator_ =
+      std::make_unique<ReadingListSidePanelCoordinator>(
+          browser->GetProfile(), browser->GetTabStripModel());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {

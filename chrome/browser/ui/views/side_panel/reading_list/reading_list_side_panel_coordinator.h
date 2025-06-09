@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_
 
-#include "chrome/browser/ui/browser_user_data.h"
+#include <memory>
 
-class Browser;
+#include "base/memory/raw_ptr.h"
+
+class Profile;
 class SidePanelEntryScope;
 class SidePanelRegistry;
+class TabStripModel;
 
 namespace views {
 class View;
@@ -17,21 +20,24 @@ class View;
 
 // ReadingListSidePanelCoordinator handles the creation and registration of the
 // bookmarks SidePanelEntry.
-class ReadingListSidePanelCoordinator
-    : public BrowserUserData<ReadingListSidePanelCoordinator> {
+class ReadingListSidePanelCoordinator {
  public:
-  explicit ReadingListSidePanelCoordinator(Browser* browser);
-  ~ReadingListSidePanelCoordinator() override;
+  ReadingListSidePanelCoordinator(Profile* profile,
+                                  TabStripModel* tab_strip_model);
+  ReadingListSidePanelCoordinator(const ReadingListSidePanelCoordinator&) =
+      delete;
+  ReadingListSidePanelCoordinator& operator=(
+      const ReadingListSidePanelCoordinator&) = delete;
+  ~ReadingListSidePanelCoordinator();
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
  private:
-  friend class BrowserUserData<ReadingListSidePanelCoordinator>;
-
   std::unique_ptr<views::View> CreateReadingListWebView(
       SidePanelEntryScope& scope);
 
-  BROWSER_USER_DATA_KEY_DECL();
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READING_LIST_SIDE_PANEL_COORDINATOR_H_

@@ -9,10 +9,9 @@
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,7 +22,8 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadingListUI, SidePanelWebUIViewT)
 END_METADATA
 
 ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
-    Browser* browser,
+    Profile* profile,
+    TabStripModel* tab_strip_model,
     SidePanelEntryScope& scope,
     base::RepeatingClosure close_cb)
     : SidePanelWebUIViewT(
@@ -34,15 +34,15 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
           close_cb,
           std::make_unique<WebUIContentsWrapperT<ReadingListUI>>(
               GURL(chrome::kChromeUIReadLaterURL),
-              browser->profile(),
+              profile,
               IDS_READ_LATER_TITLE,
               /*esc_closes_ui=*/false)),
-      browser_(browser) {
+      tab_strip_model_(tab_strip_model) {
   SetProperty(views::kElementIdentifierKey,
               kReadLaterSidePanelWebViewElementId);
   extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
       contents_wrapper()->web_contents());
-  browser_->tab_strip_model()->AddObserver(this);
+  tab_strip_model_->AddObserver(this);
 }
 
 ReadLaterSidePanelWebView::~ReadLaterSidePanelWebView() = default;
@@ -59,9 +59,9 @@ void ReadLaterSidePanelWebView::OnTabStripModelChanged(
 void ReadLaterSidePanelWebView::TabChangedAt(content::WebContents* contents,
                                              int index,
                                              TabChangeType change_type) {
-  if (GetVisible() && index == browser_->tab_strip_model()->active_index() &&
+  if (GetVisible() && index == tab_strip_model_->active_index() &&
       change_type == TabChangeType::kAll) {
-    UpdateActiveURL(browser_->tab_strip_model()->GetWebContentsAt(index));
+    UpdateActiveURL(tab_strip_model_->GetWebContentsAt(index));
   }
 }
 
@@ -77,7 +77,7 @@ void ReadLaterSidePanelWebView::UpdateActiveURL(
 }
 
 void ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab() {
-  UpdateActiveURL(browser_->tab_strip_model()->GetActiveWebContents());
+  UpdateActiveURL(tab_strip_model_->GetActiveWebContents());
 }
 
 BEGIN_METADATA(ReadLaterSidePanelWebView)

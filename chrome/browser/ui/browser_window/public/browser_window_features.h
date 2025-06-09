@@ -31,6 +31,7 @@ class DownloadToolbarUIController;
 class HistorySidePanelCoordinator;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
+class ReadingListSidePanelCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
 class TabMenuModelDelegate;
@@ -272,6 +273,10 @@ class BrowserWindowFeatures {
   }
 #endif
 
+  ReadingListSidePanelCoordinator* reading_list_side_panel_coordinator() {
+    return reading_list_side_panel_coordinator_.get();
+  }
+
   new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
     return new_tab_footer_controller_.get();
   }
@@ -380,6 +385,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;
+
+  std::unique_ptr<ReadingListSidePanelCoordinator>
+      reading_list_side_panel_coordinator_;
 
   std::unique_ptr<extensions::BrowserExtensionWindowController>
       extension_window_controller_;

@@ -13,7 +13,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
-class Browser;
+class Profile;
+class TabStripModel;
 
 class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
                                   public TabStripModelObserver {
@@ -21,7 +22,8 @@ class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
   METADATA_HEADER(ReadLaterSidePanelWebView, SidePanelWebUIViewT_ReadingListUI)
 
  public:
-  ReadLaterSidePanelWebView(Browser* browser,
+  ReadLaterSidePanelWebView(Profile* profile,
+                            TabStripModel* tab_strip_model,
                             SidePanelEntryScope& scope,
                             base::RepeatingClosure close_cb);
   ReadLaterSidePanelWebView(const ReadLaterSidePanelWebView&) = delete;
@@ -43,7 +45,7 @@ class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
   void UpdateActiveURLToActiveTab();
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
   base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
