@@ -7699,6 +7699,19 @@ class ServiceWorkerSyntheticResponseBrowserTest
             http_response->set_content("[SyntheticResponse] foo");
           } else if (base::Contains(request.GetURL().query(), "echo=bar")) {
             http_response->set_content("[SyntheticResponse] bar");
+          } else if (base::Contains(request.GetURL().query(),
+                                    "inline_script_without_csp")) {
+            http_response->set_content(
+                "<script>window.is_inline_script_executed=true;</script>");
+          } else if (base::Contains(request.GetURL().query(),
+                                    "inline_script_with_csp")) {
+            http_response->set_content_type("text/html");
+            http_response->set_content(
+                "<meta http-equiv=\"Content-Security-Policy\" "
+                "content=\"script-src 'nonce-jDHFShrQe4XmmH47DWyhaQ'\" />"
+                "<script "
+                "nonce=\"jDHFShrQe4XmmH47DWyhaQ\">window.is_inline_script_"
+                "executed=true;</script>");
           } else {
             http_response->set_content(is_slow
                                            ? "[SyntheticResponse] "
@@ -7794,4 +7807,34 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
                      "Math.ceil(performance.getEntriesByType('navigation')[0]."
                      "responseStart) < 2000"));
 }
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+                       InlineScriptIsNotAllowedUntilMetaCSPScriptSrc) {
+  mock_content_browser_client = std::make_unique<MockContentBrowserClient>();
+  // Navigate and store the response header.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kHostname, base::StrCat({kTargetPath, "foo"}))));
+  EXPECT_EQ("[SyntheticResponse] Response from the network", GetInnerText());
+
+  // The second navigation. Synthetic response is enabled, inline scripts are
+  // blocked until the new CSP is added via <meta> tag.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(
+          kHostname,
+          base::StrCat({kTargetPath, "foo&inline_script_without_csp"}))));
+  EXPECT_EQ(nullptr, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                            "window.is_inline_script_executed"));
+
+  // The third navigation. Synthetic response is enabled, inline scripts are
+  // allowed after the script-src update in <meta> tag.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   kHostname,
+                   base::StrCat({kTargetPath, "foo&inline_script_with_csp"}))));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "window.is_inline_script_executed"));
+}
+
 }  // namespace content

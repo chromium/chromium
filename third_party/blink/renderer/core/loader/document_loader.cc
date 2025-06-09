@@ -2740,6 +2740,17 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
             std::move(initial_permission_statuses_).value());
   }
 
+  // If the response is created with the synthetic response, the browser expects
+  // that the CSP script-src directive is not added via the response header, but
+  // added via the <meta> tag in the response body. To ensure there are no
+  // scripts executed before <meta>, enforce the CSP not to allow script
+  // executions until the new CSP is added via <meta> tag.
+  if (response_.FromSyntheticResponse()) {
+    CHECK(frame_->IsOutermostMainFrame());
+    CHECK_EQ(commit_reason_, CommitReason::kRegular);
+    csp->DisallowScriptForSyntheticResponse();
+  }
+
   content_security_notifier_ =
       HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
           frame_->DomWindow());

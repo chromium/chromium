@@ -233,6 +233,11 @@ class PLATFORM_EXPORT ResourceResponse final {
     was_fetched_via_service_worker_ = value;
   }
 
+  bool FromSyntheticResponse() const { return from_synthetic_response_; }
+  void SetFromSyntheticResponse(bool value) {
+    from_synthetic_response_ = value;
+  }
+
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const {
     return service_worker_response_source_;
   }
@@ -548,6 +553,9 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // Was the resource fetched over a ServiceWorker.
   bool was_fetched_via_service_worker_ : 1;
+
+  // True if the response is created with the synthetic response.
+  bool from_synthetic_response_ : 1;
 
   // True if service worker navigation preload was performed due to
   // the request for this resource.

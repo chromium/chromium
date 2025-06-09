@@ -181,6 +181,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   bool WasFetchedViaServiceWorker() const;
   void SetWasFetchedViaServiceWorker(bool);
 
+  bool FromSyntheticResponse() const;
+  void SetFromSyntheticResponse(bool);
+
   // Set when this request was loaded via a ServiceWorker.
   // See network.mojom.URLResponseHead.service_worker_response_source.
   network::mojom::FetchResponseSource GetServiceWorkerResponseSource() const;

@@ -179,6 +179,10 @@ bool HasScriptUnsafeHashes(
   return directive.source_list && directive.source_list->allow_unsafe_hashes;
 }
 
+const char kWarningMessageForSyntheticResponse[] =
+    " Since the synthetic response is enabled on this page, scripts are "
+    "blocked until the new Content Security Policy is added via the <meta> "
+    "tag.";
 }  // namespace
 
 // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
@@ -537,6 +541,14 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::Unknown:
         NOTREACHED();
     }
+
+    // If `disallow_script_for_synthetic_response_` is true, that means the
+    // synthetic response is used, and the script policy is enforced. This
+    // enforcement is completed if the new policy is added via meta tag.
+    if (disallow_script_for_synthetic_response_ &&
+        csp.header->source == ContentSecurityPolicySource::kMeta) {
+      disallow_script_for_synthetic_response_ = false;
+    }
   }
 }
 
@@ -571,6 +583,33 @@ bool ContentSecurityPolicy::AllowInline(
   const bool is_script = IsScriptInlineType(inline_type);
   if (!is_script && override_inline_style_allowed_) {
     return true;
+  }
+
+  // If `disallow_script_for_synthetic_response_` is true, it always returns
+  // false for scripts that are likely covered by `script-src`.
+  if (disallow_script_for_synthetic_response_) {
+    String message;
+    switch (inline_type) {
+      case ContentSecurityPolicy::InlineType::kNavigation:
+        message = "run the JavaScript URL.";
+        break;
+      case ContentSecurityPolicy::InlineType::kScriptSpeculationRules:
+        message = "apply inline speculation rules.";
+        break;
+      case ContentSecurityPolicy::InlineType::kScriptAttribute:
+        message = "execute inline event handler.";
+        break;
+      case ContentSecurityPolicy::InlineType::kScript:
+        message = "execute inline script.";
+        break;
+      default:
+        break;
+    }
+    if (!message.empty()) {
+      LogToConsole(WTF::StrCat(
+          {"Refused to ", message, kWarningMessageForSyntheticResponse}));
+      return false;
+    }
   }
 
   Vector<network::mojom::blink::CSPHashSourcePtr> csp_hash_values;
@@ -873,6 +912,16 @@ bool ContentSecurityPolicy::AllowFromSource(
     area = SchemeRegistry::kPolicyAreaImage;
   else if (type == CSPDirectiveName::StyleSrcElem)
     area = SchemeRegistry::kPolicyAreaStyle;
+
+  if (disallow_script_for_synthetic_response_ &&
+      (type == CSPDirectiveName::ScriptSrcElem ||
+       type == CSPDirectiveName::WorkerSrc)) {
+    LogToConsole(
+
+        WTF::StrCat({"The script from ", url.GetString(), " was blocked.",
+                     kWarningMessageForSyntheticResponse}));
+    return false;
+  }
 
   if (ShouldBypassContentSecurityPolicy(url, area)) {
     if (type != CSPDirectiveName::ScriptSrcElem)

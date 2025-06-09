@@ -419,6 +419,11 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   void Count(WebFeature feature) const;
 
+  // Start the mode to disallow any script executions for synthetic response.
+  void DisallowScriptForSyntheticResponse() {
+    disallow_script_for_synthetic_response_ = true;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest, NonceInline);
   FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest, NonceSinglePolicy);
@@ -497,6 +502,11 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool supports_wasm_eval_ = false;
 
   bool enforces_strict_policy_{false};
+
+  // When this flag is set true, inline script, external script, and script
+  // attribute are blocked. This is a special mode for the synthetic response
+  // experiment.
+  bool disallow_script_for_synthetic_response_ = false;
 };
 
 }  // namespace blink

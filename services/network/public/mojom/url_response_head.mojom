@@ -321,4 +321,8 @@ struct URLResponseHead {
   // Whether the request is in the scope of a device bound session.
   DeviceBoundSessionUsage device_bound_session_usage =
       DeviceBoundSessionUsage.kUnknown;
+
+  // True if the synthetic response is used. This indicates the response headers
+  // are returned with the locally storead headers. See crbug.com/352578800.
+  bool from_synthetic_response = false;
 };
