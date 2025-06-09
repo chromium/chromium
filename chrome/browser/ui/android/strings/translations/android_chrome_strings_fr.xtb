@@ -492,7 +492,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="327204079441056603">Nous avons modifié la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
-<translation id="3282568296779691940">Connectez-vous à Chrome</translation>
+<translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
 <translation id="3301936297336370235">Confirmation de la suggestion de mot de passe</translation>
@@ -938,7 +938,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5316947901395241499">Votre administrateur a désactivé l'enregistrement des mots de passe</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
-<translation id="5326246328175179736">Vous ne pouvez pas vous connecter avec ce compte</translation>
+<translation id="5326246328175179736">Impossible de se connecter avec ce compte</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5328542107300944283">Utiliser avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Demandes d'autorisation</translation>
@@ -1184,7 +1184,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6401458660421980302">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
-<translation id="6410883413783534063">Utilisez les onglets pour consulter plusieurs pages en même temps</translation>
+<translation id="6410883413783534063">Ouvrez des onglets pour consulter plusieurs pages en même temps</translation>
 <translation id="6411219469806822692">Impossible d'aller plus haut. Essayez de commencer plus haut sur la page.</translation>
 <translation id="641643625718530986">Imprimer…</translation>
 <translation id="6433501201775827830">Sélectionnez votre moteur de recherche</translation>

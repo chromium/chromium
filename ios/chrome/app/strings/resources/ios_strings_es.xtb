@@ -761,7 +761,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="422474357428465195">Tienes varios problemas relacionados con contraseñas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="422477017457571619">Protección basada en IA en tiempo real contra descargas, extensiones y sitios peligrosos, que se basa en el envío de tus datos de navegación a Google.</translation>
 <translation id="4231395118547300571">Notificaciones de Comprobación de tu estado activadas</translation>
-<translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App del navegador por omisión<ph name="END_BOLD" /></translation>
+<translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Navegador predeterminado<ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">No hay contraseñas ni llaves de acceso guardadas</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestañas}=1{Abrir {count} pestaña}other{Abrir {count} pestañas}}</translation>
@@ -1600,7 +1600,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7642277834834046856">Bajadas de precio en tus pestañas</translation>
 <translation id="7646263789464975852">Menú → Configuración → Comprobación de seguridad</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
-<translation id="764827086632467055">Toca App del navegador por omisión</translation>
+<translation id="764827086632467055">Toca Navegador predeterminado</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="765631330137769217">Toca Guardar para acceder fácilmente a esta contraseña la próxima vez que inicies sesión</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -1706,7 +1706,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8040407350301524547">Para ver las opciones de ruta, toca Cómo llegar.</translation>
 <translation id="804225253087497565">Es posible que el <ph name="BEGIN_LINK" />historial de búsqueda<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
 <translation id="804427445359061970">Aquí verás las pestañas de otros dispositivos</translation>
-<translation id="8049767396294520796">App del navegador por omisión</translation>
+<translation id="8049767396294520796">Navegador predeterminado</translation>
 <translation id="8058655154417507695">Año de caducidad</translation>
 <translation id="8059533439631660104">Oculta la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>

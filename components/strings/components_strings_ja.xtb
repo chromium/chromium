@@ -577,7 +577,7 @@
 <translation id="1997484222658892567"><ph name="URL" /> から、ローカルのパソコンに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1997774360448418989">紙（軽量）</translation>
 <translation id="1999416967035780066">フリーウェア、シェアウェア</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{他 1 個}other{他 # 個}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="2001469757375372617">エラーが発生しました。変更は保存されませんでした。</translation>
 <translation id="2002436619517051938">これらの設定は Chrome の設定で変更できます。</translation>
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
@@ -903,7 +903,7 @@
 <translation id="2533649878691950253">通常、正確な位置情報の共有が許可されていないため、このサイトでも許可されていません</translation>
 <translation id="253493526287553278">プロモーション コードの詳細を確認</translation>
 <translation id="2535585790302968248">新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="2536110899380797252">住所を追加</translation>
 <translation id="2537931901612099523">あなたのアクティビティはこのデバイスを使用する他のユーザーに表示されないため、プライバシーを守りながらブラウジングできます。アクセスしたウェブサイトと、そのウェブサイトが使用するサービス（Google を含む）のデータ収集方法は変更されません。ダウンロードしたファイルとブックマークは保存されます。</translation>
 <translation id="2539524384386349900">検出</translation>

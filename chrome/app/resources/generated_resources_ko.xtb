@@ -872,7 +872,7 @@
 <translation id="1596709061955594992">블루투스가 사용 중지되어 있습니다. 사용 가능한 기기를 보려면 블루투스를 사용 설정하세요</translation>
 <translation id="1596780725094407793">- 하위 도메인 포함</translation>
 <translation id="1597806446183714225">음질을 개선하여 음성이 자연스럽고 또렷하게 들리도록 합니다.</translation>
-<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 사용하기</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" /> 사이트를 사용하세요</translation>
 <translation id="1598233202702788831">관리자가 업데이트를 사용 중지했습니다.</translation>
 <translation id="1600857548979126453">페이지 디버거 백엔드에 액세스</translation>
 <translation id="1601481906560916994">사이트 제외</translation>
@@ -2539,7 +2539,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Google은 이 기기에서 수집된 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다. 이 정보는 개인을 식별하는 데 사용되지 않습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />언제든지 이 기기의 위치 설정(설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스 &gt; 고급 위치 설정)에서 위치 정확도를 사용 중지할 수 있습니다. 위치 정확도를 사용 중지하면 위치 정확도 데이터가 수집되지 않습니다. Android 앱 및 서비스의 경우 IP 주소만 사용하여 기기 위치를 파악합니다(사용 가능한 경우). 이는 Android 앱 및 서비스(예: Google 지도)의 위치 사용 가능 여부와 정확성에 영향을 줄 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux 앱 및 파일 백업 중</translation>
-<translation id="2730550884708194161">직장 프로필 정보</translation>
+<translation id="2730550884708194161">직장 프로필 안내</translation>
 <translation id="2730596696987224099">내 비밀번호 선택</translation>
 <translation id="2730647855013151888">모든 개인 정보 포함</translation>
 <translation id="2730901670247399077">추천 그림 이모티콘</translation>
@@ -3566,7 +3566,7 @@
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
-<translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
+<translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3477772589943384839">메모리를 적당히 절약할 수 있습니다. 좀 더 긴 시간이 지나면 탭이 비활성화됩니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3479357084663933762">녹색약</translation>
@@ -3952,7 +3952,7 @@
 <translation id="3730298295914858769">Wi-Fi Direct 기능:</translation>
 <translation id="3732078975418297900"><ph name="ERROR_LINE" />행에 오류가 있음</translation>
 <translation id="3732108843630241049">이 기기는 더 이상 자동 소프트웨어 업데이트를 수신하지 않습니다. 지속적인 보안, 안정성, 성능을 위해 보안 업데이트 연장을 사용 설정하세요. 일부 기능이 제한됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="3732414796052961578"><ph name="ACCOUNT_NAME" />으로 로그인</translation>
+<translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> 계정으로 로그인</translation>
 <translation id="3732530910372558017">PIN은 63자 이하여야 합니다.</translation>
 <translation id="3732706448780793442">수동으로 전환</translation>
 <translation id="3732857534841813090">Google 어시스턴트 관련 정보</translation>
@@ -8864,7 +8864,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7261217796641151584">그룹 공유</translation>
 <translation id="7261612856573623172">시스템 TTS(텍스트 음성 변환) 음성</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
-<translation id="7262919421769447042"><ph name="PROFILE_MANAGER" />에서 관리하는 프로필로 다음과 같은 정보를 볼 수 있습니다</translation>
+<translation id="7262919421769447042"><ph name="PROFILE_MANAGER" />에서 이 프로필을 관리하며 다음과 같은 정보를 볼 수 있습니다</translation>
 <translation id="7264695323040866038">지원되는 웹 링크를 열 때 항상 <ph name="APP" /> 앱을 사용할까요?</translation>
 <translation id="7267044199012331848">가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
@@ -10824,7 +10824,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8635399646025169806">탭 그룹을 유지하시겠습니까?</translation>
 <translation id="8635628933471165173">새로 고치는 중...</translation>
 <translation id="8636284842992792762">확장 프로그램 초기화 중...</translation>
-<translation id="8636323803535540285">여기로 더 빨리 이동하려면 <ph name="BRAND" />에 바로가기를 추가하세요.</translation>
+<translation id="8636323803535540285">여기로 더 빨리 이동하려면 <ph name="BRAND" /> 바로가기를 추가하세요.</translation>
 <translation id="8636500887554457830">사이트에서 팝업을 전송하거나 리디렉션을 사용할 수 없음</translation>
 <translation id="8636514272606969031">측면 패널 고정됨</translation>
 <translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
@@ -11577,7 +11577,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9129562557082598582">모든 <ph name="CERT_GROUP" /> 내보내기</translation>
 <translation id="9130015405878219958">잘못된 모드를 입력했습니다.</translation>
-<translation id="9130135798965366513">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" /> 정보를 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
+<translation id="9130135798965366513">계속하면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" /> 정보를 이 사이트와 공유합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="9130208109420587135">그룹 이름 <ph name="NAME" /> 수정</translation>
 <translation id="9130364135697530260">이 사이트에 삽입된 콘텐츠에서는 나에 관해 저장된 정보를 사용할 수 없습니다.</translation>
 <translation id="9131209053278896908">차단된 사이트가 여기에 표시됩니다.</translation>

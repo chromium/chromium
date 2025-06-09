@@ -17,7 +17,7 @@
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur les sites. Vous pouvez contrôler les sites auxquels elle a accès.</translation>
 <translation id="1007057452468855774">Activer le Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
-<translation id="1008261151167010035">Le <ph name="BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, une confirmation vous sera demandée à chaque fois.</translation>
+<translation id="1008261151167010035">Le <ph name="BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, une confirmation vous est demandée à chaque fois.</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="100881991356161927">Nom du site</translation>
 <translation id="1009663062402466586">Commandes de jeu désormais disponibles</translation>
@@ -3224,7 +3224,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3238192140106069382">Connexion et validation…</translation>
 <translation id="3239373508713281971">Limite de temps supprimée pour <ph name="APP_NAME" /></translation>
 <translation id="3240299564104448052">Vous semblez être hors connexion.</translation>
-<translation id="3240426699337459095">Le lien a bien été copié.</translation>
+<translation id="3240426699337459095">Lien copié</translation>
 <translation id="3241638166094654466">Cellules sur chaque ligne :</translation>
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
 <translation id="3241810535741601486">Cette modification est définitive et irréversible. Les mises à jour étendues s'appliquent à tous les utilisateurs de cet appareil. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
@@ -3465,7 +3465,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3416468988018290825">Toujours afficher les URL en entier</translation>
 <translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3417836307470882032">Système horaire sur 24 heures</translation>
-<translation id="3418798368381485936">Vous ne pouvez pas vous connecter avec ce compte</translation>
+<translation id="3418798368381485936">Impossible de se connecter avec ce compte</translation>
 <translation id="3420501302812554910">Une réinitialisation est requise pour la clé de sécurité interne</translation>
 <translation id="3421387094817716717">Clé publique de la courbe elliptique</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement permettent d'accéder à vos résultats personnels ou à l'Assistant.</translation>
@@ -10090,7 +10090,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8110489095782891123">Téléchargement de la liste de contacts…</translation>
 <translation id="8114925369073821854">Autorisation d'accéder au micro de <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">&amp;Gestionnaire de favoris</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, une confirmation vous sera demandée à chaque fois.</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, une confirmation vous est demandée à chaque fois.</translation>
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# favori}one{# favori}other{# favoris}}</translation>
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>

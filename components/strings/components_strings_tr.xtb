@@ -577,7 +577,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1997484222658892567"><ph name="URL" />, yerel bilgisiayarınızda büyük miktarda veri depolamak istiyor</translation>
 <translation id="1997774360448418989">Kağıt (İnce)</translation>
 <translation id="1999416967035780066">Ücretsiz ve Paylaşımlı Yazılımlar</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{ve 1 uygulama daha}other{ve # uygulama daha}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{ve 1 tane daha}other{ve # diğer hesap için}}</translation>
 <translation id="2001469757375372617">Bir hata oluştu. Yaptığınız değişiklik kaydedilmedi.</translation>
 <translation id="2002436619517051938">Chrome ayarlarında değişiklik yapabilirsiniz.</translation>
 <translation id="2003709556000175978">Şifrenizi şimdi sıfırlayın</translation>
@@ -903,7 +903,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2533649878691950253">Genellikle bu izni vermediğiniz için bu sitenin tam konumunuzu öğrenmesi engellendi</translation>
 <translation id="253493526287553278">Promosyon kodu ayrıntılarını göster</translation>
 <translation id="2535585790302968248">Gizli olarak göz atmak için yeni bir gizli sekme aç</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{ve 1 tane daha}other{ve # tane daha}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{ve 1 tane daha}other{ve # diğer hesap için}}</translation>
 <translation id="2536110899380797252">Adres Ekle</translation>
 <translation id="2537931901612099523">Etkinliğiniz bu cihazı kullanan diğer kullanıcılar tarafından görülmediğinden daha gizli bir şekilde göz atabilirsiniz. Bu durum, Google da dahil olmak üzere ziyaret ettiğiniz web siteleri ve kullandıkları hizmetler tarafından verilerin toplanma şeklini değiştirmez. İndirilenler ve yer işaretleri kaydedilir.</translation>
 <translation id="2539524384386349900">Algıla</translation>
@@ -3971,7 +3971,7 @@ Ek ayrıntılar:
 <translation id="782886543891417279">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="7831993212387676366">Alışveriş listesi nedir?</translation>
 <translation id="7840103971441592723">Ekran görüntüsü başlatıldı</translation>
-<translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784137052867620416">Alışveriş Analizleri</translation>
 <translation id="7841633276323004751">Ödemede kullanılmak üzere seçilebilecek ödeme yöntemleri. Klavye gizli.</translation>
 <translation id="7842611866969435396">Başlayalım</translation>
 <translation id="784404208867107517">Gruplandırılmış geçmiş</translation>

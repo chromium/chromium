@@ -644,7 +644,7 @@
 <translation id="144518587530125858">לא ניתן להעלות את '<ph name="IMAGE_PATH" />' עבור עיצוב.</translation>
 <translation id="1445330076053050041">צריך לבחור פעולה למקש <ph name="KEY_NAME" /></translation>
 <translation id="1447531650545977377">הפעלת &amp;הסנכרון…</translation>
-<translation id="1447895950459090752">כרטיס התצוגה המקדימה שמופיע כשמעבירים את העכבר מעל לכרטיסייה</translation>
+<translation id="1447895950459090752">כרטיס התצוגה המקדימה שמופיע כשמציבים את הסמן מעל לכרטיסייה</translation>
 <translation id="1448264954024227422">‏ניתן להשתמש בחשבון הזה עם אפליקציות ל-Android. כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף במקום זאת משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
 
 יכול להיות שהרשאות שכבר ניתנו לאפליקציות יחולו על החשבון הזה. אפשר לקבוע את ההרשאות לאפליקציות ל-Android ב<ph name="APPS_LINK_BEGIN" />הגדרות האפליקציות<ph name="APPS_LINK_END" />.</translation>
@@ -2511,7 +2511,7 @@
 <translation id="2715751256863167692">‏השדרוג הזה מאפס את ה-Chromebook ומסיר את נתוני המשתמש הנוכחיים.</translation>
 <translation id="2715934493766003251">אי אפשר לפנות נפח אחסון כשסנכרון הקבצים פועל</translation>
 <translation id="2716986496990888774">ההגדרה הזו מנוהלת על-ידי הורה.</translation>
-<translation id="271749239614426244">התעלמות מתנועות סמן קטנות</translation>
+<translation id="271749239614426244">התעלמות מתנועות קטנות של הסמן</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
 <translation id="2718998670920917754">תוכנת האנטי-וירוס זיהתה וירוס.</translation>
 <translation id="2719936478972253983">‏קובצי ה-Cookie הבאים נחסמו</translation>

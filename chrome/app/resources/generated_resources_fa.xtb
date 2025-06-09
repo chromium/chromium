@@ -2855,7 +2855,7 @@
 <translation id="2947605845283690091">مرور وب باید سریع باشد اکنون چندلحظه برای<ph name="BEGIN_LINK" />بررسی افزونه‌هایتان<ph name="END_LINK" /> وقت بگذارید.</translation>
 <translation id="2948300991547862301">رفتن به <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">مرورگر وب سریع، ساده و ایمن که برای وب مدرن طراحی شده است.</translation>
-<translation id="2950666755714083615">من را ثبت‌نام کن</translation>
+<translation id="2950666755714083615">ثبت‌نام شوم</translation>
 <translation id="2953210795988451570">‏به‌روزرسانی‌های امنیتی به‌اتمام رسیده است. به Chromebook جدید ارتقا دهید.</translation>
 <translation id="2953218713108551165">اعلان‌ها برای <ph name="SITE" /> مجاز نیست. در بازدید بعدی دوباره از شما سؤال خواهد شد.</translation>
 <translation id="2956070239128776395">بخش در گروه قرار گرفت: <ph name="ERROR_LINE" /></translation>
@@ -6071,7 +6071,7 @@
 <translation id="5232714764496316200">‏از «لنز Google» برای انجام تکالیف کمک بگیرید</translation>
 <translation id="5233019165164992427">‏درگاه اشکال‌زدایی NaCl</translation>
 <translation id="5233231016133573565">شناسه فرایند</translation>
-<translation id="5233638681132016545">برگه جدید</translation>
+<translation id="5233638681132016545">زبانه جدید</translation>
 <translation id="5233736638227740678">&amp;جای‌گذاری</translation>
 <translation id="5234523649284990414">‏صفحه‌خوان در ChromeOS (یعنی ChromeVox) عمدتاً توسط افراد نابینا یا کم‌بینا استفاده می‌شود تا بتوانند نوشتار نمایش‌داده‌شده در صفحه را با ترکیب‌کننده گفتار یا نمایشگر بریل بخوانند. برای روشن کردن ChromeVox، کلید فاصله را فشار دهید. بعداز فعال شدن ChromeVox، به گشت سریعی هدایت می‌شوید.</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -6728,7 +6728,7 @@
 <translation id="5719854774000914513">‏سایت‌ها می‌توانند برای اتصال به دستگاه‌های HID درخواست دهند</translation>
 <translation id="572155275267014074">‏تنظیمات Android</translation>
 <translation id="5722086096420375088">سبز و سفید</translation>
-<translation id="572328651809341494">برگه‌های اخیر</translation>
+<translation id="572328651809341494">زبانه‌های اخیر</translation>
 <translation id="5723508132121499792">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="5723967018671998714">کوکی‌های طرف سوم در «حالت ناشناس» مسدود می‌شوند</translation>
 <translation id="5725112283692663422">ارسال بازخورد برای «ساختن مضمون با هوش مصنوعی»</translation>
@@ -8528,7 +8528,7 @@
 <translation id="7003723821785740825">تنظیم روشی سریع‌تر جهت باز کردن قفل دستگاه</translation>
 <translation id="7003844668372540529">محصول نامشخص <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">‏سایت می‌تواند از MIDI استفاده کند</translation>
-<translation id="7004499039102548441">برگه‌های جدید</translation>
+<translation id="7004499039102548441">زبانه‌های جدید</translation>
 <translation id="7004562620237466965">فقط کشف رمز</translation>
 <translation id="7004969808832734860">تا <ph name="DISCOUNT_UP_TO_AMOUNT" /> تخفیف</translation>
 <translation id="7005496624875927304">اجازه‌های جانبی</translation>
@@ -9271,7 +9271,7 @@
 <translation id="7553012839257224005">‏درحال بررسی محتوی Linux</translation>
 <translation id="7553242001898162573">گذرواژه‌تان را وارد کنید</translation>
 <translation id="755472745191515939">سرپرست این زبان را مجاز نکرده است</translation>
-<translation id="7554791636758816595">برگهٔ جدید</translation>
+<translation id="7554791636758816595">زبانه جدید</translation>
 <translation id="7556033326131260574">‏Smart Lock حساب شما را تأیید نکرد. برای ورود، گذرواژه‌تان را تایپ کنید.</translation>
 <translation id="7556242789364317684">‏متأسفانه <ph name="SHORT_PRODUCT_NAME" /> قادر به بازیابی تنظیماتتان نیست. برای رفع این خطا، <ph name="SHORT_PRODUCT_NAME" /> باید دستگاهتان را با Powerwash بازنشانی کند.</translation>
 <translation id="7557194624273628371">‏بازارسال درگاه Linux</translation>
@@ -9780,7 +9780,7 @@
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
 <translation id="7906440585529721295">داده‌های محلی حذف خواهد شد</translation>
 <translation id="7907502219904644296">تغییر دسترسی</translation>
-<translation id="7907837847548254634">شیء متمرکزشده سریع برجسته شود</translation>
+<translation id="7907837847548254634">نشان دادن یک تغییر رنگ سریع روی شیء متمرکزشده</translation>
 <translation id="7908378463497120834">متأسفیم، حداقل یک بخش از دستگاه ذخیره‌سازی خارجی نصب نمی‌شود.</translation>
 <translation id="7908835530772972485">با بسته شدن همه پنجره‌ها، داده‌ها حذف می‌شود</translation>
 <translation id="7909324225945368569">تغییر نام نمایه</translation>

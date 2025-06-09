@@ -145,7 +145,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 senha comprometida neste dispositivo}one{# senha comprometida neste dispositivo}other{# senhas comprometidas neste dispositivo}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
 <translation id="1598163867407640634">Usar <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="160275202205869636">Quando essa opção está ativada, você usa e salva dados na sua Conta do Google. Quando está desativada, os dados são salvos apenas neste dispositivo.</translation>
+<translation id="160275202205869636">Com essa opção ativada, você usa e salva dados na sua Conta do Google. Quando está desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remover # item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}one{# favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}other{# favoritos e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usar em outros dispositivos.}}</translation>
 <translation id="1639239467298939599">Carregando</translation>
@@ -247,7 +247,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2145315049852051678">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Vamos avisar se algo precisar de análise.</translation>
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2158408438301413340">Não foi possível verificar todas as senhas com o Chrome</translation>
-<translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na sua Conta do Google</translation>
+<translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na Conta do Google</translation>
 <translation id="2166228530126694506">Versão <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">As descrições de imagens estão desativadas</translation>
 <translation id="2172905120685242547">Fechar a janela?</translation>
@@ -939,7 +939,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5316947901395241499">O salvamento de senhas foi desativado pelo administrador</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5319359161174645648">O Google recomenda o Chrome</translation>
-<translation id="5326246328175179736">Não é possível fazer login usando esta conta</translation>
+<translation id="5326246328175179736">Não é possível fazer login com esta conta</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5328542107300944283">Usar com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Solicitações de permissão</translation>
@@ -1512,7 +1512,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772375229873196092">Fechar <ph name="APP_NAME" /></translation>
-<translation id="7774125747223422443">Com base na legislação da sua região, é necessário definir um navegador e um mecanismo de pesquisa</translation>
+<translation id="7774125747223422443">Com base nas leis da sua região, é necessário definir um navegador e um mecanismo de pesquisa</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Protege você em todos os Serviços do Google quando sua conta está conectada.</translation>
 <translation id="7778840695157240389">Volte mais tarde para ver novas matérias</translation>
@@ -1794,7 +1794,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8972098258593396643">Fazer o download para a pasta padrão?</translation>
 <translation id="8992769679401294069">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
-<translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Se um app ainda não estiver no dispositivo, ele será baixado em breve.</translation>
+<translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Os que não estiverem no dispositivo serão baixados em breve.</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="8998837250940831980">Não foi possível minimizar a guia. Tente de novo mais tarde.</translation>
@@ -1823,7 +1823,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9086455579313502267">Não foi possível acessar a rede</translation>
 <translation id="909756639352028172">Para ter uma experiência mais personalizada, inclua o Chrome na Atividade na Web e de apps e nos Serviços do Google vinculados</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta configuração está desativada.</translation>
-<translation id="9100610230175265781">Senha necessária</translation>
+<translation id="9100610230175265781">Senha longa necessária</translation>
 <translation id="9101137867221042551">Gerenciamento</translation>
 <translation id="9102803872260866941">A guia "Visualizar" está aberta</translation>
 <translation id="9102864637938129124">Sites e anunciantes podem medir a performance dos anúncios. Esta configuração está ativada.</translation>
@@ -1832,7 +1832,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9106148373857059373">Fluxo para adicionar aos favoritos fechado</translation>
 <translation id="9108808586816295166">DNS seguro pode não estar disponível o tempo todo</translation>
 <translation id="910908805481542201">Ajude-me a corrigir isso</translation>
-<translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
+<translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="9131209053278896908">Os sites bloqueados aparecem aqui</translation>
 <translation id="9133397713400217035">Navegar off-line</translation>
 <translation id="9143389653531441385">Inscrever-se com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

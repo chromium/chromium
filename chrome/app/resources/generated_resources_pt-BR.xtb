@@ -1051,7 +1051,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     nossos produtos ou serviços.</translation>
 <translation id="17081583771848899">Acesso rápido + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1708291623166985230">Ponto de acesso desativado</translation>
-<translation id="1708338024780164500">(Inativa)</translation>
+<translation id="1708338024780164500">(inativa)</translation>
 <translation id="1708563369218024896">Nenhum coletor de dados selecionado. Selecione pelo menos um coletor de dados.</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (código: <ph name="ID_PH" />)</translation>
 <translation id="1708839673480942471">Gerenciar notificações de apps, o modo "Não perturbe" e ícones de apps</translation>
@@ -1180,7 +1180,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1803545009660609783">Redefinir</translation>
 <translation id="180441032496361123">Clique para ativar <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">A guia em segundo plano está usando o microfone</translation>
-<translation id="1805822111539868586">Inspecionar visualizações</translation>
+<translation id="1805822111539868586">Inspecionar visualizações:</translation>
 <translation id="1805888043020974594">Servidor de impressão</translation>
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Mudar para outro app aberto</translation>
@@ -3480,7 +3480,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3416468988018290825">Sempre mostrar URLs completos</translation>
 <translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3417836307470882032">Relógio de 24 horas</translation>
-<translation id="3418798368381485936">Não é possível fazer login usando esta conta</translation>
+<translation id="3418798368381485936">Não é possível fazer login com esta conta</translation>
 <translation id="3420501302812554910">A chave de segurança interna precisa ser redefinida</translation>
 <translation id="3421387094817716717">Chave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar seus resultados personalizados ou o Google Assistente.</translation>
@@ -8327,7 +8327,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="68541483639528434">Fechar outras guias</translation>
 <translation id="6855892664589459354">Backup e restauração do Crostini</translation>
 <translation id="6856348640027512653">Sem permissão para usar dispositivos ou dados de realidade virtual</translation>
-<translation id="6856607887871564638">Configure um perfil de trabalho para salvar e usar suas senhas e outros itens na sua conta</translation>
+<translation id="6856607887871564638">Crie um perfil de trabalho para salvar e usar senhas e outros itens na conta</translation>
 <translation id="6856623341093082836">Configurar e ajustar a precisão da touchscreen</translation>
 <translation id="6857145580237920905">Remover perfis de eSIM antes do Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
@@ -9165,7 +9165,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
 <translation id="747312361841682912">Excluir os dados exibidos</translation>
-<translation id="7473891865547856676">Agora Não</translation>
+<translation id="7473891865547856676">Agora não</translation>
 <translation id="7474043404939621342">Personalizar sua barra de ferramentas</translation>
 <translation id="747459581954555080">Restaurar todas</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
@@ -9776,7 +9776,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
 <translation id="7897900149154324287">No futuro, não se esqueça de ejetar o dispositivo removível no aplicativo "Arquivos" antes de desconectá-lo. Caso contrário, você poderá perder dados.</translation>
 <translation id="7898725031477653577">Sempre traduzir</translation>
-<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador e as configurações, além do software que está instalado no dispositivo.</translation>
+<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador, as configurações e qual o software instalado no dispositivo.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903429136755645827">Clique para personalizar os controles do jogo</translation>
 <translation id="7903481341948453971">Usar o bloqueio de tela ao preencher senhas</translation>
@@ -11581,7 +11581,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9128870381267983090">Conectar à rede</translation>
 <translation id="9129562557082598582">Exportar todos os <ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">Modo inválido inserido.</translation>
-<translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
+<translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" /> do site.</translation>
 <translation id="9130208109420587135">Editar nome do grupo <ph name="NAME" /></translation>
 <translation id="9130364135697530260">O conteúdo incorporado neste site pode usar as informações salvas sobre você</translation>
 <translation id="9131209053278896908">Os sites bloqueados aparecem aqui</translation>

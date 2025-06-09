@@ -2909,7 +2909,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{Free up space in <ph name="CLOUD_PROVIDER" /> to move this file}other{Free up space in <ph name="CLOUD_PROVIDER" /> to move these files}}</translation>
 <translation id="2989474696604907455">not attached</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
-<translation id="2989805286512600854">Open in New Tab</translation>
+<translation id="2989805286512600854">Open in new tab</translation>
 <translation id="2990313168615879645">Add Google Account</translation>
 <translation id="2990375978470734995">For this change to take effect, reconnect your external accessories.</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>

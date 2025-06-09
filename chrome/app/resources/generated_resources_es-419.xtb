@@ -8847,7 +8847,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7261612856573623172">Voz en la función de texto a voz del sistema</translation>
 <translation id="7262004276116528033">El servicio de acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
-<translation id="7262919421769447042"><ph name="PROFILE_MANAGER" /> administra este perfil, por lo que puede ver cierta información, lo que incluye</translation>
+<translation id="7262919421769447042"><ph name="PROFILE_MANAGER" /> administra este perfil, por lo que puede ver cierta información, como la siguiente:</translation>
 <translation id="7264695323040866038">¿Deseas usar siempre la app de <ph name="APP" /> para abrir vínculos web compatibles?</translation>
 <translation id="7267044199012331848">No se pudo instalar la máquina virtual. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Sigue levantando el dedo para agregar diferentes partes de la huella dactilar.</translation>
@@ -9756,7 +9756,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contario, es posible que pierdas datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
-<translation id="7900950034255258543">Para garantizar que este dispositivo se pueda usar de forma segura, tu organización puede consultar información sobre el sistema operativo, el navegador, la configuración y el software instalado en el dispositivo</translation>
+<translation id="7900950034255258543">Para garantizar que este dispositivo se pueda usar de forma segura, tu organización puede consultar información sobre el sistema operativo, el navegador, la configuración y el software instalado en el dispositivo.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juego</translation>
 <translation id="7903481341948453971">Usar el bloqueo de pantalla para completar contraseñas</translation>
