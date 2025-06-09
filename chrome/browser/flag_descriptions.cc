@@ -140,6 +140,10 @@ const char kNewTabPageCustomizationName[] = "Customize the new tab page";
 const char kNewTabPageCustomizationDescription[] =
     "If enabled, allows users to customize the new tab page";
 
+const char kNewTabPageCustomizationV2Name[] = "Customize the new tab page V2";
+const char kNewTabPageCustomizationV2Description[] =
+    "Allows users to customize the new tab page, like appearance.";
+
 const char kNewTabPageCustomizationToolbarButtonName[] =
     "New tab page customization toolbar button";
 const char kNewTabPageCustomizationToolbarButtonDescription[] =
