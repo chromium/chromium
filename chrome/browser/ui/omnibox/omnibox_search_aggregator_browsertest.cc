@@ -91,6 +91,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 }
               }
             },
+            "destinationUri": "https://www.example.com/people/john",
             "score": 0.8,
             "dataStore": "project 1"
           }
@@ -307,12 +308,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest, GoodJsonResponse) {
                   GURL("https://www.aggregator.com/search?q=John%27s+Demise"))),
           AllOf(Field(&AutocompleteMatch::type,
                       AutocompleteMatchType::NAVSUGGEST),
-                Field(&AutocompleteMatch::contents,
-                      u"www.aggregator.com/search?q=john%40example.com"),
+                Field(&AutocompleteMatch::contents, u"Aggregator People"),
                 Field(&AutocompleteMatch::description, u"John Doe"),
                 Field(&AutocompleteMatch::destination_url,
-                      GURL("https://www.aggregator.com/"
-                           "search?q=john%40example.com")),
+                      GURL("https://www.example.com/people/john")),
                 Field(&AutocompleteMatch::image_url,
                       GURL("https://example.com/image.png"))),
           AllOf(Field(&AutocompleteMatch::type,

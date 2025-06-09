@@ -31,8 +31,10 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -383,10 +385,11 @@ std::string CreatePeopleResult(const std::string& displayName,
               }
             }
           },
+          "destinationUri": "https://example.com/people/%s",
           "score": %0.1f
         }
         )",
-      userName, displayName, givenName, familyName, score);
+      userName, displayName, givenName, familyName, userName, score);
 }
 std::string CreateContentResult(const std::string& title,
                                 const std::string& url,
@@ -613,15 +616,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
                      {5, ACMatchClassification::NONE}};
   };
   auto secondary_text_class = [&](auto suggestion_type) {
-    return suggestion_type ==
-                   AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE
-               ? std::vector<
-                     ACMatchClassification>{{0,
-                                             ACMatchClassification::URL |
-                                                 ACMatchClassification::MATCH},
-                                            {5, ACMatchClassification::URL}}
-               : std::vector<ACMatchClassification>{
-                     {0, ACMatchClassification::DIM}};
+    return std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
   };
 
   auto query_match = provider_->CreateMatch(
@@ -653,18 +648,18 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   auto people_match = provider_->CreateMatch(
       AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE, true, {1000},
       "https://url.com/", "https://example.com/image.png",
-      "https://example.com/icon.png", u"duckduckgo.com/?q=name",
-      u"input name - Search Engine ", u"keyword https://url.com/");
+      "https://example.com/icon.png", u"Keyword People", u"input name",
+      u"keyword https://url.com/");
   EXPECT_EQ(people_match.relevance, 1000);
   EXPECT_EQ(people_match.destination_url.spec(), "https://url.com/");
   EXPECT_EQ(people_match.fill_into_edit, u"keyword https://url.com/");
   EXPECT_EQ(people_match.enterprise_search_aggregator_type,
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE);
-  EXPECT_EQ(people_match.description, u"duckduckgo.com/?q=name");
+  EXPECT_EQ(people_match.description, u"Keyword People");
   EXPECT_EQ(people_match.description_class,
             primary_text_class(
                 AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE));
-  EXPECT_EQ(people_match.contents, u"input name - Search Engine ");
+  EXPECT_EQ(people_match.contents, u"input name");
   EXPECT_EQ(people_match.contents_class,
             secondary_text_class(
                 AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE));
@@ -836,7 +831,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
 
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[0].relevance, 810);
-  EXPECT_EQ(matches[0].contents, u"example.com/people/jdoe");
+  EXPECT_EQ(matches[0].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://example.com/people/jdoe"));
@@ -879,22 +876,30 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
   ACMatches matches = provider_->matches_;
   ASSERT_EQ(matches.size(), 4u);
 
-  EXPECT_EQ(matches[0].contents, u"example.com/people/jdoe");
+  EXPECT_EQ(matches[0].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].image_url,
             GURL("https://lh3.googleusercontent.com/some/path-s100=s64"));
 
-  EXPECT_EQ(matches[1].contents, u"example.com/people/jdoe2");
+  EXPECT_EQ(matches[1].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
   EXPECT_EQ(matches[1].description, u"John Doe2");
   EXPECT_EQ(matches[1].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=s100"));
 
-  EXPECT_EQ(matches[2].contents, u"example.com/people/jdoe3");
+  EXPECT_EQ(matches[2].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
   EXPECT_EQ(matches[2].description, u"John Doe3");
   EXPECT_EQ(matches[2].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=abc-s64"));
 
-  EXPECT_EQ(matches[3].contents, u"example.com/people/jdoe4");
+  EXPECT_EQ(matches[3].contents,
+            l10n_util::GetStringFUTF16(IDS_PERSON_SUGGESTION_DESCRIPTION,
+                                       u"keyword"));
   EXPECT_EQ(matches[3].description, u"John Doe4");
   EXPECT_EQ(matches[3].image_url,
             GURL("https://lh3.googleusercontent.com/some/path=w100-h200"));
@@ -904,17 +909,11 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
 TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   provider_->adjusted_input_ = CreateInput(u"john d", true);
   ParseResponse(kMissingFieldsJsonResponse);
-  EXPECT_THAT(GetMatches(),
-              testing::ElementsAre(
-                  // TODO(crbug.com/392734200): The following match is created
-                  //   because we fall back to a search URL for the suggestion
-                  //   that is missing "destinationURI". Once support for
-                  //   fallback is removed, this match should be removed as
-                  //   well.
-                  u"https://www.google.com/?q=missingUri%40example.com",
-                  u"https://example.com/people/jdoe",
-                  u"https://www.example.com/",
-                  u"https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_THAT(
+      GetMatches(),
+      testing::ElementsAre(u"https://example.com/people/jdoe",
+                           u"https://www.example.com/",
+                           u"https://www.google.com/?q=John%27s+Document+1"));
 }
 
 // Test non-dict results are skipped.
@@ -1128,8 +1127,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
+          ScoredMatch{u"https://example.com/people/mango-1-people", 607},
+          ScoredMatch{u"https://example.com/people/mango-2-people", 606},
           ScoredMatch{u"https://url-mango-1/", 517},
           ScoredMatch{u"https://url-mango-2/", 516},
           ScoredMatch{u"https://www.google.com/?q=mango-1-query", 507},
@@ -1180,10 +1179,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 605},
-          ScoredMatch{u"https://www.google.com/?q=mango-4-people", 604},
+          ScoredMatch{u"https://example.com/people/mango-1-people", 607},
+          ScoredMatch{u"https://example.com/people/mango-2-people", 606},
+          ScoredMatch{u"https://example.com/people/mango-3-people", 605},
+          ScoredMatch{u"https://example.com/people/mango-4-people", 604},
           ScoredMatch{u"https://url-mango-1/", 517},
           ScoredMatch{u"https://url-mango-2/", 516},
           ScoredMatch{u"https://url-mango-3/", 515},
@@ -1259,9 +1258,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 605},
+          ScoredMatch{u"https://example.com/people/mango-1-people", 607},
+          ScoredMatch{u"https://example.com/people/mango-2-people", 606},
+          ScoredMatch{u"https://example.com/people/mango-3-people", 605},
           ScoredMatch{u"https://url-mango-1/", 517},
           ScoredMatch{u"https://url-mango-2/", 516},
           ScoredMatch{u"https://url-mango-3/", 515},
@@ -1307,8 +1306,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 307},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 306}));
+          ScoredMatch{u"https://example.com/people/mango-1-people", 307},
+          ScoredMatch{u"https://example.com/people/mango-2-people", 306}));
 
   // Scoped inputs have a higher limit of 8 matches allowed to score lower than
   // 500. Even if the 1st 2 matches score higher than 500, the remaining matches
@@ -1348,9 +1347,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 307},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 306},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 305},
+          ScoredMatch{u"https://example.com/people/mango-1-people", 307},
+          ScoredMatch{u"https://example.com/people/mango-2-people", 306},
+          ScoredMatch{u"https://example.com/people/mango-3-people", 305},
           ScoredMatch{u"https://url-mango-1/", 217},
           ScoredMatch{u"https://url-mango-2/", 216},
           ScoredMatch{u"https://url-mango-3/", 215},
@@ -1390,7 +1389,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ServerRelevanceScoring) {
           ScoredMatch{u"https://www.google.com/?q=query", 1009},
           ScoredMatch{u"https://www.google.com/?q=query2", 1008},
           ScoredMatch{u"https://www.google.com/?q=query3", 807},
-          ScoredMatch{u"https://www.google.com/?q=matchUserName", 710},
+          ScoredMatch{u"https://example.com/people/matchUserName", 710},
           ScoredMatch{u"https://url/", 710}, ScoredMatch{u"https://url2/", 709},
           ScoredMatch{u"https://url3/", 308}));
 }
@@ -1421,9 +1420,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, MixedRelevanceScoring) {
               testing::ElementsAre(
                   ScoredMatch{u"https://www.google.com/?q=matchQuery", 1010},
                   ScoredMatch{u"https://www.google.com/?q=query", 1009},
-                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 710},
+                  ScoredMatch{u"https://example.com/people/matchUserName", 710},
                   ScoredMatch{u"https://url/", 710},
-                  ScoredMatch{u"https://www.google.com/?q=userName", 609},
+                  ScoredMatch{u"https://example.com/people/userName", 609},
                   ScoredMatch{u"https://url2/", 309}));
 
   // Unscoped mode should use client-calculated relevance scores.
@@ -1431,7 +1430,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, MixedRelevanceScoring) {
   ParseResponse(response);
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 610},
+                  ScoredMatch{u"https://example.com/people/matchUserName", 610},
                   ScoredMatch{u"https://url/", 520},
                   ScoredMatch{u"https://www.google.com/?q=matchQuery", 510}));
 }
@@ -1456,7 +1455,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 609},
+                  ScoredMatch{u"https://example.com/people/matchUserName", 609},
                   ScoredMatch{u"https://url/", 519},
                   ScoredMatch{u"https://www.google.com/?q=matchQuery", 509},
                   FieldsAre(_, 0), FieldsAre(_, 0), FieldsAre(_, 0)));
@@ -1550,8 +1549,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=ab", 610},
-                           ScoredMatch{u"https://www.google.com/?q=abc", 309},
+      testing::ElementsAre(ScoredMatch{u"https://example.com/people/ab", 610},
+                           ScoredMatch{u"https://example.com/people/abc", 309},
                            ScoredMatch{u"https://url-ab/", 220},
                            ScoredMatch{u"https://url-abc/", 219}));
 
@@ -1571,8 +1570,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=abc", 610},
-                           ScoredMatch{u"https://www.google.com/?q=abcd", 609},
+      testing::ElementsAre(ScoredMatch{u"https://example.com/people/abc", 610},
+                           ScoredMatch{u"https://example.com/people/abcd", 609},
                            ScoredMatch{u"https://url-abc/", 520},
                            ScoredMatch{u"https://url-abcd/", 519}));
 
@@ -1684,7 +1683,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=userName", 610},
+                  ScoredMatch{u"https://example.com/people/userName", 610},
                   ScoredMatch{u"https://url/", 520},
                   ScoredMatch{u"https://www.google.com/?q=input", 510},
                   FieldsAre(_, 0)));
