@@ -697,10 +697,31 @@ public class ContextMenuTest {
 
     @Test
     @LargeTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
+    public void testSavePageLongPress() throws TimeoutException {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        Tab tab = sDownloadTestRule.getActivity().getActivityTab();
+        int callCount = sDownloadTestRule.getChromeDownloadCallCount();
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                sDownloadTestRule.getActivity(),
+                tab,
+                "testEmptySpace",
+                R.id.contextmenu_save_page);
+
+        // Wait for the download to complete and see if we got the right file
+        Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(sDownloadTestRule.hasDownloadedRegex(".*context_menu_test.html.*"));
+    }
+
+    @Test
+    @LargeTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
-    public void testSavePage() throws TimeoutException {
+    public void testSavePageRightClick() throws TimeoutException {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         int callCount = sDownloadTestRule.getChromeDownloadCallCount();
@@ -713,9 +734,7 @@ public class ContextMenuTest {
 
         // Wait for the download to complete and see if we got the right file
         Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(
-                sDownloadTestRule.hasDownloadedRegex(
-                        ".*chrome_test_data_android_contextmenu_context_menu_test.html"));
+        Assert.assertTrue(sDownloadTestRule.hasDownloadedRegex(".*context_menu_test.html.*"));
     }
 
     @Test
@@ -1231,10 +1250,57 @@ public class ContextMenuTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
+    public void testSharePageLongPress() throws Exception {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        Tab tab = sDownloadTestRule.getActivity().getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Set share delegate before triggering context menu, so the mocked share
+                    // delegate is used.
+                    var supplier =
+                            (ShareDelegateSupplier)
+                                    ShareDelegateSupplier.from(
+                                            sDownloadTestRule.getActivity().getWindowAndroid());
+                    supplier.set(mShareDelegate);
+                });
+
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                sDownloadTestRule.getActivity(),
+                tab,
+                "testEmptySpace",
+                R.id.contextmenu_share_page);
+
+        ArgumentCaptor<ShareParams> shareParamsCaptor = ArgumentCaptor.forClass(ShareParams.class);
+        ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
+                ArgumentCaptor.forClass(ChromeShareExtras.class);
+        verify(mShareDelegate)
+                .share(
+                        shareParamsCaptor.capture(),
+                        chromeExtrasCaptor.capture(),
+                        eq(ShareOrigin.CONTEXT_MENU));
+
+        Assert.assertFalse(
+                "Link being shared is empty.",
+                TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
+        Assert.assertEquals(
+                "Link being shared is not the test page url.",
+                mTestUrl,
+                shareParamsCaptor.getValue().getUrl());
+        Assert.assertTrue(
+                "Share with share sheet expect to record the last used.",
+                chromeExtrasCaptor.getValue().saveLastUsed());
+    }
+
+    @Test
+    @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
-    public void testSharePage() throws Exception {
+    public void testSharePageRightClick() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1278,10 +1344,37 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
+    @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
+    public void testPrintPageLongPress() throws Exception {
+        DeviceInput.setSupportsPrecisionPointerForTesting(true);
+        Tab tab = sDownloadTestRule.getActivity().getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                // Set printing controller to use the mock instance.
+                () -> {
+                    PrintingControllerImpl.setInstanceForTesting(mPrintingController);
+                });
+
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                sDownloadTestRule.getActivity(),
+                tab,
+                "testEmptySpace",
+                R.id.contextmenu_print_page);
+
+        // Check that the started print job has the same title as the current tab.
+        ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
+        verify(mPrintingController).startPrint(printableCaptor.capture(), any());
+        Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
-    public void testPrintPage() throws Exception {
+    public void testPrintPageRightClick() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(

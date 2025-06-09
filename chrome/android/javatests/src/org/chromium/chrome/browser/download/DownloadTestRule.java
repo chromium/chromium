@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Custom TestRule for tests that need to download a file.
@@ -89,11 +91,21 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
      *     searched in the system downloads path.
      */
     public boolean hasDownloadedRegex(String fileNameRegex) {
-        for (File file : DOWNLOAD_DIRECTORY.listFiles()) {
-            if (!file.isDirectory() && file.getName().matches(fileNameRegex)) {
+        List<String> filenames =
+                Stream.of(DOWNLOAD_DIRECTORY.listFiles())
+                        .filter(f -> !f.isDirectory())
+                        .map(f -> f.getName())
+                        .collect(Collectors.toList());
+        for (String name : filenames) {
+            if (name.matches(fileNameRegex)) {
                 return true;
             }
         }
+        Log.d(
+                TAG,
+                String.format(
+                        "No file in download directory matches regex %s: %s",
+                        fileNameRegex, String.join(", ", filenames)));
         return false;
     }
 
