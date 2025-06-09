@@ -5,6 +5,7 @@
 #include "components/persistent_cache/backend_params_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
@@ -25,7 +26,11 @@ namespace persistent_cache {
 
 BackendParamsManager::BackendParamsManager(base::FilePath top_directory)
     : backend_params_map_(kLruCacheCapacity),
-      top_directory_(std::move(top_directory)) {}
+      top_directory_(std::move(top_directory)) {
+  if (!base::PathExists(top_directory_)) {
+    base::CreateDirectory(top_directory_);
+  }
+}
 BackendParamsManager::~BackendParamsManager() = default;
 
 void BackendParamsManager::GetParamsSyncOrCreateAsync(
