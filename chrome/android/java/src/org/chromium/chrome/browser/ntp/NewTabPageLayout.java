@@ -152,8 +152,8 @@ public class NewTabPageLayout extends LinearLayout
     private OnClickListener mLensButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
     // Previous visibility states for metrics.
-    private boolean mPreviousVoiceSearchButtonVisible;
-    private boolean mPreviousLensButtonVisible;
+    private Boolean mPreviousVoiceSearchButtonVisible;
+    private Boolean mPreviousLensButtonVisible;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -950,14 +950,16 @@ public class NewTabPageLayout extends LinearLayout
             boolean isLensButtonVisible,
             boolean isComposeplateButtonVisible) {
         if (!mManager.isCurrentPage()
-                || (isVoiceSearchButtonVisible == mPreviousVoiceSearchButtonVisible
+                || (mPreviousVoiceSearchButtonVisible != null
+                        && isVoiceSearchButtonVisible == mPreviousVoiceSearchButtonVisible
+                        && mPreviousLensButtonVisible != null
                         && isLensButtonVisible == mPreviousLensButtonVisible)) {
             return;
         }
 
         ComposeplateMetricsUtils.recordFakeSearchBoxImpression();
         if (isComposeplateButtonVisible) {
-            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
+            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression();
         }
 
         mPreviousVoiceSearchButtonVisible = isVoiceSearchButtonVisible;
