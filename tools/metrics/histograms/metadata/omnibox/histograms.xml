@@ -44,7 +44,8 @@ chromium-metrics-reviews@google.com.
       summary="Default Search keywords set by policy."/>
   <variant name=".DefaultSearchEngineSetByUser"
       summary="Default Search keywords set by user"/>
-  <variant name=".FeaturedAllowUserOverrideSiteSearchSetByPolicy"
+  <variant name=".Extension" summary="keywords created by an extension."/>
+  <variant name=".FeaturedOverridableSiteSearchSetByPolicy"
       summary="featured SiteSearch keywords set by an enterprise admin
                through policy that users can override"/>
   <variant name=".FeaturedSearchAggregatorSetByPolicy"
@@ -53,9 +54,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".FeaturedSiteSearchSetByPolicy"
       summary="featured SiteSearch keywords set by an enterprise admin
                through policy that users cannot override"/>
-  <variant name=".NonFeaturedAllowUserOverrideSiteSearchSetByPolicy"
+  <variant name=".NonFeaturedOverridableSiteSearchSetByPolicy"
       summary="non-featured SiteSearch keywords set by an enterprise admin
                through policy that users can override"/>
+  <variant name=".NonFeaturedSearchAggregatorSetByPolicy"
+      summary="non-featured EnterpriseSearchAggregator keywords set by an
+               enterprise admin through policy"/>
   <variant name=".NonFeaturedSiteSearchSetByPolicy"
       summary="non-featured SiteSearch keywords set by an enterprise admin
                through policy that users cannot override"/>
@@ -63,11 +67,6 @@ chromium-metrics-reviews@google.com.
       summary="SiteSearch keywords set by the user that do not support
                replacement. (e.g. 'x.com')"/>
   <variant name=".Prepopulated" summary="prepopulated keywords"/>
-  <variant name=".SearchAggregatorSetByPolicy"
-      summary="non-featured EnterpriseSearchAggregator keywords set by an
-               enterprise admin through policy"/>
-  <variant name=".SearchEngineSetByExtension"
-      summary="keywords created by an extension."/>
   <variant name=".StarterPack" summary="starter pack keywords"/>
   <variant name=".SubstitutingSiteSearchSetByUser"
       summary="SiteSearch keywords set by the user that support replacement

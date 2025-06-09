@@ -1480,13 +1480,19 @@ message SystemProfileProto {
       // The accessibility tree will have the main node annotated.
       ANNOTATE_MAIN_NODE = 9;
 
-      // From platform is is filtered out and is never present.
-      // FROM_PLATFORM = 10;
+      // Indicates that the bundle containing this and other flags is being
+      // applied in response to an interaction with the platform's accessibility
+      // integration. This meta-flag, which must always be used in combination
+      // with one or more other flags and is never sent to renderers, is used to
+      // selectively suppress or permit accessibility modes that are set due to
+      // interactions from accessibility tools.
+      FROM_PLATFORM = 10;
 
       // The accessibility tree will contain additional properties needed only
       // by screen readers.
       SCREEN_READER = 11;
     }
+
     // Indicates which accessibility mode flags are set.
     repeated AXMode enabled_modes = 1 [packed = true];
   }

@@ -151,6 +151,7 @@ message Source {
   // discovered by Google's crawler, it should not be recorded.
   // Replaced by |urls| field.
   optional string deprecated_url = 2 [deprecated = true];
+
   reserved 5;
   reserved "deprecated_url_origin";
   reserved 9;

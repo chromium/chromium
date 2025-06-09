@@ -713,15 +713,22 @@ message OmniboxEventProto {
   // not present if not in keyword mode.
   enum KeywordType {
     KEYWORD_TYPE_UNSPECIFIED = 0;
-    STARTER_PACK = 1;                              // Starter pack keyword.
-    PREPOPULATED = 2;                              // Prepopulated keyword.
-    EXTENSION = 3;                                 // Keyword set by extension.
-    SEARCH_AGGREGATOR_SET_BY_POLICY = 4;           // Keyword set by search
-                                                   // aggregator policy.
-    FEATURED_SITE_SEARCH_SET_BY_POLICY = 5;        // Featured site search
-                                                   // keyword set by policy.
-    NON_FEATURED_SITE_SEARCH_SET_BY_POLICY = 6;    // Non-featured site search
-                                                   // keyword set by policy.
+    STARTER_PACK = 1;  // Starter pack keyword.
+    PREPOPULATED = 2;  // Prepopulated keyword.
+    EXTENSION = 3;     // Keyword set by extension.
+
+    // Enterprise policy keyword types. Each enterprise keyword can be:
+    // - Featured or non-featured
+    // - Not-overridable or overridable
+    // - Site search or search aggregator
+    //   - Search aggregator keywords cannot be overridable
+    //   - Search aggregator keywords always come in featured and non-featured
+    //   pairs
+    // All are set by policy.
+    FEATURED_SEARCH_AGGREGATOR_SET_BY_POLICY = 4;
+    FEATURED_SITE_SEARCH_SET_BY_POLICY = 5;
+    NON_FEATURED_SITE_SEARCH_SET_BY_POLICY = 6;
+
     DEFAULT_SEARCH_ENGINE_SET_BY_POLICY = 7;       // Default search engine
                                                    // keyword set by policy.
     NON_SUBSTITUTING_SITE_SEARCH_SET_BY_USER = 8;  // Site search keyword
@@ -732,6 +739,11 @@ message OmniboxEventProto {
                                                    // set by user.
     DEFAULT_SEARCH_ENGINE_SET_BY_USER = 10;        // Default search engine
                                                    // keyword set by user.
+
+    // See comment above for enterprise policy keywords.
+    NON_FEATURED_SEARCH_AGGREGATOR_SET_BY_POLICY = 11;
+    FEATURED_OVERRIDABLE_SITE_SEARCH_SET_BY_POLICY = 12;
+    NON_FEATURED_OVERRIDABLE_SITE_SEARCH_SET_BY_POLICY = 13;
   }
 
   optional KeywordType keyword_type = 28;

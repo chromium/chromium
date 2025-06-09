@@ -49,6 +49,7 @@ message Report {
     BACKGROUNDED = 2;
     SHUTDOWN = 3;
   }
+
   optional LogRotationReason log_rotation_reason = 9;
 
   // Information about the user's browser and system configuration.
@@ -69,31 +70,40 @@ message Report {
     // includes sources which were dropped or deferred, but not sources
     // carried over from a previous interval.
     optional int32 observed = 1;
+
     // Number of navigation sources that URLs were observed for, including
     // sources dropped due to limits.
     optional int32 navigation_sources = 2;
+
     // Number of sources discarded due to not matching a navigation URL.
     optional int32 unmatched_sources = 3;
+
     // Number of sources deferred from a previous interval.
     optional int32 carryover_sources = 4;
+
     // Number of sources deferred to the next interval. Sources corresponding to
     // opened tabs that could emit more events in the future are kept in memory
     // and deferred to the next interval for inclusion in next reports, up to a
     // max limit on number of sources.
     optional int32 deferred_sources = 5;
+
     // Number of sources deferred to the next interval due to lack of events.
     optional int32 entryless_sources = 6;
+
     // Time elapsed in seconds from the moment the newest truncated source was
     // created to the moment it was discarded from memory, if pruning happened
     // due to number of sources exceeding the max threshold.
     optional int32 pruned_sources_age_seconds = 7;
   }
+
   optional SourceCounts source_counts = 10;
 
   // List of Entries containing the main UKM data.
   repeated Entry entries = 4;
+
   // Web features used on pages during this reporting interval.
   repeated HighLevelWebFeatures web_features = 13;
+
   // List of Entries containing aggregated UKM data.
   repeated Aggregate aggregates = 7;
 
@@ -101,6 +111,7 @@ message Report {
     // Hash of the event name to identify the event type. This field should
     // always be set when any other field in this message is set.
     optional fixed64 event_hash = 1;
+
     // Rate computed by standard UKM downsampling.
     // A value of N means that this event type is downsampled at a rate of
     // 1-in-N, meaning this event type is only recorded for every 1 in N page
@@ -108,6 +119,7 @@ message Report {
     // downsample this event when events are collected in this reporting
     // interval, thus no downsampling is applied.
     optional uint32 standard_rate = 2;
+
     // Any other further downsampling logic by custom client-side
     // implementation.
     // A value of M means that this event type is downsampled at a rate of
