@@ -1395,12 +1395,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private final ObservableSupplierImpl<Tracker> mTrackerSupplier =
                 new ObservableSupplierImpl<>();
 
-        private void initializeOptionalButton() {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)) return;
-            if (mOptionalButtonCoordinator != null) return;
+        /** Returns {@code true} if optional button MVC was initialized successfully. */
+        private boolean initializeOptionalButton() {
+            if (mOptionalButtonCoordinator != null) return true;
+
+            if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
+                    || hasMultipleDevButtons()
+                    || ChromeFeatureList.sSearchInCCT.isEnabled()) {
+                // We disable the optional button when omnibox in CCT is on.
+                return false;
+            }
 
             ViewStub optionalButtonStub = findViewById(R.id.optional_button_stub);
-            if (optionalButtonStub == null) return;
+            if (optionalButtonStub == null) return false;
+
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
             var lp = (FrameLayout.LayoutParams) optionalButton.getLayoutParams();
@@ -1466,6 +1474,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             View optionalButtonWrapper = findViewById(R.id.optional_toolbar_button_wrapper);
             optionalButtonWrapper.setVisibility(View.VISIBLE);
             mButtonVisibilityRule.addButton(ButtonId.MTB, optionalButtonWrapper, true);
+            return true;
         }
 
         private @Px int getDimensionPx(@DimenRes int resId) {
@@ -1481,17 +1490,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateOptionalButton(ButtonData buttonData) {
-            if (mOptionalButtonCoordinator == null) initializeOptionalButton();
-
-            // See if we should show an indicator if optional button cannot be shown. This check
-            // needs to be invoked _after_ optional button initialization is attempted, in order
-            // to determine its visibility in case it gets hidden due to toolbar width/button count
-            // constraints.
-            if (maybeShowAlternativeUiForOptionalButton(
-                    buttonData.getButtonSpec().getButtonVariant())) {
+            if (mOptionalButtonCoordinator == null && !initializeOptionalButton()) {
+                // See if we should show an indicator if optional button cannot be shown. This check
+                // needs to be invoked _after_ optional button initialization is attempted, in order
+                // to determine its visibility in case it gets hidden due to toolbar width/button
+                // count
+                // constraints.
+                maybeShowActionMenuIndicator(buttonData.getButtonSpec().getButtonVariant());
                 return;
             }
-
             Tab tab = getCurrentTab();
             if (tab != null && mTrackerSupplier.get() == null) {
                 mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(tab.getProfile()));
@@ -1499,13 +1506,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
         }
 
-        private boolean maybeShowAlternativeUiForOptionalButton(
-                @AdaptiveToolbarButtonVariant int buttonVariant) {
-            if (mOptionalButtonCoordinator == null || shouldShowOptionalButton()) return false;
+        // Display a (blue) dot on the overflow menu icon for the optional button that cannot be
+        // shown on the toolbar to indicate that the action is available through the menu.
+        private void maybeShowActionMenuIndicator(@AdaptiveToolbarButtonVariant int buttonVariant) {
+            if (ChromeFeatureList.sSearchInCCT.isEnabled()) return;
 
             boolean show = buttonVariant != AdaptiveToolbarButtonVariant.READER_MODE;
             mMenuButton.findViewById(R.id.menu_dot).setVisibility(show ? View.VISIBLE : View.GONE);
-            return true;
         }
 
         private void updateOptionalButtonTint() {
@@ -2428,5 +2435,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     boolean isMaximizeButtonEnabledForTesting() {
         return mMaximizeButtonEnabled;
+    }
+
+    OptionalButtonCoordinator getOptionalButtonCoordinatorForTesting() {
+        return mLocationBar.mOptionalButtonCoordinator;
     }
 }
