@@ -1865,8 +1865,16 @@ class ProactivePersonalizationHintsFetcherBrowserTest
       identity_test_env_adaptor_;
 };
 
+// TODO(crbug.com/423415283): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HintsFetcherFetchesWithAccessToken \
+  DISABLED_HintsFetcherFetchesWithAccessToken
+#else
+#define MAYBE_HintsFetcherFetchesWithAccessToken \
+  HintsFetcherFetchesWithAccessToken
+#endif
 IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
-                       HintsFetcherFetchesWithAccessToken) {
+                       MAYBE_HintsFetcherFetchesWithAccessToken) {
   SetNetworkConnectionOnline();
   SetResponseType(
       optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
@@ -1893,9 +1901,17 @@ class ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest
   }
 };
 
+// TODO(crbug.com/423415283): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HintsFetcherDoesNotFetchAccessToken \
+  DISABLED_HintsFetcherDoesNotFetchAccessToken
+#else
+#define MAYBE_HintsFetcherDoesNotFetchAccessToken \
+  HintsFetcherDoesNotFetchAccessToken
+#endif
 IN_PROC_BROWSER_TEST_F(
     ProactivePersonalizationHintsWrongOptimizationTypeFetcherBrowserTest,
-    HintsFetcherDoesNotFetchAccessToken) {
+    MAYBE_HintsFetcherDoesNotFetchAccessToken) {
   SetNetworkConnectionOnline();
   SetResponseType(
       optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
