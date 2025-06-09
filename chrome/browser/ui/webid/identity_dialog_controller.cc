@@ -108,11 +108,11 @@ bool IdentityDialogController::ShowAccountsDialog(
   if (rp_mode == blink::mojom::RpMode::kPassive &&
       base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
-    RequestUiVolumeRecommendation(
-        base::BindOnce(&IdentityDialogController::
-                           OnRequestUiVolumeRecommendationResultReceived,
-                       base::Unretained(this), rp_data, identity_provider_data,
-                       accounts, rp_mode, new_accounts));
+    RequestUiVolumeRecommendation(base::BindOnce(
+        &IdentityDialogController::
+            OnRequestUiVolumeRecommendationResultReceived,
+        weak_ptr_factory_.GetWeakPtr(), rp_data, identity_provider_data,
+        accounts, rp_mode, new_accounts));
     return true;
   }
 
