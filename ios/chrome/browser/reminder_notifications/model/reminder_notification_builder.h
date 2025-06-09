@@ -8,6 +8,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 class GURL;
+struct ScheduledNotificationRequest;
 namespace base {
 class Time;
 }  // namespace base
@@ -15,22 +16,24 @@ namespace gfx {
 class Image;
 }  // namespace gfx
 
-// Builds a `UNNotificationRequest` that will trigger a local notification to
-// remind the user about a URL.
+// The prefixed used for reminder notification identifiers.
+extern NSString* const kReminderNotificationsIdentifierPrefix;
+
+// Builds the components for a reminder notification.
 @interface ReminderNotificationBuilder : NSObject
 
-// Initialize a builder for a reminder notification with the given `url` to
+// Initialize a builder for a reminder notification for the given `url` to
 // trigger at the given `time`.
 - (instancetype)initWithURL:(const GURL&)url time:(base::Time)time;
 
 // Builds and returns a notification request.
-- (UNNotificationRequest*)buildRequest;
+- (ScheduledNotificationRequest)buildRequest;
 
 // Sets an image (e.g. favicon) for the reminder.
 - (void)setImage:(const gfx::Image&)image;
 
 // Sets the page's title, which is displayed as part of the notification.
-- (void)setPageTitle:(NSString*)string;
+- (void)setPageTitle:(NSString*)pageTitle;
 
 @end
 

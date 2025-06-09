@@ -11,6 +11,10 @@
 
 class PrefService;
 
+// Keys for the reminder notifications dictionary stored in Prefs.
+extern const char kReminderNotificationsTimeKey[];
+extern const char kReminderNotificationsCreationTimeKey[];
+
 // `ReminderNotificationsMediator` is responsible for handling Reminder
 // Notification data storage.
 @interface ReminderNotificationsMediator

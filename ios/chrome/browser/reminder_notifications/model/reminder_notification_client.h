@@ -42,6 +42,24 @@ class ReminderNotificationClient : public PushNotificationClient {
   // Profile associated with this client.
   void OnPrefsChanged();
 
+  // Cancels all pending reminder notifications.
+  void CancelAllNotifications(base::OnceClosure completion_handler);
+
+  // Callback for `-getPendingNotificationRequestsWithCompletionHandler:` used
+  // in `CancelAllNotifications()`.
+  void OnGetPendingNotificationsForCancellation(
+      base::OnceClosure completion_handler,
+      NSArray<UNNotificationRequest*>* requests);
+
+  // Schedules all notifications based on the current state of Prefs.
+  void ScheduleNotificationsFromPrefs();
+
+  // Schedules a single reminder notification for `reminder_url` using
+  // `reminder_details`.
+  void ScheduleNotification(const GURL& reminder_url,
+                            const base::Value::Dict& reminder_details,
+                            std::string_view profile_name);
+
   // Used to assert that asynchronous callback are invoked on the correct
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);

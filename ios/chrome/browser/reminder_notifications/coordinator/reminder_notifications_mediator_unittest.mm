@@ -18,15 +18,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-namespace {
-
-// Keys for the dictionary stored per URL in the reminder Pref.
-// These need to match the ones in reminder_notifications_mediator.mm
-const char kReminderTimeKey[] = "reminder_time";
-const char kCreationTimeKey[] = "creation_time";
-
-}  // namespace
-
 // Test fixture for ReminderNotificationsMediator.
 class ReminderNotificationsMediatorTest : public PlatformTest {
  public:
@@ -73,12 +64,12 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderValidURL) {
   ASSERT_TRUE(reminder_details);
 
   std::optional<base::Time> stored_reminder_time =
-      base::ValueToTime(reminder_details->Find(kReminderTimeKey));
+      base::ValueToTime(reminder_details->Find(kReminderNotificationsTimeKey));
   ASSERT_TRUE(stored_reminder_time.has_value());
   EXPECT_EQ(reminder_time, stored_reminder_time.value());
 
-  std::optional<base::Time> stored_creation_time =
-      base::ValueToTime(reminder_details->Find(kCreationTimeKey));
+  std::optional<base::Time> stored_creation_time = base::ValueToTime(
+      reminder_details->Find(kReminderNotificationsCreationTimeKey));
   ASSERT_TRUE(stored_creation_time.has_value());
   EXPECT_EQ(creation_time, stored_creation_time.value());
 }
@@ -138,13 +129,13 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderOverwrite) {
 
   // Check that the reminder time is the second one.
   std::optional<base::Time> stored_reminder_time =
-      base::ValueToTime(reminder_details->Find(kReminderTimeKey));
+      base::ValueToTime(reminder_details->Find(kReminderNotificationsTimeKey));
   ASSERT_TRUE(stored_reminder_time.has_value());
   EXPECT_EQ(second_reminder_time, stored_reminder_time.value());
 
   // Check that the creation time is the second one.
-  std::optional<base::Time> stored_creation_time =
-      base::ValueToTime(reminder_details->Find(kCreationTimeKey));
+  std::optional<base::Time> stored_creation_time = base::ValueToTime(
+      reminder_details->Find(kReminderNotificationsCreationTimeKey));
   ASSERT_TRUE(stored_creation_time.has_value());
   EXPECT_EQ(second_creation_time, stored_creation_time.value());
   EXPECT_NE(first_creation_time, stored_creation_time.value());
@@ -172,11 +163,11 @@ TEST_F(ReminderNotificationsMediatorTest, SetMultipleReminders) {
   const base::Value::Dict* details1 = reminders.FindDict(url1.spec());
   ASSERT_TRUE(details1);
   std::optional<base::Time> stored_time1 =
-      base::ValueToTime(details1->Find(kReminderTimeKey));
+      base::ValueToTime(details1->Find(kReminderNotificationsTimeKey));
   ASSERT_TRUE(stored_time1.has_value());
   EXPECT_EQ(time1, stored_time1.value());
   std::optional<base::Time> stored_creation_time1 =
-      base::ValueToTime(details1->Find(kCreationTimeKey));
+      base::ValueToTime(details1->Find(kReminderNotificationsCreationTimeKey));
   ASSERT_TRUE(stored_creation_time1.has_value());
   EXPECT_EQ(creation_time1, stored_creation_time1.value());
 
@@ -184,11 +175,11 @@ TEST_F(ReminderNotificationsMediatorTest, SetMultipleReminders) {
   const base::Value::Dict* details2 = reminders.FindDict(url2.spec());
   ASSERT_TRUE(details2);
   std::optional<base::Time> stored_time2 =
-      base::ValueToTime(details2->Find(kReminderTimeKey));
+      base::ValueToTime(details2->Find(kReminderNotificationsTimeKey));
   ASSERT_TRUE(stored_time2.has_value());
   EXPECT_EQ(time2, stored_time2.value());
   std::optional<base::Time> stored_creation_time2 =
-      base::ValueToTime(details2->Find(kCreationTimeKey));
+      base::ValueToTime(details2->Find(kReminderNotificationsCreationTimeKey));
   ASSERT_TRUE(stored_creation_time2.has_value());
   EXPECT_EQ(creation_time2, stored_creation_time2.value());
 }

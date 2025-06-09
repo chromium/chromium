@@ -13,13 +13,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "url/gurl.h"
 
-namespace {
-
-// Keys for the dictionary stored per URL in the reminder Pref.
-const char kReminderTimeKey[] = "reminder_time";
-const char kCreationTimeKey[] = "creation_time";
-
-}  // namespace
+const char kReminderNotificationsTimeKey[] = "reminder_time";
+const char kReminderNotificationsCreationTimeKey[] = "creation_time";
 
 @implementation ReminderNotificationsMediator {
   // The `PrefService` used to store reminder data.
@@ -62,8 +57,9 @@ const char kCreationTimeKey[] = "creation_time";
   // Create the dictionary value for this specific reminder.
   base::Value::Dict reminderDetails;
 
-  reminderDetails.Set(kReminderTimeKey, base::TimeToValue(time));
-  reminderDetails.Set(kCreationTimeKey, base::TimeToValue(base::Time::Now()));
+  reminderDetails.Set(kReminderNotificationsTimeKey, base::TimeToValue(time));
+  reminderDetails.Set(kReminderNotificationsCreationTimeKey,
+                      base::TimeToValue(base::Time::Now()));
 
   update->Set(URLString, std::move(reminderDetails));
 }
