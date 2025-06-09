@@ -168,7 +168,8 @@ public class WebAppHeaderLayoutCoordinator
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
                         mControlsEnabledSupplier,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        /* isWebApp= */ true);
 
         final ChromeImageButton backButton = mView.findViewById(R.id.back_button);
         mBackButtonCoordinator =
@@ -183,7 +184,8 @@ public class WebAppHeaderLayoutCoordinator
                         () -> {
                             if (mMediator != null) mMediator.onNavigationPopupShown();
                         },
-                        mHistoryDelegate);
+                        mHistoryDelegate,
+                        /* isWebApp= */ true);
 
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }

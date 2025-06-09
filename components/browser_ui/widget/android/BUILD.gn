@@ -266,6 +266,8 @@ android_resources("java_resources") {
     "java/res/drawable/search_box_icon_background_selector_baseline.xml",
     "java/res/drawable/search_row_modern_bg.xml",
     "java/res/drawable/search_toolbar_modern_bg.xml",
+    "java/res/drawable/small_icon_background.xml",
+    "java/res/drawable/small_icon_background_baseline.xml",
     "java/res/drawable/tile_view_highlight.xml",
     "java/res/drawable/tile_view_highlight_mask.xml",
     "java/res/drawable/tile_view_icon_background_modern.xml",
