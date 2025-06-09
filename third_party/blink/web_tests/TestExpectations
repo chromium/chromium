@@ -2741,7 +2741,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Android ] external/wpt/webdriver/tests/classic/accept_alert/accept.py [ Failure ]
+crbug.com/423656972 [ Android ] external/wpt/webdriver/tests/classic/accept_alert/accept.py [ Failure ]
 crbug.com/422832549 [ Win10.20h2 ] external/wpt/css/css-contain/contain-body-dir-004.html [ Timeout ]
 crbug.com/422814959 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cache.window.html [ Crash ]
 crbug.com/422790249 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-location-set.https.html [ Crash ]
