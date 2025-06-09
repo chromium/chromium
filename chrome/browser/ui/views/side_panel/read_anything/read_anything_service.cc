@@ -35,6 +35,8 @@ constexpr int kRemoveExtensionDelaySeconds = 30;
 #if !BUILDFLAG(IS_CHROMEOS)
 const base::FilePath::CharType kManifestFileName[] =
     FILE_PATH_LITERAL("wasm_tts_manifest.json");
+const base::FilePath::CharType kManifestV3FileName[] =
+    FILE_PATH_LITERAL("wasm_tts_manifest_v3.json");
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
@@ -213,10 +215,12 @@ void ReadAnythingService::RemoveTtsDownloadExtension() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
+  const base::FilePath::CharType* manifest =
+      features::IsWasmTtsComponentUpdaterV3Enabled() ? kManifestV3FileName
+                                                     : kManifestFileName;
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
-      extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir,
-      kManifestFileName,
+      extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir, manifest,
       /*should_localize=*/false);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

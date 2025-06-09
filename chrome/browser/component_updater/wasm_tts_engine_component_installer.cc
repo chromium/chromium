@@ -29,6 +29,18 @@ const base::FilePath::CharType kWorkletProcessorJsFileName[] =
     FILE_PATH_LITERAL("streaming_worklet_processor.js");
 const base::FilePath::CharType kVoicesJsonFileName[] =
     FILE_PATH_LITERAL("voices.json");
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const base::FilePath::CharType kManifestV3FileName[] =
+    FILE_PATH_LITERAL("wasm_tts_manifest_v3.json");
+const base::FilePath::CharType kOffscreenHtmlFileName[] =
+    FILE_PATH_LITERAL("offscreen.html");
+const base::FilePath::CharType kOffscreenCompiledFileName[] =
+    FILE_PATH_LITERAL("offscreen_compiled.html");
+const base::FilePath::CharType kBindingsTypeDeclarationFileName[] =
+    FILE_PATH_LITERAL("bindings_main.d.ts");
+const base::FilePath::CharType kBackgroundCompiledFileName[] =
+    FILE_PATH_LITERAL("background_compiled.js");
+#endif
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: bjbcblmdcnggnibecjikpoljcgkbgphl
@@ -127,6 +139,18 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
 bool WasmTtsEngineComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& /* manifest */,
     const base::FilePath& install_dir) const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (features::IsWasmTtsComponentUpdaterV3Enabled()) {
+    return base::PathExists(install_dir.Append(kManifestV3FileName)) &&
+           base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
+           base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&
+           base::PathExists(install_dir.Append(kOffscreenHtmlFileName)) &&
+           base::PathExists(install_dir.Append(kOffscreenCompiledFileName)) &&
+           base::PathExists(
+               install_dir.Append(kBindingsTypeDeclarationFileName)) &&
+           base::PathExists(install_dir.Append(kBackgroundCompiledFileName));
+  }
+#endif
   return base::PathExists(install_dir.Append(kManifestFileName)) &&
          base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
          base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&

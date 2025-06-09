@@ -361,6 +361,9 @@ AX_BASE_EXPORT bool IsBlockRootWindowAccessibleNameChangeEventEnabled();
 // Enable the component updater to download the wasm tts engine component.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kWasmTtsComponentUpdaterEnabled);
 AX_BASE_EXPORT bool IsWasmTtsComponentUpdaterEnabled();
+// Use the v3 version of the wasm tts engine component.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kWasmTtsComponentUpdaterV3Enabled);
+AX_BASE_EXPORT bool IsWasmTtsComponentUpdaterV3Enabled();
 // Disable the wasm tts engine component to use dev version local extension
 // files.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kWasmTtsEngineAutoInstallDisabled);

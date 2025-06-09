@@ -548,6 +548,16 @@ bool IsWasmTtsComponentUpdaterEnabled() {
              ::features::kWasmTtsComponentUpdaterEnabled);
 }
 
+BASE_FEATURE(kWasmTtsComponentUpdaterV3Enabled,
+             "WasmTtsComponentUpdaterV3Enabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsWasmTtsComponentUpdaterV3Enabled() {
+  return base::FeatureList::IsEnabled(
+             ::features::kWasmTtsComponentUpdaterEnabled) &&
+         base::FeatureList::IsEnabled(
+             ::features::kWasmTtsComponentUpdaterV3Enabled);
+}
+
 BASE_FEATURE(kWasmTtsEngineAutoInstallDisabled,
              "WasmTtsEngineAutoInstallDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
