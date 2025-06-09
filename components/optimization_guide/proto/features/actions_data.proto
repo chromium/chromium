@@ -215,7 +215,8 @@ message ActivateTabAction {
 
 // Creates a new window.
 // Next ID: 1
-message CreateWindowAction {}
+message CreateWindowAction {
+}
 
 // Closes an existing window.
 // Next ID: 2
@@ -237,7 +238,8 @@ message ActivateWindowAction {
 
 // Yields control to the user.
 // Next ID: 1
-message YieldToUserAction {}
+message YieldToUserAction {
+}
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
@@ -280,6 +282,7 @@ message ActionInformation {
   }
 }
 
+// Deprecated. Use Actions instead.
 // A single set of actions to be taken by Chrome before responding.
 // Next ID: 4
 message BrowserAction {
@@ -290,11 +293,12 @@ message BrowserAction {
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];
 
   // The id of the tab the action will be taken in.
-  // TODO(crbug.com/421441072): Remove this field once all models are using
-  // tab_id in actions.
+  // TODO(crbug.com/421441072): Remove this field once all models are using tab_id in
+  // actions.
   int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
+// Deprecated. Use ActionsResult instead.
 // The state of the browser after an action is taken.
 // Currently only used for extension APIs, but should directly reflect the
 // production state of the browser returned in glic.mojom.
@@ -319,15 +323,78 @@ message BrowserActionResult {
   int32 tab_id = 6 [features = { field_presence: EXPLICIT }];
 }
 
+// A single set of actions to be taken by Chrome. The response is ActionsResult.
+// Next ID: 2
+message Actions {
+  // The actions to be taken by Chrome.
+  repeated ActionInformation actions = 1;
+}
+
+// Information about a chrome window.
+// Next ID: 5
+message WindowObservation {
+  // Unique id
+  int32 id = 1 [features = { field_presence: EXPLICIT }];
+
+  // id of the activated tab. There may be multiple tabs visible at the same
+  // time.
+  int32 activated_tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // The active window is defined as the most recently used chrome browser
+  // window.
+  bool active = 3 [features = { field_presence: EXPLICIT }];
+
+  // All tabs. The order is not meaningful.
+  repeated int32 tab_ids = 4;
+}
+
+// Information about a chrome tab.
+// Next ID: 5
+message TabObservation {
+  // Unique id
+  int32 id = 1 [features = { field_presence: EXPLICIT }];
+
+  // The page content at the observation time.
+  AnnotatedPageContent annotated_page_content = 2 [features = { field_presence: EXPLICIT }];
+
+  // The screenshot of the page at the time after the action.
+  bytes screenshot = 3 [features = { field_presence: EXPLICIT }];
+
+  // The mime type of the |screenshot|.
+  string screenshot_mime_type = 4 [features = { field_presence: EXPLICIT }];
+}
+
+// All relevant state in chrome after the actions are taken or an error has
+// occurred.
+// Next ID: 5
+message ActionsResult {
+  // The result of the actions. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
+  // for definition.
+  int32 action_result = 1 [features = { field_presence: EXPLICIT }];
+
+  // If a specific action failed, the index of the failed action. -1 for no
+  // failure.
+  int32 index_of_failed_action = 2 [features = { field_presence: EXPLICIT }];
+
+  // Observations after all actions are finished or an error has occurred. The
+  // client will determine the relevant windows and tabs.
+  repeated WindowObservation windows = 3;
+
+  // Observations after all actions are finished or an error has occurred. The
+  // client will determine the relevant windows and tabs.
+  repeated TabObservation tabs = 4;
+}
+
 // A request to start a task.
 // Next ID: 1
 
 message BrowserStartTask {
   // The id of the tab the task should be started in. If not set, the task
   // will be started in a new tab.
-  // TODO(crbug.com/421441072): Remove this field. This is only needed in the
-  // short term since bluedog needs a mechanism to start tasks in a new tab, and
-  // the model has not yet been trained to use CreateTabAction.
+  // TODO(crbug.com/421441072): Remove this field. This is only needed in the short term
+  // since bluedog needs a mechanism to start tasks in a new tab, and the model
+  // has not yet been trained to use CreateTabAction.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
