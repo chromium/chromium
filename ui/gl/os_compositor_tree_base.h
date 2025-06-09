@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/overlay_layer_id.h"
@@ -372,6 +373,9 @@ bool OsCompositorTreeBase<OverlayParams, Layer>::UpdateTree(
   DVLOG(1) << "layers: modified = " << num_layers_modified
            << " / total = " << layers_.size();
   num_layers_modified_last_frame_ = num_layers_modified;
+
+  UMA_HISTOGRAM_COUNTS("GPU.OsCompositor.NumLayersModified",
+                       num_layers_modified);
 
   if (num_layers_modified > 0) {
     TRACE_EVENT("gpu", "Commit overlay layers");

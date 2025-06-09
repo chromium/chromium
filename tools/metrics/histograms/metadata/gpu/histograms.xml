@@ -1134,6 +1134,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.OsCompositor.NumLayersModified" units="layers"
+    expires_after="2025-12-02">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>tangm@microsoft.com</owner>
+  <summary>
+    A count of the number of OS compositor layers that were dirtied in a single
+    commit. This estimates the amount of work the OS compositor needs to do per
+    frame and can be used to compare incremental tree updating algorithms.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2025-11-16">
   <owner>hubbe@chromium.org</owner>
   <owner>cassew@chromium.org</owner>

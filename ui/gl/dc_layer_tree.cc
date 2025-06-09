@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -924,6 +925,8 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     }
   }
 
+  size_t num_layers_modified = 0;
+
   // This loop walks the overlays and builds or updates the visual subtree for
   // each overlay. |left_sibling_visual| is required to properly stack visual
   // subtrees that are detached from the root visual.
@@ -978,7 +981,7 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     const bool allow_antialiasing = !layers_with_multiple_overlays.contains(
         overlays[i].layer_id.shared_quad_state_layer_id());
 
-    needs_commit |= visual_subtrees[i]->Update(
+    const bool visual_needs_commit = visual_subtrees[i]->Update(
         dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,
         dcomp_surface_serial, image_size, overlays[i].content_rect,
         background_color_surface,
@@ -991,9 +994,13 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
       HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->AddVisual(
           visual_subtree->container_visual(), TRUE, left_sibling_visual);
       CHECK_EQ(hr, S_OK);
-      needs_commit = true;
     }
     left_sibling_visual = visual_subtree->container_visual();
+
+    if (visual_needs_commit || !subtree_attached_to_root) {
+      num_layers_modified++;
+      needs_commit = true;
+    }
 
     layer_ids_for_testing.push_back(overlays[i].layer_id);
   }
@@ -1002,6 +1009,9 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
   layer_ids_for_testing_ = std::move(layer_ids_for_testing);
+
+  UMA_HISTOGRAM_COUNTS("GPU.OsCompositor.NumLayersModified",
+                       num_layers_modified);
 
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
