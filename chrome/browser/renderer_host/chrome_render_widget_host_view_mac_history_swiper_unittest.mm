@@ -28,8 +28,6 @@ class MacHistorySwiperTest : public CocoaTest {
   void SetUp() override {
     CocoaTest::SetUp();
 
-    [HistorySwiper resetMagicMouseState];
-
     view_ = [[NSView alloc] init];
     id mockDelegate =
         [OCMockObject mockForProtocol:@protocol(HistorySwiperDelegate)];
