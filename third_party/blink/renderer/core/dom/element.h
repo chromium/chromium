@@ -491,7 +491,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollIntoView(bool align_to_top = true);
   void scrollIntoViewWithOptions(const ScrollIntoViewOptions*);
   void ScrollIntoViewNoVisualUpdate(mojom::blink::ScrollIntoViewParamsPtr,
-                                    const Element* container = nullptr);
+                                    const Element* container = nullptr,
+                                    bool include_self = false);
   void scrollIntoViewIfNeeded(bool center_if_needed = true);
 
   int OffsetLeft();

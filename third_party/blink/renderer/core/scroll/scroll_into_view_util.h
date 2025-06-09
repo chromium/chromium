@@ -39,7 +39,8 @@ void CORE_EXPORT ScrollRectToVisible(const LayoutObject& target,
                                      const PhysicalRect&,
                                      mojom::blink::ScrollIntoViewParamsPtr,
                                      const LayoutObject* container = nullptr,
-                                     bool from_remote_frame = false);
+                                     bool from_remote_frame = false,
+                                     bool include_self = true);
 
 // ScrollFocusedEditableIntoView uses the caret rect for ScrollIntoView but
 // stores enough information in `params` so that the editable element's bounds
