@@ -237,13 +237,12 @@ suite('SplitNewTabPageTest', () => {
 
   test('Closes current tab', async () => {
     await splitNewTabPageSetup();
-    assertEquals(0, testApiProxy.getCallCount('closeTab'));
+    assertEquals(0, testApiProxy.getCallCount('closeWebUiTab'));
     const closeButton =
         splitNewTabPage.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!closeButton);
     closeButton.click();
-    const [tabId] = await testApiProxy.whenCalled('closeTab');
-    assertEquals(ACTIVE_TAB_ID, tabId);
+    await testApiProxy.whenCalled('closeWebUiTab');
   });
 
   test('Replaces tab', async () => {

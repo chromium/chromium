@@ -277,6 +277,9 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
+  // Close the tab hosting this WebUI.
+  CloseWebUiTab();
+
   // Bulk close multiple tabs as part of the declutter workflow. All tabs with
   // either an id in tab_ids should be closed. All tabs but the oldest with a
   // url in urls should be closed.

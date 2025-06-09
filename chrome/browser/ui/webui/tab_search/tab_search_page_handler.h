@@ -93,6 +93,7 @@ class TabSearchPageHandler
 
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
+  void CloseWebUiTab() override;
   void DeclutterTabs(const std::vector<int32_t>& tab_ids,
                      const std::vector<GURL>& urls) override;
   void AcceptTabOrganization(

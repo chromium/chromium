@@ -297,6 +297,22 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
+void TabSearchPageHandler::CloseWebUiTab() {
+  // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
+  // WebUI is open in a chrome browser tab rather than its bubble. In this case
+  // CloseWebContentsAt() closes the WebContents hosting this
+  // TabSearchPageHandler object, causing it to be immediately destroyed. Ensure
+  // that no further actions are performed following the call to
+  // CloseWebContentsAt(). See (https://crbug.com/1175507).
+  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+  CHECK(tab_strip_model);
+  const int index =
+      tab_strip_model->GetIndexOfWebContents(web_ui_->GetWebContents());
+  tab_strip_model->CloseWebContentsAt(
+      index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  // Do not add code past this point.
+}
+
 void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids,
                                          const std::vector<GURL>& urls) {
   // TODO(crbug.com/358382903): Add metrics logging.

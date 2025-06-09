@@ -8,7 +8,6 @@ import '../tab_search_item.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -59,7 +58,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   protected accessor focusedItem_: HTMLElement|null = null;
   protected accessor minViewportHeight_: number = 0;
   protected title_: string = '';
-  private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
@@ -132,10 +130,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   protected onClose_() {
-    // Close should never be triggered from an inactive tab, so this should
-    // always close the tab hosting this WebUI.
-    assert(this.activeTabId_ >= 0);
-    this.apiProxy_.closeTab(this.activeTabId_);
+    this.apiProxy_.closeWebUiTab();
   }
 
   protected onTabClick_(e: Event) {
@@ -153,7 +148,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   private onTabsChanged_(profileData: ProfileData) {
     const hostWindow =
         profileData.windows.find(({isHostWindow}) => isHostWindow)!;
-    this.activeTabId_ = hostWindow.tabs.find((tab) => tab.active)!.tabId;
     this.allEligibleTabs_ =
         hostWindow.tabs.filter(tab => !tab.visible && !tab.split)
             .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
