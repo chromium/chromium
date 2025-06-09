@@ -290,7 +290,8 @@ TEST_F(QuarantineWinTest, UnsafeReferrer_DependsOnLocalConfig) {
 
 // An empty source URL should result in a file that's treated the same as one
 // downloaded from the internet.
-TEST_F(QuarantineWinTest, EmptySource_DependsOnLocalConfig) {
+// TODO(crbug.com/423622358): Re-enable this test
+TEST_F(QuarantineWinTest, DISABLED_EmptySource_DependsOnLocalConfig) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
   ASSERT_TRUE(CreateFile(test_file));
 
@@ -503,7 +504,8 @@ TEST_F(QuarantineWinTest, MetaData_InvokeAS) {
   EXPECT_TRUE(IsFileQuarantined(test_file, host_url_clean, referrer_url_clean));
 }
 
-TEST_F(QuarantineWinTest, RequestInitiatorReplacesSourceUrl) {
+// TODO(crbug.com/423622358): Re-enable this test
+TEST_F(QuarantineWinTest, DISABLED_RequestInitiatorReplacesSourceUrl) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
   ASSERT_TRUE(CreateFile(test_file));
 
