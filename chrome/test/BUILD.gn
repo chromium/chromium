@@ -968,6 +968,8 @@ static_library("test_support") {
       "../browser/extensions/policy_test_utils.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
+      "base/ash/extension_js_browser_test.cc",
+      "base/ash/extension_js_browser_test.h",
       "base/ash/js_test_api.cc",
       "base/ash/js_test_api.h",
       "base/ash/scoped_test_system_nss_key_slot_mixin.cc",
@@ -980,10 +982,6 @@ static_library("test_support") {
       "base/chromeos/crosier/aura_window_title_observer.h",
       "base/chromeos/crosier/crosier_util.cc",
       "base/chromeos/crosier/crosier_util.h",
-
-      # Only used for Chromevox tests, so only included on Chrome OS.
-      "base/ash/extension_js_browser_test.cc",
-      "base/ash/extension_js_browser_test.h",
     ]
 
     if (is_chrome_branded) {
@@ -1327,7 +1325,9 @@ if (is_chromeos && is_chromeos_device) {
       "//chrome/test/base/chromeos/crosier/helper:common",
       "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
       "//ui/events:test_support",
+    ]
 
+    deps += [
       # Gather tests from other build files:
       "//chrome/browser/ash:integration_tests",
       "//chrome/browser/ui/ash:integration_tests",
@@ -1900,13 +1900,13 @@ if (is_android) {
     deps += [
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
-
-      # TODO(crbug.com/40626932): This is needed for ShellManager which is what
-      # the ChromeBrowserTestsActivity is using to build the java UI. It's
-      # likely we want to replace it with something new that uses ChromeWindow
-      # and CompositorViewHolder instead.
-      "//content/shell:content_shell_lib",
     ]
+
+    # TODO(crbug.com/40626932): This is needed for ShellManager which is what
+    # the ChromeBrowserTestsActivity is using to build the java UI. It's
+    # likely we want to replace it with something new that uses ChromeWindow
+    # and CompositorViewHolder instead.
+    deps += [ "//content/shell:content_shell_lib" ]
 
     data_deps = [ "//testing/buildbot/filters:android_browsertests_filters" ]
 
@@ -2297,6 +2297,7 @@ if (!is_android) {
       "//chrome/browser/preloading/search_preload:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
+      "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiles/keep_alive",
@@ -2354,14 +2355,6 @@ if (!is_android) {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/permission_bubble:browser_tests",
-      "//chrome/browser/ui/send_tab_to_self:browser_tests",
-      "//chrome/browser/ui/web_applications",
-      "//chrome/browser/ui/webui/app_service_internals:browser_tests",
-
-      # TODO(413315837): Remove this dependency when
-      # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
-      "//chrome/browser/privacy_sandbox/notice:factory",
-      "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/privacy_sandbox:browser_tests",
       "//chrome/browser/ui/promos:utils",
@@ -2371,6 +2364,7 @@ if (!is_android) {
       "//chrome/browser/ui/safety_hub:test_support",
       "//chrome/browser/ui/search:browser_tests",
       "//chrome/browser/ui/search_engines:browser_tests",
+      "//chrome/browser/ui/send_tab_to_self:browser_tests",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:startup_tab",
@@ -2395,9 +2389,11 @@ if (!is_android) {
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/webid:test_support",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:browser_tests",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/app_service_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_and_password_manager_internals:browser_tests",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/customize_buttons:browser_tests",
@@ -2779,6 +2775,10 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//v8",
     ]
+
+    # TODO(413315837): Remove this dependency when
+    # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
+    deps += [ "//chrome/browser/privacy_sandbox/notice:factory" ]
 
     allow_circular_includes_from = [
       # `alternate_nav_infobar_delegate_browsertest.cc` includes test_infobar.h, which is
@@ -3927,7 +3927,7 @@ if (!is_android) {
       ]
     }
 
-    #If this target is used on Android in the future, these browser / speech/*
+    # If this target is used on Android in the future, these browser / speech/*
     # files will probably not be applicable.
     sources += [
       "../browser/speech/extension_api/tts_extension_apitest.cc",
@@ -4777,20 +4777,9 @@ if (!is_android) {
         "//chrome/browser/extensions/api/braille_display_private:controller",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",
-
-        # TODO(417228688): Remove when the following tests get modularized:
-        # - chrome_serial_browsertest.cc
-        # - controlled_frame_disabled_permission_browsertest.cc
-        # - web_view_browsertest.cc
-        "//chrome/browser/serial",
         "//chrome/browser/ui/global_error:test_support",
         "//chrome/browser/ui/hid",
         "//chrome/browser/ui/javascript_dialogs",
-
-        # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
-        # when tests that include chrome_zoom_level_prefs.h get modularized, eg
-        # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
-        "//chrome/browser/ui/zoom",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
@@ -4804,11 +4793,6 @@ if (!is_android) {
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
         "//components/web_package",
-
-        # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
-        # target should be deleted and this line removed. See the
-        # chrome_extensions_browsertests_sources target for more.
-        "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
         "//extensions/browser/api:extensions_api_client",
         "//extensions/browser/api/storage:settings_namespace",
@@ -4824,6 +4808,22 @@ if (!is_android) {
         "//ui/base/idle:test_support",
         "//ui/views:test_support",
       ]
+
+      # TODO(417228688): Remove when the following tests get modularized:
+      # - chrome_serial_browsertest.cc
+      # - controlled_frame_disabled_permission_browsertest.cc
+      # - web_view_browsertest.cc
+      deps += [ "//chrome/browser/serial" ]
+
+      # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
+      # when tests that include chrome_zoom_level_prefs.h get modularized, eg
+      # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
+      deps += [ "//chrome/browser/ui/zoom" ]
+
+      # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
+      # target should be deleted and this line removed. See the
+      # chrome_extensions_browsertests_sources target for more.
+      deps += [ "//extensions:chrome_extensions_browsertests_sources" ]
 
       data += [
         "//chrome/test/data/extensions/",
@@ -5752,14 +5752,15 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_dice_sign_in_provider_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
-
-        # Extension approvals tests for Windows/Linux/Mac platforms only.
-        # ChromeOS has a different platform-specific approval flow.
-        "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
+
+      # Extension approvals tests for Windows/Linux/Mac platforms only.
+      # ChromeOS has a different platform-specific approval flow.
+      sources += [ "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc" ]
+
       deps += [
         "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser:main_extra_parts",
@@ -6779,20 +6780,12 @@ test("unit_tests") {
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:unit_tests",
     "//chrome/browser/privacy_sandbox/incognito:unit_tests",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles/keep_alive",
-
-    # TODO(413315837): Remove this dep when privacy_sandbox_service_impl_unittest.cc
-    # gets build off of c/b/privacy_sandbox/BUILD.gn.
-    "//chrome/browser/privacy_sandbox:headers",
-
-    # TODO(413315837): Remove this dependency when privacy_sandbox_service_impl_unittest.cc
-    # gets modularized.
-    "//chrome/browser/privacy_sandbox:test_support",
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/profiles:unit_tests",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/profiling_host",
     "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/reading_list",
@@ -6805,9 +6798,6 @@ test("unit_tests") {
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform:test_utils",
-
-    # TODO(417228688): Remove this dependency when serial_chooser_context_unittest.cc gets modularized.
-    "//chrome/browser/serial",
     "//chrome/browser/share",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/storage_access_api",
@@ -7204,11 +7194,23 @@ test("unit_tests") {
     "//ui/strings:ui_strings_grit",
     "//ui/webui",
     "//v8",
-
-    # Duplicate these tests here because PathService has more providers in
-    # unit_tests than in base_unittests.
-    "//base:path_service_unittest",
   ]
+
+  # Duplicate these tests here because PathService has more providers in
+  # unit_tests than in base_unittests.
+  deps += [ "//base:path_service_unittest" ]
+
+  # TODO(413315837): Remove this when privacy_sandbox_service_impl_unittest.cc
+  # gets build off of c/b/privacy_sandbox/BUILD.gn.
+  deps += [ "//chrome/browser/privacy_sandbox:headers" ]
+
+  # TODO(413315837): Remove this dependency when
+  # privacy_sandbox_service_impl_unittest.cc gets modularized.
+  deps += [ "//chrome/browser/privacy_sandbox:test_support" ]
+
+  # TODO(417228688): Remove this dependency when
+  # serial_chooser_context_unittest.cc gets modularized.
+  deps += [ "//chrome/browser/serial" ]
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic:glic" ]
@@ -7468,12 +7470,12 @@ test("unit_tests") {
       "//chrome/utility/safe_browsing",
       "//chrome/utility/safe_browsing/mac:dmg_common",
       "//components/power_metrics",
-
-      # The test fetches resources which means Mac need the app bundle to exist
-      # on disk so it can pull from it.
-      "//third_party/ocmock",
       "//ui/events/devices:test_support",
     ]
+
+    # The test fetches resources which means Mac need the app bundle to exist
+    # on disk so it can pull from it.
+    deps += [ "//third_party/ocmock" ]
 
     # TODO(mark): We really want this for all non-static library targets,
     # but when we tried to pull it up to the common.gypi level, it broke
@@ -8225,10 +8227,11 @@ test("unit_tests") {
       "//components/data_sharing:test_support",
       "//components/passage_embeddings",
       "//components/passage_embeddings:test_support",
-
-      # TODO(416215722): Remove this dep when send_tab_to_self_client_service_unittest.cc gets modularized.
-      "//chrome/browser/send_tab_to_self",
     ]
+
+    # TODO(416215722): Remove when # send_tab_to_self_client_service_unittest.cc
+    # gets modularized.
+    deps += [ "//chrome/browser/send_tab_to_self" ]
 
     if (is_chrome_branded) {
       sources += [
@@ -8949,8 +8952,10 @@ test("unit_tests") {
       "//ui/chromeos/strings",
       "//ui/file_manager:resources_grit",
       "//ui/wm/public",
+    ]
 
-      # Unit tests from other build files.
+    # Unit tests from other build files.
+    deps += [
       "//chrome/browser/apps/almanac_api_client:unit_tests",
       "//chrome/browser/apps/app_discovery_service:unit_tests",
       "//chrome/browser/apps/app_preload_service:unit_tests",
@@ -9373,12 +9378,6 @@ test("unit_tests") {
       "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/extension_unittest.cc",
-
-      # Side panel is not yet supported on desktop Android.
-      "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc",
-
-      # Platform apps are not supported on desktop Android.
-      "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
       "../common/extensions/permissions/permission_set_unittest.cc",
       "../common/extensions/sync_type_unittest.cc",
       "../renderer/extensions/api/extension_hooks_delegate_unittest.cc",
@@ -9388,6 +9387,12 @@ test("unit_tests") {
       "../renderer/extensions/custom_types_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
+
+    # Side panel is not yet supported on desktop Android.
+    sources += [ "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc" ]
+
+    # Platform apps are not supported on desktop Android.
+    sources += [ "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc" ]
 
     if (enterprise_data_controls) {
       sources += [
@@ -11164,19 +11169,9 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
-      "//chrome/browser/profiles/keep_alive",
-      "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/toolbar",
-      "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
-      "//chrome/browser/ui/web_applications",
-      "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
-
-      # TODO(413315837): Remove this dependency when
-      # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
-      # gets modularized.
-      "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/privacy_sandbox/notice:factory",
       "//chrome/browser/privacy_sandbox/notice:test_support",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
@@ -11197,6 +11192,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/content_settings:content_settings",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:interactive_ui_tests",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar:interactive_ui_tests",
       "//chrome/browser/ui/find_bar:test_support",
       "//chrome/browser/ui/hung_renderer:interactive_ui_tests",
@@ -11212,12 +11208,16 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -11325,6 +11325,11 @@ if (!is_android && !is_chromeos_device) {
       "//ui/views",
       "//ui/web_dialogs:test_support",
     ]
+
+    # TODO(413315837): Remove this dependency when
+    # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
+    # gets modularized.
+    deps += [ "//chrome/browser/privacy_sandbox:test_support" ]
 
     if (!is_chrome_for_testing) {
       deps += [
@@ -11679,8 +11684,10 @@ if (!is_android && !is_chromeos_device) {
           "//ui/chromeos",
           "//ui/events/devices",
           "//ui/events/devices:test_support",
+        ]
 
-          # Gather tests from other build files:
+        # Gather tests from other build files:
+        deps += [
           "//chrome/browser/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/webui/ash:interactive_ui_tests",
