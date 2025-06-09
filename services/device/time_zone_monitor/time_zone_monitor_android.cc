@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/android/jni_android.h"
-#include "base/android/timezone_utils.h"  // nogncheck
+#include "base/android/jni_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -32,9 +32,8 @@ TimeZoneMonitorAndroid::~TimeZoneMonitorAndroid() {
 
 void TimeZoneMonitorAndroid::TimeZoneChangedFromJava(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller) {
+    const std::u16string& zone_id) {
   // See base/i18n/icu_util.cc:InitializeIcuTimeZone() for more information.
-  std::u16string zone_id = base::android::GetDefaultTimeZoneId();
   std::unique_ptr<icu::TimeZone> new_zone(icu::TimeZone::createTimeZone(
       icu::UnicodeString(false, zone_id.data(), zone_id.length())));
   UpdateIcuAndNotifyClients(std::move(new_zone));

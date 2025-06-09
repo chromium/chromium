@@ -1229,8 +1229,6 @@ component("base") {
       "android/task_scheduler/task_traits_android.h",
       "android/thread_instruction_count.cc",
       "android/thread_instruction_count.h",
-      "android/timezone_utils.cc",
-      "android/timezone_utils.h",
       "debug/stack_trace_android.cc",
       "files/file_util_android.cc",
       "files/scoped_file_android.cc",
@@ -4478,7 +4476,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
-      "android/java/src/org/chromium/base/TimezoneUtils.java",
     ]
 
     public_deps = [
@@ -4649,7 +4646,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/RequiredCallback.java",
-      "android/java/src/org/chromium/base/TimezoneUtils.java",
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",

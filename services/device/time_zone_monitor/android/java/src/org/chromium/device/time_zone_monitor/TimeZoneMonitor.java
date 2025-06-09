@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -32,9 +33,13 @@ class TimeZoneMonitor {
                         Log.e(TAG, "unexpected intent");
                         return;
                     }
+                    String newTimeZone = intent.getStringExtra(Intent.EXTRA_TIMEZONE);
 
-                    TimeZoneMonitorJni.get()
-                            .timeZoneChangedFromJava(mNativePtr, TimeZoneMonitor.this);
+                    if (newTimeZone == null) {
+                        Log.e(TAG, "Received null timezone string");
+                        return;
+                    }
+                    TimeZoneMonitorJni.get().timeZoneChangedFromJava(mNativePtr, newTimeZone);
                 }
             };
 
@@ -68,6 +73,7 @@ class TimeZoneMonitor {
          * Native JNI call to device::TimeZoneMonitorAndroid::TimeZoneChanged. See
          * device/time_zone_monitor/time_zone_monitor_android.cc.
          */
-        void timeZoneChangedFromJava(long nativeTimeZoneMonitorAndroid, TimeZoneMonitor caller);
+        void timeZoneChangedFromJava(
+                long nativeTimeZoneMonitorAndroid, @JniType("std::u16string") String newTimeZone);
     }
 }

@@ -5,11 +5,12 @@
 #ifndef SERVICES_DEVICE_TIME_ZONE_MONITOR_TIME_ZONE_MONITOR_ANDROID_H_
 #define SERVICES_DEVICE_TIME_ZONE_MONITOR_TIME_ZONE_MONITOR_ANDROID_H_
 
-#include "services/device/time_zone_monitor/time_zone_monitor.h"
-
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
+#include "services/device/time_zone_monitor/time_zone_monitor.h"
 
 namespace device {
 
@@ -23,9 +24,7 @@ class TimeZoneMonitorAndroid : public TimeZoneMonitor {
   ~TimeZoneMonitorAndroid() override;
 
   // Called by the Java implementation when the system time zone changes.
-  void TimeZoneChangedFromJava(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void TimeZoneChangedFromJava(JNIEnv* env, const std::u16string& newTimeZone);
 
  private:
   // Java provider of system time zone change notifications.
