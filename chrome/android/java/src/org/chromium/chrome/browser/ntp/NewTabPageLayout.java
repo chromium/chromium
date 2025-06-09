@@ -911,7 +911,6 @@ public class NewTabPageLayout extends LinearLayout
                 mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
         if (!mIsComposeplateEnabled) {
             mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
-            LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, shouldShowLensButton);
             mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
             updatePreviousButtonVisibilityAndRecordMetrics(
                     shouldShowVoiceSearchButton,
@@ -930,9 +929,6 @@ public class NewTabPageLayout extends LinearLayout
         mComposeplateCoordinator.setVisibility(
                 shouldShowComposeplateButton, mManager.isCurrentPage());
 
-        // The lens button will be shown either in the fake search box or the composeplate view.
-        LensMetrics.recordShown(
-                LensEntryPoint.NEW_TAB_PAGE, isLensButtonVisible || shouldShowComposeplateButton);
         updatePreviousButtonVisibilityAndRecordMetrics(
                 isVoiceSearchButtonVisible, isLensButtonVisible, shouldShowComposeplateButton);
     }
@@ -955,6 +951,14 @@ public class NewTabPageLayout extends LinearLayout
                         && mPreviousLensButtonVisible != null
                         && isLensButtonVisible == mPreviousLensButtonVisible)) {
             return;
+        }
+
+        if (mPreviousLensButtonVisible == null
+                || isLensButtonVisible != mPreviousLensButtonVisible) {
+            // The lens button will be shown either in the fake search box or the composeplate view.
+            LensMetrics.recordShown(
+                    LensEntryPoint.NEW_TAB_PAGE,
+                    isLensButtonVisible || isComposeplateButtonVisible);
         }
 
         ComposeplateMetricsUtils.recordFakeSearchBoxImpression();
