@@ -668,7 +668,7 @@ void CreditCardAccessManager::Authenticate(
       payments_autofill_client()
           .GetOtpAuthenticator()
           ->OnChallengeOptionSelected(
-              card_.get(), *selected_challenge_option_, GetWeakPtr(),
+              *card_, *selected_challenge_option_, GetWeakPtr(),
               risk_based_authentication_response_.context_token,
               payments::GetBillingCustomerId(payments_data_manager()));
       break;

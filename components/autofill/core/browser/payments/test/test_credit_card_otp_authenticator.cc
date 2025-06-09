@@ -16,13 +16,13 @@ TestCreditCardOtpAuthenticator::TestCreditCardOtpAuthenticator(
 TestCreditCardOtpAuthenticator::~TestCreditCardOtpAuthenticator() = default;
 
 void TestCreditCardOtpAuthenticator::OnChallengeOptionSelected(
-    const CreditCard* card,
+    const CreditCard& card,
     const CardUnmaskChallengeOption& selected_challenge_option,
     base::WeakPtr<Requester> requester,
     const std::string& context_token,
     int64_t billing_customer_number) {
   on_challenge_option_selected_invoked_ = true;
-  card_ = *card;
+  card_ = card;
   selected_challenge_option_ = selected_challenge_option;
   context_token_ = context_token;
 }

@@ -231,7 +231,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   // previous unmask response. TestPaymentsNetworkInterface will directly invoke
   // m the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -274,7 +274,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccessMetrics) {
   // previous unmask response. TestPaymentsNetworkInterface will directly invoke
   // m the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
@@ -311,7 +311,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -337,7 +337,7 @@ TEST_P(CreditCardOtpAuthenticatorTest,
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
@@ -366,7 +366,7 @@ TEST_P(CreditCardOtpAuthenticatorTest,
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -393,7 +393,7 @@ TEST_P(CreditCardOtpAuthenticatorTest,
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
@@ -415,7 +415,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
     // previous unmask response. TestPaymentsNetworkInterface will ack the
     // select challenge option request and directly invoke the callback.
     authenticator_->OnChallengeOptionSelected(
-        &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+        card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
         /*context_token=*/"context_token_from_previous_unmask_response",
         /*billing_customer_number=*/kTestBillingCustomerNumber);
     // Verify the context token is updated with SelectChallengeOption response.
@@ -458,7 +458,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnErrorMetrics) {
     // previous unmask response. TestPaymentsNetworkInterface will ack the
     // select challenge option request and directly invoke the callback.
     authenticator_->OnChallengeOptionSelected(
-        &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+        card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
         /*context_token=*/"context_token_from_previous_unmask_response",
         /*billing_customer_number=*/kTestBillingCustomerNumber);
     // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
@@ -494,7 +494,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the context token is updated with SelectChallengeOption response.
@@ -526,7 +526,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnErrorMetrics) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
@@ -560,7 +560,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the context token is updated with SelectChallengeOption response.
@@ -620,7 +620,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetryMetrics) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   payments_autofill_client().ResetShowOtpInputDialog();
@@ -661,7 +661,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -737,7 +737,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtpMetrics) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   payments_autofill_client().ResetShowOtpInputDialog();
@@ -782,7 +782,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -806,7 +806,7 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthCancelledMetrics) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Simulate user closes the otp input dialog.
@@ -869,7 +869,7 @@ TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   // Verify the SelectChallengeRequest content.
@@ -907,7 +907,7 @@ TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
     // previous unmask response. TestPaymentsNetworkInterface will ack the
     // select challenge option request and directly invoke the callback.
     authenticator_->OnChallengeOptionSelected(
-        &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+        card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
         /*context_token=*/"context_token_from_previous_unmask_response",
         /*billing_customer_number=*/kTestBillingCustomerNumber);
     // Verify the context token is updated with SelectChallengeOption response.
@@ -997,7 +997,7 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
   // previous unmask response. TestPaymentsNetworkInterface will ack the select
   // challenge option request and directly invoke the callback.
   authenticator_->OnChallengeOptionSelected(
-      &card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card_, selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
 
@@ -1120,7 +1120,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
        Benefits_ClientsBehaviorConstant) {
   authenticator_->OnChallengeOptionSelected(
-      &card(), selected_otp_challenge_option_, requester_->GetWeakPtr(),
+      card(), selected_otp_challenge_option_, requester_->GetWeakPtr(),
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");

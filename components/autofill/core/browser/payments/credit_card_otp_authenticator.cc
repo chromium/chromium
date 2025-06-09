@@ -101,23 +101,15 @@ void CreditCardOtpAuthenticator::OnNewOtpRequested() {
 }
 
 void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
-    const CreditCard* card,
+    const CreditCard& card,
     const CardUnmaskChallengeOption& selected_challenge_option,
     base::WeakPtr<Requester> requester,
     const std::string& context_token,
     int64_t billing_customer_number) {
-  if (!card) {
-    requester->OnOtpAuthenticationComplete(
-        OtpAuthenticationResponse().with_result(
-            OtpAuthenticationResponse::Result::kGenericError));
-    Reset();
-    return;
-  }
-
   // Currently only virtual cards and cards enrolled in runtime retrieval are
   // supported for OTP authentication.
-  CHECK((card->record_type() == CreditCard::RecordType::kVirtualCard) ||
-        (card->card_info_retrieval_enrollment_state() ==
+  CHECK((card.record_type() == CreditCard::RecordType::kVirtualCard) ||
+        (card.card_info_retrieval_enrollment_state() ==
          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled));
   CHECK(selected_challenge_option.type ==
             CardUnmaskChallengeOptionType::kSmsOtp ||
@@ -127,7 +119,7 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
   // Store info for this session. These info will be shared for multiple
   // payments requests. Only |context_token_| will be changed during this
   // session.
-  card_ = *card;
+  card_ = card;
   selected_challenge_option_ = selected_challenge_option;
   requester_ = requester;
   context_token_ = context_token;

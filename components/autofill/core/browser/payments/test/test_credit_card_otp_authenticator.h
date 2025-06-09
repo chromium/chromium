@@ -27,7 +27,7 @@ class TestCreditCardOtpAuthenticator : public CreditCardOtpAuthenticator {
 
   // CreditCardOtpAuthenticator:
   void OnChallengeOptionSelected(
-      const CreditCard* card,
+      const CreditCard& card,
       const CardUnmaskChallengeOption& selected_challenge_option,
       base::WeakPtr<Requester> requester,
       const std::string& context_token,

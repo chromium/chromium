@@ -90,10 +90,8 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // |selected_challenge_option|. Will invoke
   // |SendSelectChallengeOptionRequest()| to send the selected challenge option
   // to server.
-  // TODO: tushartushar - Convert CreditCard* to a const CreditCard& as
-  // CreditCard can never be a nullptr, it shouldn't be raw pointer.
   virtual void OnChallengeOptionSelected(
-      const CreditCard* card,
+      const CreditCard& card,
       const CardUnmaskChallengeOption& selected_challenge_option,
       base::WeakPtr<Requester> requester,
       const std::string& context_token,
