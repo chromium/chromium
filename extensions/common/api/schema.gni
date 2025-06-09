@@ -26,6 +26,7 @@ extensions_api_schema_files_ = [
   "system_memory.idl",
   "system_network.idl",
   "test.json",
+  "types.json",
   "user_scripts.idl",
   "web_request.json",
 ]
@@ -82,7 +83,6 @@ if (enable_extensions) {
     "sockets_udp.idl",
     "system_display.idl",
     "system_storage.idl",
-    "types.json",
     "usb.idl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.idl",
@@ -108,7 +108,6 @@ if (enable_desktop_android_extensions) {
     "icon_variants.idl",
     "scripts_internal.idl",
     "system_display.idl",
-    "types.json",
     "usb.idl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.idl",

@@ -33,7 +33,7 @@
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_notify_session.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
-#include "extensions/browser/api/content_settings/content_settings_service.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
