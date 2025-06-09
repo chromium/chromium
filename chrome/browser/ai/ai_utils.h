@@ -20,21 +20,27 @@ class AIUtils {
       const mojo::Remote<ClientRemoteInterface>& client_remote,
       blink::mojom::AIManagerCreateClientError error,
       blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
-    client_remote->OnError(error, std::move(quota_error_info));
+    if (client_remote) {
+      client_remote->OnError(error, std::move(quota_error_info));
+    }
   }
 
   static void SendStreamingStatus(
       const mojo::Remote<blink::mojom::ModelStreamingResponder>& responder,
       blink::mojom::ModelStreamingResponseStatus status,
       blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
-    responder->OnError(status, std::move(quota_error_info));
+    if (responder) {
+      responder->OnError(status, std::move(quota_error_info));
+    }
   }
 
   static void SendStreamingStatus(
       blink::mojom::ModelStreamingResponder* responder,
       blink::mojom::ModelStreamingResponseStatus status,
       blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
-    responder->OnError(status, std::move(quota_error_info));
+    if (responder) {
+      responder->OnError(status, std::move(quota_error_info));
+    }
   }
 
   static blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
