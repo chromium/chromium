@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -33,22 +32,13 @@ CrosSettingsHolder::CrosSettingsHolder(
   cros_settings_->AddSettingsProvider(
       std::make_unique<SystemSettingsProvider>(notify_callback));
 
-  if (CrosSettings::IsInitialized()) {
-    // On tests, CrosSettings may be overwritten to inject testing behavior.
-    // Keep the existing one.
-    LOG(WARNING)
-        << "CrosSettings instance was injected. Skipping initialization.";
-    CHECK_IS_TEST();
-  } else {
-    CrosSettings::SetInstance(cros_settings_.get());
-  }
+  CrosSettings::SetInstance(cros_settings_.get());
 }
 
 CrosSettingsHolder::~CrosSettingsHolder() {
-  if (CrosSettings::IsInitialized() &&
-      CrosSettings::Get() == cros_settings_.get()) {
-    CrosSettings::SetInstance(nullptr);
-  }
+  // Nobody should override the global instance.
+  CHECK_EQ(CrosSettings::Get(), cros_settings_.get());
+  CrosSettings::SetInstance(nullptr);
 }
 
 }  // namespace ash
