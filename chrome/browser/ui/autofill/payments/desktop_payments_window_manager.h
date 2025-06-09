@@ -91,7 +91,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
 
-  // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
+  // Triggered when a pop-up is destroyed, and the `flow_type_` is kBnpl.
   void OnWebContentsDestroyedForBnpl();
 
   // Initiates the second UnmaskCardRequest in the VCN 3DS flow to attempt to
