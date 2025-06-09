@@ -28,12 +28,9 @@ bool GetAddress(const struct nlmsghdr* header,
     *really_deprecated = false;
   }
 
-  // TODO: NLMSG_DATA is a third-party macro that performs an unsafe operation.
-  // So, `header` should be reiwritten to `header.data()`.
-  //
   // Expected rewrite:
-  // const struct nlmsghdr* msg =
-  //     reinterpret_cast<const struct nlmsghdr*>(NLMSG_DATA(header.data()));
+  // const struct nlmsghdr* msg = reinterpret_cast<const struct nlmsghdr*>(
+  //     UNSAFE_TODO(NLMSG_DATA(header.data())));
   const struct nlmsghdr* msg =
       reinterpret_cast<const struct nlmsghdr*>(NLMSG_DATA(header));
   return true;
@@ -48,11 +45,8 @@ T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
   if (length <= 0 || static_cast<size_t>(length) < NLMSG_HDRLEN + sizeof(T)) {
     return nullptr;
   }
-  // TODO: NLMSG_DATA is a third-party macro that performs an unsafe operation.
-  // So, `header` should be reiwritten to `header.data()`.
-  //
   // Expected rewrite:
-  // return reinterpret_cast<const T*>(NLMSG_DATA(header.data()));
+  // return reinterpret_cast<const T*>(UNSAFE_TODO(NLMSG_DATA(header.data())));
   return reinterpret_cast<const T*>(NLMSG_DATA(header));
 }
 }  // namespace

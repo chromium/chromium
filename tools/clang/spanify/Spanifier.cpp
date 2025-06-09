@@ -832,6 +832,52 @@ static clang::SourceLocation GetBinaryOperationOperatorLoc(
   assert(false && "Unexpected binaryOperation Node");
 }
 
+// When a binary operation and rhs expr appear inside a macro expansion,
+// this function produces an expression like:
+//     UNSAFE_TODO(MACRO(will_be_span.data()))
+// where MACRO is defined as something like below:
+//     #define MACRO(arg) (arg + offset)
+//
+// Known issue:
+// The following code implicitly assumes that the will_be_span object is a
+// macro argument, and cannot handle the following case appropriately.
+//     #define MACRO() (will_be_span + offset)
+//
+// See test: 'span-frontier-macro-original.cc'
+static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
+                                 const std::string& key) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+  const auto& lang_opts = ast_context.getLangOpts();
+
+  const auto* decl_ref =
+      result.Nodes.getNodeAs<clang::DeclRefExpr>("declRefExpr");
+  if (!decl_ref) {
+    llvm::errs()
+        << "\n"
+           "Error: In case of a binary operation in a macro expansion, "
+           "only `declRefExpr` is supported for now.\n";
+    DumpMatchResult(result);
+    return;
+  }
+
+  EmitReplacement(
+      key, GetReplacementDirective(
+               getExprRange(decl_ref, source_manager, lang_opts).getEnd(),
+               ".data()", source_manager));
+
+  clang::CharSourceRange macro_range =
+      source_manager.getExpansionRange(decl_ref->getBeginLoc());
+  EmitReplacement(key, GetReplacementDirective(macro_range.getBegin(),
+                                               "UNSAFE_TODO(", source_manager));
+  // `macro_range.getEnd()` points to the last character of the macro call,
+  // i.e. the closing parenthesis of the macro call, so +1 offset is needed.
+  // Note that `macro_range` is a CharSourceRange, not a SourceRange.
+  EmitReplacement(
+      key, GetReplacementDirective(macro_range.getEnd().getLocWithOffset(1),
+                                   ")", source_manager));
+}
+
 static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
@@ -840,7 +886,17 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
       GetNodeOrCrash<clang::Expr>(result, "binary_operation", __FUNCTION__);
   const auto* binary_op_RHS =
       GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
+  const auto* rhs_expr =
+      GetNodeOrCrash<clang::Expr>(result, "rhs_expr", __FUNCTION__);
   const std::string key = GetRHS(result);
+
+  // If `binary_operation` and `rhs_expr` appear inside a macro expansion, then
+  // add ".data()" call in the call site instead of adding ".subspan(offset)".
+  if (binary_operation->getBeginLoc().isMacroID() &&
+      rhs_expr->getBeginLoc().isMacroID()) {
+    AdaptBinaryOpInMacro(result, key);
+    return;
+  }
 
   // C-style arrays are rewritten to `std::array`, not `base::span`, so
   // a binary operation on the rewritten array must explicitly construct
@@ -2839,17 +2895,16 @@ class Spanifier {
     // Note that BinaryOperations's LHS and RHS expressions refer to what's
     // before and after the binary operator (+) (Not to be confused with
     // lhs_expr and rhs_expr).
-    auto binary_op = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(binaryOperation(
-            binary_plus_or_minus_operation(
-                binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
-                                hasRHS(expr(hasType(isInteger()))),
-                                unless(raw_ptr_plugin::isInMacroLocation()))
-                    .bind("binary_operation")),
-            hasRHS(expr().bind("binary_op_rhs")),
-            unless(hasParent(binaryOperation(
-                anyOf(hasOperatorName("+"), hasOperatorName("-")))))))));
+    auto binary_op =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(ignoringParenCasts(binaryOperation(
+                     binary_plus_or_minus_operation(
+                         binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                         hasRHS(expr(hasType(isInteger()))))
+                             .bind("binary_operation")),
+                     hasRHS(expr().bind("binary_op_rhs")),
+                     unless(hasParent(binaryOperation(anyOf(
+                         hasOperatorName("+"), hasOperatorName("-")))))))));
     Match(binary_op, AdaptBinaryOperation);
 
     // Handles expressions of the form:

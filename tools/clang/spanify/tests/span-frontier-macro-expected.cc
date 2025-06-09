@@ -49,8 +49,19 @@ void test_take_ptr1_macro() {
   TAKE_PTR1(buf.data());
 }
 
-// TODO(yukishiino): Support static_cast and C style cast.
-// #define TAKE_PTR2(arg) ((char*)(arg))
+// A macro that expects a pointer as the argument.
+#define TAKE_PTR2(arg) (arg + 1)
 
-// TODO(yukishiino): Support binary + operator.
-// #define TAKE_PTR3(arg) (arg + 1)
+void test_take_ptr2_macro() {
+  int array[3] = {1, 2, 3};
+  // Expected rewrite:
+  // base::span<int> buf = array;
+  base::span<int> buf = array;
+  buf[0] = 0;
+  // Expected rewrite:
+  // UNSAFE_TODO(TAKE_PTR2(buf.data()));
+  UNSAFE_TODO(TAKE_PTR2(buf.data()));
+}
+
+// TODO(yukishiino): Support static_cast and C style cast.
+// #define TAKE_PTR3(arg) ((char*)(arg))
