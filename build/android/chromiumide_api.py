@@ -242,14 +242,13 @@ def _find_params(output_dir: str) -> Iterator[str]:
       [
           os.path.join(_SRC_ROOT, 'build', 'android', 'list_java_targets.py'),
           '--output-directory=' + output_dir,
+          '--omit-targets',
           '--print-params-paths',
       ],
       cwd=_SRC_ROOT,
       encoding='utf-8',
   )
-  for line in output.splitlines():
-    path = line.split(': ', 1)[1]
-    yield os.path.relpath(path, _SRC_ROOT)
+  return output.splitlines()
 
 
 def _scan_params(output_dir: str) -> Tuple[List[str], List[str], List[str]]:

@@ -154,7 +154,8 @@ class _TargetEntry:
     if ninja_target[0] == ':':
       ninja_target = ninja_target[1:]
     subpath = ninja_target.replace(':', os.path.sep) + '.build_config.json'
-    return os.path.join(constants.GetOutDirectory(), 'gen', subpath)
+    return os.path.relpath(
+        os.path.join(constants.GetOutDirectory(), 'gen', subpath))
 
   @property
   def params_path(self):
@@ -193,6 +194,9 @@ def main():
   parser.add_argument('--gn-labels',
                       action='store_true',
                       help='Print GN labels rather than ninja targets')
+  parser.add_argument('--omit-targets',
+                      action='store_true',
+                      help='Do not print the target / gn label')
   parser.add_argument(
       '--nested',
       action='store_true',
@@ -270,30 +274,37 @@ def main():
       print(f'{entry_type}: {count}')
   else:
     for e in entries:
-      if args.gn_labels:
-        to_print = e.gn_target
+      if args.omit_targets:
+        target_part = ''
       else:
-        to_print = e.ninja_target
+        if args.gn_labels:
+          target_part = e.gn_target
+        else:
+          target_part = e.ninja_target
 
-      # Convert to top-level target
-      if not args.nested:
-        to_print = to_print.replace('__test_apk', '').replace('__apk', '')
+        # Convert to top-level target
+        if not args.nested:
+          target_part = target_part.replace('__test_apk',
+                                            '').replace('__apk', '')
 
+      type_part = ''
       if args.print_types:
-        to_print = f'{to_print}: {e.get_type()}'
+        type_part = e.get_type()
       elif args.print_build_config_paths:
-        to_print = f'{to_print}: {e.build_config_path}'
+        type_part = e.build_config_path
       elif args.print_params_paths:
-        to_print = f'{to_print}: {e.params_path}'
+        type_part = e.params_path
       elif args.query:
-        value = _query_json(json_dict=e.build_config(),
-                            query=args.query,
-                            path=e.build_config_path)
-        if not value:
+        type_part = _query_json(json_dict=e.build_config(),
+                                query=args.query,
+                                path=e.build_config_path)
+        if not type_part:
           continue
-        to_print = f'{to_print}: {value}'
 
-      print(to_print)
+      if target_part and type_part:
+        print(f'{target_part}: {type_part}')
+      elif target_part or type_part:
+        print(target_part or type_part)
 
 
 if __name__ == '__main__':
