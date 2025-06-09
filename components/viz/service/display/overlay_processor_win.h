@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "components/viz/service/display/output_surface.h"
@@ -192,7 +193,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
           surface_content_render_passes,
       OverlayCandidateList& candidates);
 
-  const OutputSurface::DCSupportLevel dc_support_level_;
+  const std::optional<features::DelegatedCompositingMode>
+      delegated_compositing_supported_;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;

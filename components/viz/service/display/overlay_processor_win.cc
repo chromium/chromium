@@ -50,21 +50,6 @@ constexpr size_t kTooManyQuads = 2048;
 // than |kTooManyQuads|.
 constexpr int kTooManyQuadsWithRoundedCorners = 256;
 
-// kDCompSurfacesForDelegatedInk is for delegated ink to work with partial
-// delegated compositing. This function should return true if the feature is
-// enabled or partial delegated compositing is enabled - a condition which
-// requires the use of DCOMP surfaces for delegated ink.
-bool ShouldUseDCompSurfacesForDelegatedInk(
-    OutputSurface::DCSupportLevel support_level) {
-  if (IsDelegatedCompositingSupportedAndEnabled(support_level) &&
-      features::kDelegatedCompositingModeParam.Get() ==
-          features::DelegatedCompositingMode::kLimitToUi) {
-    return true;
-  }
-
-  return base::FeatureList::IsEnabled(features::kDCompSurfacesForDelegatedInk);
-}
-
 gfx::Rect UpdateRenderPassFromOverlayData(
     const DCLayerOverlayProcessor::RenderPassOverlayData& overlay_data,
     AggregatedRenderPass* render_pass,
@@ -151,10 +136,14 @@ OverlayProcessorWin::OverlayProcessorWin(
     OutputSurface::DCSupportLevel dc_support_level,
     const DebugRendererSettings* debug_settings,
     std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor)
-    : dc_support_level_(dc_support_level),
+    : delegated_compositing_supported_(
+          IsDelegatedCompositingSupportedAndEnabled(dc_support_level)
+              ? std::make_optional(
+                    features::kDelegatedCompositingModeParam.Get())
+              : std::nullopt),
       debug_settings_(debug_settings),
       dc_layer_overlay_processor_(std::move(dc_layer_overlay_processor)) {
-  DCHECK_GT(dc_support_level_, OutputSurface::DCSupportLevel::kNone);
+  DCHECK_GT(dc_support_level, OutputSurface::DCSupportLevel::kNone);
 }
 
 OverlayProcessorWin::~OverlayProcessorWin() = default;
@@ -225,13 +214,12 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
   // Do not attempt delegated compositing if we do not support DComp textures
   // (and therefore cannot possibly scanout quad resources) or if the feature is
   // disabled.
-  if (ForceDisableDelegation() ||
-      !IsDelegatedCompositingSupportedAndEnabled(dc_support_level_)) {
+  if (ForceDisableDelegation() || !delegated_compositing_supported_) {
     return DelegationStatus::kCompositedFeatureDisabled;
   }
 
   const bool is_full_delegated_compositing =
-      features::kDelegatedCompositingModeParam.Get() ==
+      delegated_compositing_supported_ ==
       features::DelegatedCompositingMode::kFull;
 
   OverlayCandidateFactory factory(
@@ -391,8 +379,19 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
 }
 
 void OverlayProcessorWin::SetFrameHasDelegatedInk() {
+  const bool is_partially_delegated_compositing =
+      delegated_compositing_supported_ ==
+      features::DelegatedCompositingMode::kLimitToUi;
+
+  // kDCompSurfacesForDelegatedInk is for delegated ink to work with partial
+  // delegated compositing. This should be true if the feature is enabled or
+  // partial delegated compositing is enabled - a condition which requires the
+  // use of DCOMP surfaces for delegated ink.
+  const bool should_use_d_comp_surfaces_for_delegated_ink =
+      is_partially_delegated_compositing ||
+      base::FeatureList::IsEnabled(features::kDCompSurfacesForDelegatedInk);
   frame_has_forced_dcomp_surface_ |=
-      ShouldUseDCompSurfacesForDelegatedInk(dc_support_level_);
+      should_use_d_comp_surfaces_for_delegated_ink;
 }
 
 void OverlayProcessorWin::SetUsingDCLayersForTesting(
