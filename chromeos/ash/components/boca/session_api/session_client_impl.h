@@ -12,12 +12,20 @@
 #include "base/sequence_checker.h"
 #include "student_heartbeat_request.h"
 
+namespace boca {
+class Session;
+}
+
 namespace google_apis {
 class RequestSender;
 }
 
-namespace boca {
-class Session;
+namespace network {
+class SharedURLLoaderFactory;
+}
+
+namespace signin {
+class IdentityManager;
 }
 
 namespace ash::boca {
@@ -41,7 +49,9 @@ class SessionClientImpl {
   using UpdateStudentActivitiesCallback = base::OnceCallback<void(
       base::expected<bool, google_apis::ApiErrorCode> result)>;
 
-  SessionClientImpl();
+  SessionClientImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
   explicit SessionClientImpl(
       std::unique_ptr<google_apis::RequestSender> sender);
   SessionClientImpl(const SessionClientImpl&) = delete;
@@ -76,6 +86,8 @@ class SessionClientImpl {
                                             google_apis::ApiErrorCode> result);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<google_apis::RequestSender> sender_;
   base::queue<std::unique_ptr<GetSessionRequest>> pending_get_session_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);

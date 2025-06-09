@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
@@ -25,7 +24,12 @@
 
 namespace ash::boca {
 
-SessionClientImpl::SessionClientImpl() : sender_(CreateRequestSender()) {}
+SessionClientImpl::SessionClientImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager),
+      sender_(CreateRequestSender()) {}
 SessionClientImpl::SessionClientImpl(
     std::unique_ptr<google_apis::RequestSender> sender)
     : sender_(std::move(sender)) {}
@@ -35,16 +39,17 @@ SessionClientImpl::~SessionClientImpl() = default;
 std::unique_ptr<google_apis::RequestSender>
 SessionClientImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {kSchoolToolsAuthScope};
-  auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
-  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
+
+  CHECK(url_loader_factory_);
+  CHECK(identity_manager_);
 
   auto auth_service = std::make_unique<google_apis::AuthService>(
-      identity_manager,
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      identity_manager_,
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      url_loader_factory_, scopes);
 
   return std::make_unique<google_apis::RequestSender>(
-      std::move(auth_service), url_loader_factory,
+      std::move(auth_service), url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(),
            /* `USER_VISIBLE` is because the requested/returned data is visible

@@ -136,7 +136,9 @@ BocaManager::BocaManager(
 BocaManager::BocaManager(Profile* profile,
                          PrefService* global_prefs,
                          const std::string& application_locale)
-    : session_client_impl_(std::make_unique<boca::SessionClientImpl>()) {
+    : session_client_impl_(std::make_unique<boca::SessionClientImpl>(
+          profile->GetURLLoaderFactory(),
+          IdentityManagerFactory::GetForProfile(profile))) {
   auto* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   bool is_consumer = ash::boca_util::IsConsumer(user);

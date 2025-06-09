@@ -39,14 +39,6 @@ source_set("session_api") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/boca/proto",
-
-    # TODO(http://crbug.com/421832370): The following deps is made necessary
-    # only because of the existing circular dependency between
-    # //c/a/c/boca and //c/a/c/boca/session_api. This issue was exposed by a
-    # ChromeOS build issue documented as a different bug in
-    # https://crbug.com/354839582. Remove the following deps when the circular
-    # dependency issue is fixed.
-    "//chromeos/services/network_config/public/cpp",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//google_apis/common",

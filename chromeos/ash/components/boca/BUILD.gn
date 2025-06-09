@@ -47,9 +47,6 @@ static_library("boca") {
     "//ui/base",
     "//ui/message_center",
   ]
-
-  allow_circular_includes_from =
-      [ "//chromeos/ash/components/boca/session_api" ]
 }
 
 static_library("invalidations") {
