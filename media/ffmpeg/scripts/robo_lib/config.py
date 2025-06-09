@@ -204,20 +204,24 @@ class RoboConfiguration:
         if platform.system() == "Linux":
             self._host_operating_system = "linux"
 
-            try:
-                with open("/etc/lsb-release", "r") as f:
-                    result = f.read()
-                    if "Ubuntu" in result or "Debian" in result:
-                        self._os_flavor = packages.OsFlavor.Debian
-                    elif "Arch" in result:
-                        self._os_flavor = packages.OsFlavor.Arch
-                    else:
-                        raise Exception(
-                            "Couldn't determine OS flavor from lsb-release "
-                            "(needed to install packages)")
-            except:
+            for release_file in ("/etc/lsb-release", "/etc/os-release"):
+                try:
+                    with open(release_file, "r") as f:
+                        result = f.read()
+                        if "Ubuntu" in result or "Debian" in result:
+                            self._os_flavor = packages.OsFlavor.Debian
+                        elif "Arch" in result:
+                            self._os_flavor = packages.OsFlavor.Arch
+                        else:
+                            raise Exception(
+                                "Couldn't determine OS flavor from lsb-release "
+                                "(needed to install packages)")
+                        break
+                except:
+                    pass
+            else:
                 raise Exception(
-                    "Couldn't read OS flavor from /etc/lsb-release file "
+                    "Couldn't read OS flavor from /etc/{os,lsb}-release file "
                     "(needed to install packages)")
         elif platform.system() == "Darwin":
             self._host_operating_system = "mac"
