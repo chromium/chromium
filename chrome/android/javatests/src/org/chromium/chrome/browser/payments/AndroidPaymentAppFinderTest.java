@@ -793,6 +793,68 @@ public class AndroidPaymentAppFinderTest
     }
 
     /**
+     * Test a valid installation of QuincyPay with 55555555551111111111 signature and
+     * https://quincypay.test/webpay payment method, which supports a couple of different signatures
+     * (with the same package name) through two "related_applications" in the same web app manifest.
+     * Repeated app look ups should be successful.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testValidQuincyPay1() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://quincypay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "QuincyPay",
+                "com.quincypay.app",
+                "https://quincypay.test/webpay",
+                /* signature= */ "55555555551111111111");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+
+        mPaymentApps.clear();
+        mAllPaymentAppsCreated = false;
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
+     * Test a valid installation of QuincyPay with 55555555552222222222 signature and
+     * https://quincypay.test/webpay payment method, which supports a couple of different signatures
+     * (with the same package name) through two "related_applications" in the same web app manifest.
+     * Repeated app look ups should be successful.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testValidQuincyPay2() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://quincypay.test/webpay");
+        mPackageManager.installPaymentApp(
+                "QuincyPay",
+                "com.quincypay.app",
+                "https://quincypay.test/webpay",
+                /* signature= */ "55555555552222222222");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+
+        mPaymentApps.clear();
+        mAllPaymentAppsCreated = false;
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
+        Assert.assertEquals("com.quincypay.app", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /**
      * Test a valid installation of EvePay with 55555555551111111111 signature and
      * https://evepay.test/webpay payment method, which supports a couple of different signatures
      * (with the same package name) through different web app manifests. Repeated app look ups
