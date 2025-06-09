@@ -254,8 +254,6 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 // Tests that some form control types are extracted by ExtractFormData() and
 // others are not.
 TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillExtractInputDate};
   LoadHTML(R"(
     <form id=form-id>
       <!-- These form controls are not extracted. -->

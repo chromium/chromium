@@ -2315,10 +2315,7 @@ std::optional<FormControlType> ToAutofillFormControlType(
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     case blink::mojom::FormControlType::kInputDate:
-      if (base::FeatureList::IsEnabled(features::kAutofillExtractInputDate)) {
-        return FormControlType::kInputDate;
-      }
-      break;
+      return FormControlType::kInputDate;
     case blink::mojom::FormControlType::kButtonButton:
     case blink::mojom::FormControlType::kButtonSubmit:
     case blink::mojom::FormControlType::kButtonReset:

@@ -267,13 +267,6 @@ BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
              "AutofillEnableEmailOrLoyaltyCardsFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, extracts <input type=date>, which may be filled by Autofill AI.
-// This is a kill switch.
-// TODO(crbug.com/396325496): Clean up after M137 branch (April 28, 2025).
-BASE_FEATURE(kAutofillExtractInputDate,
-             "AutofillExtractInputDate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, only non-ad frames are extracted.
 // Otherwise, non-ad frames as well as *visible* ad frames are extracted.
 // "Extracted" means that FormFieldData::child_frames is populated, which is
