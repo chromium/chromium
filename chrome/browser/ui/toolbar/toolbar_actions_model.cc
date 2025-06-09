@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -39,6 +38,10 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#endif
 
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
@@ -221,10 +224,12 @@ bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
   return base::Contains(action_ids_, action_id);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 bool ToolbarActionsModel::CanShowActionsInToolbar(const Browser& browser) {
   // Pinning extensions is not available in PWAs.
   return !web_app::AppBrowserController::IsWebApp(&browser);
 }
+#endif
 
 bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // We consider a site to be restricted if it's restricted for every
