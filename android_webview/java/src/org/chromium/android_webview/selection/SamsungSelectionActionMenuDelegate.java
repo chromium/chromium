@@ -65,6 +65,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     private static final String WRITING_TOOLKIT_SUBJECT = "toolkitSubject";
     private static final String WRITING_TOOLKIT_IS_TEXT_EDITABLE = "isTextEditable";
     private static final String WRITING_TOOLKIT_URI = "honeyboard://writing-toolkit";
+    private static final int MAXIMUM_BUILD_VERSION_CODE_SUPPORTED = 36;
     private static final int SCAN_TEXT_ID;
     private static final ComponentName WRITING_TOOLKIT_COMPONENT =
             new ComponentName(
@@ -248,7 +249,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     }
 
     public static boolean shouldUseSamsungMenuItemOrdering() {
-        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSamsungDevice();
+        return Build.VERSION.SDK_INT <= MAXIMUM_BUILD_VERSION_CODE_SUPPORTED && isSamsungDevice();
     }
 
     private static int getMenuItemOrder(@IdRes int id) {
@@ -276,7 +277,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         }
         if (!isSamsungDevice()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                || Build.VERSION.SDK_INT > MAXIMUM_BUILD_VERSION_CODE_SUPPORTED) {
             sIsManageAppsSupported = false;
             return false;
         }
@@ -372,7 +373,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     private static boolean shouldAddWritingToolkitMenu(
             String selectedText, boolean isSelectionPassword) {
         return isSamsungDevice()
-                && Build.VERSION.SDK_INT == Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && Build.VERSION.SDK_INT <= MAXIMUM_BUILD_VERSION_CODE_SUPPORTED
                 && !selectedText.isEmpty()
                 && !isSelectionPassword
                 && SCAN_TEXT_ID != 0
