@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
@@ -83,6 +84,17 @@ const bool kDefaultIsLeftSideVerticalScrollbar = false;
 const SkColor4f kDefaultSolidColorScrollbarColor = SkColors::kTransparent;
 const int kDefaultSolidColorScrollbarThumbThickness = 0;
 const int kDefaultSolidColorScrollbarTrackStart = 0;
+
+// Default NinePatchThumbScrollbarLayer property values
+const int kDefaultNinePatchThumbScrollbarThumbThickness = 0;
+const int kDefaultNinePatchThumbScrollbarThumbLength = 0;
+const int kDefaultNinePatchThumbScrollbarTrackStart = 0;
+const int kDefaultNinePatchThumbScrollbarTrackLength = 0;
+const gfx::Size kDefaultNinePatchThumbScrollbarImageBounds = gfx::Size();
+const gfx::Rect kDefaultNinePatchThumbScrollbarAperture = gfx::Rect();
+const cc::UIResourceId kDefaultNinePatchThumbScrollbarThumbUIResourceId = 0;
+const cc::UIResourceId
+    kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId = 0;
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -241,6 +253,24 @@ class LayerContextImplTest : public testing::Test {
     return id;
   }
 
+  mojom::ScrollbarLayerBaseExtraPtr CreateDefaultScrollbarBaseExtra() {
+    auto base_extra = mojom::ScrollbarLayerBaseExtra::New();
+    base_extra->scroll_element_id = kDefaultScrollElementId;
+    base_extra->is_overlay_scrollbar = kDefaultIsOverlayScrollbar;
+    base_extra->is_web_test = kDefaultIsWebTest;
+    base_extra->thumb_thickness_scale_factor =
+        kDefaultThumbThicknessScaleFactor;
+    base_extra->current_pos = kDefaultCurrentPos;
+    base_extra->clip_layer_length = kDefaultClipLayerLength;
+    base_extra->scroll_layer_length = kDefaultScrollLayerLength;
+    base_extra->vertical_adjust = kDefaultVerticalAdjust;
+    base_extra->has_find_in_page_tickmarks = kDefaultHasFindInPageTickmarks;
+    base_extra->is_horizontal_orientation = kDefaultIsHorizontalOrientation;
+    base_extra->is_left_side_vertical_scrollbar =
+        kDefaultIsLeftSideVerticalScrollbar;
+    return base_extra;
+  }
+
   mojom::LayerExtraPtr CreateDefaultLayerExtra(cc::mojom::LayerType type) {
     switch (type) {
       case cc::mojom::LayerType::kTexture: {
@@ -266,25 +296,27 @@ class LayerContextImplTest : public testing::Test {
       }
       case cc::mojom::LayerType::kSolidColorScrollbar: {
         auto extra = mojom::SolidColorScrollbarLayerExtra::New();
-        auto base_extra = mojom::ScrollbarLayerBaseExtra::New();
-        base_extra->scroll_element_id = kDefaultScrollElementId;
-        base_extra->is_overlay_scrollbar = kDefaultIsOverlayScrollbar;
-        base_extra->is_web_test = kDefaultIsWebTest;
-        base_extra->thumb_thickness_scale_factor =
-            kDefaultThumbThicknessScaleFactor;
-        base_extra->current_pos = kDefaultCurrentPos;
-        base_extra->clip_layer_length = kDefaultClipLayerLength;
-        base_extra->scroll_layer_length = kDefaultScrollLayerLength;
-        base_extra->vertical_adjust = kDefaultVerticalAdjust;
-        base_extra->has_find_in_page_tickmarks = kDefaultHasFindInPageTickmarks;
-        base_extra->is_horizontal_orientation = kDefaultIsHorizontalOrientation;
-        base_extra->is_left_side_vertical_scrollbar =
-            kDefaultIsLeftSideVerticalScrollbar;
-        extra->scrollbar_base_extra = std::move(base_extra);
+        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
         extra->color = kDefaultSolidColorScrollbarColor;
         extra->thumb_thickness = kDefaultSolidColorScrollbarThumbThickness;
         extra->track_start = kDefaultSolidColorScrollbarTrackStart;
         return mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
+            std::move(extra));
+      }
+      case cc::mojom::LayerType::kNinePatchThumbScrollbar: {
+        auto extra = mojom::NinePatchThumbScrollbarLayerExtra::New();
+        extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
+        extra->thumb_thickness = kDefaultNinePatchThumbScrollbarThumbThickness;
+        extra->thumb_length = kDefaultNinePatchThumbScrollbarThumbLength;
+        extra->track_start = kDefaultNinePatchThumbScrollbarTrackStart;
+        extra->track_length = kDefaultNinePatchThumbScrollbarTrackLength;
+        extra->image_bounds = kDefaultNinePatchThumbScrollbarImageBounds;
+        extra->aperture = kDefaultNinePatchThumbScrollbarAperture;
+        extra->thumb_ui_resource_id =
+            kDefaultNinePatchThumbScrollbarThumbUIResourceId;
+        extra->track_and_buttons_ui_resource_id =
+            kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId;
+        return mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
             std::move(extra));
       }
 
@@ -3089,10 +3121,10 @@ TEST_P(LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
 INSTANTIATE_TEST_SUITE_P(
     AllScrollbarTypes,
     LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest,
-    testing::Values(cc::mojom::LayerType::kSolidColorScrollbar
-                    // TODO(crbug.com/422778998): Add PaintedScrollbar and
-                    // NinePatchThumbScrollbar once their
-                    // CreateDefaultLayerExtra is implemented.
+    testing::Values(cc::mojom::LayerType::kSolidColorScrollbar,
+                    cc::mojom::LayerType::kNinePatchThumbScrollbar
+                    // TODO(crbug.com/422778998): Add PaintedScrollbar once
+                    // its CreateDefaultLayerExtra is implemented.
                     ),
     [](const testing::TestParamInfo<
         LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest::ParamType>&
@@ -3122,8 +3154,6 @@ class LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest
     }
     return static_cast<cc::SolidColorScrollbarLayerImpl*>(layer);
   }
-
-  const gfx::Size kDefaultScrollbarLayerBounds = gfx::Size(10, 100);
 };
 
 TEST_F(LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest,
@@ -3242,6 +3272,166 @@ TEST_F(LayerContextImplUpdateDisplayTreeSolidColorScrollbarLayerTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(layer_impl->color(), kUpdatedScrollbarColor);
+}
+
+// Test fixture for NinePatchThumbScrollbarLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest
+    : public LayerContextImplUpdateDisplayTreeScrollbarLayerBaseTest {
+ protected:
+  cc::NinePatchThumbScrollbarLayerImpl*
+  GetNinePatchThumbScrollbarLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (!layer || layer->GetLayerType() !=
+                      cc::mojom::LayerType::kNinePatchThumbScrollbar) {
+      return nullptr;
+    }
+    return static_cast<cc::NinePatchThumbScrollbarLayerImpl*>(layer);
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
+       UpdateThumbThicknessAndLength) {
+  constexpr int kScrollbarLayerId = 2;
+
+  // Initial update: Create with default thickness and length.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kNinePatchThumbScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::NinePatchThumbScrollbarLayerImpl* layer_impl =
+      GetNinePatchThumbScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_thickness(),
+            kDefaultNinePatchThumbScrollbarThumbThickness);
+  EXPECT_EQ(layer_impl->thumb_length(),
+            kDefaultNinePatchThumbScrollbarThumbLength);
+
+  // Second update: Update thumb_thickness and thumb_length.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
+  scrollbar_extra2->thumb_thickness = 5;
+  scrollbar_extra2->thumb_length = 20;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_thickness(), 5);
+  EXPECT_EQ(layer_impl->thumb_length(), 20);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
+       UpdateTrackStartAndLength) {
+  constexpr int kScrollbarLayerId = 2;
+
+  // Initial update: Create with default track_start and track_length.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kNinePatchThumbScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::NinePatchThumbScrollbarLayerImpl* layer_impl =
+      GetNinePatchThumbScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->track_start(),
+            kDefaultNinePatchThumbScrollbarTrackStart);
+  EXPECT_EQ(layer_impl->track_length(),
+            kDefaultNinePatchThumbScrollbarTrackLength);
+
+  // Second update: Update track_start and track_length.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
+  scrollbar_extra2->track_start = 2;
+  scrollbar_extra2->track_length = 90;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->track_start(), 2);
+  EXPECT_EQ(layer_impl->track_length(), 90);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
+       UpdateImageBoundsAndAperture) {
+  constexpr int kScrollbarLayerId = 2;
+
+  // Initial update: Create with default image_bounds and aperture.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kNinePatchThumbScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::NinePatchThumbScrollbarLayerImpl* layer_impl =
+      GetNinePatchThumbScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->image_bounds(),
+            kDefaultNinePatchThumbScrollbarImageBounds);
+  EXPECT_EQ(layer_impl->aperture(), kDefaultNinePatchThumbScrollbarAperture);
+
+  // Second update: Update image_bounds and aperture.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
+  scrollbar_extra2->image_bounds = gfx::Size(30, 30);
+  scrollbar_extra2->aperture = gfx::Rect(5, 5, 20, 20);
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->image_bounds(), gfx::Size(30, 30));
+  EXPECT_EQ(layer_impl->aperture(), gfx::Rect(5, 5, 20, 20));
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
+       UpdateUIResourceIds) {
+  constexpr int kScrollbarLayerId = 2;
+  constexpr cc::UIResourceId kThumbId = 101;
+  constexpr cc::UIResourceId kTrackId = 102;
+
+  // Initial update: Create with default resource IDs.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kNinePatchThumbScrollbar,
+                          kScrollbarLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::NinePatchThumbScrollbarLayerImpl* layer_impl =
+      GetNinePatchThumbScrollbarLayerFromActiveTree(kScrollbarLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->thumb_ui_resource_id(),
+            kDefaultNinePatchThumbScrollbarThumbUIResourceId);
+  EXPECT_EQ(layer_impl->track_and_buttons_ui_resource_id(),
+            kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId);
+
+  // Second update: Update resource IDs.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kScrollbarLayerId, cc::mojom::LayerType::kNinePatchThumbScrollbar,
+      kDefaultScrollbarLayerBounds);
+  auto& scrollbar_extra2 =
+      layer_props2->layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
+  scrollbar_extra2->thumb_ui_resource_id = kThumbId;
+  scrollbar_extra2->track_and_buttons_ui_resource_id = kTrackId;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->thumb_ui_resource_id(), kThumbId);
+  EXPECT_EQ(layer_impl->track_and_buttons_ui_resource_id(), kTrackId);
 }
 
 }  // namespace viz
