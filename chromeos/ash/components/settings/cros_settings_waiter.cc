@@ -9,7 +9,8 @@
 
 namespace ash {
 
-CrosSettingsWaiter::CrosSettingsWaiter(base::span<std::string_view> settings) {
+CrosSettingsWaiter::CrosSettingsWaiter(
+    base::span<const std::string_view> settings) {
   auto* cros_settings = ash::CrosSettings::Get();
   for (auto setting : settings) {
     subscriptions_.push_back(

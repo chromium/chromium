@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -82,14 +83,11 @@ class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest,
         kTestAffiliationId);
   }
 
-  void EnableGraphicsStatusPolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceGraphicsStatus, true);
-  }
-
-  void DisableGraphicsStatusPolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceGraphicsStatus, false);
+  void SetGraphicsStatusPolicy(bool enabled) {
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_device_reporting()->set_report_graphics_status(
+        enabled);
+    updater.Commit();
   }
 
   void LoginAffiliatedUser() {
@@ -121,11 +119,7 @@ class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest,
     chromeos::MissiveClientTestObserver missive_observer(
         Destination::EVENT_METRIC);
 
-    if (enable_graphics_status_policy) {
-      EnableGraphicsStatusPolicy();
-    } else {
-      DisableGraphicsStatusPolicy();
-    }
+    SetGraphicsStatusPolicy(enable_graphics_status_policy);
 
     if (is_affiliated) {
       LoginAffiliatedUser();
@@ -165,7 +159,6 @@ class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest,
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

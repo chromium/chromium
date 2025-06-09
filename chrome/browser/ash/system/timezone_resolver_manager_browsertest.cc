@@ -14,8 +14,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -25,7 +23,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_waiter.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
@@ -140,9 +140,6 @@ class TimeZoneResolverManagerTestBase : public LoginManagerTest {
 
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_{&mixin_host_};
-
-  ScopedTestingCrosSettings cros_settings_;
-  policy::DevicePolicyBuilder device_policy_builder_;
 };
 
 class TimeZoneResolverManagerEnrolledDeviceTest
@@ -154,18 +151,12 @@ class TimeZoneResolverManagerEnrolledDeviceTest
       em::SystemTimezoneProto::AutomaticTimezoneDetectionType detection_type) {
     // Override the cloud policy for automatic time zone detection to the given
     // value.
-    device_policy_builder_.SetDefaultSigningKey();
-    device_policy_builder_.payload()
-        .mutable_system_timezone()
-        ->set_timezone_detection_type(detection_type);
-    device_policy_builder_.Build();
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_system_timezone()->set_timezone_detection_type(
+        detection_type);
+    updater.Commit();
     policy_test_server_mixin_.UpdateDevicePolicy(
-        device_policy_builder_.payload());
-
-    // Simulating a policy fetch.
-    ash::FakeSessionManagerClient::Get()->set_device_policy(
-        device_policy_builder_.GetBlob());
-    ash::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+        std::cref(updater).get().payload());
 
     // Wait for the policy value to get propagated.
     policy::LocalStateValueWaiter(
@@ -176,7 +167,11 @@ class TimeZoneResolverManagerEnrolledDeviceTest
 
   // Static policy overrides automatic detection policy
   void SetDeviceTimeZoneStaticPolicy(const std::string& value) {
-    cros_settings_.device_settings()->SetString(kSystemTimezonePolicy, value);
+    ash::CrosSettingsWaiter waiter({ash::kSystemTimezonePolicy});
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_system_timezone()->set_timezone(value);
+    updater.Commit();
+    waiter.Wait();
   }
 
  private:

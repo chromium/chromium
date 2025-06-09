@@ -7,12 +7,11 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -95,15 +94,16 @@ class NetworkBandwidthSamplerBrowserTest
                                             download_speed_kbps);
   }
 
-  void SetDeviceSettingValue(bool value) {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceNetworkStatus, value);
+  void SetReportDeviceNetworkStatusPolicy(bool enabled) {
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_device_reporting()->set_report_network_status(
+        enabled);
+    updater.Commit();
   }
 
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
                        ReportNetworkBandwidthWhenSettingEnabled) {
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   UpdateDownloadSpeedKbps(kDownloadSpeedKbps);
-  SetDeviceSettingValue(true);
+  SetReportDeviceNetworkStatusPolicy(true);
 
   // Force telemetry collection by advancing the timer and verify data that is
   // being enqueued via ERP.
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(
     NetworkBandwidthSamplerBrowserTest,
     DISABLED_DoesNotReportNetworkBandwidthWhenSettingDisabled) {
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
-  SetDeviceSettingValue(false);
+  SetReportDeviceNetworkStatusPolicy(false);
 
   // Force telemetry collection by advancing the timer and verify no data is
   // being enqueued via ERP.

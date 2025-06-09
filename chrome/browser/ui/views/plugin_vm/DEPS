@@ -20,5 +20,11 @@ include_rules = [
   "+chrome/browser/ui/test",
   "+chrome/common",
   "+chrome/grit",
-
 ]
+
+specific_include_rules = {
+  "plugin_vm_installer_view_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test/device_state_mixin.h",
+    "+chrome/test",
+  ]
+}

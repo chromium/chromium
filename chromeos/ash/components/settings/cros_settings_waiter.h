@@ -23,7 +23,7 @@ class CrosSettingsWaiter {
   // If multiple settings are specified, it stops waiting when any of them
   // is updated.
   // Global ash::CrosSettings instance must be initialized on creation.
-  explicit CrosSettingsWaiter(base::span<std::string_view> settings);
+  explicit CrosSettingsWaiter(base::span<const std::string_view> settings);
   CrosSettingsWaiter(const CrosSettingsWaiter&) = delete;
   CrosSettingsWaiter& operator=(const CrosSettingsWaiter&) = delete;
   ~CrosSettingsWaiter();

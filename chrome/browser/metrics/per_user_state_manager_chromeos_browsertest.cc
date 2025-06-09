@@ -20,9 +20,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -35,6 +33,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -127,8 +126,10 @@ class ChromeOSPerUserRegularUserTest
     user_consent_ = GetParam().second;
 
     // Set the owner parameter.
-    test_cros_settings_.device_settings()->SetBoolean(ash::kStatsReportingPref,
-                                                      owner_consent_);
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_metrics_enabled()->set_metrics_enabled(
+        owner_consent_);
+    updater.Commit();
 
     // Establish ownership of the device.
     ash::OwnerSettingsServiceAshFactory::GetInstance()
@@ -139,7 +140,6 @@ class ChromeOSPerUserRegularUserTest
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  ash::ScopedTestingCrosSettings test_cros_settings_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};

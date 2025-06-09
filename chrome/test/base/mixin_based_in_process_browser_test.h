@@ -147,6 +147,9 @@ template <typename Fixture>
 #endif
 class InProcessBrowserTestMixinHostSupport : public Fixture {
  public:
+  // Inherit ctors from the base class.
+  using Fixture::Fixture;
+
   // Fixture:
   void SetUp() override {
     mixin_host_.SetUp();

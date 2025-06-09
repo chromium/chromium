@@ -35,5 +35,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/policy/device_policy:test_support",
   ]
 }

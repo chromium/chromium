@@ -29,8 +29,6 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
@@ -39,6 +37,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -265,17 +265,19 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, FocusedPod24HourClock) {
   EXPECT_FALSE(tray_test_api->Is24HourClock());
 }
 
-class SystemTrayClientClockUnknownPrefTest
-    : public SystemTrayClientClockTest,
-      public ash::LocalStateMixin::Delegate {
+class SystemTrayClientClockUnknownPrefTest : public SystemTrayClientClockTest {
  public:
-  SystemTrayClientClockUnknownPrefTest() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kSystemUse24HourClock, true);
+  // SystemTrayClientClockTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    SystemTrayClientClockTest::SetUpInProcessBrowserTestFixture();
+    policy::CachedDevicePolicyUpdater updater;
+    updater.payload().mutable_use_24hour_clock()->set_use_24hour_clock(true);
+    updater.Commit();
   }
-  // ash::localStateMixin::Delegate:
-  void SetUpLocalState() override {
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    SystemTrayClientClockTest::SetUpLocalStatePrefService(local_state);
+    user_manager::KnownUser known_user(local_state);
     // First user does not have a preference.
     ASSERT_FALSE(known_user.FindBoolPath(account_id1_, ::prefs::kUse24HourClock)
                      .has_value());
@@ -285,8 +287,12 @@ class SystemTrayClientClockUnknownPrefTest
   }
 
  protected:
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  ash::LocalStateMixin local_state_{&mixin_host_, this};
+  ash::ScopedStubInstallAttributes install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("fake-domain.com",
+                                                     "fake-id")};
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
 };
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {

@@ -153,6 +153,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos/reporting",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
     "//chromeos/dbus/missive:test_support",
