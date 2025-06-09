@@ -31,6 +31,10 @@ std::u16string StripCardNumberSeparators(std::u16string_view number);
 // invalid card "4garbage" will be Visa, which has an IIN of 4.
 const char* GetCardNetwork(std::u16string_view number);
 
+// The well-formatted full digits for display. A whitespace will be added as a
+// separator between digits, e.g. "1234 5678 9000 0000"
+std::u16string GetFormattedCardNumberForDisplay(std::u16string_view number);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_CREDIT_CARD_NUMBER_VALIDATION_H_

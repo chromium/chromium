@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,34 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 
 namespace autofill {
+
+namespace {
+
+constexpr char16_t kWhiteSpaceSeparator = ' ';
+
+constexpr auto k15DigitAmexNumberSegmentations = std::to_array({4, 6, 5});
+constexpr auto k16DigitNumberSegmentations = std::to_array({4, 4, 4, 4});
+
+// Returns a new string based on the input `number` by adding a white space
+// between `segments`. The provided `segments` denotes the length of each
+// segment, and we don't need to add whitespace to the last segmentation. For
+// example, if you would like to format 15-digit card number into "XXXX XXXXXX
+// XXXXX", you need to provide [4, 6, 5] as the `segments`.
+std::u16string AddWhiteSpaceSeparatorForNumber(std::u16string_view number,
+                                               base::span<const int> segments) {
+  std::u16string formatted;
+  int pos = 0;
+  for (int segment : segments) {
+    formatted += number.substr(pos, segment);
+    formatted += kWhiteSpaceSeparator;
+    pos += segment;
+  }
+
+  // Remove the extra white space at the end.
+  return formatted.substr(0, formatted.length() - 1);
+}
+
+}  // namespace
 
 bool IsValidCreditCardNumber(std::u16string_view text) {
   const std::u16string number = StripCardNumberSeparators(text);
@@ -274,6 +303,21 @@ const char* GetCardNetwork(std::u16string_view number) {
     return kVisaCard;
 
   return kGenericCard;
+}
+
+std::u16string GetFormattedCardNumberForDisplay(std::u16string_view number) {
+  std::u16string stripped = StripCardNumberSeparators(number);
+  if (stripped.size() == 16) {
+    return AddWhiteSpaceSeparatorForNumber(stripped,
+                                           k16DigitNumberSegmentations);
+  }
+  if (stripped.size() == 15 &&
+      GetCardNetwork(stripped) == kAmericanExpressCard) {
+    return AddWhiteSpaceSeparatorForNumber(stripped,
+                                           k15DigitAmexNumberSegmentations);
+  }
+
+  return std::u16string(number);
 }
 
 }  // namespace autofill
