@@ -301,8 +301,6 @@ TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
 
 // Test that email fields are parsed even when the field is not in a <form>.
 TEST_F(FormFieldParserTest, ParseStandaloneEmailFieldsOutsiteOfFormTag) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillEnableEmailHeuristicOutsideForms};
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode(""), LanguageCode(""),
                                /*is_form_tag=*/false));

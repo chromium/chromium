@@ -303,8 +303,8 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   }
 
   FieldTypeSet permitted_single_field_types{
-      MERCHANT_PROMO_CODE, IBAN_VALUE,
-      CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+      MERCHANT_PROMO_CODE, IBAN_VALUE, CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+      EMAIL_ADDRESS};
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
@@ -319,36 +319,16 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
   }
 
-  // For historic reasons email addresses are only retained if they appear in
-  // a <form> tag. It's unclear whether that's necessary.
-  FieldTypeSet permitted_single_field_types_in_form{EMAIL_ADDRESS};
-
-  // `AutofillEnableEmailHeuristicOutsideForms` permits email fields to be
-  // filled even when they are not in a <form> tag.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableEmailHeuristicOutsideForms)) {
-    permitted_single_field_types.insert(EMAIL_ADDRESS);
-    permitted_single_field_types_in_form.erase(EMAIL_ADDRESS);
-  }
-
-  // Returns whether a field type may exist as a stand-alone field.
-  auto retainable_field_type =
-      [&is_form_tag, &permitted_single_field_types_in_form,
-       &permitted_single_field_types](FieldType heuristic_type) {
-        return (is_form_tag && permitted_single_field_types_in_form.contains(
-                                   heuristic_type)) ||
-               permitted_single_field_types.contains(heuristic_type);
-      };
-
   struct WipedField {
     FieldGlobalId field_id;
     FieldType best_heuristic_type;
   };
+
   std::vector<WipedField> wiped_fields;
   if (IsLoggingActive(context.log_manager)) {
     for (const auto& [field_id, candidates] : field_candidates) {
       FieldType heuristic_type = candidates.BestHeuristicType();
-      if (!retainable_field_type(heuristic_type)) {
+      if (!permitted_single_field_types.contains(heuristic_type)) {
         wiped_fields.emplace_back(WipedField{field_id, heuristic_type});
       }
     }
@@ -360,9 +340,10 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // clear everything.
   base::EraseIf(
       field_candidates,
-      [&retainable_field_type](
+      [&permitted_single_field_types](
           const FieldCandidatesMap::container_type::value_type& candidate) {
-        return !retainable_field_type(candidate.second.BestHeuristicType());
+        return !permitted_single_field_types.contains(
+            candidate.second.BestHeuristicType());
       });
 
   if (IsLoggingActive(context.log_manager)) {

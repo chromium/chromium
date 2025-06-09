@@ -251,9 +251,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DETECT_FIELD_VISIBILITY,
                 "Populates FormFieldData::is_visible() with visibility rather than focusability"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_OUTSIDE_FORMS,
-                "Enables heuristics for detecting email fields outside of forms."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
                 "Enables various improvements to handling expiration dates."),
         Flag.baseFeature(

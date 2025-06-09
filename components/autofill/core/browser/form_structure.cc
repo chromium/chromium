@@ -680,18 +680,9 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     // For standalone email fields, allow heuristics even when the minimum
     // number of fields is not met. See similar comments in
     // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    // Note that if a form tag is present this behaviour is enabled by default.
-    // The alternative case it relies on
-    // `kAutofillEnableEmailHeuristicOutsideForms` being enabled.
-    const bool parse_standalone_email_fields =
-        is_form_element() ||
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableEmailHeuristicOutsideForms);
+    FormFieldParser::ParseStandaloneEmailFields(context, fields_,
+                                                field_type_map);
 
-    if (parse_standalone_email_fields) {
-      FormFieldParser::ParseStandaloneEmailFields(context, fields_,
-                                                  field_type_map);
-    }
     // Try parsing standalone loyalty card fields after an attempt has been
     // made to parse multi-purpose input fields e.g. email or loyalty number
     // fields.

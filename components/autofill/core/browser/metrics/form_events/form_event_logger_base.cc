@@ -50,17 +50,10 @@ const char* AblationGroupToString(AblationGroup ablation_group) {
 
 bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
   // First, check the prerequisites. The forms for which this classification is
-  // applicable must be inside a form tag (unless
-  // `kAutofillEnableEmailHeuristicOutsideForms` is enabled), must not run
-  // heuristics normally (i.e., their field count is below
-  // `kMinRequiredFieldsForHeuristics`), but must be eligible for single field
-  // form heuristics. Note that `kAutofillEnableEmailHeuristicOutsideForms`
-  // rolls out support for fields outside of form tags.
-  const bool form_tag_requirement_passed =
-      form.is_form_element() ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableEmailHeuristicOutsideForms);
-  if (!form_tag_requirement_passed || form.ShouldRunHeuristics() ||
+  // applicable  must not run heuristics normally (i.e., their field count is
+  // below `kMinRequiredFieldsForHeuristics`), but must be eligible for single
+  // field form heuristics.
+  if (form.ShouldRunHeuristics() ||
       !form.ShouldRunHeuristicsForSingleFields()) {
     return false;
   }
