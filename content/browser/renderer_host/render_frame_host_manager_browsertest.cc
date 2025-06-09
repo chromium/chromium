@@ -6885,6 +6885,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL url_d_redirect_to_e(embedded_test_server()->GetURL(
       "d.com", "/server-redirect?" + url_e.spec()));
   {
+    SCOPED_TRACE("Case 1: From initial blank document to A");
     // 1) Navigate to A, which will reuse the current RFH.
     base::HistogramTester histogram_tester;
     ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -6905,6 +6906,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   {
+    SCOPED_TRACE("Case 2: From A to B");
     // 2) Navigate cross-site to B, which will use a new speculative RFH.  Note
     // that we navigate from the renderer to avoid doing a proactive
     // BrowsingInstance swap which might cause renderer process/RenderFrameHost
@@ -6936,6 +6938,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   {
+    SCOPED_TRACE("Case 3: From B to C and redirecting to D");
     // 3) Navigate (initially) cross-site to C, but then redirect to another
     // cross-site URL D. Note that we navigate from the renderer to avoid doing
     // a proactive BrowsingInstance swap which might cause renderer process
@@ -6997,6 +7000,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   {
+    SCOPED_TRACE("Case 4: From D to C and redirecting to D");
     // 4) Navigate (initially) cross-site to C, but then redirect to a
     // same-site-to-current-RFH URL D.  Note that we navigate from the renderer
     // to avoid doing a proactive BrowsingInstance swap which might cause
@@ -7007,9 +7011,8 @@ IN_PROC_BROWSER_TEST_P(
 
     // GetFrameHostForNavigation is called twice for the navigation above.
     bool wasted_speculative_rfh = false;
-    // The first call will create a new process if strict SiteInstances are
-    // enabled (site isolation or default SiteInstanceGroups are enabled),
-    // or BFCache-induced proactive BrowsingInstance swap happened.
+    // The first call will create a new process if strict site isolation is
+    // enabled, or BFCache-induced proactive BrowsingInstance swap happened.
     // TODO(https://crbug.com/376777350): Reconsider if we really should do
     // process swap on BrowsingInstance swap when site isolation is turned off.
     bool first_call_created_new_process =
@@ -7114,6 +7117,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   {
+    SCOPED_TRACE("Case 5: From D to D and redirecting to E");
     // 5) Navigate (initially) same-site to D, but then redirect cross-site to
     // E. Note that we navigate from the renderer to avoid doing a proactive
     // BrowsingInstance swap which might cause renderer process swaps despite
@@ -7170,7 +7174,7 @@ IN_PROC_BROWSER_TEST_P(
       // TODO(https://crbug.com/376777350): Investigate if we should suppress
       // the process creation for BFCache when site isolation is turned off.
       //
-      // TODO(https://crbug.com/390571607): These metrics do not behave properly
+      // TODO(https://crbug.com/419469455): These metrics do not behave properly
       // with default SiteInstanceGroups. They indicate that in this case, a new
       // process is created, whereas in fact it is not created but rather
       // reused.  As a result, ProcessDiffers and ReplacementRFHCreateNewProcess
