@@ -50,6 +50,8 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
@@ -59,6 +61,7 @@
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -73,6 +76,8 @@
 #import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/OCMock/OCMockMacros.h"
 
 using base::test::ScopedFeatureList;
 
@@ -310,6 +315,8 @@ class AutofillControllerTest : public PlatformTest {
   // dispatching a TextEvent with value 'field_value'.
   void SimulateTextInputEvent(NSString* field_id, NSString* field_value);
 
+  void LoadAndFillCreditCardForm();
+
   // Returns the AutofillManager for the main frame.
   BrowserAutofillManager* autofill_manager_for_main_frame() {
     web::WebFramesManager* frames_manager =
@@ -337,6 +344,10 @@ class AutofillControllerTest : public PlatformTest {
   bool processed_a_task_ = false;
   // Histogram tester for these tests.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  raw_ptr<AutofillBottomSheetTabHelper> bottomsheet_tab_helper_;
+  id<AutofillCommands> autofill_commands_handler_;
+  ScopedFeatureList scoped_feature_list_{
+      features::kAutofillLocalSaveCardBottomSheet};
 
  private:
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
@@ -399,6 +410,13 @@ void AutofillControllerTest::SetUp() {
 
   [accessory_mediator_ injectWebState:web_state()];
   [accessory_mediator_ injectProvider:suggestion_controller_];
+
+  AutofillBottomSheetTabHelper::CreateForWebState(web_state());
+  bottomsheet_tab_helper_ =
+      AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
+  autofill_commands_handler_ = OCMProtocolMock(@protocol(AutofillCommands));
+  bottomsheet_tab_helper_->SetAutofillBottomSheetHandler(
+      autofill_commands_handler_);
 
   histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
@@ -465,6 +483,18 @@ void AutofillControllerTest::SimulateTextInputEvent(NSString* field_id,
               @"document.getElementById('%@').dispatchEvent(event);",
               field_id, field_value, field_id],
       web_state());
+}
+
+void AutofillControllerTest::LoadAndFillCreditCardForm() {
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
+
+  // Simulate entering a credit card in the form.
+  SimulateTextInputEvent(/*field_id=*/@"name", /*field_value=*/@"Superman");
+  SimulateTextInputEvent(/*field_id=*/@"CCNo",
+                         /*field_value=*/@"4000-4444-4444-4444");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresMonth", /*field_value=*/@"11");
+  SimulateTextInputEvent(/*field_id=*/@"CCExpiresYear",
+                         /*field_value=*/@"2999");
 }
 
 // Checks that viewing an HTML page containing a form results in the form being
@@ -1166,7 +1196,6 @@ TEST_F(AutofillControllerTest, NoKeyValueSuggestionsWithoutTyping) {
 // submitted with scripts (simulating user form submission) results in a credit
 // card being successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, CreditCardImport) {
-  InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
@@ -1175,37 +1204,27 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   EXPECT_EQ(
       0U,
       personal_data_manager->payments_data_manager().GetCreditCards().size());
-  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
-  web::test::ExecuteJavaScript(@"document.forms[0].name.value = 'Superman'",
-                               web_state());
-  web::test::ExecuteJavaScript(
-      @"document.forms[0].CCNo.value = '4000-4444-4444-4444'", web_state());
-  web::test::ExecuteJavaScript(@"document.forms[0].CCExpiresMonth.value = '11'",
-                               web_state());
-  web::test::ExecuteJavaScript(
-      @"document.forms[0].CCExpiresYear.value = '2999'", web_state());
-  web::test::ExecuteJavaScript(@"submit.click()", web_state());
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state());
-  WaitForCondition(^bool() {
-    return infobar_manager->infobars().size();
-  });
-  ExpectMetric("Autofill.CreditCardInfoBar.Local",
-               AutofillMetrics::INFOBAR_SHOWN);
-  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
-               "NumStrikes.0.NoFixFlow",
-               static_cast<int>(
-                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
-  ASSERT_EQ(1U, infobar_manager->infobars().size());
-  infobars::InfoBarDelegate* infobar =
-      infobar_manager->infobars()[0]->delegate();
-  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
 
-  // This call cause a modification of the PersonalDataManager, so wait until
-  // the asynchronous task complete in addition to waiting for the UI update.
-  PersonalDataChangedWaiter waiter(*personal_data_manager);
-  confirm_infobar->Accept();
-  std::move(waiter).Wait();
+  LoadAndFillCreditCardForm();
+
+  __block bool save_card_bottomsheet_shown = false;
+  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        save_card_bottomsheet_shown = true;
+      });
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
+  WaitForCondition(^bool() {
+    return save_card_bottomsheet_shown;
+  });
+  ASSERT_TRUE(save_card_bottomsheet_shown);
+
+  {
+    // This call cause a modification of the PersonalDataManager, so wait until
+    // the asynchronous task completes in addition to waiting for the UI update.
+    PersonalDataChangedWaiter waiter(*personal_data_manager);
+    bottomsheet_tab_helper_->GetSaveCardBottomSheetModel()->OnAccepted();
+    std::move(waiter).Wait();
+  }
 
   const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
@@ -1228,7 +1247,6 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
 // submitted with scripts (simulating form removal) results in a credit
 // card being successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
-  InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
@@ -1238,15 +1256,13 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
       0U,
       personal_data_manager->payments_data_manager().GetCreditCards().size());
 
-  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
+  LoadAndFillCreditCardForm();
 
-  // Simulate entering a credit card in the form.
-  SimulateTextInputEvent(/*field_id=*/@"name", /*field_value=*/@"Superman");
-  SimulateTextInputEvent(/*field_id=*/@"CCNo",
-                         /*field_value=*/@"4000-4444-4444-4444");
-  SimulateTextInputEvent(/*field_id=*/@"CCExpiresMonth", /*field_value=*/@"11");
-  SimulateTextInputEvent(/*field_id=*/@"CCExpiresYear",
-                         /*field_value=*/@"2999");
+  __block bool save_card_bottomsheet_shown = false;
+  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        save_card_bottomsheet_shown = true;
+      });
 
   // Deleting the form should be detected as a submission because it had user
   // input. Adding a delay is necessary or the event above might not be
@@ -1255,27 +1271,18 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
                                @"   document.forms[0].remove();"
                                @"}, 30);",
                                web_state());
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state());
   WaitForCondition(^bool() {
-    return infobar_manager->infobars().size();
+    return save_card_bottomsheet_shown;
   });
-  ExpectMetric("Autofill.CreditCardInfoBar.Local",
-               AutofillMetrics::INFOBAR_SHOWN);
-  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
-               "NumStrikes.0.NoFixFlow",
-               static_cast<int>(
-                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
-  ASSERT_EQ(1U, infobar_manager->infobars().size());
-  infobars::InfoBarDelegate* infobar =
-      infobar_manager->infobars()[0]->delegate();
-  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(save_card_bottomsheet_shown);
 
-  // This call cause a modification of the PersonalDataManager, so wait until
-  // the asynchronous task complete in addition to waiting for the UI update.
-  PersonalDataChangedWaiter waiter(*personal_data_manager);
-  confirm_infobar->Accept();
-  std::move(waiter).Wait();
+  {
+    // This call cause a modification of the PersonalDataManager, so wait until
+    // the asynchronous task completes in addition to waiting for the UI update.
+    PersonalDataChangedWaiter waiter(*personal_data_manager);
+    bottomsheet_tab_helper_->GetSaveCardBottomSheetModel()->OnAccepted();
+    std::move(waiter).Wait();
+  }
 
   const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
@@ -1301,7 +1308,6 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
 // the submitted form.
 TEST_F(AutofillControllerTest,
        CreditCardImportWithFieldDataManagerValuesAfterFormRemoval) {
-  InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
@@ -1311,15 +1317,7 @@ TEST_F(AutofillControllerTest,
       0U,
       personal_data_manager->payments_data_manager().GetCreditCards().size());
 
-  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kCreditCardFormHtml, 1));
-
-  // Simulate entering a credit card in the form.
-  SimulateTextInputEvent(/*field_id=*/@"name", /*field_value=*/@"Superman");
-  SimulateTextInputEvent(/*field_id=*/@"CCNo",
-                         /*field_value=*/@"4000-4444-4444-4444");
-  SimulateTextInputEvent(/*field_id=*/@"CCExpiresMonth", /*field_value=*/@"11");
-  SimulateTextInputEvent(/*field_id=*/@"CCExpiresYear",
-                         /*field_value=*/@"2999");
+  LoadAndFillCreditCardForm();
 
   // Update the form fields in `FieldDataManager`.
   // When detecting a submission, the imported credit card should include the
@@ -1344,6 +1342,12 @@ TEST_F(AutofillControllerTest,
   fieldDataManager->UpdateFieldDataMap(FieldRendererId(5), u"2998",
                                        FieldPropertiesFlags::kAutofilled);
 
+  __block bool save_card_bottomsheet_shown = false;
+  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        save_card_bottomsheet_shown = true;
+      });
+
   // Deleting the form should be detected as a submission because it had user
   // input. Adding a delay is necessary or the event above might not be
   // dispatched.
@@ -1352,27 +1356,18 @@ TEST_F(AutofillControllerTest,
                                @"}, 30);",
                                web_state());
 
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state());
   WaitForCondition(^bool() {
-    return infobar_manager->infobars().size();
+    return save_card_bottomsheet_shown;
   });
-  ExpectMetric("Autofill.CreditCardInfoBar.Local",
-               AutofillMetrics::INFOBAR_SHOWN);
-  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
-               "NumStrikes.0.NoFixFlow",
-               static_cast<int>(
-                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
-  ASSERT_EQ(1U, infobar_manager->infobars().size());
-  infobars::InfoBarDelegate* infobar =
-      infobar_manager->infobars()[0]->delegate();
-  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(save_card_bottomsheet_shown);
 
-  // This call cause a modification of the PersonalDataManager, so wait until
-  // the asynchronous task complete in addition to waiting for the UI update.
-  PersonalDataChangedWaiter waiter(*personal_data_manager);
-  confirm_infobar->Accept();
-  std::move(waiter).Wait();
+  {
+    // This call cause a modification of the PersonalDataManager, so wait until
+    // the asynchronous task completes in addition to waiting for the UI update.
+    PersonalDataChangedWaiter waiter(*personal_data_manager);
+    bottomsheet_tab_helper_->GetSaveCardBottomSheetModel()->OnAccepted();
+    std::move(waiter).Wait();
+  }
 
   const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
@@ -1435,6 +1430,76 @@ TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kAutofillSubmissionDetectionSourceHistogram,
       /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_count=*/1);
+}
+
+class AutofillControllerWithoutLocalSaveCardBottomSheetTest
+    : public AutofillControllerTest {
+ protected:
+  AutofillControllerWithoutLocalSaveCardBottomSheetTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAutofillLocalSaveCardBottomSheet);
+  }
+  ScopedFeatureList scoped_feature_list_;
+};
+
+// Checks that an HTML page containing a credit card-type form which is
+// submitted with scripts (simulating user form submission) results in a credit
+// card being successfully imported into the PersonalDataManager.
+// TODO(crbug.com/422148854): Remove this test post local save card bottomsheet
+// is launched.
+TEST_F(AutofillControllerWithoutLocalSaveCardBottomSheetTest,
+       CreditCardImport) {
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
+  personal_data_manager->SetSyncServiceForTest(nullptr);
+
+  // Check there are no registered profiles already.
+  EXPECT_EQ(
+      0U,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
+
+  LoadAndFillCreditCardForm();
+  web::test::ExecuteJavaScript(@"submit.click()", web_state());
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  WaitForCondition(^bool() {
+    return infobar_manager->infobars().size();
+  });
+  ExpectMetric("Autofill.CreditCardInfoBar.Local",
+               AutofillMetrics::INFOBAR_SHOWN);
+  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
+               "NumStrikes.0.NoFixFlow",
+               static_cast<int>(
+                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  infobars::InfoBarDelegate* infobar =
+      infobar_manager->infobars()[0]->delegate();
+  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
+
+  {
+    // This call cause a modification of the PersonalDataManager, so wait until
+    // the asynchronous task completes in addition to waiting for the UI update.
+    PersonalDataChangedWaiter waiter(*personal_data_manager);
+    confirm_infobar->Accept();
+    std::move(waiter).Wait();
+  }
+
+  const std::vector<const CreditCard*>& credit_cards =
+      personal_data_manager->payments_data_manager().GetCreditCards();
+  ASSERT_EQ(1U, credit_cards.size());
+  const CreditCard& credit_card = *credit_cards[0];
+  EXPECT_EQ(u"Superman", credit_card.GetInfo(CREDIT_CARD_NAME_FULL, "en-US"));
+  EXPECT_EQ(u"4000444444444444",
+            credit_card.GetInfo(CREDIT_CARD_NUMBER, "en-US"));
+  EXPECT_EQ(u"11", credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, "en-US"));
+  EXPECT_EQ(u"2999",
+            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::FORM_SUBMISSION,
       /*expected_count=*/1);
 }
 
