@@ -168,7 +168,7 @@ TEST_F(InstallerDownloaderControllerTest,
        DownloadUrlHasValidGuidAndNoPlaceholders) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
 
-  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
   EXPECT_CALL(
       *mock_model_,
       StartDownload(
@@ -183,7 +183,7 @@ TEST_F(InstallerDownloaderControllerTest,
                   HasSubstr("&stats=1"),
                   // No leftover placeholders.
                   Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")))),
-          destination, _, _));
+          destination.AppendASCII(kDownloadedInstallerFileName.Get()), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -191,10 +191,12 @@ TEST_F(InstallerDownloaderControllerTest,
 TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
 
-  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
-  EXPECT_CALL(*mock_model_,
-              StartDownload(Property(&GURL::spec, HasSubstr("&stats=1")),
-                            destination, _, _));
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
+  EXPECT_CALL(
+      *mock_model_,
+      StartDownload(Property(&GURL::spec, HasSubstr("&stats=1")),
+                    destination.AppendASCII(kDownloadedInstallerFileName.Get()),
+                    _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -202,10 +204,12 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
 TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(false));
 
-  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
-  EXPECT_CALL(*mock_model_,
-              StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
-                            destination, _, _));
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
+  EXPECT_CALL(
+      *mock_model_,
+      StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
+                    destination.AppendASCII(kDownloadedInstallerFileName.Get()),
+                    _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -215,17 +219,19 @@ TEST_F(InstallerDownloaderControllerTest,
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run())
       .WillRepeatedly(Return(true));
 
-  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
+  const base::FilePath full_destination =
+      destination.AppendASCII(kDownloadedInstallerFileName.Get());
   GURL first_url;
   GURL second_url;
 
   {
     ::testing::Sequence s;
-    EXPECT_CALL(*mock_model_, StartDownload(_, destination, _, _))
+    EXPECT_CALL(*mock_model_, StartDownload(_, full_destination, _, _))
         .InSequence(s)
         .WillOnce(SaveArg<0>(&first_url));
 
-    EXPECT_CALL(*mock_model_, StartDownload(_, destination, _, _))
+    EXPECT_CALL(*mock_model_, StartDownload(_, full_destination, _, _))
         .InSequence(s)
         .WillOnce(SaveArg<0>(&second_url));
   }
@@ -307,7 +313,8 @@ TEST_F(InstallerDownloaderControllerTest, RequestAcceptedTrueMetric) {
   EXPECT_CALL(*mock_model_, StartDownload(_, _, _, _)).Times(1);
 
   controller_->OnDownloadRequestAccepted(
-      base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\installer.exe")));
+      base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
+          .AppendASCII(kDownloadedInstallerFileName.Get()));
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
                                 /*true=*/1, /*expected_count=*/1);
@@ -336,7 +343,8 @@ TEST_F(InstallerDownloaderControllerTest, LogsDownloadResultMetric) {
       });
 
   controller_->OnDownloadRequestAccepted(
-      base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\installer.exe")));
+      base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
+          .AppendASCII(kDownloadedInstallerFileName.Get()));
 
   ASSERT_TRUE(download_completion_callback);
   std::move(download_completion_callback).Run(/*success=*/true);

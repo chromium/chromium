@@ -25,6 +25,12 @@ inline constexpr base::FeatureParam<std::string> kInstallerUrlTemplateParam(
     "installer_url_template",
     "");
 
+// Indicates the file name of the downloaded installer.
+inline constexpr base::FeatureParam<std::string> kDownloadedInstallerFileName(
+    &kInstallerDownloader,
+    "downloaded_installer_file_name",
+    "ChromeSetup.exe");
+
 }  // namespace installer_downloader
 
 #endif  // CHROME_BROWSER_WIN_INSTALLER_DOWNLOADER_INSTALLER_DOWNLOADER_FEATURE_H_
