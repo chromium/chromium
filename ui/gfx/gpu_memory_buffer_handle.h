@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/rect.h"

@@ -27,6 +27,10 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace gpu {
 namespace raster {
 class RasterInterface;

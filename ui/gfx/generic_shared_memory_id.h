@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/hash/hash.h"
-#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 
 namespace gfx {
 

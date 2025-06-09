@@ -6,6 +6,7 @@
 #define UI_GFX_GPU_MEMORY_BUFFER_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"

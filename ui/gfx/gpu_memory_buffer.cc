@@ -4,6 +4,8 @@
 
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#include "base/functional/callback.h"
+
 namespace gfx {
 
 void GpuMemoryBuffer::MapAsync(base::OnceCallback<void(bool)> result_cb) {

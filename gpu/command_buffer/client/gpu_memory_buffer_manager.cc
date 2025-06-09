@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
+#include "base/functional/callback.h"
+#include "base/notreached.h"
+
 namespace gpu {
 
 GpuMemoryBufferManager::GpuMemoryBufferManager() = default;

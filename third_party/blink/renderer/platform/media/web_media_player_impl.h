@@ -64,6 +64,10 @@
 namespace base {
 class SingleThreadTaskRunner;
 class TaskRunner;
+namespace trace_event {
+struct MemoryDumpArgs;
+class ProcessMemoryDump;
+}  // namespace trace_event
 }  // namespace base
 
 namespace cc {
