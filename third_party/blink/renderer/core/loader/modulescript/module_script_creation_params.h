@@ -74,6 +74,14 @@ class ModuleScriptCreationParams {
 
   ~ModuleScriptCreationParams() = default;
 
+  // Move-only. The move constructor is also deleted because it's not used and
+  // due to const members.
+  ModuleScriptCreationParams(const ModuleScriptCreationParams&) = delete;
+  ModuleScriptCreationParams& operator=(const ModuleScriptCreationParams&) =
+      delete;
+  ModuleScriptCreationParams(ModuleScriptCreationParams&&) = default;
+  ModuleScriptCreationParams& operator=(ModuleScriptCreationParams&&) = delete;
+
   ModuleScriptCreationParams IsolatedCopy() const {
     // `script_streamer_` and `cache_handler_` are intentionally cleared since
     // they cannot be passed across threads. This only disables script

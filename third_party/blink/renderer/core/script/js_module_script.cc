@@ -33,9 +33,14 @@ JSModuleScript* JSModuleScript::Create(
 
   // <spec step="1">If scripting is disabled for settings's responsible browsing
   // context, then set source to the empty string.</spec>
+  //
+  // The `static_cast` is added to avoid copy construction. Without
+  // `static_cast`, we'd create an temporary object either
+  // `CopyWithClearedSourceText()` or a copy of `original_params`.
   const ModuleScriptCreationParams& params =
       modulator->IsScriptingDisabled()
-          ? original_params.CopyWithClearedSourceText()
+          ? static_cast<const ModuleScriptCreationParams&>(
+                original_params.CopyWithClearedSourceText())
           : original_params;
 
   // <spec step="2">Let script be a new module script that this algorithm will
