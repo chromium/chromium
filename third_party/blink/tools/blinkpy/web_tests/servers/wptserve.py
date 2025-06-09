@@ -102,12 +102,11 @@ class WPTServe(server_base.ServerBase):
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
             start_cmd += ['--ws_doc_root', path_to_ws_handlers]
 
-        if six.PY3:
-            self._mappings.append({
-                'port': webtransport_h3_port,
-                'scheme': 'webtransport-h3'
-            })
-            start_cmd.append('--webtransport-h3')
+        self._mappings.append({
+            'port': webtransport_h3_port,
+            'scheme': 'webtransport-h3'
+        })
+        start_cmd.append('--webtransport-h3')
 
         # TODO(burnik): We should stop setting the CWD once WPT can be run without it.
         self._cwd = finder.path_from_web_tests()

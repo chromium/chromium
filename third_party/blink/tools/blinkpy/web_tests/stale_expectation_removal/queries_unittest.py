@@ -6,10 +6,7 @@
 import datetime
 import os
 import unittest
-import six
-
-if six.PY3:
-    import unittest.mock as mock
+from unittest import mock
 
 from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import data_types
@@ -80,7 +77,6 @@ class GetRelevantExpectationFilesForQueryResultUnittest(unittest.TestCase):
             expected_files)
 
 
-@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
 class GeneratedQueryUnittest(unittest.TestCase):
     maxDiff = None
 

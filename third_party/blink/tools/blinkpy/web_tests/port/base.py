@@ -2214,12 +2214,10 @@ class Port(object):
         Once blinkpy runs under python3, this can be removed in favour of
         callers using sys.executable.
         """
-        if six.PY3:
-            # Prefer sys.executable when the current script runs under python3.
-            # The current script might be running with vpython3 and in that case
-            # using the same executable will share the same virtualenv.
-            return sys.executable
-        return 'python3'
+        # Prefer sys.executable when the current script runs under python3.
+        # The current script might be running with vpython3 and in that case
+        # using the same executable will share the same virtualenv.
+        return sys.executable
 
     def get_option(self, name, default_value=None):
         return getattr(self._options, name, default_value)

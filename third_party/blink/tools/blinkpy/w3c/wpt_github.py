@@ -7,7 +7,6 @@ import datetime
 import json
 import logging
 import re
-import six
 
 from collections import namedtuple
 from requests.exceptions import HTTPError
@@ -82,10 +81,7 @@ class GitHubRepo(object):
         assert path.startswith('/')
 
         if body:
-            if six.PY3:
-                body = json.dumps(body).encode("utf-8")
-            else:
-                body = json.dumps(body)
+            body = json.dumps(body).encode("utf-8")
 
         if accept_header:
             headers = {'Accept': accept_header}

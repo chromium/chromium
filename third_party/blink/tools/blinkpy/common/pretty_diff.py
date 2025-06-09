@@ -11,15 +11,11 @@ This code doesn't support other diff commands such as "diff" and "svn diff".
 
 import base64
 import difflib
+import html as cgi
 import mimetypes
 import re
-import six
 import zlib
 
-if six.PY2:
-    import cgi
-else:
-    import html as cgi
 
 # The style below is meant to be similar to PolyGerrit.
 _LEADING_HTML = """<!DOCTYPE html>

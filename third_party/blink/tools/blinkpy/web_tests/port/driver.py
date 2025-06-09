@@ -818,13 +818,7 @@ class ContentBlock(object):
         self.content_hash = None
         self._content_length = None
         # Content is treated as binary data even though the text output is usually UTF-8.
-        # FIXME: Should be bytearray() once we require Python 2.6.
-        # TODO(crbug/1197331): Keeping PY2 as str() for now, as diffing modules
-        # need to be looked into for PY3 unified_diff.py and html_diff.py
-        if six.PY2:
-            self.content = str()
-        else:
-            self.content = bytearray()
+        self.content = bytearray()
         self.decoded_content = None
         self.malloc = None
         self.js_heap = None

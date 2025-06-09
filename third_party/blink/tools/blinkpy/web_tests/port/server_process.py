@@ -121,13 +121,7 @@ class ServerProcess(object):
                 self._proc.stderr = None
 
         self._proc = None
-        # TODO(crbug/1197331): Keeping output in PY2 as str() for now as
-        # diffing modules(unified_diff.py and html_diff.py) need to be looked
-        # into for PY3.
-        if six.PY2:
-            self._output = str()
-        else:
-            self._output = bytearray()
+        self._output = bytearray()
         self._error = bytearray()
         self._crashed = False
         self.timed_out = False

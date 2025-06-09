@@ -217,11 +217,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         one_line_summary = "%d tests ran as expected%s, %d didn't:\n" % (
             expected_tests, expected_summary_str,
             len(details.initial_results.unexpected_results_by_name))
-        if six.PY2:
-            self.assertIn(one_line_summary, logging_stream.buflist)
-        else:
-            self.assertIn(one_line_summary, logging_stream.getvalue())
-
+        self.assertIn(one_line_summary, logging_stream.getvalue())
 
         # Ensure the results were summarized properly.
         self.assertEqual(details.summarized_failing_results['num_regressions'],
@@ -250,26 +246,18 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         _, regular_output, _ = logging_run(
             ['--debug-rwt-logging', '--jobs', '2', 'passes', 'http/tests', 'perf/foo'],
             tests_included=True, shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any('1 locked' in line for line in regular_output.buflist))
-        else:
-            self.assertTrue(
-                any('1 locked' in line
-                    for line in regular_output.getvalue().splitlines()))
+        self.assertTrue(
+            any('1 locked' in line
+                for line in regular_output.getvalue().splitlines()))
 
     def test_child_processes_2(self):
         _, regular_output, _ = logging_run(
             ['--debug-rwt-logging', '--jobs', '2'], shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any(['Running 2 ' in line for line in regular_output.buflist]))
-        else:
-            self.assertTrue(
-                any([
-                    'Running 2 ' in line
-                    for line in regular_output.getvalue().splitlines()
-                ]))
+        self.assertTrue(
+            any([
+                'Running 2 ' in line
+                for line in regular_output.getvalue().splitlines()
+            ]))
 
     def test_child_processes_min(self):
         _, regular_output, _ = logging_run([
@@ -278,15 +266,11 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         ],
                                            tests_included=True,
                                            shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any(['Running 1 ' in line for line in regular_output.buflist]))
-        else:
-            self.assertTrue(
-                any([
-                    'Running 1 ' in line
-                    for line in regular_output.getvalue().splitlines()
-                ]))
+        self.assertTrue(
+            any([
+                'Running 1 ' in line
+                for line in regular_output.getvalue().splitlines()
+            ]))
 
     def test_dryrun(self):
         tests_run = get_tests_run(['--dry-run'])

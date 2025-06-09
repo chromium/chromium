@@ -4,7 +4,6 @@
 """A utility function to do text diffs of expected and actual web test results."""
 
 import difflib
-import six
 
 
 def unified_diff(expected_text, actual_text, expected_filename,
@@ -12,13 +11,6 @@ def unified_diff(expected_text, actual_text, expected_filename,
     """Returns a string containing the diff of the two text strings
     in 'unified diff' format.
     """
-    # The filenames show up in the diff output, make sure they're
-    # raw bytes and not unicode, so that they don't trigger join()
-    # trying to decode the input.
-    if six.PY2:
-        expected_filename = six.ensure_binary(expected_filename)
-        actual_filename = six.ensure_binary(actual_filename)
-
     diff = difflib.unified_diff(expected_text.splitlines(True),
                                 actual_text.splitlines(True),
                                 expected_filename, actual_filename)

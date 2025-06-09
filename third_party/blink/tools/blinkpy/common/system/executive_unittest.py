@@ -31,7 +31,6 @@ import os
 import subprocess
 import sys
 import unittest
-import six
 
 # Since we execute this script directly as part of the unit tests, we need to
 # ensure that blink/tools is in sys.path for the next imports to work correctly.
@@ -113,16 +112,7 @@ class ExecutiveTest(unittest.TestCase):
 
     def test_print_command_unicode(self):
         executive = Executive()
-        # The expected result is different on Windows because the unicode arg
-        # first gets encoded using 'mbcs'. This encoding makes it unnecessary to
-        # escape any unicode characters in the arg.
-        # Elsewhere, the 'mbcs' encoding is skipped, but then we must escape any
-        # non-ascii unicode characters by encoding with 'unicode_escape'. This
-        # results in an extra \ on non-Win platforms.
-        if sys.platform == 'win32' and six.PY2:
-            expected_result = 'echo 1 a\xac'
-        else:
-            expected_result = 'echo 1 a\\xac'
+        expected_result = 'echo 1 a\\xac'
         self.assertEqual(expected_result,
                          executive.command_for_printing(['echo', 1, 'a\xac']))
 
@@ -132,26 +122,17 @@ class ExecutiveTest(unittest.TestCase):
         executive.popen(
             args=command_line('echo', 1), stdout=executive.PIPE).wait()
 
+    @unittest.skipIf(sys.platform == 'win32', 'crbug.com/40218265')
     def test_run_command_with_unicode(self):
         """Validate that it is safe to pass unicode() objects
         to Executive.run* methods, and they will return unicode()
         objects by default unless decode_output=False
         """
-        # TODO(crbug/1306209): Needs more investigation. skipping for now.
-        if sys.platform == 'win32' and six.PY3:
-            return
         unicode_tor_input = "WebKit \u2661 Tor Arne Vestb\u00F8!"
-        if sys.platform == 'win32' and six.PY2:
-            encoding = 'mbcs'
-        else:
-            encoding = 'utf-8'
+        encoding = 'utf-8'
         encoded_tor = unicode_tor_input.encode(encoding)
-        # On Windows, we expect the unicode->mbcs->unicode roundtrip to be
-        # lossy. On other platforms, we expect a lossless roundtrip.
-        if sys.platform == 'win32' and six.PY2:
-            unicode_tor_output = encoded_tor.decode(encoding)
-        else:
-            unicode_tor_output = unicode_tor_input
+        # We expect a lossless roundtrip.
+        unicode_tor_output = unicode_tor_input
 
         executive = Executive()
 

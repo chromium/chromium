@@ -4,7 +4,6 @@
 
 import json
 import logging
-import six
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -47,9 +46,8 @@ class TestWPTServe(LoggingTestCase):
             server._config_file,
             '--doc_root',
             '/mock-checkout/third_party/blink/web_tests/external/wpt',
+            '--webtransport-h3',
         ]
-        if six.PY3:
-            expected_start_cmd.append('--webtransport-h3')
 
         self.assertEqual(server._start_cmd, expected_start_cmd)
 
@@ -69,9 +67,8 @@ class TestWPTServe(LoggingTestCase):
             '/mock-checkout/third_party/blink/web_tests/external/wpt',
             '--ws_doc_root',
             '/mock-checkout/third_party/blink/web_tests/external/wpt/websockets/handlers',
+            '--webtransport-h3',
         ]
-        if six.PY3:
-            expected_start_cmd.append('--webtransport-h3')
 
         self.assertEqual(server._start_cmd, expected_start_cmd)
 

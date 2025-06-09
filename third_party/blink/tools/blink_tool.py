@@ -30,42 +30,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import codecs
 import logging
 import os
 import signal
 import sys
-import six
 
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.tool.blink_tool import BlinkTool
-
-# A StreamWriter will by default try to encode all objects passed
-# to write(), so when passed a raw string already encoded as utf8,
-# it will blow up with an UnicodeDecodeError. This does not match
-# the default behaviour of writing to sys.stdout, so we intercept
-# the case of writing raw strings and make sure StreamWriter gets
-# input that it can handle.
-
-
-class ForgivingUTF8Writer(codecs.lookup('utf-8')[-1]):
-    def write(self, obj):
-        if isinstance(obj, str):
-            # Assume raw strings are utf-8 encoded. If this line
-            # fails with an UnicodeDecodeError, our assumption was
-            # wrong, and the stacktrace should show you where we
-            # write non-Unicode/UTF-8 data (which we shouldn't).
-            obj = obj.decode('utf-8')
-        return codecs.StreamWriter.write(self, obj)
-
-
-# By default, sys.stdout assumes ascii encoding.  Since our messages can
-# contain unicode strings (as with some peoples' names) we need to apply
-# the utf-8 codec to prevent throwing and exception.
-# Not having this was the cause of https://bugs.webkit.org/show_bug.cgi?id=63452.
-# In PY3 default encoding is utf-8. Hence we don't need this.
-if six.PY2:
-    sys.stdout = ForgivingUTF8Writer(sys.stdout)
 
 
 def main() -> int:
