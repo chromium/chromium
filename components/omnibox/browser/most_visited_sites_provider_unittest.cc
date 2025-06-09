@@ -553,9 +553,13 @@ TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedTopSitesMatches) {
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().directly_query_history_service = false;
-  scoped_config.Get().max_suggestions = 8U;
-  scoped_config.Get().max_url_suggestions = 4U;
-  scoped_config.Get().max_search_suggestions = 4U;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
+  suggestion_limit_scoped_config.Get().max_url_suggestions = 4U;
+  suggestion_limit_scoped_config.Get().max_search_suggestions = 4U;
 
   provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
 
@@ -563,8 +567,8 @@ TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedTopSitesMatches) {
   // Accept only direct TopSites data.
   auto test_data = DefaultTestData();
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
-  CheckDesktopMatchesEquivalentTo(test_data,
-                                  scoped_config.Get().max_url_suggestions);
+  CheckDesktopMatchesEquivalentTo(
+      test_data, suggestion_limit_scoped_config.Get().max_url_suggestions);
 }
 
 TEST_F(MostVisitedSitesProviderTest, DesktopProviderDoesNotAllowChromeSites) {
@@ -597,8 +601,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
   scoped_config.Get().most_visited_recency_window = 4;
   scoped_config.Get().most_visited_recency_factor =
       history::kMvtScoringParamRecencyFactor_Classic;
-  scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = false;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
@@ -642,8 +650,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
-  scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = false;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
@@ -703,8 +715,12 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
-  scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = true;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   AutocompleteInput input(BuildAutocompletePrefetchInputForWeb());
 
@@ -774,8 +790,12 @@ TEST_F(MostVisitedSitesProviderTest,
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
-  scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = true;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
@@ -837,8 +857,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteWithPrefetching) {
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
-  scoped_config.Get().max_suggestions = 8;
   scoped_config.Get().prefetch_most_visited_sites = true;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxZpsSuggestionLimit>
+      suggestion_limit_scoped_config;
+  suggestion_limit_scoped_config.Get().enabled = true;
+  suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))

@@ -383,6 +383,18 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   bool enabled;
 };
 
+struct OmniboxZpsSuggestionLimit : Config<OmniboxZpsSuggestionLimit> {
+  DECLARE_FEATURE(kOmniboxZpsSuggestionLimit);
+  OmniboxZpsSuggestionLimit();
+  bool enabled;
+  // Max number of zps suggestions to show.
+  size_t max_suggestions;
+  // Max number of search zps suggestions to show.
+  size_t max_search_suggestions;
+  // Max number of url zps suggestions to show.
+  size_t max_url_suggestions;
+};
+
 // Enables url suggestions when omnibox is focused on Web/SRP.
 struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   DECLARE_FEATURE(kOmniboxUrlSuggestionsOnFocus);
@@ -392,12 +404,6 @@ struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   ~OmniboxUrlSuggestionsOnFocus();
   bool enabled;
   bool show_recently_closed_tabs;
-  // Max number of zps suggestions to show.
-  size_t max_suggestions;
-  // Max number of search zps suggestions to show.
-  size_t max_search_suggestions;
-  // Max number of url zps suggestions to show.
-  size_t max_url_suggestions;
   // Number of days to consider for most visited sites (0-indexed).
   size_t most_visited_recency_window;
   // Recency factor heuristic used to calculate most visited sites.  Must be

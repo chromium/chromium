@@ -441,6 +441,24 @@ SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }
 
+BASE_FEATURE(OmniboxZpsSuggestionLimit::kOmniboxZpsSuggestionLimit,
+             "OmniboxZpsSuggestionLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+OmniboxZpsSuggestionLimit::OmniboxZpsSuggestionLimit() {
+  enabled = base::FeatureList::IsEnabled(kOmniboxZpsSuggestionLimit);
+  max_suggestions = base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
+                                               "OmniboxZpsMaxSuggestions", 6)
+                        .Get();
+  max_search_suggestions =
+      base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
+                                 "OmniboxZpsMaxSearchSuggestions", 3)
+          .Get();
+  max_url_suggestions =
+      base::FeatureParam<size_t>(&kOmniboxZpsSuggestionLimit,
+                                 "OmniboxZpsMaxUrlSuggestions", 3)
+          .Get();
+}
+
 BASE_FEATURE(OmniboxUrlSuggestionsOnFocus::kOmniboxUrlSuggestionsOnFocus,
              "OmniboxUrlSuggestionsOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -450,17 +468,6 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
   show_recently_closed_tabs =
       base::FeatureParam<bool>(&kOmniboxUrlSuggestionsOnFocus,
                                "ShowRecentlyClosedTabs", false)
-          .Get();
-  max_suggestions = base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                               "OnFocusMaxSuggestions", 6)
-                        .Get();
-  max_search_suggestions =
-      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                 "OnFocusMaxSearchSuggestions", 3)
-          .Get();
-  max_url_suggestions =
-      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                 "OnFocusMaxUrlSuggestions", 3)
           .Get();
   most_visited_recency_window =
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
