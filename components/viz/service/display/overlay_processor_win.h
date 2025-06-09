@@ -40,6 +40,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   ~OverlayProcessorWin() override;
 
+  bool DisableSplittingQuads() const override;
   bool IsOverlaySupported() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 

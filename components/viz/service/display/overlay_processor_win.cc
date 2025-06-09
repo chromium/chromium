@@ -148,6 +148,11 @@ OverlayProcessorWin::OverlayProcessorWin(
 
 OverlayProcessorWin::~OverlayProcessorWin() = default;
 
+bool OverlayProcessorWin::DisableSplittingQuads() const {
+  return delegated_compositing_supported_ ==
+         features::DelegatedCompositingMode::kFull;
+}
+
 bool OverlayProcessorWin::IsOverlaySupported() const {
   return true;
 }
