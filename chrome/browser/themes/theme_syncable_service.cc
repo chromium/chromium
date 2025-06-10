@@ -418,6 +418,19 @@ void ThemeSyncableService::StopSyncing(syncer::DataType type) {
   }
 }
 
+void ThemeSyncableService::StayStoppedAndMaybeClearData(syncer::DataType type) {
+  CHECK(thread_checker_.CalledOnValidThread());
+  CHECK_EQ(type, syncer::THEMES);
+  CHECK(!sync_processor_);
+
+  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    // Avoid applying the default theme unlike StopSyncing() does because this
+    // method can be called multiple times and applying default theme will cause
+    // the local theme to be lost.
+    ApplySavedLocalThemeIfExistsAndClear();
+  }
+}
+
 void ThemeSyncableService::OnBrowserShutdown(syncer::DataType type) {
   CHECK(thread_checker_.CalledOnValidThread());
   CHECK_EQ(type, syncer::THEMES);

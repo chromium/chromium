@@ -99,6 +99,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
   void OnBrowserShutdown(syncer::DataType type) override;
+  void StayStoppedAndMaybeClearData(syncer::DataType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,

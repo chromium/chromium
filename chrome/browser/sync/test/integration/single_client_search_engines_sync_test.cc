@@ -7,6 +7,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
+#include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/search_engines_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -16,6 +17,8 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -272,8 +275,14 @@ class
     SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled
     : public SingleClientSearchEnginesSyncTest {
  public:
-  SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled()
-      : feature_list_(syncer::kSeparateLocalAndAccountSearchEngines) {}
+  SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountSearchEngines,
+                              // This is needed to enable search engines in
+                              // transport mode.
+                              switches::kEnablePreferencesAccountStorage},
+        /*disabled_features=*/{});
+  }
 
  protected:
   auto CreateSyncEntity(const std::u16string& keyword,
@@ -515,4 +524,104 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
   EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
       "key1", GetFakeServer()));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    PRE_ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set the sign-in allowed bit to true initially.
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, true);
+
+  TemplateURLService* service =
+      search_engines_helper::GetServiceForBrowserContext(0);
+  service->Add(CreateTestTemplateURL(u"localkeyword", "http://local.com",
+                                     "guid", base::Time::FromTimeT(100)));
+
+  GetFakeServer()->InjectEntity(CreateFromTemplateURL(
+      CreateTestTemplateURL(u"accountkeyword", "http://account.com", "guid",
+                            base::Time::FromTimeT(100))));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Account value is effective.
+  ASSERT_THAT(service->GetTemplateURLForGUID("guid"),
+              testing::Pointee(
+                  testing::Property(&TemplateURL::keyword, u"accountkeyword")));
+
+  // Simulate turning off the sign-in allowed bit on the settings page.
+  preferences_helper::GetPrefs(/*index=*/0)
+      ->SetBoolean(prefs::kSigninAllowedOnNextStartup, false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  // Original local value should be active and the account value should not have
+  // been applied.
+  EXPECT_THAT(search_engines_helper::GetServiceForBrowserContext(0)
+                  ->GetTemplateURLForGUID("guid"),
+              testing::Pointee(
+                  testing::Property(&TemplateURL::keyword, u"localkeyword")));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    PRE_ShouldClearAccountDataOnStartupIfAccountStateChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  TemplateURLService* service =
+      search_engines_helper::GetServiceForBrowserContext(0);
+  service->Add(CreateTestTemplateURL(u"localkeyword", "http://local.com",
+                                     "guid", base::Time::FromTimeT(100)));
+
+  GetFakeServer()->InjectEntity(CreateFromTemplateURL(
+      CreateTestTemplateURL(u"accountkeyword", "http://account.com", "guid",
+                            base::Time::FromTimeT(100))));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(SetupSync());
+#else
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Account value is effective.
+  ASSERT_THAT(service->GetTemplateURLForGUID("guid"),
+              testing::Pointee(
+                  testing::Property(&TemplateURL::keyword, u"accountkeyword")));
+
+  // Simulate a data type error to prevent clearing of account data.
+  GetSyncService(0)->ReportDataTypeErrorForTest(syncer::SEARCH_ENGINES);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Disable sync.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+#else
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(HasSearchEngine(/*profile_index=*/0, "accountkeyword"));
+
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::SEARCH_ENGINES});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
+    ShouldClearAccountDataOnStartupIfAccountStateChanged) {
+  ASSERT_TRUE(SetupClients());
+
+  // Original local value should be active and the account value should not have
+  // been applied.
+  EXPECT_THAT(search_engines_helper::GetServiceForBrowserContext(0)
+                  ->GetTemplateURLForGUID("guid"),
+              testing::Pointee(
+                  testing::Property(&TemplateURL::keyword, u"localkeyword")));
 }
