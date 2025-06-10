@@ -13,7 +13,6 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -51,7 +50,8 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       LocalFrame& frame,
       const MediaStreamDevice& device,
       bool disable_local_echo,
-      const MediaStreamAudioProcessingLayout& processing_layout,
+      const AudioProcessingProperties& audio_processing_properties,
+      int num_requested_channels,
       ConstraintsOnceCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -73,7 +73,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   }
 
   const blink::AudioProcessingProperties& audio_processing_properties() const {
-    return processing_layout_.properties();
+    return audio_processing_properties_;
   }
 
   std::optional<blink::AudioProcessingProperties> GetAudioProcessingProperties()
@@ -140,7 +140,8 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   WeakPersistent<LocalFrame> consumer_frame_;
   WeakPersistent<PeerConnectionDependencyFactory> dependency_factory_;
 
-  blink::MediaStreamAudioProcessingLayout processing_layout_;
+  blink::AudioProcessingProperties audio_processing_properties_;
+  int num_requested_channels_;
 
   // Callback that's called when the audio source has been initialized.
   ConstraintsOnceCallback started_callback_;

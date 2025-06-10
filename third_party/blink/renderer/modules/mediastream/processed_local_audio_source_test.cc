@@ -117,7 +117,8 @@ class ProcessedLocalAudioSourceBase : public SimTest {
   }
 
   void CreateProcessedLocalAudioSource(
-      const MediaStreamAudioProcessingLayout& processing_layout) {
+      const AudioProcessingProperties& properties,
+      int num_requested_channels) {
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
             *MainFrame().GetFrame(),
@@ -126,12 +127,13 @@ class ProcessedLocalAudioSourceBase : public SimTest {
                 "mock_audio_device_id", "Mock audio device", kSampleRate,
                 media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                 kDeviceBufferSize),
-            /*disable_local_echo=*/false, processing_layout, base::DoNothing(),
+            false /* disable_local_echo */, properties, num_requested_channels,
+            base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
     source->SetAllowInvalidRenderFrameIdForTesting(true);
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), /*remote=*/false, std::move(source));
+        String::FromUTF8("audio_track"), false /* remote */, std::move(source));
     audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source_->Id(), audio_source_,
         std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
@@ -207,9 +209,7 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // the native buffer size.
   AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
-  CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
-      properties,
-      /*available_platform_effects=*/0, /*channels=*/1));
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
 
   // Connect the track, and expect the MockAudioCapturerSource to be initialized
   // and started by ProcessedLocalAudioSource.
@@ -302,23 +302,20 @@ class ProcessedLocalAudioSourceIgnoreUiGainsTest
     ProcessedLocalAudioSourceBase::SetUp();
   }
 
-  MediaStreamAudioProcessingLayout SetUpAudioProcessingLayout() {
-    AudioProcessingProperties properties;
-    int platform_effects = 0;
+  void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
     switch (std::get<1>(GetParam())) {
       case AGC_DISABLED:
-        properties.auto_gain_control = false;
+        properties->auto_gain_control = false;
         break;
       case BROWSER_AGC:
-        properties.auto_gain_control = true;
+        properties->auto_gain_control = true;
+        properties->system_gain_control_activated = false;
         break;
       case SYSTEM_AGC:
-        properties.auto_gain_control = true;
-        platform_effects |= media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+        properties->auto_gain_control = true;
+        properties->system_gain_control_activated = true;
         break;
     }
-    return MediaStreamAudioProcessingLayout(properties, platform_effects,
-                                            /*channels=*/1);
   }
 
  protected:
@@ -343,7 +340,9 @@ MATCHER_P2(AudioEffectsAsExpected, flag, agc_state, "") {
 
 TEST_P(ProcessedLocalAudioSourceIgnoreUiGainsTest,
        VerifyIgnoreUiGainsStateAsExpected) {
-  CreateProcessedLocalAudioSource(SetUpAudioProcessingLayout());
+  AudioProcessingProperties properties;
+  SetUpAudioProcessingProperties(&properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
 
   // Connect the track, and expect the MockAudioCapturerSource to be initialized
   // and started by ProcessedLocalAudioSource.
@@ -404,40 +403,52 @@ class ProcessedLocalAudioSourceVoiceIsolationTest
     ProcessedLocalAudioSourceBase::SetUp();
   }
 
-  MediaStreamAudioProcessingLayout SetUpAudioProcessingLayout(
-      int platform_effects) {
-    AudioProcessingProperties properties;
+  void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
     switch (GetAecState()) {
       case AEC_DISABLED:
-        properties.echo_cancellation_type = AudioProcessingProperties::
+        properties->echo_cancellation_type = AudioProcessingProperties::
             EchoCancellationType::kEchoCancellationDisabled;
         break;
       case BROWSER_AEC:
-        properties.echo_cancellation_type = AudioProcessingProperties::
+        properties->echo_cancellation_type = AudioProcessingProperties::
             EchoCancellationType::kEchoCancellationAec3;
         break;
       case SYSTEM_AEC:
-        properties.echo_cancellation_type = AudioProcessingProperties::
+        properties->echo_cancellation_type = AudioProcessingProperties::
             EchoCancellationType::kEchoCancellationSystem;
         break;
     }
 
     switch (GetVoiceIsolationState()) {
       case VoiceIsolationState::kEnabled:
-        properties.voice_isolation = AudioProcessingProperties::
+        properties->voice_isolation = AudioProcessingProperties::
             VoiceIsolationType::kVoiceIsolationEnabled;
         break;
       case VoiceIsolationState::kDisabled:
-        properties.voice_isolation = AudioProcessingProperties::
+        properties->voice_isolation = AudioProcessingProperties::
             VoiceIsolationType::kVoiceIsolationDisabled;
         break;
       case VoiceIsolationState::kDefault:
-        properties.voice_isolation = AudioProcessingProperties::
+        properties->voice_isolation = AudioProcessingProperties::
             VoiceIsolationType::kVoiceIsolationDefault;
         break;
     }
-    return MediaStreamAudioProcessingLayout(properties, platform_effects,
-                                            /*channels=*/1);
+  }
+
+  void SetUpAudioParameters() {
+    blink::MediaStreamDevice modified_device(audio_source()->device());
+
+    if (IsVoiceIsolationSupported()) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+    }
+    if (IsSystemAecDefaultEnabled()) {
+      modified_device.input.set_effects(modified_device.input.effects() |
+                                        media::AudioParameters::ECHO_CANCELLER);
+    }
+
+    audio_source()->SetDevice(modified_device);
   }
 
  protected:
@@ -477,21 +488,10 @@ MATCHER_P4(VoiceIsolationAsExpected,
 
 TEST_P(ProcessedLocalAudioSourceVoiceIsolationTest,
        VerifyVoiceIsolationStateAsExpected) {
-  int platform_effects = 0;
-  if (IsVoiceIsolationSupported()) {
-    platform_effects |= media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
-  }
-  if (IsSystemAecDefaultEnabled()) {
-    platform_effects |= media::AudioParameters::ECHO_CANCELLER;
-  }
-
-  MediaStreamAudioProcessingLayout processing_layout =
-      SetUpAudioProcessingLayout(platform_effects);
-  CreateProcessedLocalAudioSource(processing_layout);
-
-  blink::MediaStreamDevice modified_device(audio_source()->device());
-  modified_device.input.set_effects(platform_effects);
-  audio_source()->SetDevice(modified_device);
+  AudioProcessingProperties properties;
+  SetUpAudioProcessingProperties(&properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
+  SetUpAudioParameters();
 
   // Connect the track, and expect the MockAudioCapturerSource to be initialized
   // and started by ProcessedLocalAudioSource.
@@ -544,22 +544,21 @@ class ProcessedLocalAudioSourcePlatformEffectsTest
                          bool>> {};
 
 TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
-       PlatformAecNsAgcCorrectIfAvailale) {
+       PlatformAecNsAgcCorrectWhenIfAvailale) {
   AudioProcessingProperties properties;
   properties.echo_cancellation_type = std::get<0>(GetParam());
   properties.noise_suppression = std::get<1>(GetParam());
   properties.auto_gain_control = std::get<2>(GetParam());
 
-  int platform_effects = media::AudioParameters::ECHO_CANCELLER |
-                         media::AudioParameters::NOISE_SUPPRESSION |
-                         media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-
-  CreateProcessedLocalAudioSource(MediaStreamAudioProcessingLayout(
-      properties, platform_effects, /*channels=*/1));
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
 
   // Enable platform AEC, HS and AGC effects for the device.
   blink::MediaStreamDevice modified_device(audio_source()->device());
-  modified_device.input.set_effects(platform_effects);
+  modified_device.input.set_effects(
+      media::AudioParameters::ECHO_CANCELLER |
+      media::AudioParameters::NOISE_SUPPRESSION |
+      media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
+
   audio_source()->SetDevice(modified_device);
 
   media::AudioParameters expected_params = modified_device.input;
@@ -577,8 +576,7 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
     // No platform processing if platform AEC is not requested.
     expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
     expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
-    if (!MediaStreamAudioProcessingLayout::
-            IsIndependentSystemNsAllowedForTests()) {
+    if (!IsIndependentSystemNsAllowed()) {
       // Special case for NS.
       expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
     }
@@ -587,9 +585,7 @@ TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
     if (!properties.auto_gain_control) {
       expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
     }
-    if (!properties.noise_suppression &&
-        !MediaStreamAudioProcessingLayout::
-            IsIndependentSystemNsAllowedForTests()) {
+    if (!properties.noise_suppression && !IsIndependentSystemNsAllowed()) {
       // TODO(crbug.com/417413190): It's weird that we keep NS enabled in this
       // case if IsIndependentSystemNsAllowed() returns true, but this is how
       // the code works now.
