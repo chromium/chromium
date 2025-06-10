@@ -150,6 +150,49 @@ bool HasSetTargetConverged(float value,
   return false;
 }
 
+// Computes the value of a linear ramp event at time t with the given event
+// parameters.
+float LinearRampAtTime(double t,
+                       float value1,
+                       double time1,
+                       float value2,
+                       double time2) {
+  return value1 + (value2 - value1) * (t - time1) / (time2 - time1);
+}
+
+// Computes the value of an exponential ramp event at time t with the given
+// event parameters.
+float ExponentialRampAtTime(double t,
+                            float value1,
+                            double time1,
+                            float value2,
+                            double time2) {
+  DCHECK(!std::isnan(value1) && std::isfinite(value1));
+  DCHECK(!std::isnan(value2) && std::isfinite(value2));
+
+  return (value1 == 0.0f || std::signbit(value1) != std::signbit(value2))
+             ? value1
+             : value1 *
+                   fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
+}
+
+// Compute the value of a set curve event at time t with the given event
+// parameters.
+float ValueCurveAtTime(double t,
+                       double time1,
+                       double duration,
+                       const float* curve_data,
+                       unsigned curve_length) {
+  double curve_index = (curve_length - 1) / duration * (t - time1);
+  unsigned k = std::min(static_cast<unsigned>(curve_index), curve_length - 1);
+  unsigned k1 = std::min(k + 1, curve_length - 1);
+  float c0 = curve_data[k];
+  float c1 = curve_data[k1];
+  float delta = std::min(curve_index - k, 1.0);
+
+  return c0 + (c1 - c0) * delta;
+}
+
 }  // namespace
 
 AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
@@ -448,59 +491,6 @@ String AudioParamHandler::EventToString(const ParamEvent& event) const {
   return WTF::StrCat({s, "(", args, ")"});
 }
 
-// Computes the value of a linear ramp event at time t with the given event
-// parameters.
-float AudioParamHandler::LinearRampAtTime(double t,
-                                          float value1,
-                                          double time1,
-                                          float value2,
-                                          double time2) {
-  return value1 + (value2 - value1) * (t - time1) / (time2 - time1);
-}
-
-// Computes the value of an exponential ramp event at time t with the given
-// event parameters.
-float AudioParamHandler::ExponentialRampAtTime(double t,
-                                               float value1,
-                                               double time1,
-                                               float value2,
-                                               double time2) {
-  DCHECK(!std::isnan(value1) && std::isfinite(value1));
-  DCHECK(!std::isnan(value2) && std::isfinite(value2));
-
-  return (value1 == 0.0f || std::signbit(value1) != std::signbit(value2))
-             ? value1
-             : value1 *
-                   fdlibm::pow(value2 / value1, (t - time1) / (time2 - time1));
-}
-
-// Compute the value of a set target event at time t with the given event
-// parameters.
-float AudioParamHandler::TargetValueAtTime(double t,
-                                           float value1,
-                                           double time1,
-                                           float value2,
-                                           float time_constant) {
-  return value2 + (value1 - value2) * fdlibm::exp(-(t - time1) / time_constant);
-}
-
-// Compute the value of a set curve event at time t with the given event
-// parameters.
-float AudioParamHandler::ValueCurveAtTime(double t,
-                                          double time1,
-                                          double duration,
-                                          const float* curve_data,
-                                          unsigned curve_length) {
-  double curve_index = (curve_length - 1) / duration * (t - time1);
-  unsigned k = std::min(static_cast<unsigned>(curve_index), curve_length - 1);
-  unsigned k1 = std::min(k + 1, curve_length - 1);
-  float c0 = curve_data[k];
-  float c1 = curve_data[k1];
-  float delta = std::min(curve_index - k, 1.0);
-
-  return c0 + (c1 - c0) * delta;
-}
-
 std::unique_ptr<AudioParamHandler::ParamEvent>
 AudioParamHandler::ParamEvent::CreateSetValueEvent(float value, double time) {
   return base::WrapUnique(
@@ -621,7 +611,7 @@ AudioParamHandler::ParamEvent::ParamEvent(
     double call_time,
     double time_constant,
     double duration,
-    Vector<float>& curve,
+    const Vector<float>& curve,
     double curve_points_per_second,
     float curve_end_value,
     std::unique_ptr<ParamEvent> saved_event)

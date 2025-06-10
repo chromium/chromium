@@ -83,7 +83,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   };
 
   // Automation rate of the AudioParam
-  enum AutomationRate {
+  enum class AutomationRate {
     // a-rate
     kAudio,
     // k-rate
@@ -91,7 +91,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   };
 
   // Indicates whether automation rate can be changed.
-  enum AutomationRateMode {
+  enum class AutomationRateMode {
     // Rate can't be changed after construction
     kFixed,
     // Rate can be selected
@@ -176,7 +176,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // An AudioParam needs sample accurate processing if there are
   // automations scheduled or if there are connections.
-  bool HasSampleAccurateValues() {
+  bool HasSampleAccurateValues() const {
     bool has_values = HasValues(destination_handler_->CurrentSampleFrame(),
                                 destination_handler_->SampleRate(),
                                 GetDeferredTaskHandler().RenderQuantumFrames());
@@ -184,7 +184,9 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     return has_values || NumberOfRenderingConnections();
   }
 
-  bool IsAudioRate() const { return automation_rate_ == kAudio; }
+  bool IsAudioRate() const {
+    return automation_rate_ == AutomationRate::kAudio;
+  }
 
   // Calculates numberOfValues parameter values starting at the context's
   // current time.
@@ -285,7 +287,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                double call_time,
                double time_constant,
                double duration,
-               Vector<float>& curve,
+               const Vector<float>& curve,
                double curve_points_per_second,
                float curve_end_value,
                std::unique_ptr<ParamEvent> saved_event);
@@ -451,29 +453,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // Produce a nice string describing the event in human-readable form.
   String EventToString(const ParamEvent&) const;
-
-  // Automation functions that compute the value of the specified
-  // automation at the specified time.
-  float LinearRampAtTime(double t,
-                         float value1,
-                         double time1,
-                         float value2,
-                         double time2);
-  float ExponentialRampAtTime(double t,
-                              float value1,
-                              double time1,
-                              float value2,
-                              double time2);
-  float TargetValueAtTime(double t,
-                          float value1,
-                          double time1,
-                          float value2,
-                          float time_constant);
-  float ValueCurveAtTime(double t,
-                         double time1,
-                         double duration,
-                         const float* curve_data,
-                         unsigned curve_length);
 
   // Handles the special case where the first event in the timeline
   // starts after `start_frame`.  These initial values are filled using
