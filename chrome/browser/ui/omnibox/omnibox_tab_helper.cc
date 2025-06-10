@@ -58,9 +58,10 @@ OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents,
       content::WebContentsObserver(contents) {
   // Only fetch the APC paywall signal if the feature flag is enabled.
   if (omnibox_feature_configs::ContextualSearch::Get().use_apc_paywall_signal) {
-    page_content_service_observation_.Observe(
-        page_content_annotations::PageContentExtractionServiceFactory::
-            GetForProfile(profile));
+    if (auto* service = page_content_annotations::
+            PageContentExtractionServiceFactory::GetForProfile(profile)) {
+      page_content_service_observation_.Observe(service);
+    }
   }
 }
 
