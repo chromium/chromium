@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 
 #include "third_party/blink/renderer/core/dom/popover_data.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {

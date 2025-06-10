@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
@@ -173,8 +174,6 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
-  // TODO: Handle activation behavior events.
-  // TODO: Handle arrow key navigation for menuitems in menulist.
   if (event.type() == event_type_names::kDOMActivate) {
     // Menuitems with a commandfor will dispatch a CommandEvent on the
     // invoker, and run HandleCommandInternal to perform default logic.
@@ -196,9 +195,118 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
       return;
     }
   }
-
+  // Handle arrow key navigation for menuitems.
   if (HandleKeyboardActivation(event)) {
     return;
+  }
+  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+  int tab_ignore_modifiers = WebInputEvent::kControlKey |
+                             WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
+  int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
+  FocusParams focus_params(FocusTrigger::kUserGesture);
+
+  if (keyboard_event && event.type() == event_type_names::kKeydown) {
+    const AtomicString key(keyboard_event->key());
+    // TODO: This is the same ignore list as option event handling and can be
+    // consolidated together.
+    if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
+      if ((key == " " || key == keywords::kCapitalEnter)) {
+        // TODO: implement chooseItem(event);
+        return;
+      }
+      if (auto* menulist = OwnerMenuListElement()) {
+        MenuItemList menuitems = menulist->GetItemList();
+        // Nothing below can do anything, if the list is empty.
+        if (menuitems.Empty()) {
+          return;
+        }
+        if (key == keywords::kArrowUp) {
+          if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
+            previous->Focus(focus_params);
+          }
+          event.SetDefaultHandled();
+          return;
+        } else if (key == keywords::kArrowDown) {
+          if (auto* next = menuitems.NextFocusableMenuItem(*this)) {
+            next->Focus(focus_params);
+          }
+          event.SetDefaultHandled();
+          return;
+        } else if (key == keywords::kHome) {
+          if (auto* first = menuitems.NextFocusableMenuItem(
+                  *menuitems.begin(), /*inclusive*/ true)) {
+            first->Focus(focus_params);
+            event.SetDefaultHandled();
+            return;
+          }
+        } else if (key == keywords::kEnd) {
+          if (auto* last = menuitems.PreviousFocusableMenuItem(
+                  *menuitems.last(), /*inclusive*/ true)) {
+            last->Focus(focus_params);
+            event.SetDefaultHandled();
+            return;
+          }
+        }
+        // TODO: implement invoke nested menulist, for kArrowLeft/kArrowRight.
+        // TODO: implement scrolling to visible menuitem, for kPageDown/kPageUp.
+      } else if (auto* menubar = OwnerMenuBarElement()) {
+        MenuItemList menuitems = menubar->GetItemList();
+        // Nothing below can do anything, if the list is empty.
+        if (menuitems.Empty()) {
+          return;
+        }
+        if (key == keywords::kArrowLeft) {
+          if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
+            previous->Focus(focus_params);
+          }
+          event.SetDefaultHandled();
+          return;
+        } else if (key == keywords::kArrowRight) {
+          if (auto* next = menuitems.NextFocusableMenuItem(*this)) {
+            next->Focus(focus_params);
+          }
+          event.SetDefaultHandled();
+          return;
+        } else if (key == keywords::kHome) {
+          if (auto* first = menuitems.NextFocusableMenuItem(
+                  *menuitems.begin(), /*inclusive*/ true)) {
+            first->Focus(focus_params);
+            event.SetDefaultHandled();
+            return;
+          }
+        } else if (key == keywords::kEnd) {
+          if (auto* last = menuitems.PreviousFocusableMenuItem(
+                  *menuitems.last(), /*inclusive*/ true)) {
+            last->Focus(focus_params);
+            event.SetDefaultHandled();
+            return;
+          }
+        }
+        // If this invokes a menulist popover and is in a menubar, then
+        // arrow down/up should go to first/last menuitem in the menulist.
+        if (HTMLElement* popover = GetOpenPopoverTarget()) {
+          if (auto* invoked_menulist =
+                  DynamicTo<HTMLMenuListElement>(popover)) {
+            MenuItemList invoked_menuitems = invoked_menulist->GetItemList();
+            if (key == keywords::kArrowDown) {
+              if (auto* first = invoked_menuitems.NextFocusableMenuItem(
+                      *invoked_menuitems.begin(), /*inclusive*/ true)) {
+                first->Focus(focus_params);
+                event.SetDefaultHandled();
+                return;
+              }
+            } else if (key == keywords::kArrowUp) {
+              if (auto* last = invoked_menuitems.PreviousFocusableMenuItem(
+                      *invoked_menuitems.last(), /*inclusive*/ true)) {
+                last->Focus(focus_params);
+                event.SetDefaultHandled();
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
   }
   HTMLElement::DefaultEventHandler(event);
 }

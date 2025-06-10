@@ -40,6 +40,9 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   void RemovedFrom(ContainerNode&) override;
 
   bool IsDisabledFormControl() const override;
+  bool IsKeyboardFocusableSlow(
+      UpdateBehavior update_behavior =
+          UpdateBehavior::kStyleAndLayout) const override;
   void DefaultEventHandler(Event&) override;
 
   void SetDirty(bool);
@@ -51,9 +54,6 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   int DefaultTabIndex() const override;
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
-  bool IsKeyboardFocusableSlow(
-      UpdateBehavior update_behavior =
-          UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldHaveFocusAppearance() const override;
 
   // Traverse ancestors to find the nearest menubar or menulist ancestor.

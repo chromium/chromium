@@ -492,6 +492,8 @@ blink_core_sources_html = [
   "media/video_frame_callback_requester.h",
   "media/video_wake_lock.cc",
   "media/video_wake_lock.h",
+  "menu_item_list.cc",
+  "menu_item_list.h",
   "nesting_level_incrementer.h",
   "plugin_document.cc",
   "plugin_document.h",
