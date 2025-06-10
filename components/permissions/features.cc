@@ -91,6 +91,11 @@ const base::FeatureParam<bool> kApproximateGeolocationPermissionSampleData(
     "sample_data",
     false);
 
+const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm(
+    &features::kApproximateGeolocationPermission,
+    "prompt_arm",
+    0);
+
 #else
 
 // When enabled, chooser permissions grants will have a last visited timestamp

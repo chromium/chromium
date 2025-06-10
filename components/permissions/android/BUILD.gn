@@ -203,6 +203,7 @@ generate_jni("core_jni") {
 android_library("core_java") {
   srcjar_deps = [ ":core_jni" ]
   sources = [
+    "java/src/org/chromium/components/permissions/ApproximateGeolocationPromptArm.java",
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureMap.java",
@@ -215,6 +216,7 @@ android_library("core_java") {
     "//components/location/android:location_java",
     "//components/webxr/android:features_java",
     "//device/vr/public:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

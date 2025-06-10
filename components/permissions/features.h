@@ -60,6 +60,9 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool>
     kApproximateGeolocationPermissionSampleData;
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<int> kApproximateGeolocationPermissionPromptArm;
+
 #else
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
