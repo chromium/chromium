@@ -48,17 +48,6 @@ chromium-metrics-reviews@google.com.
   <summary>Playback rate is changed in Animations panel in DevTools.</summary>
 </histogram>
 
-<histogram name="DevTools.AnimationPointDragged"
-    enum="DevToolsAnimationPointDragged" expires_after="2024-10-13">
-  <owner>yangguo@google.com</owner>
-  <owner>changhaohan@google.com</owner>
-  <owner>ergunsh@google.com</owner>
-  <summary>
-    An animation's duration or delay updated visually by dragging the animation
-    point in Animations panel in DevTools.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
     expires_after="2025-11-16">
   <owner>wolfi@google.com</owner>

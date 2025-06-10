@@ -847,14 +847,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Other"/>
 </enum>
 
-<enum name="DevToolsAnimationPointDragged">
-  <int value="0" label="Animation is dragged as a whole"/>
-  <int value="1" label="Keyframe is moved"/>
-  <int value="2" label="Animation start point is moved"/>
-  <int value="3" label="Animation finish point is moved"/>
-  <int value="4" label="Other"/>
-</enum>
-
 <enum name="DevToolsCSSHintShown">
   <int value="0" label="Other"/>
   <int value="1" label="AlignContent"/>
