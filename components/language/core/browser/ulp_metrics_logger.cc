@@ -72,7 +72,7 @@ void ULPMetricsLogger::RecordInitiationPageLanguagesMissingFromULPCount(
 ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
     const std::string& language,
     const std::vector<std::string>& ulp_languages) {
-  if (language.empty() || language.compare("und") == 0) {
+  if (language.empty() || language == "und") {
     return ULPLanguageStatus::kLanguageEmpty;
   }
 
@@ -86,10 +86,10 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
   }
 
   // Now search for a base language match (e.g pt-BR == pt-MZ).
-  const std::string base_language = l10n_util::GetLanguage(language);
+  const auto base_language = l10n_util::GetLanguage(language);
   std::vector<std::string>::const_iterator base_match = std::ranges::find_if(
       ulp_languages, [&base_language](const std::string& ulp_language) {
-        return base_language.compare(l10n_util::GetLanguage(ulp_language)) == 0;
+        return base_language == l10n_util::GetLanguage(ulp_language);
       });
   if (base_match == ulp_languages.begin()) {
     return ULPLanguageStatus::kTopULPLanguageBaseMatch;
@@ -100,8 +100,8 @@ ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
 }
 
 int ULPMetricsLogger::LanguagesOverlapRatio(
-    const std::vector<std::string> languages,
-    const std::vector<std::string> compare_languages) {
+    const std::vector<std::string>& languages,
+    const std::vector<std::string>& compare_languages) {
   if (languages.size() <= 0) {
     return 0;
   }
@@ -109,12 +109,11 @@ int ULPMetricsLogger::LanguagesOverlapRatio(
   int num_overlap_languages = 0;
   for (const std::string& language : languages) {
     // Search for base matches of language (e.g. pt-BR == pt-MZ).
-    const std::string base_language = l10n_util::GetLanguage(language);
+    const auto base_language = l10n_util::GetLanguage(language);
     if (std::ranges::any_of(
             compare_languages,
             [&base_language](const std::string& compare_language) {
-              return base_language.compare(
-                         l10n_util::GetLanguage(compare_language)) == 0;
+              return base_language == l10n_util::GetLanguage(compare_language);
             })) {
       ++num_overlap_languages;
     }
@@ -123,17 +122,16 @@ int ULPMetricsLogger::LanguagesOverlapRatio(
 }
 
 std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(
-    const std::vector<std::string> languages,
-    const std::vector<std::string> ulp_languages) {
+    const std::vector<std::string>& languages,
+    const std::vector<std::string>& ulp_languages) {
   std::vector<std::string> filtered_languages;
 
   for (const auto& language : languages) {
     // Only add languages that do not have a base match in ulp_languages.
-    const std::string base_language = l10n_util::GetLanguage(language);
+    const auto base_language = l10n_util::GetLanguage(language);
     if (std::ranges::none_of(
             ulp_languages, [&base_language](const std::string& ulp_language) {
-              return base_language.compare(
-                         l10n_util::GetLanguage(ulp_language)) == 0;
+              return base_language == l10n_util::GetLanguage(ulp_language);
             })) {
       filtered_languages.push_back(language);
     }
