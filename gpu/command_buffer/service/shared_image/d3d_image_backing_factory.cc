@@ -197,6 +197,15 @@ D3DImageBackingFactory::D3DImageBackingFactory(
   bool has_required_format_support =
       (format_support & kRequiredUsage) == kRequiredUsage;
   d3d11_supports_nv12_ = SUCCEEDED(hr) && has_required_format_support;
+
+  D3D_FEATURE_LEVEL feature_level = d3d11_device_->GetFeatureLevel();
+  if (feature_level < D3D_FEATURE_LEVEL_9_3) {
+    max_nv12_dim_supported_ = 2048;
+  } else if (feature_level < D3D_FEATURE_LEVEL_11_0) {
+    max_nv12_dim_supported_ = 4096;
+  } else {
+    max_nv12_dim_supported_ = 16384;
+  }
 }
 
 D3DImageBackingFactory::~D3DImageBackingFactory() = default;
@@ -825,35 +834,30 @@ bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
                                   D3D11_FORMAT_SUPPORT_RENDER_TARGET;
   bool has_required_format_support =
       (format_support & kRequiredUsage) == kRequiredUsage;
-  if (!SUCCEEDED(hr) || !has_required_format_support) {
-    return false;
-  }
-
-  D3D11_TEXTURE2D_DESC desc;
-  desc.Width = size.width();
-  desc.Height = size.height();
-  desc.MipLevels = 1;
-  desc.ArraySize = 1;
-  desc.Format = dxgi_format;
-  desc.SampleDesc.Count = 1;
-  desc.SampleDesc.Quality = 0;
-  desc.Usage = D3D11_USAGE_DEFAULT;
-  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-  desc.CPUAccessFlags = 0;
-  desc.MiscFlags = 0;
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
   if (!SUCCEEDED(hr)) {
-    LOG(ERROR) << "CanCreateNV12Texture failed with size " << size.ToString()
-               << " error " << std::hex << hr;
-
-    min_nv12_size_unsupported_ =
-        std::min(size.GetArea(), min_nv12_size_unsupported_);
+    LOG(ERROR) << "D3D device does not support NV12 texture creation with "
+                  "format usage="
+               << format_support;
+    return false;
+  }
+  if (!has_required_format_support) {
+    LOG(ERROR) << "D3D device does not support NV12 texture with format usage="
+               << format_support;
     return false;
   }
 
-  max_nv12_size_supported_ = std::max(size.GetArea(), max_nv12_size_supported_);
+  // We know current size width and height must be within
+  // `max_nv12_dim_supported_` as nv12 creation is supported for
+  // `max_nv12_dim_supported_`.
+  if (size.width() > max_nv12_dim_supported_ ||
+      size.height() > max_nv12_dim_supported_) {
+    LOG(ERROR)
+        << "Provided size=" << size.ToString()
+        << "is not supported by d3d device, with max supported dimensions="
+        << max_nv12_dim_supported_;
+    return false;
+  }
+
   return true;
 }
 
@@ -900,16 +904,6 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   if (format == viz::MultiPlaneFormat::kNV12) {
     // Return early if d3d11 cannot support nv12 formats.
     if (!d3d11_supports_nv12_) {
-      return false;
-    }
-    // We know current size is within `max_nv12_size_supported_` and nv12
-    // creation is supported for `max_nv12_size_supported_`.
-    if (size.GetArea() <= max_nv12_size_supported_) {
-      return true;
-    }
-    // We know current size is larger than `min_nv12_size_unsupported_` and nv12
-    // creation is unsupported for `min_nv12_size_unsupported_`.
-    if (size.GetArea() >= min_nv12_size_unsupported_) {
       return false;
     }
     if (!CanCreateNV12Texture(size)) {

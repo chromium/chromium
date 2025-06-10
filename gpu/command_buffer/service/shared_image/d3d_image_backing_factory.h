@@ -161,12 +161,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device_;
 
-  // Stores the minimum size area unsupported by an nv12 texture.
-  // Default initialized to max size.
-  int min_nv12_size_unsupported_ = std::numeric_limits<int>::max();
-
-  // Stores the maximum size area supported by an nv12 texture.
-  int max_nv12_size_supported_ = 0;
+  // Stores the maximum size dimension supported by an nv12 texture.
+  int max_nv12_dim_supported_ = 0;
 
   // Stores whether NV12 format is supported by the D3D device.
   bool d3d11_supports_nv12_;
