@@ -276,7 +276,12 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       return LayoutCacheStatus::kNeedsLayout;
   }
 
-  bool is_block_size_equal = block_size == fragment.BlockSize();
+  const bool is_block_size_equal = block_size == fragment.BlockSize();
+
+  if (RuntimeEnabledFeatures::LayoutStretchCacheFixEnabled() &&
+      !is_block_size_equal) {
+    return LayoutCacheStatus::kNeedsLayout;
+  }
 
   if (!is_block_size_equal) {
     // Only block-flow supports changing the block-size for simplified layout.

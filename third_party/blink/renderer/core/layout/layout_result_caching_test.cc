@@ -971,7 +971,9 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   // intrinsic height is 0 (no children), so it matters whether the cell has a
   // height or not. We're only going to need simplified layout, though, since no
   // children will be affected by its height change.
-  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsSimplifiedLayout);
+  EXPECT_EQ(cache_status, RuntimeEnabledFeatures::LayoutStretchCacheFixEnabled()
+                              ? LayoutCacheStatus::kNeedsLayout
+                              : LayoutCacheStatus::kNeedsSimplifiedLayout);
 }
 
 TEST_F(LayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {
