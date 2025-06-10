@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
 
 #include "components/input/native_web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -95,6 +96,20 @@ static void* kObservingContext = &kObservingContext;
   event.dom_key = ui::DomKey::ENTER;
   event.windows_key_code = ui::VKEY_RETURN;
 
+  // Copied from components/input/web_input_event_builders_mac.mm's
+  // WebKeyboardEventBuilder::Build().
+  // This is necessary due to way some HTML elements process keyboard activation
+  // (e.g. blink::HTMLElement::HandleKeyboardActivation()).
+  event.text[0] = '\r';
+  event.unmodified_text[0] = '\r';
+
+  _view->SendKeyEvent(
+      input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
+
+  // We also need to send a keyup event so that e.g. checkboxes are properly
+  // activated/deactivated with the keyboard.
+  event.SetType(blink::WebInputEvent::Type::kKeyUp);
+  event.SetTimeStamp(ui::EventTimeForNow());
   _view->SendKeyEvent(
       input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
 }
