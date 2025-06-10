@@ -159,49 +159,6 @@ struct EnumTraits<ash::ime::mojom::AutocorrectSuggestionProvider,
                         AutocorrectSuggestionProvider* output);
 };
 
-template <>
-struct StructTraits<ash::ime::mojom::BucketedHistogramDataView,
-                    base::Histogram*> {
-  static bool IsNull(base::Histogram* histogram) { return !histogram; }
-
-  static void SetToNull(base::Histogram** histogram) { *histogram = nullptr; }
-
-  static std::string_view name(base::Histogram* histogram) {
-    return histogram->histogram_name();
-  }
-
-  static ash::ime::mojom::HistogramBucketType bucket_type(
-      base::Histogram* histogram) {
-    switch (histogram->GetHistogramType()) {
-      case base::HISTOGRAM:
-        return ash::ime::mojom::HistogramBucketType::kExponential;
-      case base::LINEAR_HISTOGRAM:
-      case base::BOOLEAN_HISTOGRAM:
-        return ash::ime::mojom::HistogramBucketType::kLinear;
-      case base::CUSTOM_HISTOGRAM:
-      case base::SPARSE_HISTOGRAM:
-      case base::DUMMY_HISTOGRAM:
-        NOTREACHED() << "Invalid histogram bucket type: "
-                     << static_cast<int>(histogram->GetHistogramType());
-    }
-  }
-
-  static uint16_t minimum(base::Histogram* histogram) {
-    return base::checked_cast<uint16_t>(histogram->declared_min());
-  }
-
-  static uint16_t maximum(base::Histogram* histogram) {
-    return base::checked_cast<uint16_t>(histogram->declared_max());
-  }
-
-  static uint16_t bucket_count(base::Histogram* histogram) {
-    return base::checked_cast<uint16_t>(histogram->bucket_count());
-  }
-
-  static bool Read(ash::ime::mojom::BucketedHistogramDataView input,
-                   base::Histogram** output);
-};
-
 }  // namespace mojo
 
 #endif  // CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
