@@ -182,10 +182,7 @@ PopupRowView::PopupRowView(
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()),
       suggestion_is_acceptable_(
           controller && line_number < controller->GetLineCount() &&
-          controller->GetSuggestionAt(line_number).IsAcceptable()),
-      highlight_on_select_(
-          controller && line_number < controller->GetLineCount() &&
-          controller->GetSuggestionAt(line_number).highlight_on_select) {
+          controller->GetSuggestionAt(line_number).IsAcceptable()) {
   CHECK(content_view);
   CHECK(controller_);
   CHECK_LT(line_number_, controller_->GetLineCount());
@@ -388,7 +385,7 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
-    content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
+    content_view_->UpdateStyle(/*selected=*/true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     content_view_->GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEventDeprecated(
@@ -467,9 +464,6 @@ void PopupRowView::OnCellSelected(std::optional<CellType> type,
 
 void PopupRowView::UpdateBackground() {
   const bool is_highlighted = [&]() {
-    if (!highlight_on_select_) {
-      return false;
-    }
     // The whole row is highlighted when the subpopup is open, or ...
     if (child_suggestions_displayed_) {
       return true;

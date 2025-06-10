@@ -190,25 +190,6 @@ TEST_F(PopupRowViewTest, BackgroundColorOnContentSelect) {
   EXPECT_EQ(content_background->color(), ui::kColorDropdownBackgroundSelected);
 }
 
-// Tests that the background colors of both the `PopupRowView` and the
-// `PopupRowContentView` are updated correctly when the content cell is
-// selected.
-TEST_F(PopupRowViewTest,
-       BackgroundColorOnContentSelectWithHighlightOnSelectFalse) {
-  Suggestion suggestion(u"Another entry");
-  suggestion.highlight_on_select = false;
-  ShowView(/*line_number=*/0, {suggestion});
-  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
-  EXPECT_FALSE(row_view().GetContentView().GetBackground());
-
-  // When `highlight_on_select` is false, then selecting a cell does not change
-  // the background color.
-  row_view().SetSelectedCell(CellType::kContent);
-  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
-  EXPECT_FALSE(row_view().GetContentView().GetBackground());
-}
-
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
   ShowView(/*line_number=*/2, /*has_control=*/true);
 

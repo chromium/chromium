@@ -541,13 +541,6 @@ struct Suggestion {
   // The acceptability of the suggestion, see the enum values doc for details.
   Acceptability acceptability = Acceptability::kAcceptable;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // If true, selecting a suggestion or, when it exists, expanding its
-  // sub-popup, highlights the background of the suggestion row and its
-  // contained cells.
-  bool highlight_on_select = true;
-#endif
-
   // Returns whether the user is able to preview the suggestion by hovering on
   // it or accept it by clicking on it.
   bool IsAcceptable() const;
