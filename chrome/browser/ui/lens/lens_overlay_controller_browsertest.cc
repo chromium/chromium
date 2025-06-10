@@ -1419,6 +1419,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
       [&]() { return controller->state() == State::kOff; }));
   // Tab contents web view should be enabled.
   ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
+
+  // The overlay should have been notified of the closing.
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
 }
 
 // TODO(crbug.com/341383805): Enable once flakiness is fixed on all platforms.
