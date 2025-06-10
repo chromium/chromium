@@ -142,6 +142,11 @@ inline constexpr content::PreloadingPredictor kChromeCustomTabs(
 inline constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnNewTabPage(116,
                                        "MouseHoverOrMouseDownOnNewTabPage");
+
+// When the default search engine needs to prerender a prewarm page.
+inline constexpr content::PreloadingPredictor kPrewarmDefaultSearchEngine(
+    117,
+    "PrewarmDefaultSearchEngine");
 }  // namespace chrome_preloading_predictor
 // LINT.ThenChange()
 

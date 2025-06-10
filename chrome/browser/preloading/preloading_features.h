@@ -8,6 +8,12 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace features {}  // namespace features
+namespace features {
+
+// DSE Prewarm tracked at https://crbug.com/406378765.
+BASE_DECLARE_FEATURE(kPrewarm);
+BASE_DECLARE_FEATURE_PARAM(std::string, kPrewarmUrl);
+
+}  // namespace features
 
 #endif  // CHROME_BROWSER_PRELOADING_PRELOADING_FEATURES_H_

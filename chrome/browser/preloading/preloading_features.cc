@@ -4,4 +4,9 @@
 
 #include "chrome/browser/preloading/preloading_features.h"
 
-namespace features {}  // namespace features
+namespace features {
+
+BASE_FEATURE(kPrewarm, "Prewarm", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string, kPrewarmUrl, &kPrewarm, "url", "");
+
+}  // namespace features

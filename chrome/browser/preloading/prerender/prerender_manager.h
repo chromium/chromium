@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/preloading/preloading_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
@@ -60,6 +61,12 @@ class PrerenderManager : public content::WebContentsObserver,
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // Calling this method will start prerendering a prewarm page. Prerendered
+  // page will close at the next call. Returns true if a new prerender is
+  // started.
+  // TODO(https://crbug.com/423465927): Decide a better timing to close.
+  bool StartPrewarmSearchResult();
 
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `canonical_search_url` differs from the ongoing one's.
@@ -134,6 +141,8 @@ class PrerenderManager : public content::WebContentsObserver,
   bool ResetSearchPrerenderTaskIfNecessary(
       const GURL& canonical_search_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
+
+  std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
 
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and informing `SearchPrefetchService`

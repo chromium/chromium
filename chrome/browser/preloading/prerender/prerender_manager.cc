@@ -155,8 +155,9 @@ class PrerenderManager::SearchPrerenderTask {
   void set_prediction_status(PrerenderPredictionStatus prediction_status) {
     // If the final status was set, do nothing because the status has been
     // finalized.
-    if (prediction_status_ != PrerenderPredictionStatus::kUnused)
+    if (prediction_status_ != PrerenderPredictionStatus::kUnused) {
       return;
+    }
     CHECK_NE(prediction_status, PrerenderPredictionStatus::kUnused);
     prediction_status_ = prediction_status;
   }
@@ -403,6 +404,48 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   return nullptr;
 }
 
+bool PrerenderManager::StartPrewarmSearchResult() {
+  CHECK(base::FeatureList::IsEnabled(features::kPrewarm));
+  const GURL prewarm_url(features::kPrewarmUrl.Get());
+  CHECK(prewarm_url.is_valid());
+
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents());
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kPrewarmDefaultSearchEngine,
+          content::PreloadingType::kPrerender,
+          content::PreloadingData::GetSameURLMatcher(prewarm_url),
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  search_prewarm_handle_ = web_contents()->StartPrerendering(
+      prewarm_url, content::PreloadingTriggerType::kEmbedder,
+      prerender_utils::kPrewarmDefaultSearchEngineMetricSuffix,
+      /*additional_headers=*/net::HttpRequestHeaders(),
+      /*no_vary_search_hint=*/std::nullopt,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      // TODO(https://crbug.com/406378765): Consider enabling rendering
+      // warm-ups when we support process reuse.
+      /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
+      preloading_attempt,
+      // Prewarm page won't be activated, so we don't need to match the
+      // prerendering url with the navigation url.
+      // TODO(https://crbug.com/406378765): Revisit when we support process
+      // reuse.
+      /*url_match_predicate=*/base::BindRepeating([](const GURL& url,
+                               const std::optional<content::UrlMatchType>&) {
+        return false;
+      }),
+      /*prerender_navigation_handle_callback=*/{});
+
+  return search_prewarm_handle_ != nullptr;
+}
+
 void PrerenderManager::StartPrerenderSearchResult(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,
@@ -528,8 +571,9 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
     const GURL& canonical_search_url,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
-  if (!search_prerender_task_)
+  if (!search_prerender_task_) {
     return true;
+  }
 
   // Do not re-prerender the same search result.
   if (search_prerender_task_->prerendered_canonical_search_url() ==

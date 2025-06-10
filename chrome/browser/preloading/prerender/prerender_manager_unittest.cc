@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
+
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
-#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -328,6 +330,36 @@ TEST_F(PrerenderManagerTest, DisallowSearchUrlNewTabPage) {
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", true, 1);
+}
+
+class PrerenderManagerPrewarmTest : public PrerenderManagerTest {
+ public:
+  PrerenderManagerPrewarmTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPrewarm,
+        {{"url", "https://search.example.com/prewarm.html"}});
+  }
+  ~PrerenderManagerPrewarmTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
+  const GURL prewarm_url(features::kPrewarmUrl.Get());
+  ASSERT_TRUE(prewarm_url.is_valid());
+
+  // Prerender the prewarm page.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  ASSERT_TRUE(prerender_manager()->StartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+
+  // Prewarm page should not be found here as it's matcher was set as not
+  // matching to any URL.
+  content::FrameTreeNodeId prerender_host_id =
+      prerender_helper().GetHostForUrl(prewarm_url);
+  EXPECT_EQ(prerender_host_id, content::FrameTreeNodeId());
 }
 
 }  // namespace
