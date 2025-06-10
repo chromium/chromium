@@ -3546,6 +3546,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
+<histogram name="Autofill.HomeWorkProfiles.ProfileFiltered"
+    enum="BooleanFiltered" expires_after="2025-12-20">
+  <owner>jsobiech@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks whether a Home/Work profile was filtered out due to incompleteness.
+    Emitted the moment Home/Work profiles are received or updated via sync.
+
+    Since the server already checks completeness on a best-effort basis, this
+    metric is not representative of the total fraction of incomplete Home/Work
+    addresses.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iban.CountryOfSaveAcceptedIban" enum="IbanCountry"
     expires_after="2026-06-01">
   <owner>qihuizhao@google.com</owner>

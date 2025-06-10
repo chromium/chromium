@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
@@ -913,12 +914,18 @@ TEST_F(ContactInfoSyncUtilTest, AreContactInfoSpecificsValid_Completeness) {
   base::test::ScopedFeatureList feature(
       features::kAutofillEnableSupportForHomeAndWork);
 
+  base::HistogramTester histogram_tester;
+
   ContactInfoSpecifics specifics = ConstructBaseSpecifics();
   EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
   specifics.set_address_type(ContactInfoSpecifics::HOME);
   EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
   specifics.set_address_type(ContactInfoSpecifics::WORK);
   EXPECT_TRUE(AreContactInfoSpecificsValid(specifics));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.ProfileFiltered"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 2)));
 
   specifics.clear_address_city();
   specifics.set_address_type(ContactInfoSpecifics::REGULAR);
@@ -927,6 +934,10 @@ TEST_F(ContactInfoSyncUtilTest, AreContactInfoSpecificsValid_Completeness) {
   EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
   specifics.set_address_type(ContactInfoSpecifics::HOME);
   EXPECT_FALSE(AreContactInfoSpecificsValid(specifics));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.ProfileFiltered"),
+              BucketsAre(base::Bucket(false, 2), base::Bucket(true, 2)));
 }
 
 // Tests that if a token's `value` changes by external means, its observations

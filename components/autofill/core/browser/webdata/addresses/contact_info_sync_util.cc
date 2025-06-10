@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -439,13 +440,23 @@ bool AreContactInfoSpecificsValid(
   if (!base::Uuid::ParseLowercase(specifics.guid()).is_valid()) {
     return false;
   }
+
+  if (specifics.address_type() == sync_pb::ContactInfoSpecifics::REGULAR) {
+    return true;
+  }
+
   // H/W addresses need to meet Autofill's completeness requirements since they
   // are read from a source that doesn't enforce them.
-  return specifics.address_type() == sync_pb::ContactInfoSpecifics::REGULAR ||
-         (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForHomeAndWork) &&
-          IsMinimumAddress(
-              CreateAutofillProfileFromContactInfoSpecifics(specifics)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForHomeAndWork)) {
+    const bool is_minimum_address = IsMinimumAddress(
+        CreateAutofillProfileFromContactInfoSpecifics(specifics));
+    base::UmaHistogramBoolean("Autofill.HomeWorkProfiles.ProfileFiltered",
+                              is_minimum_address);
+    return is_minimum_address;
+  }
+
+  return false;
 }
 
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
