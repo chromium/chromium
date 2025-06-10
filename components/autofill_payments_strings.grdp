@@ -274,6 +274,9 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_ACCEPT" desc="Text to show for the Autofill Save and Fill dialog accept button.">
       Save and autofill
     </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER" desc="Error message to show when a user has input an invalid card number.">
+      Card number is invalid
+    </message>
   </if>
 
   <!-- Autofill error dialog related strings -->

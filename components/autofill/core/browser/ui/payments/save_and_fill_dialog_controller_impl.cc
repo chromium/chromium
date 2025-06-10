@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -46,10 +47,21 @@ std::u16string SaveAndFillDialogControllerImpl::GetNameOnCardLabel() const {
 std::u16string SaveAndFillDialogControllerImpl::GetAcceptButtonText() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_ACCEPT);
 }
+
+std::u16string
+SaveAndFillDialogControllerImpl::GetInvalidCardNumberErrorMessage() const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER);
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool SaveAndFillDialogControllerImpl::IsUploadSaveAndFill() const {
   return is_upload_save_and_fill_;
+}
+
+bool SaveAndFillDialogControllerImpl::IsValidCreditCardNumber(
+    std::u16string_view input_text) const {
+  return autofill::IsValidCreditCardNumber(input_text);
 }
 
 base::WeakPtr<SaveAndFillDialogController>

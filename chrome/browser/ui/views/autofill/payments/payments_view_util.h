@@ -17,6 +17,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 
 class GURL;
@@ -41,6 +43,30 @@ struct TextLinkInfo {
 
   gfx::Range offset;
   base::RepeatingCallback<void()> callback;
+};
+
+struct LabeledTextfieldWithErrorMessage {
+  LabeledTextfieldWithErrorMessage();
+
+  LabeledTextfieldWithErrorMessage(
+      const LabeledTextfieldWithErrorMessage& other);
+  LabeledTextfieldWithErrorMessage& operator=(
+      const LabeledTextfieldWithErrorMessage& other);
+  LabeledTextfieldWithErrorMessage(LabeledTextfieldWithErrorMessage&& other);
+  LabeledTextfieldWithErrorMessage& operator=(
+      LabeledTextfieldWithErrorMessage&& other);
+
+  ~LabeledTextfieldWithErrorMessage();
+
+  std::unique_ptr<views::View> container = nullptr;
+  raw_ptr<views::Textfield> input = nullptr;
+  raw_ptr<views::Label> error_label = nullptr;
+  raw_ptr<views::View> error_label_placeholder = nullptr;
+
+  views::Textfield& GetInputTextField() const;
+
+  void SetErrorState(bool is_valid_input,
+                     std::optional<std::u16string> error_message);
 };
 
 // Gets the user avatar icon if available, or else a placeholder.
@@ -110,10 +136,12 @@ gfx::ImageSkia CreateTiledGooglePayLogo(int width,
                                         const ui::ColorProvider* provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Creates a view containing a label and a textfield. The view is arranged
-// vertically with the label positioned above the textfield.
-std::unique_ptr<views::View> CreateLabelAndTextfieldView(
-    const std::u16string& text);
+// Creates a view containing a label and a textfield with an optional error
+// message. The view is arranged vertically with the label positioned above the
+// textfield.
+LabeledTextfieldWithErrorMessage CreateLabelAndTextfieldView(
+    const std::u16string& label_text,
+    std::optional<std::u16string> error_message);
 
 }  // namespace autofill
 

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -53,11 +54,20 @@ std::u16string SaveAndFillDialog::GetWindowTitle() const {
   return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
+void SaveAndFillDialog::ContentsChanged(views::Textfield* sender,
+                                        const std::u16string& new_contents) {
+  if (sender == &card_number_data_.GetInputTextField()) {
+    card_number_data_.SetErrorState(
+        /*is_valid_input=*/controller_->IsValidCreditCardNumber(new_contents),
+        /*error_message=*/controller_->GetInvalidCardNumberErrorMessage());
+  }
+}
+
 void SaveAndFillDialog::InitViews() {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
@@ -69,10 +79,21 @@ void SaveAndFillDialog::InitViews() {
                    .SetMultiLine(true)
                    .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
                    .Build());
-  // Create a container for the card number label and textfield.
-  AddChildView(CreateLabelAndTextfieldView(controller_->GetCardNumberLabel()));
-  // Create a container for the cardholder name label and textfield.
-  AddChildView(CreateLabelAndTextfieldView(controller_->GetNameOnCardLabel()));
+
+  card_number_data_ = CreateLabelAndTextfieldView(
+      /*label_text=*/controller_->GetCardNumberLabel(),
+      /*error_message=*/controller_->GetInvalidCardNumberErrorMessage());
+  card_number_data_.GetInputTextField().SetTextInputType(
+      ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
+  card_number_data_.GetInputTextField().SetController(this);
+  AddChildView(std::move(card_number_data_.container));
+
+  // TODO(crbug.com/378163937): Implement validation rule for the `name on card`
+  // field.
+  AddChildView(std::move(CreateLabelAndTextfieldView(
+                             /*label_text=*/controller_->GetNameOnCardLabel(),
+                             /*error_message=*/std::u16string())
+                             .container));
 }
 
 }  // namespace autofill
