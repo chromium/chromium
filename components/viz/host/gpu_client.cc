@@ -13,8 +13,6 @@
 #include "components/viz/host/gpu_host_impl.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 
 namespace viz {
