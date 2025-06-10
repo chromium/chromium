@@ -58,7 +58,7 @@ String ContouredRect::ToString() const {
     return rect_string;
   }
 
-  return WTF::StrCat(
+  return StrCat(
       {rect_string, " curvature:(", GetCornerCurvature().ToString(), ")"});
 }
 

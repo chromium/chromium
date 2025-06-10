@@ -120,11 +120,10 @@ String CubicBezierTimingFunction::ToString() const {
     case CubicBezierTimingFunction::EaseType::EASE_IN_OUT:
       return "ease-in-out";
     case CubicBezierTimingFunction::EaseType::CUSTOM:
-      return WTF::StrCat({"cubic-bezier(",
-                          String::NumberToStringECMAScript(X1()), ", ",
-                          String::NumberToStringECMAScript(Y1()), ", ",
-                          String::NumberToStringECMAScript(X2()), ", ",
-                          String::NumberToStringECMAScript(Y2()), ")"});
+      return StrCat({"cubic-bezier(", String::NumberToStringECMAScript(X1()),
+                     ", ", String::NumberToStringECMAScript(Y1()), ", ",
+                     String::NumberToStringECMAScript(X2()), ", ",
+                     String::NumberToStringECMAScript(Y2()), ")"});
     default:
       NOTREACHED();
   }

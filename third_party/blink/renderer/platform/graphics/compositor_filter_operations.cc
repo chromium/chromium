@@ -128,8 +128,8 @@ bool CompositorFilterOperations::operator==(
 }
 
 String CompositorFilterOperations::ToString() const {
-  return WTF::StrCat({String(filter_operations_.ToString()), " at ",
-                      String(reference_box_.ToString())});
+  return StrCat({String(filter_operations_.ToString()), " at ",
+                 String(reference_box_.ToString())});
 }
 
 }  // namespace blink

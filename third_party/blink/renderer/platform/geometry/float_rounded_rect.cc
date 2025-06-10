@@ -319,7 +319,7 @@ String FloatRoundedRect::ToString() const {
   if (GetRadii().IsZero())
     return String(Rect().ToString());
 
-  return WTF::StrCat(
+  return StrCat(
       {String(Rect().ToString()), " radii:(", GetRadii().ToString(), ")"});
 }
 

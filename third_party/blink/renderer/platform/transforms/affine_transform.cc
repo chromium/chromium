@@ -292,7 +292,7 @@ String AffineTransform::ToString(bool as_matrix) const {
 
   std::optional<gfx::DecomposedTransform> decomp = ToTransform().Decompose();
   if (!decomp)
-    return WTF::StrCat({ToString(true), " (degenerate)"});
+    return StrCat({ToString(true), " (degenerate)"});
 
   if (IsIdentityOrTranslation()) {
     return String::Format("translation(%lg,%lg)", decomp->translate[0],

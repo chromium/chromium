@@ -123,9 +123,9 @@ String PropertyTreeStateOrAlias::ToString() const {
 #if DCHECK_IS_ON()
 
 String PropertyTreeStateOrAlias::ToTreeString() const {
-  return WTF::StrCat({"transform:\n", Transform().ToTreeString(), "\nclip:\n",
-                      Clip().ToTreeString(), "\neffect:\n",
-                      Effect().ToTreeString()});
+  return StrCat({"transform:\n", Transform().ToTreeString(), "\nclip:\n",
+                 Clip().ToTreeString(), "\neffect:\n",
+                 Effect().ToTreeString()});
 }
 
 #endif

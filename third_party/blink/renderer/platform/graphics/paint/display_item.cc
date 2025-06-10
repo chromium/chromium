@@ -103,7 +103,7 @@ static WTF::String PaintPhaseAsDebugString(int paint_phase) {
 #define PAINT_PHASE_BASED_DEBUG_STRINGS(Category)                            \
   if (type >= DisplayItem::k##Category##PaintPhaseFirst &&                   \
       type <= DisplayItem::k##Category##PaintPhaseLast) {                    \
-    return WTF::StrCat(                                                      \
+    return StrCat(                                                           \
         {#Category, PaintPhaseAsDebugString(                                 \
                         type - DisplayItem::k##Category##PaintPhaseFirst)}); \
   }
@@ -151,7 +151,7 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
 
 static WTF::String DrawingTypeAsDebugString(DisplayItem::Type type) {
   PAINT_PHASE_BASED_DEBUG_STRINGS(Drawing);
-  return WTF::StrCat({"Drawing", SpecialDrawingTypeAsDebugString(type)});
+  return StrCat({"Drawing", SpecialDrawingTypeAsDebugString(type)});
 }
 
 static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
@@ -207,7 +207,7 @@ String DisplayItem::IdAsString(const PaintArtifact& paint_artifact) const {
   if (IsSubsequenceTombstone())
     return "SUBSEQUENCE TOMBSTONE";
   if (IsTombstone())
-    return WTF::StrCat({"TOMBSTONE ", paint_artifact.IdAsString(GetId())});
+    return StrCat({"TOMBSTONE ", paint_artifact.IdAsString(GetId())});
   return paint_artifact.IdAsString(GetId());
 }
 

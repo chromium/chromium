@@ -541,7 +541,7 @@ String DateComponents::ToString(SecondFormat format) const {
     case kDate:
       return String::Format("%04d-%02d-%02d", year_, month_ + 1, month_day_);
     case kDateTimeLocal:
-      return WTF::StrCat(
+      return StrCat(
           {String::Format("%04d-%02d-%02dT", year_, month_ + 1, month_day_),
            ToStringForTime(format)});
     case kMonth:

@@ -204,11 +204,11 @@ MIMEHeader* MIMEHeader::ParseHeader(SharedBufferChunkReader* buffer) {
         DVLOG(1) << "No boundary found in multipart MIME header.";
         return nullptr;
       }
-      mime_header->end_of_part_boundary_ = WTF::StrCat({"--", boundary});
+      mime_header->end_of_part_boundary_ = StrCat({"--", boundary});
       mime_header->end_of_document_boundary_ =
           mime_header->end_of_part_boundary_;
       mime_header->end_of_document_boundary_ =
-          WTF::StrCat({mime_header->end_of_document_boundary_, "--"});
+          StrCat({mime_header->end_of_document_boundary_, "--"});
     }
   }
 

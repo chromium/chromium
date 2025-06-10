@@ -220,7 +220,7 @@ String KURL::ElidedString() const {
     return string;
   }
 
-  return WTF::StrCat({string.Left(511), "...", string.Right(510)});
+  return StrCat({string.Left(511), "...", string.Right(510)});
 }
 
 KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}

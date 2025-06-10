@@ -1512,11 +1512,11 @@ ResourceLoader::CheckResponseNosniff(
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        WTF::StrCat({"Refused to apply style from '",
-                     response.CurrentRequestUrl().ElidedString(),
-                     "' because its MIME type ('", mime_type,
-                     "') is not a supported stylesheet MIME type, and strict "
-                     "MIME checking is enabled."}));
+        StrCat({"Refused to apply style from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not a supported stylesheet MIME type, and strict "
+                "MIME checking is enabled."}));
     return ResourceRequestBlockedReason::kContentType;
   }
   // TODO(mkwst): Move the 'nosniff' bit of 'AllowedByNosniff::MimeTypeAsScript'

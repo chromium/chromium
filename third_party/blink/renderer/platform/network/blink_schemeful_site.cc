@@ -50,7 +50,7 @@ String BlinkSchemefulSite::Serialize() const {
 
 String BlinkSchemefulSite::GetDebugString() const {
   DCHECK(site_as_origin_);
-  return WTF::StrCat({"{ origin_as_site: ", Serialize(), " }"});
+  return StrCat({"{ origin_as_site: ", Serialize(), " }"});
 }
 
 // static

@@ -26,16 +26,16 @@ String FromLayoutUnit(FixedPoint<fractional_bits, Storage> value) {
 template <unsigned fractional_bits, typename Storage>
 String FixedPoint<fractional_bits, Storage>::ToString() const {
   if (value_ == Max().RawValue()) {
-    return WTF::StrCat({"Max(", FromLayoutUnit(*this), ")"});
+    return StrCat({"Max(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == Min().RawValue()) {
-    return WTF::StrCat({"Min(", FromLayoutUnit(*this), ")"});
+    return StrCat({"Min(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMax().RawValue()) {
-    return WTF::StrCat({"NearlyMax(", FromLayoutUnit(*this), ")"});
+    return StrCat({"NearlyMax(", FromLayoutUnit(*this), ")"});
   }
   if (value_ == NearlyMin().RawValue()) {
-    return WTF::StrCat({"NearlyMin(", FromLayoutUnit(*this), ")"});
+    return StrCat({"NearlyMin(", FromLayoutUnit(*this), ")"});
   }
   return FromLayoutUnit(*this);
 }

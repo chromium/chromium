@@ -184,11 +184,11 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        WTF::StrCat({"Refused to execute script from '",
-                     response.CurrentRequestUrl().ElidedString(),
-                     "' because its MIME type ('", mime_type,
-                     "') is not executable, and strict MIME type checking is "
-                     "enabled."}));
+        StrCat({"Refused to execute script from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not executable, and strict MIME type checking is "
+                "enabled."}));
     return false;
   }
 
@@ -221,10 +221,10 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        WTF::StrCat({"Refused to execute script from '",
-                     response.CurrentRequestUrl().ElidedString(),
-                     "' because its MIME type ('", mime_type,
-                     "') is not executable."}));
+        StrCat({"Refused to execute script from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not executable."}));
   } else if (mime_type_check_mode == MimeTypeCheck::kLaxForWorker) {
     bool strict_allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                               MimeTypeCheck::kStrict, counter);
@@ -250,11 +250,10 @@ bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
   console_logger->AddConsoleMessage(
       mojom::blink::ConsoleMessageSource::kSecurity,
       mojom::blink::ConsoleMessageLevel::kError,
-      WTF::StrCat(
-          {"Refused to load XML external entity from '",
-           response.CurrentRequestUrl().ElidedString(),
-           "' because its MIME type ('", response.HttpContentType(),
-           "') is incorrect, and strict MIME type checking is enabled."}));
+      StrCat({"Refused to load XML external entity from '",
+              response.CurrentRequestUrl().ElidedString(),
+              "' because its MIME type ('", response.HttpContentType(),
+              "') is incorrect, and strict MIME type checking is enabled."}));
   return false;
 }
 

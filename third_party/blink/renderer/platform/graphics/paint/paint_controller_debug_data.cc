@@ -55,9 +55,9 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
 
   json_object->SetString(
       "subsequence",
-      WTF::StrCat({String::Format("client: %p ", reinterpret_cast<void*>(
-                                                     subsequence.client_id)),
-                   artifact_.ClientDebugName(subsequence.client_id)}));
+      StrCat({String::Format("client: %p ",
+                             reinterpret_cast<void*>(subsequence.client_id)),
+              artifact_.ClientDebugName(subsequence.client_id)}));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
                                            subsequence.end_chunk_index));

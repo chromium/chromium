@@ -407,7 +407,7 @@ void ResourceRequestHead::AddHttpHeaderField(const AtomicString& name,
                                              const AtomicString& value) {
   HTTPHeaderMap::AddResult result = http_header_fields_.Add(name, value);
   if (!result.is_new_entry) {
-    String new_value = WTF::StrCat({result.stored_value->value, ", ", value});
+    String new_value = StrCat({result.stored_value->value, ", ", value});
     result.stored_value->value = AtomicString(new_value);
   }
 }

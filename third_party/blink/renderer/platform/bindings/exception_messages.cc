@@ -45,14 +45,14 @@ String OptionalNameProperty(const String& property) {
   if (property.empty()) {
     return String();
   }
-  return WTF::StrCat({" '", property, "'"});
+  return StrCat({" '", property, "'"});
 }
 
 String OptionalIndexProperty(const String& property) {
   if (!property) {
     return String();
   }
-  return WTF::StrCat({" [", property, "]"});
+  return StrCat({" [", property, "]"});
 }
 
 }  //  namespace
@@ -104,7 +104,7 @@ String ExceptionMessages::AddContextToMessage(v8::ExceptionContext type,
 }
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {
-  return WTF::StrCat({"Failed to convert value to '", type, "'."});
+  return StrCat({"Failed to convert value to '", type, "'."});
 }
 
 String ExceptionMessages::FailedToConstruct(const char* type,
@@ -114,17 +114,17 @@ String ExceptionMessages::FailedToConstruct(const char* type,
     return detail;
   }
   if (detail.empty()) {
-    return WTF::StrCat({"Failed to construct '", type_string, "'"});
+    return StrCat({"Failed to construct '", type_string, "'"});
   }
-  return WTF::StrCat({"Failed to construct '", type_string, "': ", detail});
+  return StrCat({"Failed to construct '", type_string, "': ", detail});
 }
 
 String ExceptionMessages::FailedToEnumerate(const char* type,
                                             const String& detail) {
   if (detail.empty()) {
-    return WTF::StrCat({"Failed to enumerate the properties of '", type, "'"});
+    return StrCat({"Failed to enumerate the properties of '", type, "'"});
   }
-  return WTF::StrCat(
+  return StrCat(
       {"Failed to enumerate the properties of '", type, "': ", detail});
 }
 
@@ -132,79 +132,77 @@ String ExceptionMessages::FailedToExecute(const String& method,
                                           const char* type,
                                           const String& detail) {
   if (detail.empty()) {
-    return WTF::StrCat({"Failed to execute '", method, "' on '", type, "'"});
+    return StrCat({"Failed to execute '", method, "' on '", type, "'"});
   }
-  return WTF::StrCat(
-      {"Failed to execute '", method, "' on '", type, "': ", detail});
+  return StrCat({"Failed to execute '", method, "' on '", type, "': ", detail});
 }
 
 String ExceptionMessages::FailedToGet(const String& property,
                                       const char* type,
                                       const String& detail) {
-  return WTF::StrCat({"Failed to read the '", property, "' property from '",
-                      type, "': ", detail});
+  return StrCat({"Failed to read the '", property, "' property from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSet(const String& property,
                                       const char* type,
                                       const String& detail) {
-  return WTF::StrCat({"Failed to set the '", property, "' property on '", type,
-                      "': ", detail});
+  return StrCat({"Failed to set the '", property, "' property on '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToDelete(const String& property,
                                          const char* type,
                                          const String& detail) {
-  return WTF::StrCat({"Failed to delete the '", property, "' property from '",
-                      type, "': ", detail});
+  return StrCat({"Failed to delete the '", property, "' property from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToGetIndexed(const String& property,
                                              const char* type,
                                              const String& detail) {
-  return WTF::StrCat({"Failed to read an indexed property",
-                      OptionalIndexProperty(property), " from '", type,
-                      "': ", detail});
+  return StrCat({"Failed to read an indexed property",
+                 OptionalIndexProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSetIndexed(const String& property,
                                              const char* type,
                                              const String& detail) {
-  return WTF::StrCat({"Failed to set an indexed property",
-                      OptionalIndexProperty(property), " on '", type,
-                      "': ", detail});
+  return StrCat({"Failed to set an indexed property",
+                 OptionalIndexProperty(property), " on '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToDeleteIndexed(const String& property,
                                                 const char* type,
                                                 const String& detail) {
-  return WTF::StrCat({"Failed to delete an indexed property",
-                      OptionalIndexProperty(property), " from '", type,
-                      "': ", detail});
+  return StrCat({"Failed to delete an indexed property",
+                 OptionalIndexProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToGetNamed(const String& property,
                                            const char* type,
                                            const String& detail) {
-  return WTF::StrCat({"Failed to read a named property",
-                      OptionalNameProperty(property), " from '", type,
-                      "': ", detail});
+  return StrCat({"Failed to read a named property",
+                 OptionalNameProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSetNamed(const String& property,
                                            const char* type,
                                            const String& detail) {
-  return WTF::StrCat({"Failed to set a named property",
-                      OptionalNameProperty(property), " on '", type,
-                      "': ", detail});
+  return StrCat({"Failed to set a named property",
+                 OptionalNameProperty(property), " on '", type, "': ", detail});
 }
 
 String ExceptionMessages::FailedToDeleteNamed(const String& property,
                                               const char* type,
                                               const String& detail) {
-  return WTF::StrCat({"Failed to delete a named property",
-                      OptionalNameProperty(property), " from '", type,
-                      "': ", detail});
+  return StrCat({"Failed to delete a named property",
+                 OptionalNameProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::ConstructorNotCallableAsFunction(const char* type) {
@@ -221,21 +219,21 @@ String ExceptionMessages::ConstructorCalledAsFunction() {
 
 String ExceptionMessages::IncorrectPropertyType(const String& property,
                                                 const String& detail) {
-  return WTF::StrCat({"The '", property, "' property ", detail});
+  return StrCat({"The '", property, "' property ", detail});
 }
 
 String ExceptionMessages::InvalidArity(const char* expected,
                                        unsigned provided) {
-  return WTF::StrCat({"Valid arities are: ", expected, ", but ",
-                      String::Number(provided), " arguments provided."});
+  return StrCat({"Valid arities are: ", expected, ", but ",
+                 String::Number(provided), " arguments provided."});
 }
 
 String ExceptionMessages::ArgumentNullOrIncorrectType(
     int argument_index,
     const String& expected_type) {
-  return WTF::StrCat({"The ", OrdinalNumber(argument_index),
-                      " argument provided is either null, or an invalid ",
-                      expected_type, " object."});
+  return StrCat({"The ", OrdinalNumber(argument_index),
+                 " argument provided is either null, or an invalid ",
+                 expected_type, " object."});
 }
 
 String ExceptionMessages::ArgumentNotOfType(int argument_index,
@@ -246,29 +244,29 @@ String ExceptionMessages::ArgumentNotOfType(int argument_index,
 
 String ExceptionMessages::NotASequenceTypeProperty(
     const String& property_name) {
-  return WTF::StrCat(
+  return StrCat(
       {"'", property_name,
        "' property is neither an array, nor does it have indexed properties."});
 }
 
 String ExceptionMessages::NotEnoughArguments(unsigned expected,
                                              unsigned provided) {
-  return WTF::StrCat({String::Number(expected), " argument",
-                      expected > 1 ? "s" : "", " required, but only ",
-                      String::Number(provided), " present."});
+  return StrCat({String::Number(expected), " argument", expected > 1 ? "s" : "",
+                 " required, but only ", String::Number(provided),
+                 " present."});
 }
 
 String ExceptionMessages::NotAFiniteNumber(double value, const char* name) {
   DCHECK(!std::isfinite(value));
-  return WTF::StrCat({"The ", name, " is ",
-                      std::isinf(value) ? "infinite." : "not a number."});
+  return StrCat({"The ", name, " is ",
+                 std::isinf(value) ? "infinite." : "not a number."});
 }
 
 String ExceptionMessages::NotAFiniteNumber(const Decimal& value,
                                            const char* name) {
   DCHECK(!value.IsFinite());
-  return WTF::StrCat({"The ", name, " is ",
-                      value.IsInfinity() ? "infinite." : "not a number."});
+  return StrCat({"The ", name, " is ",
+                 value.IsInfinity() ? "infinite." : "not a number."});
 }
 
 String ExceptionMessages::OrdinalNumber(int number) {
@@ -287,25 +285,23 @@ String ExceptionMessages::OrdinalNumber(int number) {
         suffix = "rd";
       break;
   }
-  return WTF::StrCat({String::Number(number), suffix});
+  return StrCat({String::Number(number), suffix});
 }
 
 String ExceptionMessages::IndexExceedsMaximumBound(const char* name,
                                                    bool eq,
                                                    const String& given,
                                                    const String& bound) {
-  return WTF::StrCat({"The ", name, " provided (", given, ") is greater than ",
-                      eq ? "or equal to " : "", "the maximum bound (", bound,
-                      ")."});
+  return StrCat({"The ", name, " provided (", given, ") is greater than ",
+                 eq ? "or equal to " : "", "the maximum bound (", bound, ")."});
 }
 
 String ExceptionMessages::IndexExceedsMinimumBound(const char* name,
                                                    bool eq,
                                                    const String& given,
                                                    const String& bound) {
-  return WTF::StrCat({"The ", name, " provided (", given, ") is less than ",
-                      eq ? "or equal to " : "", "the minimum bound (", bound,
-                      ")."});
+  return StrCat({"The ", name, " provided (", given, ") is less than ",
+                 eq ? "or equal to " : "", "the minimum bound (", bound, ")."});
 }
 
 String ExceptionMessages::IndexOutsideRange(const char* name,
@@ -314,34 +310,30 @@ String ExceptionMessages::IndexOutsideRange(const char* name,
                                             BoundType lower_type,
                                             const String& upper_bound,
                                             BoundType upper_type) {
-  return WTF::StrCat(
-      {"The ", name, " provided (", given, ") is outside the range ",
-       lower_type == kExclusiveBound ? "(" : "[", lower_bound, ", ",
-       upper_bound, upper_type == kExclusiveBound ? ")." : "]."});
+  return StrCat({"The ", name, " provided (", given, ") is outside the range ",
+                 lower_type == kExclusiveBound ? "(" : "[", lower_bound, ", ",
+                 upper_bound, upper_type == kExclusiveBound ? ")." : "]."});
 }
 
 String ExceptionMessages::ReadOnly(const char* detail) {
   DEFINE_STATIC_LOCAL(String, read_only, ("This object is read-only."));
-  return detail
-             ? WTF::StrCat({"This object is read-only, because ", detail, "."})
-             : read_only;
+  return detail ? StrCat({"This object is read-only, because ", detail, "."})
+                : read_only;
 }
 
 String ExceptionMessages::SharedArrayBufferNotAllowed(
     const char* expected_type) {
-  return WTF::StrCat(
-      {"The provided ", expected_type, " value must not be shared."});
+  return StrCat({"The provided ", expected_type, " value must not be shared."});
 }
 
 String ExceptionMessages::ResizableArrayBufferNotAllowed(
     const char* expected_type) {
-  return WTF::StrCat(
+  return StrCat(
       {"The provided ", expected_type, " value must not be resizable."});
 }
 
 String ExceptionMessages::ValueNotOfType(const char* expected_type) {
-  return WTF::StrCat(
-      {"The provided value is not of type '", expected_type, "'."});
+  return StrCat({"The provided value is not of type '", expected_type, "'."});
 }
 
 template <>

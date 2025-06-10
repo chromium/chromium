@@ -185,7 +185,7 @@ BlinkStorageKey BlinkStorageKey::WithOrigin(
 }
 
 String BlinkStorageKey::ToDebugString() const {
-  return WTF::StrCat(
+  return StrCat(
       {"{ origin: ", GetSecurityOrigin()->ToString(),
        ", top-level site: ", top_level_site_.Serialize(), ", nonce: ",
        (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())

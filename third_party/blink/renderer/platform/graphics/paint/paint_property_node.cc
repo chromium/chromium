@@ -65,7 +65,7 @@ const PaintPropertyNode& PaintPropertyNode::LowestCommonAncestorInternal(
 String PaintPropertyNode::ToString() const {
   String s = ToJSON()->ToJSONString();
 #if DCHECK_IS_ON()
-  return WTF::StrCat({debug_name_, String::Format(" %p ", this), s});
+  return StrCat({debug_name_, String::Format(" %p ", this), s});
 #else
   return s;
 #endif

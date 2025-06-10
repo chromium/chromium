@@ -87,8 +87,8 @@ void GetSharedBufferMemoryDump(SharedBuffer* buffer,
   String dump_name;
   buffer->GetMemoryDumpNameAndSize(dump_name, dump_size);
 
-  WebMemoryAllocatorDump* dump = memory_dump->CreateMemoryAllocatorDump(
-      WTF::StrCat({dump_prefix, dump_name}));
+  WebMemoryAllocatorDump* dump =
+      memory_dump->CreateMemoryAllocatorDump(StrCat({dump_prefix, dump_name}));
   dump->AddScalar("size", "bytes", dump_size);
   memory_dump->AddSuballocation(
       dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
@@ -205,7 +205,7 @@ void Resource::CheckResourceIntegrity() {
     DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
-    integrity_report_.AddConsoleErrorMessage(WTF::StrCat(
+    integrity_report_.AddConsoleErrorMessage(StrCat(
         {"The resource '", Url().ElidedString(),
          "' has an `unencoded-digest` header which asserts a digest which does "
          "not match the resource's body."}));
@@ -927,7 +927,7 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
     String url_to_report = Url().GetString();
     if (url_to_report.length() > kMaxURLReportLength) {
       url_to_report.Truncate(kMaxURLReportLength);
-      url_to_report = WTF::StrCat({url_to_report, "..."});
+      url_to_report = StrCat({url_to_report, "..."});
     }
     dump->AddString("url", "", url_to_report);
 
@@ -939,10 +939,10 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
       client_names.push_back(client->DebugName());
     ResourceClientWalker<ResourceClient> walker2(clients_awaiting_callback_);
     while (ResourceClient* client = walker2.Next())
-      client_names.push_back(WTF::StrCat({"(awaiting) ", client->DebugName()}));
+      client_names.push_back(StrCat({"(awaiting) ", client->DebugName()}));
     ResourceClientWalker<ResourceClient> walker3(finished_clients_);
     while (ResourceClient* client = walker3.Next())
-      client_names.push_back(WTF::StrCat({"(finished) ", client->DebugName()}));
+      client_names.push_back(StrCat({"(finished) ", client->DebugName()}));
     std::sort(client_names.begin(), client_names.end(),
               WTF::CodeUnitCompareLessThan);
 
@@ -963,7 +963,7 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
     dump->AddString("ResourceClient", "", builder.ToString());
   }
 
-  const String overhead_name = WTF::StrCat({dump_name, "/metadata"});
+  const String overhead_name = StrCat({dump_name, "/metadata"});
   WebMemoryAllocatorDump* overhead_dump =
       memory_dump->CreateMemoryAllocatorDump(overhead_name);
   overhead_dump->AddScalar("size", "bytes", OverheadSize());
@@ -972,10 +972,9 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 }
 
 String Resource::GetMemoryDumpName() const {
-  return WTF::StrCat(
-      {"web_cache/",
-       ResourceTypeToString(GetType(), Options().initiator_info.name),
-       "_resources/", String::Number(InspectorId())});
+  return StrCat({"web_cache/",
+                 ResourceTypeToString(GetType(), Options().initiator_info.name),
+                 "_resources/", String::Number(InspectorId())});
 }
 
 void Resource::SetCachePolicyBypassingCache() {

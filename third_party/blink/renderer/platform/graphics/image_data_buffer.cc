@@ -140,8 +140,8 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
   if (!ImageEncoder::Encode(&result, pixmap_, mime_type, quality)) {
     return "data:,";
   }
-  return WTF::StrCat({"data:", ImageEncoderUtils::MimeTypeName(mime_type),
-                      ";base64,", Base64Encode(result)});
+  return StrCat({"data:", ImageEncoderUtils::MimeTypeName(mime_type),
+                 ";base64,", Base64Encode(result)});
 }
 
 }  // namespace blink

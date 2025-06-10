@@ -48,8 +48,8 @@ String FormatErrorMessage(Error error, int line, int column) {
           "valid Unicode characters.";
       break;
   }
-  return WTF::StrCat({"Line: ", String::Number(line),
-                      ", column: ", String::Number(column), ", ", text});
+  return StrCat({"Line: ", String::Number(line),
+                 ", column: ", String::Number(column), ", ", text});
 }
 
 // Note: all parsing functions take a |cursor| parameter which is

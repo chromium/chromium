@@ -88,7 +88,7 @@ void ScriptCachedMetadataHandler::OnMemoryDump(
     const String& dump_prefix) const {
   if (!cached_metadata_)
     return;
-  const String dump_name = WTF::StrCat({dump_prefix, "/script"});
+  const String dump_name = StrCat({dump_prefix, "/script"});
   auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
   dump->AddScalar("size", "bytes", GetCodeCacheSize());
   pmd->AddSuballocation(dump->Guid(),

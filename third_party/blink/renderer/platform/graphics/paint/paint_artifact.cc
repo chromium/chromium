@@ -77,9 +77,8 @@ void PaintArtifact::AppendChunksAsJSON(
     const auto& chunk = chunks_[i];
     auto json_object = std::make_unique<JSONObject>();
 
-    json_object->SetString(
-        "chunk", WTF::StrCat({ClientDebugName(chunk.id.client_id), " ",
-                              chunk.id.ToString(*this)}));
+    json_object->SetString("chunk", StrCat({ClientDebugName(chunk.id.client_id),
+                                            " ", chunk.id.ToString(*this)}));
     json_object->SetString("state", chunk.properties.ToString());
     json_object->SetString("bounds", String(chunk.bounds.ToString()));
 #if DCHECK_IS_ON()
