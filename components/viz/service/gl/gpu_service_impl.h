@@ -26,7 +26,6 @@
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
 #include "components/viz/service/gl/exit_code.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"

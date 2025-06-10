@@ -32,7 +32,6 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "components/viz/service/gl/gpu_log_message_manager.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"

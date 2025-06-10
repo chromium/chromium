@@ -18,7 +18,6 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/xdg_shell_surface.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
 #include "ui/display/types/display_constants.h"
 

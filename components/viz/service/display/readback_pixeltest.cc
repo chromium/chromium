@@ -31,7 +31,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/viz_pixel_test.h"
-#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/buildflags.h"

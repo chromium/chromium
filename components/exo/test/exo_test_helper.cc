@@ -22,7 +22,6 @@
 #include "components/exo/wm_helper.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/aura/env.h"
