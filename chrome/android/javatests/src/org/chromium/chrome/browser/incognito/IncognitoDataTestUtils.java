@@ -241,7 +241,7 @@ public class IncognitoDataTestUtils {
                                     });
                 });
 
-        CustomTabsConnection.getInstance().warmup(0);
+        CustomTabsConnection.getInstance().warmup();
         startUpCallback.waitForCallback(0);
     }
 }

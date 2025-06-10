@@ -242,7 +242,7 @@ public class CustomTabsConnectionTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testOnlyOneHiddenTab() throws Exception {
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
@@ -301,7 +301,7 @@ public class CustomTabsConnectionTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testKillHiddenTabRenderer() throws Exception {
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
         var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
@@ -436,12 +436,12 @@ public class CustomTabsConnectionTest {
         prepareEmbeddedTestServer();
         Context context = ApplicationProvider.getApplicationContext();
 
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
 
         final OnEvaluateJavaScriptResultHelper JsHelper = new OnEvaluateJavaScriptResultHelper();
 
         // Launch a custom tab and load the url.
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -469,7 +469,7 @@ public class CustomTabsConnectionTest {
 
         // Launch the first hidden tab. This tab should use a separate storage partition and
         // therefore shouldn't see the first cookie.
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         Intent intent2 =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent2);
@@ -571,7 +571,7 @@ public class CustomTabsConnectionTest {
 
         // Finally, launch a third custom tab. Because there isn't an associated mayLaunchUrl this
         // custom tab will use the default storage partition and will access the first cookie.
-        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
         Intent intent3 =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent3);
@@ -882,11 +882,11 @@ public class CustomTabsConnectionTest {
         newSessionWithWarmupWaiter(client, warmupWaiter);
 
         // Both sessions should be notified.
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertTrue(mCustomTabsConnection.warmup());
         warmupWaiter.waitForCallback(0, 2, 20, TimeUnit.SECONDS);
 
         // Notifications should be sent even if warmup() has already been called.
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertTrue(mCustomTabsConnection.warmup());
         warmupWaiter.waitForCallback(2, 2);
     }
 
@@ -935,7 +935,7 @@ public class CustomTabsConnectionTest {
     public void testPrefetchWithWarmup() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        Assert.assertTrue(mCustomTabsConnection.warmup());
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
 
         HistogramWatcher histogramWatcher =

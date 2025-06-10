@@ -1649,7 +1649,7 @@ public class CustomTabActivityTest {
         var sessionHolder = new SessionHolder<>(token);
         connection.newSession(token);
         setCanUseHiddenTabForSession(sessionHolder, true);
-        connection.warmup(0);
+        connection.warmup();
 
         // Needs the browser process to be initialized.
         ThreadUtils.runOnUiThreadBlocking(

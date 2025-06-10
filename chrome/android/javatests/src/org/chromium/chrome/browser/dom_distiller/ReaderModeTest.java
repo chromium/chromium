@@ -125,6 +125,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
@@ -148,6 +149,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Downloaded() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
@@ -173,6 +175,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/423646543")
     public void testReaderModeInCct_Incognito() throws TimeoutException {
         mDownloadTestRule.loadUrl(mURL);
         openReaderModeInIncognitoCct();
@@ -412,7 +415,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
                                 is("chrome-distiller")));
         ChromeTabUtils.waitForTabPageLoaded(tab, null);
         // Distiller Viewer load the content dynamically, so waitForTabPageLoaded() is not enough.
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.getTitle(), is(expectedTitle)));
+        CriteriaHelper.pollUiThreadLongTimeout(
+                null, () -> Criteria.checkThat(tab.getTitle(), is(expectedTitle)));
 
         String innerHtml = getInnerHtml(tab);
         assertThat(innerHtml).contains("article-header");

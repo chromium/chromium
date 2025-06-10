@@ -115,7 +115,7 @@ public class CustomTabsTestUtils {
                         }
                     }
                 });
-        Assert.assertTrue(connection.warmup(0));
+        Assert.assertTrue(connection.warmup());
         startupCallbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
         return connection;
     }

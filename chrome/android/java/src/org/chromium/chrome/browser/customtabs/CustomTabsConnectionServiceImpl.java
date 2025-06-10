@@ -52,7 +52,7 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     @Override
     protected boolean warmup(long flags) {
         if (!isFirstRunDone()) return false;
-        return mConnection.warmup(flags);
+        return mConnection.warmup();
     }
 
     @Override
