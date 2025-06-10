@@ -6,22 +6,30 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/recovery_key_store_certificate.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 namespace trusted_vault {
+
 namespace {
 
 // The "/0" suffix is required but ignored.
@@ -31,6 +39,55 @@ constexpr char kUpdateVaultUrl[] =
 constexpr char kListVaultsUrl[] =
     "https://cryptauthvault.googleapis.com/v1/"
     "vaults?use_case=13&challenge_not_required=1";
+
+constexpr char kRecoveryKeyStoreCertFileUrl[] =
+    "https://www.gstatic.com/cryptauthvault/v0/cert.xml";
+
+constexpr char kRecoveryKeyStoreSigFileUrl[] =
+    "https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml";
+
+// The maximum number of bytes that will be downloaded from the above two URLs.
+constexpr size_t kMaxRecoveryKeyStoreCertFetchBodyBytes = 128 * 1024;
+
+static constexpr net::NetworkTrafficAnnotationTag kCertXmlTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("trusted_vault_cert_request",
+                                        R"(
+      semantics {
+        sender: "Trusted Vault Service"
+        description:
+          "Request to the vault service in order to retrieve the public list "
+          "of certificates to perform encryption key operations for Chrome, "
+          "such as Google Password Manager passkey operations"
+        trigger:
+          "Periodically/upon certain non-user controlled events after user "
+          "signs in Chrome profile."
+        data: "None"
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-06-05"
+        user_data {
+          type: NONE
+        }
+        internal {
+          contacts {
+            email: "nsatragno@chromium.org"
+          }
+          contacts {
+            email: "chrome-webauthn@google.com"
+          }
+        }
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "This feature cannot be disabled in settings, but if user signs "
+          "out of Chrome, this request would not be made."
+        chrome_policy {
+          SigninAllowed {
+            policy_options {mode: MANDATORY}
+            SigninAllowed: false
+          }
+        }
+      })");
 
 RecoveryKeyStoreStatus HttpStatusToRecoveryKeyStoreStatus(
     TrustedVaultRequest::HttpStatus http_status) {
@@ -142,6 +199,113 @@ class ListRecoveryKeyStoresRequest : public TrustedVaultConnection::Request {
   std::vector<RecoveryKeyStoreEntry> result_;
 };
 
+// Represents a request to fetch the recovery key store certificates.
+class FetchRecoveryKeyStoreCertificatesRequest
+    : public TrustedVaultConnection::Request {
+ public:
+  // `clock` must outlive this.
+  FetchRecoveryKeyStoreCertificatesRequest(
+      base::Clock* clock,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      RecoveryKeyStoreConnection::FetchRecoveryKeyStoreCertificatesCallback
+          callback)
+      : clock_(clock),
+        url_loader_factory_(std::move(url_loader_factory)),
+        callback_(std::move(callback)) {
+    // Destroying `this` will also destroy the URL loader, which means these
+    // callbacks will never complete. Thus, unretained is fine.
+    file_download_closure_ = base::BarrierClosure(
+        2, base::BindOnce(
+               &FetchRecoveryKeyStoreCertificatesRequest::OnDownloadComplete,
+               base::Unretained(this)));
+    cert_xml_loader_ =
+        Fetch(kRecoveryKeyStoreCertFileUrl,
+              base::BindOnce(
+                  &FetchRecoveryKeyStoreCertificatesRequest::OnFileReceived,
+                  base::Unretained(this), &cert_xml_));
+    sig_xml_loader_ =
+        Fetch(kRecoveryKeyStoreSigFileUrl,
+              base::BindOnce(
+                  &FetchRecoveryKeyStoreCertificatesRequest::OnFileReceived,
+                  base::Unretained(this), &sig_xml_));
+  }
+
+ private:
+  // Fetches `url` and runs `callback` when done.
+  std::unique_ptr<network::SimpleURLLoader> Fetch(
+      const std::string_view url,
+      base::OnceCallback<void(std::optional<std::string>)> callback) {
+    auto network_request = std::make_unique<network::ResourceRequest>();
+    GURL request_url(url);
+    CHECK(request_url.is_valid());
+    network_request->url = std::move(request_url);
+
+    auto loader = network::SimpleURLLoader::Create(std::move(network_request),
+                                                   kCertXmlTrafficAnnotation);
+    loader->SetTimeoutDuration(base::Seconds(10));
+    loader->SetURLLoaderFactoryOptions(
+        network::mojom::kURLLoadOptionBlockAllCookies);
+    loader->DownloadToString(url_loader_factory_.get(), std::move(callback),
+                             kMaxRecoveryKeyStoreCertFetchBodyBytes);
+    return loader;
+  }
+
+  // Called after a fetch request finishes.
+  void OnFileReceived(std::string* destination,
+                      std::optional<std::string> file) {
+    if (!file) {
+      FinishRequestAndMaybeDestroySelf(base::unexpected(
+          RecoveryKeyStoreCertificateFetchStatus::kNetworkError));
+      return;
+    }
+    *destination = std::move(*file);
+    file_download_closure_.Run();
+  }
+
+  // Called after both `sig_xml_` and `cert_xml_` have been downloaded.
+  void OnDownloadComplete() {
+    std::optional<RecoveryKeyStoreCertificate> certificate =
+        RecoveryKeyStoreCertificate::Parse(cert_xml_, sig_xml_, clock_->Now());
+    if (certificate) {
+      FinishRequestAndMaybeDestroySelf(std::move(*certificate));
+      return;
+    }
+    FinishRequestAndMaybeDestroySelf(
+        base::unexpected(RecoveryKeyStoreCertificateFetchStatus::kParseError));
+  }
+
+  void FinishRequestAndMaybeDestroySelf(
+      base::expected<RecoveryKeyStoreCertificate,
+                     RecoveryKeyStoreCertificateFetchStatus> result) {
+    RecoveryKeyStoreCertificatesFetchStatusForUMA status =
+        RecoveryKeyStoreCertificatesFetchStatusForUMA::kSuccess;
+    if (!result.has_value()) {
+      switch (result.error()) {
+        case RecoveryKeyStoreCertificateFetchStatus::kNetworkError:
+          status = RecoveryKeyStoreCertificatesFetchStatusForUMA::kNetworkError;
+          break;
+        case RecoveryKeyStoreCertificateFetchStatus::kParseError:
+          status = RecoveryKeyStoreCertificatesFetchStatusForUMA::kParseError;
+          break;
+        case RecoveryKeyStoreCertificateFetchStatus::kSuccess:
+          NOTREACHED();
+      }
+    }
+    RecordRecoveryKeyStoreFetchCertificatesStatus(status);
+    std::move(callback_).Run(std::move(result));
+  }
+
+  raw_ptr<base::Clock> clock_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  RecoveryKeyStoreConnection::FetchRecoveryKeyStoreCertificatesCallback
+      callback_;
+  base::RepeatingClosure file_download_closure_;
+  std::unique_ptr<network::SimpleURLLoader> cert_xml_loader_;
+  std::unique_ptr<network::SimpleURLLoader> sig_xml_loader_;
+  std::string cert_xml_;
+  std::string sig_xml_;
+};
+
 }  // namespace
 
 RecoveryKeyStoreEntry::RecoveryKeyStoreEntry() = default;
@@ -188,6 +352,14 @@ RecoveryKeyStoreConnectionImpl::ListRecoveryKeyStores(
   return std::make_unique<ListRecoveryKeyStoresRequest>(
       account_info, URLLoaderFactory(), access_token_fetcher_->Clone(),
       std::move(callback));
+}
+
+std::unique_ptr<RecoveryKeyStoreConnectionImpl::Request>
+RecoveryKeyStoreConnectionImpl::FetchRecoveryKeyStoreCertificates(
+    base::Clock* clock,
+    FetchRecoveryKeyStoreCertificatesCallback callback) {
+  return std::make_unique<FetchRecoveryKeyStoreCertificatesRequest>(
+      clock, URLLoaderFactory(), std::move(callback));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

@@ -82,6 +82,17 @@ enum class RecoveryKeyStoreURLFetchReasonForUMA {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(RecoveryKeyStoreCertificatesFetchStatus)
+enum class RecoveryKeyStoreCertificatesFetchStatusForUMA {
+  kSuccess = 0,
+  kNetworkError = 1,
+  kParseError = 2,
+  kMaxValue = kParseError,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:RecoveryKeyStoreCertificatesFetchStatus)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(TrustedVaultDownloadKeysStatus)
 enum class TrustedVaultDownloadKeysStatusForUMA {
   kSuccess = 0,
@@ -180,6 +191,10 @@ void RecordRecoveryKeyStoreURLFetchResponse(
     RecoveryKeyStoreURLFetchReasonForUMA reason,
     int http_response_code,
     int net_error);
+
+// Records the result of fetching recovery key store certificates.
+void RecordRecoveryKeyStoreFetchCertificatesStatus(
+    RecoveryKeyStoreCertificatesFetchStatusForUMA status);
 
 // Records the outcome of trying to download keys from the server.
 void RecordTrustedVaultDownloadKeysStatus(

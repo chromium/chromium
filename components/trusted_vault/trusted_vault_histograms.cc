@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/trusted_vault/local_recovery_factor.h"
+#include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
@@ -168,6 +169,12 @@ void RecordRecoveryKeyStoreURLFetchResponse(
       base::StrCat({"TrustedVault.RecoveryKeyStoreURLFetchResponse", ".",
                     reason_suffix}),
       value);
+}
+
+void RecordRecoveryKeyStoreFetchCertificatesStatus(
+    RecoveryKeyStoreCertificatesFetchStatusForUMA status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.RecoveryKeyStoreCertificatesFetchStatus", status);
 }
 
 void RecordTrustedVaultDownloadKeysStatus(

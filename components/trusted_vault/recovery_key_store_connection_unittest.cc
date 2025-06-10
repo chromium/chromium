@@ -9,17 +9,25 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/recovery_key_store_connection_impl.h"
+#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
+#include "components/trusted_vault/test/recovery_key_store_certificate_test_util.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -46,6 +54,11 @@ using UpdateRecoveryKeyStoreFuture =
     base::test::TestFuture<RecoveryKeyStoreStatus>;
 using ListVaultsFuture = base::test::TestFuture<
     base::expected<std::vector<RecoveryKeyStoreEntry>, RecoveryKeyStoreStatus>>;
+using FetchCertCallback = base::MockCallback<
+    RecoveryKeyStoreConnection::FetchRecoveryKeyStoreCertificatesCallback>;
+using FetchCertFuture = base::test::TestFuture<
+    base::expected<RecoveryKeyStoreCertificate,
+                   RecoveryKeyStoreCertificateFetchStatus>>;
 
 constexpr char kPasskeysApplicationKeyName[] =
     "security_domain_member_key_encrypted_locally";
@@ -61,8 +74,14 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
       "https://cryptauthvault.googleapis.com/v1/vaults/0?alt=proto";
   static constexpr char kListVaultsUrl[] =
       "https://cryptauthvault.googleapis.com/v1/vaults";
+  static constexpr char kRecoveryKeyStoreCertFileUrl[] =
+      "https://www.gstatic.com/cryptauthvault/v0/cert.xml";
+  static constexpr char kRecoveryKeyStoreSigFileUrl[] =
+      "https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml";
 
-  RecoveryKeyStoreConnectionImplTest() = default;
+  RecoveryKeyStoreConnectionImplTest() {
+    clock_.SetNow(test_certs::kValidCertificateDate);
+  }
   ~RecoveryKeyStoreConnectionImplTest() override = default;
 
   RecoveryKeyStoreConnection* connection() { return connection_.get(); }
@@ -122,6 +141,8 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
                   "test access token",
                   /*expiration_time_param=*/base::Time::Max(),
                   /*id_token=*/"")));
+
+  base::SimpleTestClock clock_;
 };
 
 TEST_F(RecoveryKeyStoreConnectionImplTest,
@@ -314,6 +335,65 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
   EXPECT_CALL(callback,
               Run(Eq(base::unexpected(RecoveryKeyStoreStatus::kOtherError))));
   SimulateResponse(kListVaultsUrl, net::HTTP_OK, "This is not a proto");
+}
+
+TEST_F(RecoveryKeyStoreConnectionImplTest,
+       ShouldHandleNetworkErrorDuringFetch) {
+  for (const std::string_view error_url :
+       {kRecoveryKeyStoreSigFileUrl, kRecoveryKeyStoreCertFileUrl}) {
+    base::HistogramTester histogram_tester;
+    FetchCertCallback callback;
+    std::unique_ptr<TrustedVaultConnection::Request> request =
+        connection()->FetchRecoveryKeyStoreCertificates(&clock_,
+                                                        callback.Get());
+    ASSERT_THAT(request, NotNull());
+    EXPECT_CALL(callback,
+                Run(Eq(base::unexpected(
+                    RecoveryKeyStoreCertificateFetchStatus::kNetworkError))));
+    SimulateNetworkError(error_url, net::ERR_FAILED);
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.RecoveryKeyStoreCertificatesFetchStatus",
+        RecoveryKeyStoreCertificatesFetchStatusForUMA::kNetworkError, 1);
+  }
+}
+
+TEST_F(RecoveryKeyStoreConnectionImplTest,
+       ShouldHandleParseErrorDuringFetchCerts) {
+  base::HistogramTester histogram_tester;
+  FetchCertCallback callback;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->FetchRecoveryKeyStoreCertificates(&clock_, callback.Get());
+  ASSERT_THAT(request, NotNull());
+  EXPECT_CALL(callback,
+              Run(Eq(base::unexpected(
+                  RecoveryKeyStoreCertificateFetchStatus::kParseError))));
+  SimulateResponse(kRecoveryKeyStoreCertFileUrl, net::HTTP_OK,
+                   "This is not a certificate file");
+  SimulateResponse(kRecoveryKeyStoreSigFileUrl, net::HTTP_OK,
+                   test_certs::kSigXml);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.RecoveryKeyStoreCertificatesFetchStatus",
+      RecoveryKeyStoreCertificatesFetchStatusForUMA::kParseError, 1);
+}
+
+TEST_F(RecoveryKeyStoreConnectionImplTest, ShouldFetchAndParseCertificates) {
+  base::HistogramTester histogram_tester;
+  FetchCertFuture future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->FetchRecoveryKeyStoreCertificates(&clock_,
+                                                      future.GetCallback());
+  SimulateResponse(kRecoveryKeyStoreCertFileUrl, net::HTTP_OK,
+                   test_certs::kCertXml);
+  SimulateResponse(kRecoveryKeyStoreSigFileUrl, net::HTTP_OK,
+                   test_certs::kSigXml);
+  base::expected<RecoveryKeyStoreCertificate,
+                 RecoveryKeyStoreCertificateFetchStatus>
+      result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->endpoint_public_keys().size(), 3u);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.RecoveryKeyStoreCertificatesFetchStatus",
+      RecoveryKeyStoreCertificatesFetchStatusForUMA::kSuccess, 1);
 }
 
 }  // namespace

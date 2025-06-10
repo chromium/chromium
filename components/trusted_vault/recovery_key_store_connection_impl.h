@@ -14,6 +14,10 @@
 
 struct CoreAccountInfo;
 
+namespace base {
+class Clock;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -36,6 +40,9 @@ class RecoveryKeyStoreConnectionImpl : public RecoveryKeyStoreConnection {
   std::unique_ptr<Request> ListRecoveryKeyStores(
       const CoreAccountInfo& account_info,
       ListRecoveryKeyStoresCallback callback) override;
+  std::unique_ptr<Request> FetchRecoveryKeyStoreCertificates(
+      base::Clock* clock,
+      FetchRecoveryKeyStoreCertificatesCallback callback) override;
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactory();

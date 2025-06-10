@@ -153,6 +153,8 @@ static_library("test_support") {
     "test/fake_trusted_vault_client.h",
     "test/mock_recovery_key_store_connection.cc",
     "test/mock_recovery_key_store_connection.h",
+    "test/recovery_key_store_certificate_test_util.cc",
+    "test/recovery_key_store_certificate_test_util.h",
   ]
 
   deps = [

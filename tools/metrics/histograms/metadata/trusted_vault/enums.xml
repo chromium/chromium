@@ -33,6 +33,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Irrecoverable"/>
 </enum>
 
+<!-- LINT.IfChange(RecoveryKeyStoreCertificatesFetchStatus) -->
+
+<enum name="RecoveryKeyStoreCertificatesFetchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Failed to parse or validate certificates"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:RecoveryKeyStoreCertificatesFetchStatus) -->
+
 <!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
 
 <enum name="TrustedVaultDownloadKeysStatus">
