@@ -63,6 +63,7 @@
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
@@ -273,8 +274,9 @@ void OmniboxEditModel::RestoreState(const State* state) {
   // Restore the autocomplete controller's input, or clear it if this is a new
   // tab.
   input_ = state ? state->autocomplete_input : AutocompleteInput();
-  if (!state)
+  if (!state) {
     return;
+  }
 
   // The tab-management system saves the last-focused control for each tab and
   // restores it. That operation also updates this edit model's focus_state_
@@ -286,9 +288,20 @@ void OmniboxEditModel::RestoreState(const State* state) {
   // However, in some circumstances (if the last-focused control was destroyed),
   // the Omnibox will be focused by default, and the edit model's saved state
   // may be invalid. We make a check to guard against that.
-  bool saved_focus_state_invalid = focus_state_ == OMNIBOX_FOCUS_VISIBLE &&
-                                   state->focus_state == OMNIBOX_FOCUS_NONE;
-  if (!saved_focus_state_invalid) {
+  //
+  // The experiment with `features::kOmniboxRestoreInvisibleFocusOnly` explores
+  // only restoring focus when needed due to one of the states being the
+  // "invisible focus" state.
+  const bool saved_focus_state_invalid =
+      focus_state_ == OMNIBOX_FOCUS_VISIBLE &&
+      state->focus_state == OMNIBOX_FOCUS_NONE;
+  const bool invisible_focus_changed =
+      focus_state_ == OMNIBOX_FOCUS_INVISIBLE ||
+      state->focus_state == OMNIBOX_FOCUS_INVISIBLE;
+
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxRestoreInvisibleFocusOnly)
+          ? invisible_focus_changed
+          : !saved_focus_state_invalid) {
     SetFocusState(state->focus_state, OMNIBOX_FOCUS_CHANGE_TAB_SWITCH);
   }
 

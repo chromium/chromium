@@ -452,4 +452,10 @@ BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions,
              "PreconnectNonSearchOmniboxSuggestions",
              DISABLED);
 
+// Enables restricting omnibox focus restoration to only situations that involve
+// "invisible focus".
+BASE_FEATURE(kOmniboxRestoreInvisibleFocusOnly,
+             "OmniboxRestoreInvisibleFocusOnly",
+             DISABLED);
+
 }  // namespace omnibox

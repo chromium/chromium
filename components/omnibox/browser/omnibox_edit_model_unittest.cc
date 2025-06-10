@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -344,6 +345,10 @@ TEST_F(OmniboxEditModelTest, UnelideDoesNothingWhenFullURLAlreadyShown) {
 // The tab-switching system sometimes focuses the Omnibox even if it was not
 // previously focused. In those cases, ignore the saved focus state.
 TEST_F(OmniboxEditModelTest, IgnoreInvalidSavedFocusStates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {omnibox::kOmniboxRestoreInvisibleFocusOnly});
+
   // The Omnibox starts out unfocused. Save that state.
   ASSERT_FALSE(model()->has_focus());
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
@@ -356,6 +361,47 @@ TEST_F(OmniboxEditModelTest, IgnoreInvalidSavedFocusStates) {
   model()->RestoreState(&state);
   EXPECT_TRUE(model()->has_focus());
   EXPECT_TRUE(model()->is_caret_visible());
+}
+
+TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForVisibleState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxRestoreInvisibleFocusOnly}, {});
+
+  // The Omnibox starts out focused. Save that state.
+  model()->OnSetFocus(false);
+  ASSERT_TRUE(model()->has_focus());
+  OmniboxEditModel::State state = model()->GetStateForTabSwitch();
+  ASSERT_EQ(OMNIBOX_FOCUS_VISIBLE, state.focus_state);
+
+  // Remove focus from the Omnibox and confirm it no longer has focus.
+  model()->OnKillFocus();
+  ASSERT_FALSE(model()->has_focus());
+
+  // Restoring the old saved state should not clobber the model's focus state.
+  model()->RestoreState(&state);
+  EXPECT_FALSE(model()->has_focus());
+}
+
+TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForInvisibleState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxRestoreInvisibleFocusOnly}, {});
+
+  // The Omnibox starts out invisibly focused. Save that state.
+  model()->OnSetFocus(false);
+  model()->SetCaretVisibility(false);
+  ASSERT_TRUE(model()->has_focus());
+  OmniboxEditModel::State state = model()->GetStateForTabSwitch();
+  ASSERT_EQ(OMNIBOX_FOCUS_INVISIBLE, state.focus_state);
+
+  // Remove focus from the Omnibox and confirm it no longer has focus.
+  model()->OnKillFocus();
+  ASSERT_FALSE(model()->has_focus());
+
+  // Restoring the old saved state should clobber the model's focus state.
+  model()->RestoreState(&state);
+  EXPECT_TRUE(model()->has_focus());
 }
 
 // Tests ConsumeCtrlKey() consumes ctrl key when down, but does not affect ctrl
