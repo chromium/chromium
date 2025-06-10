@@ -388,6 +388,61 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
 
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
+                       AsyncDnsDisabledWhenZTDNSEnabled) {
+  // This test focuses on the interaction of ZTDNS with the AsyncDns feature.
+  // The StubResolverConfigReader constructor, which runs during
+  // SetUpOnMainThread, sets the *default* value of
+  // prefs::kBuiltInDnsClientEnabled based on ShouldEnableAsyncDns(). To test
+  // the effect of ZTDNS, we set the override *before* a relevant
+  // StubResolverConfigReader instance evaluates this default. We achieve this
+  // by creating a new instance after setting the override.
+
+  // Simulate ZTDNS is ON
+  StubResolverConfigReader::SetZTDNSEnabledForTesting(true);
+
+  // Create a new StubResolverConfigReader instance. Its constructor will use
+  // the ZTDNS override when calling ShouldEnableAsyncDns() to set the default
+  // value for prefs::kBuiltInDnsClientEnabled in the local_state's
+  // PrefRegistry. We pass 'true' for set_up_pref_defaults to ensure this
+  // happens.
+  StubResolverConfigReader test_config_reader(g_browser_process->local_state(),
+                                              true /* set_up_pref_defaults */);
+
+  PrefService* local_state = g_browser_process->local_state();
+
+  // Case 1: AsyncDns feature is ON.
+  // With ZTDNS enabled (mocked), ShouldEnableAsyncDns() should return false.
+  // Therefore, the default for kBuiltInDnsClientEnabled should be false.
+  // Case 2: AsyncDns feature is OFF.
+  // ShouldEnableAsyncDns() should return false (regardless of ZTDNS).
+  // Therefore, the default for kBuiltInDnsClientEnabled should be false.
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled))
+      << "kBuiltInDnsClientEnabled should default to false when AsyncDns "
+         "feature is off.";
+  EXPECT_FALSE(test_config_reader.GetInsecureStubResolverEnabled())
+      << "GetInsecureStubResolverEnabled should be false when AsyncDns "
+         "feature is off.";
+
+  // Sanity check SecureDnsConfig (DoH settings should be unaffected by this
+  // specific test, assuming default DoH mode 'automatic' and no templates,
+  // leading to 'off' effectively unless other conditions for 'automatic' are
+  // met, which are not the focus here). This part primarily ensures
+  // GetSecureDnsConfiguration can be called without crashing.
+  SecureDnsConfig secure_dns_config =
+      test_config_reader.GetSecureDnsConfiguration(
+          false /* force_check_parental_controls_for_automatic_mode */);
+  // Default DoH mode is kAutomatic, which without explicit templates often
+  // resolves to effectively off for the purpose of doh_servers(), unless probes
+  // succeed. The exact mode isn't the primary assert here, but rather that
+  // GetInsecureStubResolverEnabled is correct. Depending on default DoH
+  // settings, mode might be kAutomatic or kOff.
+  EXPECT_TRUE(secure_dns_config.mode() == net::SecureDnsMode::kAutomatic ||
+              secure_dns_config.mode() == net::SecureDnsMode::kOff);
+}
+#endif
+
 INSTANTIATE_TEST_SUITE_P(All,
                          StubResolverConfigReaderBrowsertest,
                          ::testing::Bool());
