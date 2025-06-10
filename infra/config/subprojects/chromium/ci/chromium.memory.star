@@ -691,7 +691,7 @@ linux_memory_builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 35,
+                    shards = 40,
                 ),
             ),
             "content_browsertests": targets.mixin(
