@@ -246,7 +246,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
         password_manager::features::kIOSStatelessFillDataFlow);
   }
 
-  if ([self isRunningTest:@selector(testDisplayRecoveryPassword)]) {
+  if ([self isRunningTest:@selector(testDisplayRecoveryPassword)] ||
+      [self isRunningTest:@selector
+            (testAvailableContextMenuItemsForRecoveryPassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSFillRecoveryPassword);
   }
@@ -1147,6 +1149,22 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // `grey_sufficientlyVisible` once a recovery password will have been added.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kHistorySymbol)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that only the expected options are available in the context menu when
+// opened from a recovery password suggestion.
+- (void)testAvailableContextMenuItemsForRecoveryPassword {
+  // TODO(crbug.com/422206607): Add a PasswordForm with a recovery password.
+  [self saveGenericPasswordAndLoadLoginPage];
+
+  // Tap on a field to trigger the bottom sheet.
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  // TODO(crbug.com/422206607): Once a recovery password will have been added,
+  // make sure to long press the recovery password suggestion and verify that
+  // only the "Password Manager" context menu item is available.
+  LongPressElementOnceVisible(grey_accessibilityID(@"user"));
 }
 
 @end

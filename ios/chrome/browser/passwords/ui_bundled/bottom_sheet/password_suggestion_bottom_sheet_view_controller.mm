@@ -160,6 +160,12 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   [self.handler viewDidDisappear];
 }
 
+#pragma mark - Getters
+
+- (NSArray<FormSuggestion*>*)suggestions {
+  return _suggestions;
+}
+
 #pragma mark - PasswordSuggestionBottomSheetConsumer
 
 - (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions
@@ -203,16 +209,22 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
                                  children:@[
                                    [strongSelf openPasswordManagerAction]
                                  ]]];
-      [menuElements
-          addObject:[UIMenu
-                        menuWithTitle:@""
-                                image:nil
-                           identifier:nil
-                              options:UIMenuOptionsDisplayInline
-                             children:@[
-                               [strongSelf
-                                   openPasswordDetailsForIndexPath:indexPath]
-                             ]]];
+
+      // The option to open password details shouldn't be available for recovery
+      // passwords as they are not displayed in the Password Manager for now.
+      FormSuggestion* formSuggestion =
+          [strongSelf.suggestions objectAtIndex:indexPath.row];
+      if (!formSuggestion.metadata.is_recovery_password) {
+        [menuElements
+            addObject:[UIMenu
+                          menuWithTitle:@""
+                                  image:nil
+                             identifier:nil
+                                options:UIMenuOptionsDisplayInline
+                               children:@[ [strongSelf
+                                            openPasswordDetailsForSuggestion:
+                                                formSuggestion] ]]];
+      }
     }
 
     return [UIMenu menuWithTitle:@"" children:menuElements];
@@ -369,11 +381,10 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
               handler:passwordManagerButtonTapHandler];
 }
 
-// Creates the UI action used to open the password details for form suggestion
-// at index path.
-- (UIAction*)openPasswordDetailsForIndexPath:(NSIndexPath*)indexPath {
+// Creates the UI action used to open the password details for the given
+// `formSuggestion`.
+- (UIAction*)openPasswordDetailsForSuggestion:(FormSuggestion*)formSuggestion {
   __weak __typeof(self) weakSelf = self;
-  FormSuggestion* formSuggestion = [_suggestions objectAtIndex:indexPath.row];
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Details.
     weakSelf.disableBottomSheetOnExit = NO;
