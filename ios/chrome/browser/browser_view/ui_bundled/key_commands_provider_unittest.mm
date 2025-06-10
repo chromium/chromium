@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -41,7 +42,6 @@
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -474,7 +474,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_BackForwardWithMultipleEntries) {
 // Checks whether KeyCommandsProvider can perform the actions that are only
 // available when there are at least one closed tab.
 TEST_F(KeyCommandsProviderTest, CanPerform_ReopenLastClosedTab) {
-  ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+  IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser_.get());
   // No tabs.
   ASSERT_EQ(web_state_list_->count(), 0);
   EXPECT_FALSE(CanPerform(@"keyCommand_reopenLastClosedTab"));

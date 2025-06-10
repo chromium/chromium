@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "ios_chrome_session_tab_helper.h",
     "ios_chrome_session_tab_helper.mm",
+    "ios_chrome_tab_restore_browser_agent.h",
+    "ios_chrome_tab_restore_browser_agent.mm",
     "ios_chrome_tab_restore_service_client.h",
     "ios_chrome_tab_restore_service_client.mm",
     "ios_chrome_tab_restore_service_factory.cc",
@@ -19,6 +21,8 @@ source_set("model") {
   ]
   deps = [
     ":serialisation",
+    ":session_restoration_service",
+    ":session_restoration_service_factory",
     ":session_util",
     "//base",
     "//components/tab_groups",

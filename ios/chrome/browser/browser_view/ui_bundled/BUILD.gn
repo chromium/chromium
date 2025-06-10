@@ -410,7 +410,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator",
-    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/ui_bundled",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/toolbar/ui_bundled:coordinator",

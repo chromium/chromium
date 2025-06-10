@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -68,7 +68,7 @@ class TabsSearchServiceTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+    IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser_.get());
 
     browser_list_->AddBrowser(browser_.get());
 
