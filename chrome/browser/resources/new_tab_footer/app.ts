@@ -48,7 +48,7 @@ export enum FooterElement {
   OTHER = 0,
   CUSTOMIZE_BUTTON = 1,
   EXTENSION_NAME = 2,
-  MAX_VALUE = CUSTOMIZE_BUTTON,
+  MAX_VALUE = EXTENSION_NAME,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
