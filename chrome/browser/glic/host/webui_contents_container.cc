@@ -66,7 +66,9 @@ void WebUIContentsContainer::RequestMediaAccessPermission(
 
 void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));
+  if (status != base::TERMINATION_STATUS_NORMAL_TERMINATION) {
+    base::RecordAction(base::UserMetricsAction("GlicSessionWebUiCrash"));
+  }
   auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       web_contents_->GetBrowserContext());
   keyed_service->CloseUI();
