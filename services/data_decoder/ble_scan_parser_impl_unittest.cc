@@ -319,7 +319,7 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithBadLengthPacket) {
         // A packet length of 1 should also be considered invalid and cause
         // parsing to fail.
         // 0x01 is under the minimum packet length.
-        0x01};
+        0x01, 0x00};
     ASSERT_FALSE(this->ParseBleScan(kRawData));
   }
 
