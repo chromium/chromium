@@ -9,7 +9,6 @@
 
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "extensions/buildflags/buildflags.h"
 
