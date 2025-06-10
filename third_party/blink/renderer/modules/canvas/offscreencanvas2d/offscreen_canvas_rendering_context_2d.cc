@@ -176,7 +176,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   if (host == nullptr) [[unlikely]] {
     return nullptr;
   }
-  return host->GetOrCreateResourceProvider();
+  return host->GetOrCreateResourceProviderForCanvas2D();
 }
 
 CanvasResourceProvider*

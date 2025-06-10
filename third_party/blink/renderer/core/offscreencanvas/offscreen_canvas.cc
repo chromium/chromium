@@ -492,7 +492,7 @@ bool OffscreenCanvas::EnableAccelerationForCanvas2D() {
   // Note that `OffscreenCanvas::IsAccelerated` above is not equivalent! This
   // returns false if the canvas resource provider doesn't exist yet, even if it
   // will be an accelerated canvas once it has been created.
-  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
+  CanvasResourceProvider* provider = GetOrCreateResourceProviderForCanvas2D();
   if (!provider) {
     return false;
   }
@@ -531,6 +531,12 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
       frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
   }
   return frame_dispatcher_.get();
+}
+
+CanvasResourceProvider*
+OffscreenCanvas::GetOrCreateResourceProviderForCanvas2D() {
+  CHECK(IsRenderingContext2D());
+  return GetOrCreateResourceProvider();
 }
 
 CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
