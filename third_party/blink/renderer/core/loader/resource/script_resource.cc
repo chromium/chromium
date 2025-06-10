@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -208,11 +209,11 @@ void ScriptResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                                   WebProcessMemoryDump* memory_dump) const {
   Resource::OnMemoryDump(level_of_detail, memory_dump);
   {
-    const String name = GetMemoryDumpName() + "/decoded_script";
+    const String name = StrCat({GetMemoryDumpName(), "/decoded_script"});
     source_text_.OnMemoryDump(memory_dump, name);
   }
   if (cached_metadata_handler_) {
-    const String name = GetMemoryDumpName() + "/code_cache";
+    const String name = StrCat({GetMemoryDumpName(), "/code_cache"});
     cached_metadata_handler_->OnMemoryDump(memory_dump, name);
   }
 }

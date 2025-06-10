@@ -2106,7 +2106,7 @@ void DocumentLoader::StartLoadingResponse() {
     frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Malformed multipart archive: " + url_.GetString()));
+        StrCat({"Malformed multipart archive: ", url_.GetString()})));
     FinishedLoading(base::TimeTicks::Now());
     return;
   }
@@ -3538,14 +3538,14 @@ void DocumentLoader::RecordConsoleMessagesForCommit() {
     // TODO(https://crbug.com/340616797): Add which document policy violated in
     // error string, instead of just displaying serialized required document
     // policy.
-    ConsoleError(
-        "Refused to display '" + response_.CurrentRequestUrl().ElidedString() +
-        "' because it violates the following document policy "
-        "required by its embedder: '" +
-        DocumentPolicy::Serialize(frame_policy_.required_document_policy)
-            .value_or("[Serialization Error]")
-            .c_str() +
-        "'.");
+    ConsoleError(StrCat(
+        {"Refused to display '", response_.CurrentRequestUrl().ElidedString(),
+         "' because it violates the following document policy required by its "
+         "embedder: '",
+         DocumentPolicy::Serialize(frame_policy_.required_document_policy)
+             .value_or("[Serialization Error]")
+             .c_str(),
+         "'."}));
   }
 
   // Report the ResourceResponse now that the new Document has been created and

@@ -194,10 +194,9 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
         document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            String("Did not find element expected to be parsed from: <link "
-                   "rel=expect "
-                   "href=\"") +
-                link.FastGetAttribute(html_names::kHrefAttr) + "\">"));
+            StrCat({"Did not find element expected to be parsed from: <link "
+                    "rel=expect href=\"",
+                    link.FastGetAttribute(html_names::kHrefAttr), "\">"})));
       },
       WrapPersistent(document_.Get())));
   element_render_blocking_links_->Clear();

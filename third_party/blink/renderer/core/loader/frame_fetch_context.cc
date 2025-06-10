@@ -1350,8 +1350,8 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kError,
-            "Only fetch keepalive is allowed during onfreeze: " +
-                url.GetString()));
+            StrCat({"Only fetch keepalive is allowed during onfreeze: ",
+                    url.GetString()})));
     return ResourceRequestBlockedReason::kOther;
   }
   std::optional<ResourceRequestBlockedReason> blocked_reason =

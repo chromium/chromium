@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -99,16 +100,16 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
   }
 
   String message;
+  StringView prefix("Unsafe attempt to load URL ");
   if (Url().IsNull()) {
-    message = "Unsafe attempt to load URL " + url.ElidedString() + '.';
-  } else if (url.IsLocalFile() || Url().IsLocalFile()) {
-    message = "Unsafe attempt to load URL " + url.ElidedString() +
-              " from frame with URL " + Url().ElidedString() +
-              ". 'file:' URLs are treated as unique security origins.\n";
+    message = StrCat({prefix, url.ElidedString(), "."});
   } else {
-    message = "Unsafe attempt to load URL " + url.ElidedString() +
-              " from frame with URL " + Url().ElidedString() +
-              ". Domains, protocols and ports must match.\n";
+    message =
+        StrCat({prefix, url.ElidedString(), " from frame with URL ",
+                Url().ElidedString(),
+                url.IsLocalFile() || Url().IsLocalFile()
+                    ? ". 'file:' URLs are treated as unique security origins.\n"
+                    : ". Domains, protocols and ports must match.\n"});
   }
 
   console_logger_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -217,7 +218,7 @@ BaseFetchContext::CanRequestInternal(
       console_logger_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kError,
-          "Not allowed to load local resource: " + url.GetString()));
+          StrCat({"Not allowed to load local resource: ", url.GetString()})));
     }
     RESOURCE_LOADING_DVLOG(1) << "ResourceFetcher::requestResource URL was not "
                                  "allowed by SecurityOrigin::CanDisplay";

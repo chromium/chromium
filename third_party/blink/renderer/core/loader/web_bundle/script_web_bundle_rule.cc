@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -77,7 +78,8 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
         logger->AddConsoleMessage(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            "Invalid top-level key \"" + entry.first + "\" in WebBundle rule.");
+            StrCat({"Invalid top-level key \"", entry.first,
+                    "\" in WebBundle rule."}));
       }
     }
   }

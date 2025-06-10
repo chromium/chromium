@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -71,8 +72,8 @@ ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "A nested bundle is not supported: " +
-              rule.source_url().ElidedString()));
+          StrCat({"A nested bundle is not supported: ",
+                  rule.source_url().ElidedString()})));
     }
     return ScriptWebBundleError(ScriptWebBundleError::Type::kSystemError,
                                 "A nested bundle is not supported.");
@@ -128,17 +129,19 @@ bool ScriptWebBundle::CanHandleRequest(const KURL& url) const {
   DCHECK(bundle_loader_);
   if (!bundle_loader_->GetSecurityOrigin()->IsSameOriginWith(
           SecurityOrigin::Create(url).get())) {
-    OnWebBundleError(url.ElidedString() + " cannot be loaded from WebBundle " +
-                     bundle_loader_->url().ElidedString() +
-                     ": bundled resource must be same origin with the bundle.");
+    OnWebBundleError(
+        StrCat({url.ElidedString(), " cannot be loaded from WebBundle ",
+                bundle_loader_->url().ElidedString(),
+                ": bundled resource must be same origin with the bundle."}));
     return false;
   }
 
   if (!url.GetString().StartsWith(bundle_loader_->url().BaseAsString())) {
     OnWebBundleError(
-        url.ElidedString() + " cannot be loaded from WebBundle " +
-        bundle_loader_->url().ElidedString() +
-        ": bundled resource path must contain the bundle's path as a prefix.");
+        StrCat({url.ElidedString(), " cannot be loaded from WebBundle ",
+                bundle_loader_->url().ElidedString(),
+                ": bundled resource path must contain the bundle's path as a "
+                "prefix."}));
     return false;
   }
   return true;

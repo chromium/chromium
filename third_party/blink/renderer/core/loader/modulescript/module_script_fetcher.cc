@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -92,13 +93,13 @@ std::optional<ResolvedModuleType> ModuleScriptFetcher::WasModuleLoadSuccessful(
     return ResolvedModuleType::kCSS;
   }
 
-  String message =
-      "Failed to load module script: Expected a " +
-      ModuleScriptCreationParams::ModuleTypeToString(expected_module_type) +
-      " module script but the server responded with a MIME type of \"" +
-      resource->GetResponse().HttpContentType() +
-      "\". Strict MIME type checking is enforced for module scripts per HTML "
-      "spec.";
+  String message = StrCat(
+      {"Failed to load module script: Expected a ",
+       ModuleScriptCreationParams::ModuleTypeToString(expected_module_type),
+       " module script but the server responded with a MIME type of \"",
+       resource->GetResponse().HttpContentType(),
+       "\". Strict MIME type checking is enforced for module scripts per HTML "
+       "spec."});
 
   error_messages->push_back(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,

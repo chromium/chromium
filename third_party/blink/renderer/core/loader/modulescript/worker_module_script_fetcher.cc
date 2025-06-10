@@ -224,11 +224,11 @@ void WorkerModuleScriptFetcher::OnStartLoadingBodyWorkerMainScript(
           resource_response.HttpContentType())) {
     HeapVector<Member<ConsoleMessage>> error_messages;
     String message =
-        "Failed to load module script: The server responded with a "
-        "non-JavaScript MIME type of \"" +
-        resource_response.HttpContentType() +
-        "\". Strict MIME type checking is enforced for module scripts per HTML "
-        "spec.";
+        StrCat({"Failed to load module script: The server responded with a "
+                "non-JavaScript MIME type of \"",
+                resource_response.HttpContentType(),
+                "\". Strict MIME type checking is enforced for module scripts "
+                "per HTML spec."});
     error_messages.push_back(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message,

@@ -562,7 +562,8 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kSecurity,
             mojom::ConsoleMessageLevel::kError,
-            "Not allowed to load local resource: " + url.ElidedString()));
+            StrCat(
+                {"Not allowed to load local resource: ", url.ElidedString()})));
     return false;
   }
   return true;
@@ -667,8 +668,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kSecurity,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Not allowed to navigate to " + url.Protocol() +
-                " URL: " + url.ElidedString()));
+            StrCat({"Not allowed to navigate to ", url.Protocol(),
+                    " URL: ", url.ElidedString()})));
     return;
   }
 
@@ -691,8 +692,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kSecurity,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Not allowed to navigate top frame to " + url.Protocol() +
-                " URL: " + url.ElidedString()));
+            StrCat({"Not allowed to navigate top frame to ", url.Protocol(),
+                    " URL: ", url.ElidedString()})));
     return;
   }
 

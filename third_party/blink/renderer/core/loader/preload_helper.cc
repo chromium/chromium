@@ -313,7 +313,7 @@ void PreloadHelper::DnsPrefetchIfNeeded(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kOther,
                 mojom::blink::ConsoleMessageLevel::kVerbose,
-                String("DNS prefetch triggered for " + params.href.Host())),
+                StrCat({"DNS prefetch triggered for ", params.href.Host()})),
             document, frame);
       }
       WebPrescientNetworking* web_prescient_networking =
@@ -344,18 +344,17 @@ void PreloadHelper::PreconnectIfNeeded(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kVerbose,
-              String("Preconnect triggered for ") + params.href.GetString()),
+              StrCat({"Preconnect triggered for ", params.href.GetString()})),
           document, frame);
       if (params.cross_origin != kCrossOriginAttributeNotSet) {
         SendMessageToConsoleForPossiblyNullDocument(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kOther,
                 mojom::blink::ConsoleMessageLevel::kVerbose,
-                String("Preconnect CORS setting is ") +
-                    String(
+                StrCat({"Preconnect CORS setting is ",
                         (params.cross_origin == kCrossOriginAttributeAnonymous)
                             ? "anonymous"
-                            : "use-credentials")),
+                            : "use-credentials"})),
             document, frame);
       }
     }
@@ -533,7 +532,8 @@ void PreloadHelper::PreloadIfNeeded(
   link_fetch_params.SetContentSecurityPolicyNonce(params.nonce);
   Settings* settings = document.GetSettings();
   if (settings && settings->GetLogPreload()) {
-    String message = "Preload triggered for " + url.Host() + url.GetPath();
+    String message =
+        StrCat({"Preload triggered for ", url.Host(), url.GetPath()});
     String fetch_priority_message;
     if (!params.fetch_priority_hint.empty()) {
       mojom::blink::FetchPriorityHint hint =
@@ -555,7 +555,7 @@ void PreloadHelper::PreloadIfNeeded(
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kVerbose,
-        message + fetch_priority_message));
+        StrCat({message, fetch_priority_message})));
   }
   link_fetch_params.SetLinkPreload(true);
   link_fetch_params.SetRenderBlockingBehavior(
@@ -617,8 +617,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        String("<link rel=modulepreload> has an invalid `as` value " +
-               params.as)));
+        StrCat({"<link rel=modulepreload> has an invalid `as` value ",
+                params.as})));
     // This triggers the same logic as Step 11 asynchronously, which will fire
     // the error event.
     if (client) {
@@ -643,8 +643,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "<link rel=modulepreload> has an invalid `href` value " +
-            params.href.GetString()));
+        StrCat({"<link rel=modulepreload> has an invalid `href` value ",
+                params.href.GetString()})));
     return;
   }
 
@@ -719,8 +719,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kVerbose,
-        "Module preload triggered for " + params.href.Host() +
-            params.href.GetPath()));
+        StrCat({"Module preload triggered for ", params.href.Host(),
+                params.href.GetPath()})));
   }
 
   // Asynchronously continue processing after
