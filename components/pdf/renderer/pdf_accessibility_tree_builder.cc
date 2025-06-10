@@ -458,12 +458,8 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
     bool ocr_block_end = !text_run.is_searchified && ocr_block;
     if (ocr_block_start || ocr_block_end) {
       // If already inside a block, end it.
-      // The searchifier adds the text at the exact position that it is seen in
-      // the image and does not deal with paragraphs or other structures.
-      // The function that creates the text runs only considers text positions
-      // and separates the blocks based on that. Therefore there can be cases
-      // that OCR text will be added in the middle of a block.
-      // TODO(crbug.com/360803943): Add browser tests to verify.
+      // PDF searchifier only processes pages that have no text, hence OCR text
+      // is never added in the middle of a paragraph.
       if (block_node) {
         BuildStaticNode(&static_text_node, &static_text);
         block_node = nullptr;
@@ -1214,9 +1210,8 @@ void PdfAccessibilityTreeBuilder::AddRemainingAnnotations(
   for (size_t i = current_image_index_; i < images_->size(); i++) {
     const chrome_pdf::AccessibilityImageInfo& image_info = (*images_)[i];
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    // Drop the image if it's OCRed.
-    // TODO(crbug.com/360803943): Look into the case with more than one image
-    // and only one of them OCRed.
+    // Drop the image if it's OCRed. PDF Searchify either OCRs all images on a
+    // page, or none of them.
     if (ocr_applied) {
       continue;
     }

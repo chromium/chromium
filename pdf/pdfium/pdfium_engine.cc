@@ -4377,6 +4377,9 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
 
   // TODO(crbug.com/40066441): Explore heuristics to run OCR on pages with large
   // images and a little text.
+  // Note that `PdfAccessibilityTreeBuilder` relies on this heuristic about
+  // pages that are searchified. If this is changed, verify it's also compatible
+  // with that.
   bool page_has_text = page->GetCharCount() != 0;
 
   // Report metric only once for each page. Note that it is possible to reach
