@@ -141,7 +141,7 @@ ui::GestureEvent CreateTestGestureEvent(const ui::GestureEventDetails& details,
 
 std::unique_ptr<NativeFrameView> CreateMinimumSizeFrameView(Widget* frame) {
   auto frame_view = std::make_unique<ConfigurableTestFrameView>(frame);
-  frame_view->SetMinimumSize(gfx::Size(300, 400));
+  frame_view->set_minimum_size(gfx::Size(300, 400));
   return std::move(frame_view);
 }
 

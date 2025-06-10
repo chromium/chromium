@@ -33,8 +33,8 @@ class ConfigurableTestFrameView : public NativeFrameView {
   ConfigurableTestFrameView& operator=(const ConfigurableTestFrameView&) =
       delete;
 
-  void SetMinimumSize(const gfx::Size& size) { minimum_size_ = size; }
-  void SetHitTestResult(int result) { hit_test_result_ = result; }
+  void set_minimum_size(const gfx::Size& size) { minimum_size_ = size; }
+  void set_hit_test_result(int result) { hit_test_result_ = result; }
   bool fullscreen_layout_called() { return fullscreen_layout_caled_; }
   void set_client_view_margin(const gfx::Size& margin) {
     client_view_margin_ = margin;

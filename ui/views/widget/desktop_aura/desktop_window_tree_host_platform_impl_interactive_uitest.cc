@@ -350,7 +350,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, HitTest) {
 
     // Set the desired hit test result value, which will be returned, when
     // WindowEventFilter starts to perform hit testing.
-    frame_view->SetHitTestResult(hittest);
+    frame_view->set_hit_test_result(hittest);
 
     gfx::Rect bounds = window->GetBoundsInScreen();
 
@@ -432,7 +432,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   auto* frame_view = delegate_->frame_view();
   // Set the desired hit test result value, which will be returned, when
   // WindowEventFilter starts to perform hit testing.
-  frame_view->SetHitTestResult(HTCAPTION);
+  frame_view->set_hit_test_result(HTCAPTION);
 
   host_->ResetCalledMaximize();
 
@@ -474,20 +474,20 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   auto* frame_view = delegate_->frame_view();
 
   if (use_touch_event()) {
-    frame_view->SetHitTestResult(HTCLIENT);
+    frame_view->set_hit_test_result(HTCLIENT);
     ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 
-    frame_view->SetHitTestResult(HTCLIENT);
+    frame_view->set_hit_test_result(HTCLIENT);
     details.set_tap_count(2);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
   } else {
-    frame_view->SetHitTestResult(HTCLIENT);
+    frame_view->set_hit_test_result(HTCLIENT);
     int flags = ui::EF_LEFT_MOUSE_BUTTON;
     GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
 
-    frame_view->SetHitTestResult(HTCLIENT);
+    frame_view->set_hit_test_result(HTCLIENT);
     flags |= ui::EF_IS_DOUBLE_CLICK;
     GenerateAndDispatchClickMouseEvent(gfx::Point(), flags);
   }
@@ -515,11 +515,11 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
 
   auto* frame_view = delegate_->frame_view();
 
-  frame_view->SetHitTestResult(HTCLIENT);
+  frame_view->set_hit_test_result(HTCLIENT);
   int flags_left_button = ui::EF_LEFT_MOUSE_BUTTON;
   GenerateAndDispatchClickMouseEvent(gfx::Point(), flags_left_button);
 
-  frame_view->SetHitTestResult(HTCAPTION);
+  frame_view->set_hit_test_result(HTCAPTION);
   GenerateAndDispatchClickMouseEvent(gfx::Point(), ui::EF_RIGHT_MOUSE_BUTTON);
   EXPECT_FALSE(host_->called_maximize());
 
