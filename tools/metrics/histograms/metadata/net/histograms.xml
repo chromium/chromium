@@ -7478,7 +7478,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TCPSocket.PortReuseTimeWindows.{IPType}.{Result}"
+<histogram name="Net.TCPSocket.PortReuseTimeWindows2.{IPType}.{Result}"
     units="ms" expires_after="2025-12-01">
   <owner>arichiv@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
@@ -7490,6 +7490,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded once for each attempted re-use of an address/port for TCP on
     Windows via TCPSocketWin::DoConnectComplete.
+
+    This second version of the histogram uses UmaHistogramLongTimes100 where the
+    original used UmaHistogramTimes, which was insufficient.
 
     {IPType}
 

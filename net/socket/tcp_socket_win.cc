@@ -154,8 +154,8 @@ void RecordSocketConnectForReuseMetrics(TCPSocketWin* socket, bool success) {
   } else if (local_address.address().IsLinkLocal()) {
     ip_address_type = "LinkLocal";
   }
-  base::UmaHistogramTimes(
-      base::JoinString({"Net.TCPSocket.PortReuseTimeWindows", ip_address_type,
+  base::UmaHistogramLongTimes100(
+      base::JoinString({"Net.TCPSocket.PortReuseTimeWindows2", ip_address_type,
                         success ? "Success" : "Failure"},
                        "."),
       base::Time::Now() - last_closed_after_successful_open);
