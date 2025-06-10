@@ -69,6 +69,7 @@
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/url_constants.h"
 
 #if defined(USE_AURA)
@@ -531,7 +532,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
 
   content::WebContents* contents = browser_view()->GetActiveWebContents();
   auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "MessageBoxView");
   TabModalConfirmDialog::Create(std::move(delegate), contents);
+  ASSERT_TRUE(waiter.WaitIfNeededAndGet());
 
   // The tab modal dialog should be in the accessibility tree; everything else
   // should be hidden. So we expect an "OK" button and no reload button.
