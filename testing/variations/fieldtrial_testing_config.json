@@ -15640,7 +15640,26 @@
             ]
         }
     ],
-    "OmniboxAIModeZPS_Desktop": [
+    "OmniboxAIModeZPSAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_1",
+                    "params": {
+                        "LocalHistoryNonNormalizedContents": "true",
+                        "SuppressPsuggestBackfillWithMIA": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxMiaZPS"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxAIModeZPSDesktop": [
         {
             "platforms": [
                 "chromeos",
@@ -15671,6 +15690,7 @@
                 {
                     "name": "Enabled_5_PSuggest_4_AIM_Without_Backfill",
                     "params": {
+                        "LocalHistoryNonNormalizedContents": "true",
                         "SuppressPsuggestBackfillWithMIA": "true"
                     },
                     "enable_features": [
