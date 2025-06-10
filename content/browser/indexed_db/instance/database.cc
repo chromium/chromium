@@ -676,22 +676,22 @@ Status Database::GetAllOperation(
   const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
   int64_t num_found_items = 0;
   while (num_found_items++ < max_count) {
-    bool cursor_valid;
-    Status s;
+    StatusOr<bool> cursor_valid = true;
     if (did_first_seek) {
-      cursor_valid = (*cursor)->Continue(&s);
+      cursor_valid = (*cursor)->Continue();
     } else {
       // Cursor creation performs the first seek, returning a nullptr cursor
       // when invalid.
-      cursor_valid = true;
       did_first_seek = true;
     }
-    IDB_RETURN_IF_ERROR_AND_DO(
-        s, result_sink->Get()->OnError(CreateIDBErrorPtr(
-               blink::mojom::IDBException::kUnknownError,
-               "Seek failure, unable to continue", transaction)));
+    if (!cursor_valid.has_value()) {
+      result_sink->Get()->OnError(
+          CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
+                            "Seek failure, unable to continue", transaction));
+      return cursor_valid.error();
+    }
 
-    if (!cursor_valid) {
+    if (!cursor_valid.value()) {
       break;
     }
 

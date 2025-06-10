@@ -642,15 +642,15 @@ StatusOr<uint32_t> CountCursorEntries(
     return 0;
   }
 
-  uint32_t count = 1;
-  Status s;
-  while (cursor->Continue(&s)) {
-    if (!s.ok()) {
-      return base::unexpected(s);
+  for (uint32_t count = 1;; ++count) {
+    StatusOr<bool> result = cursor->Continue();
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
     }
-    ++count;
+    if (!result.value()) {
+      return count;
+    }
   }
-  return count;
 }
 
 bool ObjectStoreCursorOptions(
@@ -3221,68 +3221,66 @@ BackingStore::Cursor::CloneIterator(const BackingStore::Cursor* other) {
   return it;
 }
 
-bool BackingStore::Cursor::FirstSeek(Status* s) {
+StatusOr<bool> BackingStore::Cursor::FirstSeek() {
   DCHECK(transaction_);
-  DCHECK(s);
-  std::tie(iterator_, *s) =
+  Status s;
+  std::tie(iterator_, s) =
       CreateIteratorAndGetStatus(*transaction_->transaction());
-  if (!s->ok()) {
+  if (!s.ok()) {
     INTERNAL_WRITE_ERROR(CREATE_ITERATOR);
-    return false;
+    return base::unexpected(s);
   }
 
   {
     TRACE_EVENT0("IndexedDB", "BackingStore::Cursor::FirstSeek::Seek");
     if (cursor_options_.forward) {
-      *s = iterator_->Seek(cursor_options_.low_key);
+      s = iterator_->Seek(cursor_options_.low_key);
     } else {
-      *s = iterator_->Seek(cursor_options_.high_key);
+      s = iterator_->Seek(cursor_options_.high_key);
     }
-    if (!s->ok()) {
-      return false;
+    if (!s.ok()) {
+      return base::unexpected(s);
     }
   }
-  return Continue({}, {}, READY, s);
+  return Continue({}, {}, READY);
 }
 
-bool BackingStore::Cursor::Advance(uint32_t count, Status* s) {
-  *s = Status::OK();
+StatusOr<bool> BackingStore::Cursor::Advance(uint32_t count) {
   while (count--) {
-    if (!indexed_db::BackingStore::Cursor::Continue(s)) {
+    StatusOr<bool> result = indexed_db::BackingStore::Cursor::Continue();
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
+    }
+
+    if (!result.value()) {
       return false;
     }
   }
   return true;
 }
 
-bool BackingStore::Cursor::Continue(const IndexedDBKey& key,
-                                    const IndexedDBKey& primary_key,
-                                    Status* s) {
-  return Continue(key, primary_key, SEEK, s);
+StatusOr<bool> BackingStore::Cursor::Continue(const IndexedDBKey& key,
+                                              const IndexedDBKey& primary_key) {
+  return Continue(key, primary_key, SEEK);
 }
 
-bool BackingStore::Cursor::Continue(const IndexedDBKey& key,
-                                    const IndexedDBKey& primary_key,
-                                    IteratorState next_state,
-                                    Status* s) {
+StatusOr<bool> BackingStore::Cursor::Continue(const IndexedDBKey& key,
+                                              const IndexedDBKey& primary_key,
+                                              IteratorState next_state) {
   TRACE_EVENT0("IndexedDB", "BackingStore::Cursor::Continue");
   DCHECK(!key.IsValid() || next_state == SEEK);
 
-  if (cursor_options_.forward) {
-    return ContinueNext(key, primary_key, next_state, s) ==
-           ContinueResult::DONE;
-  }
-  return ContinuePrevious(key, primary_key, next_state, s) ==
-         ContinueResult::DONE;
+  auto continue_func = cursor_options_.forward ? &Cursor::ContinueNext
+                                               : &Cursor::ContinuePrevious;
+  return (this->*continue_func)(key, primary_key, next_state)
+      .transform([](ContinueResult r) { return r == ContinueResult::DONE; });
 }
 
-BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
-    const IndexedDBKey& key,
-    const IndexedDBKey& primary_key,
-    IteratorState next_state,
-    Status* s) {
+StatusOr<BackingStore::Cursor::ContinueResult>
+BackingStore::Cursor::ContinueNext(const IndexedDBKey& key,
+                                   const IndexedDBKey& primary_key,
+                                   IteratorState next_state) {
   DCHECK(cursor_options_.forward);
-  *s = Status::OK();
 
   // TODO(alecflett): avoid a copy here?
   std::optional<IndexedDBKey> previous_key;
@@ -3295,9 +3293,9 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
   if (next_state == SEEK && key.IsValid()) {
     std::string leveldb_key =
         primary_key.IsValid() ? EncodeKey(key, primary_key) : EncodeKey(key);
-    *s = iterator_->Seek(leveldb_key);
-    if (!s->ok()) {
-      return ContinueResult::LEVELDB_ERROR;
+    Status s = iterator_->Seek(leveldb_key);
+    if (!s.ok()) {
+      return base::unexpected(s);
     }
     // Cursor is at the next value already; don't advance it again below.
     next_state = READY;
@@ -3308,9 +3306,9 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
     // because it is newly opened (and positioned at start of range) or
     // skipped forward by continue with a specific key.
     if (next_state == SEEK) {
-      *s = iterator_->Next();
-      if (!s->ok()) {
-        return ContinueResult::LEVELDB_ERROR;
+      Status s = iterator_->Next();
+      if (!s.ok()) {
+        return base::unexpected(s);
       }
     } else {
       next_state = SEEK;
@@ -3329,9 +3327,10 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
 
     // The row may not load because there's a stale entry in the index. If no
     // error then not fatal.
-    if (!LoadCurrentRow(s)) {
-      if (!s->ok()) {
-        return ContinueResult::LEVELDB_ERROR;
+    Status s;
+    if (!LoadCurrentRow(&s)) {
+      if (!s.ok()) {
+        return base::unexpected(s);
       }
       continue;
     }
@@ -3350,13 +3349,11 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
   return ContinueResult::DONE;
 }
 
-BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
-    const IndexedDBKey& key,
-    const IndexedDBKey& primary_key,
-    IteratorState next_state,
-    Status* s) {
+StatusOr<BackingStore::Cursor::ContinueResult>
+BackingStore::Cursor::ContinuePrevious(const IndexedDBKey& key,
+                                       const IndexedDBKey& primary_key,
+                                       IteratorState next_state) {
   DCHECK(!cursor_options_.forward);
-  *s = Status::OK();
 
   // TODO(alecflett): avoid a copy here?
   std::optional<IndexedDBKey> previous_key;
@@ -3379,9 +3376,9 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
 
   for (;;) {
     if (next_state == SEEK) {
-      *s = iterator_->Prev();
-      if (!s->ok()) {
-        return ContinueResult::LEVELDB_ERROR;
+      Status s = iterator_->Prev();
+      if (!s.ok()) {
+        return base::unexpected(s);
       }
     } else {
       next_state = SEEK;  // for subsequent iterations
@@ -3403,9 +3400,10 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
 
     // The row may not load because there's a stale entry in the index. If no
     // error then not fatal.
-    if (!LoadCurrentRow(s)) {
-      if (!s->ok()) {
-        return ContinueResult::LEVELDB_ERROR;
+    Status s;
+    if (!LoadCurrentRow(&s)) {
+      if (!s.ok()) {
+        return base::unexpected(s);
       }
       continue;
     }
@@ -3455,13 +3453,13 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
     DCHECK(duplicate_key.IsValid());
     DCHECK(!earliest_duplicate.empty());
 
-    *s = iterator_->Seek(earliest_duplicate);
-    if (!s->ok()) {
-      return ContinueResult::LEVELDB_ERROR;
+    Status s = iterator_->Seek(earliest_duplicate);
+    if (!s.ok()) {
+      return base::unexpected(s);
     }
-    if (!LoadCurrentRow(s)) {
-      DCHECK(!s->ok());
-      return ContinueResult::LEVELDB_ERROR;
+    if (!LoadCurrentRow(&s)) {
+      DCHECK(!s.ok());
+      return base::unexpected(s);
     }
   }
 
@@ -4259,16 +4257,9 @@ void BackingStore::Transaction::PartitionBlobsToRemove(
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
-  Status s;
-  if (cursor->FirstSeek(&s)) {
-    DCHECK(s.ok());
-    return cursor;
-  }
-
-  if (!s.ok()) {
-    return base::unexpected(s);
-  }
-  return nullptr;
+  return cursor->FirstSeek().transform([&cursor](bool success) {
+    return success ? std::move(cursor) : nullptr;
+  });
 }
 
 Status BackingStore::Transaction::CommitPhaseOne(BlobWriteCallback callback) {

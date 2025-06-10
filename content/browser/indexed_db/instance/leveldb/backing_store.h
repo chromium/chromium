@@ -365,16 +365,14 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     const blink::IndexedDBKey& GetKey() const override;
     const blink::IndexedDBKey& GetPrimaryKey() const override;
     blink::IndexedDBKey TakeKey() && override;
-    bool Continue(const blink::IndexedDBKey& key,
-                  const blink::IndexedDBKey& primary_key,
-                  Status*) override;
-    bool Advance(uint32_t count, Status*) override;
+    StatusOr<bool> Continue(const blink::IndexedDBKey& key,
+                            const blink::IndexedDBKey& primary_key) override;
+    StatusOr<bool> Advance(uint32_t count) override;
 
-    bool Continue(const blink::IndexedDBKey& key,
-                  const blink::IndexedDBKey& primary_key,
-                  IteratorState state,
-                  Status*);
-    bool FirstSeek(Status*);
+    StatusOr<bool> Continue(const blink::IndexedDBKey& key,
+                            const blink::IndexedDBKey& primary_key,
+                            IteratorState state);
+    StatusOr<bool> FirstSeek();
 
    protected:
     Cursor(base::WeakPtr<Transaction> transaction,
@@ -413,20 +411,20 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     RecordIdentifier record_identifier_;
 
    private:
-    enum class ContinueResult { LEVELDB_ERROR, DONE, OUT_OF_BOUNDS };
+    enum class ContinueResult { DONE, OUT_OF_BOUNDS };
 
     // For cursors with direction Next or NextNoDuplicate.
-    ContinueResult ContinueNext(const blink::IndexedDBKey& key,
-                                const blink::IndexedDBKey& primary_key,
-                                IteratorState state,
-                                Status*);
+    StatusOr<ContinueResult> ContinueNext(
+        const blink::IndexedDBKey& key,
+        const blink::IndexedDBKey& primary_key,
+        IteratorState state);
     // For cursors with direction Prev or PrevNoDuplicate. The PrevNoDuplicate
     // case has additional complexity of not being symmetric with
     // NextNoDuplicate.
-    ContinueResult ContinuePrevious(const blink::IndexedDBKey& key,
-                                    const blink::IndexedDBKey& primary_key,
-                                    IteratorState state,
-                                    Status*);
+    StatusOr<ContinueResult> ContinuePrevious(
+        const blink::IndexedDBKey& key,
+        const blink::IndexedDBKey& primary_key,
+        IteratorState state);
 
     int tombstones_count_ = 0;
     base::WeakPtrFactory<Cursor> weak_factory_{this};
