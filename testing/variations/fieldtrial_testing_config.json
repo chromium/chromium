@@ -10501,7 +10501,6 @@
                     "name": "Enabled",
                     "params": {
                         "glic-allowed-origins-override": "https://www.google.com",
-                        "glic-client-responsiveness-check-interval-ms": "5000",
                         "glic-fre-url": "https://www.google.com/?",
                         "glic-guest-url": "https://www.google.com/",
                         "glic-shortcuts-launcher-toggle-learn-more-url": "https://support.google.com/",
@@ -10512,7 +10511,6 @@
                     "enable_features": [
                         "GlicAppMenuNewBadge",
                         "GlicCSPConfig",
-                        "GlicClientResponsivenessCheck",
                         "GlicFreURLConfig",
                         "GlicKeyboardShortcutNewBadge",
                         "GlicPageContextEligibility",
