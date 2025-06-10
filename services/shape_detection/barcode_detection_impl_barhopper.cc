@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom-shared.h"
 #include "third_party/barhopper/barhopper/barcode.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -150,7 +151,8 @@ void BarcodeDetectionImplBarhopper::Detect(
     shape_detection::mojom::BarcodeDetection::DetectCallback callback) {
   int width = bitmap.width();
   int height = bitmap.height();
-  std::vector<uint8_t> luminances(height * width);
+  std::vector<uint8_t> luminances(
+      (base::CheckedNumeric<size_t>(width) * height).ValueOrDie());
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       SkColor color = bitmap.getColor(x, y);
