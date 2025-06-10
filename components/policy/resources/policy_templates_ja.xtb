@@ -2209,6 +2209,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを未設定のままにした場合、どのウェブ アプリケーションでも <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> の使用は許可されません。
 プライバシー保護を強化するため、このポリシーでは、セッション中のポリシー値の更新はサポートされていません。変更はユーザーがログアウトして再度ログインした後に適用されます。
 セッション開始時に許可しない限り、ログイン後に他のアプリでスクリーンがキャプチャされることはなく、これはユーザーの安心材料になります。</translation>
+<translation id="2614156176932194496">アドレスバーと新しいタブページの検索ボックスでの Google AI モード統合の設定。</translation>
 <translation id="2615240493030733717">タイムゾーン情報を報告する</translation>
 <translation id="2619258867868873629"><ph name="PRODUCT_OS_NAME" /> デバイスの [PDF に保存] の保存先と [Google ドライブに保存] の保存先</translation>
 <translation id="262035875928535253"><ph name="PRODUCT_NAME" /> で <ph name="PASSWORD_MANAGER_NAME" /> を必ず無効にするドメインのリストを設定します。これにより、保存と入力のワークフローが無効になり、これらのウェブサイトのパスワードを保存したり、ウェブフォームに自動入力したりできなくなります。
@@ -4245,6 +4246,15 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
 
           このポリシーを設定しない場合、音声フィードバックは初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4173974507809462880">ログイン時にタッチパッドのスクロール方向の画面を表示する</translation>
+<translation id="4175770453187201981">このポリシーでは、アドレスバーと新しいタブページの検索ボックスに Google AI モードを統合するかどうかを制御します。
+
+この機能にアクセスするには、Google をユーザーのデフォルトの検索エンジンに設定する必要があります。
+
+0 / 未設定 = ユーザーはこの機能を使用できます。
+
+1 = ユーザーはこの機能を使用できません。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。</translation>
 <translation id="417956245902013347">ログイン画面で「テキストカーソルによるハイライト表示」ユーザー補助機能を有効にします。
 
           このポリシーを true に設定した場合、テキストカーソルによるハイライト表示はログイン画面で常に有効になります。
@@ -4532,6 +4542,7 @@ WebSQL は M112 で削除されました。</translation>
 
       このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="4402887080007986374">Edu Coexistence 利用規約の有効なバージョン</translation>
+<translation id="4405712318246131640">AI モードの統合を許可しない。</translation>
 <translation id="4408428864159735559">事前設定のネットワーク ファイル共有のリスト。</translation>
 <translation id="4410236409016356088">ネットワークの帯域幅制限を有効にする</translation>
 <translation id="4410361389637971319">独立したウェブアプリのオリジンに Direct Sockets の使用を許可する</translation>
@@ -6194,6 +6205,7 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">キオスク セッションでの Chrome アプリの実行を許可する。</translation>
 <translation id="5607021831414604820">デバイスのストレージ ステータス レポートを有効にする</translation>
+<translation id="5607808178576647930">AI モードの統合を許可する。</translation>
 <translation id="5608114828230655271">デフォルトのデバイスの動作</translation>
 <translation id="5609294254185484756"><ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> で指定し無効にした機能の管理対象ゲスト セッション（MGS）でのユーザー エクスペリエンスを制御します。
 

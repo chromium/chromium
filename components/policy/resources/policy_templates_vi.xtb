@@ -2309,6 +2309,7 @@ LƯU Ý: Chỉ các quy trình kết xuất hình ảnh mới bắt đầu mới
       Nếu bạn chưa đặt chính sách này thì mọi ứng dụng web đều không thể dùng <ph name="GET_ALL_SCREENS_MEDIA_NAME" />.
 Để cải thiện quyền riêng tư, chính sách này sẽ không hỗ trợ cập nhật giá trị chính sách vào giữa phiên. Do đó, nội dung thay đổi sẽ chỉ áp dụng sau khi người dùng đăng xuất rồi đăng nhập lại.
 Người dùng có thể yên tâm rằng không có thêm ứng dụng nào có thể chụp màn hình sau khi đăng nhập nếu không được cho phép từ khi phiên bắt đầu.</translation>
+<translation id="2614156176932194496">Chế độ cài đặt cho phần tích hợp chế độ AI của Google trong thanh địa chỉ và hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="2615240493030733717">Báo cáo thông tin về múi giờ</translation>
 <translation id="2619258867868873629">Đích "Lưu dưới dạng PDF" cũng như đích "Lưu vào Google Drive" trên các thiết bị <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="262035875928535253">Thiết lập danh sách các miền mà <ph name="PRODUCT_NAME" /> sẽ vô hiệu hoá <ph name="PASSWORD_MANAGER_NAME" />. Nói cách khác, quy trình Lưu và điền sẽ bị vô hiệu hoá, đảm bảo rằng hệ thống không thể lưu hoặc tự động điền mật khẩu cho những trang web đó vào các biểu mẫu web.
@@ -4410,6 +4411,15 @@ Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng phản hồi bằng giọng nói sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="4173974507809462880">Hiển thị màn hình hướng cuộn của bàn di chuột trong khi đăng nhập</translation>
+<translation id="4175770453187201981">Chính sách này kiểm soát phần tích hợp chế độ AI của Google trong thanh địa chỉ và hộp tìm kiếm trên trang Thẻ mới.
+
+Để truy cập tính năng này, người dùng phải đặt Google làm công cụ tìm kiếm mặc định.
+
+0/chưa đặt = Người dùng sẽ có thể sử dụng tính năng này.
+
+1 = Người dùng sẽ không thể sử dụng tính năng này.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.</translation>
 <translation id="417956245902013347">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn trên màn hình đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì tính năng làm nổi bật dấu chèn sẽ luôn bật trên màn hình đăng nhập.
@@ -4727,6 +4737,7 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 
       Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="4402887080007986374">Phiên bản hợp lệ của Điều khoản dịch vụ của tài khoản trường học</translation>
+<translation id="4405712318246131640">Không cho phép tích hợp chế độ AI.</translation>
 <translation id="4408428864159735559">Danh sách các mục chia sẻ tệp trong mạng đã định cấu hình sẵn.</translation>
 <translation id="4410236409016356088">Cho phép điều chỉnh băng thông mạng</translation>
 <translation id="4410361389637971319">Cho phép các nguồn gốc của Ứng dụng web tách biệt sử dụng Direct Sockets</translation>
@@ -6552,6 +6563,7 @@ Nếu bạn đặt chính sách này thành một danh sách trống hoặc khô
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5605676983184673391">Cho phép các ứng dụng Chrome chạy trong các phiên Kiosk.</translation>
 <translation id="5607021831414604820">Bật tính năng báo cáo trạng thái bộ nhớ của thiết bị</translation>
+<translation id="5607808178576647930">Cho phép tích hợp chế độ AI.</translation>
 <translation id="5608114828230655271">Hành vi mặc định của thiết bị</translation>
 <translation id="5609294254185484756">Kiểm soát trải nghiệm người dùng đối với các tính năng bị tắt có trong danh sách <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> dành cho Phiên khách được quản lý (MGS).
 
