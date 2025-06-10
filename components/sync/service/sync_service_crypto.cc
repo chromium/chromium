@@ -189,10 +189,12 @@ SyncServiceCrypto::SyncServiceCrypto(
 SyncServiceCrypto::~SyncServiceCrypto() = default;
 
 void SyncServiceCrypto::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = State();
 }
 
 void SyncServiceCrypto::StopObservingTrustedVaultClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   trusted_vault_client_->RemoveObserver(this);
 }
 
@@ -337,10 +339,12 @@ void SyncServiceCrypto::SetExplicitPassphraseDecryptionNigoriKey(
 
 std::unique_ptr<Nigori>
 SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kFetchingTrustedVaultKeys:
@@ -362,6 +366,7 @@ std::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
 
 void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
                                       SyncEngine* engine) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(engine);
   CHECK(!state_.engine);
   state_.account_info = account_info;
@@ -573,6 +578,7 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
 }
 
 void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kNone:
@@ -600,6 +606,7 @@ void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
 }
 
 void SyncServiceCrypto::OnTrustedVaultRecoverabilityChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore calls during engine initialization, as decoverability will be
   // refreshed in SetSyncEngine().
   if (!state_.engine) {
@@ -766,6 +773,7 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
 
 void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     bool is_recoverability_degraded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // `engine` could have been reset.
   if (!state_.engine) {
     DCHECK_EQ(state_.required_user_action,
