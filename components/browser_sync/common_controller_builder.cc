@@ -461,7 +461,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           base::BindRepeating(&AutofillWalletMetadataDelegateFromDataService),
           sync_service, /*with_transport_mode_support=*/
           base::FeatureList::IsEnabled(
-              syncer::kSyncEnableWalletMetadataInTransportMode)));
+              syncer::kReplaceSyncPromosWithSignInPromos)));
     }
 
     // Wallet offer sync depends on Wallet data sync.
@@ -472,7 +472,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           base::BindRepeating(&AutofillWalletOfferDelegateFromDataService),
           sync_service, /*with_transport_mode_support=*/
           base::FeatureList::IsEnabled(
-              syncer::kSyncEnableWalletOfferInTransportMode)));
+              syncer::kReplaceSyncPromosWithSignInPromos)));
     }
 
     // Wallet usage data sync depends on Wallet data sync.

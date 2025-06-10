@@ -288,7 +288,46 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
-    DataTypesEnabledInTransportMode) {
+    DataTypesEnabledInTransportModeWithoutHistorySync) {
+  ASSERT_TRUE(SetupClients());
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+
+  // With `kReplaceSyncPromosWithSignInPromos` and by default (without opting
+  // into history), all the history-related should be disabled in transport
+  // mode.
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::HISTORY_DELETE_DIRECTIVES));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
+
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::PRIORITY_PREFERENCES));
+
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_METADATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_OFFER));
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
+    DataTypesEnabledInTransportModeWithHistorySync) {
   ASSERT_TRUE(SetupClients());
   // Sign in, without turning on Sync-the-feature.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -299,9 +338,6 @@ IN_PROC_BROWSER_TEST_F(
       syncer::UserSelectableType::kHistory, true);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  // Preferences are opted-into by default.
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPreferences));
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -315,18 +351,20 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
 
-  // With `kReplaceSyncPromosWithSignInPromos`, both PREFERENCES and
-  // PRIORITY_PREFERENCES should be enabled in transport mode.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::PRIORITY_PREFERENCES));
 
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_METADATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_OFFER));
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

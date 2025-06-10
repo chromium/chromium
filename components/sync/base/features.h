@@ -85,11 +85,6 @@ constexpr bool IsReadingListAccountStorageEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Flags to allow AUTOFILL_WALLET_METADATA and AUTOFILL_WALLET_OFFER,
-// respectively, to run in transport mode.
-BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);
-BASE_DECLARE_FEATURE(kSyncEnableWalletOfferInTransportMode);
-
 // Flag to enable clean up of password deletions that may be unintentional.
 BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
 // The minimum number of deletions that can be considered a batch deletion.

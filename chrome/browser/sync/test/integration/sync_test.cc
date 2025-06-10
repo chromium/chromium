@@ -1104,16 +1104,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 
   allowed_types.Put(syncer::PLUS_ADDRESS);
   allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableWalletMetadataInTransportMode)) {
-    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
-  }
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableWalletOfferInTransportMode)) {
-    allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
-  }
-
   allowed_types.Put(syncer::PASSWORDS);
   allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
   allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
@@ -1133,12 +1123,16 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   }
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
+    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
+    allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
+    allowed_types.Put(syncer::COLLABORATION_GROUP);
     allowed_types.Put(syncer::HISTORY);
-    allowed_types.Put(syncer::SESSIONS);
+    allowed_types.Put(syncer::HISTORY_DELETE_DIRECTIVES);
     allowed_types.Put(syncer::PRODUCT_COMPARISON);
     allowed_types.Put(syncer::SAVED_TAB_GROUP);
-    allowed_types.Put(syncer::COLLABORATION_GROUP);
+    allowed_types.Put(syncer::SESSIONS);
     allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+    allowed_types.Put(syncer::USER_EVENTS);
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);
