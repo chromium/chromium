@@ -9,6 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -143,6 +144,12 @@ void PingManagerTest::SetNewPingManager(
 }
 
 std::string PingManagerTest::CallPersistThreatDetails(const std::string& url) {
+  base::RunLoop run_loop;
+  auto histogram_waiter =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          "SafeBrowsing.ClientSafeBrowsingReport.PersisterWriteResult",
+          run_loop.QuitClosure());
+
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
       std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(
@@ -156,7 +163,7 @@ std::string PingManagerTest::CallPersistThreatDetails(const std::string& url) {
           std::move(report));
   EXPECT_EQ(result,
             PingManager::PersistThreatDetailsResult::kPersistTaskPosted);
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
   return serialized_report;
 }
 
