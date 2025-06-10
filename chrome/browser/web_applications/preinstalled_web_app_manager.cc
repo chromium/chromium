@@ -535,15 +535,16 @@ void MaybeForceInstallForRemigration(
     // feature flags.
     for (const std::string& app_id : options.uninstall_and_replace) {
       bool migration_needed = false;
+      if (extensions::IsExtensionInstalled(profile, app_id)) {
+        if (always_migrate_calculator &&
+            app_id == extension_misc::kCalculatorAppId) {
+          calculator_migration_needed = true;
+          migration_needed = true;
+        }
 
-      if (always_migrate_calculator &&
-          app_id == extension_misc::kCalculatorAppId) {
-        calculator_migration_needed = true;
-        migration_needed = true;
-      }
-
-      if (always_migrate && extensions::IsExtensionInstalled(profile, app_id)) {
-        migration_needed = true;
+        if (always_migrate) {
+          migration_needed = true;
+        }
       }
 
       if (migration_needed) {
