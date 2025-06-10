@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OsDefaultsChoiceDialogSuppressionStatus">
   <int value="0" label="Can show"/>
-  <int value="1" label="Suppressed: Dark Launch"/>
+  <int value="1" label="Suppressed: Dark Launch (Deprecated 06/2025)"/>
   <int value="2" label="Suppressed: Escape Hatch"/>
 </enum>
 
