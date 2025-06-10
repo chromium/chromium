@@ -30,6 +30,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
@@ -47,6 +48,11 @@ PDFExtensionTestBase::~PDFExtensionTestBase() = default;
 
 void PDFExtensionTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+  // Initialize server so port is set.
+  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  // Treat the test server as public to bypass Local Network Access checks.
+  network::AddPublicIpAddressSpaceOverrideToCommandLine(*embedded_test_server(),
+                                                        *command_line);
 
   feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                               GetDisabledFeatures());
@@ -55,7 +61,6 @@ void PDFExtensionTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 void PDFExtensionTestBase::SetUpOnMainThread() {
   extensions::ExtensionApiTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
-  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   content::SetupCrossSiteRedirector(embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
