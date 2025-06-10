@@ -11,12 +11,14 @@
 // * Stores the constants to avoid hardcoded strings.
 namespace prerender_utils {
 
+// LINT.IfChange(PreloadingEmbedderTriggerType)
 extern const char kPrewarmDefaultSearchEngineMetricSuffix[];
 extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
 extern const char kBookmarkBarMetricSuffix[];
 extern const char kNewTabPageMetricSuffix[];
 extern const char kLinkPreviewMetricsSuffix[];
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType, //tools/metrics/histograms/metadata/page/histograms.xml:PagePreloadingTriggerType)
 
 }  // namespace prerender_utils
 
