@@ -101,6 +101,7 @@ int PrefetchCanaryCheckRetries();
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
     const PrefetchType& prefetch_type,
+    bool should_disable_block_until_head_timeout,
     bool is_nav_prerender);
 
 // Gets the histogram suffix for the given `prefetch_type` and

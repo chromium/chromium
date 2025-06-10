@@ -189,8 +189,15 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-base::TimeDelta PrefetchBlockUntilHeadTimeout(const PrefetchType& prefetch_type,
-                                              bool is_nav_prerender) {
+base::TimeDelta PrefetchBlockUntilHeadTimeout(
+    const PrefetchType& prefetch_type,
+    bool should_disable_block_until_head_timeout,
+    bool is_nav_prerender) {
+  // If the caller of prefetches requests to disable the timeout, follow that.
+  if (should_disable_block_until_head_timeout) {
+    return base::Seconds(0);
+  }
+
   // Don't set a timeout for prerender because
   //
   // - The intention of prefetch ahead of prerender is not sending additional
