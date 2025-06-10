@@ -202,6 +202,45 @@ bool LayoutBlock::RespectsCSSOverflow() const {
 void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
   NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
+  DCHECK(!IsLayoutBlockFlow());
+  DCHECK_NE(before_descendant->Parent(), this);
+  LayoutObject* before_descendant_container = before_descendant->Parent();
+  while (before_descendant_container->Parent() != this) {
+    before_descendant_container = before_descendant_container->Parent();
+  }
+  DCHECK(before_descendant_container);
+
+  // We really can't go on if what we have found isn't anonymous. We're not
+  // supposed to use some random non-anonymous object and put the child there.
+  // That's a recipe for security issues.
+  CHECK(before_descendant_container->IsAnonymous());
+
+  // Insert the child into the anonymous block box instead of here.
+  if (new_child->IsInline() &&
+      before_descendant_container->IsAnonymousBlockFlow()) {
+    before_descendant_container->AddChild(new_child, before_descendant);
+    return;
+  }
+
+  // Insert into the anonymous table.
+  if (new_child->IsTablePart()) {
+    before_descendant_container->AddChild(new_child, before_descendant);
+    return;
+  }
+
+  LayoutObject* before_child =
+      SplitAnonymousBoxesAroundChild(before_descendant);
+
+  DCHECK_EQ(before_child->Parent(), this);
+  AddChild(new_child, before_child);
+}
+
+void LayoutBlock::AddChildBeforeDescendantDeprecated(
+    LayoutObject* new_child,
+    LayoutObject* before_descendant) {
+  NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
   DCHECK_NE(before_descendant->Parent(), this);
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this)
@@ -254,7 +293,11 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
                            LayoutObject* before_child) {
   NOT_DESTROYED();
   if (before_child && before_child->Parent() != this) {
-    AddChildBeforeDescendant(new_child, before_child);
+    if (RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled()) {
+      AddChildBeforeDescendant(new_child, before_child);
+    } else {
+      AddChildBeforeDescendantDeprecated(new_child, before_child);
+    }
     return;
   }
 

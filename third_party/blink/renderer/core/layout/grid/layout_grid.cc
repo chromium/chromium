@@ -27,20 +27,17 @@ void LayoutGrid::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
   LayoutBlock::AddChild(new_child, before_child);
 
-  // Out-of-flow grid items don't impact placement.
-  if (!new_child->IsOutOfFlowPositioned()) {
-    MarkGridDirty();
-  }
+  // Counter-intuitively, adding/removing a "position:absolute" child or
+  // similar *can* make the placement dirty as the OOF may cause an anonymous
+  // child to be split (or merged).
+  MarkGridDirty();
 }
 
 void LayoutGrid::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
 
-  // Out-of-flow grid items don't impact placement.
-  if (!child->IsOutOfFlowPositioned()) {
-    MarkGridDirty();
-  }
+  MarkGridDirty();
 }
 
 namespace {

@@ -171,6 +171,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  private:
   void UpdateForMulticol(const ComputedStyle* old_style);
 
+  void AddChildBeforeDescendant(LayoutObject* new_child,
+                                LayoutObject* before_descendant);
+
   // Merge children of |sibling_that_may_be_deleted| into this object if
   // possible, and delete |sibling_that_may_be_deleted|. Returns true if we
   // were able to merge. In that case, |sibling_that_may_be_deleted| will be
