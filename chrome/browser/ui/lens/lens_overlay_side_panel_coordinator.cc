@@ -954,7 +954,10 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
         base::BindRepeating(
             &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)),
-        GetMoreInfoCallback(), SidePanelEntry::kSidePanelDefaultContentWidth);
+        GetMoreInfoCallback(),
+        lens::features::IsLensSearchSidePanelDefaultWidthChangeEnabled()
+            ? lens::features::GetLensSearchSidePanelDefaultWidth()
+            : SidePanelEntry::kSidePanelDefaultContentWidth);
     entry->SetProperty(kShouldShowTitleInSidePanelHeaderKey, false);
     registry->Register(std::move(entry));
 

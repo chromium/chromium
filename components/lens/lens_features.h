@@ -119,6 +119,10 @@ BASE_DECLARE_FEATURE(kLensSearchProtectedPage);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayEduActionChip);
 
+// Enables the modification of the default width of the Lens search side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchSidePanelDefaultWidthChange);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -168,6 +172,10 @@ extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
 // Whether the EDU action chip should be disabled by glic.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
+
+// The default width of the Lens search side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<int> kLensSearchSidePanelDefaultWidth;
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -948,6 +956,14 @@ extern std::string GetLensOverlayEduHashedDomainBlockFilters();
 // Whether EDU action chip should be disabled by glic.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayEduActionChipDisabledByGlic();
+
+// Whether to enable the default width change for the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool IsLensSearchSidePanelDefaultWidthChangeEnabled();
+
+// The default width for the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensSearchSidePanelDefaultWidth();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

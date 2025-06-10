@@ -6356,6 +6356,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-search-side-panel-default-width-change",
+    "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-single-tap-text-selection-disabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140

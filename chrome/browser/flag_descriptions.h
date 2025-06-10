@@ -1539,6 +1539,9 @@ extern const char kLensOverlayLatencyOptimizationsDescription[];
 extern const char kLensImageFormatOptimizationsName[];
 extern const char kLensImageFormatOptimizationsDescription[];
 
+extern const char kLensSearchSidePanelDefaultWidthChangeName[];
+extern const char kLensSearchSidePanelDefaultWidthChangeDescription[];
+
 extern const char kLensSearchSidePanelNewFeedbackName[];
 extern const char kLensSearchSidePanelNewFeedbackDescription[];
 

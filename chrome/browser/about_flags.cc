@@ -12932,6 +12932,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppInstallationApiDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebAppInstallation)},
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+BUILDFLAG(IS_WIN)
+     {"lens-search-side-panel-default-width-change",
+      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeName,
+      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeDescription,
+      kOsDesktop,
+      FEATURE_VALUE_TYPE(
+          lens::features::kLensSearchSidePanelDefaultWidthChange)},
+ #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+         // BUILDFLAG(IS_WIN)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

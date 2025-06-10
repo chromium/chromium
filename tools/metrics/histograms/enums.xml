@@ -8714,6 +8714,8 @@ from previous Chrome versions.
   <int value="-1954122445" label="PrintManagementSetupAssistance:disabled"/>
   <int value="-1953840665"
       label="SearchCustomizableShortcutsInLauncher:enabled"/>
+  <int value="-1953513285"
+      label="LensSearchSidePanelDefaultWidthChange:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
@@ -18858,6 +18860,8 @@ from previous Chrome versions.
   <int value="1831593339" label="stop-in-background:disabled"/>
   <int value="1831777433" label="query-tiles-rank-tiles"/>
   <int value="1831835753" label="MaterialDesignIncognitoNTP:enabled"/>
+  <int value="1832418387"
+      label="LensSearchSidePanelDefaultWidthChange:disabled"/>
   <int value="1832552562" label="EnableVirtualKeyboardUkm:enabled"/>
   <int value="1832889721" label="AppToAppLinkCapturing:enabled"/>
   <int value="1833124619" label="PhoneHubNudge:enabled"/>

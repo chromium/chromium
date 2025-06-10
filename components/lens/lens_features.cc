@@ -119,6 +119,10 @@ BASE_FEATURE(kLensOverlayEduActionChip,
              "LensOverlayEduActionChip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchSidePanelDefaultWidthChange,
+             "LensSearchSidePanelDefaultWidthChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -599,6 +603,9 @@ const base::FeatureParam<std::string>
 
 const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
     &kLensOverlayEduActionChip, "disabled-by-glic", true};
+
+constexpr base::FeatureParam<int> kLensSearchSidePanelDefaultWidth{
+    &kLensSearchSidePanelDefaultWidthChange, "lens-panel-default-width", 440};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -1267,6 +1274,14 @@ std::string GetLensOverlayEduHashedDomainBlockFilters() {
 
 bool IsLensOverlayEduActionChipDisabledByGlic() {
   return kLensOverlayEduActionChipDisabledByGlic.Get();
+}
+
+bool IsLensSearchSidePanelDefaultWidthChangeEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchSidePanelDefaultWidthChange);
+}
+
+int GetLensSearchSidePanelDefaultWidth() {
+  return kLensSearchSidePanelDefaultWidth.Get();
 }
 
 }  // namespace lens::features

@@ -2670,6 +2670,11 @@ const char kLensOverlayLatencyOptimizationsName[] =
 const char kLensOverlayLatencyOptimizationsDescription[] =
     "Enables latency optimizations for the Lens overlay.";
 
+const char kLensSearchSidePanelDefaultWidthChangeName[] =
+    "Lens search side panel default width change";
+const char kLensSearchSidePanelDefaultWidthChangeDescription[] =
+    "Enables changing the default width of the Lens search side panel.";
+
 const char kLensSearchSidePanelNewFeedbackName[] =
     "Lens side panel new feedback";
 const char kLensSearchSidePanelNewFeedbackDescription[] =
