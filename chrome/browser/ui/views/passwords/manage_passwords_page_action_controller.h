@@ -17,6 +17,10 @@ class PageActionController;
 
 class ManagePasswordsUIController;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 // Controller for the manage passwords page action icon. This class observes
 // the state of ManagePasswordsUIController and updates the page action icon
 // visibility, icon, and tooltip accordingly.
@@ -38,7 +42,8 @@ class ManagePasswordsPageActionController {
   // saving.
   void UpdateVisibility(password_manager::ui::State state,
                         bool is_blocklisted,
-                        ManagePasswordsUIController* passwords_ui_controller);
+                        ManagePasswordsUIController& passwords_ui_controller,
+                        actions::ActionItem& passwords_action_item);
 
   // Returns the appropriate tooltip text for the manage passwords icon based
   // on the current state.

@@ -31,6 +31,8 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1171,7 +1173,12 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     CHECK(tab_features);
     auto* const controller =
         tab_features->manage_passwords_page_action_controller();
-    controller->UpdateVisibility(GetState(), IsExplicitlyBlocklisted(), this);
+    actions::ActionItem* passwords_action_item =
+        actions::ActionManager::Get().FindAction(
+            kActionShowPasswordsBubbleOrPage,
+            browser->browser_actions()->root_action_item());
+    controller->UpdateVisibility(GetState(), IsExplicitlyBlocklisted(), *this,
+                                 *passwords_action_item);
   } else {
     browser->window()->UpdatePageActionIcon(
         PageActionIconType::kManagePasswords);
