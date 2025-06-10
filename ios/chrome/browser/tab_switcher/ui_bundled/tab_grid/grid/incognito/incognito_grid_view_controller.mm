@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito_grid_commands.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -21,6 +23,9 @@
   // A view to obscure incognito content when the user isn't authorized to
   // see it.
   IncognitoReauthView* _blockingView;
+
+  // The object responsible for animating the tabs closure.
+  TabsClosureAnimation* _tabsClosureAnimation;
 }
 
 #pragma mark - Parent's functions
@@ -68,6 +73,7 @@
     }
 
     [self.view addSubview:_blockingView];
+    _blockingView.hidden = NO;
     _blockingView.alpha = 1;
     AddSameConstraints(self.collectionView.frameLayoutGuide, _blockingView);
 
@@ -115,7 +121,7 @@
 
   if (IsIOSSoftLockEnabled()) {
     id<GridCommands> gridHandler = self.gridHandler;
-    id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
+    __weak IncognitoGridViewController* weakSelf = self;
     [blockingView.secondaryButton
                addAction:[UIAction actionWithHandler:^(UIAction* action) {
                  base::UmaHistogramEnumeration(
@@ -125,7 +131,7 @@
                  base::RecordAction(base::UserMetricsAction(
                      "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
                  [gridHandler closeAllItems];
-                 [reauthHandler manualAuthenticationOverride];
+                 [weakSelf animateClosure];
                }]
         forControlEvents:UIControlEventTouchUpInside];
   } else {
@@ -146,10 +152,35 @@
 // Cleans up after blocking view animation completed.
 - (void)blockingViewDidHide:(BOOL)finished {
   if (self.contentNeedsAuthentication) {
+    _blockingView.hidden = NO;
     _blockingView.alpha = 1;
   } else {
     [_blockingView removeFromSuperview];
   }
+}
+
+// Animates closing Incognito tabs by with a wipe effect on the blocking view.
+- (void)animateClosure {
+  UIWindow* window = self.view.window;
+  [window setUserInteractionEnabled:NO];
+  NSMutableArray<UIView*>* gridCells =
+      [[NSMutableArray alloc] initWithObjects:_blockingView, nil];
+  _tabsClosureAnimation =
+      [[TabsClosureAnimation alloc] initWithWindow:window gridCells:gridCells];
+
+  __weak IncognitoGridViewController* weakSelf = self;
+  [_tabsClosureAnimation animateWithCompletion:^{
+    [weakSelf onTabsClosureAnimationCompleted:window];
+  }];
+}
+
+// After animation is completed, update reauth state, switch to normal tab grid,
+// clean up animation object, and re-enable user interaction.
+- (void)onTabsClosureAnimationCompleted:(UIWindow*)window {
+  [self.reauthHandler manualAuthenticationOverride];
+  [self.tabGridHandler showPage:TabGridPageRegularTabs animated:YES];
+  [window setUserInteractionEnabled:YES];
+  _tabsClosureAnimation = nil;
 }
 
 @end
