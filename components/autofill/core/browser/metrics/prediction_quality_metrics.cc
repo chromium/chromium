@@ -393,7 +393,6 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-        case IMPROVED_PREDICTION:
         case PASSPORT_NAME_TAG:
         case PASSPORT_NUMBER:
         case PASSPORT_ISSUING_COUNTRY:

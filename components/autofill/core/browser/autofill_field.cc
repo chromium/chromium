@@ -344,8 +344,7 @@ std::optional<FieldType> AutofillField::GetAutofillAiServerTypePredictions()
   for (const FieldPrediction& prediction : server_predictions_) {
     FieldType predicted_type =
         ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
-    if (predicted_type != IMPROVED_PREDICTION &&
-        GroupTypeOfFieldType(predicted_type) == FieldTypeGroup::kAutofillAi) {
+    if (GroupTypeOfFieldType(predicted_type) == FieldTypeGroup::kAutofillAi) {
       return predicted_type;
     }
   }

@@ -455,13 +455,7 @@ enum FieldType {
   // classification for the field.
   // SERVER_RESPONSE_PENDING = 161;
 
-  // Improved Prediction indicates that this field is support by the predition
-  // improvement system.
-  // This type is a metatype and does not correspond to a specific sort of
-  // data.
-  // It should not take precedence over existing types.
-  // TODO(crbug.com/389629676): Deprecate this field type.
-  IMPROVED_PREDICTION = 162,
+  // IMPROVED_PREDICTION = 162 is deprecated
 
   // Types to represent alternative names (e.g. phonetic name in Japanese).
   ALTERNATIVE_FULL_NAME = 163,
@@ -623,13 +617,15 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
            // UPI VPA type (value 102) is deprecated.
-           !(t == 102) &&
+           t != 102 &&
            // Birthdates (values [118, 120]) are deprecated.
            !(118 <= t && t <= 120) &&
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
            !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161 &&
+           // Deprecated Autofill AI types.
+           t != 162 &&
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            !(187 <= t && t <= 188);
@@ -785,7 +781,6 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
 
-    case IMPROVED_PREDICTION:
     case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
