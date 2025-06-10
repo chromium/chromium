@@ -17,8 +17,9 @@ desc: |-
 
   Extensions availability are still controlled by other policies.
 supported_on:
-- chrome.*:110-
-- chrome_os:110-
+- chrome.*:110-138
+- chrome_os:110-138
+deprecated: true
 future_on:
 - fuchsia
 features:

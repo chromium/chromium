@@ -17,7 +17,8 @@ desc: |-
 
   Extensions availability are still controlled by other policies.
 supported_on:
-- chrome_os:111-
+- chrome_os:111-138
+deprecated: true
 device_only: true
 features:
   dynamic_refresh: true

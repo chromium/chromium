@@ -3255,10 +3255,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       extensions::pref_names::kExtensionUnpublishedAvailability,
       /*min=*/0, /*max=*/1, /*clamp=*/false));
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kExtensionManifestV2Availability,
-      extensions::pref_names::kManifestV2Availability, /*min=*/0, /*max=*/3,
-      /*clamp=*/false));
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

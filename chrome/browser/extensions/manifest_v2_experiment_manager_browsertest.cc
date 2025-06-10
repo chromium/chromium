@@ -15,11 +15,6 @@
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
@@ -76,12 +71,6 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
       {"PRE_MarkingGlobalNoticeAsAcknowledged", MV2ExperimentStage::kWarning},
       {"MarkingGlobalNoticeAsAcknowledged",
        MV2ExperimentStage::kDisableWithReEnable},
-      {"PRE_PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2ExperimentStage::kWarning},
-      {"PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2ExperimentStage::kDisableWithReEnable},
-      {"ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2ExperimentStage::kDisableWithReEnable},
       {"PRE_PRE_ExtensionsAreReEnabledIfExperimentDisabled",
        MV2ExperimentStage::kWarning},
       {"PRE_ExtensionsAreReEnabledIfExperimentDisabled",
@@ -117,38 +106,6 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
   NOTREACHED()
       << "Unknown test name '" << test_name << "'. "
       << "You need to add a new test stage entry into this collection.";
-}
-
-enum class MV2PolicyLevel {
-  kUnset,
-  kAllowed,
-  kDisallowed,
-  kAllowedForAdminInstalledOnly,
-};
-
-// Each test may have a different desired policy setting. Store them here so the
-// test harness properly instantiates them. If a test isn't specified, it
-// defaults to not setting the policy.
-MV2PolicyLevel GetPolicyLevelForTest(std::string_view test_name) {
-  struct {
-    const char* test_name;
-    MV2PolicyLevel policy_level;
-  } test_stages[] = {
-      {"PRE_PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2PolicyLevel::kUnset},
-      {"PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2PolicyLevel::kUnset},
-      {"ExtensionsAreReEnabledIfPolicyChangesOnStartup",
-       MV2PolicyLevel::kAllowed},
-  };
-
-  for (const auto& test_stage : test_stages) {
-    if (test_stage.test_name == test_name) {
-      return test_stage.policy_level;
-    }
-  }
-
-  return MV2PolicyLevel::kUnset;
 }
 
 }  // namespace
@@ -202,24 +159,15 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-
     ExtensionBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(nullptr);
     ExtensionBrowserTest::TearDown();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
-    SetMV2PolicyLevel(GetPolicyLevelForTest(
-        testing::UnitTest::GetInstance()->current_test_info()->name()));
   }
 
   void SetUpOnMainThread() override {
@@ -235,36 +183,6 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   // Since this is testing the MV2 deprecation experiments, we don't want to
   // bypass their disabling for testing.
   bool ShouldAllowMV2Extensions() override { return false; }
-
-  // Sets the current level of the MV2 admin policy.
-  void SetMV2PolicyLevel(MV2PolicyLevel policy_level) {
-    std::optional<internal::GlobalSettings::ManifestV2Setting> pref_value;
-    switch (policy_level) {
-      case MV2PolicyLevel::kUnset:
-        break;
-      case MV2PolicyLevel::kAllowed:
-        pref_value = internal::GlobalSettings::ManifestV2Setting::kEnabled;
-        break;
-      case MV2PolicyLevel::kDisallowed:
-        pref_value = internal::GlobalSettings::ManifestV2Setting::kDisabled;
-        break;
-      case MV2PolicyLevel::kAllowedForAdminInstalledOnly:
-        pref_value = internal::GlobalSettings::ManifestV2Setting::
-            kEnabledForForceInstalled;
-        break;
-    }
-
-    if (!pref_value) {
-      return;
-    }
-
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kExtensionManifestV2Availability,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 base::Value(static_cast<int>(*pref_value)), nullptr);
-    policy_provider_.UpdateChromePolicy(policies);
-  }
 
   void WaitForExtensionSystemReady() {
     base::RunLoop run_loop;
@@ -340,7 +258,6 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
       std::vector<base::test::FeatureRef>& disabled_features) {}
 
   base::test::ScopedFeatureList feature_list_;
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::HistogramTester histogram_tester_;
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
@@ -623,59 +540,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // acknowledged.
   experiment_manager()->MarkNoticeAsAcknowledgedGlobally();
   EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
-}
-
-// Tests that extensions are properly re-enabled on startup if they should no
-// longer be disabled because the policy setting changed.
-// First stage: Install an MV2 extension.
-IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
-                       PRE_PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup) {
-  EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
-
-  const Extension* extension = AddMV2Extension("Test MV2 Extension");
-  ASSERT_TRUE(extension);
-}
-// Second stage: MV2 deprecation experiment takes effect; extension is disabled.
-IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
-                       PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup) {
-  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
-            GetActiveExperimentStage());
-
-  WaitForExtensionSystemReady();
-
-  const Extension* extension = GetExtensionByName(
-      "Test MV2 Extension", extension_registry()->disabled_extensions());
-  ASSERT_TRUE(extension);
-  const ExtensionId extension_id = extension->id();
-  EXPECT_THAT(extension_prefs()->GetDisableReasons(extension_id),
-              testing::UnorderedElementsAre(
-                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
-}
-// Third stage: The enterprise policy was changed to allow all MV2 extensions.
-// The extension should be automatically re-enabled.
-IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
-                       ExtensionsAreReEnabledIfPolicyChangesOnStartup) {
-  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
-            GetActiveExperimentStage());
-
-  WaitForExtensionSystemReady();
-
-  const Extension* extension = GetExtensionByName(
-      "Test MV2 Extension", extension_registry()->enabled_extensions());
-  ASSERT_TRUE(extension);
-  const ExtensionId extension_id = extension->id();
-
-  EXPECT_TRUE(extension_prefs()->GetDisableReasons(extension_id).empty());
-  // The user didn't re-enable the extension, so it shouldn't be marked as such.
-  EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
-
-  // The extension is reported as "unaffected" since it is now exempt from
-  // the experiments.
-  histogram_tester().ExpectTotalCount(
-      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
-      ManifestV2ExperimentManager::MV2ExtensionState::kUnaffected, 1);
 }
 
 // Tests that if a user moves from a later experiment stage (disable with

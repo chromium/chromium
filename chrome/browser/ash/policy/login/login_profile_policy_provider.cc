@@ -69,8 +69,6 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenWebUsbAllowDevicesForUrls,
      key::kWebUsbAllowDevicesForUrls},
     {key::kDeviceLoginScreenExtensions, key::kExtensionInstallForcelist},
-    {key::kDeviceLoginScreenExtensionManifestV2Availability,
-     key::kExtensionManifestV2Availability},
     {key::kDeviceLoginScreenPromptOnMultipleMatchingCertificates,
      key::kPromptOnMultipleMatchingCertificates},
     {key::kDeviceLoginScreenContextAwareAccessSignalsAllowlist,

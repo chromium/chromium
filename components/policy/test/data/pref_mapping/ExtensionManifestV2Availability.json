@@ -1,21 +1,5 @@
 [
   {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos",
-      "fuchsia"
-    ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "extensions.manifest_v2",
-      "default_value": 0,
-      "values_to_test": [
-        0,
-        1,
-        2,
-        3
-      ]
-    }
+    "reason_for_missing_test": "Policy was removed"
   }
 ]
