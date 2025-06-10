@@ -16,7 +16,8 @@
 #infoContainer {
   display: flex;
   justify-content: center;
-  max-width: 400px;
+  min-width: 0;
+  padding: 0 210px;
 }
 
 .notice-item {
