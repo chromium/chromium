@@ -171,6 +171,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   void LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                            viz::SharedImageFormat format,
                            gfx::GpuMemoryBufferType gmb_type,
+                           const gfx::Size& size,
                            const std::string& debug_label);
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);

@@ -342,7 +342,7 @@ bool SharedImageFactory::CreateSharedImage(
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
+    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, size, debug_label);
     return false;
   }
 
@@ -408,7 +408,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     auto* factory = GetFactoryByUsage(usage, format, size,
                                       /*pixel_data=*/{}, GetNativeBufferType());
     if (!factory) {
-      LogGetFactoryFailed(usage, format, GetNativeBufferType(), debug_label);
+      LogGetFactoryFailed(usage, format, GetNativeBufferType(), size,
+                          debug_label);
       return false;
     }
 
@@ -454,7 +455,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       }
 
       if (!factory) {
-        LogGetFactoryFailed(usage, format, gfx::SHARED_MEMORY_BUFFER,
+        LogGetFactoryFailed(usage, format, gfx::SHARED_MEMORY_BUFFER, size,
                             debug_label);
         return false;
       }
@@ -499,7 +500,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   SharedImageBackingFactory* const factory =
       GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
+    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, size, debug_label);
     return false;
   }
 
@@ -547,7 +548,7 @@ bool SharedImageFactory::CreateSharedImage(
   }
 
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gmb_type, debug_label);
+    LogGetFactoryFailed(usage, format, gmb_type, size, debug_label);
     return false;
   }
 
@@ -887,11 +888,13 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                                              viz::SharedImageFormat format,
                                              gfx::GpuMemoryBufferType gmb_type,
+                                             const gfx::Size& size,
                                              const std::string& debug_label) {
   SCOPED_CRASH_KEY_STRING32("SIFactory", "DebugLabel", debug_label);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
   SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "Size", size.ToString());
   SCOPED_CRASH_KEY_BOOL("SIFactory", "SharedBwThreads",
                         IsSharedBetweenThreads(usage));
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
@@ -899,6 +902,7 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
              << ", format: " << format.ToString()
              << ", share_between_threads: " << IsSharedBetweenThreads(usage)
              << ", gmb_type: " << GmbTypeToString(gmb_type)
+             << ", size: " << size.ToString()
              << ", debug_label: " << debug_label;
   // DumpWithoutCrashing to get crash reports for failure to find a shared image
   // backing factory.

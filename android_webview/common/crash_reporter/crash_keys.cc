@@ -216,6 +216,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "SIFactory-GMBType",
     "SIFactory-SharedBwThreads",
     "SIFactory-Usage",
+    "SIFactory-Size",
 
     nullptr};
 // clang-format on
