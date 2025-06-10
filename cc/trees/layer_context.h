@@ -15,6 +15,7 @@ class Rect;
 
 namespace viz {
 class ClientResourceProvider;
+class LocalSurfaceId;
 class RasterContextProvider;
 }  // namespace viz
 
@@ -38,7 +39,8 @@ class CC_EXPORT LayerContext {
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       viz::RasterContextProvider& context_provider,
-      const gfx::Rect& viewport_damage_rect) = 0;
+      const gfx::Rect& viewport_damage_rect,
+      const viz::LocalSurfaceId& target_local_surface_id) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
   virtual void UpdateDisplayTile(PictureLayerImpl& layer,

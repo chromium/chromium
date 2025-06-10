@@ -12,7 +12,8 @@ void TestLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
-    const gfx::Rect& viewport_damage_rect) {}
+    const gfx::Rect& viewport_damage_rect,
+    const viz::LocalSurfaceId& target_local_surface_id) {}
 
 void TestLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,

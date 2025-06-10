@@ -1152,7 +1152,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
-    const gfx::Rect& viewport_damage_rect) {
+    const gfx::Rect& viewport_damage_rect,
+    const viz::LocalSurfaceId& target_local_surface_id) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
@@ -1173,6 +1174,9 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   }
   update->new_local_surface_id_request =
       tree.TakeNewLocalSurfaceIdRequestForVizProcess();
+  if (target_local_surface_id.is_valid()) {
+    update->target_local_surface_id = target_local_surface_id;
+  }
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();

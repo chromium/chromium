@@ -16,10 +16,12 @@ class TestLayerContext : public LayerContext {
 
   void SetVisible(bool visible) override;
 
-  void UpdateDisplayTreeFrom(LayerTreeImpl& tree,
-                             viz::ClientResourceProvider& resource_provider,
-                             viz::RasterContextProvider& context_provider,
-                             const gfx::Rect& viewport_damage_rect) override;
+  void UpdateDisplayTreeFrom(
+      LayerTreeImpl& tree,
+      viz::ClientResourceProvider& resource_provider,
+      viz::RasterContextProvider& context_provider,
+      const gfx::Rect& viewport_damage_rect,
+      const viz::LocalSurfaceId& target_local_surface_id) override;
 
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,

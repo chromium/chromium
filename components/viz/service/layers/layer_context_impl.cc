@@ -1468,12 +1468,16 @@ void LayerContextImpl::DetachFromClient() {
 
 void LayerContextImpl::SetLocalSurfaceId(
     const LocalSurfaceId& local_surface_id) {
-  host_impl_->SetTargetLocalSurfaceId(local_surface_id);
+  // There are a few places that calls this. One is from LayerTreeHostImpl in
+  // TreesInViz mode in viz process, and it's unnecessary to call it. The
+  // others are from ui/aura/window.cc, and their frame_sink_ should not be
+  // LayerContextImpl.
+  NOTREACHED();
 }
 
 void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
                                              bool hit_test_data_changed) {
-  if (!host_impl_->target_local_surface_id().is_valid()) {
+  if (!host_impl_->GetCurrentLocalSurfaceId().is_valid()) {
     return;
   }
 
@@ -1485,9 +1489,9 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
   // TODO(vmiura): Implement other functionality from
   // AsyncLayerTreeFrameSink::SubmitCompositorFrame()
 
-  compositor_sink_->SubmitCompositorFrame(host_impl_->target_local_surface_id(),
-                                          std::move(frame),
-                                          std::move(hit_test_region_list), 0);
+  compositor_sink_->SubmitCompositorFrame(
+      host_impl_->GetCurrentLocalSurfaceId(), std::move(frame),
+      std::move(hit_test_region_list), 0);
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     constexpr bool start_ready_animations = true;
@@ -1609,8 +1613,10 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       layers.RequestNewLocalSurfaceId();
     }
     host_impl_->UpdateChildLocalSurfaceId();
-    // TODO(zmo): Remove calling SetTargetLocalSurfaceId().
-    host_impl_->SetTargetLocalSurfaceId(*update->local_surface_id_from_parent);
+  }
+
+  if (update->target_local_surface_id) {
+    host_impl_->SetTargetLocalSurfaceId(*update->target_local_surface_id);
   }
 
   for (const auto& tiling : update->tilings) {

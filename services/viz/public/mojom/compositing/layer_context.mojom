@@ -94,6 +94,13 @@ struct LayerTreeUpdate {
   // process.
   bool new_local_surface_id_request;
 
+  // The viz::LocalSurfaceId to unthrottle drawing for.
+  // This is from LayerTreeHostImpl.
+  // It is still necessary to send it over to viz because
+  // LayerContextImpl::BeginFrame calls LayerTreeHostImpl::WillBeginImplFrame
+  // which uses the target_local_surface_id_.
+  LocalSurfaceId? target_local_surface_id;
+
   // The background color with which to fill any space not covered by layers
   // within the tree's content rect.
   skia.mojom.SkColor4f background_color;
