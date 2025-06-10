@@ -111,7 +111,7 @@ version = "2"
 features = ["full"]
 
 [dependencies.temporal_capi]
-version = "0.0.8"
+version = "0.0.9"
 features = ["compiled_data"]
 
 [dependencies.zip]
