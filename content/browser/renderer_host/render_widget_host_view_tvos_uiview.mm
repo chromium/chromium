@@ -4,7 +4,12 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_tvos_uiview.h"
 
-#include "base/notimplemented.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 static void* kObservingContext = &kObservingContext;
 
@@ -17,8 +22,40 @@ static void* kObservingContext = &kObservingContext;
   self = [self init];
   if (self) {
     _view = view;
-    // TODO(crbug.com/411452047): Need to support text input.
-    TVOS_NOT_YET_IMPLEMENTED();
+    self.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+    UITapGestureRecognizer* tapGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(tapGesture:)];
+    [self addGestureRecognizer:tapGesture];
+
+    UISwipeGestureRecognizer* swipeLeftGesture =
+        [[UISwipeGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(swipeGesture:)];
+    swipeLeftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self addGestureRecognizer:swipeLeftGesture];
+
+    UISwipeGestureRecognizer* swipeRightGesture =
+        [[UISwipeGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(swipeGesture:)];
+    swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
+    [self addGestureRecognizer:swipeRightGesture];
+
+    UISwipeGestureRecognizer* swipeUpGesture = [[UISwipeGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(swipeGesture:)];
+    swipeUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
+    [self addGestureRecognizer:swipeUpGesture];
+
+    UISwipeGestureRecognizer* swipeDownGesture =
+        [[UISwipeGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(swipeGesture:)];
+    swipeDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
+    [self addGestureRecognizer:swipeDownGesture];
   }
   return self;
 }
@@ -41,6 +78,68 @@ static void* kObservingContext = &kObservingContext;
   [view removeObserver:self
             forKeyPath:NSStringFromSelector(@selector(contentInset))];
   [self removeFromSuperview];
+}
+
+#pragma mark - Private
+
+- (void)tapGesture:(UIGestureRecognizer*)gestureRecognizer {
+  if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
+    return;
+  }
+
+  blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
+                                blink::WebInputEvent::kNoModifiers,
+                                ui::EventTimeForNow());
+  event.native_key_code = UIKeyboardHIDUsageKeyboardReturnOrEnter;
+  event.dom_code = static_cast<int>(ui::DomCode::ENTER);
+  event.dom_key = ui::DomKey::ENTER;
+  event.windows_key_code = ui::VKEY_RETURN;
+
+  _view->SendKeyEvent(
+      input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
+}
+
+- (void)swipeGesture:(UISwipeGestureRecognizer*)gestureRecognizer {
+  if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
+    return;
+  }
+
+  const UISwipeGestureRecognizerDirection direction =
+      gestureRecognizer.direction;
+
+  blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
+                                blink::WebInputEvent::kNoModifiers,
+                                ui::EventTimeForNow());
+
+  switch (direction) {
+    case UISwipeGestureRecognizerDirectionLeft:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardLeftArrow;
+      event.dom_code = static_cast<int>(ui::DomCode::ARROW_LEFT);
+      event.dom_key = ui::DomKey::ARROW_LEFT;
+      event.windows_key_code = ui::VKEY_LEFT;
+      break;
+    case UISwipeGestureRecognizerDirectionRight:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardRightArrow;
+      event.dom_code = static_cast<int>(ui::DomCode::ARROW_RIGHT);
+      event.dom_key = ui::DomKey::ARROW_RIGHT;
+      event.windows_key_code = ui::VKEY_RIGHT;
+      break;
+    case UISwipeGestureRecognizerDirectionUp:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardUpArrow;
+      event.dom_code = static_cast<int>(ui::DomCode::ARROW_UP);
+      event.dom_key = ui::DomKey::ARROW_UP;
+      event.windows_key_code = ui::VKEY_UP;
+      break;
+    case UISwipeGestureRecognizerDirectionDown:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardDownArrow;
+      event.dom_code = static_cast<int>(ui::DomCode::ARROW_DOWN);
+      event.dom_key = ui::DomKey::ARROW_DOWN;
+      event.windows_key_code = ui::VKEY_DOWN;
+      break;
+  }
+
+  _view->SendKeyEvent(
+      input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
 }
 
 #pragma mark - CALayerFrameSinkProvider
@@ -67,6 +166,10 @@ static void* kObservingContext = &kObservingContext;
 }
 
 #pragma mark - UIView
+
+- (BOOL)canBecomeFocused {
+  return YES;
+}
 
 - (void)layoutSubviews {
   CHECK(_view);
