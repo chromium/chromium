@@ -95,7 +95,7 @@ class CORE_EXPORT OffscreenCanvas final
   }
 
   CanvasResourceProvider* GetOrCreateResourceProviderForCanvas2D();
-  CanvasResourceProvider* GetOrCreateResourceProvider();
+  CanvasResourceProvider* GetOrCreateResourceProviderForImageBitmap();
 
   void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
     client_id_ = client_id;
@@ -261,6 +261,7 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
+  CanvasResourceProvider* GetOrCreateResourceProvider();
   void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
                                    const IdentifiableToken& token) const;
 

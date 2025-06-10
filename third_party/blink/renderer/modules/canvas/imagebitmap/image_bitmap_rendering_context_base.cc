@@ -124,7 +124,8 @@ bool ImageBitmapRenderingContextBase::CanCreateCanvas2dResourceProvider()
     const {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
-  return !!static_cast<OffscreenCanvas*>(Host())->GetOrCreateResourceProvider();
+  return !!static_cast<OffscreenCanvas*>(Host())
+               ->GetOrCreateResourceProviderForImageBitmap();
 }
 
 bool ImageBitmapRenderingContextBase::PushFrame() {

@@ -534,6 +534,12 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 }
 
 CanvasResourceProvider*
+OffscreenCanvas::GetOrCreateResourceProviderForImageBitmap() {
+  CHECK(IsImageBitmapRenderingContext());
+  return GetOrCreateResourceProvider();
+}
+
+CanvasResourceProvider*
 OffscreenCanvas::GetOrCreateResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
   return GetOrCreateResourceProvider();
