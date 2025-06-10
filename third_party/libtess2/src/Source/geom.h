@@ -48,7 +48,12 @@
 #endif
 
 #define EdgeEval(u,v,w)	tesedgeEval(u,v,w)
-#define EdgeSign(u,v,w)	tesedgeSign(u,v,w)
+
+/* EdgeSign used to call tesedgeSign(), which is a cheaper version of tesedgeEval(), but should return the same sign.
+* This does not seem to be the case if the x coordinates are almost 0. Always using tesedgeEval() fixes this discrepancy.
+* See https://github.com/memononen/libtess2/issues/22 for example data that triggers the issue.
+*/
+#define EdgeSign(u,v,w)	tesedgeEval(u,v,w)
 
 /* Versions of VertLeq, EdgeSign, EdgeEval with s and t transposed. */
 

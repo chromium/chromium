@@ -493,7 +493,7 @@ static int CheckForRightSplice( TESStesselator *tess, ActiveRegion *regUp )
 			SpliceMergeVertices( tess, eLo->Oprev, eUp );
 		}
 	} else {
-		if( EdgeSign( eUp->Dst, eLo->Org, eUp->Org ) <= 0 ) return FALSE;
+		if( EdgeSign( eUp->Dst, eLo->Org, eUp->Org ) < 0 ) return FALSE;
 
 		/* eLo->Org appears to be above eUp, so splice eLo->Org into eUp */
 		regUp->dirty = TRUE;
