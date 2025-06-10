@@ -16,17 +16,6 @@ GEN_INCLUDE(['mock_feedback.js']);
 ChromeVoxE2ETest = class extends E2ETestBase {
   constructor() {
     super();
-
-    if (this.runtimeDeps.length > 0) {
-      chrome.extension.getViews().forEach(view => {
-        this.runtimeDeps.forEach(dep => {
-          if (view[dep]) {
-            window[dep] = view[dep];
-          }
-        });
-      });
-    }
-
     this.originalOutputContextValues_ = {};
   }
 
@@ -123,14 +112,6 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   doGesture(gesture, opt_x, opt_y) {
     return () => GestureCommandHandler.instance.onAccessibilityGesture_(
                gesture, opt_x, opt_y);
-  }
-
-  /**
-   * Dependencies defined on a background window other than this one.
-   * @type {!Array<string>}
-   */
-  get runtimeDeps() {
-    return [];
   }
 
   /** @override */

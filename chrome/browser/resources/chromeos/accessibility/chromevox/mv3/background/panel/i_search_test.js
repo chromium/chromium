@@ -9,11 +9,6 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
  * Test fixture for ISearch.
  */
 ChromeVoxISearchTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  get runtimeDeps() {
-    return ['ISearch', 'ISearchHandler'];
-  }
-
   get linksAndHeadingsDoc() {
     return `
       <p>start</p>
