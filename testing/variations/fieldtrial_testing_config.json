@@ -2813,6 +2813,21 @@
             ]
         }
     ],
+    "AutomaticUsbDetach": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutomaticUsbDetach"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidDuplicateDelayBeginFrame": [
         {
             "platforms": [
