@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/bidirectional_stream.h"
 
 #include <memory>
@@ -1449,7 +1444,7 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
   EXPECT_EQ(NextProto::kProtoHTTP2, delegate->GetProtocol());
   // BidirectionalStreamSpdyStreamJob does not count the bytes sent for |rst|
   // because it is sent after SpdyStream::Delegate::OnClose is called.
-  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes).first(1u)),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 

@@ -315,7 +315,7 @@ class MockNetworkTransaction final : public HttpTransaction {
   CompletionOnceCallback callback_;
 
   HttpResponseInfo response_;
-  std::string data_;
+  std::vector<uint8_t> data_;
   int64_t data_cursor_ = 0;
   int64_t content_length_ = 0;
   int test_mode_;

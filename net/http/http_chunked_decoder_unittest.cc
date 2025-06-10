@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_chunked_decoder.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
 #include "net/test/gtest_util.h"
@@ -30,8 +28,7 @@ namespace {
 
 typedef testing::Test HttpChunkedDecoderTest;
 
-void RunTest(const char* const inputs[],
-             size_t num_inputs,
+void RunTest(base::span<const std::string_view> inputs,
              const char* expected_output,
              bool expected_eof,
              int bytes_after_eof) {
@@ -40,12 +37,16 @@ void RunTest(const char* const inputs[],
 
   std::string result;
 
-  for (size_t i = 0; i < num_inputs; ++i) {
-    std::string input = inputs[i];
-    int n = decoder.FilterBuf(base::as_writable_byte_span(input));
+  for (const auto input : inputs) {
+    // FilterBuf() modifies the input, so copy to a vector, which can be written
+    // to.
+    std::vector<uint8_t> copy(input.begin(), input.end());
+    int n = decoder.FilterBuf(copy);
     EXPECT_GE(n, 0);
-    if (n > 0)
-      result.append(input.data(), n);
+    if (n > 0) {
+      copy.resize(n);
+      result.append(copy.begin(), copy.end());
+    }
   }
 
   EXPECT_EQ(expected_output, result);
@@ -54,15 +55,16 @@ void RunTest(const char* const inputs[],
 }
 
 // Feed the inputs to the decoder, until it returns an error.
-void RunTestUntilFailure(const char* const inputs[],
-                         size_t num_inputs,
+void RunTestUntilFailure(base::span<const std::string_view> inputs,
                          size_t fail_index) {
   HttpChunkedDecoder decoder;
   EXPECT_FALSE(decoder.reached_eof());
 
-  for (size_t i = 0; i < num_inputs; ++i) {
-    std::string input = inputs[i];
-    int n = decoder.FilterBuf(base::as_writable_byte_span(input));
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    // FilterBuf() modifies the input, so copy to a vector, which can be written
+    // to.
+    std::vector<uint8_t> copy(inputs[i].begin(), inputs[i].end());
+    int n = decoder.FilterBuf(copy);
     if (n < 0) {
       EXPECT_THAT(n, IsError(ERR_INVALID_CHUNKED_ENCODING));
       EXPECT_EQ(fail_index, i);
@@ -73,232 +75,263 @@ void RunTestUntilFailure(const char* const inputs[],
 }
 
 TEST(HttpChunkedDecoderTest, Basic) {
-  const char* const inputs[] = {
-    "B\r\nhello hello\r\n0\r\n\r\n"
-  };
-  RunTest(inputs, std::size(inputs), "hello hello", true, 0);
+  const std::vector<std::string_view> inputs = {
+      "B\r\nhello hello\r\n0\r\n\r\n"};
+  RunTest(inputs, "hello hello", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, OneChunk) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n"
-  };
-  RunTest(inputs, std::size(inputs), "hello", false, 0);
+  const std::vector<std::string_view> inputs = {"5\r\nhello\r\n"};
+  RunTest(inputs, "hello", false, 0);
 }
 
 TEST(HttpChunkedDecoderTest, Typical) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n",
-    "1\r\n \r\n",
-    "5\r\nworld\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n",
+      "1\r\n \r\n",
+      "5\r\nworld\r\n",
+      "0\r\n\r\n"
   };
-  RunTest(inputs, std::size(inputs), "hello world", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello world", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, Incremental) {
-  const char* const inputs[] = {
-    "5",
-    "\r",
-    "\n",
-    "hello",
-    "\r",
-    "\n",
-    "0",
-    "\r",
-    "\n",
-    "\r",
-    "\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5",
+      "\r",
+      "\n",
+      "hello",
+      "\r",
+      "\n",
+      "0",
+      "\r",
+      "\n",
+      "\r",
+      "\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 0);
 }
 
 // Same as above, but group carriage returns with previous input.
 TEST(HttpChunkedDecoderTest, Incremental2) {
-  const char* const inputs[] = {
-    "5\r",
-    "\n",
-    "hello\r",
-    "\n",
-    "0\r",
-    "\n\r",
-    "\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r",
+      "\n",
+      "hello\r",
+      "\n",
+      "0\r",
+      "\n\r",
+      "\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, LF_InsteadOf_CRLF) {
-  // Compatibility: [RFC 7230 - Invalid]
-  // {Firefox3} - Valid
-  // {IE7, Safari3.1, Opera9.51} - Invalid
-  const char* const inputs[] = {
-    "5\nhello\n",
-    "1\n \n",
-    "5\nworld\n",
-    "0\n\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\nhello\n",
+      "1\n \n",
+      "5\nworld\n",
+      "0\n\n"
   };
-  RunTest(inputs, std::size(inputs), "hello world", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello world", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, Extensions) {
-  const char* const inputs[] = {
-    "5;x=0\r\nhello\r\n",
-    "0;y=\"2 \"\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5;x=0\r\nhello\r\n",
+      "0;y=\"2 \"\r\n\r\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, Trailers) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n",
-    "0\r\n",
-    "Foo: 1\r\n",
-    "Bar: 2\r\n",
-    "\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n",
+      "0\r\n",
+      "Foo: 1\r\n",
+      "Bar: 2\r\n",
+      "\r\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, TrailersUnfinished) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n",
-    "0\r\n",
-    "Foo: 1\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n",
+      "0\r\n",
+      "Foo: 1\r\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", false, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", false, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
-  const char* const inputs[] = {
-    // This chunked body is not terminated.
-    // However we will fail decoding because the chunk-size
-    // number is larger than we can handle.
-    "48469410265455838241\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      // This chunked body is not terminated.
+      // However we will fail decoding because the chunk-size
+      // number is larger than we can handle.
+      "48469410265455838241\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {Safari3.1, IE7} - Invalid
-    // {Firefox3, Opera 9.51} - Valid
-    "0x5\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "0x5\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
+// Note that this test covers behavior contrary to RFC 7230.
 TEST(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {IE7, Safari3.1, Firefox3, Opera 9.51} - Valid
-    //
-    // At least yahoo.com depends on this being valid.
-    "5      \r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5      \r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 0);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {IE7, Safari3.1, Firefox3, Opera 9.51} - Valid
-    "5\t\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\t\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230- Invalid]:
-    // {Safari3.1} - Invalid
-    // {IE7, Firefox3, Opera 9.51} - Valid
-    "5\f\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\f\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {Safari 3.1} - Invalid
-    // {IE7, Firefox3, Opera 9.51} - Valid
-    "5\v\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\v\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {Safari 3.1} - Invalid
-    // {IE7, Firefox3, Opera 9.51} - Valid
-    "5H\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5H\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_LeadingSpace) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {IE7} - Invalid
-    // {Safari 3.1, Firefox3, Opera 9.51} - Valid
-    " 5\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      " 5\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidLeadingSeparator) {
-  const char* const inputs[] = {
-    "\r\n5\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+       "\r\n5\r\nhello\r\n",
+       "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
-  const char* const inputs[] = {
-    "5\r\nhello",
-    "1\r\n \r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello",
+      "1\r\n \r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 1);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 1);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
-  const char* const inputs[] = {
-    "8\r\n12345678\r\n-5\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "8\r\n12345678\r\n-5\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidChunkSize_Plus) {
-  const char* const inputs[] = {
-    // Compatibility [RFC 7230 - Invalid]:
-    // {IE7, Safari 3.1} - Invalid
-    // {Firefox3, Opera 9.51} - Valid
-    "+5\r\nhello\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "+5\r\nhello\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, InvalidConsecutiveCRLFs) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n",
-    "\r\n\r\n\r\n\r\n",
-    "0\r\n\r\n"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n",
+      "\r\n\r\n\r\n\r\n",
+      "0\r\n\r\n"
   };
-  RunTestUntilFailure(inputs, std::size(inputs), 1);
+  // clang-format on
+
+  RunTestUntilFailure(inputs, 1);
 }
 
 TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
@@ -360,73 +393,72 @@ TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
 
 TEST(HttpChunkedDecoderTest, ExcessiveChunkLen) {
   // Smallest number that can't be represented as a signed int64.
-  const char* const inputs[] = {"8000000000000000\r\nhello\r\n"};
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  const std::vector<std::string_view> inputs = {
+      "8000000000000000\r\nhello\r\n"};
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, ExcessiveChunkLen2) {
   // Smallest number that can't be represented as an unsigned int64.
-  const char* const inputs[] = {"10000000000000000\r\nhello\r\n"};
-  RunTestUntilFailure(inputs, std::size(inputs), 0);
+  const std::vector<std::string_view> inputs = {
+      "10000000000000000\r\nhello\r\n"};
+  RunTestUntilFailure(inputs, 0);
 }
 
 TEST(HttpChunkedDecoderTest, BasicExtraData) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n0\r\n\r\nextra bytes"
-  };
-  RunTest(inputs, std::size(inputs), "hello", true, 11);
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n0\r\n\r\nextra bytes"};
+  RunTest(inputs, "hello", true, 11);
 }
 
 TEST(HttpChunkedDecoderTest, IncrementalExtraData) {
-  const char* const inputs[] = {
-    "5",
-    "\r",
-    "\n",
-    "hello",
-    "\r",
-    "\n",
-    "0",
-    "\r",
-    "\n",
-    "\r",
-    "\nextra bytes"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5",
+      "\r",
+      "\n",
+      "hello",
+      "\r",
+      "\n",
+      "0",
+      "\r",
+      "\n",
+      "\r",
+      "\nextra bytes"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 11);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 11);
 }
 
 TEST(HttpChunkedDecoderTest, MultipleExtraDataBlocks) {
-  const char* const inputs[] = {
-    "5\r\nhello\r\n0\r\n\r\nextra",
-    " bytes"
+  // clang-format off
+  const std::vector<std::string_view> inputs = {
+      "5\r\nhello\r\n0\r\n\r\nextra",
+      " bytes"
   };
-  RunTest(inputs, std::size(inputs), "hello", true, 11);
+  // clang-format on
+
+  RunTest(inputs, "hello", true, 11);
 }
 
 // Test when the line with the chunk length is too long.
 TEST(HttpChunkedDecoderTest, LongChunkLengthLine) {
-  int big_chunk_length = HttpChunkedDecoder::kMaxLineBufLen;
-  auto big_chunk = std::make_unique<char[]>(big_chunk_length + 1);
-  memset(big_chunk.get(), '0', big_chunk_length);
-  big_chunk[big_chunk_length] = 0;
-  const char* const inputs[] = {
-    big_chunk.get(),
-    "5"
-  };
-  RunTestUntilFailure(inputs, std::size(inputs), 1);
+  const int kBigChunkLength = HttpChunkedDecoder::kMaxLineBufLen;
+  std::vector<char> big_chunk(kBigChunkLength, '0');
+  const std::vector<std::string_view> inputs = {base::as_string_view(big_chunk),
+                                                "5"};
+  RunTestUntilFailure(inputs, 1);
 }
 
 // Test when the extension portion of the line with the chunk length is too
 // long.
 TEST(HttpChunkedDecoderTest, LongLengthLengthLine) {
-  int big_chunk_length = HttpChunkedDecoder::kMaxLineBufLen;
-  auto big_chunk = std::make_unique<char[]>(big_chunk_length + 1);
-  memset(big_chunk.get(), '0', big_chunk_length);
-  big_chunk[big_chunk_length] = 0;
-  const char* const inputs[] = {
-    "5;",
-    big_chunk.get()
-  };
-  RunTestUntilFailure(inputs, std::size(inputs), 1);
+  const int kBigChunkLength = HttpChunkedDecoder::kMaxLineBufLen;
+  std::vector<char> big_chunk(kBigChunkLength, '0');
+  const std::vector<std::string_view> inputs = {
+      "5;", base::as_string_view(big_chunk)};
+  RunTestUntilFailure(inputs, 1);
 }
 
 }  // namespace

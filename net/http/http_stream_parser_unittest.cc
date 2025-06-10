@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_stream_parser.h"
 
 #include <stdint.h>
@@ -1250,11 +1245,11 @@ class SimpleGetRunner {
 
   void ReadHeaders() { ReadHeadersExpectingError(OK); }
 
-  std::string ReadBody(int user_buf_len, int* read_lengths) {
+  std::string ReadBody(int user_buf_len, base::span<int> read_lengths) {
     TestCompletionCallback callback;
     auto buffer = base::MakeRefCounted<IOBufferWithSize>(user_buf_len);
     int rv;
-    int i = 0;
+    size_t i = 0;
     std::string body;
     while (true) {
       rv = parser_->ReadResponseBody(
@@ -1265,11 +1260,12 @@ class SimpleGetRunner {
         i++;
         EXPECT_EQ(read_lengths[i], rv);
       }
-      if (rv > 0)
-        body.append(buffer->data(), rv);
-      i++;
-      if (rv <= 0)
+      if (rv > 0) {
+        body.append(base::as_string_view(buffer->first(rv)));
+      } else {
         return body;
+      }
+      i++;
     }
   }
 
@@ -1598,7 +1594,7 @@ TEST(HttpStreamParser, ReceivedBytesAsyncMultiReadExcludesExtraData) {
   get_runner.ReadHeaders();
   const int headers_size = headers.size();
   EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
-  int read_lengths[] = {body_start_size, -1, body_end_size, 0};
+  int read_lengths[] = {body_start_size, ERR_IO_PENDING, body_end_size, 0};
   get_runner.ReadBody(body_start_size, read_lengths);
   const int response_size = headers_size + body_size;
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
