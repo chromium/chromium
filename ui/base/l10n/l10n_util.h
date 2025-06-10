@@ -304,9 +304,8 @@ int GetLocalizedContentsWidthInPixels(int pixel_resource_id);
 COMPONENT_EXPORT(UI_BASE)
 std::vector<std::string_view> GetAcceptLanguageListForTesting();
 
-COMPONENT_EXPORT(UI_BASE) const char* const* GetPlatformLocalesForTesting();
-
-COMPONENT_EXPORT(UI_BASE) size_t GetPlatformLocalesSizeForTesting();
+COMPONENT_EXPORT(UI_BASE)
+base::span<const std::string_view> GetPlatformLocalesForTesting();
 
 }  // namespace l10n_util
 

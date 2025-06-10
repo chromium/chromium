@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <memory>
@@ -677,25 +678,13 @@ TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
 }
 
 TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
-  const char* const* locales = l10n_util::GetPlatformLocalesForTesting();
-  const size_t locales_size = l10n_util::GetPlatformLocalesSizeForTesting();
+  const base::span<const std::string_view> locales =
+      l10n_util::GetPlatformLocalesForTesting();
 
-  // Check adjacent pairs and ensure they are in sorted order without
-  // duplicates.
-
-  // All 0-length and 1-length lists are sorted.
-  if (locales_size <= 1) {
-    return;
-  }
-
-  const char* last_locale = locales[0];
-  for (size_t i = 1; i < locales_size; i++) {
-    const char* cur_locale = locales[i];
-    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
-        << "Incorrect ordering in kPlatformLocales: " << last_locale
-        << " >= " << cur_locale;
-    last_locale = cur_locale;
-  }
+  // Check adjacent pairs and ensure they are in sorted order ...
+  EXPECT_TRUE(std::ranges::is_sorted(locales));
+  // ... and without duplicates.
+  EXPECT_EQ(std::ranges::adjacent_find(locales), locales.end());
 }
 
 TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
