@@ -208,7 +208,8 @@ DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Profile* profile,
     content::NavigationHandle* navigation_handle,
     Callback callback) {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return nullptr;
   }
 

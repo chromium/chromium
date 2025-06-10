@@ -35,6 +35,7 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -549,6 +550,61 @@ TEST_F(DataProtectionNavigationObserverTest,
     ASSERT_EQ(navigation_observer, nullptr);
     ASSERT_EQ(future.Get(), UrlSettings());
   }
+}
+
+class SameDocumentNavigationWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  explicit SameDocumentNavigationWebContentsObserver(
+      content::WebContents* web_contents,
+      FakeRealTimeUrlLookupService* lookup_service,
+      content::BrowserContext* browser_context)
+      : content::WebContentsObserver(web_contents),
+        lookup_service_(lookup_service),
+        browser_context_(browser_context) {}
+
+  MOCK_METHOD(void,
+              DidFinishNavigation,
+              (content::NavigationHandle*),
+              (override));
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    base::test::TestFuture<const UrlSettings&> future;
+
+    FakeDataProtectionNavigationController controller(
+        web_contents(), lookup_service_, future.GetCallback());
+
+    auto navigation_observer =
+        DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
+            &controller, Profile::FromBrowserContext(browser_context_),
+            navigation_handle, future.GetCallback());
+
+    ASSERT_EQ(navigation_observer, nullptr);
+  }
+
+ private:
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<FakeRealTimeUrlLookupService> lookup_service_;
+  raw_ptr<content::BrowserContext> browser_context_;
+};
+
+TEST_F(DataProtectionNavigationObserverTest,
+       SkipSameDocumentNavigation_CreateForNavigationIfNeeded) {
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+  SameDocumentNavigationWebContentsObserver observer(
+      web_contents(), &lookup_service_, browser_context());
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com#fragment"), main_rfh());
+
+  // Ensure that the navigation callbacks are invoked, since the assertion is
+  // outside the test body. If DidFinishNavigation() was called, then it is
+  // guaranteed that DidStartNavigation() was called prior, thereby checking the
+  // same document assertion.
+  EXPECT_CALL(observer, DidFinishNavigation);
+  simulator->CommitSameDocument();
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
