@@ -377,8 +377,7 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
         AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     UpdateCaptionButtonPlaceholderContainerBackground();
   } else {
-    RemoveChildView(caption_button_placeholder_container_);
-    caption_button_placeholder_container_ = nullptr;
+    RemoveChildViewT(caption_button_placeholder_container_.ExtractAsDangling());
   }
 }
 ///////////////////////////////////////////////////////////////////////////////
