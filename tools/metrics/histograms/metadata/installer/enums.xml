@@ -35,8 +35,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ChromeOSEfiManagementEvent">
-  <int value="0" label="RequiredEntryManagementFailed"/>
-  <int value="1" label="OptionalEntryManagementFailed"/>
+  <int value="1" label="RequiredEntryManagementFailed"/>
+  <int value="2" label="OptionalEntryManagementFailed"/>
 </enum>
 
 <enum name="ChromeOSRecoveryReason">
