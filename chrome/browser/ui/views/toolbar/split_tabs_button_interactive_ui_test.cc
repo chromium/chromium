@@ -402,5 +402,5 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ButtonUpdatesOnSplit) {
                       OnIncompatibleAction::kIgnoreAndContinue,
                       "Screenshot can only run in pixel_tests on Windows."),
                   Screenshot(kToolbarSplitTabsToolbarButtonElementId,
-                             "SplitTabButton", "6618989"));
+                             "SplitTabButton", "6628632"));
 }
