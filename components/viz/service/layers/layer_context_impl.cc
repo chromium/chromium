@@ -606,6 +606,11 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
         "Invalid contents_opaque_for_text: cannot be false if contents_opaque "
         "is true.");
   }
+  if (wire.safe_opaque_background_color.isOpaque() != wire.contents_opaque) {
+    return base::unexpected(
+        "Invalid safe_opaque_background_color: opaqueness must agree with "
+        "contents_opaque");
+  }
 
   layer.SetBounds(wire.bounds);
   layer.SetContentsOpaque(wire.contents_opaque);

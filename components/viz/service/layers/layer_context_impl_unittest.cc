@@ -2178,6 +2178,8 @@ TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
   layer1_props->bounds = kUpdatedBounds;
   layer1_props->contents_opaque = true;
   layer1_props->contents_opaque_for_text = true;
+  // If contents_opaque is true, safe_opaque_background_color must be opaque.
+  layer1_props->safe_opaque_background_color = SkColors::kRed;
   layer1_props->background_color = SkColors::kRed;
   layer1_props->transform_tree_index = cc::kRootPropertyNodeId;
   update_props->layers.push_back(std::move(layer1_props));
@@ -2349,6 +2351,8 @@ TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
   auto layer_props_valid1 = CreateManualLayer(layer_id);
   layer_props_valid1->contents_opaque = true;
   layer_props_valid1->contents_opaque_for_text = true;
+  // If contents_opaque is true, safe_opaque_background_color must be opaque.
+  layer_props_valid1->safe_opaque_background_color = SkColors::kRed;
   update_valid1->layers.push_back(std::move(layer_props_valid1));
   EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid1))
                   .has_value());
@@ -2362,6 +2366,8 @@ TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
   auto layer_props_invalid = CreateManualLayer(layer_id);
   layer_props_invalid->contents_opaque = true;
   layer_props_invalid->contents_opaque_for_text = false;
+  // This would also be invalid if contents_opaque_for_text was not opaque.
+  layer_props_invalid->safe_opaque_background_color = SkColors::kGreen;
   update_invalid->layers.push_back(std::move(layer_props_invalid));
   auto result_invalid =
       layer_context_impl_->DoUpdateDisplayTree(std::move(update_invalid));
@@ -2380,6 +2386,9 @@ TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
   auto layer_props_valid2 = CreateManualLayer(layer_id);
   layer_props_valid2->contents_opaque = false;
   layer_props_valid2->contents_opaque_for_text = true;
+  // If contents_opaque is false, safe_opaque_background_color must be
+  // transparent.
+  layer_props_valid2->safe_opaque_background_color = SkColors::kTransparent;
   update_valid2->layers.push_back(std::move(layer_props_valid2));
   EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid2))
                   .has_value());
@@ -2393,6 +2402,9 @@ TEST_F(LayerContextImplLayerLifecycleTest, ContentsOpaqueFlags) {
   auto layer_props_valid3 = CreateManualLayer(layer_id);
   layer_props_valid3->contents_opaque = false;
   layer_props_valid3->contents_opaque_for_text = false;
+  // If contents_opaque is false, safe_opaque_background_color must be
+  // transparent.
+  layer_props_valid3->safe_opaque_background_color = SkColors::kTransparent;
   update_valid3->layers.push_back(std::move(layer_props_valid3));
   EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_valid3))
                   .has_value());
@@ -2501,6 +2513,293 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   EXPECT_EQ(layer_impl_after_invalid->clip_tree_index(), kValidIndex);
   EXPECT_EQ(layer_impl_after_invalid->effect_tree_index(), kValidIndex);
   EXPECT_EQ(layer_impl_after_invalid->scroll_tree_index(), kValidIndex);
+}
+
+// Test fixture for base LayerImpl property updates (those directly on
+// mojom::Layer).
+class LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest
+    : public LayerContextImplLayerLifecycleTest {};
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateSafeOpaqueBackgroundColor) {
+  constexpr int kLayerId = 2;
+  const SkColor4f kDefaultColor = SkColors::kTransparent;  // Default from mojom
+  const SkColor4f kColor1 = SkColors::kRed;
+  const SkColor4f kColor2 = SkColors::kGreen;
+
+  // Initial update: Create with default color.
+  // Default contents_opaque is false.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_FALSE(layer_impl->contents_opaque());
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), kDefaultColor);
+
+  // Second update: Update color (still transparent, contents_opaque=false).
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->contents_opaque = false;
+  layer_props2->contents_opaque_for_text = false;
+  layer_props2->safe_opaque_background_color = SkColors::kTransparent;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), SkColors::kTransparent);
+
+  // Third update: Set contents_opaque = true, safe_opaque_background_color =
+  // opaque red.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->contents_opaque = true;
+  layer_props3->contents_opaque_for_text = true;
+  layer_props3->safe_opaque_background_color = kColor2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_TRUE(layer_impl->contents_opaque());
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), kColor2);
+
+  // Fourth update: Update color again (opaque green, contents_opaque=true).
+  auto update4 = CreateDefaultUpdate();
+  auto layer_props4 = CreateManualLayer(kLayerId);
+  layer_props4->contents_opaque = true;
+  layer_props4->contents_opaque_for_text = true;
+  layer_props4->safe_opaque_background_color = kColor2;
+  update4->layers.push_back(std::move(layer_props4));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), kColor2);
+
+  // Fifth update: Attempt invalid update: contents_opaque = true, but
+  // safe_opaque_background_color is transparent.
+  auto update5 = CreateDefaultUpdate();
+  auto layer_props5 = CreateManualLayer(kLayerId);
+  layer_props5->contents_opaque = true;
+  layer_props5->contents_opaque_for_text = true;
+  layer_props5->safe_opaque_background_color = SkColors::kTransparent;
+  update5->layers.push_back(std::move(layer_props5));
+  auto result5 = layer_context_impl_->DoUpdateDisplayTree(std::move(update5));
+  ASSERT_FALSE(result5.has_value());
+  EXPECT_THAT(result5.error(),
+              testing::StartsWith("Invalid safe_opaque_background_color"));
+  // Color should remain kColor2 from the last successful update.
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), kColor2);
+  EXPECT_TRUE(layer_impl->contents_opaque());
+
+  // Sixth update: Attempt invalid update: contents_opaque = false, but
+  // safe_opaque_background_color is opaque (and not transparent).
+  auto update6 = CreateDefaultUpdate();
+  auto layer_props6 = CreateManualLayer(kLayerId);
+  layer_props6->contents_opaque = false;
+  layer_props6->contents_opaque_for_text = false;
+  layer_props6->safe_opaque_background_color = kColor1;  // Opaque red
+  update6->layers.push_back(std::move(layer_props6));
+  auto result6 = layer_context_impl_->DoUpdateDisplayTree(std::move(update6));
+  ASSERT_FALSE(result6.has_value());
+  EXPECT_THAT(result6.error(),
+              testing::StartsWith("Invalid safe_opaque_background_color"));
+  // Color should remain kColor2 from the last successful update.
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), kColor2);
+  EXPECT_TRUE(layer_impl->contents_opaque());
+
+  // Seventh update: Valid update: contents_opaque = false,
+  // safe_opaque_background_color is transparent.
+  auto update7 = CreateDefaultUpdate();
+  auto layer_props7 = CreateManualLayer(kLayerId);
+  layer_props7->contents_opaque = false;
+  layer_props7->contents_opaque_for_text = false;
+  layer_props7->safe_opaque_background_color = SkColors::kTransparent;
+  update7->layers.push_back(std::move(layer_props7));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update7)).has_value());
+  EXPECT_FALSE(layer_impl->contents_opaque());
+  EXPECT_EQ(layer_impl->safe_opaque_background_color(), SkColors::kTransparent);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest, UpdateRect) {
+  constexpr int kLayerId = 2;
+  const gfx::Rect kInitialRect;  // Default from mojom
+  const gfx::Rect kRect1(10, 10, 5, 5);
+  const gfx::Rect kRect2(0, 0, 12, 12);
+  const gfx::Rect kExpectedUnion = gfx::UnionRects(kRect1, kRect2);
+
+  // Initial update: Create with default (empty) update_rect.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->update_rect(), kInitialRect);
+
+  // Second update: Set update_rect to kRect1.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->update_rect = kRect1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  // LayerImpl::UnionUpdateRect is called, so it unions with its current value.
+  // Since it was empty, it becomes kRect1.
+  EXPECT_EQ(layer_impl->update_rect(), kRect1);
+
+  // Third update: Set update_rect to kRect2. It should be unioned.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->update_rect = kRect2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->update_rect(), kExpectedUnion);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateHitTestOpaqueness) {
+  constexpr int kLayerId = 2;
+  const cc::HitTestOpaqueness kDefaultValue =
+      cc::HitTestOpaqueness::kTransparent;  // Default from mojom
+  const cc::HitTestOpaqueness kValue1 = cc::HitTestOpaqueness::kOpaque;
+  const cc::HitTestOpaqueness kValue2 = cc::HitTestOpaqueness::kMixed;
+
+  // Initial update: Create with default value.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->hit_test_opaqueness(), kDefaultValue);
+
+  // Second update: Update value.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->hit_test_opaqueness = kValue1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->hit_test_opaqueness(), kValue1);
+
+  // Third update: Update value again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->hit_test_opaqueness = kValue2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->hit_test_opaqueness(), kValue2);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateElementId) {
+  constexpr int kLayerId = 2;
+  const cc::ElementId kDefaultValue;  // Default from mojom
+  const cc::ElementId kValue1(123);
+  const cc::ElementId kValue2(456);
+
+  // Initial update: Create with default value.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->element_id(), kDefaultValue);
+
+  // Second update: Update value.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->element_id = kValue1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->element_id(), kValue1);
+
+  // Third update: Update value again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->element_id = kValue2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->element_id(), kValue2);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateOffsetToTransformParent) {
+  constexpr int kLayerId = 2;
+  const gfx::Vector2dF kDefaultValue;  // Default from mojom
+  const gfx::Vector2dF kValue1(10.f, 20.f);
+  const gfx::Vector2dF kValue2(-5.f, 15.f);
+
+  // Initial update: Create with default value.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->offset_to_transform_parent(), kDefaultValue);
+
+  // Second update: Update value.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->offset_to_transform_parent = kValue1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->offset_to_transform_parent(), kValue1);
+
+  // Third update: Update value again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->offset_to_transform_parent = kValue2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->offset_to_transform_parent(), kValue2);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateShouldCheckBackfaceVisibility) {
+  constexpr int kLayerId = 2;
+  constexpr bool kDefaultValue = false;  // Default from mojom
+  constexpr bool kValue1 = true;
+
+  // Initial update: Create with default value.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->should_check_backface_visibility(), kDefaultValue);
+
+  // Second update: Update value to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->should_check_backface_visibility = kValue1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->should_check_backface_visibility(), kValue1);
+
+  // Third update: Update value back to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->should_check_backface_visibility = kDefaultValue;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->should_check_backface_visibility(), kDefaultValue);
 }
 
 class LayerContextImplUpdateDisplayTreeTextureLayerTest
