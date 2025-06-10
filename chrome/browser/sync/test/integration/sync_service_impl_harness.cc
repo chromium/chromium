@@ -142,7 +142,7 @@ class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
 // Same as reset on chrome.google.com/sync.
 // This function will wait until the reset is done. If error occurs,
 // it will log error messages.
-void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
+bool ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
                   const std::string& access_token,
                   const GURL& url,
                   const std::string& username,
@@ -182,7 +182,9 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
     LOG(ERROR) << "Reset account failed with error "
                << net::ErrorToString(simple_loader->NetError())
                << ". The account will remain dirty and may cause test fail.";
+    return false;
   }
+  return true;
 }
 
 std::unique_ptr<SyncSigninDelegate> CreateSyncSigninDelegateForType(
@@ -258,7 +260,7 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(SyncTestAccount account) {
   return true;
 }
 
-void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
+bool SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
   syncer::SyncTransportDataPrefs transport_data_prefs(
       profile_->GetPrefs(), GetGaiaIdHashForPrimaryAccount());
   // Generate the https url.
@@ -276,11 +278,14 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
                                            transport_data_prefs.GetCacheGuid());
 
   // Call sync server to clear sync data.
-  std::string access_token = service()->GetAccessTokenForTest();
-  DCHECK(access_token.size()) << "Access token is not available.";
-  ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, url,
-               service()->GetAccountInfo().email,
-               transport_data_prefs.GetBirthday());
+  const std::string access_token = service()->GetAccessTokenForTest();
+  if (access_token.empty()) {
+    LOG(ERROR) << "Access token is not available.";
+    return false;
+  }
+  return ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, url,
+                      service()->GetAccountInfo().email,
+                      transport_data_prefs.GetBirthday());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

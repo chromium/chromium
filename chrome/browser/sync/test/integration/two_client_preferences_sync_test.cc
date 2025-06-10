@@ -44,7 +44,7 @@ class TwoClientPreferencesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   const std::string new_home_page = base::StringPrintf(
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(BooleanPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kHomePageIsNewTabPage).Wait());
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(BooleanPref)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(Bidirectional)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(UnsyncableBooleanPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kDisableScreenshots).Wait());
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
 
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ChangeStringPref(0, prefs::kHomePage, "http://news.google.com");
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(ComplexPrefs)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(IntegerPrefMatchChecker(prefs::kRestoreOnStartup).Wait());
   ASSERT_TRUE(ListPrefMatchChecker(prefs::kURLsToRestoreOnStartup).Wait());
@@ -173,7 +173,7 @@ class TwoClientPreferencesSyncTestWithSelfNotifications : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
                        E2E_ENABLED(ShouldKeepLocalDataOnTypeMismatch)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   constexpr char string_value[] = "some-string";

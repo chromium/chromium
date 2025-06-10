@@ -30,7 +30,7 @@ class TwoClientOsPreferencesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   // Wait until sync settles before we override the prefs below.
   ASSERT_TRUE(AwaitQuiescence());
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest,
                        E2E_ENABLED(Bidirectional)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);
   ASSERT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());

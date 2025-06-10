@@ -65,7 +65,7 @@ constexpr char kURLTemplate[] =
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
                        E2E_ENABLED(SingleClientChanged)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   // Open tab and access a url on client 0
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, E2E_ENABLED(AllChanged)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   // Open tabs on all clients and retain window information.

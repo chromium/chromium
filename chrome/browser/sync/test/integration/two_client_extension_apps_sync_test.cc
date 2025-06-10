@@ -72,14 +72,14 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(StartWithNoApps)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(StartWithSameApps)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   const int kNumApps = 5;
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, StartWithDifferentApps) {
 // end up with all apps, and the app and page ordinals should be identical.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(InstallDifferentApps)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   int i = 0;
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Add)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Add)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Uninstall)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Uninstall)) {
 // ordinals.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UninstallThenInstall)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Merge)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Merge)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateEnableDisableApp)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateIncognitoEnableDisable)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 // the app.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdatePageOrdinal)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 // launch ordinal for the app.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateAppLaunchOrdinal)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 // page and app launch ordinal values for the CWS.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateCWSOrdinals)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 // have the same launch type values for the CWS.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
                        E2E_ENABLED(UpdateLaunchType)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
 

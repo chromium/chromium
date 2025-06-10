@@ -36,7 +36,7 @@ class TwoClientExtensionsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(StartWithNoExtensions)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(ExtensionsMatchChecker().Wait());
 }
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(MAYBE_StartWithSameExtensions)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   const int kNumExtensions = 5;
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 #endif
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(MAYBE_StartWithDifferentExtensions)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   int extension_index = 0;
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(InstallDifferentExtensions)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   int extension_index = 0;
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Uninstall)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Uninstall)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UpdateEnableDisableExtension)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UpdateIncognitoEnableDisable)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 // setting up sync, when uninstalled, is also uninstalled from sync.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
                        E2E_ENABLED(UninstallPreinstalledExtensions)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 

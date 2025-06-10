@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
@@ -16,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -151,6 +153,16 @@ class ChromeBrowserMainExtraPartsThreadNotifier final
   base::OnceClosure threads_ready_closure_;
 };
 
+int GetNumClients(SyncTest::TestType test_type) {
+  switch (test_type) {
+    case SyncTest::SINGLE_CLIENT:
+      return 1;
+    case SyncTest::TWO_CLIENT:
+      return 2;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -183,23 +195,13 @@ SyncTest::SyncTest(TestType test_type)
                        ? EXTERNAL_LIVE_SERVER
                        : IN_PROCESS_FAKE_SERVER),
       test_construction_time_(base::Time::Now()),
+      num_clients_(GetNumClients(test_type_)),
       sync_run_loop_timeout(FROM_HERE, TestTimeouts::action_max_timeout()),
-      previous_profile_(nullptr),
-      num_clients_(-1) {
+      previous_profile_(nullptr) {
   // Any RunLoop timeout will by default result in test failure.
   sync_run_loop_timeout.SetAddGTestFailureOnTimeout();
 
   sync_datatype_helper::AssociateWithTest(this);
-  switch (test_type_) {
-    case SINGLE_CLIENT: {
-      num_clients_ = 1;
-      break;
-    }
-    case TWO_CLIENT: {
-      num_clients_ = 2;
-      break;
-    }
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   browser_list_observer_ = std::make_unique<ClosedBrowserObserver>(
@@ -356,12 +358,7 @@ bool SyncTest::CreateProfile(int index) {
   // Instead of creating a new directory, use a deterministic name such that
   // PRE_ tests (i.e. tests that span browser restarts) can reuse the same
   // directory and carry over state.
-  base::FilePath base_name = GetProfileBaseName(index);
-  if (use_new_user_data_dir_) {
-    base_name = base::FilePath::FromASCII(
-        "SyncIntegrationTestClientForClearServerData");
-  }
-  profile_path = user_data_dir.Append(base_name);
+  profile_path = user_data_dir.Append(GetProfileBaseName(index));
 #endif
 
   BeforeSetupClient(index, profile_path);
@@ -889,37 +886,43 @@ std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(
       std::move(fake_gcm_driver));
 }
 
-void SyncTest::ResetSyncForPrimaryAccount() {
+bool SyncTest::ResetSyncForPrimaryAccount() {
   if (server_type_ != EXTERNAL_LIVE_SERVER) {
     // No-op for anything other than when external servers are used.
-    return;
+    return true;
   }
 
-  // FakeGCMDriver isn't used in combination with external servers.
-  CHECK(profile_to_fake_gcm_driver_.empty());
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
   // For external server testing, we need to have a clean account. The following
   // code will sign in one chrome browser, get the client id and access token,
   // then clean the server data.
-  base::AutoReset<bool> scoped_user_new_user_data_dir(&use_new_user_data_dir_,
-                                                      true);
-  base::AutoReset<int> scoped_num_clients(&num_clients_, 1);
-  // Do not wait for sync complete. Some tests set passphrase and sync will
-  // fail. NO_WAITING mode gives access token and birthday so
-  // SyncServiceImplHarness::ResetSyncForPrimaryAccount() can succeed. The
-  // passphrase will be reset together with the rest of the sync data clearing.
-  ASSERT_TRUE(SetupSync(NO_WAITING));
-  GetClient(0)->ResetSyncForPrimaryAccount();
-  // After reset account, the client should get a NOT_MY_BIRTHDAY error and
-  // disable sync. Adding a wait to make sure this is propagated.
-  ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
+#if BUILDFLAG(IS_ANDROID)
+  Profile& profile = CHECK_DEREF(ProfileManager::GetLastUsedProfile());
+#else   // BUILDFLAG(IS_ANDROID)
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  Profile& profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      g_browser_process->profile_manager()->GenerateNextProfileDirectoryPath());
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (browsers_[0]) {
-    CloseBrowserSynchronously(browsers_[0]);
+  std::unique_ptr<SyncServiceImplHarness> client =
+      SyncServiceImplHarness::Create(
+          &profile, SyncServiceImplHarness::SigninType::UI_SIGNIN);
+  CHECK(client);
+  if (!client->SignInPrimaryAccount()) {
+    LOG(ERROR) << "Failed to sign in primary account";
+    return false;
   }
-#endif
+  if (!client->AwaitSyncTransportActive()) {
+    return false;
+  }
+  if (!client->ResetSyncForPrimaryAccount()) {
+    LOG(ERROR) << "Failed to reset sync for primary account";
+    return false;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  client->SignOutPrimaryAccount();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // After reset, this client will disable sync. It may log some messages that
   // do not contribute to test failures. It includes:
@@ -928,17 +931,7 @@ void SyncTest::ResetSyncForPrimaryAccount() {
   //   mcs_client fails with 401.
   LOG(WARNING) << "Finished reset account. Warning logs before "
                << "this log may be safe to ignore.";
-
-  CHECK_EQ(1u, profiles_.size());
-  CHECK(profiles_[0]);
-  profiles_[0]->RemoveObserver(this);
-  profiles_.clear();
-
-  scoped_temp_dirs_.clear();
-#if !BUILDFLAG(IS_ANDROID)
-  browsers_.clear();
-#endif
-  clients_.clear();
+  return true;
 }
 
 void SyncTest::SetUpOnMainThread() {

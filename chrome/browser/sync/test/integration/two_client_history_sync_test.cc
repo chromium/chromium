@@ -149,7 +149,7 @@ class TwoClientHistorySyncTest : public SyncTest {
 // Very simple test; its main reason for existence is that it's the only E2E
 // test covering history.
 IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   // Use a randomized URL to prevent test collisions.
   const std::u16string kHistoryUrl = base::ASCIIToUTF16(base::StringPrintf(
       "http://www.add-history.google.com/%s",

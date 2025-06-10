@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, NoCreditCardSync) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
                        E2E_ONLY(TwoClientsAddAutofillProfiles)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   // All profiles should sync same autofill profiles.

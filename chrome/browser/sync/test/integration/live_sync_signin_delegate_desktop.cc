@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -42,8 +43,16 @@ bool LiveSyncSigninDelegateDesktop::SignIn(SyncTestAccount account,
     return false;
   }
 
+  // Switch to `profile_` to ensure a browser exists.
+  profiles::testing::SwitchToProfileSync(profile_->GetPath(),
+                                         /*always_create=*/true);
+
   Browser* browser = chrome::FindBrowserWithProfile(profile_.get());
-  DCHECK(browser);
+  if (!browser) {
+    LOG(ERROR) << "Failed to open browser to sign in.";
+    return false;
+  }
+
   if (!login_ui_test_utils::SignInWithUI(browser, username, password,
                                          consent_level)) {
     LOG(ERROR) << "Could not sign in to GAIA servers.";

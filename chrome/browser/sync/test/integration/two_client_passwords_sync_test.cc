@@ -76,7 +76,7 @@ class TwoClientPasswordsSyncTestWithVerifier
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
                        E2E_ENABLED(AddInTransportMode)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());
 
   // Sign in on all clients without enabling Sync-the-feature.
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
                        E2E_ENABLED(SetPassphraseAndAddPassword)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase(
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, DeleteAll) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
-  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   // All profiles should sync same passwords.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait())

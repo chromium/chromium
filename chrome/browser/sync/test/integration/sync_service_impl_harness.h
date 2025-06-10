@@ -77,7 +77,7 @@ class SyncServiceImplHarness {
       SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // This is similar to click the reset button on chrome.google.com/sync.
-  void ResetSyncForPrimaryAccount();
+  [[nodiscard]] bool ResetSyncForPrimaryAccount();
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Signs out of the primary account. ChromeOS doesn't have the concept of

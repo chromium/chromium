@@ -207,9 +207,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // This is similar to click the reset button on chrome.google.com/sync.
   // Only takes effect when running with external servers.
-  // Please call this before setting anything. This method will clear all
-  // local profiles, browsers, etc.
-  void ResetSyncForPrimaryAccount();
+  // Please call this before setting anything.
+  [[nodiscard]] bool ResetSyncForPrimaryAccount();
 
   // Sets whether or not the sync clients in this test should respond to
   // notifications of their own commits.  Real sync clients do not do this, but
@@ -346,6 +345,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // how long the setup took.
   const base::Time test_construction_time_;
 
+  // Number of sync clients that will be created by a test.
+  const int num_clients_;
+
   // Used to catch any timeout within RunLoop and cause test error.
   base::test::ScopedRunLoopTimeout sync_run_loop_timeout;
 
@@ -353,9 +355,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_ = nullptr;
-
-  // Number of sync clients that will be created by a test.
-  int num_clients_;
 
   // Collection of sync profiles used by a test. A sync profile maintains sync
   // data contained within its own subdirectory under the chrome user data
@@ -397,10 +396,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> verifier_ = nullptr;
-
-  // Indicates whether to use a new user data dir.
-  // Only used for external server tests with two clients.
-  bool use_new_user_data_dir_ = false;
 
   syncer::DataTypeSet excluded_types_from_check_for_data_type_failures_;
 
