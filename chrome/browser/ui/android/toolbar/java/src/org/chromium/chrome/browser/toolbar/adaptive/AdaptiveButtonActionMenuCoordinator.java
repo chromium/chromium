@@ -58,7 +58,6 @@ public class AdaptiveButtonActionMenuCoordinator {
                         buildMenuItems(),
                         id -> onItemClicked.onResult(id));
             } else {
-                // TODO(crbug.com/414373110): Align the displayed text with UI work once finalized.
                 return showAnchoredToastInternal(view, view.getContentDescription());
             }
             return true;
