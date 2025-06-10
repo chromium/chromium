@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -98,6 +99,18 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   class WebUIControllerEmbedderStub;
   class PendingPreload;
 
+  // Used in telemetry to record the reason of preloading.
+  enum class PreloadReason {
+    // Preloading triggered by calling `WarmupForBrowser()`.
+    kBrowserWarmup = 0,
+    // Preloading triggered by destroy of WebUIs tracked by
+    // `PerProfileWebUITracker`.
+    kWebUIDestroyed = 1,
+    // Preloading triggered by request of WebUIs, i.e. `Request()` is called.
+    kWebUIRequested = 2,
+    kMaxValue = kWebUIRequested,
+  };
+
   std::vector<GURL> GetAllPreloadableWebUIURLs();
 
   // Returns the currently preloaded WebUI URL. Returns nullopt if no content is
@@ -116,7 +129,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // If the preloaded contents has a different browser context, replace it
   // with a new contents under the given `browser_context`.
   // If under heavy memory pressure, no preloaded contents will be created.
-  void MaybePreloadForBrowserContext(content::BrowserContext* browser_context);
+  void MaybePreloadForBrowserContext(
+      content::BrowserContext* browser_context,
+      PreloadReason preload_reason);
 
   // Schedule a preload. This calls MaybePreloadForBrowserContext() at a later
   // time.
@@ -132,6 +147,7 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   void MaybePreloadForBrowserContextLater(
       content::BrowserContext* browser_context,
       content::WebContents* busy_web_contents_to_watch,
+      PreloadReason preload_reason,
       base::TimeDelta deadline = base::Seconds(3));
 
   // Sets the current preloaded WebContents and performs necessary bookkepping.

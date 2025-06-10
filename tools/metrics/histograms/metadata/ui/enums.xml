@@ -378,6 +378,12 @@ chromium-metrics-reviews@google.com.
   <int value="75" label="UMA_NTP_MOST_VISITED_UNPIN_UNDO"/>
 </enum>
 
+<enum name="WebUIPreloadReason">
+  <int value="0" label="BrowserWarmup"/>
+  <int value="1" label="WebUIDestroyed"/>
+  <int value="2" label="WebUIRequested"/>
+</enum>
+
 <enum name="WebUIPreloadResult">
   <int value="0"
       label="No Preload: no preloaded WebUI is available when a WebUI is
