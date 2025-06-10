@@ -126,7 +126,7 @@ class ProtocolParser {
   void ParseError(const char* details, ...);
 
  private:
-  virtual bool DoParse(const std::string& response, Results* results) = 0;
+  virtual bool DoParse(std::string_view response, Results* results) = 0;
 
   Results results_;
   std::string errors_;

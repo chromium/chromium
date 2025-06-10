@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -258,7 +259,7 @@ bool ParseApp(const base::Value& node_value,
 
 }  // namespace
 
-bool ProtocolParserJSON::DoParse(const std::string& response_json,
+bool ProtocolParserJSON::DoParse(std::string_view response_json,
                                  Results* results) {
   CHECK(results);
 
@@ -268,15 +269,14 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
   }
 
   // The JSON response contains a prefix to prevent XSSI.
-  static constexpr char kJSONPrefix[] = ")]}'";
+  static constexpr std::string_view kJSONPrefix = ")]}'";
   if (!base::StartsWith(response_json, kJSONPrefix,
                         base::CompareCase::SENSITIVE)) {
     ParseError("Missing secure JSON prefix.");
     return false;
   }
-  const auto doc = base::JSONReader::ReadDict(base::MakeStringPiece(
-      response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
-      response_json.end()));
+  const auto doc =
+      base::JSONReader::ReadDict(response_json.substr(kJSONPrefix.size()));
   if (!doc) {
     ParseError("JSON read error.");
     return false;

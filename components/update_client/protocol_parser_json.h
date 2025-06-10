@@ -26,7 +26,7 @@ class ProtocolParserJSON final : public ProtocolParser {
 
  private:
   // Overrides for ProtocolParser.
-  bool DoParse(const std::string& response_json, Results* results) override;
+  bool DoParse(std::string_view response_json, Results* results) override;
 };
 
 }  // namespace update_client
