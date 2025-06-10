@@ -94,6 +94,16 @@ void MaybeRecordMediaFeatureValue(
   }
 }
 
+// Supported types: <number> | <percentage> | <length> | <angle> | <time> |
+// <resolution>
+bool TypesMatch(const CSSNumericLiteralValue& a,
+                const CSSNumericLiteralValue& b) {
+  return (a.IsNumber() && b.IsNumber()) ||
+         (a.IsPercentage() && b.IsPercentage()) ||
+         (a.IsLength() && b.IsLength()) || (a.IsAngle() && b.IsAngle()) ||
+         (a.IsTime() && b.IsTime()) || (a.IsResolution() && b.IsResolution());
+}
+
 }  // namespace
 
 using mojom::blink::DevicePostureType;
@@ -1881,7 +1891,7 @@ KleeneValue MediaQueryEvaluator::EvalIfRange(const CSSValue& reference_value,
       DynamicTo<CSSNumericLiteralValue>(query_value);
 
   if (!reference_numeric || !query_numeric ||
-      reference_numeric->GetType() != query_numeric->GetType()) {
+      !TypesMatch(*reference_numeric, *query_numeric)) {
     return KleeneValue::kFalse;
   }
 
