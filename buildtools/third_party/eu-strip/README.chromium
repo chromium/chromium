@@ -7,8 +7,6 @@ License: LGPL-3.0
 
 Description:
 
-This directory used to include a prebuilt bin/eu-strip binary with a patch
-applied that fixed stripping large debug binaries that would have otherwise
-overflowed certain integer limits. This has since been fixed upstream, so
-bin/eu-strip now forwards to the system eu-strip and this directory will be
-removed in the future.
+Patched eu-strip from elfutils.
+
+To build (on Trusty): ./build.sh in this directory.
