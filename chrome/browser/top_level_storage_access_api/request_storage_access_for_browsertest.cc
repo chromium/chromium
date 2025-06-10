@@ -1469,8 +1469,17 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_metric_value = {2}},
     }));
 
+
+// TODO(crbug.com/423704050): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestMetricResults \
+  DISABLED_TestMetricResults
+#else
+#define MAYBE_TestMetricResults \
+  TestMetricResults
+#endif
 IN_PROC_BROWSER_TEST_P(TopLevelStorageExemptionReasonMetricTest,
-                       TestMetricResults) {
+                       MAYBE_TestMetricResults) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(block_third_party_cookies());
 
