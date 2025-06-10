@@ -25167,6 +25167,28 @@
             ]
         }
     ],
+    "V8LargePagePool": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_large_page_pool"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8LateHeapLimitCheck": [
         {
             "platforms": [
