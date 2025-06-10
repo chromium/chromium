@@ -241,6 +241,16 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="D3D_SHADER_MODEL_6_7"/>
 </enum>
 
+<!-- LINT.IfChange(DawnAdapterFeatureLevel) -->
+
+<enum name="DawnAdapterFeatureLevel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Compatibility"/>
+  <int value="2" label="Core"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/dawn_context_provider.cc:DawnAdapterFeatureLevel) -->
+
 <enum name="DCLayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed unsupported quad (not recorded)"/>
