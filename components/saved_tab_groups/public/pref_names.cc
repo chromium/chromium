@@ -19,12 +19,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // this value is never read.
   registry->RegisterBooleanPref(prefs::kSyncableTabGroups, false);
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
-    registry->RegisterBooleanPref(prefs::kAutoOpenSyncedTabGroups,
-                                  base::GetFieldTrialParamByFeatureAsBool(
-                                      tab_groups::kTabGroupSyncAndroid,
-                                      "auto_open_synced_tab_groups", false));
-  }
+  registry->RegisterBooleanPref(prefs::kAutoOpenSyncedTabGroups, false);
   // Always register stop showing prefs. They're conditionally used by a cached
   // feature in Java, which is hard to synchronize.
   registry->RegisterBooleanPref(prefs::kStopShowingTabGroupConfirmationOnClose,

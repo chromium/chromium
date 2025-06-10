@@ -27,10 +27,7 @@ class TabGroupSyncServiceFactoryTest : public testing::Test {
     profile_ = TestingProfile::Builder().Build();
 
     base::flat_map<base::test::FeatureRef, bool> feature_states;
-#if BUILDFLAG(IS_ANDROID)
-    feature_states.try_emplace(tab_groups::kTabGroupSyncAndroid,
-                               enable_feature);
-#else
+#if !BUILDFLAG(IS_ANDROID)
     feature_states.try_emplace(tab_groups::kTabGroupSyncServiceDesktopMigration,
                                enable_feature);
 #endif
@@ -43,12 +40,14 @@ class TabGroupSyncServiceFactoryTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(TabGroupSyncServiceFactoryTest, FeatureDisabledReturnsNullService) {
   InitService(/*enable_feature=*/false);
   TabGroupSyncService* service =
       TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service);
 }
+#endif
 
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
   InitService(/*enable_feature=*/true);

@@ -10,7 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
@@ -94,9 +93,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
         // Shared tab groups should always auto-open if supported.
         boolean isAutoOpenEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-                        && (mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)
-                                || isCollaboration);
+                mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS) || isCollaboration;
         if (!isAutoOpenEnabled) return;
 
         mEnableLocalObserverCallback.onResult(false);

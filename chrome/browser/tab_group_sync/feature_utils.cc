@@ -35,7 +35,7 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
   // deprecate this after a milestone.
   pref_service->ClearPref(tab_groups::prefs::kSyncableTabGroups);
 
-  return base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
+  return true;
 #else
   return IsTabGroupSyncServiceDesktopMigrationEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
