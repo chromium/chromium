@@ -17,7 +17,9 @@
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/preloading_data.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace {
 
@@ -78,6 +80,41 @@ void SearchPreloadPipelineManager::EraseNotAlivePipelines() {
       });
 }
 
+void SearchPreloadPipelineManager::MaybePreloadSharedDictionary(
+    Profile& profile,
+    const AutocompleteResult& result) {
+  std::vector<GURL> urls;
+  urls.reserve(result.size());
+  for (const AutocompleteMatch& match : result) {
+    if (match.destination_url.SchemeIsHTTPOrHTTPS()) {
+      urls.emplace_back(match.destination_url);
+    }
+  }
+
+  if (urls.empty()) {
+    return;
+  }
+
+  // Keep the old handle until `PreloadSharedDictionaryInfoForDocument()` call
+  // to avoid reloading dictionaries in the network service.
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      old_handle = std::move(shared_dictionary_handle_);
+
+  shared_dictionary_handle_.reset();
+  profile.GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->PreloadSharedDictionaryInfoForDocument(
+          urls, shared_dictionary_handle_.InitWithNewPipeAndPassReceiver());
+  shared_dictionary_expiry_timer_.Start(
+      FROM_HERE, features::kDsePreload2OnSuggestSharedDictionaryTtl.Get(),
+      base::BindOnce(&SearchPreloadPipelineManager::InvalidateSharedDictionary,
+                     base::Unretained(this)));
+}
+
+void SearchPreloadPipelineManager::InvalidateSharedDictionary() {
+  shared_dictionary_handle_.reset();
+}
+
 void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
     Profile& profile,
     base::WeakPtr<SearchPreloadService> search_preload_service,
@@ -89,6 +126,8 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
   if (!template_url_service->GetDefaultSearchProvider()) {
     return;
   }
+
+  MaybePreloadSharedDictionary(profile, result);
 
   // Erase to count prefetches.
   EraseNotAlivePipelines();

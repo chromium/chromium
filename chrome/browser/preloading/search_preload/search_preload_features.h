@@ -24,6 +24,9 @@ namespace features {
 BASE_DECLARE_FEATURE(kDsePreload2);
 
 extern const base::FeatureParam<size_t> kDsePreload2MaxPrefetch;
+// The amount of time preloaded dictionary is kept alive.
+extern const base::FeatureParam<base::TimeDelta>
+    kDsePreload2OnSuggestSharedDictionaryTtl;
 
 // Enables on-press prefetch.
 BASE_DECLARE_FEATURE(kDsePreload2OnPress);

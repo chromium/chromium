@@ -14,6 +14,10 @@ BASE_FEATURE(kDsePreload2, "DsePreload2", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
     &kDsePreload2, "kDsePreload2MaxPrefetch", 7};
+const base::FeatureParam<base::TimeDelta>
+    kDsePreload2OnSuggestSharedDictionaryTtl{
+        &kDsePreload2, "kDsePreload2OnSuggestSharedDictionaryTtl",
+        base::Milliseconds(60000)};
 
 BASE_FEATURE(kDsePreload2OnPress,
              "DsePreload2OnPress",
