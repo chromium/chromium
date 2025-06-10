@@ -26,6 +26,8 @@ import packaging.version  # pylint: disable=import-error
 # //third_party/webdriver/pylib imports.
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
@@ -141,7 +143,9 @@ def _confirm_new_seed_downloaded(user_data_dir,
   wait_timeout_in_sec = _WAIT_TIMEOUT_IN_SEC
   while attempt < _MAX_ATTEMPTS:
     # Starts Chrome to allow it to download a seed or a seed delta.
-    driver = webdriver.Chrome(path_chromedriver, chrome_options=chrome_options)
+    chromedriver_service = Service(executable_path=path_chromedriver)
+    driver = webdriver.Chrome(service=chromedriver_service,
+                              options=chrome_options)
     time.sleep(5)
     # Exits Chrome so that Local State could be serialized to disk.
     driver.quit()
@@ -246,21 +250,23 @@ def _run_tests(work_dir, skia_util, *args):
 
   driver = None
   try:
-    chrome_verison = _check_chrome_version()
+    chrome_version = _check_chrome_version()
     # If --variations-test-seed-path flag was not implemented in this version
-    if chrome_verison <= _FLAG_RELEASE_VERSION:
+    if chrome_version <= _FLAG_RELEASE_VERSION:
       if _inject_seed(user_data_dir, path_chromedriver, chrome_options) == 1:
         return 1
 
     # Starts Chrome with the test seed injected.
-    driver = webdriver.Chrome(path_chromedriver, chrome_options=chrome_options)
+    chromedriver_service = Service(executable_path=path_chromedriver)
+    driver = webdriver.Chrome(service=chromedriver_service,
+                              options=chrome_options)
 
     # Run test cases: visit urls and verify certain web elements are rendered
     # correctly.
     for t in _TEST_CASES:
       driver.get(t['url'])
       driver.set_window_size(1280, 1024)
-      element = driver.find_element_by_id(t['expected_id'])
+      element = driver.find_element(By.ID, t['expected_id'])
       if not element.is_displayed() or t['expected_text'] != element.text:
         logging.error(
             'Test failed because element: "%s" is not visibly found after '
@@ -269,7 +275,7 @@ def _run_tests(work_dir, skia_util, *args):
       if 'skia_gold_image' in t:
         image_name = t['skia_gold_image']
         sc_file = os.path.join(work_dir, image_name + '.png')
-        driver.find_element_by_id('body').screenshot(sc_file)
+        driver.find_element(By.ID, 'body').screenshot(sc_file)
         force_dryrun = False
         if skia_util.IsTryjobRun and skia_util.IsRetryWithoutPatch:
           force_dryrun = True
