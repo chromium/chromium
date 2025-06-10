@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/time.h"
