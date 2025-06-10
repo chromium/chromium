@@ -16842,8 +16842,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_With_Predictions_Caching",
                     "enable_features": [
+                        "FieldClassificationModelCaching",
                         "PasswordFormClientsideClassifier"
                     ]
                 }
