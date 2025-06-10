@@ -290,7 +290,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     assert isinstance(test_name, str), 'Expecting a string.'
     hash_bytes = hashlib.sha256(test_name.encode('utf-8')).digest()
     # To speed thing up, only take the last 3 bytes
-    return int.from_bytes(hash_bytes[-3:])
+    return int.from_bytes(hash_bytes[-3:], byteorder='big')
 
   # Sort by hash so we don't put all tests in a slow suite in the same shard.
   def _SortTests(self, tests):
