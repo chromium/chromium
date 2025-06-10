@@ -650,7 +650,7 @@ public class WebsitePermissionsFetcher {
             public void runAsync(final TaskQueue queue) {
                 mWebsitePreferenceBridge.fetchCookiesInfo(
                         mBrowserContextHandle,
-                        new Callback<Map<String, CookiesInfo>>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(Map<String, CookiesInfo> result) {
                                 for (Map.Entry<String, CookiesInfo> entry : result.entrySet()) {

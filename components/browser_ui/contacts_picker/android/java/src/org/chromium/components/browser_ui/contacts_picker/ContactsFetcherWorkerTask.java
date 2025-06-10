@@ -111,7 +111,7 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
      */
     private Map<String, ArrayList<String>> getDetails(
             Uri source, String idColumn, String dataColumn, String sortOrder) {
-        Map<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+        Map<String, ArrayList<String>> map = new HashMap<>();
 
         Cursor cursor = mContentResolver.query(source, null, null, null, sortOrder);
         ArrayList<String> list = new ArrayList<>();

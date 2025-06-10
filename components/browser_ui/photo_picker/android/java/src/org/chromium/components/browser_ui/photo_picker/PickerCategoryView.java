@@ -519,7 +519,7 @@ public class PickerCategoryView extends RelativeLayout
         if (mLowResThumbnails == null || mLowResThumbnails.get() == null) {
             mLowResThumbnails =
                     GlobalDiscardableReferencePool.getReferencePool()
-                            .put(new LruCache<String, Thumbnail>(mCacheSizeSmall));
+                            .put(new LruCache<>(mCacheSizeSmall));
         }
         return assumeNonNull(mLowResThumbnails.get());
     }
@@ -528,7 +528,7 @@ public class PickerCategoryView extends RelativeLayout
         if (mHighResThumbnails == null || mHighResThumbnails.get() == null) {
             mHighResThumbnails =
                     GlobalDiscardableReferencePool.getReferencePool()
-                            .put(new LruCache<String, Thumbnail>(mCacheSizeLarge));
+                            .put(new LruCache<>(mCacheSizeLarge));
         }
         return assumeNonNull(mHighResThumbnails.get());
     }
@@ -537,7 +537,7 @@ public class PickerCategoryView extends RelativeLayout
         if (mFullScreenBitmaps == null || mFullScreenBitmaps.get() == null) {
             mFullScreenBitmaps =
                     GlobalDiscardableReferencePool.getReferencePool()
-                            .put(new LruCache<String, Thumbnail>(mCacheSizeFullScreen));
+                            .put(new LruCache<>(mCacheSizeFullScreen));
         }
         return assumeNonNull(mFullScreenBitmaps.get());
     }

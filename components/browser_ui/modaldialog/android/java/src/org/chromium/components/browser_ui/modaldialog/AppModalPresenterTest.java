@@ -334,7 +334,7 @@ public class AppModalPresenterTest {
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {
-        return new BoundedMatcher<View, Button>(Button.class) {
+        return new BoundedMatcher<>(Button.class) {
             private int mColor;
 
             @Override

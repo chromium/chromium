@@ -287,7 +287,7 @@ public class MediaImageManagerTest {
     public void testDownloadImageFails() {
         mMediaImageManager.downloadImage(mImages, mCallback);
         mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 404, IMAGE_URL_1, new ArrayList<>(), new ArrayList<Rect>());
+                REQUEST_ID_1, 404, IMAGE_URL_1, new ArrayList<>(), new ArrayList<>());
 
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());

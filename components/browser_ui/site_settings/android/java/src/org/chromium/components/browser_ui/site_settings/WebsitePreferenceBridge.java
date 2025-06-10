@@ -90,7 +90,7 @@ public class WebsitePreferenceBridge {
 
     @CalledByNative
     private static Object createLocalStorageInfoMap() {
-        return new HashMap<String, LocalStorageInfo>();
+        return new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -115,7 +115,7 @@ public class WebsitePreferenceBridge {
 
     @CalledByNative
     private static Object createCookiesInfoMap() {
-        return new HashMap<String, CookiesInfo>();
+        return new HashMap<>();
     }
 
     @CalledByNative
