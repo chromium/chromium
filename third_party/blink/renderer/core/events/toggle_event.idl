@@ -8,5 +8,5 @@
     constructor(DOMString type, optional ToggleEventInit eventInitDict = {});
     readonly attribute DOMString oldState;
     readonly attribute DOMString newState;
-    [RuntimeEnabled=ToggleEventSource] readonly attribute Element source;
+    [RuntimeEnabled=ToggleEventSource] readonly attribute Element? source;
 };
