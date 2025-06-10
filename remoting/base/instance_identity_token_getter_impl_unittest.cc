@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/instance_identity_token_getter.h"
+#include "remoting/base/instance_identity_token_getter_impl.h"
 
 #include <memory>
 #include <optional>
@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
@@ -30,6 +31,16 @@ constexpr char kTestAudience[] = "audience_for_testing";
 // Matches the URL generated for requests from ComputeEngineServiceClient.
 constexpr char kHttpMetadataRequestUrl[] =
     "http://metadata.google.internal/computeMetadata/v1/instance/"
+    "service-accounts/default/identity?audience=audience_for_testing&"
+    "format=full";
+// The environment variable used to override the default metadata server host
+// when code is run on a Compute Engine instance.
+constexpr char kGceMetadataHostVarName[] = "GCE_METADATA_HOST";
+
+// Constants used for testing Compute Engine Metadata server overrides.
+constexpr char kTestMetadataServerHost[] = "override.google.internal";
+constexpr char kOverriddenMetadataRequestUrl[] =
+    "http://override.google.internal/computeMetadata/v1/instance/"
     "service-accounts/default/identity?audience=audience_for_testing&"
     "format=full";
 
@@ -109,12 +120,12 @@ struct TokenParams {
 
 }  // namespace
 
-class InstanceIdentityTokenGetterTest
+class InstanceIdentityTokenGetterImplTest
     : public testing::Test,
       public testing::WithParamInterface<TokenParams> {
  public:
-  InstanceIdentityTokenGetterTest();
-  ~InstanceIdentityTokenGetterTest() override;
+  InstanceIdentityTokenGetterImplTest();
+  ~InstanceIdentityTokenGetterImplTest() override;
 
   void SetUp() override;
 
@@ -122,13 +133,16 @@ class InstanceIdentityTokenGetterTest
 
  protected:
   void RunUntilQuit();
-  void SetTokenResponse(std::string_view response_body);
+  void SetTokenResponse(
+      std::string_view response_body,
+      std::string_view metadata_server_url = kHttpMetadataRequestUrl);
   void SetErrorResponse(net::HttpStatusCode status);
   void ResetQuitClosure();
   void ClearTokenResponse();
   void FastForwardBy(base::TimeDelta duration);
+  void SetMetadataServerEnvVar(std::string_view metadata_server_host);
 
-  InstanceIdentityTokenGetter& instance_identity_token_getter() {
+  InstanceIdentityTokenGetterImpl& instance_identity_token_getter() {
     return *instance_identity_token_getter_;
   }
 
@@ -157,51 +171,61 @@ class InstanceIdentityTokenGetterTest
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<base::Environment> environment_ = base::Environment::Create();
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
-  std::unique_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
+  std::unique_ptr<InstanceIdentityTokenGetterImpl>
+      instance_identity_token_getter_;
 };
 
-InstanceIdentityTokenGetterTest::InstanceIdentityTokenGetterTest() = default;
-InstanceIdentityTokenGetterTest::~InstanceIdentityTokenGetterTest() = default;
+InstanceIdentityTokenGetterImplTest::InstanceIdentityTokenGetterImplTest() =
+    default;
+InstanceIdentityTokenGetterImplTest::~InstanceIdentityTokenGetterImplTest() =
+    default;
 
-void InstanceIdentityTokenGetterTest::SetUp() {
+void InstanceIdentityTokenGetterImplTest::SetUp() {
   valid_jwt_ = GenerateValidJwt();
   shared_url_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
+  // Unset any pre-existing environment vars before constructing the
+  // InstanceIdentityTokenGetterImpl so the externally set values are not used.
+  environment_->UnSetVar(kGceMetadataHostVarName);
   instance_identity_token_getter_ =
-      std::make_unique<InstanceIdentityTokenGetter>(kTestAudience,
-                                                    shared_url_loader_factory_);
+      std::make_unique<InstanceIdentityTokenGetterImpl>(
+          kTestAudience, shared_url_loader_factory_);
+
   quit_closure_ = task_environment_.QuitClosure();
 }
 
-void InstanceIdentityTokenGetterTest::RunUntilQuit() {
+void InstanceIdentityTokenGetterImplTest::RunUntilQuit() {
   task_environment_.RunUntilQuit();
 }
 
-void InstanceIdentityTokenGetterTest::SetTokenResponse(
-    std::string_view response_body) {
+void InstanceIdentityTokenGetterImplTest::SetTokenResponse(
+    std::string_view response_body,
+    std::string_view metadata_server_url) {
   ClearTokenResponse();
-  test_url_loader_factory_.AddResponse(kHttpMetadataRequestUrl, response_body);
+  test_url_loader_factory_.AddResponse(metadata_server_url, response_body);
 }
 
-void InstanceIdentityTokenGetterTest::ClearTokenResponse() {
+void InstanceIdentityTokenGetterImplTest::ClearTokenResponse() {
   test_url_loader_factory_.ClearResponses();
 }
 
-void InstanceIdentityTokenGetterTest::SetErrorResponse(
+void InstanceIdentityTokenGetterImplTest::SetErrorResponse(
     net::HttpStatusCode status) {
   ClearTokenResponse();
   test_url_loader_factory_.AddResponse(kHttpMetadataRequestUrl,
                                        /*content=*/std::string(), status);
 }
 
-void InstanceIdentityTokenGetterTest::ResetQuitClosure() {
+void InstanceIdentityTokenGetterImplTest::ResetQuitClosure() {
   ASSERT_TRUE(quit_closure_.is_null());
   quit_closure_ = task_environment_.QuitClosure();
 }
 
-void InstanceIdentityTokenGetterTest::OnTokenRetrieved(std::string_view token) {
+void InstanceIdentityTokenGetterImplTest::OnTokenRetrieved(
+    std::string_view token) {
   // If the callback has been run previously, make sure each callback receives
   // the same value.
   if (token_.has_value()) {
@@ -216,15 +240,26 @@ void InstanceIdentityTokenGetterTest::OnTokenRetrieved(std::string_view token) {
   }
 }
 
-void InstanceIdentityTokenGetterTest::FastForwardBy(base::TimeDelta duration) {
+void InstanceIdentityTokenGetterImplTest::FastForwardBy(
+    base::TimeDelta duration) {
   task_environment_.FastForwardBy(duration);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, SingleRequest) {
+void InstanceIdentityTokenGetterImplTest::SetMetadataServerEnvVar(
+    std::string_view metadata_server_host) {
+  environment_->SetVar(kGceMetadataHostVarName,
+                       std::string(metadata_server_host));
+  // Recreate the InstanceIdentityTokenGetterImpl so the new value is used.
+  instance_identity_token_getter_ =
+      std::make_unique<InstanceIdentityTokenGetterImpl>(
+          kTestAudience, shared_url_loader_factory_);
+}
+
+TEST_F(InstanceIdentityTokenGetterImplTest, SingleRequest) {
   SetTokenResponse(valid_jwt());
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -234,12 +269,28 @@ TEST_F(InstanceIdentityTokenGetterTest, SingleRequest) {
   ASSERT_EQ(url_loader_request_count(), 1U);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, JwtWithoutPadding) {
+TEST_F(InstanceIdentityTokenGetterImplTest,
+       SingleRequestWithCustomMetadataServer) {
+  SetMetadataServerEnvVar(kTestMetadataServerHost);
+  SetTokenResponse(valid_jwt(), kOverriddenMetadataRequestUrl);
+
+  instance_identity_token_getter().RetrieveToken(
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
+                     base::Unretained(this)));
+
+  RunUntilQuit();
+
+  ASSERT_TRUE(token().has_value());
+  ASSERT_EQ(*token(), valid_jwt());
+  ASSERT_EQ(url_loader_request_count(), 1U);
+}
+
+TEST_F(InstanceIdentityTokenGetterImplTest, JwtWithoutPadding) {
   // Base64 decode will fail if kStrict is used.
   SetTokenResponse(kJwtWithoutPadding);
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -249,13 +300,13 @@ TEST_F(InstanceIdentityTokenGetterTest, JwtWithoutPadding) {
   ASSERT_EQ(url_loader_request_count(), 1U);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, MultipleRequests) {
+TEST_F(InstanceIdentityTokenGetterImplTest, MultipleRequests) {
   const int kQueuedCallbackCount = 10;
 
   set_pending_callback_count(kQueuedCallbackCount);
   for (int i = 0; i < kQueuedCallbackCount; i++) {
     instance_identity_token_getter().RetrieveToken(
-        base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+        base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                        base::Unretained(this)));
   }
 
@@ -268,9 +319,9 @@ TEST_F(InstanceIdentityTokenGetterTest, MultipleRequests) {
   ASSERT_EQ(url_loader_request_count(), 1U);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, CachedTokenReturned) {
+TEST_F(InstanceIdentityTokenGetterImplTest, CachedTokenReturned) {
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   SetTokenResponse(valid_jwt());
@@ -286,7 +337,7 @@ TEST_F(InstanceIdentityTokenGetterTest, CachedTokenReturned) {
   set_pending_callback_count(1);
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -296,10 +347,10 @@ TEST_F(InstanceIdentityTokenGetterTest, CachedTokenReturned) {
   ASSERT_EQ(url_loader_request_count(), 1U);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, CachedTokenIgnored) {
+TEST_F(InstanceIdentityTokenGetterImplTest, CachedTokenIgnored) {
   auto first_jwt_response = valid_jwt();
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   SetTokenResponse(first_jwt_response);
@@ -319,7 +370,7 @@ TEST_F(InstanceIdentityTokenGetterTest, CachedTokenIgnored) {
   SetTokenResponse(second_jwt_response);
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -329,9 +380,9 @@ TEST_F(InstanceIdentityTokenGetterTest, CachedTokenIgnored) {
   ASSERT_EQ(url_loader_request_count(), 2U);
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, ServiceFailureReturnsEmptyString) {
+TEST_F(InstanceIdentityTokenGetterImplTest, ServiceFailureReturnsEmptyString) {
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   SetErrorResponse(net::HTTP_BAD_REQUEST);
@@ -342,12 +393,12 @@ TEST_F(InstanceIdentityTokenGetterTest, ServiceFailureReturnsEmptyString) {
   ASSERT_TRUE(token()->empty());
 }
 
-TEST_F(InstanceIdentityTokenGetterTest, UnsignedJwtReturnsEmptyToken) {
+TEST_F(InstanceIdentityTokenGetterImplTest, UnsignedJwtReturnsEmptyToken) {
   // Set response to a token which is missing the signature.
   SetTokenResponse(GetBase64EncodedHeader() + "." + GetBase64EncodedPayload());
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -356,11 +407,11 @@ TEST_F(InstanceIdentityTokenGetterTest, UnsignedJwtReturnsEmptyToken) {
   ASSERT_TRUE(token()->empty());
 }
 
-TEST_P(InstanceIdentityTokenGetterTest, InvalidJwtReturnsEmptyToken) {
+TEST_P(InstanceIdentityTokenGetterImplTest, InvalidJwtReturnsEmptyToken) {
   SetTokenResponse(GetParam().header + "." + GetParam().payload + ".signature");
 
   instance_identity_token_getter().RetrieveToken(
-      base::BindOnce(&InstanceIdentityTokenGetterTest::OnTokenRetrieved,
+      base::BindOnce(&InstanceIdentityTokenGetterImplTest::OnTokenRetrieved,
                      base::Unretained(this)));
 
   RunUntilQuit();
@@ -370,8 +421,8 @@ TEST_P(InstanceIdentityTokenGetterTest, InvalidJwtReturnsEmptyToken) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    InstanceIdentityTokenGetterTest,
-    InstanceIdentityTokenGetterTest,
+    InstanceIdentityTokenGetterImplTest,
+    InstanceIdentityTokenGetterImplTest,
     ::testing::Values(
         TokenParams("", "", "EmptyHeaderAndPayload"),
         TokenParams("a." + GetBase64EncodedHeader(),
@@ -424,7 +475,9 @@ INSTANTIATE_TEST_SUITE_P(
                         base::Value::Dict().Set("instance_id",
                                                 "test-instance-id"))),
                     "ComputeEngineDictMissingValues")),
-    [](const testing::TestParamInfo<InstanceIdentityTokenGetterTest::ParamType>&
-           info) { return info.param.test_name; });
+    [](const testing::TestParamInfo<
+        InstanceIdentityTokenGetterImplTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace remoting

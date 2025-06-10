@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/instance_identity_token_getter.h"
+#include "remoting/base/instance_identity_token_getter_impl.h"
 
 #include <optional>
 #include <string>
@@ -26,14 +26,14 @@
 
 namespace remoting {
 
-InstanceIdentityTokenGetter::InstanceIdentityTokenGetter(
+InstanceIdentityTokenGetterImpl::InstanceIdentityTokenGetterImpl(
     std::string_view audience,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : audience_(audience), compute_engine_service_client_(url_loader_factory) {}
 
-InstanceIdentityTokenGetter::~InstanceIdentityTokenGetter() = default;
+InstanceIdentityTokenGetterImpl::~InstanceIdentityTokenGetterImpl() = default;
 
-void InstanceIdentityTokenGetter::RetrieveToken(TokenCallback on_token) {
+void InstanceIdentityTokenGetterImpl::RetrieveToken(TokenCallback on_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check expiration, clear token if no longer valid. Reduce the expiration by
@@ -55,12 +55,13 @@ void InstanceIdentityTokenGetter::RetrieveToken(TokenCallback on_token) {
   if (queued_callbacks_.size() == 1) {
     compute_engine_service_client_.GetInstanceIdentityToken(
         audience_,
-        base::BindOnce(&InstanceIdentityTokenGetter::OnTokenRetrieved,
+        base::BindOnce(&InstanceIdentityTokenGetterImpl::OnTokenRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void InstanceIdentityTokenGetter::OnTokenRetrieved(const HttpStatus& response) {
+void InstanceIdentityTokenGetterImpl::OnTokenRetrieved(
+    const HttpStatus& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (response.ok()) {

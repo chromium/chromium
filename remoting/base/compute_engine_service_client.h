@@ -73,6 +73,11 @@ class ComputeEngineServiceClient {
   void OnRequestComplete(ResponseCallback callback,
                          std::optional<std::string> response_body);
 
+  // The URL used to fetch information from the metadata server. The default
+  // hostname and port can be overridden by setting the GCE_METADATA_HOST
+  // environment variable.
+  std::string metadata_server_base_url_;
+
   // |url_loader_| is non-null when a request is in-flight.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -59,6 +59,7 @@
 #include "remoting/base/errors.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/instance_identity_token_getter.h"
+#include "remoting/base/instance_identity_token_getter_impl.h"
 #include "remoting/base/is_google_email.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
@@ -1777,7 +1778,7 @@ void HostProcess::InitializeSignaling() {
     // Initialize |instance_identity_token_getter_| so it can be used to
     // generate tokens for calling the private Remoting Cloud API.
     instance_identity_token_getter_ =
-        std::make_unique<InstanceIdentityTokenGetter>(
+        std::make_unique<InstanceIdentityTokenGetterImpl>(
             base::StringPrintf(
                 "https://%s",
                 ServiceUrls::GetInstance()->remoting_cloud_private_endpoint()),

@@ -445,6 +445,7 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
+    "//base",
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
     "//remoting/base:base",

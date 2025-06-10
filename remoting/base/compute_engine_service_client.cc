@@ -10,11 +10,13 @@
 #include <string_view>
 #include <utility>
 
+#include "base/environment.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/logging.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -27,12 +29,18 @@ namespace {
 // Compute Engine VM Instances always have an HTTP metadata server endpoint.
 // Shielded Instances also provide an HTTPS endpoint. For compatibility, we
 // use the HTTP endpoint for fail-fast decisions or to provide an identity token
-// but rely on our backend services to validate the token and metadata.
+// but rely on our backend services to validate the token and metadata. More
+// info at: https://cloud.google.com/compute/docs/metadata/querying-metadata.
+constexpr char kDefaultMetadataServerHost[] = "metadata.google.internal";
 // TODO: joedow - Add support for the HTTPS endpoint:
 // https://cloud.google.com/compute/docs/metadata/querying-metadata#query-https-mds
-constexpr char kHttpMetadataBaseUrl[] =
-    "http://metadata.google.internal/computeMetadata/v1/instance/"
-    "service-accounts/default";
+constexpr char kHttpMetadataServerBaseUrlFormat[] =
+    "http://%s/computeMetadata/v1/instance/service-accounts/default";
+// Cloud users can configure a custom metadata server for the VM and direct CLI
+// tools to call it instead by providing a hostname, hostname:port, or IP
+// address in this environment variable.
+// https://cloud.google.com/nodejs/docs/reference/gcp-metadata/latest#environment-variables
+constexpr char kGceMetadataHostVarName[] = "GCE_METADATA_HOST";
 
 constexpr size_t kMaxResponseSize = 4096;
 
@@ -144,7 +152,16 @@ constexpr net::NetworkTrafficAnnotationTag kAccessTokenScopesTrafficAnnotation =
 
 ComputeEngineServiceClient::ComputeEngineServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    : url_loader_factory_(url_loader_factory) {
+  auto env = base::Environment::Create();
+  auto metadata_host_override = env->GetVar(kGceMetadataHostVarName);
+  metadata_server_base_url_ = base::StringPrintf(
+      kHttpMetadataServerBaseUrlFormat,
+      metadata_host_override.has_value() && !metadata_host_override->empty()
+          ? *metadata_host_override
+          : kDefaultMetadataServerHost);
+  HOST_LOG << "Using Metadata server URL: " << metadata_server_base_url_;
+}
 
 ComputeEngineServiceClient::~ComputeEngineServiceClient() = default;
 
@@ -155,7 +172,7 @@ void ComputeEngineServiceClient::GetInstanceIdentityToken(
 
   // Use 'format=full' to include project and instance details in the token.
   ExecuteRequest(base::StringPrintf("%s/identity?audience=%s&format=full",
-                                    kHttpMetadataBaseUrl, audience),
+                                    metadata_server_base_url_, audience),
                  kInstanceIdentityTrafficAnnotation, std::move(callback));
 }
 
@@ -163,7 +180,7 @@ void ComputeEngineServiceClient::GetServiceAccountAccessToken(
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  ExecuteRequest(base::StringPrintf("%s/token", kHttpMetadataBaseUrl),
+  ExecuteRequest(base::StringPrintf("%s/token", metadata_server_base_url_),
                  kAccessTokenTrafficAnnotation, std::move(callback));
 }
 
@@ -171,7 +188,7 @@ void ComputeEngineServiceClient::GetServiceAccountScopes(
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  ExecuteRequest(base::StringPrintf("%s/scopes", kHttpMetadataBaseUrl),
+  ExecuteRequest(base::StringPrintf("%s/scopes", metadata_server_base_url_),
                  kAccessTokenScopesTrafficAnnotation, std::move(callback));
 }
 

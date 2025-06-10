@@ -36,11 +36,19 @@ using ::google::internal::remoting::cloud::v1alpha::TurnServer;
 
 constexpr int kLifetimeDurationSeconds = 43200;
 
-// Matches the URL generated for requests from ComputeEngineServiceClient.
-constexpr char kHttpMetadataRequestUrl[] =
-    "http://metadata.google.internal/computeMetadata/v1/instance/"
-    "service-accounts/default/identity?audience=audience_for_testing&"
-    "format=full";
+class FakeInstanceIdentityTokenGetter : public InstanceIdentityTokenGetter {
+ public:
+  FakeInstanceIdentityTokenGetter() = default;
+  FakeInstanceIdentityTokenGetter(const FakeInstanceIdentityTokenGetter&) =
+      delete;
+  FakeInstanceIdentityTokenGetter& operator=(
+      const FakeInstanceIdentityTokenGetter&) = delete;
+  ~FakeInstanceIdentityTokenGetter() override = default;
+
+  void RetrieveToken(TokenCallback on_token) override {
+    std::move(on_token).Run("header.payload.signature");
+  }
+};
 
 }  // namespace
 
@@ -56,9 +64,6 @@ class IceConfigFetcherCloudTest : public testing::Test {
           run_loop_to_quit->Quit();
         });
 
-    test_responder_.AddResponse(kHttpMetadataRequestUrl,
-                                "header.payload.signature");
-
     fetcher_.GetIceConfig(mock_on_result->Get());
     return mock_on_result;
   }
@@ -67,8 +72,7 @@ class IceConfigFetcherCloudTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ProtobufHttpTestResponder test_responder_;
   PassthroughOAuthTokenGetter oauth_token_getter_{{"blergh", "blargh"}};
-  InstanceIdentityTokenGetter instance_identity_token_getter_{
-      "audience_for_testing", test_responder_.GetUrlLoaderFactory()};
+  FakeInstanceIdentityTokenGetter instance_identity_token_getter_;
   IceConfigFetcherCloud fetcher_{test_responder_.GetUrlLoaderFactory(),
                                  &oauth_token_getter_,
                                  &instance_identity_token_getter_};
