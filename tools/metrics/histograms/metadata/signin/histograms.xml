@@ -641,7 +641,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidAccountReauth.Event"
-    enum="AccountReauthenticationEvent" expires_after="2025-07-01">
+    enum="AccountReauthenticationEvent" expires_after="2026-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <summary>
