@@ -34,6 +34,7 @@ include_rules = [
   "+components/os_crypt/async",
   "+components/page_load_metrics/browser",
   "+components/page_load_metrics/google/browser",
+  "+components/payments/content/android/payment_feature_map.h",
   "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",

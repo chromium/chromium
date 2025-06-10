@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/payments/content/android/payment_feature_map.h"
 #include "components/permissions/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/translate/core/common/translate_util.h"
@@ -111,6 +112,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(::features::kVulkan);
 
   aw_feature_overrides.DisableFeature(::features::kServiceWorkerPaymentApps);
+  aw_feature_overrides.EnableFeature(
+      ::payments::android::kAndroidPaymentIntentsOmitDeprecatedParameters);
 
   // WebView does not support overlay fullscreen yet for video overlays.
   aw_feature_overrides.DisableFeature(media::kOverlayFullscreenVideo);
