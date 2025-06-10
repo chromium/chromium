@@ -52,7 +52,7 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
       current_source_id_ < args.frame_id.source_id) {
     // The change in source_id can be as a result of crash on gpu process,
     // which invalidates existing pending frames (no ack is expected).
-    Reset();
+    Reset(true);
   }
 
   if (!pending_frames_.empty()) {
@@ -148,7 +148,7 @@ bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
   return it->second.is_dropped();
 }
 
-void FrameSorter::Reset() {
+void FrameSorter::Reset(bool reset_fcp) {
   total_frames_ = 0;
   total_partial_ = 0;
   total_dropped_ = 0;
@@ -167,6 +167,9 @@ void FrameSorter::Reset() {
   }
   pending_frames_.clear();
   ring_buffer_.Clear();
+  if (reset_fcp) {
+    first_contentful_paint_received_ = false;
+  }
 }
 
 void FrameSorter::FlushFrames() {
@@ -200,6 +203,11 @@ uint32_t FrameSorter::GetAverageThroughput() const {
   }
   double throughput = 100. * good_frames / ring_buffer_.BufferSize();
   return static_cast<uint32_t>(throughput);
+}
+
+void FrameSorter::OnFirstContentfulPaintReceived() {
+  DCHECK(!first_contentful_paint_received_);
+  first_contentful_paint_received_ = true;
 }
 
 }  // namespace cc

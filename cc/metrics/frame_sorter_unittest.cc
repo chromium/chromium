@@ -101,7 +101,7 @@ class FrameSorterTest : public testing::Test, FrameSorterObserver {
           IncreaseSourceId();
           break;
         case 'R':
-          frame_sorter_.Reset();
+          frame_sorter_.Reset(/*reset_fcp=*/true);
           break;
       }
     }

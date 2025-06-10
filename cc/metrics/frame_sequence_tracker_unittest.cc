@@ -900,6 +900,7 @@ TEST_F(FrameSequenceTrackerTest,
   const uint64_t kNumFramesSkipped = 5;
 
   dfc_mock_.OnFirstContentfulPaintReceived();
+  sorter_.OnFirstContentfulPaintReceived();
   // Expect that kNumFramesSkipped are backfilled with the appropriate smooth
   // thread set.
   EXPECT_CALL(dfc_mock_, OnEndFrame(testing::_, testing::_))

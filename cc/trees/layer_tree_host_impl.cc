@@ -638,7 +638,8 @@ void LayerTreeHostImpl::ReadyToCommit(
         begin_main_frame_metrics->should_measure_smoothness) ||
        commit_timeout)) {
     is_measuring_smoothness_ = true;
-    dropped_frame_counter_.OnFirstContentfulPaintReceived();
+    frame_sorter_.OnFirstContentfulPaintReceived();
+    dropped_frame_counter()->OnFirstContentfulPaintReceived();
   }
 
   // Notify the browser controls manager that we have processed any
@@ -3731,7 +3732,7 @@ void LayerTreeHostImpl::DidLoseLayerTreeFrameSink() {
   has_valid_layer_tree_frame_sink_ = false;
   client_->DidLoseLayerTreeFrameSinkOnImplThread();
   lag_tracking_manager_.Clear();
-  frame_sorter_.Reset();
+  frame_sorter_.Reset(/*reset_fcp=*/false);
   dropped_frame_counter_.ResetPendingFrames(base::TimeTicks::Now());
 }
 
@@ -4035,7 +4036,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
 
   if (!visible_) {
     auto now = base::TimeTicks::Now();
-    frame_sorter_.Reset();
+    frame_sorter_.Reset(/*reset_fcp=*/false);
     dropped_frame_counter_.ResetPendingFrames(now);
 
     // When page is invisible, throw away corresponding EventsMetrics since
@@ -5968,7 +5969,7 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // case to occur.
   // The source id has already been associated to the URL.
   compositor_frame_reporting_controller_->SetSourceId(source_id);
-  frame_sorter_.Reset();
+  frame_sorter_.Reset(/*reset_fcp=*/true);
   dropped_frame_counter_.Reset();
   is_measuring_smoothness_ = false;
 }

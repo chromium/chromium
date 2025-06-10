@@ -88,7 +88,13 @@ class CC_EXPORT FrameSorter {
 
   uint32_t GetAverageThroughput() const;
 
-  void Reset();
+  void Reset(bool reset_fcp);
+
+  void OnFirstContentfulPaintReceived();
+
+  bool first_contentful_paint_received() {
+    return first_contentful_paint_received_;
+  }
 
  private:
   void FlushFrames();
@@ -113,6 +119,7 @@ class CC_EXPORT FrameSorter {
   size_t total_dropped_ = 0;
 
   std::optional<uint64_t> current_source_id_;
+  bool first_contentful_paint_received_ = false;
 };
 
 }  // namespace cc

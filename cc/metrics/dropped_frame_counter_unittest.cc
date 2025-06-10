@@ -674,8 +674,9 @@ class DroppedFrameCounterLegacyMetricsTest : public DroppedFrameCounterTest {
 DroppedFrameCounterLegacyMetricsTest::DroppedFrameCounterLegacyMetricsTest() {
   frame_sorter_.RemoveObserver(dropped_frame_counter_.get());
   dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
-  frame_sorter_.Reset();
+  frame_sorter_.Reset(/*reset_fcp=*/true);
   dropped_frame_counter_->OnFirstContentfulPaintReceived();
+  frame_sorter_.OnFirstContentfulPaintReceived();
   frame_sorter_.AddObserver(dropped_frame_counter_.get());
 }
 

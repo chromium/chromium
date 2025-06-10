@@ -1548,8 +1548,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // Stop requesting frames, skip over a few frames, and submit + present
   // another frame. There should no new dropped frames.
+  frame_sorter_.Reset(/*reset_fcp=*/true);
   dropped_counter_.Reset();
-  frame_sorter_.Reset();
   reporting_controller_.OnStoppedRequestingBeginFrames();
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
@@ -1650,6 +1650,7 @@ TEST_F(CompositorFrameReportingControllerTest,
       FrameSequenceTrackerType::kCompositorAnimation);
   EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_compositor);
   dropped_counter_.OnFirstContentfulPaintReceived();
+  frame_sorter_.OnFirstContentfulPaintReceived();
 
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
@@ -1793,6 +1794,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_main);
 
   dropped_counter_.OnFirstContentfulPaintReceived();
+  frame_sorter_.OnFirstContentfulPaintReceived();
   dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
       args_.frame_time);
 
@@ -1837,6 +1839,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 TEST_F(CompositorFrameReportingControllerTest,
        NoUpdateCompositorWithJankyMain) {
   dropped_counter_.OnFirstContentfulPaintReceived();
+  frame_sorter_.OnFirstContentfulPaintReceived();
   dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
       args_.frame_time);
 

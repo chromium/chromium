@@ -217,7 +217,7 @@ void VideoFrameSubmitter::StopRendering() {
   is_rendering_ = false;
 
   frame_trackers_.StopSequence(cc::FrameSequenceTrackerType::kVideo);
-  frame_sorter_.Reset();
+  frame_sorter_.Reset(/*reset_fcp=*/false);
 
   UpdateSubmissionState();
 }
