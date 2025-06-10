@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
@@ -40,6 +41,22 @@ void MockBlindSignAuth::GetTokens(
   }
 
   std::move(callback)(std::move(result));
+}
+
+void MockBlindSignAuth::GetAttestationTokens(
+    int num_tokens,
+    quiche::ProxyLayer layer,
+    quiche::AttestationDataCallback callback) {
+  NOTREACHED() << "Not implemented";
+}
+
+void MockBlindSignAuth::AttestAndSign(
+    int num_tokens,
+    quiche::ProxyLayer layer,
+    std::string attestation_data,
+    std::optional<std::string> token_challenge,
+    quiche::SignedTokenCallback callback) {
+  NOTREACHED() << "Not implemented";
 }
 
 bool MockBlindSignAuth::GetTokensCalledInDifferentThread() {
