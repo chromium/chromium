@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -47,7 +48,10 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -1699,5 +1703,83 @@ TEST_F(ContentAnalysisDelegateWithLocalClient, FailClosed) {
   EXPECT_TRUE(called);
 }
 #endif
+
+class ContentAnalysisDelegateFrameUrlChainTest
+    : public ContentAnalysisDelegateAuditOnlyTest {
+ public:
+  ContentAnalysisDelegateFrameUrlChainTest() = default;
+
+ protected:
+  void SetUp() override {
+    ContentAnalysisDelegateAuditOnlyTest::SetUp();
+
+    // Create test web contents as we need to navigate to a URL to get a valid
+    // frame chain.
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile(), content::SiteInstance::Create(profile()));
+    content::WebContentsTester::For(web_contents_.get())
+        ->NavigateAndCommit(GURL(kTestUrl));
+  }
+
+  void TearDown() override {
+    // `WebContentsTester` needs to be destroyed before the
+    // `RenderViewHostTestEnabler`.
+    if (web_contents_) {
+      web_contents_.reset();
+    }
+    ContentAnalysisDelegateAuditOnlyTest::TearDown();
+  }
+
+ private:
+  // Needed for frame tree and navigation operations.
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+};
+
+TEST_F(ContentAnalysisDelegateFrameUrlChainTest, UploadWithNestedFrames) {
+  base::HistogramTester histogram_tester;
+  ContentAnalysisDelegate::Data data;
+
+  // Create main frame.
+  content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHostTester* main_frame_tester =
+      content::RenderFrameHostTester::For(main_frame);
+
+  // Create and navigate the first child frame.
+  content::RenderFrameHost* child_frame1 =
+      main_frame_tester->AppendChild("child1");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://child1.example.com/"), child_frame1);
+
+  // Create and navigate the second (nested) child frame.
+  content::RenderFrameHostTester* child_frame1_tester =
+      content::RenderFrameHostTester::For(child_frame1);
+  content::RenderFrameHost* child_frame2 =
+      child_frame1_tester->AppendChild("child2");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://child2.example.com/"), child_frame2);
+
+  // Set focus on the innermost frame.
+  content::FocusWebContentsOnFrame(web_contents_.get(), child_frame2);
+
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), GURL(kTestUrl),
+                                                 &data, FILE_ATTACHED));
+
+  bool called = false;
+  ScanUpload(
+      contents(), std::move(data),
+      base::BindOnce(
+          [](bool* called, const ContentAnalysisDelegate::Data& data,
+             ContentAnalysisDelegate::Result& result) { *called = true; },
+          &called));
+  RunUntilDone();
+
+  EXPECT_EQ(0,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.IframeDlpRulesSupport.Upload.UrlChainSize", 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.IframeDlpRulesSupport.Upload.UrlChainSize", 3, 1);
+}
 
 }  // namespace enterprise_connectors

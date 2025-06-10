@@ -544,9 +544,15 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   DCHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
-  if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport) &&
-      access_point_ == safe_browsing::DeepScanAccessPoint::UPLOAD) {
+  if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
     frame_url_chain_ = CollectFrameUrls(web_contents);
+    base::UmaHistogramCustomCounts(
+        base::JoinString(
+            {"Enterprise.IframeDlpRulesSupport",
+             safe_browsing::DeepScanAccessPointToString(access_point_),
+             "UrlChainSize"},
+            "."),
+        frame_url_chain_.size(), 1, kMaxFrameUrls, 10);
   }
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
   user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
