@@ -74,6 +74,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   UpdateColors();
 
   SetVisible(true);
+  SetText(base::UTF8ToUTF16(std::string()));
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -92,6 +93,7 @@ void GlicButton::SetIsShowingNudge(bool is_showing) {
     AnnounceNudgeShown();
   } else {
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
+    SetText(base::UTF8ToUTF16(std::string()));
   }
   is_showing_nudge_ = is_showing;
   PreferredSizeChanged();
