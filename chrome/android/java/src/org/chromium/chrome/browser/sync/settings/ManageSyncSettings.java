@@ -475,8 +475,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mBatchUploadCardPreference.initialize(
                 getActivity(),
                 profile,
-                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
-        mBatchUploadCardPreference.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                mSnackbarManagerSupplier);
     }
 
     private void setupAccountDataTypePreferences() {

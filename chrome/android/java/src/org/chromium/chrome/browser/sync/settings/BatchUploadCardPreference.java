@@ -63,11 +63,16 @@ public class BatchUploadCardPreference extends Preference
 
     /** Initialize the dependencies for the BatchUploadCardPreference and update the error card. */
     @Initializer
-    public void initialize(Activity activity, Profile profile, ModalDialogManager dialogManager) {
+    public void initialize(
+            Activity activity,
+            Profile profile,
+            ModalDialogManager dialogManager,
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
         mActivity = activity;
         mProfile = profile;
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mDialogManager = dialogManager;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
@@ -83,11 +88,6 @@ public class BatchUploadCardPreference extends Preference
         setVisible(false);
         notifyChanged();
         update();
-    }
-
-    public void setSnackbarManagerSupplier(
-            OneshotSupplier<SnackbarManager> snackbarManagerSupplier) {
-        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     @Override
