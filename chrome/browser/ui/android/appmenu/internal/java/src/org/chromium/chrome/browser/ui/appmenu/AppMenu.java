@@ -127,43 +127,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     /**
-     * Notifies the menu that the contents of the menu item specified by {@code menuRowId} have
-     * changed. This should be called if icons, titles, etc. are changing for a particular menu item
-     * while the menu is open.
-     *
-     * @param menuRowId The id of the menu item to change. This must be a row id and not a child id.
-     */
-    public void menuItemContentChanged(int menuRowId) {
-        // Make sure we have all the valid state objects we need.
-        if (mAdapter == null || mPopup == null || mListView == null) {
-            return;
-        }
-
-        // Calculate the item index.
-        int index = -1;
-        int menuSize = mModelList.size();
-        for (int i = 0; i < menuSize; i++) {
-            if (mModelList.get(i).model.get(AppMenuItemProperties.MENU_ITEM_ID) == menuRowId) {
-                index = i;
-                break;
-            }
-        }
-        if (index == -1) return;
-
-        // Check if the item is visible.
-        int startIndex = mListView.getFirstVisiblePosition();
-        int endIndex = mListView.getLastVisiblePosition();
-        if (index < startIndex || index > endIndex) return;
-
-        // Grab the correct View.
-        View view = mListView.getChildAt(index - startIndex);
-        if (view == null) return;
-
-        // Cause the Adapter to re-populate the View.
-        mAdapter.getView(index, view, mListView);
-    }
-
-    /**
      * Creates and shows the app menu anchored to the specified view.
      *
      * @param context The context of the AppMenu (ensure the proper theme is set on this context).

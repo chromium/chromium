@@ -506,33 +506,6 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
-    public void testMenuItemContentChanged() throws TimeoutException {
-        showMenuAndAssert();
-        View itemView = getViewAtPosition(1);
-        Assert.assertEquals(
-                "Menu item text incorrect",
-                "Menu Item Two",
-                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
-
-        String newText = "Test!";
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mAppMenuHandler
-                            .getAppMenu()
-                            .getMenuItemPropertyModel(R.id.menu_item_two)
-                            .set(AppMenuItemProperties.TITLE, newText);
-                    mAppMenuHandler.menuItemContentChanged(R.id.menu_item_two);
-                });
-
-        itemView = getViewAtPosition(1);
-        Assert.assertEquals(
-                "Menu item text incorrect",
-                newText,
-                ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
-    }
-
-    @Test
-    @MediumTest
     public void testMenuItemRemoved() throws TimeoutException, ExecutionException {
         showMenuAndAssert();
         Assert.assertEquals(3, mAppMenuHandler.getModelListForTesting().size());

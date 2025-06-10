@@ -889,6 +889,12 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     if (subListItem.model.get(AppMenuItemProperties.MENU_ITEM_ID)
                             == R.id.reload_menu_id) {
                         updateReloadPropertyModel(subListItem.model, isLoading);
+
+                        // The additional icons model list is not observed, so replace the full
+                        // list object to trigger an update.
+                        ModelList replacementList = new ModelList();
+                        replacementList.addAll(subList);
+                        listItem.model.set(AppMenuItemProperties.ADDITIONAL_ICONS, replacementList);
                         return;
                     }
                 }

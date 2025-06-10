@@ -228,7 +228,6 @@ class MenuButtonMediator implements AppMenuObserver {
             return;
         }
         mAppMenuPropertiesDelegate.loadingStateChanged(isLoading);
-        mAppMenuHandler.menuItemContentChanged(R.id.icon_row_menu_id);
     }
 
     ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {

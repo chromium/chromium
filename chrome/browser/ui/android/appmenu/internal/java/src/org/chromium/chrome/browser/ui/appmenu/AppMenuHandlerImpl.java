@@ -193,11 +193,6 @@ class AppMenuHandlerImpl
     }
 
     @Override
-    public void menuItemContentChanged(int menuRowId) {
-        if (mAppMenu != null) mAppMenu.menuItemContentChanged(menuRowId);
-    }
-
-    @Override
     public void clearMenuHighlight() {
         setMenuHighlight(null);
     }
