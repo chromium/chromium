@@ -536,16 +536,18 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 CanvasResourceProvider*
 OffscreenCanvas::GetOrCreateResourceProviderForImageBitmap() {
   CHECK(IsImageBitmapRenderingContext());
-  return GetOrCreateResourceProvider();
+  return GetOrCreateResourceProviderForCanvas2DOrImageBitmap();
 }
 
 CanvasResourceProvider*
 OffscreenCanvas::GetOrCreateResourceProviderForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  return GetOrCreateResourceProvider();
+  return GetOrCreateResourceProviderForCanvas2DOrImageBitmap();
 }
 
-CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
+CanvasResourceProvider*
+OffscreenCanvas::GetOrCreateResourceProviderForCanvas2DOrImageBitmap() {
+  CHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
   if (!context_ ||
       (context_->isContextLost() && !context_->IsContextBeingRestored())) {
     return nullptr;
@@ -577,9 +579,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   gfx::Size surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
-      (IsWebGL() || IsWebGPU() || IsImageBitmapRenderingContext() ||
-       (IsRenderingContext2D() &&
-        RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
+      (IsImageBitmapRenderingContext() ||
+       (RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
         !(context_->CreationAttributes().will_read_frequently ==
           CanvasContextCreationAttributesCore::WillReadFrequently::kTrue)));
   const bool use_shared_image =
@@ -588,10 +589,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   const bool use_scanout =
       use_shared_image && HasPlaceholderCanvas() &&
       SharedGpuContext::MaySupportImageChromium() &&
-      (IsWebGPU() ||
-       (IsWebGL() && RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) ||
-       (IsRenderingContext2D() &&
-        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()));
+      (IsRenderingContext2D() &&
+       RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled());
 
   gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

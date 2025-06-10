@@ -261,7 +261,7 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
-  CanvasResourceProvider* GetOrCreateResourceProvider();
+  CanvasResourceProvider* GetOrCreateResourceProviderForCanvas2DOrImageBitmap();
   void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
                                    const IdentifiableToken& token) const;
 
