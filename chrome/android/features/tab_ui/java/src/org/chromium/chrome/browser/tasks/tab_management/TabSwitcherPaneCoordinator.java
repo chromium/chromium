@@ -325,7 +325,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             int emptyImageResId =
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                             ? R.drawable.tablet_tab_switcher_empty_state_illustration
-                            : R.drawable.phone_tab_switcher_empty_state_illustration;
+                            : R.drawable.phone_tab_switcher_empty_state_illustration_static;
             TabListCoordinator tabListCoordinator =
                     new TabListCoordinator(
                             mode,

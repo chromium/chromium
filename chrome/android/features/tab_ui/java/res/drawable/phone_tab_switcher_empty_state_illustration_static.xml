@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:width="130dp"
+    android:height="130dp"
+    android:viewportWidth="130"
+    android:viewportHeight="130">
+  <path
+      android:pathData="M15,39.44C15,24.84 26.87,13 41.51,13H89.49C104.13,13 116,24.84 116,39.44C116,51.48 107.93,61.65 96.89,64.84C96.82,64.86 96.77,64.93 96.77,65C96.77,65.07 96.82,65.14 96.89,65.16C107.93,68.35 116,78.52 116,90.56C116,105.16 104.13,117 89.49,117H41.51C26.87,117 15,105.16 15,90.56C15,78.6 22.97,68.49 33.9,65.22C34,65.19 34.06,65.1 34.06,65C34.06,64.9 34,64.81 33.9,64.78C22.97,61.51 15,51.4 15,39.44Z"
+      android:fillColor="@color/empty_state_asset_bg_color"/>
+  <path
+      android:pathData="M55,39L87,39A8,8 0,0 1,95 47L95,95A8,8 0,0 1,87 103L55,103A8,8 0,0 1,47 95L47,47A8,8 0,0 1,55 39z"
+      android:fillColor="@color/empty_state_asset_outline_color_secondary"/>
+  <path
+      android:pathData="M53,53C53,51.9 53.9,51 55,51H87C88.1,51 89,51.9 89,53V95C89,96.1 88.1,97 87,97H55C53.9,97 53,96.1 53,95V53Z"
+      android:fillColor="@color/empty_state_asset_bg_color"/>
+  <path
+      android:pathData="M43,27L75,27A8,8 0,0 1,83 35L83,83A8,8 0,0 1,75 91L43,91A8,8 0,0 1,35 83L35,35A8,8 0,0 1,43 27z"
+      android:fillColor="@color/empty_state_asset_outline_color_primary"/>
+  <path
+      android:pathData="M43,39L75,39A2,2 0,0 1,77 41L77,83A2,2 0,0 1,75 85L43,85A2,2 0,0 1,41 83L41,41A2,2 0,0 1,43 39z"
+      android:fillColor="@color/empty_state_asset_bg_color"/>
+  <path
+      android:pathData="M45,33m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="@color/empty_state_asset_bg_color"/>
+  <path
+      android:pathData="M50,32L62,32A1,1 0,0 1,63 33L63,33A1,1 0,0 1,62 34L50,34A1,1 0,0 1,49 33L49,33A1,1 0,0 1,50 32z"
+      android:fillColor="@color/empty_state_asset_bg_color"/>
+</vector>

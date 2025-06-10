@@ -197,6 +197,7 @@ class TabListEmptyCoordinator {
         return mIsListObserverAttached;
     }
 
+    // TODO(https://crbug.com/423697444): Clean up old animation class for GTS mobile.
     private boolean isDrawableForPhones(@DrawableRes int drawableResId) {
         return drawableResId == R.drawable.phone_tab_switcher_empty_state_illustration;
     }
