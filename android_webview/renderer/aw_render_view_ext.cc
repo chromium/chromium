@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
@@ -101,7 +102,9 @@ void AwRenderViewExt::UpdateContentsSize() {
 
   // Fall back to contentsPreferredMinimumSize if the mainFrame is reporting a
   // 0x0 size (this happens during initial load).
-  if (contents_size.IsEmpty()) {
+  if (contents_size.IsEmpty() &&
+      !base::FeatureList::IsEnabled(
+          features::kWebViewSkipPreferredSizeForContentsSize)) {
     contents_size = webview->ContentsPreferredMinimumSize();
   }
 

@@ -170,6 +170,12 @@ BASE_FEATURE(kWebViewSkipInterceptsForPrefetch,
              "WebViewSkipInterceptsForPrefetch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to skip `WebView::ContentsPreferredMinimumSize` within
+// `AwRenderViewExt::UpdateContentsSize`.
+BASE_FEATURE(kWebViewSkipPreferredSizeForContentsSize,
+             "WebViewSkipPreferredSizeForContentsSize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to use initial network state during initialization to speed up
 // startup.
 BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,
