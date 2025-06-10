@@ -9,7 +9,6 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/wm_helper.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
 namespace ash {
 namespace {
