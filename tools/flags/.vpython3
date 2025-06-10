@@ -1,4 +1,4 @@
-python_version: "3.8"
+python_version: "3.11"
 
 wheel: <
   name: "infra/python/wheels/httplib2-py3"
