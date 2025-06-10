@@ -10779,6 +10779,8 @@ from previous Chrome versions.
   <int value="-1176540753"
       label="ContextualSearchWithCredentialsForDebug:enabled"/>
   <int value="-1176493523" label="enable-md-extensions"/>
+  <int value="-1176055259"
+      label="CrOSLateBootCrasOutputPluginProcessor:enabled"/>
   <int value="-1175552430" label="WebViewNewInvalidateHeuristic:enabled"/>
   <int value="-1175496736" label="AutofillUnmaskCardRequestTimeout:enabled"/>
   <int value="-1174628038"
@@ -14439,6 +14441,8 @@ from previous Chrome versions.
   <int value="201203491"
       label="ReduceUserAgentAndroidVersionDeviceModel:enabled"/>
   <int value="201343576" label="enable-password-change-support:enabled"/>
+  <int value="201641586"
+      label="CrOSLateBootCrasOutputPluginProcessor:disabled"/>
   <int value="202197713" label="WallpaperRefreshRevamp:enabled"/>
   <int value="202966815" label="SettingsAppNotificationSettings:enabled"/>
   <int value="203239167" label="ImprovedGeoLanguageData:enabled"/>

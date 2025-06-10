@@ -1839,6 +1839,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cras-output-plugin-processor",
+    "owners": ["hunghsienchen@google.com", "chromeos-audio@google.com" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 150

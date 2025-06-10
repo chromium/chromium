@@ -12925,6 +12925,13 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kFacilitatedPaymentsEnableA2APayment)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"cras-output-plugin-processor",
+     flag_descriptions::kCrasOutputPluginProcessorName,
+     flag_descriptions::kCrasOutputPluginProcessorDescription, kOsCrOS,
+     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrasOutputPluginProcessor")},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

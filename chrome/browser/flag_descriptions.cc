@@ -2437,6 +2437,12 @@ const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
     "mute controls.";
 
+const char kCrasOutputPluginProcessorName[] =
+    "Enable audio output plugin processor in CRAS";
+const char kCrasOutputPluginProcessorDescription[] =
+    "When enabled, and the configuration files are properly set, the audio "
+    "output will be processed by the output plugin processor.";
+
 const char kCrasProcessorWavDumpName[] = "Enable CrasProcessor WAVE file dumps";
 const char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
