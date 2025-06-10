@@ -258,6 +258,7 @@ class CertGenerator {
   inline net::IPAddress GetIpAddress();
   std::vector<bssl::KeyUsageBit> GetKeyUsages();
   inline bssl::SignatureAlgorithm GetSignatureAlgorithm();
+  std::string GetValidOid();
 
   void GenerateCert();
 
@@ -380,6 +381,29 @@ bssl::SignatureAlgorithm CertGenerator::GetSignatureAlgorithm() {
     case SupportedSignatureAlgorithm::kEcdsaSha256:
       return bssl::SignatureAlgorithm::kEcdsaSha256;
   }
+}
+
+std::string CertGenerator::GetValidOid() {
+  CBB policy_identifier;
+  CBB_init(&policy_identifier, /*initial_capacity=*/10);
+
+  std::vector<std::string> oid_parts;
+  for (int i = 0; i < 2; i++) {
+    // A valid OID needs to have at least two parts.
+    oid_parts.push_back(base::NumberToString(GetUint64()));
+  }
+  while (GetBool()) {
+    oid_parts.push_back(base::NumberToString(GetUint64()));
+  }
+  std::string oid = base::JoinString(oid_parts, ".");
+  // Check that the OID will be accepted as valid by openssl.
+  if (!CBB_add_asn1_oid_from_text(&policy_identifier, oid.data(), oid.size())) {
+    // Fallback on an always valid OID.
+    oid = "0.0";
+  }
+
+  CBB_cleanup(&policy_identifier);
+  return oid;
 }
 
 void CertGenerator::GenerateCert() {
@@ -505,26 +529,15 @@ void CertGenerator::GenerateCert() {
   }
   if (GetBool()) {
     std::vector<std::string> policy_oids;
-    CBB policy_identifier;
-    CBB_init(&policy_identifier, /*initial_capacity=*/10);
     while (GetBool()) {
-      std::vector<std::string> oid_parts;
-      while (GetBool()) {
-        oid_parts.push_back(base::NumberToString(GetUint64()));
-      }
-      std::string oid = base::JoinString(oid_parts, ".");
-      // Check that the OID will be accepted as valid before adding it.
-      if (CBB_add_asn1_oid_from_text(&policy_identifier, oid.data(),
-                                     oid.size())) {
-        policy_oids.push_back(oid);
-      }
+      policy_oids.push_back(GetValidOid());
     }
     cert_builder_->SetCertificatePolicies(policy_oids);
   }
   if (GetBool()) {
     std::vector<std::pair<std::string, std::string>> policy_mappings;
     while (GetBool()) {
-      policy_mappings.emplace_back(GetString(), GetString());
+      policy_mappings.emplace_back(GetValidOid(), GetValidOid());
     }
     cert_builder_->SetPolicyMappings(policy_mappings);
   }
