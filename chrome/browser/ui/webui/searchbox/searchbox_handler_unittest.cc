@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -171,6 +172,38 @@ TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
   handler_->RemoveObserver(&observer);
   EXPECT_FALSE(handler_->HasObserver(&observer));
   EXPECT_TRUE(observer.called());
+}
+
+TEST_F(RealboxHandlerTest, RealboxShowAIMEntrypoint) {
+  // Enable entry point feature and AIMode Settings pref.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{ntp_features::kNtpSearchboxComposeEntrypoint,
+                             {{}}}},
+      /*disabled_features=*/{});
+  {
+    profile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 1);
+    RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile());
+    // Searchbox entrypoint should be disabled if policy is not set and flag is
+    // enabled.
+    EXPECT_FALSE(source()
+                     ->GetLocalizedStrings()
+                     ->FindBool("searchboxShowComposeEntrypoint")
+                     .value());
+  }
+
+  {
+    profile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
+    RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile());
+    // Searchbox entrypoint should be enabled if policy is set and flag is
+    // enabled.
+    EXPECT_TRUE(source()
+                    ->GetLocalizedStrings()
+                    ->FindBool("searchboxShowComposeEntrypoint")
+                    .value());
+  }
 }
 
 TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
