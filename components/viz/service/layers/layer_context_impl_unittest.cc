@@ -1796,6 +1796,32 @@ TEST_F(LayerContextImplTest, TransferableUIResourceLifecycleAndEdgeCases) {
 }
 
 class LayerContextImplLayerLifecycleTest : public LayerContextImplTest {
+ public:
+  static std::string GetLayerImplName(cc::mojom::LayerType type) {
+    switch (type) {
+      case cc::mojom::LayerType::kLayer:
+        return "LayerImpl";
+      case cc::mojom::LayerType::kMirror:
+        return "MirrorLayerImpl";
+      case cc::mojom::LayerType::kNinePatchThumbScrollbar:
+        return "NinePatchThumbScrollbarLayerImpl";
+      case cc::mojom::LayerType::kPaintedScrollbar:
+        return "PaintedScrollbarLayerImpl";
+      case cc::mojom::LayerType::kSolidColorScrollbar:
+        return "SolidColorScrollbarLayerImpl";
+      case cc::mojom::LayerType::kSurface:
+        return "SurfaceLayerImpl";
+      case cc::mojom::LayerType::kTexture:
+        return "TextureLayerImpl";
+      case cc::mojom::LayerType::kTileDisplay:
+        return "TileDisplayLayerImpl";
+      case cc::mojom::LayerType::kViewTransitionContent:
+        return "ViewTransitionContentLayerImpl";
+      default:
+        return "UnknownLayerType";
+    }
+  }
+
  protected:
   cc::LayerImpl* GetLayerFromActiveTree(int layer_id) {
     return layer_context_impl_->host_impl()->active_tree()->LayerById(layer_id);
@@ -2438,7 +2464,7 @@ TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
 
   for (cc::mojom::LayerType type : types_requiring_extra) {
     SCOPED_TRACE(testing::Message()
-                 << "Testing LayerType: " << static_cast<int>(type));
+                 << "Testing LayerType: " << GetLayerImplName(type));
     ResetTestState();
     // Create a valid root layer first.
     auto initial_update = CreateDefaultUpdate();
@@ -2460,9 +2486,92 @@ TEST_F(LayerContextImplLayerLifecycleTest, MissingLayerExtra) {
     auto result = layer_context_impl_->DoUpdateDisplayTree(
         std::move(update_missing_extra));
     ASSERT_FALSE(result.has_value());
-    EXPECT_EQ(result.error(), "Invalid layer_extra");
+    EXPECT_EQ(result.error(),
+              "Invalid layer_extra type for " + GetLayerImplName(type));
   }
 }
+
+class LayerContextImplLayerExtraTypeValidationTest
+    : public LayerContextImplLayerLifecycleTest,
+      public testing::WithParamInterface<cc::mojom::LayerType> {};
+
+const cc::mojom::LayerType kLayerTypesWithSpecificExtras[] = {
+    cc::mojom::LayerType::kMirror,
+    cc::mojom::LayerType::kNinePatchThumbScrollbar,
+    cc::mojom::LayerType::kPaintedScrollbar,
+    cc::mojom::LayerType::kSolidColorScrollbar,
+    cc::mojom::LayerType::kSurface,
+    cc::mojom::LayerType::kTexture,
+    cc::mojom::LayerType::kTileDisplay,
+    cc::mojom::LayerType::kViewTransitionContent,
+};
+
+TEST_P(LayerContextImplLayerExtraTypeValidationTest, MismatchedLayerExtra) {
+  constexpr int kLayerId = 2;
+  cc::mojom::LayerType layer_type_under_test = GetParam();
+
+  for (cc::mojom::LayerType mismatching_extra_provider_type :
+       kLayerTypesWithSpecificExtras) {
+    if (layer_type_under_test == mismatching_extra_provider_type) {
+      continue;
+    }
+
+    SCOPED_TRACE(testing::Message()
+                 << "LayerTypeUnderTest: "
+                 << GetLayerImplName(layer_type_under_test)
+                 << ", MismatchingExtraProviderType: "
+                 << GetLayerImplName(mismatching_extra_provider_type));
+
+    // Test Creation with mismatched extra
+    ResetTestState();
+    auto update_create = CreateDefaultUpdate();
+    auto layer_props_create =
+        CreateManualLayer(kLayerId, layer_type_under_test);
+    layer_props_create->layer_extra =
+        CreateDefaultLayerExtra(mismatching_extra_provider_type);
+    update_create->layers.push_back(std::move(layer_props_create));
+    update_create->layer_order = {1, kLayerId};  // Root layer (1) + test layer
+
+    auto result_create =
+        layer_context_impl_->DoUpdateDisplayTree(std::move(update_create));
+    ASSERT_FALSE(result_create.has_value());
+    EXPECT_THAT(result_create.error(),
+                testing::StartsWith("Invalid layer_extra type for " +
+                                    GetLayerImplName(layer_type_under_test)));
+
+    // Test Update with mismatched extra
+    ResetTestState();
+    auto initial_update = CreateDefaultUpdate();
+    AddDefaultLayerToUpdate(initial_update.get(), layer_type_under_test,
+                            kLayerId);
+    EXPECT_TRUE(
+        layer_context_impl_->DoUpdateDisplayTree(std::move(initial_update))
+            .has_value());
+
+    auto update_props = CreateDefaultUpdate();
+    auto layer_props_update =
+        CreateManualLayer(kLayerId, layer_type_under_test);
+    layer_props_update->layer_extra =
+        CreateDefaultLayerExtra(mismatching_extra_provider_type);
+    update_props->layers.push_back(std::move(layer_props_update));
+
+    auto result_update =
+        layer_context_impl_->DoUpdateDisplayTree(std::move(update_props));
+    ASSERT_FALSE(result_update.has_value());
+    EXPECT_THAT(result_update.error(),
+                testing::StartsWith("Invalid layer_extra type for " +
+                                    GetLayerImplName(layer_type_under_test)));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllLayerTypesRequiringExtra,
+    LayerContextImplLayerExtraTypeValidationTest,
+    testing::ValuesIn(kLayerTypesWithSpecificExtras),
+    [](const testing::TestParamInfo<
+        LayerContextImplLayerExtraTypeValidationTest::ParamType>& info) {
+      return LayerContextImplLayerLifecycleTest::GetLayerImplName(info.param);
+    });
 
 TEST_F(LayerContextImplLayerLifecycleTest,
        UpdateExistingLayerWithInvalidPropertyTreeIndicesFails) {
