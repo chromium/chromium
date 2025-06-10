@@ -102,7 +102,7 @@ gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
                                        int size,
                                        bool has_padding,
                                        bool has_background,
-                                       ui::ColorProvider* color_provider);
+                                       const ui::ColorProvider& color_provider);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns a version of |image| suitable for use in WebUI.

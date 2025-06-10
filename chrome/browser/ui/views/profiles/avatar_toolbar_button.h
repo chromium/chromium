@@ -30,9 +30,9 @@ class GaiaId;
 enum class AvatarDelayType {
   // Delay for the name to stop showing.
   kNameGreeting,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Delay for the SigninPending mode to show the "Verify it's you" text.
   kSigninPendingText,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Delay for the History Sync Opt-in entry point.
   kHistorySyncOptin,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -145,6 +145,7 @@ class AvatarToolbarButton : public ToolbarButton {
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
   // Force stop any ongoing delay, this expects the proper state to be active.
   void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Specific override for the SigninPending text delay. Setting a zero value
   // make it possible to test the creation of browser after the delay has
   // reached.
@@ -153,6 +154,7 @@ class AvatarToolbarButton : public ToolbarButton {
   // `TriggerTimeoutForTesting()` not enough for testing.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,

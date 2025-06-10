@@ -484,11 +484,12 @@ ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
-                                       int size,
-                                       bool has_padding,
-                                       bool has_background,
-                                       ui::ColorProvider* color_provider) {
+gfx::ImageSkia GetAvatarWithDottedRing(
+    const ui::ImageModel& image,
+    int size,
+    bool has_padding,
+    bool has_background,
+    const ui::ColorProvider& color_provider) {
   DCHECK(!image.IsEmpty());
 
   const AvatarWithDottedRingParams& params =
@@ -503,7 +504,7 @@ gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
 
   // Shrink the avatar to fit inside the dotted ring.
   gfx::ImageSkia sized_avatar_image =
-      GetSizedAvatarImageModel(image, avatar_size).Rasterize(color_provider);
+      GetSizedAvatarImageModel(image, avatar_size).Rasterize(&color_provider);
   // Crop to a circle.
   sized_avatar_image = CircleImageSource::CropCircle(sized_avatar_image);
   // Add padding.
@@ -512,13 +513,13 @@ gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
   // Add background color.
   if (has_background) {
     padded_image = AddBackgroundToImage(
-        padded_image, color_provider->GetColor(ui::kColorBubbleBackground));
+        padded_image, color_provider.GetColor(ui::kColorBubbleBackground));
   }
   // Add dotted ring.
   return gfx::ImageSkia(
       std::make_unique<ImageWithDottedCircleSource>(
           padded_image, avatar_ring_radius, avatar_ring_stroke,
-          color_provider->GetColor(ui::kColorSysStateInactiveRing)),
+          color_provider.GetColor(ui::kColorSysStateInactiveRing)),
       gfx::Size(size, size));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

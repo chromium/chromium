@@ -189,8 +189,8 @@ class AvatarToolbarButtonBaseBrowserTest {
     // `AvatarToolbarButton::TriggerTimeoutForTesting()`. This allows to
     // properly test the behavior pre/post delay without being time dependent.
     SetInfiniteAvatarDelay(AvatarDelayType::kNameGreeting);
-    SetInfiniteAvatarDelay(AvatarDelayType::kSigninPendingText);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    SetInfiniteAvatarDelay(AvatarDelayType::kSigninPendingText);
     SetInfiniteAvatarDelay(AvatarDelayType::kHistorySyncOptin);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
@@ -217,6 +217,7 @@ class AvatarToolbarButtonBaseBrowserTest {
             delay_type));
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Special override for the `AvatarDelayType::kSigninPendingText` delay to set
   // it to 0 given that the start time is stored as a ProfileUserData, which can
   // remain even if no browser exist. Setting it to 0 allows testing the
@@ -227,6 +228,7 @@ class AvatarToolbarButtonBaseBrowserTest {
         AvatarToolbarButton::
             CreateScopedZeroDelayOverrideSigninPendingTextForTesting());
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the window count in avatar button text, if it exists.
   std::optional<int> GetWindowCountInAvatarButtonText(

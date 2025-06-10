@@ -207,12 +207,14 @@ class AvatarImageView : public views::ImageView {
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
     DCHECK(!avatar_image_.IsEmpty());
+    ui::ColorProvider* color_provider = GetColorProvider();
+    CHECK(color_provider);
     gfx::ImageSkia sized_avatar_image;
     if (has_dotted_ring_) {
       const int size_with_border = image_size_ + 2 * border_size_;
       sized_avatar_image = profiles::GetAvatarWithDottedRing(
           avatar_image_, size_with_border, /*has_padding=*/true,
-          /*has_background=*/true, GetColorProvider());
+          /*has_background=*/true, *color_provider);
       // Dotted ring avatar does not support a border, as the border is already
       // included with the dotted ring.
       CHECK_EQ(border_size_, 0);
@@ -222,12 +224,12 @@ class AvatarImageView : public views::ImageView {
         ui::ImageModel sized_avatar_image_without_border =
             GetCircularSizedImage(avatar_image_, image_size_);
         sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
-            sized_avatar_image_without_border.Rasterize(GetColorProvider()),
+            sized_avatar_image_without_border.Rasterize(color_provider),
             gfx::Insets(border_size_));
       } else {
         sized_avatar_image =
             profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
-                .Rasterize(GetColorProvider());
+                .Rasterize(color_provider);
       }
       sized_avatar_image = profiles::AddBackgroundToImage(sized_avatar_image,
                                                           GetBackgroundColor());

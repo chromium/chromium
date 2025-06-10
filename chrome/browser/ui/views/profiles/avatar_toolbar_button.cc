@@ -127,9 +127,11 @@ void AvatarToolbarButton::UpdateIcon() {
   }
 
   const int icon_size = GetIconSize();
+  const ui::ColorProvider* const color_provider = GetColorProvider();
+  CHECK(color_provider);
   ui::ImageModel icon = delegate_->GetAvatarIcon(
       icon_size, GetForegroundColor(ButtonState::STATE_NORMAL),
-      GetColorProvider());
+      *color_provider);
 
   SetImageModel(ButtonState::STATE_NORMAL, icon);
   SetImageModel(ButtonState::STATE_DISABLED,
@@ -188,7 +190,7 @@ void AvatarToolbarButton::UpdateText() {
   CHECK(color_provider);
 
   SetTooltipText(delegate_->GetAvatarTooltipText());
-  auto [text, color] = delegate_->GetTextAndColor(color_provider);
+  auto [text, color] = delegate_->GetTextAndColor(*color_provider);
   SetHighlight(text, color);
   UpdateAccessibilityLabel();
   // Update the layout insets after `SetHighlight()` since
@@ -255,7 +257,7 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
   const auto* const color_provider = GetColorProvider();
   CHECK(color_provider);
-  return delegate_->GetHighlightTextColor(color_provider);
+  return delegate_->GetHighlightTextColor(*color_provider);
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
@@ -510,12 +512,14 @@ void AvatarToolbarButton::TriggerTimeoutForTesting(AvatarDelayType delay_type) {
   delegate_->TriggerTimeoutForTesting(delay_type);  // IN-TEST
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
     CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
   return AvatarToolbarButtonDelegate::
       CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BEGIN_METADATA(AvatarToolbarButton)
 END_METADATA

@@ -47,6 +47,9 @@ enum class ButtonState;
 // - Explicit modifications override: such as displaying specific text when
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
+//
+// TODO(crbug.com/421821832): Consider merging this class with `StateManager` as
+// after crrev.com/c/6616340 this class is not doing much anymore.
 class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
@@ -69,15 +72,15 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
 
   // These info are based on the `ButtonState`.
   std::pair<std::u16string, std::optional<SkColor>> GetTextAndColor(
-      const ui::ColorProvider* color_provider) const;
+      const ui::ColorProvider& color_provider) const;
   std::optional<SkColor> GetHighlightTextColor(
-      const ui::ColorProvider* color_provider) const;
+      const ui::ColorProvider& color_provider) const;
   std::optional<std::u16string> GetAccessibilityLabel() const;
   std::u16string GetAvatarTooltipText() const;
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const;
   ui::ImageModel GetAvatarIcon(int icon_size,
                                SkColor icon_color,
-                               const ui::ColorProvider* color_provider) const;
+                               const ui::ColorProvider& color_provider) const;
   bool ShouldPaintBorder() const;
   std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
   GetButtonActionOverride();
@@ -95,19 +98,12 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
   void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
-  std::u16string GetProfileName() const;
-  std::u16string GetShortProfileName() const;
-  // Must only be called in states which have an avatar image (i.e. not
-  // kGuestSession and not kIncognitoProfile).
-  gfx::Image GetProfileAvatarImage(int preferred_size) const;
-  // Returns the count of incognito or guest windows attached to the profile.
-  int GetWindowCount() const;
-  gfx::Image GetGaiaAccountImage() const;
-
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
