@@ -23,8 +23,11 @@ public interface TopControlLayer {
     int getTopControlVisibility();
 
     /**
-     * Return if the layer should contribute to the total height, which a view may not if it draws
-     * over other views, for example the progress bar.
+     * Return true if the layer should contribute to the total height, which a view may not if it
+     * draws over other views, for example the progress bar. Returns true by default since most of
+     * the Top Controls will always contribute to the total height.
      */
-    boolean contributesToTotalHeight();
+    default boolean contributesToTotalHeight() {
+        return true;
+    }
 }

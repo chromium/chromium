@@ -80,4 +80,9 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     public void removeControl(TopControlLayer control) {
         mControls.remove(control.getTopControlType());
     }
+
+    /** Tear down |this| and clear all existing controls from the Map. */
+    public void destroy() {
+        mControls.clear();
+    }
 }
