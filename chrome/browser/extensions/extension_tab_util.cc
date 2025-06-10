@@ -235,8 +235,7 @@ void RecordNavigationScheme(const GURL& url,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns the URL to the extension's options page, if any.
-const std::optional<GURL> GetOptionsPageUrlToNavigate(
-    const Extension* extension) {
+std::optional<GURL> GetOptionsPageUrlToNavigate(const Extension* extension) {
   if (!OptionsPageInfo::HasOptionsPage(extension)) {
     return std::nullopt;
   }
@@ -1335,7 +1334,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
       *url, content::Referrer(),
       open_in_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                   : WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_LINK, /* is_renderer_initiated */ false);
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
   web_contents->OpenURL(params, {});
   return true;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

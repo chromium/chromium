@@ -98,6 +98,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetTabById) {
   EXPECT_EQ(found_contents, active_contents);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       OpenOptionsPageFromWebContents) {
+  // Load an extension with an options page that opens in a tab.
+  const Extension* options_in_tab =
+      LoadExtension(test_data_dir_.AppendASCII("options_page"));
+  ASSERT_TRUE(options_in_tab);
+  ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_in_tab));
+
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+
+  EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      options_in_tab, active_contents));
+
+  EXPECT_EQ(GetActiveWebContents()->GetURL(),
+            OptionsPageInfo::GetOptionsPage(options_in_tab));
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
