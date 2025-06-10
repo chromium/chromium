@@ -64,6 +64,8 @@ public class EdgeToEdgeControllerImpl
             "Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration";
     private static final String SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM =
             "Android.EdgeToEdge.SupportedConfigurationSwitch2";
+    private static final String CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM =
+            "Android.EdgeToEdge.Debugging.ConfigurationSwitchOutcome";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -76,6 +78,33 @@ public class EdgeToEdgeControllerImpl
         int FROM_SUPPORTED_TO_UNSUPPORTED = 0;
         int FROM_UNSUPPORTED_TO_SUPPORTED = 1;
         int NUM_ENTRIES = 2;
+    }
+
+    /** When configuration changes from supported to unsupported, what's the outcome */
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS,
+        ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS,
+        ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY,
+        ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY,
+        ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS,
+        ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS,
+        ConfigurationSwitchOutcome.NUM_ENTRIES
+    })
+    public @interface ConfigurationSwitchOutcome {
+
+        // Correct cases
+        int ADD_PADDING_ORIGINAL_INSETS = 0;
+        int ADD_PADDING_NEW_INSETS = 1;
+        // Error case / impossible case
+        int ERROR_ADD_PADDING_BOTH_INSETS_EMPTY = 2;
+        int NO_PADDING_BOTH_INSETS_EMPTY = 3;
+        int NO_PADDING_NO_NEW_INSETS = 4;
+        // Error case / impossible case
+        int ERROR_NO_PADDING_WITH_NEW_INSETS = 5;
+
+        int NUM_ENTRIES = 6;
     }
 
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
@@ -488,6 +517,8 @@ public class EdgeToEdgeControllerImpl
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
         boolean changedWindowState = false;
+        @SupportedConfigurationSwitch
+        int configurationChanged = SupportedConfigurationSwitch.NUM_ENTRIES;
         if (mIsSupportedConfiguration
                 != EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
             Log.v(
@@ -496,11 +527,13 @@ public class EdgeToEdgeControllerImpl
                     (mIsSupportedConfiguration
                             ? "supported to unsupported"
                             : "unsupported to supported"));
-            RecordHistogram.recordEnumeratedHistogram(
-                    SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
+            configurationChanged =
                     mIsSupportedConfiguration
                             ? SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED
-                            : SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED,
+                            : SupportedConfigurationSwitch.FROM_UNSUPPORTED_TO_SUPPORTED;
+            RecordHistogram.recordEnumeratedHistogram(
+                    SUPPORTED_CONFIGURATION_SWITCH_HISTOGRAM,
+                    configurationChanged,
                     SupportedConfigurationSwitch.NUM_ENTRIES);
             mIsSupportedConfiguration =
                     EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
@@ -514,11 +547,12 @@ public class EdgeToEdgeControllerImpl
             return windowInsets;
         }
 
+        Insets originalSystemInsets = mSystemInsets;
         Insets newInsets = getSystemInsets(windowInsets);
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
         if (updateVisibilityRects(rootView)
-                || !newInsets.equals(mSystemInsets)
+                || !newInsets.equals(originalSystemInsets)
                 || !newKeyboardInsets.equals(mKeyboardInsets)) {
             mSystemInsets = newInsets;
             mKeyboardInsets = newKeyboardInsets;
@@ -536,6 +570,12 @@ public class EdgeToEdgeControllerImpl
         // insets.
         if (changedWindowState) {
             drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
+        }
+
+        // Signal: When configuration is changed, did we pad the system correctly.
+        if (configurationChanged == SupportedConfigurationSwitch.FROM_SUPPORTED_TO_UNSUPPORTED) {
+            recordConfigurationSwitchScenario(
+                    originalSystemInsets, newInsets, mAppliedContentViewPadding);
         }
 
         var builder = new WindowInsetsCompat.Builder(windowInsets);
@@ -696,6 +736,41 @@ public class EdgeToEdgeControllerImpl
             mFullscreenManager.removeObserver(this);
         }
         mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
+    }
+
+    static void recordConfigurationSwitchScenario(
+            Insets originalInsets, Insets newInsets, Insets paddingApplied) {
+        // Do not record when configuration change is disabled.
+        if (!shouldMonitorConfigurationChanges()) return;
+
+        // Do not record landscape mode. Assuming the configuration change will be triggered
+        // mostly with nav bar in portrait mode.
+        if (paddingApplied.left > 0 || paddingApplied.right > 0) return;
+
+        @ConfigurationSwitchOutcome int outcome;
+        // Correct cases - fixed applied
+        if (paddingApplied.bottom > 0) {
+            if (originalInsets.bottom != 0) {
+                outcome = ConfigurationSwitchOutcome.ADD_PADDING_ORIGINAL_INSETS;
+            } else if (newInsets.bottom != 0) {
+                outcome = ConfigurationSwitchOutcome.ADD_PADDING_NEW_INSETS;
+            } else {
+                outcome = ConfigurationSwitchOutcome.ERROR_ADD_PADDING_BOTH_INSETS_EMPTY;
+            }
+        } else { // paddingApplied.bottom == 0
+            if (originalInsets.bottom == 0 && newInsets.bottom == 0) {
+                outcome = ConfigurationSwitchOutcome.NO_PADDING_BOTH_INSETS_EMPTY;
+            } else if (originalInsets.bottom > 0) {
+                outcome = ConfigurationSwitchOutcome.NO_PADDING_NO_NEW_INSETS;
+            } else {
+                outcome = ConfigurationSwitchOutcome.ERROR_NO_PADDING_WITH_NEW_INSETS;
+            }
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                CONFIGURATION_SWITCH_OUTCOME_HISTOGRAM,
+                outcome,
+                ConfigurationSwitchOutcome.NUM_ENTRIES);
     }
 
     @VisibleForTesting

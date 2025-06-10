@@ -1942,6 +1942,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.Debugging.ConfigurationSwitchOutcome"
+    enum="EdgeToEdgeConfigurationSwitchOutcome" expires_after="2025-11-23">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records when the EdgeToEdgeControllerImpl notices a change when edge-to-edge
+    is changed from a supported configuration into unsupported. Record the
+    outcome combination of the original window insets, new window insets, and
+    paddings applied to the content view.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.DrawToEdgeInUnsupportedConfiguration"
     enum="Boolean" expires_after="2025-11-23">
   <owner>clhager@google.com</owner>

@@ -1025,6 +1025,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
 </enum>
 
+<enum name="EdgeToEdgeConfigurationSwitchOutcome">
+  <summary>
+    When edge to edge changed into unsupported configuration, what's the outcome
+  </summary>
+  <int value="0" label="ADD_PADDING_NEW_INSETS"/>
+  <int value="1" label="ADD_PADDING_ORIGINAL_INSETS"/>
+  <int value="2" label="ERROR_ADD_PADDING_BOTH_INSETS_EMPTY"/>
+  <int value="3" label="NO_PADDING_BOTH_INSETS_EMPTY"/>
+  <int value="4" label="NO_PADDING_NO_NEW_INSETS"/>
+  <int value="5" label="ERROR_NO_PADDING_WITH_NEW_INSETS"/>
+</enum>
+
 <enum name="ExifOrientation">
   <int value="0" label="Normal"/>
   <int value="1" label="Rotate 90"/>
