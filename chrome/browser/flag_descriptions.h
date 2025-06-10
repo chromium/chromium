@@ -2580,6 +2580,9 @@ extern const char kWebAuthnLargeBlobForICloudKeychainName[];
 extern const char kWebAuthnLargeBlobForICloudKeychainDescription[];
 #endif
 
+extern const char kWebAppInstallationApiName[];
+extern const char kWebAppInstallationApiDescription[];
+
 extern const char kWebBluetoothName[];
 extern const char kWebBluetoothDescription[];
 

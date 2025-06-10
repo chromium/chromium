@@ -12928,6 +12928,10 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrasOutputPluginProcessor")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"web-app-installation-api", flag_descriptions::kWebAppInstallationApiName,
+     flag_descriptions::kWebAppInstallationApiDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kWebAppInstallation)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

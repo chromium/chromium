@@ -10220,6 +10220,11 @@
     "expiry_milestone": 141
   },
   {
+    "name": "web-app-installation-api",
+    "owners": [ "liahiscock@microsoft.com", "pwa-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "web-authentication-align-error-type-for-payment-credential-create",
     "owners": ["smcgruer@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 140
@@ -10232,7 +10237,7 @@
     ],
     "expiry_milestone": 140
   },
-{
+  {
     "name": "web-authentication-large-blob-for-icloudkeychain",
     "owners": [
       "ambikaraj@google.com",

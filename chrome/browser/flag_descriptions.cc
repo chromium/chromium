@@ -4401,6 +4401,11 @@ const char kWallpaperSearchSettingsVisibilityName[] =
 const char kWallpaperSearchSettingsVisibilityDescription[] =
     "Shows wallpaper search settings in settings UI.";
 
+const char kWebAppInstallationApiName[] = "Web App Installation API";
+const char kWebAppInstallationApiDescription[] =
+    "Enables the Web App Installation API which allows web apps to be "
+    "installed programmatically using navigator.install().";
+
 const char kWebAuthenticationAlignErrorTypeForPaymentCredentialCreateName[] =
     "Web Authentication Align Error Type for 'payment' credentials";
 
