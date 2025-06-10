@@ -69,7 +69,8 @@
     <div id="subpageDescription">$i18n{otherDataDescription}
     </div>
     <div class="link-rows-block">
-      <cr-link-row sub-label="$i18n{manageInGooglePasswordManager}" external
+      <cr-link-row sub-label="$i18n{manageInGooglePasswordManager}"
+          id="passwordManagerLink" on-click="onPasswordManagerClick_" external
           using-slotted-label>
         <div slot="label">$i18n{passwordsAndPasskeys}</div>
       </cr-link-row>

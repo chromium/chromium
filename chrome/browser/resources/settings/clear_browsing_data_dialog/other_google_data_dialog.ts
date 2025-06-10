@@ -15,13 +15,17 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 
 import {getTemplate} from './other_google_data_dialog.html.js';
 
 export interface SettingsOtherGoogleDataDialogElement {
   $: {
     dialog: CrDialogElement,
+    passwordManagerLink: CrLinkRowElement,
   };
 }
 
@@ -36,6 +40,11 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
 
   private onBackOrCancelClick_() {
     this.$.dialog.cancel();
+  }
+
+  private onPasswordManagerClick_() {
+    PasswordManagerImpl.getInstance().showPasswordManager(
+        PasswordManagerPage.PASSWORDS);
   }
 }
 
