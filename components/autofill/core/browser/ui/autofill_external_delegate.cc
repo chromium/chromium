@@ -639,8 +639,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     }
     case SuggestionType::kLoyaltyCardEntry:
-      // Always shows the masked loyalty card value as the preview of the
-      // suggestion.
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
