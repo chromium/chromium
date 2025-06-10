@@ -873,7 +873,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.EsbDownloadRowPromo.Outcome"
-    enum="SafeBrowsingEsbDownloadRowPromoOutcome" expires_after="2025-06-22">
+    enum="SafeBrowsingEsbDownloadRowPromoOutcome" expires_after="2026-06-22">
   <owner>awado@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
