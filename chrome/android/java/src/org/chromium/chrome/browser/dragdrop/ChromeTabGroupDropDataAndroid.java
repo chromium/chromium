@@ -8,16 +8,16 @@ import android.content.ClipDescription;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 
 /** Chrome-specific drop data containing a {@link TabGroupMetadata}. */
+@NullMarked
 public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
-    @Nullable public final TabGroupMetadata tabGroupMetadata;
+    public final @Nullable TabGroupMetadata tabGroupMetadata;
 
     ChromeTabGroupDropDataAndroid(Builder builder) {
         super(builder);
@@ -32,11 +32,12 @@ public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
 
     @Override
     public boolean isIncognito() {
-        return tabGroupMetadata.isIncognito;
+        return tabGroupMetadata != null && tabGroupMetadata.isIncognito;
     }
 
     @Override
     public String buildTabClipDataText(Context context) {
+        if (tabGroupMetadata == null) return "";
         if (TextUtils.isEmpty(tabGroupMetadata.tabGroupTitle)) {
             return TabGroupTitleUtils.getDefaultTitle(
                     context, tabGroupMetadata.tabIdsToUrls.size());
@@ -56,13 +57,13 @@ public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
 
     /** Builder for @{@link ChromeTabDropDataAndroid} instance. */
     public static class Builder extends ChromeDropDataAndroid.Builder {
-        private TabGroupMetadata mTabGroupMetadata;
+        private @Nullable TabGroupMetadata mTabGroupMetadata;
 
         /**
          * @param tabGroupMetadata The {@link TabGroupMetadata} associated with the dragging group.
          * @return {@link ChromeTabGroupDropDataAndroid.Builder} instance.
          */
-        public Builder withTabGroupMetadata(@NonNull TabGroupMetadata tabGroupMetadata) {
+        public Builder withTabGroupMetadata(TabGroupMetadata tabGroupMetadata) {
             mTabGroupMetadata = tabGroupMetadata;
             return this;
         }

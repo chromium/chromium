@@ -7,14 +7,15 @@ package org.chromium.chrome.browser.dragdrop;
 import android.content.ClipDescription;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.MimeTypeUtils;
 
 /** Chrome-specific drop data containing a {@link Tab}. */
+@NullMarked
 public class ChromeTabDropDataAndroid extends ChromeDropDataAndroid {
-    public final Tab tab;
+    public final @Nullable Tab tab;
     public final boolean isTabInGroup;
 
     ChromeTabDropDataAndroid(Builder builder) {
@@ -31,11 +32,13 @@ public class ChromeTabDropDataAndroid extends ChromeDropDataAndroid {
 
     @Override
     public boolean isIncognito() {
-        return tab.isIncognitoBranded();
+        return tab != null && tab.isIncognitoBranded();
     }
 
     @Override
     public String buildTabClipDataText(Context context) {
+        if (tab == null) return "";
+
         return tab.getUrl().getSpec();
     }
 
@@ -51,14 +54,14 @@ public class ChromeTabDropDataAndroid extends ChromeDropDataAndroid {
 
     /** Builder for @{@link ChromeTabDropDataAndroid} instance. */
     public static class Builder extends ChromeDropDataAndroid.Builder {
-        private Tab mTab;
+        private @Nullable Tab mTab;
         private boolean mIsTabInGroup;
 
         /**
          * @param tab to be set in clip data.
          * @return {@link ChromeTabDropDataAndroid.Builder} instance.
          */
-        public Builder withTab(@NonNull Tab tab) {
+        public Builder withTab(Tab tab) {
             mTab = tab;
             return this;
         }
