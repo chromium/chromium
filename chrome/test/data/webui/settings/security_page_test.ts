@@ -6,8 +6,9 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -15,10 +16,12 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -170,16 +173,6 @@ suite('Main', function() {
     assertEquals(
         HttpsFirstModeSetting.DISABLED,
         page.getPref('generated.https_first_mode_enabled').value);
-  });
-
-  // Test that clicking the V8 security row navigates to the setting page.
-  test('NavigateToV8Setting', function() {
-    const link = page.shadowRoot!.querySelector<HTMLElement>('#v8SettingLink');
-    assertTrue(!!link);
-    link.click();
-    assertEquals(
-        routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
-        Router.getInstance().getCurrentRoute());
   });
 
   // Tests that the correct Advanced Protection sublabel is used when the
@@ -1129,6 +1122,79 @@ suite('SafeBrowsing', function() {
 
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+});
+
+suite('JavascriptOptimizer', function() {
+  let page: SettingsSecurityPageElement;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+  });
+
+  teardown(function() {
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
+  function setDefaultJavascriptOptimizerContentSetting(value: ContentSetting) {
+    const contentSettingPref = createSiteSettingsPrefs(
+        [
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.JAVASCRIPT_OPTIMIZER,
+              createDefaultContentSetting({
+                setting: value,
+                source: DefaultSettingSource.DEFAULT,
+              })),
+        ],
+        []);
+    siteSettingsBrowserProxy.setPrefs(contentSettingPref);
+  }
+
+  // Test that clicking the javascript-optimizer security row navigates to the
+  // setting page.
+  test('NavigateToJavascriptOptimizerSetting', async () => {
+    await createPage();
+    const link = page.shadowRoot!.querySelector<HTMLElement>(
+        '#javascriptOptimizerSettingLink');
+    assertTrue(!!link);
+    link.click();
+    assertEquals(
+        routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
+        Router.getInstance().getCurrentRoute());
+  });
+
+  test('JavascriptOptimizerSubLabelAllow', async () => {
+    setDefaultJavascriptOptimizerContentSetting(ContentSetting.ALLOW);
+    await createPage();
+    const link = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#javascriptOptimizerSettingLink');
+    assertTrue(!!link);
+    const expectedSubLabel = loadTimeData.getString(
+        'securityJavascriptOptimizerLinkRowLabelEnabled');
+    assertEquals(expectedSubLabel, link.subLabel);
+  });
+
+  test('JavascriptOptimizerSubLabelBlock', async () => {
+    setDefaultJavascriptOptimizerContentSetting(ContentSetting.BLOCK);
+    await createPage();
+    const link = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#javascriptOptimizerSettingLink');
+    assertTrue(!!link);
+    const expectedSubLabel = loadTimeData.getString(
+        'securityJavascriptOptimizerLinkRowLabelDisabled');
+    assertEquals(expectedSubLabel, link.subLabel);
+  });
 });
 
 async function clickCancelOnDisableSafebrowsingDialog(

@@ -688,7 +688,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SyncAccountControl) {
 }
 #endif
 
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, TabDiscardExceptionDialog) {
   RunTest("settings/tab_discard_exception_dialog_test.js", "mocha.run()");
 }
@@ -934,8 +933,7 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MemorySaverAggressiveness) {
           "runMochaSuite('MemorySaverAggressiveness')");
 }
 
-class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {
-};
+class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, AllBuilds) {
   RunTest("settings/personalization_options_test.js",
@@ -1467,6 +1465,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
                        SecurityPageHappinessTrackingSurveys) {
   RunTest("settings/security_page_test.js",
           "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
+  RunTest("settings/security_page_test.js",
+          "runMochaSuite('JavascriptOptimizer')");
 }
 
 // TODO(crbug/338155508): Enable this flaky test. This is flaky on Linux debug

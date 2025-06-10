@@ -1958,8 +1958,8 @@
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR" desc="Error text for a custom secure DNS provider entry to which a probe connection fails">
     Please verify that this is a valid provider or try again later
   </message>
-  <message name="IDS_SETTINGS_SECURITY_V8_LINK_TITLE" desc="Title for the link row to the V8 security settings.">
-    Manage V8 security
+  <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_OPTIMIZATION_LINK_TITLE" desc="Title for the link row to the V8 security settings.">
+    Manage JavaScript optimization &amp; security
   </message>
   <message name="IDS_SETTINGS_CONTENT_SETTINGS" desc="Text of the button that takes a user to settings page thats allows users to modify site settings. Also the title of that settings page.">
     Content settings
