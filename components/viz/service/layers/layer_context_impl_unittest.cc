@@ -2615,7 +2615,7 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   ASSERT_FALSE(result_clip.has_value());
   EXPECT_THAT(result_clip.error(), testing::StartsWith("Invalid clip tree ID"));
 
-  // Test Case 3: Update with invalid effect_tree_index (similar for scroll).
+  // Test Case 3: Update with invalid effect_tree_index.
   auto update_invalid_effect = CreateDefaultUpdate();
   update_invalid_effect->layers.push_back(CreateManualLayer(
       kLayerId, cc::mojom::LayerType::kLayer, kDefaultLayerBounds, kValidIndex,
@@ -2625,6 +2625,17 @@ TEST_F(LayerContextImplLayerLifecycleTest,
   ASSERT_FALSE(result_effect.has_value());
   EXPECT_THAT(result_effect.error(),
               testing::StartsWith("Invalid effect tree ID"));
+
+  // Test Case 4: Update with invalid scroll_tree_index.
+  auto update_invalid_scroll = CreateDefaultUpdate();
+  update_invalid_scroll->layers.push_back(CreateManualLayer(
+      kLayerId, cc::mojom::LayerType::kLayer, kDefaultLayerBounds, kValidIndex,
+      kValidIndex, kValidIndex, kInvalidIndex));
+  auto result_scroll = layer_context_impl_->DoUpdateDisplayTree(
+      std::move(update_invalid_scroll));
+  ASSERT_FALSE(result_scroll.has_value());
+  EXPECT_THAT(result_scroll.error(),
+              testing::StartsWith("Invalid scroll tree ID"));
 
   // Verify layer properties remain from the last successful update.
   cc::LayerImpl* layer_impl_after_invalid = GetLayerFromActiveTree(kLayerId);
