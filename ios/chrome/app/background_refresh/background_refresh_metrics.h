@@ -39,7 +39,8 @@ enum class BGTaskSchedulerErrorActions {
   kErrorCodeUnavailable = 2,
   kErrorCodeNotPermitted = 3,
   kErrorCodeTooManyPendingTaskRequests = 4,
-  kMaxValue = kErrorCodeTooManyPendingTaskRequests,
+  kErrorCodeImmediateRunIneligible = 5,
+  kMaxValue = kErrorCodeImmediateRunIneligible,
 };
 
 // Histogram name for application launch status when background tasks are

@@ -1054,6 +1054,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Error code unavailable"/>
   <int value="3" label="Error code not permitted"/>
   <int value="4" label="Error code too many pensing task requests"/>
+  <int value="5" label="Error code immediate run ineligible"/>
 </enum>
 
 <enum name="BidderSignalsOriginRelation">
