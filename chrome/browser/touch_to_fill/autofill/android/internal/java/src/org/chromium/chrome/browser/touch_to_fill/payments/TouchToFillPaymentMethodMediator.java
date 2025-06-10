@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.PaymentsPayload;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -223,7 +224,9 @@ class TouchToFillPaymentMethodMediator {
                             new FillableItemCollectionInfo(i + 1, mSuggestions.size()),
                             cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
-            cardBenefitsTermsAvailable |= suggestion.shouldDisplayTermsAvailable();
+            // TODO(crbug.com/423849651): Add null checks.
+            PaymentsPayload paymentsPayload = (PaymentsPayload) suggestion.getPayload();
+            cardBenefitsTermsAvailable |= paymentsPayload.shouldDisplayTermsAvailable();
         }
 
         if (cardBenefitsTermsAvailable) {
@@ -391,7 +394,9 @@ class TouchToFillPaymentMethodMediator {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         boolean is_virtual_card =
                 suggestion.getSuggestionType() == SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY;
-        mDelegate.creditCardSuggestionSelected(suggestion.getGuid(), is_virtual_card);
+        // TODO(crbug.com/423849651): Add null checks.
+        PaymentsPayload payload = (PaymentsPayload) suggestion.getPayload();
+        mDelegate.creditCardSuggestionSelected(payload.getGuid(), is_virtual_card);
         recordTouchToFillCreditCardOutcomeHistogram(
                 is_virtual_card
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
@@ -433,15 +438,15 @@ class TouchToFillPaymentMethodMediator {
                                         == SuggestionType.VIRTUAL_CREDIT_CARD_ENTRY)
                         ? suggestion.getCustomIconUrl()
                         : new GURL("");
+        // TODO(crbug.com/423849651): Add null checks.
+        PaymentsPayload payload = (PaymentsPayload) suggestion.getPayload();
         TouchToFillPaymentMethodProperties.CardImageMetaData cardImageMetaData =
                 new TouchToFillPaymentMethodProperties.CardImageMetaData(drawableId, artUrl);
         PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
                         .withTransformingKey(CARD_IMAGE, cardImageFunction, cardImageMetaData)
                         .with(MAIN_TEXT, suggestion.getLabel())
-                        .with(
-                                MAIN_TEXT_CONTENT_DESCRIPTION,
-                                suggestion.getLabelContentDescription())
+                        .with(MAIN_TEXT_CONTENT_DESCRIPTION, payload.getLabelContentDescription())
                         .with(MINOR_TEXT, suggestion.getSecondaryLabel())
                         // For virtual cards, show the "Virtual card" label on the second
                         // line, and for non-virtual cards, show the expiration date.
@@ -580,7 +585,9 @@ class TouchToFillPaymentMethodMediator {
 
     private static boolean hasOnlyLocalCards(List<AutofillSuggestion> suggestions) {
         for (AutofillSuggestion suggestion : suggestions) {
-            if (!suggestion.isLocalPaymentsMethod()) return false;
+            // TODO(crbug.com/423849651): Add null checks.
+            PaymentsPayload payload = (PaymentsPayload) suggestion.getPayload();
+            if (!payload.isLocalPaymentsMethod()) return false;
         }
         return true;
     }

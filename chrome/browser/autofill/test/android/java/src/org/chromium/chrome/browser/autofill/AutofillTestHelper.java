@@ -31,6 +31,7 @@ import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
+import org.chromium.components.autofill.PaymentsPayload;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -510,19 +511,22 @@ public class AutofillTestHelper {
             boolean shouldDisplayTermsAvailable,
             String guid,
             boolean isLocalPaymentsMethod) {
+        PaymentsPayload payload =
+                new PaymentsPayload(
+                        labelContentDescription,
+                        shouldDisplayTermsAvailable,
+                        guid,
+                        isLocalPaymentsMethod);
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setSecondarySubLabel(secondarySubLabel)
-                .setLabelContentDescription(labelContentDescription)
                 .setSuggestionType(suggestionType)
                 .setCustomIconUrl(customIconUrl)
                 .setIconId(iconId)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
-                .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
-                .setGuid(guid)
-                .setIsLocalPaymentsMethod(isLocalPaymentsMethod)
+                .setPayload(payload)
                 .build();
     }
 

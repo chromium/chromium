@@ -101,6 +101,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.PaymentsPayload;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -1137,12 +1138,11 @@ public class TouchToFillPaymentMethodViewTest {
             AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo,
             Runnable actionCallback) {
+        PaymentsPayload payload = (PaymentsPayload) suggestion.getPayload();
         PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
                         .with(MAIN_TEXT, suggestion.getLabel())
-                        .with(
-                                MAIN_TEXT_CONTENT_DESCRIPTION,
-                                suggestion.getLabelContentDescription())
+                        .with(MAIN_TEXT_CONTENT_DESCRIPTION, payload.getLabelContentDescription())
                         .with(MINOR_TEXT, suggestion.getSecondaryLabel())
                         .with(FIRST_LINE_LABEL, suggestion.getSublabel())
                         .with(SECOND_LINE_LABEL, suggestion.getSecondarySublabel())

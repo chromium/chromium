@@ -120,15 +120,12 @@ bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
         Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, minor_text,
             suggestion.labels[0][0].value, secondarySubLabel,
-            payments_payload.main_text_content_description,
             base::to_underlying(suggestion.type),
             custom_icon_url ? url::GURLAndroid::FromNativeGURL(
                                   env, custom_icon_url->value())
                             : url::GURLAndroid::EmptyGURL(env),
             android_icon_id, suggestion.HasDeactivatedStyle(),
-            payments_payload.should_display_terms_available,
-            payments_payload.guid.value(),
-            payments_payload.is_local_payments_method));
+            payments_payload.CreateJavaObject()));
   }
   Java_TouchToFillPaymentMethodViewBridge_showCreditCards(
       env, java_object_, std::move(suggestions_array),

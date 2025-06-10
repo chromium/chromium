@@ -115,6 +115,10 @@ struct Suggestion {
     PaymentsPayload& operator=(PaymentsPayload&&);
     ~PaymentsPayload();
 
+#if BUILDFLAG(IS_ANDROID)
+    base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     friend bool operator==(const PaymentsPayload&,
                            const PaymentsPayload&) = default;
 

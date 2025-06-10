@@ -18,6 +18,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/autofill/android/main_autofill_jni_headers/AutofillProfilePayload_jni.h"
+#include "components/autofill/android/main_autofill_jni_headers/PaymentsPayload_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -299,6 +300,16 @@ Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
     PaymentsPayload&&) = default;
 
 Suggestion::PaymentsPayload::~PaymentsPayload() = default;
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+Suggestion::PaymentsPayload::CreateJavaObject() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PaymentsPayload_Constructor(
+      env, main_text_content_description, should_display_terms_available,
+      guid.value(), is_local_payments_method);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 Suggestion::IPHMetadata::IPHMetadata() = default;
 

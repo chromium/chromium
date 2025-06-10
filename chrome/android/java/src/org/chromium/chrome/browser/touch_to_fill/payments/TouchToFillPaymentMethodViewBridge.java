@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -101,27 +102,21 @@ class TouchToFillPaymentMethodViewBridge {
             @JniType("std::u16string") String secondaryLabel,
             @JniType("std::u16string") String subLabel,
             @JniType("std::u16string") String secondarySubLabel,
-            @JniType("std::u16string") String labelContentDescription,
             @SuggestionType int suggestionType,
             GURL customIconUrl,
             int iconId,
             boolean applyDeactivatedStyle,
-            boolean shouldDisplayTermsAvailable,
-            @JniType("std::string") String guid,
-            boolean isLocalPaymentsMethod) {
+            Payload payload) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setSecondarySubLabel(secondarySubLabel)
-                .setLabelContentDescription(labelContentDescription)
                 .setSuggestionType(suggestionType)
                 .setCustomIconUrl(customIconUrl)
                 .setIconId(iconId)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
-                .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
-                .setGuid(guid)
-                .setIsLocalPaymentsMethod(isLocalPaymentsMethod)
+                .setPayload(payload)
                 .build();
     }
 }
