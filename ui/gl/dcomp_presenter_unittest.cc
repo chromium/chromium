@@ -324,6 +324,14 @@ class DCompPresenterTestBase : public testing::Test {
     std::ranges::move(overlays, std::back_inserter(pending_overlays_));
   }
 
+  static gfx::OverlayLayerId GetRootSurfaceId() {
+    // Use an arbitrary render pass ID. The render passes themselves have been
+    // forgotten by the time we reach DCompPresenter, so we just need any unique
+    // identifier to represent the root surface.
+    return gfx::OverlayLayerId::MakeVizInternalRenderPass(
+        gfx::OverlayLayerId::RenderPassId(1));
+  }
+
   // DCompPresenter is surfaceless--it's root surface is achieved via an
   // overlay the size of the window.
   // We can also present a manual initialized root surface with specific size
@@ -336,8 +344,7 @@ class DCompPresenterTestBase : public testing::Test {
     params.z_order = 0;
     params.quad_rect = gfx::Rect(window_size);
     params.overlay_image = CreateDCompSurface(window_size, initial_color);
-    params.layer_id = gfx::OverlayLayerId::MakeVizInternal(
-        gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+    params.layer_id = GetRootSurfaceId();
     ScheduleOverlay(std::move(params));
   }
 
@@ -865,9 +872,7 @@ TEST_P(DCompPresenterTest, VisualsReused) {
 
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visual0 =
-      dcLayerTree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeVizInternal(
-              gfx::OverlayLayerId::VizInternalId::kPrimaryPlane));
+      dcLayerTree->GetContentVisualForTesting(GetRootSurfaceId());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visual1 =
       dcLayerTree->GetContentVisualForTesting(
           gfx::OverlayLayerId::MakeForTesting(0));
@@ -893,9 +898,7 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   // Verify that the visuals are reused from the previous frame but attached
   // to the root visual in a reversed order.
   EXPECT_EQ(visual0.Get(),
-            dcLayerTree->GetContentVisualForTesting(
-                gfx::OverlayLayerId::MakeVizInternal(
-                    gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)));
+            dcLayerTree->GetContentVisualForTesting(GetRootSurfaceId()));
   EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(
                                gfx::OverlayLayerId::MakeForTesting(0)));
 #if DCHECK_IS_ON()
@@ -1013,9 +1016,7 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
 
   EXPECT_EQ(7u, dc_layer_tree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualRS =
-      dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeVizInternal(
-              gfx::OverlayLayerId::VizInternalId::kPrimaryPlane));
+      dc_layer_tree->GetContentVisualForTesting(GetRootSurfaceId());
   EXPECT_NE(visualRS, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualA =
       dc_layer_tree->GetContentVisualForTesting(
@@ -1061,10 +1062,8 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   // D is matched to D and kept attached to the root.
   // C is matched to C and reattached to the root.
   // M is reused from E and kept attached to the root.
-  EXPECT_EQ(visualRS.Get(),
-            dc_layer_tree->GetContentVisualForTesting(
-                gfx::OverlayLayerId::MakeVizInternal(
-                    gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)) /*RS*/);
+  EXPECT_EQ(visualRS.Get(), dc_layer_tree->GetContentVisualForTesting(
+                                GetRootSurfaceId()) /*RS*/);
   EXPECT_EQ(visualA.Get(), dc_layer_tree->GetContentVisualForTesting(
                                gfx::OverlayLayerId::MakeForTesting(1)) /*A*/);
   EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(
@@ -1317,8 +1316,7 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
                            {{root_surface_hole, kRootSurfaceHiddenColor}}));
     root_surface.quad_rect = gfx::Rect(window_size);
     root_surface.z_order = 0;
-    root_surface.layer_id = gfx::OverlayLayerId::MakeVizInternal(
-        gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+    root_surface.layer_id = GetRootSurfaceId();
     ScheduleOverlay(std::move(root_surface));
 
     ScheduleOverlay(std::move(fit_in_hole_overlay));
@@ -3046,8 +3044,7 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
       CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
   dc_layer_params.quad_rect = gfx::Rect(monitor_size);
   dc_layer_params.z_order = 0;
-  dc_layer_params.layer_id = gfx::OverlayLayerId::MakeVizInternal(
-      gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+  dc_layer_params.layer_id = GetRootSurfaceId();
   ScheduleOverlay(std::move(dc_layer_params));
 
   ASSERT_HRESULT_SUCCEEDED(ClearRenderTargetViewAndPresent(
@@ -3062,8 +3059,7 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
   dc_layer_params =
       CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
   dc_layer_params.quad_rect = gfx::Rect(monitor_size);
-  dc_layer_params.layer_id = gfx::OverlayLayerId::MakeVizInternal(
-      gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+  dc_layer_params.layer_id = GetRootSurfaceId();
   ScheduleOverlay(std::move(dc_layer_params));
   PresentAndCheckScreenshot("cleared-swapchain");
 }
@@ -3099,8 +3095,7 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, RootSurfaceIsDCompSurface) {
       CreateParamsFromImage(CreateDCompSurface(window_size, SkColors::kWhite));
   overlay.quad_rect = gfx::Rect(200, 200);
   overlay.z_order = 0;
-  overlay.layer_id = gfx::OverlayLayerId::MakeVizInternal(
-      gfx::OverlayLayerId::VizInternalId::kPrimaryPlane);
+  overlay.layer_id = GetRootSurfaceId();
   ScheduleOverlay(std::move(overlay));
   PresentAndCheckScreenshot("no-ink-trail");
 }

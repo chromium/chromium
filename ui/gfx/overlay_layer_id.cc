@@ -4,25 +4,41 @@
 
 #include "ui/gfx/overlay_layer_id.h"
 
+#include <sstream>
+#include <variant>
+
 #include "base/check_op.h"
-#include "base/strings/stringprintf.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace gfx {
 
-OverlayLayerId::OverlayLayerId() = default;
+OverlayLayerId::OverlayLayerId() : impl_(VizInternalId::kOsCompositorRoot) {}
+
 OverlayLayerId::OverlayLayerId(const NamespaceId& layer_namespace_id,
                                uint32_t layer_id)
-    : layer_namespace_id_(layer_namespace_id), layer_id_(layer_id) {
+    : impl_(RendererLayer{
+          .layer_namespace_id = layer_namespace_id,
+          .layer_id = layer_id,
+      }) {
   // See: `viz::FrameSinkId::is_valid()`.
-  CHECK(layer_namespace_id_.first != 0 || layer_namespace_id_.second != 0);
+  CHECK(layer_namespace_id.first != 0 || layer_namespace_id.second != 0);
 }
+
 OverlayLayerId::~OverlayLayerId() = default;
 
 // static
 OverlayLayerId OverlayLayerId::MakeVizInternal(VizInternalId layer_id) {
-  CHECK_NE(VizInternalId::kInvalid, layer_id);
   OverlayLayerId overlay_layer_id;
-  overlay_layer_id.layer_id_ = static_cast<uint32_t>(layer_id);
+  overlay_layer_id.impl_ = {layer_id};
+  return overlay_layer_id;
+}
+
+// static
+OverlayLayerId OverlayLayerId::MakeVizInternalRenderPass(
+    RenderPassId render_pass_id) {
+  OverlayLayerId overlay_layer_id;
+  overlay_layer_id.impl_ = std::array<uint8_t, sizeof(RenderPassId)>(
+      base::U64ToNativeEndian(render_pass_id.value()));
   return overlay_layer_id;
 }
 
@@ -31,9 +47,46 @@ OverlayLayerId OverlayLayerId::MakeForTesting(uint32_t layer_id) {
   return OverlayLayerId({1, 1}, layer_id);
 }
 
+std::optional<OverlayLayerId::SharedQuadStateLayerId>
+OverlayLayerId::shared_quad_state_layer_id() const {
+  if (const auto* renderer_layer = std::get_if<RendererLayer>(&impl_)) {
+    return std::make_optional<OverlayLayerId::SharedQuadStateLayerId>(
+        renderer_layer->layer_namespace_id, renderer_layer->layer_id);
+  }
+  return std::nullopt;
+}
+
 std::string OverlayLayerId::ToString() const {
-  return base::StringPrintf("%d:%d:%d", layer_namespace_id_.first,
-                            layer_namespace_id_.second, layer_id_);
+  std::stringstream out;
+
+  std::visit(
+      [&](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+
+        if constexpr (std::is_same_v<T, VizInternalId>) {
+          switch (arg) {
+            case VizInternalId::kOsCompositorRoot:
+              out << "OsCompositorRoot";
+              break;
+            case VizInternalId::kDelegatedInkTrail:
+              out << "DelegatedInkTrail";
+              break;
+          }
+        }
+
+        if constexpr (std::is_same_v<
+                          T, std::array<uint8_t, sizeof(RenderPassId)>>) {
+          out << "RenderPass(" << base::U64FromNativeEndian(arg) << ")";
+        }
+
+        if constexpr (std::is_same_v<T, RendererLayer>) {
+          out << arg.layer_namespace_id.first << ":"
+              << arg.layer_namespace_id.second << ":" << arg.layer_id;
+        }
+      },
+      impl_);
+
+  return out.str();
 }
 
 }  // namespace gfx

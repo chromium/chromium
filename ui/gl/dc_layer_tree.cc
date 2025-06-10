@@ -908,12 +908,12 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
 
   IDCompositionVisual2* left_sibling_visual = nullptr;
 
-  base::flat_set<gfx::OverlayLayerId::SharedQuadStateLayerId>
+  base::flat_set<std::optional<gfx::OverlayLayerId::SharedQuadStateLayerId>>
       layers_with_multiple_overlays;
   for (size_t i = 1; i < overlays.size(); i++) {
-    const gfx::OverlayLayerId::SharedQuadStateLayerId sqs_layer_id =
+    const decltype(layers_with_multiple_overlays)::key_type sqs_layer_id =
         overlays[i].layer_id.shared_quad_state_layer_id();
-    if (sqs_layer_id == gfx::OverlayLayerId::SharedQuadStateLayerId()) {
+    if (sqs_layer_id == decltype(layers_with_multiple_overlays)::key_type()) {
       // A default layer ID implies no explicit layer, which should be treated
       // as different from every other layer ID, including itself.
       continue;
