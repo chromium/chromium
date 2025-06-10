@@ -52,7 +52,7 @@ public class CafMessageHandler {
     static final int VOID_SEQUENCE_NUMBER = -1;
     static final int TIMEOUT_IMMEDIATE = 0;
 
-    private static final String MEDIA_MESSAGE_TYPES[] = {
+    private static final String[] MEDIA_MESSAGE_TYPES = {
         "PLAY",
         "LOAD",
         "PAUSE",
@@ -68,7 +68,7 @@ public class CafMessageHandler {
         "QUEUE_REORDER",
     };
 
-    private static final String MEDIA_SUPPORTED_COMMANDS[] = {
+    private static final String[] MEDIA_SUPPORTED_COMMANDS = {
         "pause", "seek", "stream_volume", "stream_mute",
     };
 

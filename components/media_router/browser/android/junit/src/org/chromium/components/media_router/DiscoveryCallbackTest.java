@@ -48,8 +48,7 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Feature({"MediaRouter"})
     public void testInitCallbackWithEmptyKnownSinks() {
         List<MediaSink> knownSinks = new ArrayList<>();
-        DiscoveryCallback callback =
-                new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
+        new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(knownSinks));
     }
@@ -58,9 +57,8 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Feature({"MediaRouter"})
     public void testInitCallbackWithNonemptyKnownSinks() {
         List<MediaSink> knownSinks = new ArrayList<>();
-        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1, null);
-        DiscoveryCallback callback =
-                new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
+        new MediaSink(SINK_ID1, SINK_NAME1, null);
+        new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(knownSinks));
     }
