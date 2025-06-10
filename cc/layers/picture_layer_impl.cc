@@ -167,10 +167,9 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
 
     // Solid color layers have no tilings.
     DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
-    // The pending tree should only have a high res (and possibly low res)
-    // tiling.
-    DCHECK_LE(tilings_->num_tilings(),
-              layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
+
+    // The pending tree should have at most a single tiling.
+    DCHECK_LE(tilings_->num_tilings(), 1u);
 
     layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
     layer_impl->UpdateRasterSourceInternal(
@@ -186,7 +185,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     layer_impl->raster_device_scale_ = raster_device_scale_;
     layer_impl->raster_source_scale_ = raster_source_scale_;
     layer_impl->raster_contents_scale_ = raster_contents_scale_;
-    layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
     // Simply push the value to the active tree without any extra invalidations,
     // since the pending tree tiles would have this handled. This is here to
     // ensure the state is consistent for future raster.
@@ -618,16 +616,12 @@ bool PictureLayerImpl::UpdateTiles() {
   UpdateTilingsForRasterScaleAndTranslation(should_adjust_raster_scale);
   raster_source_size_changed_ = false;
 
-  if (layer_tree_impl()->IsActiveTree())
-    AddLowResolutionTilingIfNeeded();
-
   DCHECK(raster_page_scale_);
   DCHECK(raster_device_scale_);
   DCHECK(raster_source_scale_.x());
   DCHECK(raster_source_scale_.y());
   DCHECK(raster_contents_scale_.x());
   DCHECK(raster_contents_scale_.y());
-  DCHECK(low_res_raster_contents_scale_);
 
   was_screen_space_transform_animating_ =
       draw_properties().screen_space_transform_is_animating;
@@ -1568,35 +1562,6 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   return true;
 }
 
-void PictureLayerImpl::AddLowResolutionTilingIfNeeded() {
-  DCHECK(layer_tree_impl()->IsActiveTree());
-
-  if (!layer_tree_impl()->create_low_res_tiling())
-    return;
-
-  // We should have a high resolution tiling at raster_contents_scale, so if the
-  // low res one is the same then we shouldn't try to override this tiling by
-  // marking it as a low res.
-  if (raster_contents_scale_key() == low_res_raster_contents_scale_)
-    return;
-
-  PictureLayerTiling* low_res =
-      tilings_->FindTilingWithScaleKey(low_res_raster_contents_scale_);
-  DCHECK(!low_res || low_res->resolution() != HIGH_RESOLUTION);
-
-  // Only create new low res tilings when the transform is static.  This
-  // prevents wastefully creating a paired low res tiling for every new high
-  // res tiling during a pinch or a CSS animation.
-  bool is_pinching = layer_tree_impl()->PinchGestureActive();
-  bool is_animating = draw_properties().screen_space_transform_is_animating;
-  if (!is_pinching && !is_animating) {
-    if (!low_res)
-      low_res = AddTiling(gfx::AxisTransform2d(low_res_raster_contents_scale_,
-                                               gfx::Vector2dF()));
-    low_res->set_resolution(LOW_RESOLUTION);
-  }
-}
-
 void PictureLayerImpl::RecalculateRasterScales() {
   if (IsDirectlyCompositedImage()) {
     // TODO(crbug.com/40176440): Support 2D scales in directly composited
@@ -1609,7 +1574,6 @@ void PictureLayerImpl::RecalculateRasterScales() {
       raster_page_scale_ = 1.f;
       raster_device_scale_ = 1.f;
       raster_contents_scale_ = raster_source_scale_;
-      low_res_raster_contents_scale_ = used_raster_scale;
       return;
     }
 
@@ -1678,27 +1642,6 @@ void PictureLayerImpl::RecalculateRasterScales() {
   DCHECK_GE(raster_contents_scale_.y(), min_scale);
   DCHECK_LE(raster_contents_scale_.x(), max_scale);
   DCHECK_LE(raster_contents_scale_.y(), max_scale);
-
-  // If this layer would create zero or one tiles at this content scale,
-  // don't create a low res tiling.
-  gfx::Size raster_bounds = gfx::ScaleToCeiledSize(
-      raster_source_->recorded_bounds().size(), raster_contents_scale_.x(),
-      raster_contents_scale_.y());
-  gfx::Size tile_size = CalculateTileSize(raster_bounds);
-  bool tile_covers_bounds = tile_size.width() >= raster_bounds.width() &&
-                            tile_size.height() >= raster_bounds.height();
-  if (tile_size.IsEmpty() || tile_covers_bounds) {
-    low_res_raster_contents_scale_ = raster_contents_scale_key();
-    return;
-  }
-
-  float low_res_factor =
-      layer_tree_impl()->settings().low_res_contents_scale_factor;
-  low_res_raster_contents_scale_ =
-      std::max(raster_contents_scale_key() * low_res_factor, min_scale);
-  DCHECK_LE(low_res_raster_contents_scale_, raster_contents_scale_key());
-  DCHECK_GE(low_res_raster_contents_scale_, min_scale);
-  DCHECK_LE(low_res_raster_contents_scale_, max_scale);
 }
 
 void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
@@ -1866,7 +1809,6 @@ void PictureLayerImpl::ResetRasterScale() {
   raster_device_scale_ = 0.f;
   raster_source_scale_ = gfx::Vector2dF(0.f, 0.f);
   raster_contents_scale_ = gfx::Vector2dF(0.f, 0.f);
-  low_res_raster_contents_scale_ = 0.f;
   directly_composited_image_default_raster_scale_ = 0.f;
 }
 
@@ -2046,7 +1988,6 @@ void PictureLayerImpl::AsValueInto(
   state->AppendDouble(raster_contents_scale_.x());
   state->AppendDouble(raster_contents_scale_.y());
   state->EndArray();
-  state->SetDouble("low_res_contents_scale", low_res_raster_contents_scale_);
   state->EndDictionary();
 
   state->BeginDictionary("ideal_scales");

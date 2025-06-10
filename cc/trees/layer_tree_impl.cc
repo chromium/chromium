@@ -2089,10 +2089,6 @@ bool LayerTreeImpl::use_gpu_rasterization() const {
   return host_impl_->use_gpu_rasterization();
 }
 
-bool LayerTreeImpl::create_low_res_tiling() const {
-  return host_impl_->create_low_res_tiling();
-}
-
 void LayerTreeImpl::SetNeedsRedraw() {
   host_impl_->SetNeedsRedraw();
 }

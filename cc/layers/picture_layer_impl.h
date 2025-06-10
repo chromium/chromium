@@ -302,7 +302,6 @@ class CC_EXPORT PictureLayerImpl
   float raster_device_scale_ = 0.f;
   gfx::Vector2dF raster_source_scale_;
   gfx::Vector2dF raster_contents_scale_;
-  float low_res_raster_contents_scale_ = 0.f;
 
   float ideal_source_scale_key() const {
     return std::max(ideal_source_scale_.x(), ideal_source_scale_.y());
