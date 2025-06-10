@@ -9433,6 +9433,21 @@
             ]
         }
     ],
+    "ExternalDisplayEventTelemetry": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExternalDisplayEventTelemetry"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExternalHDR10": [
         {
             "platforms": [
