@@ -58,8 +58,6 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   // already been called.
   void WaitForCallback();
 
-  void Reset();
-
  private:
   void ReceiverMethod(blink::mojom::RequestTokenStatus status,
                       const std::optional<GURL>& selected_idp_config_url,
