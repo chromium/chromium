@@ -243,7 +243,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
       }, 50);
     </script>
   `);
-  const focusAfterNodeChange = setTimeout.bind(window, function() {
+  const focusAfterNodeChange = () => setTimeout(() => {
     root.firstChild.nextSibling.focus();
   }, 1000);
   mockFeedback.call(focusAfterNodeChange)
