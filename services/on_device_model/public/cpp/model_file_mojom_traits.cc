@@ -10,12 +10,12 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace mojo {
 
@@ -69,7 +69,7 @@ on_device_model::mojom::ModelFileDataView::Tag UnionTraits<
     on_device_model::ModelFile>::GetTag(const on_device_model::ModelFile&
                                             file) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const base::File& file) {
             return on_device_model::mojom::ModelFileDataView::Tag::kFile;
           },

@@ -6,11 +6,11 @@
 
 #include <ranges>
 
-#include "base/functional/overloaded.h"
 #include "base/types/fixed_array.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/ort_tensor.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace webnn::ort {
 
@@ -206,7 +206,7 @@ ScopedOrtOpAttr ModelEditor::CreateAttribute(base::cstring_view name,
 
   const OrtApi* ort_api = GetOrtApi();
   ScopedOrtOpAttr attribute;
-  std::visit(base::Overloaded{
+  std::visit(absl::Overload{
                  [&](int64_t int_data) {
                    CHECK_STATUS(ort_api->CreateOpAttr(
                        name.c_str(), &int_data,
