@@ -68,7 +68,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                 "intentional_user",
                                 options,
                                 null,
-                                new Callback<ClassificationResult>() {
+                                new Callback<>() {
                                     @Override
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
@@ -120,7 +120,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                 "contextual_page_actions",
                                 options,
                                 inputContext,
-                                new Callback<ClassificationResult>() {
+                                new Callback<>() {
                                     @Override
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(

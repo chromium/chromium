@@ -38,7 +38,7 @@ public class MimeUtils {
     // Mime types that Android can't handle when tries to open the file. Chrome may deduct a better
     // mime type based on file extension.
     private static final HashSet<String> GENERIC_MIME_TYPES =
-            new HashSet<String>(
+            new HashSet<>(
                     Arrays.asList(
                             "text/plain",
                             "application/octet-stream",
@@ -50,7 +50,7 @@ public class MimeUtils {
 
     // Set will be more expensive to initialize, so use an ArrayList here.
     private static final List<String> MIME_TYPES_TO_OPEN =
-            new ArrayList<String>(
+            new ArrayList<>(
                     Arrays.asList(
                             MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME,
                             "application/pdf",

@@ -98,7 +98,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
     // OfflineContentProvider.Observer implementation.
     @Override
     public void onItemsAdded(List<OfflineItem> items) {
-        Set<OfflineItem> addedItems = new HashSet<OfflineItem>();
+        Set<OfflineItem> addedItems = new HashSet<>();
         for (OfflineItem item : items) {
             if (mItems.containsKey(item.id)) {
                 onItemUpdated(item, null);

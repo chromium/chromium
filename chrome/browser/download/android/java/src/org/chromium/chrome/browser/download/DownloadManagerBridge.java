@@ -309,7 +309,7 @@ public class DownloadManagerBridge {
         final String mimeType =
                 MimeUtils.remapGenericMimeType(originalMimeType, originalUrl.getSpec(), fileName);
         AsyncTask<Long> task =
-                new AsyncTask<Long>() {
+                new AsyncTask<>() {
                     @Override
                     protected Long doInBackground() {
                         long downloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
