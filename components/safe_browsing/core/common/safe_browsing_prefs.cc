@@ -205,6 +205,10 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  // TODO(crbug.com/422747384): Implement correct logic to set bundle level
+  // based on user's safe browsing status.
+  registry->RegisterIntegerPref(prefs::kSecuritySettingsBundle,
+                                SecuritySettingsBundleLevel::STANDARD);
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);

@@ -4174,6 +4174,8 @@ static_library("browser") {
       "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
       "safe_browsing/generated_safe_browsing_pref.h",
+      "safe_browsing/generated_security_settings_bundle_pref.cc",
+      "safe_browsing/generated_security_settings_bundle_pref.h",
       "send_tab_to_self/desktop_notification_handler.cc",
       "send_tab_to_self/desktop_notification_handler.h",
       "serial/web_serial_chooser_desktop.cc",

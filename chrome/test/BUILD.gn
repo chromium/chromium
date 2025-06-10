@@ -7930,6 +7930,7 @@ test("unit_tests") {
       "../browser/resource_coordinator/test_lifecycle_unit.h",
       "../browser/resources_integrity_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
+      "../browser/safe_browsing/generated_security_settings_bundle_pref_unittest.cc",
       "../browser/search/background/ntp_custom_background_service_unittest.cc",
       "../browser/search/background/wallpaper_search/wallpaper_search_background_manager_unittest.cc",
       "../browser/search/instant_service_unittest.cc",

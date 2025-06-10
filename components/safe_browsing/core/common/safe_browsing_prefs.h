@@ -263,9 +263,22 @@ inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
 inline constexpr char kExternalAppRedirectTimestamps[] =
     "safe_browsing.external_app_redirect_timestamps";
 
+// Integer that maps to SecuritySettingsBundleLevel. Indicates what bundle
+// the user is in.
+inline constexpr char kSecuritySettingsBundle[] = "safebrowsing.bundle";
+
 }  // namespace prefs
 
 namespace safe_browsing {
+
+// Enumerates the possible bundle options for bundled security settings found
+// chrome://settings/security.
+enum SecuritySettingsBundleLevel {
+  // Standard bundle with default settings.
+  STANDARD = 0,
+  // Enhanced bundle with most secure settings selected.
+  ENHANCED = 1,
+};
 
 // Enumerates the level of Safe Browsing Extended Reporting that is currently
 // available.
