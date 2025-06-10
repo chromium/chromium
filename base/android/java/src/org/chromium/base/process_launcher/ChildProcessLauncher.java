@@ -18,6 +18,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -322,6 +323,7 @@ public class ChildProcessLauncher {
         args.apkInfo = ApkInfo.getAidlInfo();
         args.androidInfo = AndroidInfo.getAidlInfo();
         args.deviceInfo = DeviceInfo.getAidlInfo();
+        args.channel = VersionConstants.CHANNEL;
         return args;
     }
 
