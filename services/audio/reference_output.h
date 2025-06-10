@@ -23,6 +23,10 @@ class ReferenceOutput {
                                int sample_rate,
                                base::TimeDelta audio_delay) = 0;
 
+    // Called if an error occurred in the reference stream. Called on the same
+    // sequence as StartListening.
+    virtual void OnReferenceStreamError() = 0;
+
    protected:
     virtual ~Listener() = default;
   };

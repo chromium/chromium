@@ -120,6 +120,7 @@ class MockListener : public audio::ReferenceOutput::Listener {
               OnPlayoutData,
               (const media::AudioBus&, int, base::TimeDelta),
               (override));
+  MOCK_METHOD(void, OnReferenceStreamError, (), (override));
 };
 
 class MockOutputDeviceMixer : public audio::OutputDeviceMixer {

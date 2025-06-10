@@ -6,9 +6,13 @@
 
 #include <memory>
 
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "input_controller.h"
 #include "input_stream.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_io.h"
@@ -103,6 +107,7 @@ class MockListener : public ReferenceOutput::Listener {
               OnPlayoutData,
               (const media::AudioBus&, int, base::TimeDelta),
               (override));
+  MOCK_METHOD(void, OnReferenceStreamError, (), (override));
 };
 
 class LoopbackReferenceManagerTest : public ::testing::Test {
@@ -128,7 +133,14 @@ class LoopbackReferenceManagerTest : public ::testing::Test {
       OpenOutcome loopback_open_outcome,
       ReferenceOpenOutcome expected_reference_open_outcome);
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_ =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+  scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner_ =
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   StrictMock<LocalMockAudioManager> audio_manager_;
   LoopbackReferenceManager loopback_reference_manager_;
 
@@ -445,6 +457,231 @@ TEST_F(LoopbackReferenceManagerTest, StreamOpenSystemPermissionsError) {
 TEST_F(LoopbackReferenceManagerTest, StreamOpenDeviceInUseError) {
   TestStreamOpenError(OpenOutcome::kFailedInUse,
                       ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR);
+}
+
+TEST_F(LoopbackReferenceManagerTest, OnReferenceStreamError) {
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBus::Create(loopback_params_);
+
+  // These should use he same underlying core.
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_1 =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_2 =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  // Setup the expectations for starting the loopback stream.
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_1 =
+      ExpectCreateLoopbackStream(1000000);
+
+  // Add the first listener to the first provider. This should create the
+  // stream.
+  StrictMock<MockListener> mock_listener_1;
+  EXPECT_EQ(ReferenceOpenOutcome::SUCCESS,
+            reference_signal_provider_1->StartListening(&mock_listener_1,
+                                                        output_device_id_));
+  CHECK(mock_input_stream_1->captured_callback_);
+  AudioInputCallback* audio_callback =
+      *(mock_input_stream_1->captured_callback_);
+
+  // Report an error, causing the core to be invalidated, and scheduled to be
+  // deleted. Note that this will not normally be called on the main thread, but
+  // we do so in this test to check the various cases in which the scheduled
+  // deletion interacts with StartListening() and GetReferenceSignalProvider().
+  audio_callback->OnError();
+
+  // We have had an error but destruction of the core has not yet occurred, so
+  // listening will be successful.
+  StrictMock<MockListener> mock_listener_2;
+  EXPECT_EQ(ReferenceOpenOutcome::SUCCESS,
+            reference_signal_provider_2->StartListening(&mock_listener_2,
+                                                        output_device_id_));
+
+  // Fast-forwarding will run the scheduled deletion on the main thread, which
+  // should send the error to the listeners.
+  EXPECT_CALL(mock_listener_1, OnReferenceStreamError());
+  EXPECT_CALL(mock_listener_2, OnReferenceStreamError());
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  {
+    // Trying to listen to the providers with broken cores will now fail.
+    StrictMock<MockListener> temp_mock_listener;
+    EXPECT_EQ(ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR,
+              reference_signal_provider_1->StartListening(&temp_mock_listener,
+                                                          output_device_id_));
+  }
+
+  // Get a new ReferenceSignalProvider after the error has been processed.
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider_3 =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream_2 =
+      ExpectCreateLoopbackStream(1000001);
+  {
+    // reference_signal_provider_3 was gotten after the error, so it should have
+    // a new core.
+    StrictMock<MockListener> temp_mock_listener;
+    EXPECT_EQ(ReferenceOpenOutcome::SUCCESS,
+              reference_signal_provider_3->StartListening(&temp_mock_listener,
+                                                          output_device_id_));
+    reference_signal_provider_3->StopListening(&temp_mock_listener);
+  }
+}
+
+TEST_F(LoopbackReferenceManagerTest, StopListeningAfterOnError) {
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBus::Create(loopback_params_);
+
+  // These should use he same underlying core.
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  // Setup the expectations for starting the loopback stream.
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
+      ExpectCreateLoopbackStream(1000000);
+
+  // Add the first listener to the first provider. This should create the
+  // stream.
+  StrictMock<MockListener> mock_listener;
+  EXPECT_EQ(ReferenceOpenOutcome::SUCCESS,
+            reference_signal_provider->StartListening(&mock_listener,
+                                                      output_device_id_));
+  CHECK(mock_input_stream->captured_callback_);
+  AudioInputCallback* audio_callback = *(mock_input_stream->captured_callback_);
+
+  // Send an error.
+  audio_callback->OnError();
+
+  // Stop listening to the provider before the error has been processed.
+  reference_signal_provider->StopListening(&mock_listener);
+
+  // mock_listener will not get an error, because it has already stopped
+  // listening.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+// Implementation of ReferenceOutput::Listener that expects OnPlayoutData and
+// OnReferenceStreamError to be called on specific threads.
+class ThreadedReferenceListener : public ReferenceOutput::Listener {
+ public:
+  ThreadedReferenceListener(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
+      base::WaitableEvent* on_playout_data_event)
+      : main_task_runner_(main_task_runner),
+        audio_thread_task_runner_(audio_thread_task_runner),
+        on_playout_data_event_(on_playout_data_event) {}
+  ~ThreadedReferenceListener() override = default;
+
+  MOCK_METHOD(void,
+              MockOnPlayoutData,
+              (const media::AudioBus&, int, base::TimeDelta),
+              ());
+  MOCK_METHOD(void, MockOnReferenceStreamError, (), ());
+
+  void OnPlayoutData(const media::AudioBus& audio_bus,
+                     int sample_rate,
+                     base::TimeDelta audio_delay) final {
+    // If this is called on the main thread, the test might deadlock.
+    CHECK(audio_thread_task_runner_->BelongsToCurrentThread());
+    MockOnPlayoutData(audio_bus, sample_rate, audio_delay);
+    on_playout_data_event_->Signal();
+  }
+
+  void OnReferenceStreamError() final {
+    CHECK(main_task_runner_->BelongsToCurrentThread());
+    MockOnReferenceStreamError();
+  }
+
+ private:
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner_;
+  raw_ptr<base::WaitableEvent> on_playout_data_event_;
+};
+
+TEST_F(LoopbackReferenceManagerTest, DeliversAudioOnAudioThread) {
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBus::Create(loopback_params_);
+
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  // Setup the expectations for starting the loopback stream.
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
+      ExpectCreateLoopbackStream(1000000);
+
+  // Create a listener which checks that the methods are called on the right
+  // threads.
+  base::WaitableEvent on_playout_data_event;
+  StrictMock<ThreadedReferenceListener> threaded_listener(
+      main_task_runner_, audio_thread_task_runner_, &on_playout_data_event);
+
+  // Add the first listener to the first provider. This should create the
+  // stream.
+  reference_signal_provider->StartListening(&threaded_listener,
+                                            output_device_id_);
+  CHECK(mock_input_stream->captured_callback_);
+  AudioInputCallback* audio_callback = *(mock_input_stream->captured_callback_);
+
+  audio_bus->channel(0)[0] = 111;
+  EXPECT_CALL(
+      threaded_listener,
+      MockOnPlayoutData(FirstSampleEquals(111), loopback_params_.sample_rate(),
+                        base::TimeDelta()));
+  audio_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AudioInputCallback::OnData,
+                     base::Unretained(audio_callback), audio_bus.get(),
+                     base::TimeTicks::Now(), 0, media::AudioGlitchInfo()));
+
+  // on_playout_data_event will be signaled when OnPlayoutData is called.
+  // TimedWait returns true when the signal is called, and false on timeout.
+  EXPECT_TRUE(on_playout_data_event.TimedWait(base::Seconds(1)));
+
+  reference_signal_provider->StopListening(&threaded_listener);
+}
+
+TEST_F(LoopbackReferenceManagerTest, DeliversErrorsOnMainThread) {
+  std::unique_ptr<media::AudioBus> audio_bus =
+      media::AudioBus::Create(loopback_params_);
+
+  std::unique_ptr<ReferenceSignalProvider> reference_signal_provider =
+      loopback_reference_manager_.GetReferenceSignalProvider();
+
+  // Setup the expectations for starting the loopback stream.
+  std::unique_ptr<StrictMock<MockAudioInputStream>> mock_input_stream =
+      ExpectCreateLoopbackStream(1000000);
+
+  // Create a listener which checks that the methods are called on the right
+  // threads.
+  base::WaitableEvent on_playout_data_event;
+  StrictMock<ThreadedReferenceListener> threaded_listener(
+      main_task_runner_, audio_thread_task_runner_, &on_playout_data_event);
+
+  // Add the first listener to the first provider. This should create the
+  // stream.
+  reference_signal_provider->StartListening(&threaded_listener,
+                                            output_device_id_);
+  CHECK(mock_input_stream->captured_callback_);
+  AudioInputCallback* audio_callback = *(mock_input_stream->captured_callback_);
+
+  base::WaitableEvent fired_error_event;
+  audio_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* fired_error_event,
+                        AudioInputCallback* audio_callback) {
+                       audio_callback->OnError();
+                       fired_error_event->Signal();
+                     },
+                     &fired_error_event, audio_callback));
+
+  // TimedWait returns true when the signal is called, and false on timeout.
+  EXPECT_TRUE(fired_error_event.TimedWait(base::Seconds(1)));
+
+  // At this point OnError has been called on the audio thread, scheduling the
+  // error on the main thread. Fast-forwarding will run the deletion on the main
+  // thread, which  should send the error to the listener.
+  EXPECT_CALL(threaded_listener, MockOnReferenceStreamError());
+  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 }  // namespace

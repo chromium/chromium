@@ -107,6 +107,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   void OnPlayoutData(const media::AudioBus& audio_bus,
                      int sample_rate,
                      base::TimeDelta delay) final;
+  void OnReferenceStreamError() final;
 
   // mojom::AudioProcessorControls implementation.
   void GetStats(GetStatsCallback callback) final;

@@ -36,6 +36,7 @@ class MockListener : public ReferenceOutput::Listener {
                void(const media::AudioBus& audio_bus,
                     int sample_rate,
                     base::TimeDelta delay));
+  MOCK_METHOD(void, OnReferenceStreamError, (), (override));
 };
 
 // Mock of a physical output stream_under_test.

@@ -16,6 +16,7 @@
 namespace audio {
 
 class LoopbackReferenceManagerCore;
+class LoopbackReferenceStreamIdProvider;
 
 // Singleton in the AudioService.
 //
@@ -37,9 +38,13 @@ class LoopbackReferenceManager : public ReferenceSignalProviderFactory {
   std::unique_ptr<ReferenceSignalProvider> GetReferenceSignalProvider() final;
 
  private:
+  void OnCoreError();
+
   SEQUENCE_CHECKER(owning_sequence_);
   const raw_ptr<media::AudioManager> audio_manager_;
+  const std::unique_ptr<LoopbackReferenceStreamIdProvider> stream_id_provider_;
   std::unique_ptr<LoopbackReferenceManagerCore> core_;
+  base::WeakPtrFactory<LoopbackReferenceManager> weak_ptr_factory_{this};
 };
 
 }  // namespace audio

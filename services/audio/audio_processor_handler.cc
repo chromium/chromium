@@ -69,6 +69,10 @@ void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
   audio_processor_->OnPlayoutData(audio_bus, sample_rate, delay);
 }
 
+void AudioProcessorHandler::OnReferenceStreamError() {
+  // TODO(crbug.com/412581642): Handle errors.
+}
+
 void AudioProcessorHandler::GetStats(GetStatsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   media::AudioProcessingStats stats;
