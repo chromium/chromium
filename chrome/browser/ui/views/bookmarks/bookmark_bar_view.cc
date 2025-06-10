@@ -1193,6 +1193,13 @@ void BookmarkBarView::BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
   // mouse/touch-device, the location will update accordingly.
   InvalidateDrop();
 
+  if (extensive_bookmarks_changes_ongoing_) {
+    // Delays the call to the end of the extensive changes.
+    // Assumes that the layout will need an update.
+    needs_layout_update_after_extensive_changes_ = true;
+    return;
+  }
+
   bool needs_layout_and_paint = BookmarkNodeRemovedImpl(
       old_parent, old_index,
       bookmark_service_->GetNodeAtIndex(new_parent, new_index));

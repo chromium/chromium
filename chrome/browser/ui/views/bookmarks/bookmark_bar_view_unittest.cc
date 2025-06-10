@@ -37,6 +37,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -853,7 +854,7 @@ class BookmarkBarViewWithCounterTest : public BookmarkBarViewBaseTest {
   std::unique_ptr<BookmarkBarViewWithCounter> bookmark_bar_view_with_counter_;
 };
 
-TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithIndividualAddition) {
+TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithIndividualOperations) {
   ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
 
   const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
@@ -863,19 +864,27 @@ TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithIndividualAddition) {
   model()->AddFolder(bookmark_bar, 0, u"f2");
   ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 2u);
 
-  model()->AddFolder(bookmark_bar, 0, u"f3");
+  const bookmarks::BookmarkNode* f3 =
+      model()->AddFolder(bookmark_bar, 0, u"f3");
   ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 3u);
+
+  const bookmarks::BookmarkNode* ff3 = model()->AddFolder(f3, 0, u"ff3");
+  model()->Move(ff3, bookmark_bar, 0);
+  ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 4u);
 }
 
-TEST_F(BookmarkBarViewWithCounterTest, PaintCountWithExtensiveChangesAddition) {
+TEST_F(BookmarkBarViewWithCounterTest,
+       PaintCountWithExtensiveChangesOperations) {
   ASSERT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
 
   model()->BeginExtensiveChanges();
   const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
   model()->AddFolder(bookmark_bar, 0, u"f1");
   model()->AddFolder(bookmark_bar, 0, u"f2");
-  model()->AddFolder(bookmark_bar, 0, u"f3");
-
+  const bookmarks::BookmarkNode* f3 =
+      model()->AddFolder(bookmark_bar, 0, u"f3");
+  const bookmarks::BookmarkNode* ff3 = model()->AddFolder(f3, 0, u"ff3");
+  model()->Move(ff3, bookmark_bar, 0);
   EXPECT_EQ(bookmark_bar_view_with_counter()->GetSchedulePaintCount(), 0u);
 
   model()->EndExtensiveChanges();
