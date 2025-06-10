@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"

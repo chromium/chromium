@@ -7,7 +7,9 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_HIT_REPORT_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_HIT_REPORT_H_
 
-#include "components/safe_browsing/core/browser/db/util.h"
+#include <string>
+
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "url/gurl.h"
 
