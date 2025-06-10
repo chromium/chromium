@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONFIRMATION_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONFIRMATION_H_
 
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+
 namespace privacy_sandbox {
 
 /**
@@ -19,7 +21,7 @@ namespace privacy_sandbox {
  * `false` otherwise.
  *
  */
-bool IsConsentRequired();
+bool IsConsentRequired(PrivacySandboxCountries* privacy_sandbox_countries);
 
 /**
  * Determines whether a the Privay Sandbox Ads notice is required.
@@ -31,7 +33,7 @@ bool IsConsentRequired();
  * Returns `true` if a privacy notice should be displayed, `false` otherwise.
  *
  */
-bool IsNoticeRequired();
+bool IsNoticeRequired(PrivacySandboxCountries* privacy_sandbox_countries);
 
 /**
  * Determines whether the Privacy Sandbox Ads Restricted notice is required.
@@ -43,7 +45,8 @@ bool IsNoticeRequired();
  * Returns `true` if a Privacy Sandbox restricted notice is enabled.
  *
  */
-bool IsRestrictedNoticeRequired();
+bool IsRestrictedNoticeRequired(
+    PrivacySandboxCountries* privacy_sandbox_countries);
 
 }  // namespace privacy_sandbox
 

@@ -59,7 +59,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxConsentConfirmationTest, ConsentTest) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry(
       GetParam().variation_country);
 
-  EXPECT_EQ(IsConsentRequired(), GetParam().expect_required);
+  EXPECT_EQ(IsConsentRequired(GetSingletonPrivacySandboxCountries()),
+            GetParam().expect_required);
   histogram_tester.ExpectBucketCount(
       "Settings.PrivacySandbox.ConsentCheckIsMismatched", true,
       GetParam().expect_mismatch_histogram_true);
@@ -148,7 +149,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxNoticeConfirmationTest, NoticeTest) {
   base::HistogramTester histogram_tester;
   g_browser_process->variations_service()->OverrideStoredPermanentCountry(
       GetParam().variation_country);
-  EXPECT_EQ(IsNoticeRequired(), GetParam().expect_required);
+  EXPECT_EQ(IsNoticeRequired(GetSingletonPrivacySandboxCountries()),
+            GetParam().expect_required);
   histogram_tester.ExpectBucketCount(
       "Settings.PrivacySandbox.NoticeCheckIsMismatched", true,
       GetParam().expect_mismatch_histogram_true);
@@ -270,7 +272,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxRestrictedNoticeConfirmationTest,
   g_browser_process->variations_service()->OverrideStoredPermanentCountry(
       GetParam().variation_country);
 
-  EXPECT_EQ(IsRestrictedNoticeRequired(), GetParam().expect_required);
+  EXPECT_EQ(IsRestrictedNoticeRequired(GetSingletonPrivacySandboxCountries()),
+            GetParam().expect_required);
   histogram_tester.ExpectBucketCount(
       "Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched", true,
       GetParam().expect_mismatch_histogram_true);

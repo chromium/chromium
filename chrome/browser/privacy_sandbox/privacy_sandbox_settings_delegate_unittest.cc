@@ -65,7 +65,8 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
     experiment_manager_ =
         std::make_unique<tpcd::experiment::MockExperimentManager>();
     delegate_ = std::make_unique<PrivacySandboxSettingsDelegate>(
-        profile_.get(), experiment_manager_.get());
+        profile_.get(), experiment_manager_.get(),
+        GetSingletonPrivacySandboxCountries());
   }
 
  protected:
@@ -586,14 +587,16 @@ TEST_P(CookieDeprecationExperimentEligibilityOTRProfileTest, IsEligible) {
   Profile* off_the_record_profile = profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
-  PrivacySandboxSettingsDelegate otr_delegate_under_test(off_the_record_profile,
-                                                         experiment_manager());
+  PrivacySandboxSettingsDelegate otr_delegate_under_test(
+      off_the_record_profile, experiment_manager(),
+      GetSingletonPrivacySandboxCountries());
 
   // Android does not have guest profiles.
 #if !BUILDFLAG(IS_ANDROID)
   auto guest_profile = TestingProfile::Builder().SetGuestSession().Build();
   PrivacySandboxSettingsDelegate guest_delegate_under_test(
-      guest_profile.get(), experiment_manager());
+      guest_profile.get(), experiment_manager(),
+      GetSingletonPrivacySandboxCountries());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool use_profile_filtering = GetParam();

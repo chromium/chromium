@@ -39,13 +39,14 @@ void EmitHistogram(ConfirmationType confirmation_type, bool value) {
   }
 }
 
-template <typename FilterFunction>
+template <typename FilterFunction, typename... Args>
 bool IsConfirmationRequired(ConfirmationType confirmation_type,
-                            FilterFunction filter_function) {
+                            FilterFunction filter_function,
+                            Args&&... args) {
   bool is_confirmation_required =
       privacy_sandbox::kPrivacySandboxSettings4.default_state ==
           base::FEATURE_ENABLED_BY_DEFAULT &&
-      filter_function();
+      std::invoke(filter_function, std::forward<Args>(args)...);
 
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           privacy_sandbox::kPrivacySandboxSettings4.name)) {
@@ -58,24 +59,31 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
   return is_confirmation_required;
 }
 
+bool IsRestrictedNoticeCondition(
+    PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsNoticeRequired(privacy_sandbox_countries) ||
+         IsConsentRequired(privacy_sandbox_countries);
+}
+
 }  // namespace
 
-bool IsConsentRequired() {
-  return IsConfirmationRequired(ConfirmationType::Consent, []() {
-    return GetSingletonPrivacySandboxCountries()->IsConsentCountry();
-  });
+bool IsConsentRequired(PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::Consent,
+                                &PrivacySandboxCountries::IsConsentCountry,
+                                privacy_sandbox_countries);
 }
 
-bool IsNoticeRequired() {
-  return IsConfirmationRequired(ConfirmationType::Notice, []() {
-    return GetSingletonPrivacySandboxCountries()->IsRestOfWorldCountry();
-  });
+bool IsNoticeRequired(PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::Notice,
+                                &PrivacySandboxCountries::IsRestOfWorldCountry,
+                                privacy_sandbox_countries);
 }
 
-bool IsRestrictedNoticeRequired() {
-  return IsConfirmationRequired(ConfirmationType::RestrictedNotice, []() {
-    return IsNoticeRequired() || IsConsentRequired();
-  });
+bool IsRestrictedNoticeRequired(
+    PrivacySandboxCountries* privacy_sandbox_countries) {
+  return IsConfirmationRequired(ConfirmationType::RestrictedNotice,
+                                &IsRestrictedNoticeCondition,
+                                privacy_sandbox_countries);
 }
 
 }  // namespace privacy_sandbox

@@ -327,7 +327,7 @@ class PrivacySandboxService : public KeyedService {
   virtual void TopicsToggleChanged(bool new_value) const = 0;
 
   // Whether the current profile requires consent for Topics to operate.
-  virtual bool TopicsConsentRequired() const = 0;
+  virtual bool TopicsConsentRequired() = 0;
 
   // Whether there is an active consent for Topics currently recorded.
   virtual bool TopicsHasActiveConsent() const = 0;

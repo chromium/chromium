@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_delegate.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +52,8 @@ PrivacySandboxSettingsFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
       std::make_unique<PrivacySandboxSettingsDelegate>(
           profile,
-          tpcd::experiment::ExperimentManagerImpl::GetForProfile(profile)),
+          tpcd::experiment::ExperimentManagerImpl::GetForProfile(profile),
+          GetSingletonPrivacySandboxCountries()),
       HostContentSettingsMapFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),

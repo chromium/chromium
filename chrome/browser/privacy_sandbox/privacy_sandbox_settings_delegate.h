@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 
@@ -29,7 +30,8 @@ class PrivacySandboxSettingsDelegate
  public:
   PrivacySandboxSettingsDelegate(
       Profile* profile,
-      tpcd::experiment::ExperimentManager* experiment_manager);
+      tpcd::experiment::ExperimentManager* experiment_manager,
+      PrivacySandboxCountries* privacy_sandbox_countries);
   ~PrivacySandboxSettingsDelegate() override;
 
   // PrivacySandboxSettings::Delegate:
@@ -61,6 +63,8 @@ class PrivacySandboxSettingsDelegate
 
   // The experiment manager is a singleton and lives forever.
   raw_ptr<tpcd::experiment::ExperimentManager> experiment_manager_;
+
+  raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebappRegistry> webapp_registry_;

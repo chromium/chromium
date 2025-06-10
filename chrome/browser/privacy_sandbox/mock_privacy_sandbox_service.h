@@ -121,7 +121,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (override));
   MOCK_METHOD(bool, ShouldUsePrivacyPolicyChinaDomain, (), (override));
   MOCK_METHOD(void, TopicsToggleChanged, (bool), (const, override));
-  MOCK_METHOD(bool, TopicsConsentRequired, (), (const, override));
+  MOCK_METHOD(bool, TopicsConsentRequired, (), (override));
   MOCK_METHOD(bool, TopicsHasActiveConsent, (), (const, override));
   MOCK_METHOD(privacy_sandbox::TopicsConsentUpdateSource,
               TopicsConsentLastUpdateSource,

@@ -111,7 +111,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() override;
   bool ShouldUsePrivacyPolicyChinaDomain() override;
   void TopicsToggleChanged(bool new_value) const override;
-  bool TopicsConsentRequired() const override;
+  bool TopicsConsentRequired() override;
   bool TopicsHasActiveConsent() const override;
   privacy_sandbox::TopicsConsentUpdateSource TopicsConsentLastUpdateSource()
       const override;
@@ -309,6 +309,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  // Determines whether Privacy Sandbox Ads consent is required.
+  bool IsConsentRequired();
+  // Determines whether a Privacy Sandbox Ads notice is required.
+  bool IsNoticeRequired();
+  // Determines whether the Privacy Sandbox Ads Restricted notice is required.
+  bool IsRestrictedNoticeRequired();
   // Checks if a prompt should be suppressed and updates the suppression
   // reason preference if a new reason is determined.
   // Returns true if the prompt should be suppressed (due to an existing
