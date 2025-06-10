@@ -9,12 +9,15 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,8 +27,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/channel_info.h"
@@ -198,7 +199,13 @@ base::Time ReadLastPowerwashTime() {
 
 }  // namespace
 
-ReportControllerInitializer::ReportControllerInitializer() {
+ReportControllerInitializer::ReportControllerInitializer(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetState(State::kWaitingForOwnership);
 
@@ -409,13 +416,9 @@ void ReportControllerInitializer::OnLastPowerwashTimeRead(
 
   // OOBE is completed, so we can safely calculate the device market
   // segment.
-  report::MarketSegment device_market_segment =
-      GetMarketSegment(g_browser_process->platform_part()
-                           ->browser_policy_connector_ash()
-                           ->GetDeviceMode(),
-                       g_browser_process->platform_part()
-                           ->browser_policy_connector_ash()
-                           ->GetEnterpriseMarketSegment());
+  report::MarketSegment device_market_segment = GetMarketSegment(
+      browser_policy_connector_ash_->GetDeviceMode(),
+      browser_policy_connector_ash_->GetEnterpriseMarketSegment());
 
   // Record histogram after oobe is completed and the policies are in trusted
   // status. At this point, the device market segment is known and assigned.
@@ -431,9 +434,7 @@ void ReportControllerInitializer::OnLastPowerwashTimeRead(
       ash::report::device_metrics::ChromeDeviceMetadataParameters{
           chrome::GetChannel() /* chromeos_channel */, device_market_segment,
           last_powerwash_week},
-      g_browser_process->local_state(),
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory(),
+      &local_state_.get(), shared_url_loader_factory_,
       std::make_unique<ash::report::device_metrics::PsmClientManager>(
           std::make_unique<
               report::device_metrics::RealPsmClientManagerDelegate>()));

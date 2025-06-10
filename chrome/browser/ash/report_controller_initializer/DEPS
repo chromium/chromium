@@ -17,9 +17,14 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/first_run",
   "+chrome/browser/net",
   "+chrome/common",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/test",
+  ],
+}

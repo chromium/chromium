@@ -1409,7 +1409,10 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
 void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   report_controller_initializer_ =
-      std::make_unique<ReportControllerInitializer>();
+      std::make_unique<ReportControllerInitializer>(
+          g_browser_process->local_state(),
+          g_browser_process->shared_url_loader_factory(),
+          g_browser_process->platform_part()->browser_policy_connector_ash());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Construct a delegate to connect the accessibility component extensions and

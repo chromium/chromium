@@ -8,10 +8,19 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/report/report_controller.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class PrefService;
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -56,7 +65,12 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
   };
 
   // Trigger checks for preconditions before construction of |ReportController|.
-  ReportControllerInitializer();
+  // `local_state` must be non-null and must outlive `this`.
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  ReportControllerInitializer(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
   ReportControllerInitializer(const ReportControllerInitializer&) = delete;
   ReportControllerInitializer& operator=(const ReportControllerInitializer&) =
       delete;
@@ -102,6 +116,12 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
   // Handler after reading last powerwash time file in ThreadPool task.
   // This is done to avoid blocking the main browser thread.
   void OnLastPowerwashTimeRead(base::Time last_powerwash_time);
+
+  const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // Store the current state this class is in.
   State state_ = State::kWaitingForOwnership;
