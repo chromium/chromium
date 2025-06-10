@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <queue>
 #include <utility>
 
 #include "absl/base/macros.h"
