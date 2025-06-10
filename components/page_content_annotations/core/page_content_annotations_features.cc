@@ -71,11 +71,10 @@ bool IsSupportedLocaleForFeature(
     return true;
   }
 
-  // Otherwise, the locale or the
-  // primary language subtag must match an element of the allowlist.
-  std::string locale_language = l10n_util::GetLanguage(locale);
+  // Otherwise, the locale or the primary language subtag must match an element
+  // of the allowlist.
   return base::Contains(supported_locales, locale) ||
-         base::Contains(supported_locales, locale_language);
+         base::Contains(supported_locales, l10n_util::GetLanguage(locale));
 }
 
 bool IsSupportedCountryForFeature(const std::string& country_code,

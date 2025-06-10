@@ -4,6 +4,7 @@
 
 #include "chrome/browser/on_device_translation/translation_manager_util.h"
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
@@ -33,12 +34,7 @@ const std::vector<std::string_view> GetAcceptLanguages(
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
                         const std::string_view lang) {
-  const std::string normalized_lang = l10n_util::GetLanguage(lang);
-
-  return std::find_if(accept_languages.begin(), accept_languages.end(),
-                      [&](const std::string_view lang) {
-                        return l10n_util::GetLanguage(lang) == normalized_lang;
-                      }) != accept_languages.end();
+  return base::Contains(accept_languages, l10n_util::GetLanguage(lang));
 }
 
 bool IsTranslatorAllowed(content::BrowserContext* browser_context) {
