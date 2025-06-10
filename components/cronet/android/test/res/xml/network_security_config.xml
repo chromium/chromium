@@ -42,5 +42,7 @@ found in the LICENSE file.
     <domain includeSubdomains="true">this-weird-host-name-does-not-exist</domain>
     <!-- Used by CronetUrlRequestContextTest#testHostResolverRules -->
     <domain includeSubdomains="true">some-weird-hostname</domain>
+    <!-- Used by CronetSystemProxyTest -->
+    <domain includeSubdomains="true">test-hostname</domain>
   </domain-config>
 </network-security-config>
