@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -40,6 +39,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -48,8 +48,6 @@ import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -57,24 +55,6 @@ import java.util.List;
  * and the header component.
  */
 public class ContextMenuCoordinator implements ContextMenuUi {
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-        ListItemType.DIVIDER,
-        ListItemType.HEADER,
-        ListItemType.CONTEXT_MENU_ITEM,
-        ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-        ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
-        ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
-    })
-    public @interface ListItemType {
-        int DIVIDER = 0;
-        int HEADER = 1;
-        int CONTEXT_MENU_ITEM = 2;
-        int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
-        int CONTEXT_MENU_ITEM_WITH_CHECKBOX = 4;
-        int CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON = 5;
-    }
-
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
