@@ -58,6 +58,9 @@ extern NSString* const kChromeShowDefaultBrowserPromoCapability;
 // links in chrome.
 extern NSString* const kChromeSupportOpenLinksParametersFromCapability;
 
+// Share default browser promo status capability.
+extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability;
+
 // The x-callback-url indicating that an application in the group requires a
 // command.
 extern const char kChromeAppGroupXCallbackCommand[];

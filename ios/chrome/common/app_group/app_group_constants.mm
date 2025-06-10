@@ -19,6 +19,8 @@ extern NSString* const kChromeShowDefaultBrowserPromoCapability =
     @"ShowDefaultBrowserPromo";
 extern NSString* const kChromeSupportOpenLinksParametersFromCapability =
     @"SupportOpenLinksParametersFrom";
+extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability =
+    @"SupportShareDefaultBrowserStatus";
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
