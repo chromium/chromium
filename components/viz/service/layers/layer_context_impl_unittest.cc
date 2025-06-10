@@ -20,6 +20,7 @@
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -120,6 +121,13 @@ const gfx::Rect kDefaultPaintedScrollbarTrackAndButtonsAperture = gfx::Rect();
 
 // Default MirrorLayer property values
 const int kDefaultMirrorLayerMirroredLayerId = 0;
+
+// Default ViewTransitionContentLayer property values
+const ViewTransitionElementResourceId
+    kDefaultViewTransitionContentLayerResourceId =
+        ViewTransitionElementResourceId(blink::ViewTransitionToken(), 1, false);
+const bool kDefaultViewTransitionContentLayerIsLiveContentLayer = false;
+const gfx::RectF kDefaultViewTransitionContentLayerMaxExtentsRect;
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -376,6 +384,16 @@ class LayerContextImplTest : public testing::Test {
         extra->track_and_buttons_aperture =
             kDefaultPaintedScrollbarTrackAndButtonsAperture;
         return mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
+            std::move(extra));
+      }
+      case cc::mojom::LayerType::kViewTransitionContent: {
+        auto extra = mojom::ViewTransitionContentLayerExtra::New();
+        extra->resource_id = kDefaultViewTransitionContentLayerResourceId;
+        extra->is_live_content_layer =
+            kDefaultViewTransitionContentLayerIsLiveContentLayer;
+        extra->max_extents_rect =
+            kDefaultViewTransitionContentLayerMaxExtentsRect;
+        return mojom::LayerExtra::NewViewTransitionContentLayerExtra(
             std::move(extra));
       }
 
@@ -4097,6 +4115,165 @@ TEST_F(LayerContextImplUpdateDisplayTreeMirrorLayerTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(layer_impl->mirrored_layer_id(), kMirroredLayerId2);
+}
+
+// Test fixture for ViewTransitionContentLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::ViewTransitionContentLayerImpl*
+  GetViewTransitionContentLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (!layer ||
+        layer->GetLayerType() != cc::mojom::LayerType::kViewTransitionContent) {
+      return nullptr;
+    }
+    return static_cast<cc::ViewTransitionContentLayerImpl*>(layer);
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest,
+       InitialResourceId) {
+  constexpr int kVTContentLayerId = 2;
+  const ViewTransitionElementResourceId kInitialResourceId(
+      blink::ViewTransitionToken(), 3, true);
+  const ViewTransitionElementResourceId kAttemptedUpdateResourceId1(
+      blink::ViewTransitionToken(), 1, false);
+
+  // Initial update: Create with a specific, non-default resource_id.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  auto& vt_extra1 =
+      layer_props1->layer_extra->get_view_transition_content_layer_extra();
+  vt_extra1->resource_id = kInitialResourceId;
+  update1->layers.push_back(std::move(layer_props1));
+  // AddDefaultLayerToUpdate normally handles this. Since we used
+  // CreateManualLayer, update the layer_order here.
+  layer_order_.push_back(kVTContentLayerId);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ViewTransitionContentLayerImpl* layer_impl =
+      GetViewTransitionContentLayerFromActiveTree(kVTContentLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->ViewTransitionResourceId(), kInitialResourceId);
+
+  // Second update: Attempt to update resource_id. This should have no effect
+  // as resource_id is a constructor parameter for the Impl layer.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  // We need to set the resource_id on the update struct, even though it won't
+  // change the impl layer, to reflect what the client might send.
+  auto& vt_extra2 =
+      layer_props2->layer_extra->get_view_transition_content_layer_extra();
+  vt_extra2->resource_id = kAttemptedUpdateResourceId1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  // Expect the resource_id to remain the initially set one.
+  EXPECT_EQ(layer_impl->ViewTransitionResourceId(), kInitialResourceId);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest,
+       UpdateIsLiveContentLayer) {
+  constexpr int kVTContentLayerId = 2;
+  constexpr bool kInitialIsLiveContentLayer = true;
+  constexpr bool kAttemptedUpdateIsLiveContentLayer = false;
+
+  // Initial update: Create with a specific, non-default is_live_content_layer.
+  auto update1 = CreateDefaultUpdate();
+  auto layer_props1 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  auto& vt_extra1 =
+      layer_props1->layer_extra->get_view_transition_content_layer_extra();
+  vt_extra1->is_live_content_layer = kInitialIsLiveContentLayer;
+  update1->layers.push_back(std::move(layer_props1));
+  // AddDefaultLayerToUpdate normally handles this. Since we used
+  // CreateManualLayer, update the layer_order here.
+  layer_order_.push_back(kVTContentLayerId);
+  update1->layer_order = layer_order_;
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ViewTransitionContentLayerImpl* layer_impl =
+      GetViewTransitionContentLayerFromActiveTree(kVTContentLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->is_live_content_layer(), kInitialIsLiveContentLayer);
+
+  // Second update: Attempt to update is_live_content_layer. This should have
+  // no effect as is_live_content_layer is a constructor parameter for the Impl
+  // layer.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  auto& vt_extra2 =
+      layer_props2->layer_extra->get_view_transition_content_layer_extra();
+  // We need to set the is_live_content_layer on the update struct, even though
+  // it won't change the impl layer, to reflect what the client might send.
+  vt_extra2->is_live_content_layer = kAttemptedUpdateIsLiveContentLayer;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  // Expect the is_live_content_layer to remain the initially set one.
+  EXPECT_EQ(layer_impl->is_live_content_layer(), kInitialIsLiveContentLayer);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest,
+       UpdateMaxExtentsRect) {
+  constexpr int kVTContentLayerId = 2;
+  const gfx::RectF kMaxExtentsRect1(10.f, 10.f, 80.f, 80.f);
+  const gfx::RectF kMaxExtentsRect2(5.f, 5.f, 90.f, 90.f);
+
+  // Initial update: Create with default max_extents_rect.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(),
+                          cc::mojom::LayerType::kViewTransitionContent,
+                          kVTContentLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::ViewTransitionContentLayerImpl* layer_impl =
+      GetViewTransitionContentLayerFromActiveTree(kVTContentLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->max_extents_rect(),
+            kDefaultViewTransitionContentLayerMaxExtentsRect);
+
+  // Second update: Update max_extents_rect.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  auto& vt_extra2 =
+      layer_props2->layer_extra->get_view_transition_content_layer_extra();
+  vt_extra2->max_extents_rect = kMaxExtentsRect1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->max_extents_rect(), kMaxExtentsRect1);
+
+  // Third update: Update max_extents_rect again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  auto& vt_extra3 =
+      layer_props3->layer_extra->get_view_transition_content_layer_extra();
+  vt_extra3->max_extents_rect = kMaxExtentsRect2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->max_extents_rect(), kMaxExtentsRect2);
+
+  // Fourth update: Update max_extents_rect back to default (empty).
+  auto update4 = CreateDefaultUpdate();
+  auto layer_props4 = CreateManualLayer(
+      kVTContentLayerId, cc::mojom::LayerType::kViewTransitionContent);
+  // Default is already set by CreateDefaultLayerExtra.
+  update4->layers.push_back(std::move(layer_props4));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+  EXPECT_EQ(layer_impl->max_extents_rect(),
+            kDefaultViewTransitionContentLayerMaxExtentsRect);
 }
 
 }  // namespace viz
