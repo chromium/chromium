@@ -855,12 +855,14 @@ TEST_F(RendererImplTest, AudioTrackDisableThenEnable) {
 
   base::RunLoop disable_wait;
   SetAudioTrackSwitchExpectations();
+  EXPECT_CALL(time_source_, SetMediaTime(_));
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {},
                                   disable_wait.QuitClosure());
   disable_wait.Run();
 
   base::RunLoop enable_wait;
   SetAudioTrackSwitchExpectations();
+  EXPECT_CALL(time_source_, SetMediaTime(_));
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, streams_[0],
                                   enable_wait.QuitClosure());
   enable_wait.Run();
@@ -901,6 +903,7 @@ TEST_F(RendererImplTest, AudioUnderflowDuringAudioTrackChange) {
       .WillOnce(MoveArg(&audio_renderer_flush_cb));
 
   EXPECT_CALL(time_source_, CurrentMediaTime()).Times(2);
+  EXPECT_CALL(time_source_, SetMediaTime(_));
   std::vector<DemuxerStream*> tracks;
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {}, loop.QuitClosure());
 
@@ -956,6 +959,7 @@ TEST_F(RendererImplTest, VideoUnderflowDuringAudioTrackChange) {
 
   EXPECT_CALL(time_source_, CurrentMediaTime()).Times(2);
   EXPECT_CALL(time_source_, StopTicking());
+  EXPECT_CALL(time_source_, SetMediaTime(_));
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {}, loop.QuitClosure());
 
   EXPECT_CALL(*audio_renderer_, StartPlaying());
@@ -1015,6 +1019,7 @@ TEST_F(RendererImplTest, VideoResumedFromUnderflowDuringAudioTrackChange) {
     EXPECT_CALL(time_source_, CurrentMediaTime()).Times(2);
     EXPECT_CALL(*audio_renderer_, Flush(_))
         .WillOnce(MoveArg(&audio_renderer_flush_cb));
+    EXPECT_CALL(time_source_, SetMediaTime(_));
   }
   renderer_impl_->OnTracksChanged(DemuxerStream::AUDIO, {},
                                   track_change.QuitClosure());

@@ -678,6 +678,7 @@ void RendererImpl::RestartAudioRenderer(
     return;
   }
 
+  time_source_->SetMediaTime(time);
   {
     base::AutoLock lock(restarting_audio_lock_);
     audio_playing_ = true;
