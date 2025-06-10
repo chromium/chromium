@@ -315,15 +315,12 @@ BrowserWindowInterface* GlicFocusedTabManager::ComputeBrowserCandidate() {
     return nullptr;
   }
 
-  if (window_controller_->IsActive()) {
-    Browser* const profile_last_active =
-        chrome::FindLastActiveWithProfile(profile_);
-    return IsBrowserValid(profile_last_active) ? profile_last_active : nullptr;
+  Browser* const active_browser = BrowserList::GetInstance()->GetLastActive();
+  if (!IsBrowserValid(active_browser)) {
+    return nullptr;
   }
 
-  Browser* const active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (active_browser && active_browser->IsActive() &&
-      IsBrowserValid(active_browser)) {
+  if (window_controller_->IsActive() || active_browser->IsActive()) {
     return active_browser;
   }
 

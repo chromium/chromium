@@ -256,10 +256,12 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   ObserveState(kTab1AlertState, browser(), 0),
                   ObserveState(kTab2AlertState, browser2, 0),
                   ClickMockGlicElement(kMockGlicContextAccessButton),
+                  InContext(browser()->window()->GetElementContext(),
+                            ActivateSurface(kBrowserViewElementId)),
                   WaitForState(kTab1AlertState, IsAccessing()),
                   InContext(browser2->window()->GetElementContext(),
                             ActivateSurface(kBrowserViewElementId)),
-                  WaitForState(kTab1AlertState, IsAccessing()),
+                  WaitForState(kTab1AlertState, IsNotAccessing()),
                   WaitForState(kTab2AlertState, IsNotAccessing()));
 }
 
