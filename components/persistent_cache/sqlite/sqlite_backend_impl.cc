@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/sqlite_entry_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
@@ -143,6 +144,10 @@ void SqliteBackendImpl::Insert(std::string_view key,
                          TRACE_EVENT_SCOPE_THREAD, "error_code",
                          db_.GetErrorCode());
   }
+}
+
+BackendType SqliteBackendImpl::GetType() const {
+  return BackendType::kSqlite;
 }
 
 }  // namespace persistent_cache

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/entry_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,6 +19,7 @@ class MockBackendImpl : public Backend {
  public:
   explicit MockBackendImpl(const BackendParams& backend_params);
   ~MockBackendImpl() override;
+  BackendType GetType() const override;
 
   MockBackendImpl(const MockBackendImpl&) = delete;
   MockBackendImpl(MockBackendImpl&&) = delete;

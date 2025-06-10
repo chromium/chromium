@@ -194,6 +194,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/performance_manager/histograms.xml",
   "//tools/metrics/histograms/metadata/permissions/enums.xml",
   "//tools/metrics/histograms/metadata/permissions/histograms.xml",
+  "//tools/metrics/histograms/metadata/persistent_cache/histograms.xml",
   "//tools/metrics/histograms/metadata/phonehub/enums.xml",
   "//tools/metrics/histograms/metadata/phonehub/histograms.xml",
   "//tools/metrics/histograms/metadata/platform/enums.xml",

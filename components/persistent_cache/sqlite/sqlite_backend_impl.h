@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/types/pass_key.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
@@ -37,6 +38,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   void Insert(std::string_view key,
               base::span<const uint8_t> content,
               EntryMetadata metadata) override;
+  BackendType GetType() const override;
 
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);

@@ -6,12 +6,25 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 
 namespace persistent_cache {
+
+const char* GetBackendTypeName(BackendType backend_type) {
+  switch (backend_type) {
+    case BackendType::kSqlite:
+      return "SQLite";
+    case BackendType::kMock:
+      return "Mock";
+  }
+}
 
 // static
 std::unique_ptr<PersistentCache> PersistentCache::Open(
@@ -32,8 +45,15 @@ std::unique_ptr<PersistentCache> PersistentCache::Open(
 PersistentCache::PersistentCache(std::unique_ptr<Backend> backend) {
   CHECK(backend);
 
+  base::ElapsedTimer timer;
+  BackendType backend_type = backend->GetType();
   if (backend->Initialize()) {
     backend_ = std::move(backend);
+    // TODO (https://crbug.com/377475540): Implement read-only mode.
+    std::string histogram_name =
+        base::StrCat({"PersistentCache.BackendInitialize.",
+                      GetBackendTypeName(backend_type), ".ReadWrite"});
+    base::UmaHistogramMicrosecondsTimes(histogram_name, timer.Elapsed());
   }
 }
 
