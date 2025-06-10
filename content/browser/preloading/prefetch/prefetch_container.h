@@ -148,8 +148,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
           nullptr,
-      base::TimeDelta ttl_in_sec =
-          PrefetchContainerDefaultTtlInPrefetchService(),
+      base::TimeDelta ttl = PrefetchContainerDefaultTtlInPrefetchService(),
       bool should_append_variations_header = true);
 
   ~PrefetchContainer();
@@ -827,7 +826,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled,
-      base::TimeDelta ttl_in_sec,
+      base::TimeDelta ttl,
       bool should_append_variations_header);
 
   // Update |prefetch_status_| and report prefetch status to
@@ -1095,7 +1094,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Time-to-live (TTL) for this prefetched data. Currently, this is configured
   // for browser-initiated prefetch that doesn't depend on web content.
   // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
-  base::TimeDelta ttl_in_sec_;
+  base::TimeDelta ttl_;
 
   // Whether to add the X-Client-Data header with experiment IDs from field
   // trials. This will not be applied to redirects. Currently, this is

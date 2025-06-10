@@ -411,7 +411,7 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-    base::TimeDelta ttl_in_sec,
+    base::TimeDelta ttl,
     bool should_append_variations_header)
     : PrefetchContainer(
           GlobalRenderFrameHostId(),
@@ -436,7 +436,7 @@ PrefetchContainer::PrefetchContainer(
           additional_headers,
           std::move(request_status_listener),
           javascript_enabled,
-          ttl_in_sec,
+          ttl,
           should_append_variations_header) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
@@ -463,7 +463,7 @@ PrefetchContainer::PrefetchContainer(
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     bool is_javascript_enabled,
-    base::TimeDelta ttl_in_sec,
+    base::TimeDelta ttl,
     bool should_append_variations_header)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
@@ -487,7 +487,7 @@ PrefetchContainer::PrefetchContainer(
       additional_headers_(additional_headers),
       request_status_listener_(std::move(request_status_listener)),
       is_javascript_enabled_(is_javascript_enabled),
-      ttl_in_sec_(ttl_in_sec),
+      ttl_(ttl),
       should_append_variations_header_(should_append_variations_header) {
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
@@ -1338,11 +1338,10 @@ void PrefetchContainer::MaybeSetNoVarySearchData() {
 
 void PrefetchContainer::StartTimeoutTimerIfNeeded(
     base::OnceClosure on_timeout_callback) {
-  if (ttl_in_sec_.is_positive()) {
+  if (ttl_.is_positive()) {
     CHECK(!timeout_timer_);
     timeout_timer_ = std::make_unique<base::OneShotTimer>();
-    timeout_timer_->Start(FROM_HERE, ttl_in_sec_,
-                          std::move(on_timeout_callback));
+    timeout_timer_->Start(FROM_HERE, ttl_, std::move(on_timeout_callback));
   }
 }
 

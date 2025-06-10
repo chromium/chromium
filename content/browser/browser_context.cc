@@ -200,7 +200,7 @@ BrowserContext::StartBrowserPrefetchRequest(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-    base::TimeDelta ttl_in_sec,
+    base::TimeDelta ttl,
     bool should_append_variations_header) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("loading", "BrowserContext::StartBrowserPrefetchRequest");
@@ -221,8 +221,7 @@ BrowserContext::StartBrowserPrefetchRequest(
       blink::mojom::Referrer(), javascript_enabled,
       /*referring_origin=*/std::nullopt, std::move(no_vary_search_hint),
       /*attempt=*/nullptr, additional_headers,
-      std::move(request_status_listener), ttl_in_sec,
-      should_append_variations_header);
+      std::move(request_status_listener), ttl, should_append_variations_header);
   return prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
 }
 

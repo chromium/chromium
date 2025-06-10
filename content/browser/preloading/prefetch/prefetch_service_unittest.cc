@@ -550,11 +550,11 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       std::optional<net::HttpNoVarySearchData> no_vary_search_data,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-      base::TimeDelta ttl_in_sec = base::Seconds(/* 10 minutes */ 60 * 10)) {
+      base::TimeDelta ttl = base::Seconds(/* 10 minutes */ 60 * 10)) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
         no_vary_search_data, additional_headers,
-        std::move(request_status_listener), ttl_in_sec,
+        std::move(request_status_listener), ttl,
         /*should_append_variations_header=*/true);
   }
 
