@@ -452,8 +452,16 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
       .Run(page_url, true, net::HTTP_OK, std::nullopt);
 }
 
+// TODO(crbug.com/423701223): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClassifyPrerenderedPageAfterActivation \
+  DISABLED_ClassifyPrerenderedPageAfterActivation
+#else
+#define MAYBE_ClassifyPrerenderedPageAfterActivation \
+  ClassifyPrerenderedPageAfterActivation
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
-                       ClassifyPrerenderedPageAfterActivation) {
+                       MAYBE_ClassifyPrerenderedPageAfterActivation) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -501,9 +509,17 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostPrerenderBrowserTest,
       .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 }
 
+// TODO(crbug.com/423701223): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache \
+  DISABLED_ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache
+#else
+#define MAYBE_ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache \
+  ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache
+#endif
 IN_PROC_BROWSER_TEST_P(
     ClientSideDetectionHostPrerenderBrowserTest,
-    ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache) {
+    MAYBE_ClassifyPrerenderedPageAfterActivationAndCheckDebuggingMetadataCache) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -569,9 +585,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(debugging_metadata->local_model_detects_phishing());
 }
 
+// TODO(crbug.com/423701223): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation \
+  DISABLED_CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation
+#else
+#define MAYBE_CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation \
+  CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(
     ClientSideDetectionHostPrerenderBrowserTest,
-    CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation) {
+    MAYBE_CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
