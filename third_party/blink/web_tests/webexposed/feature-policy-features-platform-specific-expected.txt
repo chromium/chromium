@@ -1,0 +1,5 @@
+This test documents Blink's web-exposed policy-controlled features.
+All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
+
+bluetooth
+

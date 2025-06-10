@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ServiceWorkerGlobalScope platform-specific expose test.</title>
+  <script src="../../js-test-resources/js-test.js"></script>
+  <script src="resources/global-interface-listing-service-worker.js"></script>
+</head>
+<body>
+<div id="console"></div>
+<script>
+// We can't use testharness.js in this test because this needs to dump text
+// other than PASS/FAIL.
+
+jsTestIsAsync = true;
+
+register_service_worker(/*platform_specific=*/true);
+</script>
+</body>
+</html>
