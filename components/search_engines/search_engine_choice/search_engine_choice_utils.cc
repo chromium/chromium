@@ -318,8 +318,15 @@ std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string GetMarketingSnippetString(
     const TemplateURLData& template_url_data) {
+  constexpr bool kEnableBuiltinSearchProviderAssets =
+      !!BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS);
+
+  // TODO(crbug.com/420943295): `GetMarketingSnippetResourceId()` is generated
+  // code. The flag-gating should be moved there directly.
   int snippet_resource_id =
-      GetMarketingSnippetResourceId(template_url_data.keyword());
+      kEnableBuiltinSearchProviderAssets
+          ? GetMarketingSnippetResourceId(template_url_data.keyword())
+          : -1;
 
   return snippet_resource_id == -1
              ? l10n_util::GetStringFUTF16(

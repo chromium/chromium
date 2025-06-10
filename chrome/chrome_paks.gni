@@ -70,7 +70,7 @@ template("chrome_repack_percent") {
         "//ui/views/resources",
       ]
     }
-    if (!is_android) {
+    if (enable_builtin_search_provider_assets) {
       sources += [ "$root_gen_dir/third_party/search_engines_data/search_engines_resources_${percent}_percent.pak" ]
       deps += [ "//third_party/search_engines_data:resources" ]
     }

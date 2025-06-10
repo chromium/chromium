@@ -18,12 +18,16 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "crypto/hash.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
+
+constexpr bool kEnableBuiltinSearchProviderAssets =
+    !!BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS);
 
 // Returns a GUID used for sync, which is random except for built-in search
 // engines. The latter benefit from using a deterministic GUID, to make sure
@@ -102,7 +106,11 @@ TemplateURLData::TemplateURLData(
       contextual_search_url(contextual_search_url),
       logo_url(logo_url),
       doodle_url(doodle_url),
-      base_builtin_resource_id(base_builtin_resource_id),
+      // Loading search engines resources is not supporting on non-branded
+      // builds.
+      base_builtin_resource_id(kEnableBuiltinSearchProviderAssets
+                                   ? base_builtin_resource_id
+                                   : std::string_view()),
       search_url_post_params(search_url_post_params),
       suggestions_url_post_params(suggest_url_post_params),
       image_url_post_params(image_url_post_params),

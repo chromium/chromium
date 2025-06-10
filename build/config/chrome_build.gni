@@ -85,3 +85,7 @@ declare_args() {
   # The path to the BRANDING file in chrome/app/theme.
   branding_file_path = "//chrome/app/theme/$branding_path_component/BRANDING"
 }
+
+# Whether to enable built-in branding assets (logos & marketing snippets) for
+# search providers in choice UIs.
+enable_builtin_search_provider_assets = is_chrome_branded && !is_android
