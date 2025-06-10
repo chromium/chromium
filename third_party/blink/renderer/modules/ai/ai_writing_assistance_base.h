@@ -291,10 +291,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     const String trimmed_context =
         options->getContextOr(g_empty_string).StripWhiteSpace();
+    // Pass persistent refs to keep this instance alive during the response.
     auto pending_remote = CreateModelExecutionResponder(
         script_state, signal, resolver, task_runner_, metric_session_type_,
-        /*complete_callback=*/base::DoNothing(),
-        /*overflow_callback=*/base::DoNothing());
+        base::DoNothingWithBoundArgs(WrapPersistent(this)),
+        base::DoNothingWithBoundArgs(WrapPersistent(this)));
     remoteExecute(trimmed_input, trimmed_context, std::move(pending_remote));
     return promise;
   }
@@ -335,11 +336,12 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     const String trimmed_context =
         options->getContextOr(g_empty_string).StripWhiteSpace();
+    // Pass persistent refs to keep this instance alive during the response.
     auto [readable_stream, pending_remote] =
         CreateModelExecutionStreamingResponder(
             script_state, signal, task_runner_, metric_session_type_,
-            /*complete_callback=*/base::DoNothing(),
-            /*overflow_callback=*/base::DoNothing());
+            base::DoNothingWithBoundArgs(WrapPersistent(this)),
+            base::DoNothingWithBoundArgs(WrapPersistent(this)));
     remoteExecute(trimmed_input, trimmed_context, std::move(pending_remote));
     return readable_stream;
   }
