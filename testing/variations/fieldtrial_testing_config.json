@@ -15639,6 +15639,24 @@
             ]
         }
     ],
+    "OmniboxAiModeZpsIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_5_PSuggest_4_AIM_Without_Backfill",
+                    "params": {
+                        "SuppressPsuggestBackfillWithMIA": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxMiaZPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxAnswerActions": [
         {
             "platforms": [
