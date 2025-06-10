@@ -145,7 +145,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.A2dpExitCode" enum="CrasA2dpExitCode"
-    expires_after="2025-06-22">
+    expires_after="2026-06-10">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -197,7 +197,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.Busyloop{Cras_TimePeriod}" units="units"
-    expires_after="2025-06-22">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ This collects each top-level device metric type. For example,
 
 <histogram
     name="Cras.DeviceConfigureTime.Output{Device}{HostCapability}{PeripheralCapability}"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2026-06-10">
   <owner>hychao@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -538,7 +538,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HfpMicSuperResolutionStatus.{Device}"
-    enum="CrasHfpMicSuperResolutionStatus" expires_after="2025-06-08">
+    enum="CrasHfpMicSuperResolutionStatus" expires_after="2026-06-10">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -574,7 +574,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HfpWidebandSpeechPacketLoss" units="units"
-    expires_after="2025-06-22">
+    expires_after="2026-06-10">
   <owner>enshuo@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -621,7 +621,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HighestInputHardwareLevel" units="frames"
-    expires_after="2025-06-22">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -632,7 +632,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HighestOutputHardwareLevel" units="frames"
-    expires_after="2025-06-22">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -807,7 +807,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.OutputVolumeMutedSource" enum="AudioSettingsChangeSource"
-    expires_after="2025-06-30">
+    expires_after="2026-06-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -994,7 +994,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
-    expires_after="2025-06-08">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -1004,7 +1004,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeOutput" enum="CrasClientType"
-    expires_after="2025-06-08">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -1014,7 +1014,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamConnectStatus" enum="CrasStreamConnectStatus"
-    expires_after="2025-06-15">
+    expires_after="2026-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
@@ -1050,7 +1050,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamEffectState{Effect}" enum="StreamEffectState"
-    expires_after="2025-06-20">
+    expires_after="2026-06-10">
   <owner>eddyhsu@google.com</owner>
   <owner>chromeos-audio-sw@google.com</owner>
   <summary>
