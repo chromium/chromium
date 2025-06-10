@@ -41,7 +41,7 @@ namespace {
 const base::FilePath::CharType kSharedDictionaryStoreFilename[] =
     FILE_PATH_LITERAL("SharedDictionary");
 
-const int kCurrentVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
 
 int GetDBCurrentVersionNumber(sql::Database* db) {
   static constexpr char kGetDBCurrentVersionQuery[] =
@@ -149,6 +149,94 @@ bool CreateV2Schema(sql::Database* db) {
           "match_dest TEXT NOT NULL,"
           "id TEXT NOT NULL,"
           "url TEXT NOT NULL,"
+          "res_time INTEGER NOT NULL,"
+          "exp_time INTEGER NOT NULL,"
+          "last_used_time INTEGER NOT NULL,"
+          "size INTEGER NOT NULL,"
+          "sha256 BLOB NOT NULL,"
+          "token_high INTEGER NOT NULL,"
+          "token_low INTEGER NOT NULL)";
+  // clang-format on
+
+  static constexpr char kCreateUniqueIndexQuery[] =
+      // clang-format off
+      "CREATE UNIQUE INDEX unique_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site,"
+          "host,"
+          "match,"
+          "match_dest)";
+  // clang-format on
+
+  // This index is used for the size and count limitation per top_frame_site.
+  static constexpr char kCreateTopFrameSiteIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX top_frame_site_index ON dictionaries("
+          "top_frame_site)";
+  // clang-format on
+
+  // This index is used for GetDictionaries().
+  static constexpr char kCreateIsolationIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX isolation_index ON dictionaries("
+          "frame_origin,"
+          "top_frame_site)";
+  // clang-format on
+
+  // This index will be used when implementing garbage collection logic of
+  // SharedDictionaryDiskCache.
+  static constexpr char kCreateTokenIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX token_index ON dictionaries("
+          "token_high, token_low)";
+  // clang-format on
+
+  // This index will be used when implementing clearing expired dictionary
+  // logic.
+  static constexpr char kCreateExpirationTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX exp_time_index ON dictionaries("
+          "exp_time)";
+  // clang-format on
+
+  // This index will be used when implementing clearing dictionary logic which
+  // will be called from BrowsingDataRemover.
+  static constexpr char kCreateLastUsedTimeIndexQuery[] =
+      // clang-format off
+      "CREATE INDEX last_used_time_index ON dictionaries("
+          "last_used_time)";
+  // clang-format on
+
+  if (!db->Execute(kCreateTableQuery) ||
+      !db->Execute(kCreateUniqueIndexQuery) ||
+      !db->Execute(kCreateTopFrameSiteIndexQuery) ||
+      !db->Execute(kCreateIsolationIndexQuery) ||
+      !db->Execute(kCreateTokenIndexQuery) ||
+      !db->Execute(kCreateExpirationTimeIndexQuery) ||
+      !db->Execute(kCreateLastUsedTimeIndexQuery) ||
+      !meta_table.SetValue(kTotalDictSizeKey, 0)) {
+    return false;
+  }
+  return true;
+}
+
+bool CreateV3Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  CHECK(meta_table.Init(db, 3, 3));
+  constexpr char kTotalDictSizeKey[] = "total_dict_size";
+
+  static constexpr char kCreateTableQuery[] =
+      // clang-format off
+      "CREATE TABLE dictionaries("
+          "primary_key INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+          "frame_origin TEXT NOT NULL,"
+          "top_frame_site TEXT NOT NULL,"
+          "host TEXT NOT NULL,"
+          "match TEXT NOT NULL,"
+          "match_dest TEXT NOT NULL,"
+          "id TEXT NOT NULL,"
+          "url TEXT NOT NULL,"
+          "last_fetch_time INTEGER NOT NULL,"
           "res_time INTEGER NOT NULL,"
           "exp_time INTEGER NOT NULL,"
           "last_used_time INTEGER NOT NULL,"
@@ -3059,7 +3147,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   EXPECT_EQ(updated_last_used_time, dicts3[0].last_used_time());
 }
 
-TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV4) {
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
@@ -3072,11 +3160,11 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 4);
   }
 }
 
-TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV3) {
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV4) {
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
@@ -3089,8 +3177,24 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV3) {
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 4);
   }
 }
 
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV3ToV4) {
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    CreateV3Schema(&db);
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
+  }
+  CreateStore();
+  EXPECT_EQ(GetTotalDictionarySize(), 0u);
+  DestroyStore();
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(GetStroeFilePath()));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&db), 4);
+  }
+}
 }  // namespace net

@@ -40,10 +40,10 @@ constexpr char kTableName[] = "dictionaries";
 // metadata because calculating the total size is an expensive operation.
 constexpr char kTotalDictSizeKey[] = "total_dict_size";
 
-const int kCurrentVersionNumber = 3;
-const int kCompatibleVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
+const int kCompatibleVersionNumber = 4;
 
-bool CreateV3Schema(sql::Database* db, sql::MetaTable* meta_table) {
+bool CreateV4Schema(sql::Database* db, sql::MetaTable* meta_table) {
   CHECK(!db->DoesTableExist(kTableName));
 
   static constexpr char kCreateTableQuery[] =
@@ -401,7 +401,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
   if (!db()->DoesTableExist(kTableName) &&
-      !CreateV3Schema(db(), meta_table())) {
+      !CreateV4Schema(db(), meta_table())) {
     return false;
   }
   return true;
@@ -410,17 +410,23 @@ bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
 std::optional<int>
 SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-  if (cur_version == 1 || cur_version == 2) {
+  if (cur_version == 1 || cur_version == 2 || cur_version == 3) {
     sql::Transaction transaction(db());
     if (!transaction.Begin() ||
         !db()->Execute("DROP TABLE IF EXISTS dictionaries") ||
         !meta_table()->DeleteKey(kTotalDictSizeKey)) {
       return std::nullopt;
     }
-    // The version 1 is used during the Origin Trial period (M119-M122).
-    // The version 2 is used during the Origin Trial period (M123-M124).
-    // We don't need to migrate the data from version 1 and 2.
-    cur_version = 3;
+    // We don't need to migrate the data from version 1 and 2 and 3.
+    // - The version 1 is used during the Origin Trial period (M119-M122).
+    // - The version 2 is used during the Origin Trial period (M123-M124).
+    // - The version 3 is used until M139. Unfortunately, there was a bug
+    //   until M139 that incorrectly saved compressed dictionaries when the
+    //   RendererSideContentDecoding feature was enabled (crbug.com/423743105).
+    //   Because the RendererSideContentDecoding experiment was conducted on
+    //   Canary/Dev/Beta, we discarded the version 3 database and introduced
+    //   a version 4 database with the exact same schema as version 3.
+    cur_version = 4;
     if (!meta_table()->SetVersionNumber(cur_version) ||
         !meta_table()->SetCompatibleVersionNumber(
             std::min(cur_version, kCompatibleVersionNumber)) ||
