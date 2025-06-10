@@ -296,8 +296,6 @@ component("cpp") {
     "projector/speech_recognition_availability.h",
     "reauth_reason.h",
     "resize_shadow_type.h",
-    "rounded_corner_utils.cc",
-    "rounded_corner_utils.h",
     "rounded_image_view.cc",
     "rounded_image_view.h",
     "saved_desk_delegate.h",
