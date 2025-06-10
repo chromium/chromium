@@ -1122,6 +1122,13 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchCompressedDictionarySecureContext) {
+  RunWriteDictionaryTest(FetchType::kFetchApi,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test.dict.gz"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        CrossOriginLinkRelCompressionDictionaryWithoutACAO) {
   RunWriteDictionaryTest(
       FetchType::kLinkRelCompressionDictionary,

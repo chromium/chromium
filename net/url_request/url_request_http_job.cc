@@ -1543,9 +1543,17 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
       FilterSourceStream::GetContentEncodingTypes(
           request_->accepted_stream_types(), *headers);
 
-  if (request()->client_side_content_decoding_enabled()) {
+  if (request()->client_side_content_decoding_enabled() &&
+      !headers->HasHeader("use-as-dictionary")) {
     // When client side content encoding is enabled, the client will decode the
     // body. So returns the original stream.
+    //
+    // Currently, the write logic for SharedDictionary assumes that the
+    // dictionary itself is not compressed when it reaches
+    // network::CorsURLLoader::OnReceiveResponse. Therefore, if there is a
+    // possibility that the response will be used as a dictionary, meaning the
+    // use-as-dictionary header is set, we will decode it within
+    // URLRequestHttpJob.
     client_side_content_decoding_types_ = std::move(types);
     return upstream;
   }
