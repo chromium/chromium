@@ -7,12 +7,10 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -437,26 +435,7 @@ AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
 
 bool AreContactInfoSpecificsValid(
     const sync_pb::ContactInfoSpecifics& specifics) {
-  if (!base::Uuid::ParseLowercase(specifics.guid()).is_valid()) {
-    return false;
-  }
-
-  if (specifics.address_type() == sync_pb::ContactInfoSpecifics::REGULAR) {
-    return true;
-  }
-
-  // H/W addresses need to meet Autofill's completeness requirements since they
-  // are read from a source that doesn't enforce them.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    const bool is_minimum_address = IsMinimumAddress(
-        CreateAutofillProfileFromContactInfoSpecifics(specifics));
-    base::UmaHistogramBoolean("Autofill.HomeWorkProfiles.ProfileFiltered",
-                              is_minimum_address);
-    return is_minimum_address;
-  }
-
-  return false;
+  return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
 }
 
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(

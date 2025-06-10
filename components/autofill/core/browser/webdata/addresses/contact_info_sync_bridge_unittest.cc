@@ -10,15 +10,18 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -262,6 +265,37 @@ TEST_F(ContactInfoSyncBridgeTest,
   ASSERT_EQ(profiles.size(), 1u);
   EXPECT_EQ(profiles[0].usage_history().modification_date(),
             profile.usage_history().modification_date());
+}
+
+// Tests that incomplete Home and Work addresses are dropped and removed from
+// local storage, if necessary.
+TEST_F(ContactInfoSyncBridgeTest,
+       ApplyIncrementalSyncChanges_HomeAndWorkCompleteness) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillEnableSupportForHomeAndWork);
+  AutofillProfile remote = test::GetFullProfile();
+  test_api(remote).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(StartSyncing({remote}));
+
+  // Since `remote` is a complete H/W profile, expect it in local storage.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.HomeWorkProfiles.ProfileFiltered", false, 1);
+  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));
+
+  // Receive an update for remote that makes it incomplete.
+  remote.ClearFields({ADDRESS_HOME_CITY});
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      remote.guid(), ProfileToEntity(remote)));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // Expect that the profile was removed locally.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.ProfileFiltered"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  EXPECT_THAT(GetAllDataFromTable(), testing::IsEmpty());
 }
 
 // Tests that `GetDataForCommit()` returns all local profiles of matching GUID.
