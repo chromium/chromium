@@ -5807,7 +5807,10 @@ class WidgetSetAspectRatioTest
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     native_widget_ = std::make_unique<MockNativeWidget>(widget());
     ON_CALL(*native_widget(), CreateNonClientFrameView).WillByDefault([this]() {
-      return std::make_unique<NonClientFrameViewWithFixedMargin>(margin());
+      auto frame_view_with_fixed_margin =
+          std::make_unique<test::ConfigurableTestFrameView>(widget_.get());
+      frame_view_with_fixed_margin->set_client_view_margin(margin());
+      return frame_view_with_fixed_margin;
     });
     params.native_widget = native_widget();
     widget()->Init(std::move(params));
@@ -5836,24 +5839,6 @@ class WidgetSetAspectRatioTest
   const gfx::Size margin_;
   std::unique_ptr<Widget> widget_;
   std::unique_ptr<MockNativeWidget> native_widget_;
-
-  // `NonClientFrameView` that pads the client view with a fixed-size margin,
-  // to leave room for drawing that's not included in the aspect ratio.
-  class NonClientFrameViewWithFixedMargin : public NonClientFrameView {
-   public:
-    // `margin` is the margin that we'll provide to our client view.
-    explicit NonClientFrameViewWithFixedMargin(const gfx::Size& margin)
-        : margin_(margin) {}
-
-    // NonClientFrameView
-    gfx::Rect GetBoundsForClientView() const override {
-      gfx::Rect r = bounds();
-      return gfx::Rect(r.x(), r.y(), r.width() - margin_.width(),
-                       r.height() - margin_.height());
-    }
-
-    const gfx::Size margin_;
-  };
 };
 
 TEST_P(WidgetSetAspectRatioTest, SetAspectRatioIncludesMargin) {

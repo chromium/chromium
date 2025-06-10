@@ -9,6 +9,7 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/window/native_frame_view.h"
 
@@ -35,11 +36,17 @@ class ConfigurableTestFrameView : public NativeFrameView {
   void SetMinimumSize(const gfx::Size& size) { minimum_size_ = size; }
   void SetHitTestResult(int result) { hit_test_result_ = result; }
   bool fullscreen_layout_called() { return fullscreen_layout_caled_; }
+  void set_client_view_margin(const gfx::Size& margin) {
+    client_view_margin_ = margin;
+  }
 
   // Views
   gfx::Size GetMinimumSize() const override;
 
   // NativeFrameView
+  gfx::Rect GetBoundsForClientView() const override;
+  gfx::Rect GetWindowBoundsForClientBounds(
+      const gfx::Rect& client_bounds) const override;
   int NonClientHitTest(const gfx::Point& point) override;
   void Layout(PassKey) override;
 
@@ -47,6 +54,7 @@ class ConfigurableTestFrameView : public NativeFrameView {
   std::optional<gfx::Size> minimum_size_;
   std::optional<int> hit_test_result_;
   bool fullscreen_layout_caled_ = false;
+  std::optional<gfx::Size> client_view_margin_;
 };
 
 }  // namespace test

@@ -24,6 +24,36 @@ gfx::Size ConfigurableTestFrameView::GetMinimumSize() const {
   return NativeFrameView::GetMinimumSize();
 }
 
+gfx::Rect ConfigurableTestFrameView::GetBoundsForClientView() const {
+  gfx::Rect client_view_bounds = NativeFrameView::GetBoundsForClientView();
+
+  if (client_view_margin_) {
+    client_view_bounds.set_width(client_view_bounds.width() -
+                                 client_view_margin_->width());
+    client_view_bounds.set_height(client_view_bounds.height() -
+                                  client_view_margin_->height());
+  }
+
+  return client_view_bounds;
+}
+
+gfx::Rect ConfigurableTestFrameView::GetWindowBoundsForClientBounds(
+    const gfx::Rect& client_bounds) const {
+  if (client_view_margin_) {
+    // If a margin is set, adjust the window bounds to account for the custom
+    // margin. We do this to answer the question:
+    // "How large is the window for a client with size `client_bounds?`"
+    gfx::Rect window_bounds = client_bounds;
+    window_bounds.set_width(window_bounds.width() +
+                            client_view_margin_->width());
+    window_bounds.set_height(window_bounds.height() +
+                             client_view_margin_->height());
+    return window_bounds;
+  }
+
+  return NativeFrameView::GetWindowBoundsForClientBounds(client_bounds);
+}
+
 int ConfigurableTestFrameView::NonClientHitTest(const gfx::Point& point) {
   if (hit_test_result_) {
     return hit_test_result_.value();
