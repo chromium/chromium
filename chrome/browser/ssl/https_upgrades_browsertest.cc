@@ -64,8 +64,10 @@
 #include "net/test/test_data_directory.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -375,11 +377,10 @@ class HttpsUpgradesBrowserTest
     //
     // TODO(crbug.com/422956041): figure out why we need to do this, there may
     // be a bug where IP address spaces are not being set correctly.
-    command_line->AppendSwitchASCII(
-        network::switches::kIpAddressSpaceOverrides,
-        base::StringPrintf("%s=public,%s=public",
-                           http_server_.host_port_pair().ToString().c_str(),
-                           https_server_.host_port_pair().ToString().c_str()));
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {network::GenerateIpAddressSpaceOverride(http_server_),
+         network::GenerateIpAddressSpaceOverride(https_server_)},
+        *command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
