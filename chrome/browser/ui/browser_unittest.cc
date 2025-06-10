@@ -270,8 +270,8 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager manager{
       std::unique_ptr<user_manager::UserManager>(user_manager)};
-  const user_manager::User* user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail("fake_user@test"));
+  const user_manager::User* user = user_manager->AddKioskChromeAppUser(
+      AccountId::FromUserEmail("fake_user@test"));
   user_manager->LoginUser(user->GetAccountId());
 
   TestingProfile profile;

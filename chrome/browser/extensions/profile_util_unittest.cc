@@ -56,7 +56,7 @@ TEST_F(ProfileUtilUnitTest,
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_KioskAppUser) {
   ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
-      GetFakeUserManager()->AddKioskAppUser(account_id_), account_id_));
+      GetFakeUserManager()->AddKioskChromeAppUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }
@@ -64,7 +64,7 @@ TEST_F(ProfileUtilUnitTest,
 TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_WebKioskAppUser) {
   ASSERT_NO_FATAL_FAILURE(LoginChromeOSUser(
-      GetFakeUserManager()->AddWebKioskAppUser(account_id_), account_id_));
+      GetFakeUserManager()->AddKioskWebAppUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(profile()));
 }

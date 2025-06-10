@@ -703,7 +703,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
       fake_user_manager_->AddPublicAccountUser(account_id);
       break;
     case user_manager::UserType::kKioskChromeApp:
-      fake_user_manager_->AddKioskAppUser(account_id);
+      fake_user_manager_->AddKioskChromeAppUser(account_id);
       break;
     case user_manager::UserType::kChild:
       fake_user_manager_->AddChildUser(account_id);

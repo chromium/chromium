@@ -182,7 +182,7 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   void SimulateLoginAsKioskApp() {
     const AccountId account_id(
         AccountId::FromUserEmail("kiosk_app_user@gmail.com"));
-    user_manager::User* user = user_manager_->AddKioskAppUser(account_id);
+    user_manager::User* user = user_manager_->AddKioskChromeAppUser(account_id);
     SimulateLoginAsUser(user);
   }
 

@@ -103,7 +103,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddKioskAppUser(
+user_manager::User* FakeChromeUserManager::AddKioskChromeAppUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreateKioskChromeAppUser(account_id);
@@ -114,7 +114,7 @@ user_manager::User* FakeChromeUserManager::AddKioskAppUser(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
+user_manager::User* FakeChromeUserManager::AddKioskWebAppUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreateKioskWebAppUser(account_id);

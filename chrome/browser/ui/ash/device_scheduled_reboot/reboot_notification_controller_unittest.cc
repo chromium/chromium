@@ -86,7 +86,7 @@ class RebootNotificationControllerTest : public testing::Test {
 
   void CreateFakeKioskUser(AccountId account_id) {
     profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
-    fake_user_manager_->AddKioskAppUser(account_id);
+    fake_user_manager_->AddKioskChromeAppUser(account_id);
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
   }

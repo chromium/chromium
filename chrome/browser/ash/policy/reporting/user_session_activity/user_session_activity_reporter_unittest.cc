@@ -348,8 +348,8 @@ TEST_F(UserSessionActivityReporterTest,
 
   // Create a list of users with types that should be ignored.
   user_manager::User* kIgnoredUserTypes[] = {
-      fake_user_manager_->AddKioskAppUser(account_id),
-      fake_user_manager_->AddWebKioskAppUser(account_id),
+      fake_user_manager_->AddKioskChromeAppUser(account_id),
+      fake_user_manager_->AddKioskWebAppUser(account_id),
       fake_user_manager_->AddGuestUser(),
       fake_user_manager_->AddChildUser(account_id),
   };

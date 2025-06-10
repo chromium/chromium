@@ -30,19 +30,19 @@ const user_manager::User* CreateUserOfType(
     case TestSessionType::kManuallyLaunchedWebKioskSession:
       CHECK_DEREF(ash::KioskWebAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
-      return user_manager.AddWebKioskAppUser(account_id);
+      return user_manager.AddKioskWebAppUser(account_id);
     case TestSessionType::kManuallyLaunchedKioskSession:
       CHECK_DEREF(ash::KioskChromeAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
-      return user_manager.AddKioskAppUser(account_id);
+      return user_manager.AddKioskChromeAppUser(account_id);
     case TestSessionType::kAutoLaunchedWebKioskSession:
       CHECK_DEREF(ash::KioskWebAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      return user_manager.AddWebKioskAppUser(account_id);
+      return user_manager.AddKioskWebAppUser(account_id);
     case TestSessionType::kAutoLaunchedKioskSession:
       CHECK_DEREF(ash::KioskChromeAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      return user_manager.AddKioskAppUser(account_id);
+      return user_manager.AddKioskChromeAppUser(account_id);
     case TestSessionType::kManagedGuestSession:
       return user_manager.AddPublicAccountUser(account_id);
     case TestSessionType::kGuestSession:

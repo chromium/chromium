@@ -158,9 +158,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileUserCount) {
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
-  user_manager->AddKioskAppUser(account_id2);
-  user_manager->AddKioskAppUser(account_id3);
+  user_manager->AddKioskChromeAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id2);
+  user_manager->AddKioskChromeAppUser(account_id3);
 
   user_manager->LoginUser(account_id1);
   user_manager->LoginUser(account_id3);
@@ -178,9 +178,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileCountInvalidated) {
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
-  user_manager->AddKioskAppUser(account_id2);
-  user_manager->AddKioskAppUser(account_id3);
+  user_manager->AddKioskChromeAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id2);
+  user_manager->AddKioskChromeAppUser(account_id3);
 
   user_manager->LoginUser(account_id1);
 
@@ -213,7 +213,7 @@ TEST_F(ChromeOSSystemProfileProviderTest,
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id1);
   user_manager->LoginUser(account_id1);
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
   ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(

@@ -86,7 +86,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "kiosk", policy::DeviceLocalAccountType::kKioskApp));
-    auto* const user = fake_user_manager_->AddKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddKioskChromeAppUser(account_id);
     return CreateProfile(user);
   }
 
@@ -94,7 +94,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "webkiosk", policy::DeviceLocalAccountType::kWebKioskApp));
-    auto* const user = fake_user_manager_->AddWebKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddKioskWebAppUser(account_id);
     return CreateProfile(user);
   }
 

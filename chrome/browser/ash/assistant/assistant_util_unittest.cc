@@ -133,10 +133,10 @@ class ScopedLogIn {
         fake_user_manager_->AddPublicAccountUser(account_id_);
         return;
       case user_manager::UserType::kKioskChromeApp:
-        fake_user_manager_->AddKioskAppUser(account_id_);
+        fake_user_manager_->AddKioskChromeAppUser(account_id_);
         return;
       case user_manager::UserType::kKioskWebApp:
-        fake_user_manager_->AddWebKioskAppUser(account_id_);
+        fake_user_manager_->AddKioskWebAppUser(account_id_);
         return;
       case user_manager::UserType::kKioskIWA:
         fake_user_manager_->AddKioskIwaUser(account_id_);

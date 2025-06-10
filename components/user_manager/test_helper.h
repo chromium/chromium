@@ -70,13 +70,13 @@ class TestHelper {
   // On failure, returns nullptr.
   [[nodiscard]] User* AddPublicAccountUser(std::string_view user_id);
 
-  // Creates and adds a new Kiosk user, and returns it.
+  // Creates and adds a new kiosk chrome app user, and returns it.
   // On failure, returns nullptr.
-  [[nodiscard]] User* AddKioskAppUser(std::string_view user_id);
+  [[nodiscard]] User* AddKioskChromeAppUser(std::string_view user_id);
 
-  // Creates and adds a new web Kiosk user, and returns it.
+  // Creates and adds a new kiosk web app user, and returns it.
   // On failure, returns nullptr.
-  [[nodiscard]] User* AddWebKioskAppUser(std::string_view user_id);
+  [[nodiscard]] User* AddKioskWebAppUser(std::string_view user_id);
 
  private:
   User* AddUserInternal(const AccountId& account_id, UserType user_type);

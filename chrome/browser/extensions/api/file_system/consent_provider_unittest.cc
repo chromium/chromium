@@ -191,7 +191,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
             .SetManifestKey("kiosk_enabled", true)
             .SetManifestKey("kiosk_only", true)
             .Build());
-    auto* auto_user = user_manager_->AddKioskAppUser(
+    auto* auto_user = user_manager_->AddKioskChromeAppUser(
         AccountId::FromUserEmail(auto_launch_kiosk_app->id()));
     user_manager_->LoginUser(auto_user->GetAccountId());
 
@@ -219,7 +219,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForKioskApps) {
           .SetManifestKey("kiosk_enabled", true)
           .SetManifestKey("kiosk_only", true)
           .Build());
-  auto* manual_user = user_manager_->AddKioskAppUser(
+  auto* manual_user = user_manager_->AddKioskChromeAppUser(
       AccountId::FromUserEmail(manual_launch_kiosk_app->id()));
   user_manager_->LoginUser(manual_user->GetAccountId());
   {

@@ -221,11 +221,12 @@ TEST_F(DlpReportingManagerTest, UserType) {
       AccountId::FromUserEmail("managed-guest-session@example.com");
   const auto* mgs_user = user_manager->AddPublicAccountUser(mgs_account_id);
   AccountId kiosk_account_id = AccountId::FromUserEmail("kiosk@example.com");
-  const auto* kiosk_user = user_manager->AddKioskAppUser(kiosk_account_id);
+  const auto* kiosk_user =
+      user_manager->AddKioskChromeAppUser(kiosk_account_id);
   AccountId web_kiosk_account_id =
       AccountId::FromUserEmail("web-kiosk@example.com");
   const auto* web_kiosk_user =
-      user_manager->AddWebKioskAppUser(web_kiosk_account_id);
+      user_manager->AddKioskWebAppUser(web_kiosk_account_id);
   AccountId guest_user_id = user_manager::GuestAccountId();
   const auto* guest_user = user_manager->AddGuestUser();
   AccountId child_user_id = AccountId::FromUserEmail("child@example.com");

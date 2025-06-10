@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
 
   auto* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager::TestHelper(user_manager)
-                  .AddKioskAppUser(kKioskAppUserEmail));
+                  .AddKioskChromeAppUser(kKioskAppUserEmail));
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
 
   auto* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager::TestHelper(user_manager)
-                  .AddWebKioskAppUser(kWebKioskAppUserEmail));
+                  .AddKioskWebAppUser(kWebKioskAppUserEmail));
   LoginAsNewRegularUser();
 
   size_t total_user_count = IsUserExisting() ? 3 : 2;

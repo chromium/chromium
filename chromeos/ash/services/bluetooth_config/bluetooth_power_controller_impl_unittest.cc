@@ -72,7 +72,7 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     const user_manager::User* user;
     if (is_user_kiosk) {
       user = user_manager::TestHelper(fake_user_manager_.Get())
-                 .AddKioskAppUser(display_email);
+                 .AddKioskChromeAppUser(display_email);
     } else {
       user = fake_user_manager_->AddGaiaUser(
           AccountId::FromUserEmailGaiaId(display_email, gaia_id),

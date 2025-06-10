@@ -144,7 +144,7 @@ class ChromePermissionRequestManagerTest
     auto scoped_user_manager =
         std::make_unique<user_manager::ScopedUserManager>(
             std::move(fake_user_manager));
-    user_manager->AddWebKioskAppUser(account_id);
+    user_manager->AddKioskWebAppUser(account_id);
     user_manager->LoginUser(account_id);
 
     auto kiosk_app_manager = std::make_unique<ash::KioskWebAppManager>();

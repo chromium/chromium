@@ -612,7 +612,7 @@ void AutomaticRebootManagerTest::SetUp() {
           session_manager::SessionState::LOGIN_PRIMARY);
       break;
     case AUTOMATIC_REBOOT_MANAGER_TEST_SCENARIO_KIOSK_APP_SESSION:
-      LogIn(user_manager_->AddKioskAppUser(account_id_));
+      LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
       break;
     case AUTOMATIC_REBOOT_MANAGER_TEST_SCENARIO_NON_KIOSK_APP_SESSION:
       LogIn(user_manager_->AddUser(account_id_));
@@ -633,7 +633,7 @@ TEST_F(AutomaticRebootManagerBasicTest, LoginStopsIdleTimer) {
   VerifyNoRebootRequested();
 
   // Notify that a kiosk app session has been started.
-  LogIn(user_manager_->AddKioskAppUser(account_id_));
+  LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
 
   // Verify that the login screen idle timer is stopped.
   VerifyLoginScreenIdleTimerIsStopped();
@@ -705,7 +705,7 @@ TEST_F(AutomaticRebootManagerBasicTest, UserActivityResetsIdleTimer) {
 // Verifies that when the device is suspended and then resumes, it does not
 // immediately reboot.
 TEST_F(AutomaticRebootManagerBasicTest, ResumeNoPolicy) {
-  LogIn(user_manager_->AddKioskAppUser(account_id_));
+  LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
   uptime_provider()->SetUptime(base::Days(10));
 
   // Verify that no reboot is requested and the device does not reboot
@@ -779,7 +779,7 @@ TEST_F(AutomaticRebootManagerBasicTest, LoginScreenResumeNoPolicy) {
 // Verifies that when the device is suspended and then resumes, it does not
 // immediately reboot.
 TEST_F(AutomaticRebootManagerBasicTest, ResumeBeforeGracePeriod) {
-  LogIn(user_manager_->AddKioskAppUser(account_id_));
+  LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
   uptime_provider()->SetUptime(base::Hours(12));
 
   // Verify that no reboot is requested and the device does not reboot
@@ -870,7 +870,7 @@ TEST_F(AutomaticRebootManagerBasicTest, LoginScreenResumeBeforeGracePeriod) {
 // Verifies that when the device is suspended and then resumes, it reboots
 // shortly after.
 TEST_F(AutomaticRebootManagerBasicTest, ResumeInGracePeriod) {
-  LogIn(user_manager_->AddKioskAppUser(account_id_));
+  LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
   uptime_provider()->SetUptime(base::Hours(12));
 
   // Verify that no reboot is requested and the device does not reboot
@@ -928,7 +928,7 @@ TEST_F(AutomaticRebootManagerBasicTest, NonKioskResumeInGracePeriod) {
 // Verifies that when the device is suspended and then resumes, it immediately
 // reboots.
 TEST_F(AutomaticRebootManagerBasicTest, ResumeAfterGracePeriod) {
-  LogIn(user_manager_->AddKioskAppUser(account_id_));
+  LogIn(user_manager_->AddKioskChromeAppUser(account_id_));
   uptime_provider()->SetUptime(base::Hours(29) + base::Minutes(30));
 
   // Verify that no reboot is requested and the device does not reboot

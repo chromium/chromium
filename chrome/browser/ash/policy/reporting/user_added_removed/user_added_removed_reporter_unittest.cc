@@ -127,7 +127,7 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
         AccountId::FromUserEmail(std::string(user_email));
     TestingProfile::Builder profile_builder;
     auto profile = profile_builder.Build();
-    auto* const user = user_manager_->AddKioskAppUser(account_id);
+    auto* const user = user_manager_->AddKioskChromeAppUser(account_id);
     user_manager_->LoginUser(account_id, true);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile.get());

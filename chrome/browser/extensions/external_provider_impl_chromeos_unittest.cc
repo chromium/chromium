@@ -299,7 +299,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
 // - |secondary_kiosk_app_provider|.
 TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
   const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
-  fake_user_manager()->AddKioskAppUser(kiosk_account_id);
+  fake_user_manager()->AddKioskChromeAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
 
   ValidateExternalProviderCountInAppMode(3u);
@@ -310,7 +310,7 @@ TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
 // - |policy_provider|.
 TEST_F(ExternalProviderImplChromeOSTest, WebAppKiosk) {
   const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
-  fake_user_manager()->AddWebKioskAppUser(kiosk_account_id);
+  fake_user_manager()->AddKioskWebAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
 
   ValidateExternalProviderCountInAppMode(1u);

@@ -203,7 +203,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForKiosk) {
   auto* user_manager = GetFakeUserManager();
   auto* user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
+      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -281,7 +281,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   // The next reboot should happen at the same day of month next month. Switch
   // to the kiosk mode and verify the reboot is executed.
   auto* kiosk_user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
+      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
   user_manager->UserLoggedIn(kiosk_user->GetAccountId(),
                              user_manager::TestHelper::GetFakeUsernameHash(
                                  kiosk_user->GetAccountId()));
@@ -351,7 +351,7 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
   task_environment_.FastForwardBy(base::Minutes(10));
   auto* user_manager = GetFakeUserManager();
   auto* user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
+      user_manager->AddKioskChromeAppUser(AccountId::FromUserEmail(kKioskName));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));

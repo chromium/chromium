@@ -91,7 +91,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   }
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddKioskAppUser(account_id);
+    auto* user = user_manager->AddKioskChromeAppUser(account_id);
     user_manager->UserLoggedIn(
         user->GetAccountId(),
         user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -100,7 +100,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   }
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddWebKioskAppUser(account_id);
+    auto* user = user_manager->AddKioskWebAppUser(account_id);
     user_manager->UserLoggedIn(
         user->GetAccountId(),
         user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));

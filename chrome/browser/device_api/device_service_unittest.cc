@@ -613,7 +613,7 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
 
   void LoginKioskUser() {
     app_manager()->AddAppForTesting(account_id(), GURL(kKioskAppInstallUrl));
-    fake_user_manager()->AddWebKioskAppUser(account_id());
+    fake_user_manager()->AddKioskWebAppUser(account_id());
     fake_user_manager()->LoginUser(account_id());
   }
 
@@ -671,7 +671,7 @@ class DeviceAPIServiceWithChromeAppKioskUserTest
   }
 
   void LoginChromeAppKioskUser() {
-    fake_user_manager()->AddKioskAppUser(account_id());
+    fake_user_manager()->AddKioskChromeAppUser(account_id());
     fake_user_manager()->LoginUser(account_id());
   }
 

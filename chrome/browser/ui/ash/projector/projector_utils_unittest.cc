@@ -88,7 +88,7 @@ class ScopedLogIn {
   }
 
   void LogInWebKioskApp() {
-    fake_user_manager_->AddWebKioskAppUser(account_id_);
+    fake_user_manager_->AddKioskWebAppUser(account_id_);
     fake_user_manager_->LoginUser(account_id_);
   }
 

@@ -1086,10 +1086,10 @@ class DeviceStatusCollectorTest : public testing::Test {
     AccountId account_id = AccountId::FromUserEmail(account.user_id);
     switch (type) {
       case DeviceLocalAccountType::kKioskApp:
-        user = user_manager->AddKioskAppUser(account_id);
+        user = user_manager->AddKioskChromeAppUser(account_id);
         break;
       case DeviceLocalAccountType::kWebKioskApp:
-        user = user_manager->AddWebKioskAppUser(account_id);
+        user = user_manager->AddKioskWebAppUser(account_id);
         break;
       case DeviceLocalAccountType::kKioskIsolatedWebApp:
         user = user_manager->AddKioskIwaUser(account_id);
@@ -4228,7 +4228,7 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfKioskMode) {
   // Network interfaces should be reported if in kiosk mode.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkConfiguration, true);
-  GetFakeChromeUserManager()->AddKioskAppUser(
+  GetFakeChromeUserManager()->AddKioskChromeAppUser(
       AccountId::FromUserEmail(kKioskAccountId));
 
   GetStatus();
@@ -4315,8 +4315,8 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkStatus, true);
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
+  auto* user = user_manager->AddKioskChromeAppUser(
+      AccountId::FromUserEmail(kKioskAccountId));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -4399,8 +4399,8 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfKioskMode) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceNetworkStatus, true);
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
+  auto* user = user_manager->AddKioskChromeAppUser(
+      AccountId::FromUserEmail(kKioskAccountId));
   user_manager->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
