@@ -130,7 +130,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
-#include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -480,11 +480,8 @@ class ContextMenuBrowserTest
     ContextMenuBrowserTestBase::SetUpCommandLine(command_line);
     ASSERT_TRUE(embedded_test_server()->Start());
     // Treat the test server as public to bypass Local Network Access checks.
-    command_line->AppendSwitchASCII(
-        network::switches::kIpAddressSpaceOverrides,
-        base::StringPrintf(
-            "%s=public",
-            embedded_test_server()->host_port_pair().ToString().c_str()));
+    network::AddPublicIpAddressSpaceOverrideToCommandLine(
+        *embedded_test_server(), *command_line);
   }
 
  private:
