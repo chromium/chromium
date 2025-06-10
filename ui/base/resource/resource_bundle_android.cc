@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/android/apk_assets.h"
@@ -75,11 +76,11 @@ bool LoadFromApkOrFile(const char* apk_path,
 // Returns the path within the apk for the given locale's .pak file, or an
 // empty string if it doesn't exist.
 // Only locale paks for the active Android language can be retrieved.
-// If |in_split| is true, look into bundle split-specific location (e.g.
+// If `in_split` is true, look into bundle split-specific location (e.g.
 // 'assets/locales#lang_<lang>/<locale>.pak', otherwise use the default
 // WebView-related location, i.e. 'assets/stored-locales/<locale>.pak'.
-// If |log_error|, logs the path to logcat, but does not abort.
-std::string GetPathForAndroidLocalePakWithinApk(const std::string& locale,
+// If `log_error`, logs the path to logcat, but does not abort.
+std::string GetPathForAndroidLocalePakWithinApk(std::string_view locale,
                                                 bool in_bundle,
                                                 bool log_error) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -115,7 +116,7 @@ std::unique_ptr<DataPack> LoadDataPackFromLocalePak(
   return data_pack;
 }
 
-bool LocaleDataPakExists(const std::string& locale,
+bool LocaleDataPakExists(std::string_view locale,
                          bool in_split,
                          bool log_error) {
   return !GetPathForAndroidLocalePakWithinApk(locale, in_split, log_error)
@@ -138,10 +139,10 @@ void ResourceBundle::LoadCommonResources() {
 }
 
 // static
-bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
+bool ResourceBundle::LocaleDataPakExists(std::string_view locale) {
   const bool in_split = !g_locale_paks_in_apk;
   const bool exists =
-      ::ui::LocaleDataPakExists(locale, in_split, false /* log_error */);
+      ::ui::LocaleDataPakExists(locale, in_split, /*log_error=*/false);
   if (exists || !in_split) {
     return exists;
   }

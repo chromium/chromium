@@ -253,7 +253,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       const base::MemoryMappedFile::Region& region);
 
   // Check if the .pak for the given locale exists.
-  static bool LocaleDataPakExists(const std::string& locale);
+  static bool LocaleDataPakExists(std::string_view locale);
 
   // Registers additional data pack files with this ResourceBundle.  When
   // looking for a DataResource, we will search these files after searching the

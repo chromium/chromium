@@ -396,7 +396,7 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
 
 #if !BUILDFLAG(IS_ANDROID)
 // static
-bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
+bool ResourceBundle::LocaleDataPakExists(std::string_view locale) {
   const auto path = GetLocaleFilePath(locale);
   if (path.empty()) {
     return false;
