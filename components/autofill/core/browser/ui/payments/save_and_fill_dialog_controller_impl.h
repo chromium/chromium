@@ -31,6 +31,8 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
   std::u16string GetWindowTitle() const override;
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetCardNumberLabel() const override;
+  std::u16string GetCvcLabel() const override;
+  std::u16string GetExpirationDateLabel() const override;
   std::u16string GetNameOnCardLabel() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetInvalidCardNumberErrorMessage() const override;

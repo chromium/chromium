@@ -39,6 +39,15 @@ std::u16string SaveAndFillDialogControllerImpl::GetCardNumberLabel() const {
       IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL);
 }
 
+std::u16string SaveAndFillDialogControllerImpl::GetCvcLabel() const {
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_LABEL);
+}
+
+std::u16string SaveAndFillDialogControllerImpl::GetExpirationDateLabel() const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_LABEL);
+}
+
 std::u16string SaveAndFillDialogControllerImpl::GetNameOnCardLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_NAME_ON_CARD_LABEL);

@@ -8,6 +8,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"
+#include "components/grit/components_scaled_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -87,6 +90,50 @@ void SaveAndFillDialog::InitViews() {
       ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
   card_number_data_.GetInputTextField().SetController(this);
   AddChildView(std::move(card_number_data_.container));
+
+  expiration_date_data_ = CreateLabelAndTextfieldView(
+      /*label_text=*/controller_->GetExpirationDateLabel(),
+      /*error_message=*/std::u16string());
+  expiration_date_data_.GetInputTextField().SetTextInputType(
+      ui::TextInputType::TEXT_INPUT_TYPE_DATE);
+  expiration_date_data_.GetInputTextField().SetController(this);
+  expiration_date_data_.GetInputTextField().SetPlaceholderText(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_PLACEHOLDER));
+
+  cvc_data_ = CreateLabelAndTextfieldView(
+      /*label_text=*/controller_->GetCvcLabel(),
+      /*error_message=*/std::u16string());
+  cvc_data_.GetInputTextField().SetTextInputType(
+      ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
+  cvc_data_.GetInputTextField().SetController(this);
+  cvc_data_.GetInputTextField().SetPlaceholderText(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_PLACEHOLDER));
+
+  // Create the horizontal row for expiration date, cvc, and icon.
+  auto expiration_cvc_row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+          // Expand children to fill the entire row; otherwise, they consolidate
+          // and leave blank space at the end of the row.
+          .SetDefaultFlex(1)
+          .AddChild(views::Builder<views::View>(
+              std::move(expiration_date_data_.container)))
+          .AddChild(views::Builder<views::View>(std::move(cvc_data_.container)))
+          .Build();
+  auto* cvc_icon = expiration_cvc_row->AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(ui::ImageModel::FromImage(
+              ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                  IDR_CREDIT_CARD_CVC_HINT_BACK)))
+          .Build());
+  // Override the default flex for the icon since it shouldn't expand like the
+  // input fields.
+  expiration_cvc_row->SetFlexForView(cvc_icon, 0);
+  AddChildView(std::move(expiration_cvc_row));
 
   // TODO(crbug.com/378163937): Implement validation rule for the `name on card`
   // field.

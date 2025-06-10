@@ -40,6 +40,8 @@ class SaveAndFillDialog : public views::DialogDelegateView,
   base::WeakPtr<SaveAndFillDialogController> controller_;
 
   LabeledTextfieldWithErrorMessage card_number_data_;
+  LabeledTextfieldWithErrorMessage cvc_data_;
+  LabeledTextfieldWithErrorMessage expiration_date_data_;
 };
 
 }  // namespace autofill

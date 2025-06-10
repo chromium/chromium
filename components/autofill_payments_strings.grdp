@@ -268,6 +268,18 @@
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL" desc="The label text for the card number textfield.">
       Card number
     </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_LABEL" desc="The label text for the security code textfield.">
+      Security code
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_PLACEHOLDER" desc="The placeholder text for security code textfield">
+      Optional
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_LABEL" desc="The label text for the expiration date textfield.">
+      Expiration date
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_PLACEHOLDER" desc="The placeholder text for the expiration date textfield.">
+      MM / YY
+    </message>
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_NAME_ON_CARD_LABEL" desc="The label text for the name on card textfield.">
       Name on card
     </message>
