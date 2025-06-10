@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_host_queue.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -244,7 +245,8 @@ void ExtensionHost::CreateRendererNow() {
   if (IsBackgroundPage()) {
     DCHECK(IsRendererLive());
     // Connect orphaned dev-tools instances.
-    delegate_->OnMainFrameCreatedForBackgroundPage(this);
+    ExtensionRegistrar::Get(browser_context())
+        ->DidCreateMainFrameForBackgroundPage(this);
   }
 }
 

@@ -12,9 +12,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
-#include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -29,12 +26,6 @@ void ChromeExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {
   PrefsTabHelper::CreateForWebContents(web_contents);
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
-}
-
-void ChromeExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
-    ExtensionHost* host) {
-  ExtensionRegistrar::Get(host->browser_context())
-      ->DidCreateMainFrameForBackgroundPage(host);
 }
 
 void ChromeExtensionHostDelegate::CreateTab(

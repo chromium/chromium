@@ -18,9 +18,6 @@ DesktopAndroidExtensionHostDelegate::~DesktopAndroidExtensionHostDelegate() =
 void DesktopAndroidExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {}
 
-void DesktopAndroidExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
-    ExtensionHost* host) {}
-
 void DesktopAndroidExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
     const ExtensionId& extension_id,

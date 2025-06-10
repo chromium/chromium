@@ -20,9 +20,6 @@ void ShellExtensionHostDelegate::OnExtensionHostCreated(
   ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
-void ShellExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
-    ExtensionHost* host) {}
-
 void ShellExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
     const ExtensionId& extension_id,

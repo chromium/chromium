@@ -37,9 +37,6 @@ class ExtensionHostDelegate {
   // implementation may wish to add preference observers to `web_contents`.
   virtual void OnExtensionHostCreated(content::WebContents* web_contents) = 0;
 
-  // Called after `host` creates the renderer main frame for an extension.
-  virtual void OnMainFrameCreatedForBackgroundPage(ExtensionHost* host) = 0;
-
   // Creates a new tab or popup window with `web_contents`. The embedder may
   // choose to do nothing if tabs and popups are not supported.
   virtual void CreateTab(std::unique_ptr<content::WebContents> web_contents,
