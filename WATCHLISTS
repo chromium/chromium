@@ -1166,8 +1166,9 @@
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
                   'media/mojo/services/.*(cdm|drm|media_foundation)|' \
-                  'third_party/widevine/cdm/' \
-                  'third_party/blink/web_tests/external/wpt/encrypted-media/'
+                  'third_party/blink/renderer/modules/encryptedmedia/' \
+                  'third_party/blink/web_tests/external/wpt/encrypted-media/' \
+                  'third_party/widevine/cdm/'
     },
     'enterprise_data_protection': {
       'filepath': 'chrome/browser/enterprise/connectors/|' \
