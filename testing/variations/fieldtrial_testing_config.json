@@ -4154,24 +4154,6 @@
             ]
         }
     ],
-    "CastStreamingVp9": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CastStreamingVp9"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastStreamingWinHardwareH264": [
         {
             "platforms": [

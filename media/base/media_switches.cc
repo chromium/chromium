@@ -1612,12 +1612,9 @@ BASE_FEATURE(kCastStreamingVp8,
 
 // Controls whether mirroring negotiations will include the VP9 codec for video
 // encoding.
-//
-// NOTE: currently only software VP9 encoding is supported.
-// TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
 BASE_FEATURE(kCastStreamingVp9,
              "CastStreamingVp9",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 // Controls whether hardware H264 is default enabled on macOS.
