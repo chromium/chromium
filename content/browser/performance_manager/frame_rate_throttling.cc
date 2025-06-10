@@ -45,7 +45,7 @@ CONTENT_EXPORT void UpdateThrottlingFrameSinks(
     auto* rwh = rfh ? rfh->GetLocalRenderWidgetHost() : nullptr;
     auto sink_id = rwh ? rwh->GetFrameSinkId() : viz::FrameSinkId();
     if (sink_id.is_valid()) {
-      sink_ids.insert(std::move(sink_id));
+      sink_ids.insert(sink_id);
     }
   }
   std::vector<viz::FrameSinkId> sink_ids_vector(sink_ids.begin(),
