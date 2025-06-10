@@ -17747,21 +17747,6 @@
             ]
         }
     ],
-    "PowerSavingModeBroadcastReceiverInBackground": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PowerSavingModeBroadcastReceiverInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectCreateNewTab": [
         {
             "platforms": [
