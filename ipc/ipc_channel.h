@@ -41,8 +41,8 @@ class UrgentMessageObserver;
 // http://www.chromium.org/developers/design-documents/inter-process-communication
 // for overview of IPC in Chromium.
 
-// Channels are implemented using mojo message pipes on all platforms other
-// than NaCl.
+// Channels are implemented using mojo message pipes (via IPC::ChannelMojo) on
+// all platforms other than NaCl.
 
 class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // Security tests need access to the pipe handle.

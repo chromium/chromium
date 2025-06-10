@@ -35,10 +35,6 @@ class UrgentMessageObserver;
 // ChannelMojo builds a Mojo MessagePipe using the provided message pipe
 // |handle| and builds an associated interface for each direction on the
 // channel.
-//
-// TODO(morrita): Add APIs to create extra MessagePipes to let
-//                Mojo-based objects talk over this Channel.
-//
 class COMPONENT_EXPORT(IPC) ChannelMojo
     : public Channel,
       public Channel::AssociatedInterfaceSupport,
