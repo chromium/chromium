@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelEvent"
-    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2025-05-04">
+    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2025-12-31">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-31">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
-    expires_after="2025-05-04">
+    expires_after="2025-12-31">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.MakeCredentialStatus"
     enum="WebAuthenticationChromeOSMakeCredentialResult"
-    expires_after="2025-05-04">
+    expires_after="2025-12-31">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
-    expires_after="2025-09-07">
+    expires_after="2025-12-31">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -326,17 +326,6 @@ chromium-metrics-reviews@google.com.
     <variant name="GetAssertion" summary="Get Assertion"/>
     <variant name="MakeCredential" summary="Make Credential"/>
   </token>
-</histogram>
-
-<histogram name="WebAuthentication.EnclaveTransactionDecryptFailureSize"
-    units="bytes" expires_after="2025-10-12">
-  <owner>kenrb@chromium.org</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>
-    When an enclave transaction fails to decrypt after negotiating a Noise
-    session, this reports the size of the received data in the failed
-    decryption.
-  </summary>
 </histogram>
 
 <histogram name="WebAuthentication.EnclaveTransactionResult"
@@ -461,7 +450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.MacOS.PlatformAuthenticatorAction"
     enum="WebAuthenticationMacOSPlatformAuthenticatorAction"
-    expires_after="2025-02-23">
+    expires_after="2025-12-31">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -479,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2025-08-24">
+    enum="WebAuthenticationFidoTransport" expires_after="2025-12-31">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -606,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Windows.KeyCredentialSign"
-    enum="WindowsKeyCredentialSignResult" expires_after="2025-07-06">
+    enum="WindowsKeyCredentialSignResult" expires_after="2025-12-31">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

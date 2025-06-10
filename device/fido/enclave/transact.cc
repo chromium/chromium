@@ -99,9 +99,6 @@ struct Transaction : base::RefCounted<Transaction> {
         if (!crypter_->Decrypt(data, &plaintext)) {
           FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
           RecordTransactionResult(EnclaveTransactionResult::kDecryptionFailed);
-          base::UmaHistogramCounts10000(
-              "WebAuthentication.EnclaveTransactionDecryptFailureSize",
-              data.size());
           std::move(callback_).Run(base::unexpected(TransactError::kOther));
           break;
         }
