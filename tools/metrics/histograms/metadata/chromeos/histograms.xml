@@ -1711,7 +1711,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
     enum="BooleanReceived" expires_after="2025-12-07">
-  <owner>ayag@chromium.org</owner>
+  <owner>andreydav@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
     Records whether or not {MessageName} was received during the {GaiaAuthFlow}
@@ -2748,7 +2748,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.LockScreenReauth.LockScreenReauthReason"
     enum="LoginReauthReasons" expires_after="2025-11-09">
-  <owner>ayag@chromium.org</owner>
+  <owner>andreydav@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
     Record the reason(s) why a user is required to reauthenticate online on the
@@ -3209,7 +3209,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.SAML.APIError" enum="ChromeOSSamlApiError"
     expires_after="2025-10-26">
-  <owner>ayag@google.com</owner>
+  <owner>andreydav@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>Recorded when the Credentials Passing API call fails.</summary>
 </histogram>

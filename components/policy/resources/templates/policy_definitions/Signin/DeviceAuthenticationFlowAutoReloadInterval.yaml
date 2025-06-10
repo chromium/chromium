@@ -25,7 +25,7 @@ supported_on:
 - chrome_os:129-
 
 owners:
-- ayag@chromium.org
+- andreydav@google.com
 - chromeos-commercial-identity@google.com
 
 schema:

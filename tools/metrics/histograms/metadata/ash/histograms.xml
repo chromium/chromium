@@ -3440,7 +3440,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.EssentialSearch.Status" enum="EssentialSearchStatus"
     expires_after="2025-08-31">
-  <owner>ayag@chromium.org</owner>
   <owner>mohammedabdon@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
