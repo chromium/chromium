@@ -11,7 +11,7 @@
 #include "ipcz/application_object.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/parcel_wrapper.h"
-#include "util/overloaded.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ipcz {
 
@@ -41,7 +41,7 @@ class Box : public APIObjectImpl<Box, APIObject::kBox> {
 
   Type type() const {
     return std::visit(
-        Overloaded{
+        absl::Overload{
             [](const Empty&) { return Type::kEmpty; },
             [](const DriverObject&) { return Type::kDriverObject; },
             [](const ApplicationObject&) { return Type::kApplicationObject; },
