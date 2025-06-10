@@ -78,6 +78,7 @@ class NonClientFrameView;
 class SublevelManager;
 class TooltipManager;
 class View;
+class WidgetAXManager;
 class WidgetDelegate;
 class WidgetObserver;
 class WidgetRemovalsObserver;
@@ -1417,6 +1418,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void UpdateAccessibleNameForRootView();
   void UpdateAccessibleURLForRootView(const GURL& url);
 
+  WidgetAXManager* ax_manager() { return ax_manager_.get(); }
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.
@@ -1716,6 +1719,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
+
+  std::unique_ptr<WidgetAXManager> ax_manager_;
 
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};

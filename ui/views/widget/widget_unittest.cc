@@ -18,9 +18,11 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/hit_test.h"
@@ -5622,6 +5624,34 @@ TEST_F(WidgetTest, ShouldSaveWindowPlacement) {
     widget->Close();
     EXPECT_EQ(save ? 1 : 0, widget_delegate.save_window_placement_count());
   }
+}
+
+TEST_F(WidgetTest, WidgetAXManagerNotInitializedWhenFlagIsOff) {
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  widget->Show();
+
+  EXPECT_EQ(widget->ax_manager(), nullptr);
+}
+
+class WidgetWithAXTree : public WidgetTest {
+ public:
+  WidgetWithAXTree() = default;
+
+  WidgetWithAXTree(const WidgetWithAXTree&) = delete;
+  WidgetWithAXTree& operator=(const WidgetWithAXTree&) = delete;
+
+  ~WidgetWithAXTree() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAccessibilityTreeForViews};
+};
+
+TEST_F(WidgetWithAXTree, WidgetAXManagerInitializedWhenFlagIsOn) {
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  widget->Show();
+
+  EXPECT_NE(widget->ax_manager(), nullptr);
 }
 
 TEST_F(WidgetTest, RootViewAccessibilityCacheInitialized) {
