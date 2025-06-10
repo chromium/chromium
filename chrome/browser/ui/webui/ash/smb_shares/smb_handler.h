@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_HANDLER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

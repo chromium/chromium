@@ -76,7 +76,6 @@ SmbCredentialsDialog::SmbCredentialsDialog(const std::string& mount_id,
                                            RequestCallback callback)
     : SystemWebDialogDelegate(GURL(GetDialogId(mount_id)),
                               std::u16string() /* title */),
-      mount_id_(mount_id),
       share_path_(share_path),
       callback_(std::move(callback)) {}
 
@@ -100,7 +99,6 @@ void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
 
 std::string SmbCredentialsDialog::GetDialogArgs() const {
   base::Value::Dict args;
-  args.Set("mid", mount_id_);
   args.Set("path", share_path_);
   std::string json;
   base::JSONWriter::Write(args, &json);

@@ -35,9 +35,6 @@ Polymer({
 
     /** @private {string} */
     password_: String,
-
-    /** @private {string} */
-    mountId_: String,
   },
 
   /** @private {?SmbBrowserProxy} */
@@ -60,9 +57,7 @@ Polymer({
     const args = JSON.parse(dialogArgs);
     assert(args);
     assert(args.path);
-    assert(args.mid);
     this.sharePath_ = args.path;
-    this.mountId_ = args.mid;
 
     this.$.dialog.showModal();
   },
@@ -74,8 +69,7 @@ Polymer({
 
   /** @private */
   onSaveButtonClick_() {
-    this.browserProxy_.updateCredentials(
-        this.mountId_, this.username_, this.password_);
+    this.browserProxy_.updateCredentials(this.username_, this.password_);
     chrome.send('dialogClose');
   },
 });

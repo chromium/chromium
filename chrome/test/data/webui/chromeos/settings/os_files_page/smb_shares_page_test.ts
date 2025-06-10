@@ -36,8 +36,8 @@ class TestSmbBrowserProxy extends TestBrowserProxy implements SmbBrowserProxy {
     this.methodCalled('startDiscovery');
   }
 
-  updateCredentials(mountId: string, username: string, password: string): void {
-    this.methodCalled('updateCredentials', mountId, username, password);
+  updateCredentials(username: string, password: string): void {
+    this.methodCalled('updateCredentials', username, password);
   }
 
   hasAnySmbMountedBefore(): Promise<boolean> {

@@ -18,14 +18,13 @@ namespace ash::smb_dialog {
 namespace {
 
 smb_client::SmbService* GetSmbService(Profile* profile) {
-  smb_client::SmbService* const service =
-      smb_client::SmbServiceFactory::Get(profile);
-  return service;
+  return smb_client::SmbServiceFactory::Get(profile);
 }
 
 base::Value::List BuildShareList(
     const std::vector<smb_client::SmbUrl>& shares) {
   base::Value::List shares_list;
+  shares_list.reserve(shares.size());
   for (const auto& share : shares) {
     shares_list.Append(share.GetWindowsUNCString());
   }
@@ -130,7 +129,7 @@ void SmbHandler::HandleStartDiscovery(const base::Value::List& args) {
 
 void SmbHandler::HandleDiscoveryDone() {
   host_discovery_done_ = true;
-  if (!stored_mount_call_.is_null()) {
+  if (stored_mount_call_) {
     std::move(stored_mount_call_).Run();
   }
 }
@@ -162,11 +161,10 @@ void SmbHandler::HandleGatherSharesResponse(
 }
 
 void SmbHandler::HandleUpdateCredentials(const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
+  CHECK_EQ(2U, args.size());
 
-  std::string mount_id = args[0].GetString();
-  std::string username = args[1].GetString();
-  std::string password = args[2].GetString();
+  const std::string& username = args[0].GetString();
+  const std::string& password = args[1].GetString();
 
   DCHECK(update_cred_callback_);
   std::move(update_cred_callback_).Run(username, password);

@@ -56,7 +56,6 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
   bool ShouldShowCloseButton() const override;
 
  private:
-  const std::string mount_id_;
   const std::string share_path_;
   RequestCallback callback_;
 };
