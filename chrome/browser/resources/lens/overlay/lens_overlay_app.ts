@@ -213,6 +213,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: () => loadTimeData.getBoolean('enableCloseButtonTweaks'),
         reflectToAttribute: true,
       },
+      searchboxSuggestionCount: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -268,6 +272,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       loadTimeData.getValue('autoFocusSearchbox');
   declare private toastMessage: string;
   declare private enableCloseButtonTweaks: boolean;
+  // The number of suggestions currently being shown to the user.
+  declare private searchboxSuggestionCount: number;
   // What the current page content type is.
   declare private pageContentType: PageContentType;
   // Whether the ghost loader is enabled via feature flag.
@@ -295,7 +301,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private invocationTime: number = loadTimeData.getValue('invocationTime');
 
   private searchboxBoundingClientRectObserver: ResizeObserver =
-      new ResizeObserver(this.focusShimmerOnSearchbox.bind(this));
+      new ResizeObserver(this.onSearchboxBoundsChanged.bind(this));
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition
   // function.
@@ -431,6 +437,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     // is empty.
     this.autocompleteRequestStarted = !e.detail.inputValue;
     this.showErrorState = false;
+  }
+
+  private onSearchboxBoundsChanged() {
+    this.focusShimmerOnSearchbox();
+
+    this.searchboxSuggestionCount =
+        this.$.searchbox.getSuggestionsElement().selectableMatchElements.length;
   }
 
   private focusShimmerOnSearchbox() {
@@ -650,7 +663,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     // The searchbox is not focusable until the animation has ended.
     // Only called here if not already called in onScreenshotRendered
     if (this.autoFocusSearchbox &&
-        this.isLensOverlayContextualSearchboxVisible && !this.enableCsbMotionTweaks) {
+        this.isLensOverlayContextualSearchboxVisible &&
+        !this.enableCsbMotionTweaks) {
       this.focusSearchbox();
     }
   }

@@ -63,6 +63,12 @@ export class SearchboxGhostLoaderElement extends
         value: () => loadTimeData.getBoolean('enableSummarizeSuggestionHint'),
         reflectToAttribute: true,
       },
+      suggestionCount: {
+        type: Number,
+        value: 0,
+      },
+      shouldFadeOut:
+          {type: Boolean, computed: 'computeShouldFadeOut(suggestionCount)'},
     };
   }
 
@@ -75,6 +81,11 @@ export class SearchboxGhostLoaderElement extends
   // What the current page content type is.
   declare private pageContentType: PageContentType;
   declare private enableSummarizeSuggestionHint: boolean;
+  // The number of suggestions to show in the ghost loader.
+  declare private suggestionCount: number;
+  // Whether the ghost loader suggestions should fade out now that suggestions
+  // came in.
+  declare private shouldFadeOut: boolean;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
   declare private ghostLoaderPrimaryMessage: string;
@@ -119,6 +130,20 @@ export class SearchboxGhostLoaderElement extends
     return this.pageContentType === PageContentType.kPdf ?
         this.i18n('searchboxGhostLoaderHintTextPrimaryPdf') :
         this.i18n('searchboxGhostLoaderHintTextPrimaryDefault');
+  }
+
+  private computeShouldFadeOut() {
+    // Once the suggestionCount is no longer 0, fade out the ghost loader
+    // suggestions.
+    return this.suggestionCount !== 0;
+  }
+
+  private getSuggestionItems(): number[] {
+    if (this.suggestionCount === 0) {
+      return Array(5).fill(0);
+    }
+    // The content of the array is unused.
+    return Array(this.suggestionCount).fill(0);
   }
 }
 
