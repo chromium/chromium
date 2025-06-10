@@ -8244,7 +8244,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="309" label="AppLaunchHandler"/>
   <int value="310" label="Function"/>
   <int value="311" label="If"/>
-  <int value="312" label="WebAppManifestUpdateToken"/>
+  <int value="312" label="DRAFT_WebAppManifestUpdate"/>
   <int value="313" label="ReadingFlow"/>
   <int value="314" label="ComposedRanges"/>
   <int value="315" label="CompressionDictionaryTransport"/>

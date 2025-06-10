@@ -371,7 +371,7 @@ enum WebDXFeature {
   kAppLaunchHandler = 309,
   kFunction = 310,
   kIf = 311,
-  kWebAppManifestUpdateToken = 312,
+  kDRAFT_WebAppManifestUpdate = 312,
   kReadingFlow = 313,
   kComposedRanges = 314,
   kCompressionDictionaryTransport = 315,
