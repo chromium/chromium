@@ -10092,7 +10092,7 @@
 <translation id="8110489095782891123">جارٍ تنزيل قائمة جهات الاتصال...</translation>
 <translation id="8114925369073821854">إذن الوصول إلى الميكروفون لـ "<ph name="APP_NAME" />"</translation>
 <translation id="8116972784401310538">م&amp;دير الإشارات</translation>
-<translation id="8118276691321086429">يتذكّر "<ph name="PASSWORD_MANAGER_BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون متوقفًا، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
+<translation id="8118276691321086429">يتذكّر "<ph name="PASSWORD_MANAGER_BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون هذا الخيار غير مفعّل، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
 <translation id="8118362518458010043">‏تم إيقاف الإضافة بواسطة متصفح Chrome. ربما تكون هذه الإضافة غير آمنة.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{إشارة مرجعية واحدة}zero{‫# إشارة مرجعية}two{إشارتان مرجعيتان}few{‫# إشارات مرجعية}many{‫# إشارة مرجعية}other{‫# إشارة مرجعية}}</translation>
 <translation id="8118488170956489476">تعمل مؤسستك على <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" /></translation>

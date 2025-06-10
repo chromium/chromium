@@ -3462,7 +3462,7 @@
 <translation id="3416468988018290825">一律顯示完整網址</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3417836307470882032">24 小時制</translation>
-<translation id="3418798368381485936">無法登入這個帳戶</translation>
+<translation id="3418798368381485936">無法使用此帳戶登入</translation>
 <translation id="3420501302812554910">必須重設內部安全金鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。</translation>
@@ -4925,7 +4925,7 @@
 <translation id="4415815425191869676">一律啟用這些網站</translation>
 <translation id="4416582610654027550">請輸入有效的網址</translation>
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{暫停這個分頁}other{暫停這些分頁}}</translation>
-<translation id="4421932172707401417">系統會根據你的提示和網頁內容提供撰寫建議</translation>
+<translation id="4421932172707401417">系統會根據你的提示詞和網頁內容提供撰寫建議</translation>
 <translation id="4421932782753506458">毛毛</translation>
 <translation id="4423376891418188461">還原設定</translation>
 <translation id="4423525817792153232">露出所有牙齒</translation>
@@ -6522,7 +6522,7 @@
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
 <translation id="557722062034137776">重設裝置並不會影響你的 Google 帳戶，以及任何與這些帳戶同步處理的資料。不過，所有儲存在裝置中的資料將會遭到刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
-<translation id="5578387000057347457">輸入自訂提示或選取文字，即可生成圖像</translation>
+<translation id="5578387000057347457">輸入自訂提示詞或選取文字，即可生成圖像</translation>
 <translation id="5581134892342029705">翻譯為<ph name="LANGUAGE" />的作業已完成</translation>
 <translation id="558170650521898289">Microsoft Windows 硬體驅動程式驗證</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -8289,7 +8289,7 @@
 <translation id="68541483639528434">關閉其他分頁</translation>
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
 <translation id="6856348640027512653">不得使用虛擬實境裝置或資料</translation>
-<translation id="6856607887871564638">設定工作設定檔，以便將密碼等資料儲存到帳戶，或使用帳戶中的密碼等資料</translation>
+<translation id="6856607887871564638">設定工作設定檔，以便將密碼等資料儲存到帳戶，並使用這些資料</translation>
 <translation id="6856623341093082836">設定及調整觸控螢幕精確度</translation>
 <translation id="6857145580237920905">在執行 Powerwash 前移除 eSIM 設定檔</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -9316,7 +9316,7 @@
 <translation id="7617263010641145920">開啟 Play 商店</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7619937211696316184">維護作業已完成</translation>
-<translation id="7620616707541471029">請選擇接下來要使用的帳戶</translation>
+<translation id="7620616707541471029">請選擇帳戶繼續登入</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN 碼，就無法復原本機資料。</translation>
 <translation id="7622114377921274169">充電中。</translation>

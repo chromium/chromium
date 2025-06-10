@@ -1965,7 +1965,7 @@
 <translation id="9097506547406246598">يتعذّر إلغاء المتابعة. حدث خطأ.</translation>
 <translation id="9098541895599151034">هل تريد حذف كلمات مرور <ph name="NUMBER_OF_ACCOUNTS" /> حساب؟</translation>
 <translation id="9099233023029360602">السؤال عن الحساب المُراد استخدامه في كل مرة</translation>
-<translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
+<translation id="9100610230175265781">يجب إدخال عبارة المرور</translation>
 <translation id="91023216973987714">طُرق الدفع</translation>
 <translation id="9106655997975673326">من "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">التحقُّق من كلمات المرور المحتمَل تعرّضها للاختراق</translation>

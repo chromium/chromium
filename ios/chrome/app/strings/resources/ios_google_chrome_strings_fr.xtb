@@ -96,7 +96,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="314782365035065913">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="322254490661677575">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète.</translation>
-<translation id="3282568296779691940">Connectez-vous à Chrome</translation>
+<translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3303503998967553377">Utiliser Actions Chrome sur iOS</translation>
 <translation id="3348862487678490430">Ajouter un élément de liste de lecture à Chrome</translation>
 <translation id="3357827134511189025">Connectez-vous avec vos mots de passe et clés d'accès enregistrés depuis n'importe quelle appli avec Chrome pour la saisie automatique</translation>
@@ -227,7 +227,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 
 Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Supprimez les données de navigation dans Chrome.</translation>
-<translation id="6924922227983877439">Ouvrez les liens dans Chrome par défaut</translation>
+<translation id="6924922227983877439">Ouvrir les liens dans Chrome par défaut</translation>
 <translation id="6931601805528922498">En vous connectant, vous ajoutez votre compte à Chrome pour vos activités de navigation dans le cadre professionnel.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>
 <translation id="7056826488869329999">Lance le contrôle de sécurité dans Chrome.</translation>

@@ -56,7 +56,7 @@
 <translation id="1786003790898721085">Verifique se sua conta está conectada ao Chrome no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="1786044937610313874">Abrir atalhos no Chrome</translation>
 <translation id="178701303897325119">Essa extensão não é mais compatível. O Chrome recomenda que você a remova.</translation>
-<translation id="1812689907177901597">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chrome</translation>
+<translation id="1812689907177901597">Desative essa opção para acessar sites do Google, como o Gmail, sem login no Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}one{O Chrome recomenda pausar a guia que está deixando o navegador mais lento}other{O Chrome recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1860536484129686729">O Chrome precisa de permissão para este site acessar sua câmera</translation>
@@ -87,7 +87,7 @@
 <translation id="2137162749895930932">Fechar o tradutor</translation>
 <translation id="2139300032719313227">Reiniciar o ChromeOS</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
-<translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na sua Conta do Google</translation>
+<translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na Conta do Google</translation>
 <translation id="2174917724755363426">A instalação não foi concluída. Tem certeza de que quer cancelar?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Erro na verificação de atualização: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -312,7 +312,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Clique em "Gerenciador de senhas do Google"</translation>
 <translation id="5114340746415930644">Digite a senha longa para usar e salvar os dados do Chrome na sua conta <ph name="USER_EMAIL" /></translation>
-<translation id="5120334927898581447">Fazer login no Chrome ao se conectar a outros Serviços do Google</translation>
+<translation id="5120334927898581447">Fazer login no Chrome ao acessar Serviços do Google</translation>
 <translation id="5126049312684316860">O Chrome pré-carrega mais páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas</translation>
 <translation id="5132929315877954718">Descubra ótimos aplicativos, jogos, extensões e temas para o Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizar perfil do Chrome</translation>
@@ -351,7 +351,7 @@
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. Algo precisa da sua atenção. Clique para ver mais detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Não foi possível se conectar à Internet. O servidor proxy requer autenticação.</translation>
-<translation id="5709557627224531708">Definir o Chrome como seu navegador padrão</translation>
+<translation id="5709557627224531708">Defina o Chrome como seu navegador padrão</translation>
 <translation id="5727531838415286053">Se o Chrome colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chrome exclui seus interesses mais antigos do que um mês. Os interesses são atualizados, a menos que você os remova.</translation>
 <translation id="5736850870166430177">Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar os URLs, incluindo partes do conteúdo da página, para o Navegação segura</translation>
 <translation id="5756509061973259733">Este dispositivo já tem um perfil do Chrome com essa conta</translation>
@@ -381,7 +381,7 @@
 <translation id="604424701295382420">Fixado. Você pode acessar o Google Lens de novo usando o novo botão na barra de ferramentas</translation>
 <translation id="6069027071882229820">Copiar como imagem</translation>
 <translation id="6070348360322141662">Para aumentar a segurança, seus dados serão criptografados pelo Google Chrome</translation>
-<translation id="6075300983329039771">Sua organização, <ph name="MANAGER" />, exige que você faça login no Chrome</translation>
+<translation id="6075300983329039771">Sua organização, <ph name="MANAGER" />, exige o login no Chrome</translation>
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
 <translation id="6113794647360055231">O Chrome ficou ainda melhor</translation>
 <translation id="6116252277240876590">Este idioma é usado para mostrar menus, configurações, alertas e outros textos no Chrome</translation>
@@ -596,7 +596,7 @@
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8781673607513845160">Para usar a câmera, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8798550110818026746">Sua organização pode acessar e gerenciar dados de navegação, como favoritos, histórico e senhas. Ela não tem acesso a dados de navegação em outros perfis do Chrome.</translation>
+<translation id="8798550110818026746">Sua organização pode acessar e gerenciar dados de navegação, como favoritos, histórico e senhas, mas apenas do seu perfil do Chrome.</translation>
 <translation id="8801657293260363985">V8 é o mecanismo JavaScript e WebAssembly do Chrome usado para melhorar o desempenho de sites</translation>
 <translation id="8821043148920470810">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 7.</translation>
 <translation id="8823341990149967727">O Google Chrome está desatualizado</translation>

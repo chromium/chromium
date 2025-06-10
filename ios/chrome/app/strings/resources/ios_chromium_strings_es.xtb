@@ -88,7 +88,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
-<translation id="3054480780637153380">En iOS, ve a Ajustes, selecciona Chromium, toca App del navegador por omisión, y elige Chromium.</translation>
+<translation id="3054480780637153380">En iOS, ve a Ajustes, selecciona Chromium, toca Navegador predeterminado y elige Chromium.</translation>
 <translation id="3102849287235003384">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">¿Establecer Chromium como navegador predeterminado?</translation>
 <translation id="3180939591219927904">Activa Bloquear las pestañas de Incógnito al cerrar Chromium</translation>
@@ -185,7 +185,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="5453478652154926037">Chromium no puede comprobar tus contraseñas.</translation>
 <translation id="5479292367402350143">Para establecer Chromium como navegador predeterminado, haz lo siguiente:
 1. Abre Ajustes
-2. Toca App del navegador por omisión
+2. Toca Navegador predeterminado
 3. Selecciona Chromium</translation>
 <translation id="5482686278086727777">Para recibir recordatorios de pestañas de Chromium, activa las notificaciones en los ajustes de iOS.</translation>
 <translation id="5521125884468363740">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chromium</translation>

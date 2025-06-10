@@ -4352,7 +4352,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3986813315215454677">Bluetooth của ChromeOS</translation>
 <translation id="3987307536043958493">Chặn và rời khỏi</translation>
 <translation id="3987544746655539083">Tiếp tục chặn không cho trang web này truy cập thông tin vị trí của bạn</translation>
-<translation id="3987993985790029246">Sao chép liên kết</translation>
+<translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="3988124842897276887">Thẻ này đã kết nối với một thiết bị USB</translation>
 <translation id="3988996860813292272">Chọn múi giờ</translation>
 <translation id="3989635538409502728">Đăng xuất</translation>
@@ -5125,7 +5125,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4559617833001311418">Trang web này đang sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
 <translation id="4560728518401799797">Tuỳ chọn khác cho dấu trang <ph name="FOLDER_TITLE" /></translation>
 <translation id="4561893854334016293">Bạn chưa thay đổi quyền nào gần đây</translation>
-<translation id="4562091353415772246">Cài đặt các bản cập nhật và ứng dụng. Việc bạn tiếp tục có nghĩa là bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một số ứng dụng trong số này có thể cung cấp hàng bán trong ứng dụng. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về tính năng tự động cài đặt qua Play<ph name="BEGIN_LINK1_END" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
+<translation id="4562091353415772246">Cài đặt các bản cập nhật và ứng dụng. Việc bạn tiếp tục có nghĩa là bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một số ứng dụng trong số này có thể cung cấp lựa chọn mua hàng ứng dụng. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về tính năng tự động cài đặt qua Play<ph name="BEGIN_LINK1_END" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Thêm vân tay</translation>
 <translation id="4562155266774382038">Đóng đề xuất</translation>
 <translation id="4562364000855074606">Chặn các ứng dụng được cài đặt trên <ph name="DEVICE_TYPE" /> này. Để hạn chế việc tải ứng dụng hoặc nội dung xuống, hãy chuyển đến phần Cài đặt Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10952,7 +10952,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="871515167518607670">Hãy chọn một thiết bị. Sau đó, hãy mở Chrome trên thiết bị đó để xem trang.</translation>
 <translation id="8715480913140015283">Thẻ nền đang sử dụng máy ảnh</translation>
 <translation id="8716931980467311658">Bạn muốn xóa tất cả ứng dụng Linux và dữ liệu trong thư mục tệp Linux khỏi <ph name="DEVICE_TYPE" /> này?</translation>
-<translation id="8717864919010420084">Sao chép liên kết</translation>
+<translation id="8717864919010420084">Sao chép đường liên kết</translation>
 <translation id="8718994464069323380">Đã phát hiện thấy màn hình cảm ứng</translation>
 <translation id="8719472795285728850">Đang nghe các hoạt động của tiện ích...</translation>
 <translation id="8719665168401479425">Sử dụng cử chỉ khuôn mặt để thực hiện các thao tác</translation>
@@ -11035,7 +11035,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt, hệ điều hành của thiết bị và địa chỉ IP.</translation>
 <translation id="876956356450740926">Chạy công cụ cho nhà phát triển, IDE và trình chỉnh sửa. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Thư mục gốc của tiện ích</translation>
-<translation id="8773535891252326047">Đã sao chép đường liên kết đến văn bản được đánh dấu</translation>
+<translation id="8773535891252326047">Đã sao chép đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="8774379074441005279">Xác nhận khôi phục</translation>
 <translation id="8774934320277480003">Lề trên</translation>
 <translation id="8775144690796719618">URL không hợp lệ</translation>

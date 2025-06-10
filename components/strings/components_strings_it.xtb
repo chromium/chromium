@@ -575,7 +575,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1997484222658892567"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul computer locale</translation>
 <translation id="1997774360448418989">Carta (Leggera)</translation>
 <translation id="1999416967035780066">Freeware e shareware</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{e un'altra}other{e altre #}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{e 1 altra}other{e altre #}}</translation>
 <translation id="2001469757375372617">Si è verificato un problema. La modifica non è stata salvata.</translation>
 <translation id="2002436619517051938">Puoi apportare modifiche nelle impostazioni di Chrome.</translation>
 <translation id="2003709556000175978">Reimposta ora la password</translation>
@@ -897,7 +897,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2533649878691950253">A questo sito è stato impedito di conoscere la tua posizione precisa perché di solito non lo permetti</translation>
 <translation id="253493526287553278">Visualizza i dettagli del codice promozionale</translation>
 <translation id="2535585790302968248">Apri una nuova scheda di navigazione in incognito per navigare in privato</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{e 1 altro}other{e altro #}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{e 1 altra}other{e altre #}}</translation>
 <translation id="2536110899380797252">Aggiungi indirizzo</translation>
 <translation id="2537931901612099523">Le altre persone che usano questo dispositivo non vedranno la tua attività, di conseguenza potrai navigare in modo più privato. La modalità di raccolta dei dati da parte dei siti web visitati e dei servizi utilizzati, incluso Google, rimane invariata. I download e i preferiti verranno salvati.</translation>
 <translation id="2539524384386349900">Rileva</translation>

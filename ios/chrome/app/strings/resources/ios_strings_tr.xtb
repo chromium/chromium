@@ -172,7 +172,7 @@
 <translation id="1654232554734641711">Mikrofon erişimine izin veriliyor</translation>
 <translation id="16554782717487656">Birimleri algıla</translation>
 <translation id="1657011748321897393">Ağa bağlı olmadığınızdan paylaşma başarısız oldu.</translation>
-<translation id="1668001730617725852">Yeni Sekme Grubu'nda aç</translation>
+<translation id="1668001730617725852">Yeni Sekme Grubunda Aç</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="169048873465870056">Sekme kaldırılıp grup silinsin mi?</translation>
@@ -772,7 +772,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4286718549648564014">Adres, <ph name="USER_EMAIL" /> hesabınıza taşındı</translation>
 <translation id="4287172530684295552">Okundu olarak işaretle</translation>
 <translation id="428768789042547925">Yenilikler</translation>
-<translation id="429074084062258019">{count,plural, =1{Sekmeyi gruba ekle}other{Sekmeleri gruba ekle}}</translation>
+<translation id="429074084062258019">{count,plural, =1{Sekmeyi Gruba Ekle}other{Sekmeleri Gruba Ekle}}</translation>
 <translation id="4302061870579014542">Konumu ayarla</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4309403553630140242">Daha fazla bilgi için iki kez dokunun</translation>
@@ -1726,7 +1726,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8202744799033457229">Geçmişi göster</translation>
 <translation id="8205564605687841303">İptal</translation>
 <translation id="8206354486702514201">Bu seçenek, yöneticiniz tarafınızdan denetleniyor.</translation>
-<translation id="8209050860603202033">Resmi aç</translation>
+<translation id="8209050860603202033">Resmi Aç</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> için birden fazla şifre aldınız</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
 <translation id="8214293972734702249"><ph name="TAB_TITLE" /> sabitlendi</translation>

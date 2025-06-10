@@ -3031,7 +3031,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3082493846131340396">extensions</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Bloquée temporairement afin de protéger votre confidentialité</translation>
-<translation id="3083899879156272923">Déplacer l'écran pour laisser le pointeur de la souris au centre de l'écran</translation>
+<translation id="3083899879156272923">L'écran se déplace pour laisser le pointeur de la souris au centre de l'écran</translation>
 <translation id="3083998949001524405">Autorisé à utiliser des témoins tiers</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> est épinglée par votre administrateur</translation>
 <translation id="3084548735795614657">Déposer pour installer</translation>
@@ -11232,7 +11232,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8920133120839850939">Sélectionnez l'onglet Plus de gestes, puis activez Naviguer d'une page à l'autre pour naviguer vers l'avant et l'arrière</translation>
 <translation id="8921369299636221117">Le service Concierge n'est pas accessible.</translation>
 <translation id="8922348435910470639">Double réservation</translation>
-<translation id="8922624386829239660">Déplacer l'écran lorsque le pointeur de la souris touche les rebords de l'écran</translation>
+<translation id="8922624386829239660">L'écran se déplace lorsque le pointeur de la souris touche les rebords de l'écran</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925124370124776087">La barre de titre est maintenant masquée</translation>
 <translation id="8925458182817574960">Paramètre&amp;s</translation>
@@ -11366,7 +11366,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011262023858991985">Diffuser cet onglet</translation>
 <translation id="9011393886518328654">Notes de version</translation>
-<translation id="9012122671773859802">Déplacer l'écran en continu pour suivre le mouvement du pointeur de la souris</translation>
+<translation id="9012122671773859802">L'écran se déplace en continu pour suivre le mouvement du curseur de la souris</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> d'espace libre est nécessaire pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="9014206344398081366">Tutoriel de ChromeVox</translation>

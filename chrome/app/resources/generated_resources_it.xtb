@@ -8728,7 +8728,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7181329571386134105">Per consentire a <ph name="CHILD_NAME" /> di installare estensioni in futuro senza la tua approvazione, apri l'app Family Link sul tuo dispositivo e aggiorna le impostazioni di Google Chrome per <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" />}=1{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e altri #}other{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e altri #}}</translation>
-<translation id="7182051712900867547">Utilizza un account diverso</translation>
+<translation id="7182051712900867547">Usa un account diverso</translation>
 <translation id="7182063559013288142">Hotspot istantaneo</translation>
 <translation id="7182791023900310535">Sposta la password</translation>
 <translation id="718427252411067142">Per impedire ad altri di utilizzare la tua password, apri l'app per cambiare la password</translation>

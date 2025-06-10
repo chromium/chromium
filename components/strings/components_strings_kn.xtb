@@ -531,7 +531,7 @@
 <translation id="1908217026282415406">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
 <translation id="1908690643053136980">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಸೈಟ್‌ಗೆ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1913037223029790376">ಈ ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಾಗಿ CVC ಬಳಸಿ</translation>
-<translation id="191374271204266022">JSON ಫಾರ್ಮ್ಯಾಟ್ ರೀತಿಯಲ್ಲೇ ನಕಲಿಸಿ</translation>
+<translation id="191374271204266022">JSON ಫಾರ್ಮ್ಯಾಟ್ ರೀತಿಯಲ್ಲೇ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1914326953223720820">ಸೇವೆಯನ್ನು ಅನ್ ಜಿಪ್ ಮಾಡಿ</translation>
 <translation id="1919367280705858090">ನಿರ್ದಿಷ್ಟ ದೋಷ ಸಂದೇಶಕ್ಕೆ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="1919526244108283799">400 x 600 ಮಿಮೀ</translation>
@@ -540,7 +540,7 @@
 <translation id="1924727005275031552">ಹೊಸತು</translation>
 <translation id="1927439846988093361">ಕೂದಲಿನ ಆರೈಕೆ</translation>
 <translation id="1935353813610900265">AI ನಿಂದ ಚಾಲಿತವಾದ ಇತಿಹಾಸ ಹುಡುಕಾಟಕ್ಕಾಗಿ ಫೀಡ್‌ಬ್ಯಾಕ್ ಕಳುಹಿಸಿ</translation>
-<translation id="1935995810530254458">ಹೇಗಿದ್ದರೂ ನಕಲಿಸಿ</translation>
+<translation id="1935995810530254458">ಹೇಗಿದ್ದರೂ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1939059826036755332">ಸ್ವಯಂಚಾಲಿತ ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್</translation>
 <translation id="1939175642807587452">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="1940441167050915935">ಸೇವ್ ಮಾಡಲಾದ ಸೆಕ್ಯೂರಿಟಿ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
@@ -3025,7 +3025,7 @@
 <translation id="6264376385120300461">ಹೇಗಿದ್ದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6264485186158353794">ಸುರಕ್ಷತೆಗೆ ಹಿಂದಿರುಗಿ</translation>
 <translation id="6264636978858465832">Password Manager ಗೆ ಹೆಚ್ಚಿನ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
-<translation id="6265794661083428563"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="6265794661083428563"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="6266934640124581640">ತಿಳಿ ಕೆನ್ನೀಲಿ</translation>
 <translation id="6270066318535733958">ದೋಣಿ ವಿಹಾರ</translation>
 <translation id="6272088941196661550">ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
@@ -3896,7 +3896,7 @@
 <translation id="7730057435797792985">ವಿಂಗಡಿಸಿ</translation>
 <translation id="7734285854693414638">Google Forms ನಲ್ಲಿ ಹೊಸ ಫಾರ್ಮ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="773466115871691567">ಯಾವಾಗಲು <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಿ</translation>
-<translation id="7736959720849233795">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="7736959720849233795">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="7740996059027112821">ಪ್ರಮಾಣಿತ</translation>
 <translation id="77424286611022110">ಈ ಸೈಟ್ ಅತಿಕ್ರಮಣಕಾರಿ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="7744505202669469867">ಉಳಿಸಲಾದ ವಿಳಾಸಗಳ ಟೇಬಲ್</translation>

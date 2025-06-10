@@ -436,7 +436,7 @@
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
 <translation id="6561560012278703671">הצגת התראות שקטה יותר (למניעת הקפצה של חלוניות מפריעות)</translation>
-<translation id="6593061639179217415">אתר שמותאם למחשב</translation>
+<translation id="6593061639179217415">אתר מותאם למחשב</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>

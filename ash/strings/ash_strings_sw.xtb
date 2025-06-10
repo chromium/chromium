@@ -170,7 +170,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
 <translation id="1521655867290435174">Majedwali ya Google</translation>
-<translation id="1523032696246003">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> ijae</translation>
+<translation id="1523032696246003">Chaji ni <ph name="BATTERY_PERCENTAGE" />% | zimesalia <ph name="TIME" /> ijae</translation>
 <translation id="1525508553941733066">ONDOA</translation>
 <translation id="1526448108126799339">Fungua kichupo kipya katika dirisha jipya</translation>
 <translation id="1528259147807435347">Ilibadilishwa wiki iliyopita</translation>
@@ -577,7 +577,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="2942350706960889382">Kikuzaji Kilichoambatishwa</translation>
 <translation id="2942516765047364088">Nafasi ya rafu</translation>
 <translation id="2946119680249604491">Ongeza muunganisho</translation>
-<translation id="2947835478872237115">Kiwango cha sasa cha chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" />, zimesalia <ph name="TIME" /> ijae</translation>
+<translation id="2947835478872237115">Kiwango cha sasa cha chaji ya betri ni <ph name="BATTERY_PERCENTAGE" />%, zimesalia <ph name="TIME" /> ijae</translation>
 <translation id="2949420361496057765">Bonyeza <ph name="MODIFIER" /> na ubofye kiungo</translation>
 <translation id="2957159466053076448">Unaweza kuzima vipengele hivi wakati wowote kwenye Mipangilio. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Sauti ya kifaa</translation>
@@ -1308,7 +1308,7 @@ Unaweza pia kutumia mikato ya kibodi. Kwanza, angazia maandishi, kisha ubonyeze 
 <translation id="5243355658487390559">Tafuta tarehe</translation>
 <translation id="5245201184978705914">Imeshindwa kuzalisha manukuu</translation>
 <translation id="5251174953851719648">Onyesha maudhui upya</translation>
-<translation id="5253783950165989294">Imeunganishwa kwenye kifaa kiitwacho <ph name="DEVICE_NAME" />, chaji ya betri ni <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5253783950165989294">Imeunganishwa na kifaa kiitwacho <ph name="DEVICE_NAME" />, chaji ya betri ni <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5256939106029293271">Jaribu maikrofoni yako</translation>
 <translation id="5258528442992323769">Hakuna maeneokazi yaliyohifadhiwa</translation>
 <translation id="5260676007519551770">Eneokazi la 4</translation>
@@ -1503,7 +1503,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="5860491529813859533">Washa</translation>
 <translation id="5864691701242730005">Onyesha mipangilio ya kipengele cha Kutuma Haraka. Umechagua uonekanaji wa <ph name="VISIBILITY" /></translation>
-<translation id="5864748620896638071">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="5864748620896638071">Chaji ni <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Inakusanya maelezo ya mtandao</translation>
 <translation id="5867606971598166637">Msimamizi wako wa mfumo anafuatilia skrini zako</translation>
 <translation id="5876666360658629066">Weka msimbo wa mzazi</translation>
@@ -1777,7 +1777,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera na maikrofoni zinatumika</translation>
 <translation id="6739144137573853180">NENDA KWENYE MIPANGILIO</translation>
-<translation id="6747985245839783873">Chaji ya betri ni asilimia <ph name="PERCENTAGE" />. Kiokoa Betri kimewashwa.</translation>
+<translation id="6747985245839783873">Chaji ni asilimia <ph name="PERCENTAGE" />. Kiokoa Betri kimewashwa.</translation>
 <translation id="6751052314767925245">Kinadhibitiwa na msimamizi wako</translation>
 <translation id="6751826523481687655">Kipengele cha ufuatiliaji wa utendaji kimewashwa</translation>
 <translation id="6752912906630585008">Kiolesura cha <ph name="REMOVED_DESK" /> kimeondolewa na kimeunganishwa na Kiolesura cha <ph name="RECEIVE_DESK" /></translation>
@@ -2015,7 +2015,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7568790562536448087">Inasasisha</translation>
 <translation id="7569509451529460200">Breli na ChromeVox zimewashwa</translation>
 <translation id="7569886975397378678">Ondoa kidokezo cha kuweka mipangilio ya kuangalia arifa na programu za simu yako</translation>
-<translation id="7571361473021531288">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> chaji iishe</translation>
+<translation id="7571361473021531288">Chaji ni <ph name="BATTERY_PERCENTAGE" />% | zimesalia <ph name="TIME" /> chaji iishe</translation>
 <translation id="7573585051776738856">Dirisha linalotumika limepachikwa kulia.</translation>
 <translation id="7579778809502851308">Kurekodi skrini</translation>
 <translation id="7588317312481506627">Imenakiliwa kwenye ubao wa kunakili.</translation>

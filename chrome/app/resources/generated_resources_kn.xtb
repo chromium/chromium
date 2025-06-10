@@ -75,7 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}one{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}other{ಈ ಸಾಧನದಲ್ಲಿ {NUM_PASSWORDS} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="BRAND" /> ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1046572983040892965">ವಿಂಡೋವನ್ನು ಮೇಲಕ್ಕೆ ಮತ್ತು ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="104710386808485638">Linux ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕೇ?</translation>
-<translation id="1047431265488717055">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ನಕಲಿಸಿ</translation>
+<translation id="1047431265488717055">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1048986595386481879">ಕ್ರಿಯಾತ್ಮಕವಾಗಿ ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}one{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}other{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
@@ -98,7 +98,7 @@
 <translation id="1061130374843955397">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="1061373870045429865">ಈ ಲಿಂಕ್‌ಗಾಗಿ QR ಕೋಡ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="1061904396131502319">ಬಹುತೇಕ ವಿರಾಮದ ಸಮಯ</translation>
-<translation id="10619348099955377">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="10619348099955377">ಡಿಸ್‌ಪ್ಲೇ ಹೆಸರನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1062407476771304334">ಸ್ಥಾನಾಂತರಿಸು</translation>
 <translation id="1066964438793906105">ಮಾಲ್‌ವೇರ್‌ಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="1067661089446014701">ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸುವ ಮುನ್ನ ಅವುಗಳನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಬಹುದು</translation>
@@ -693,7 +693,7 @@
 <translation id="1473927070149284123">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹಸ್ತಚಾಲಿತವಾಗಿ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="1474785664565228650">ಮೈಕ್ರೊಫೋನ್ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿರುವ ಬದಲಾವಣೆಯನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು Parallels Desktop ‌ನ ಅಗತ್ಯವಿದೆ ಮುಂದುವರಿಯಲು, Parallels Desktop ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="1475502736924165259">ಇತರ ಯಾವುದೇ ವರ್ಗಗಳಿಗೆ ಹೊಂದದಿರುವಂತಹ ಫೈಲ್‌ನಲ್ಲಿ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಹೊಂದಿರುವಿರಿ</translation>
-<translation id="1476088332184200792">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ನಕಲಿಸಿ</translation>
+<translation id="1476088332184200792">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1476347941828409626">Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1476595624592550506">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="1476607407192946488">&amp;ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -834,7 +834,7 @@
 <translation id="1570604804919108255">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್ ರಚಿಸಲಾಗಿದೆ.</translation>
 <translation id="1571041387761170095">ದುರ್ಬಲ ಅಥವಾ ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ</translation>
-<translation id="1571304935088121812">ಬಳಕೆದಾರರಹೆಸರು ನಕಲಿಸಿ</translation>
+<translation id="1571304935088121812">ಬಳಕೆದಾರರಹೆಸರು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1571738973904005196"><ph name="TAB_ORIGIN" /> ಟ್ಯಾಬ್ ನೋಡಿ</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ಅತಿಥಿ)</translation>
 <translation id="1572266655485775982">ವೈ-ಫೈ ಸಕ್ರಿಯ</translation>
@@ -1374,7 +1374,7 @@
 <translation id="1933489278505808700">ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1935303383381416800">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="193565226207940518">ಬೆಂಬಲ ಟೂಲ್</translation>
-<translation id="1935995810530254458">ಹೇಗಿದ್ದರೂ ನಕಲಿಸಿ</translation>
+<translation id="1935995810530254458">ಹೇಗಿದ್ದರೂ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="1936157145127842922">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="1936344977780165685">{PAGES,plural, =1{ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟವನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}other{ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1936931585862840749">ಎಷ್ಟು ಪ್ರತಿಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಬೇಕೆಂದು (1 ರಿಂದ <ph name="MAX_COPIES" />) ಸೂಚಿಸಲು ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಿ.</translation>
@@ -2105,7 +2105,7 @@
 <translation id="2435137177546457207">Google Chrome ಹಾಗೂ ChromeOS Flex ನ ಹೆಚ್ಚುವರಿ ನಿಯಮಗಳು</translation>
 <translation id="2435248616906486374">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
-<translation id="2436385001956947090">&amp;ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="2436385001956947090">&amp;ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="2437561292559037753">ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="2438853563451647815">ಪ್ರಿಂಟರ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
@@ -2565,7 +2565,7 @@
 <translation id="274290345632688601">Linux ಆ್ಯಪ್‌ಗಳು &amp; ಫೈಲ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="274318651891194348">ಕೀಬೋರ್ಡ್ ಅನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2743301740238894839">ಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="2743387203779672305">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿ</translation>
+<translation id="2743387203779672305">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="274362947316498129">ಆ್ಯಪ್‌ವೊಂದು <ph name="DEVICE_NAME" /> ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸಲು <ph name="DEVICE_NAME" /> ಗೌಪ್ಯತೆ ಸ್ವಿಚ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಆಗಿ</translation>
@@ -4344,7 +4344,7 @@
 <translation id="3986813315215454677">ChromeOS ಬ್ಲೂಟೂತ್</translation>
 <translation id="3987307536043958493">ನಿರ್ಬಂಧಿಸಿ ಮತ್ತು ತೊರೆಯಿರಿ</translation>
 <translation id="3987544746655539083">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
-<translation id="3987993985790029246">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="3987993985790029246">ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3988124842897276887">ಈ ಟ್ಯಾಬ್ USB ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3988996860813292272">ಸಮಯ ವಲಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3989635538409502728">ಸೈನ್ ಔಟ್</translation>
@@ -4770,7 +4770,7 @@
 <translation id="4301697210743228350">{COUNT,plural, =1{# ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ. ಅವರ ಜೊತೆಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}one{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}other{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}}</translation>
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
-<translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
+<translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4305817255990598646">ಬದಲಿಸಿ</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" ಪ್ರಕಾರದ ವಿಷಯದೊಂದಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು</translation>
 <translation id="4306810703452026910">ಈ ಸೈಟ್‌ನಿಂದ ಬರುವ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ಪ್ಯಾಮ್ ಎಂದು ಫ್ಲ್ಯಾಗ್ ಮಾಡುವುದನ್ನು Chrome ನಿಲ್ಲಿಸುತ್ತದೆ</translation>
@@ -5742,7 +5742,7 @@
 <translation id="5001526427543320409">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳು</translation>
 <translation id="5003070249435823986">ಸ್ಕ್ರಾಲ್ ಮೋಡ್ ಅನ್ನು ನಮೂದಿಸಲು ಗೆಸ್ಚರ್ ಬಳಸಿ, ನಂತರ ನೀವು ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಬಯಸುವ ದಿಕ್ಕಿನಲ್ಲಿ ನಿಮ್ಮ ತಲೆಯನ್ನು ಮೂವ್ ಮಾಡಿ. ಸ್ಕ್ರಾಲ್ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಗೆಸ್ಚರ್ ಅನ್ನು ಪುನಃ ಬಳಸಿ.</translation>
 <translation id="5003993274120026347">ಮುಂದಿನ ವಾಕ್ಯ</translation>
-<translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
+<translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5006218871145547804">Crostini Android ಆ್ಯಪ್ ADB</translation>
 <translation id="5006778209728626987">ಮಿಂಚು</translation>
 <translation id="5007392906805964215">ಪರಿಶೀಲಿಸಿ</translation>
@@ -6312,7 +6312,7 @@
 <translation id="5420274697768050645">ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಪಾಸ್‌ವರ್ಡ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5420438158931847627">ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳ ತೀಕ್ಷ್ಣತೆಯನ್ನು ನಿರ್ಧರಿಸುತ್ತದೆ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ಅವರು ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ</translation>
-<translation id="5420935737933866496">&amp;ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="5420935737933866496">&amp;ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5421048291985386320">ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5422781158178868512">ಕ್ಷಮಸಿ, ನಿಮ್ಮ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯ ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="5423505005476604112">Crostini</translation>
@@ -10370,7 +10370,7 @@
 <translation id="8315018673856831477">ಮೆಮೊರಿ ಸೇವರ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="8315514906653279104">ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8317671367883557781">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="8317965619823678157">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="8317965619823678157">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="8318266828739827371">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ವರ್ಧಿತ ಪ್ರದೇಶವನ್ನು ನೋಡಲು ಸ್ಕ್ರೀನ್ ಬೇರ್ಪಡಿಸಿ ವೀಕ್ಷಣೆಯನ್ನು ಬಳಸಿ. ಡಾಕ್ ಮಾಡಿದ ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಅನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು ಹುಡುಕಾಟ + Ctrl + D ಬಳಸಿ.</translation>
 <translation id="8319414634934645341">ವಿಸ್ತರಿತ ಕೀಲಿ ಬಳಕೆ</translation>
 <translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
@@ -11095,7 +11095,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ಬಳಸಲು ಸಿದ್ಧವಾಗಿದೆ.</translation>
 <translation id="8821647731831124007">ಲಭ್ಯವಿರುವ ಯಾವುದೇ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="882204272221080310">ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌‌ ಮಾಡಿ.</translation>
-<translation id="8823514049557262177">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ನಕಲಿಸಿ</translation>
+<translation id="8823514049557262177">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="8823704566850948458">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="8823963789776061136">ಪರ್ಯಾಯವಾಗಿ, ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">&amp;ಪುಟ ಸೇರಿಸು...</translation>
@@ -11155,7 +11155,7 @@
 <translation id="8864458770072227512">ಈ ಸಾಧನದಿಂದ <ph name="EMAIL" /> ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="8865112428068029930">ಹಂಚಿಕೊಂಡ ಕಂಪ್ಯೂಟರ್‌ ಬಳಸಲಾಗುತ್ತಿದೆಯೇ? ಅಜ್ಞಾತ ವಿಂಡೋವನ್ನು ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8867102760244540173">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ...</translation>
-<translation id="8867228703146808825">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿ</translation>
+<translation id="8867228703146808825">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="8868333925931032127">ಡೆಮೋ ಮೋಡ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8868626022555786497">ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="8868838761037459823">ಸೆಲ್ಯುಲರ್ ವಿವರಗಳು</translation>

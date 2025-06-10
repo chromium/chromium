@@ -1596,7 +1596,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}other{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}}</translation>
-<translation id="8209050860603202033">Resmi aç</translation>
+<translation id="8209050860603202033">Resmi Aç</translation>
 <translation id="8210770465353466621">Sekmeleriniz burada gösterilir</translation>
 <translation id="8211101263765532799">Bazı şifreler yakında çalışmayı durduracak</translation>
 <translation id="8215740705341534369">Yan sayfa</translation>
@@ -1768,7 +1768,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8972098258593396643">Varsayılan klasöre indirilsin mi?</translation>
 <translation id="8992769679401294069">Verileriniz parolanızla şifrelenir. Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="8993760627012879038">Gizli modda yeni bir sekme açar</translation>
-<translation id="8995521496079646922">Seçtiğiniz uygulamalar varsayılan olarak kullanılır. Bir uygulama bu cihazda yoksa kısa süre içinde indirilir.</translation>
+<translation id="8995521496079646922">Seçtiğiniz uygulamalar varsayılan olarak kullanılır. Cihazda yüklü olmayan uygulamalar kısa süre içinde indirilir.</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="8998837250940831980">Sekme küçültülemedi. Daha sonra tekrar deneyin.</translation>

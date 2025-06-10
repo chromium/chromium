@@ -1170,7 +1170,7 @@
 <translation id="1803545009660609783">重新调校</translation>
 <translation id="180441032496361123">点击即可启用<ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">背景标签页正在使用您的麦克风</translation>
-<translation id="1805822111539868586">检查视图</translation>
+<translation id="1805822111539868586">检查视图：</translation>
 <translation id="1805888043020974594">打印服务器</translation>
 <translation id="1805967612549112634">确认 PIN 码</translation>
 <translation id="1806335016774576568">切换到另一个已打开的应用</translation>
@@ -2247,7 +2247,7 @@
 <translation id="2532144599248877204">会将电池电量保持在 80% 左右以延长电池寿命，并会在您通常切断电源的时间之前将电池电量充满。</translation>
 <translation id="2532146950330687938">正在准备设备…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 设置中管理安全 DNS</translation>
-<translation id="2532589005999780174">高反差模式</translation>
+<translation id="2532589005999780174">高对比度模式</translation>
 <translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253434972992662860">暂停(&amp;P)</translation>
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
@@ -4866,7 +4866,7 @@
 <translation id="438503109373656455">小马</translation>
 <translation id="4385146930797718821">屏幕截图已复制到剪贴板</translation>
 <translation id="4385905942116811558">正在搜索蓝牙设备和 USB 设备</translation>
-<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{此扩展程序已停用，因为它已不再受支持}other{这些扩展程序已停用，因为它们已不再受支持}}</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{此扩展程序不再受支持，因此已停用}other{这些扩展程序不再受支持，因此已停用}}</translation>
 <translation id="4386604394450371010">概览</translation>
 <translation id="4387890294700445764">已泄露的密码</translation>
 <translation id="4388650384344483842">请输入至少 8 个字符</translation>
@@ -6618,14 +6618,14 @@
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
 <translation id="5654669866168491665">详细了解在屏蔽第三方 Cookie 后可能无法正常运行的网站</translation>
-<translation id="5654751240928365405">此扩展程序已停用，因为它已不再受支持</translation>
+<translation id="5654751240928365405">此扩展程序不再受支持，因此已停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{为保护您的隐私，已撤消某个网站的权限}other{为保护您的隐私，已撤消某些网站的权限}}</translation>
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="5655823808357523308">调整屏幕显示颜色的方式</translation>
 <translation id="5656845498778518563">向 Google 发送反馈</translation>
 <translation id="5657667036353380798">该外部扩展程序需要安装 <ph name="MINIMUM_CHROME_VERSION" /> 或更高版本的 Chrome。</translation>
 <translation id="565899488479822148">正在安装最新更新</translation>
-<translation id="5659593005791499971">电子邮件</translation>
+<translation id="5659593005791499971">邮箱</translation>
 <translation id="5659964844710667266">为此 <ph name="DEVICE_TYPE" /> 创建密码</translation>
 <translation id="566040795510471729">自定义您的 Chrome(&amp;U)</translation>
 <translation id="5662513737565158057">更改 Linux 应用的运行方式。</translation>
@@ -7657,7 +7657,7 @@
 <translation id="641867537956679916">您的管理员已登录，目的是调查一个问题。待管理员将控制权交还给您后，您可以继续使用此设备。</translation>
 <translation id="641899100123938294">扫描新设备</translation>
 <translation id="6419524191360800346">可以升级至 Debian 11 (Bullseye)</translation>
-<translation id="6419546358665792306">加载已解压的扩展程序</translation>
+<translation id="6419546358665792306">加载未打包的扩展程序</translation>
 <translation id="642469772702851743">此设备（序列号：<ph name="SERIAL_NUMBER" />）已被所有者锁定。</translation>
 <translation id="6425556984042222041">文字转语音的语速</translation>
 <translation id="642729974267661262">不允许播放声音</translation>
@@ -8159,7 +8159,7 @@
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787531944787756058">用户名 <ph name="USER_EMAIL" /> 仅会保存到此设备上。查看详情</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
-<translation id="6788210894632713004">未封装的扩展程序</translation>
+<translation id="6788210894632713004">未打包的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
 <translation id="6789834167207639931">您必须在下一个屏幕中再次输入您的 Google 账号密码，才能完成恢复流程</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -11274,7 +11274,7 @@
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8967548289042494261">卸载 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
-<translation id="8968766641738584599">保存卡</translation>
+<translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8968906873893164556">选择要用于设置的账号</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="89720367119469899">转义</translation>

@@ -953,7 +953,7 @@
 <translation id="264810637653812429">هیچ دستگاه سازگاری پیدا نشد.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />، <ph name="COUNTRY" /></translation>
 <translation id="2650446666397867134">دسترسی به فایل رد شد</translation>
-<translation id="2651465929321991146">سابقه و برگه‌ها</translation>
+<translation id="2651465929321991146">سابقه و زبانه‌ها</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2655752832536625875">حمام</translation>
 <translation id="2656194288057285221">‏دکمه «بستن نکته Chrome»، کلید «ورود» را برای بستن فشار دهید</translation>
@@ -2726,7 +2726,7 @@
 <translation id="5720705177508910913">کاربر کنونی</translation>
 <translation id="5720895412771013401">رایانه رومیزی</translation>
 <translation id="5721367770070844253">{count,plural, =1{‫{website_1}}=2{‫{website_1}،‏ {website_2}}=3{‫{website_1}،‏ {website_2}، و ۱ وب‌سایت دیگر}one{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}other{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}}</translation>
-<translation id="572328651809341494">برگه‌های اخیر</translation>
+<translation id="572328651809341494">زبانه‌های اخیر</translation>
 <translation id="5723873695528696965">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
 <translation id="5725297205162868298">میان‌بر نمی‌تواند با نویسه @ شروع شود: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="5728246486828755318">می‌تواند برای استفاده از ویژگی‌های پیشرفته چاپگر درخواست دهد</translation>
@@ -3457,7 +3457,7 @@
 <translation id="6999480632062519056">آموزش تناسب اندام و تعلیم شخصی</translation>
 <translation id="7003278537452757231">فرش و قالیچه</translation>
 <translation id="7003322000677139268">قطعات و لوازم جانبی خودرو</translation>
-<translation id="7004499039102548441">برگه‌های جدید</translation>
+<translation id="7004499039102548441">زبانه‌های جدید</translation>
 <translation id="7006930604109697472">در هر حال فرستاده شود</translation>
 <translation id="7009364359744329733">این کارت درحال‌حاضر دردسترس نیست. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="7010658264061801199">غذا و نوشیدنی</translation>
@@ -3782,7 +3782,7 @@
 <translation id="7552846755917812628">نکته‌های زیر را امتحان کنید:</translation>
 <translation id="7554242657529665960">ازطرف سرپرست: «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="7554475479213504905">بار کردن مجدد و نمایش درهرصورت</translation>
-<translation id="7554791636758816595">برگهٔ جدید</translation>
+<translation id="7554791636758816595">زبانه جدید</translation>
 <translation id="755597522379497407">علوم زیستی</translation>
 <translation id="7556328470713619625">استفاده از گذرکلید</translation>
 <translation id="7557077170802745837">ادغام و تملک</translation>
