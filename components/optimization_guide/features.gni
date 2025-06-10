@@ -7,6 +7,9 @@ import("//build/config/compiler/compiler.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
 }
+if (is_fuchsia) {
+  import("//build/config/fuchsia/config.gni")
+}
 
 declare_args() {
   # This enables build with TFLite library.
@@ -55,7 +58,7 @@ declare_args() {
 }
 
 declare_args() {
-  # Model execution is not built on fuchsia.
+  # Exclude the model on builders targeting web_engine on fuchsia.
   # TODO: crbug.com/393434571 - Clarify the boundary / strategy here.
-  build_with_model_execution = !is_fuchsia || !optimize_for_size
+  build_with_model_execution = !(is_fuchsia && is_web_engine)
 }
