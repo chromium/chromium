@@ -402,11 +402,6 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultiByteFlags) {
       0x65,
       0x76,
       0x65,
-      // 0x00 is not a data type supported by the current parser. It should be
-      // ignored and not treated as a parse failure.
-      0x02,
-      0x00,
-      0x00,
   };
   mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
@@ -441,11 +436,6 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleFlags) {
       0x65,
       0x76,
       0x65,
-      // 0x00 is not a data type supported by the current parser. It should be
-      // ignored and not treated as a parse failure.
-      0x02,
-      0x00,
-      0x00,
   };
   mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
@@ -478,11 +468,6 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultiByteTxPower) {
       0x65,
       0x76,
       0x65,
-      // 0x00 is not a data type supported by the current parser. It should be
-      // ignored and not treated as a parse failure.
-      0x02,
-      0x00,
-      0x00,
   };
   mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
@@ -517,11 +502,6 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleTxPowers) {
       0x65,
       0x76,
       0x65,
-      // 0x00 is not a data type supported by the current parser. It should be
-      // ignored and not treated as a parse failure.
-      0x02,
-      0x00,
-      0x00,
   };
   mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
@@ -560,17 +540,42 @@ TYPED_TEST(BleScanParserImplTest, ParseBleScanWithMultipleAdvertisementNames) {
       0x6c,
       0x6c,
       0x6f,
-      // 0x00 is not a data type supported by the current parser. It should be
-      // ignored and not treated as a parse failure.
-      0x02,
-      0x00,
-      0x00,
   };
   mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
   ASSERT_TRUE(actual);
   EXPECT_EQ(0x42, actual->advertising_flags);
   EXPECT_EQ(0x1b, actual->tx_power);
   EXPECT_EQ("Hello", actual->advertisement_name);
+  EXPECT_TRUE(actual->service_uuids.empty());
+  EXPECT_TRUE(actual->service_data_map.empty());
+  EXPECT_TRUE(actual->manufacturer_data_map.empty());
+}
+
+TYPED_TEST(BleScanParserImplTest, ParseBleScanWithNonUtf8AdvertisementName) {
+  const uint8_t kRawData[] = {
+      // Length of the rest of the section, field type, data.
+      // Advertising flag = 0x42
+      0x02,
+      0x01,
+      0x42,
+      // TX power = 0x1b
+      0x02,
+      0x0a,
+      0x1b,
+      // Local name 'U+1FFFE'
+      0x05,
+      0x08,
+      // Invalid encoding of U+1FFFE (0x8F instead of 0x9F)
+      0xF0,
+      0x8F,
+      0xBF,
+      0xBE,
+  };
+  mojom::ScanRecordPtr actual = this->ParseBleScan(kRawData);
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(0x42, actual->advertising_flags);
+  EXPECT_EQ(0x1b, actual->tx_power);
+  EXPECT_EQ("\xF0\x8F\xBF\xBE", actual->advertisement_name);
   EXPECT_TRUE(actual->service_uuids.empty());
   EXPECT_TRUE(actual->service_data_map.empty());
   EXPECT_TRUE(actual->manufacturer_data_map.empty());

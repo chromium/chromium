@@ -20,7 +20,8 @@ using ScanRecord = data_decoder::mojom::ScanRecord;
 
 void set_advertising_flags(ScanRecord& record, int8_t flags);
 void set_tx_power(ScanRecord& record, int8_t power);
-void set_advertisement_name(ScanRecord& record, rust::Str name);
+void set_advertisement_name(ScanRecord& record,
+                            rust::Slice<const uint8_t> name);
 void add_service_uuid(ScanRecord& record, const std::array<uint8_t, 16>& uuid);
 void add_service_data(ScanRecord& record,
                       const std::array<uint8_t, 16>& uuid,

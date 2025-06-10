@@ -1895,6 +1895,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.LocalNameIsUtf8" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>dcheng@chromium.org</owner>
+  <owner>reillyg@chromium.org</owner>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Counts how many non-UTF8 local names are seen in BLE advertisements. It is
+    unclear if the permisiveness in the current C++ parser is intentional or an
+    oversight.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
     units="ms" expires_after="2026-04-13">
   <owner>jonmann@chromium.org</owner>

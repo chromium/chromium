@@ -24,7 +24,7 @@ pub mod ffi {
 
         fn set_advertising_flags(record: Pin<&mut ScanRecord>, flags: i8);
         fn set_tx_power(record: Pin<&mut ScanRecord>, power: i8);
-        fn set_advertisement_name(record: Pin<&mut ScanRecord>, name: &str);
+        fn set_advertisement_name(record: Pin<&mut ScanRecord>, name: &[u8]);
         fn add_service_uuid(record: Pin<&mut ScanRecord>, uuid: &[u8; 16]);
         fn add_service_data(record: Pin<&mut ScanRecord>, uuid: &[u8; 16], data: &[u8]);
         fn add_manufacturer_data(record: Pin<&mut ScanRecord>, company_code: u16, data: &[u8]);

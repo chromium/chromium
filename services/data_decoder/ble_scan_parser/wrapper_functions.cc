@@ -31,8 +31,9 @@ void set_tx_power(ScanRecord& record, int8_t power) {
   record.tx_power = power;
 }
 
-void set_advertisement_name(ScanRecord& record, rust::Str name) {
-  record.advertisement_name = std::string(name);
+void set_advertisement_name(ScanRecord& record,
+                            rust::Slice<const uint8_t> name) {
+  record.advertisement_name = std::string(name.begin(), name.end());
 }
 
 void add_service_uuid(ScanRecord& record, const std::array<uint8_t, 16>& uuid) {

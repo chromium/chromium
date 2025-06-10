@@ -47,7 +47,7 @@ fn parse_impl<'a>(
     // TODO(dcheng): The C++ style guide very clearly discourages treating signed
     // types as bitfields, and yet here we are.
     let mut advertising_flags: i8 = -1;
-    let mut advertisement_name: &'a str = "";
+    let mut advertisement_name: &'a [u8] = &[];
     // TODO(dcheng): It's unclear what the correct default value here is, as the
     // original C++ implementation does not bother initializing this.
     let mut tx_power: i8 = 0;
@@ -98,11 +98,11 @@ fn parse_impl<'a>(
                 })?
             }
             DATA_TYPE_LOCAL_NAME_SHORT | DATA_TYPE_LOCAL_NAME_COMPLETE => {
-                // TODO(dcheng): The Core Specification Supplement, Part A, Section 1.2, states
-                // that this should be a valid UTF-8 string. Do we need to be lenient with our
-                // parsing here though? The original C++ implementation certainly never bothered
-                // to validate...
-                advertisement_name = str::from_utf8(data).ok()?;
+                // TODO(crbug.com/423064072): The Core Specification Supplement, Part A, Section
+                // 1.2, states that this should be a valid UTF-8 string. The original C++
+                // implementation certainly never bothered to validate, but maybe it's possible
+                // to be stricter...
+                advertisement_name = data;
             }
             // For TX power, additional bytes past the first are silently ignored. The unwrap() is
             // guaranteed to succeed, due to the length <= 1 check above.
