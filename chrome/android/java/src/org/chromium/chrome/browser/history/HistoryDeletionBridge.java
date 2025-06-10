@@ -13,10 +13,13 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** The JNI bridge for Android to receive notifications about history deletions. */
+@NullMarked
 public class HistoryDeletionBridge implements Destroyable {
     /**
      * Allows derived class to listen to history deletions that pass through this bridge. The
@@ -26,7 +29,7 @@ public class HistoryDeletionBridge implements Destroyable {
         void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo);
     }
 
-    private static ProfileKeyedMap<HistoryDeletionBridge> sProfileMap;
+    private static @Nullable ProfileKeyedMap<HistoryDeletionBridge> sProfileMap;
 
     /** Return the deletion bridge associated with the given {@link Profile}. */
     public static HistoryDeletionBridge getForProfile(Profile profile) {

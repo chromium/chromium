@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** UMA/Histogram recorder for in-app history. */
+@NullMarked
 public class AppHistoryUmaRecorder extends HistoryUmaRecorder {
     private static final String APP_METRICS_PREFIX = "Android.AppHistoryPage.";
 

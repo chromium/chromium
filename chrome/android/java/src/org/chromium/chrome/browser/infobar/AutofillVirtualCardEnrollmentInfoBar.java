@@ -17,6 +17,9 @@ import android.text.style.TextAppearanceSpan;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
@@ -33,14 +36,15 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import java.util.LinkedList;
 
 /** An infobar for virtual card enrollment information. */
+@NullMarked
 public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillVirtualCardEnrollmentInfoBar;
     private Bitmap mIssuerIcon;
     private String mCardLabel;
     private int mIconDrawableId = -1;
     private final String mTitleText;
-    private String mDescriptionText;
-    private String mLearnMoreLinkText;
+    private @Nullable String mDescriptionText;
+    private @Nullable String mLearnMoreLinkText;
     private final LinkedList<LegalMessageLine> mGoogleLegalMessageLines = new LinkedList<>();
     private final LinkedList<LegalMessageLine> mIssuerLegalMessageLines = new LinkedList<>();
 
@@ -109,6 +113,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
      * @param issuerIcon Bitmap image of the icon that will be shown for this credit card.
      * @param label The credit card label, for example "***1234".
      */
+    @Initializer
     @CalledByNative
     private void addCardDetail(Bitmap issuerIcon, String label) {
         mIssuerIcon = issuerIcon;

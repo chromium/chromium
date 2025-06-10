@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.feedback;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
@@ -25,9 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A utility class for checking if the device is currently connected to the Internet by using
- * both available network stacks, and checking over both HTTP and HTTPS.
+ * A utility class for checking if the device is currently connected to the Internet by using both
+ * available network stacks, and checking over both HTTP and HTTPS.
  */
+@NullMarked
 public class ConnectivityTask {
     private static final String TAG = "feedback";
 
@@ -272,11 +274,11 @@ public class ConnectivityTask {
 
     private final Map<Integer, Integer> mResult = new HashMap<>();
     private final int mTimeoutMs;
-    private final ConnectivityResult mCallback;
+    private final @Nullable ConnectivityResult mCallback;
     private final long mStartCheckTimeMs;
 
     @VisibleForTesting
-    ConnectivityTask(Profile profile, int timeoutMs, ConnectivityResult callback) {
+    ConnectivityTask(Profile profile, int timeoutMs, @Nullable ConnectivityResult callback) {
         mTimeoutMs = timeoutMs;
         mCallback = callback;
         mStartCheckTimeMs = SystemClock.elapsedRealtime();

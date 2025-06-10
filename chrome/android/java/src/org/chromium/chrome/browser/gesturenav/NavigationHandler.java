@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.ACTION;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.ALLOW_NAV;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.BUBBLE_OFFSET;
@@ -22,11 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
@@ -49,6 +52,7 @@ import java.lang.annotation.RetentionPolicy;
  * 3-button navigation mode. For gestural navigation mode, see {@link
  * ToolbarManager#OnBackPressHandler}
  */
+@NullMarked
 class NavigationHandler implements TouchEventObserver {
     // Width of a rectangluar area in dp on the left/right edge used for navigation.
     // Swipe beginning from a point within these rects triggers the operation.
@@ -105,8 +109,8 @@ class NavigationHandler implements TouchEventObserver {
     private GestureDetector mDetector;
     private final View.OnAttachStateChangeListener mAttachStateListener;
     private final BackActionDelegate mBackActionDelegate;
-    @Nullable private TabOnBackGestureHandler mTabOnBackGestureHandler;
-    private Tab mTab;
+    private @Nullable TabOnBackGestureHandler mTabOnBackGestureHandler;
+    private @Nullable Tab mTab;
     private final Supplier<Boolean> mWillNavigateSupplier;
 
     private @GestureState int mState;
@@ -140,11 +144,12 @@ class NavigationHandler implements TouchEventObserver {
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(
+                @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             // |onScroll| needs handling only after the state moved away from |NONE|.
             if (isStopped()) return true;
             return NavigationHandler.this.onScroll(
-                    e1.getX(), distanceX, distanceY, e2.getX(), e2.getY());
+                    assumeNonNull(e1).getX(), distanceX, distanceY, e2.getX(), e2.getY());
         }
     }
 
@@ -300,6 +305,7 @@ class NavigationHandler implements TouchEventObserver {
             mState = GestureState.DRAGGED;
 
             if (willUpdateTabHistory(forward)) {
+                assert mTab != null;
                 if (GestureNavigationUtils.allowTransition(mTab, forward)) {
                     if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
                             forward, initiatingEdge)) {
@@ -312,8 +318,9 @@ class NavigationHandler implements TouchEventObserver {
                             getProgress(), mInitiatingEdge, forward, false);
                 }
                 BackPressMetrics.recordNavStatusOnGestureStart(
-                        mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
-                        mTab.getWindowAndroid().getActivity().get().getWindow());
+                        assumeNonNull(mTab.getWebContents())
+                                .hasUncommittedNavigationInPrimaryMainFrame(),
+                        assumeNonNull(mTab.getWindowAndroid().getActivity().get()).getWindow());
                 mStartNavDuringOngoingGesture = false;
                 mBackGestureForTabHistoryInProgress = true;
             }
@@ -355,6 +362,7 @@ class NavigationHandler implements TouchEventObserver {
             // Delegate navigation to native side: supposed to be triggered after animation.
             return;
         }
+        assert mTab != null;
         if (forward) {
             // Session history may have changed since the beginning of the gesture such that it's no
             // longer possible to go forward.
@@ -365,7 +373,7 @@ class NavigationHandler implements TouchEventObserver {
             // Perform back action at the next UI thread execution. The back action can
             // potentially close the tab we're running on, which causes use-after-destroy
             // exception if the closing operation is performed synchronously.
-            mHandler.post(() -> mBackActionDelegate.onBackGesture(mTab));
+            mHandler.post(() -> mBackActionDelegate.onBackGesture(assertNonNull(mTab)));
         }
     }
 
@@ -377,6 +385,7 @@ class NavigationHandler implements TouchEventObserver {
     private @CloseTarget int getCloseIndicator(boolean forward) {
         if (forward) return CloseTarget.NONE;
 
+        assert mTab != null;
         @ActionType int type = mBackActionDelegate.getBackActionType(mTab);
         if (type == ActionType.CLOSE_TAB) {
             return CloseTarget.TAB;
@@ -414,9 +423,10 @@ class NavigationHandler implements TouchEventObserver {
         boolean allowNav = endState == GestureEndState.INVOKE;
         // If the back gesture will update history, record the metrics.
         if (mBackGestureForTabHistoryInProgress) {
+            assumeNonNull(mTab);
             BackPressMetrics.recordNavStatusDuringGesture(
                     mStartNavDuringOngoingGesture,
-                    mTab.getWindowAndroid().getActivity().get().getWindow());
+                    assumeNonNull(mTab.getWindowAndroid().getActivity().get()).getWindow());
         }
         mBackGestureForTabHistoryInProgress = false;
         mStartNavDuringOngoingGesture = false;
@@ -503,6 +513,7 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /** Performs cleanup upon destruction. */
+    @SuppressWarnings("NullAway")
     void destroy() {
         if (mTab != null) {
             assert mTabObserver != null : "Always has a tab observer";
@@ -512,7 +523,7 @@ class NavigationHandler implements TouchEventObserver {
         mDetector = null;
     }
 
-    TabOnBackGestureHandler getTabOnBackGestureHandlerForTesting() {
+    @Nullable TabOnBackGestureHandler getTabOnBackGestureHandlerForTesting() {
         return mTabOnBackGestureHandler;
     }
 

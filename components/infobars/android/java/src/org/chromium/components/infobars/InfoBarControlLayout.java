@@ -453,7 +453,7 @@ public final class InfoBarControlLayout extends ViewGroup {
             Bitmap iconBitmap,
             int iconColorId,
             CharSequence primaryMessage,
-            CharSequence secondaryMessage,
+            @Nullable CharSequence secondaryMessage,
             int resourceId) {
         LinearLayout layout =
                 (LinearLayout)
