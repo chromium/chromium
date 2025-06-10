@@ -19,88 +19,118 @@ found in the LICENSE file.
         android:importantForAccessibility="no" />
 
     <!-- Main card content. -->
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <RelativeLayout
-            android:id="@+id/card_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@drawable/tab_grid_card_background"
-            android:layout_margin="@dimen/tab_grid_card_margin">
-            <ImageView
-                android:id="@+id/tab_favicon"
-                android:layout_height="@dimen/tab_grid_card_header_height"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
-                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
-                android:adjustViewBounds="true"
-                android:importantForAccessibility="no" />
-            <FrameLayout
-                android:id="@+id/tab_group_color_view_container"
-                android:layout_height="@dimen/tab_grid_card_header_height"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_toEndOf="@id/tab_favicon"
-                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
-                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
-                android:importantForAccessibility="no"
-                android:visibility="gone"/>
-            <TextView
-                android:id="@+id/tab_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/tab_group_color_view_container"
-                android:layout_marginEnd="@dimen/tab_grid_card_title_end_margin"
-                android:requiresFadingEdge="horizontal"
-                android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
-                android:minHeight="@dimen/tab_grid_card_header_height"
-                android:gravity="center_vertical"
-                android:ellipsize="none"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
-            <org.chromium.chrome.browser.tab_ui.TabThumbnailView
-                android:id="@+id/tab_thumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/tab_title"
-                android:layout_marginLeft="@dimen/tab_grid_card_thumbnail_margin"
-                android:layout_marginRight="@dimen/tab_grid_card_thumbnail_margin"
-                android:layout_marginBottom="@dimen/tab_grid_card_thumbnail_margin"
-                android:gravity="center_horizontal"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="false"
-                android:importantForAccessibility="no"
-                app:cornerRadiusTopStart="@dimen/tab_grid_card_thumbnail_corner_radius_top"
-                app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
-                app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
-                app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
+        <View
+          android:id="@+id/card_wrapper"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:visibility="gone"
+          android:background="@drawable/tab_grid_card_background"
+          android:layout_marginHorizontal="@dimen/tab_grid_card_margin_wrapper"
+          android:layout_marginTop="@dimen/tab_grid_card_margin_wrapper"
+          android:layout_marginBottom="@dimen/tab_grid_card_margin_wrapper"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"/>
+        <View
+          android:id="@+id/card_view"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:layout_gravity="center"
+          android:background="@drawable/tab_grid_card_background"
+          android:layout_margin="@dimen/tab_grid_card_margin"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent" />
+        <ImageView
+          android:id="@+id/tab_favicon"
+          android:layout_height="@dimen/tab_grid_card_header_height"
+          android:layout_width="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:padding="@dimen/tab_grid_card_favicon_padding_start"
+          android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
+          android:adjustViewBounds="true"
+          android:scaleType="fitCenter"
+          android:importantForAccessibility="no"
+          app:layout_constraintTop_toTopOf="@id/card_view"
+          app:layout_constraintStart_toStartOf="@id/card_view" />
+        <FrameLayout
+          android:id="@+id/tab_group_color_view_container"
+          android:layout_height="@dimen/tab_grid_card_header_height"
+          android:layout_width="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_toEndOf="@id/tab_favicon"
+          app:layout_constraintTop_toTopOf="@id/card_view"
+          app:layout_constraintStart_toEndOf="@id/tab_favicon"
+          android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
+          android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
+          android:importantForAccessibility="no"
+          android:visibility="gone"/>
+        <TextView
+          android:id="@+id/tab_title"
+          android:layout_width="0dp"
+          android:layout_height="@dimen/tab_grid_card_header_height"
+          app:layout_constraintTop_toTopOf="@id/card_view"
+          app:layout_constraintStart_toEndOf="@id/tab_group_color_view_container"
+          app:layout_constraintEnd_toEndOf="@+id/card_view"
+          android:layout_marginEnd="@dimen/tab_grid_card_title_end_margin"
+          android:requiresFadingEdge="horizontal"
+          android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
+          android:gravity="center_vertical"
+          android:ellipsize="none"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+        <org.chromium.chrome.browser.tab_ui.TabThumbnailView
+          android:id="@+id/tab_thumbnail"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintTop_toBottomOf="@id/tab_title"
+          app:layout_constraintBottom_toBottomOf="@id/card_view"
+          app:layout_constraintStart_toStartOf="@id/card_view"
+          app:layout_constraintEnd_toEndOf="@id/card_view"
+          android:layout_marginLeft="@dimen/tab_grid_card_thumbnail_margin"
+          android:layout_marginRight="@dimen/tab_grid_card_thumbnail_margin"
+          android:layout_marginBottom="@dimen/tab_grid_card_thumbnail_margin"
+          android:gravity="center_horizontal"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="false"
+          android:importantForAccessibility="no"
+          app:cornerRadiusTopStart="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+          app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+          app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
+          app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
 
-            <!-- Legacy layout for price cards. To be removed in favor of tab_card_label. -->
-            <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
-                android:id="@+id/price_info_box_outer"
-                android:layout_below="@id/tab_title"
-                android:background="@drawable/price_card_scrim"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginStart="4dp"
-                android:visibility="gone"/>
+        <!-- Legacy layout for price cards. To be removed in favor of tab_card_label. -->
+        <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
+          android:id="@+id/price_info_box_outer"
+          app:layout_constraintTop_toBottomOf="@id/tab_title"
+          app:layout_constraintStart_toStartOf="@id/card_view"
+          app:layout_constraintEnd_toEndOf="@id/card_view"
+          android:background="@drawable/price_card_scrim"
+          android:layout_width="0dp"
+          android:layout_height="56dp"
+          android:layout_marginStart="4dp"
+          android:visibility="gone"/>
 
-            <!-- New layout for labels including activity updates and price cards. -->
-            <ViewStub
-                android:id="@+id/tab_card_label_stub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/tab_card_label_height"
-                android:layout_marginBottom="11dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:inflatedId="@+id/tab_card_label"
-                android:layout="@layout/tab_card_label_layout" />
-        </RelativeLayout>
+        <!-- New layout for labels including activity updates and price cards. -->
+        <ViewStub
+          android:id="@+id/tab_card_label_stub"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/tab_card_label_height"
+          android:layout_marginBottom="11dp"
+          android:layout_alignParentBottom="true"
+          app:layout_constraintBottom_toBottomOf="@id/card_view"
+          app:layout_constraintStart_toStartOf="@id/card_view"
+          app:layout_constraintEnd_toEndOf="@id/card_view"
+          android:layout_centerHorizontal="true"
+          android:inflatedId="@+id/tab_card_label"
+          android:layout="@layout/tab_card_label_layout" />
 
         <!--
           Close/Select button. This is outside the RelativeLayout so it can look like it is inside
@@ -115,6 +145,8 @@ found in the LICENSE file.
             android:scaleType="center"
             android:layout_gravity="end"
             android:tint="@macro/default_icon_color"
-            tools:ignore="ContentDescription" />
-    </FrameLayout>
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

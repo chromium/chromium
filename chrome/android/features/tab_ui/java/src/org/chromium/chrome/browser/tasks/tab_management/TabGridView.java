@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.BASE_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider.getTabCardHighlightBackgroundTintList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationSt
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
+import org.chromium.ui.UiUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -196,6 +198,23 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         }
 
         mActionButton.setImportantForAccessibility(accessibilityMode);
+    }
+
+    void setIsHighlighted(boolean isHighlighted, boolean isIncognito) {
+        Drawable gridCardHighlightDrawable = null;
+        View cardWrapper = findViewById(R.id.card_wrapper);
+        if (isHighlighted) {
+            Context context = getContext();
+            cardWrapper.setVisibility(VISIBLE);
+            gridCardHighlightDrawable =
+                    UiUtils.getTintedDrawable(
+                            context,
+                            R.drawable.tab_grid_card_highlight,
+                            getTabCardHighlightBackgroundTintList(context, isIncognito));
+        } else {
+            cardWrapper.setVisibility(GONE);
+        }
+        cardWrapper.setBackground(gridCardHighlightDrawable);
     }
 
     private void setTabActionButtonCloseDrawable() {

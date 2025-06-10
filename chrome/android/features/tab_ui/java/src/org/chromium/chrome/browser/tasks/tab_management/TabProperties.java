@@ -76,6 +76,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabActionListener> TAB_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
 
@@ -195,6 +198,7 @@ public class TabProperties {
                         SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                         HAS_NOTIFICATION_BUBBLE,
                         TAB_CARD_LABEL_DATA,
+                        IS_HIGHLIGHTED
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);
 

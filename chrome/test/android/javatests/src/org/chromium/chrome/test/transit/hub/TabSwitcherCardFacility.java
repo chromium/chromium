@@ -6,8 +6,8 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -44,7 +44,10 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
     @CallSuper
     public void declareExtraElements() {
         Matcher<View> cardTitleMatcher =
-                allOf(withText(mTitle), withId(R.id.tab_title), withParent(withId(R.id.card_view)));
+                allOf(
+                        withText(mTitle),
+                        withId(R.id.tab_title),
+                        isDescendantOfA(withId(R.id.content_view)));
         titleElement = declareView(cardTitleMatcher);
 
         ViewSpec<View> cardSpec =

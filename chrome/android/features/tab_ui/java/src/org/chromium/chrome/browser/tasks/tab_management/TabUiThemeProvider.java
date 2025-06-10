@@ -314,6 +314,24 @@ public class TabUiThemeProvider {
     }
 
     /**
+     * Returns the {@link ColorStateList} to use for tab card highlighting based on the incognito
+     * mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorStateList} for the tab card highlight.
+     */
+    public static ColorStateList getTabCardHighlightBackgroundTintList(
+            Context context, boolean isIncognito) {
+        int backgroundTint =
+                isIncognito
+                        ? ContextCompat.getColor(
+                                context, R.color.incognito_tab_highlight_card_bg_color)
+                        : ContextCompat.getColor(context, R.color.tab_highlight_card_bg_color);
+        return ColorStateList.valueOf(backgroundTint);
+    }
+
+    /**
      * Returns the text color for the strip tab hover card title based on the incognito mode.
      *
      * @param context {@link Context} used to retrieve color.

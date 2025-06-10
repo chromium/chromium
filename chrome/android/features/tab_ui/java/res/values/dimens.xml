@@ -45,9 +45,12 @@ found in the LICENSE file.
     <dimen name="incognito_reauth_promo_message_icon_height">52dp</dimen>
 
     <dimen name="tab_grid_card_bg_radius">24dp</dimen>
+    <dimen name="tab_grid_card_highlight_bg_radius">27dp</dimen>
     <dimen name="tab_grid_card_favicon_padding_start">11dp</dimen>
     <dimen name="tab_grid_card_favicon_padding_end">9dp</dimen>
     <dimen name="tab_grid_card_header_height">40dp</dimen>
+    <dimen name="tab_grid_card_margin_wrapper">3dp</dimen>
+    <!-- The tab card highlight size is equal to tab_grid_card_margin - tab_grid_card_margin_wrapper -->
     <dimen name="tab_grid_card_margin">8dp</dimen>
     <dimen name="tab_grid_card_between_card_padding">4dp</dimen>
     <dimen name="tab_grid_card_title_fading_length">20dp</dimen>

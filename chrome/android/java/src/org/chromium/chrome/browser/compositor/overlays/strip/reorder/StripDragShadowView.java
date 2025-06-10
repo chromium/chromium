@@ -17,11 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -158,8 +158,8 @@ public class StripDragShadowView extends FrameLayout {
         // margin that matches the start padding of the favicon. This is not applicable in the xml
         // layout, because the tab_grid_card_item expects to have an action button that exists after
         // the title to handle this symmetry.
-        RelativeLayout.LayoutParams layoutParams =
-                (RelativeLayout.LayoutParams) mTitleView.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
         int padding =
                 getResources().getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding_start);
         layoutParams.setMarginEnd(padding);

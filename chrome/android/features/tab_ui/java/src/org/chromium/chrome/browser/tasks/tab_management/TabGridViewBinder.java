@@ -264,6 +264,11 @@ class TabGridViewBinder {
                                     model.get(TabProperties.IS_SELECTED)));
         } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
             updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
+        } else if (TabProperties.IS_HIGHLIGHTED == propertyKey) {
+            ((TabGridView) view)
+                    .setIsHighlighted(
+                            model.get(TabProperties.IS_HIGHLIGHTED),
+                            model.get(TabProperties.IS_INCOGNITO));
         }
     }
 
