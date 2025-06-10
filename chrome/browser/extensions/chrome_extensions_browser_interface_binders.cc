@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
@@ -83,17 +84,16 @@ void BindMachineLearningService(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void BindLanguagePacks(
-    content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<ash::language::mojom::LanguagePacks> receiver) {
   ash::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
       std::move(receiver));
 }
 
 void BindGoogleTtsStream(
-    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context,
     mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream> receiver) {
   TtsEngineExtensionObserverChromeOSFactory::GetForProfile(
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
+      Profile::FromBrowserContext(browser_context))
       ->BindGoogleTtsStream(std::move(receiver));
 }
 
@@ -172,8 +172,10 @@ void PopulateChromeFrameBindersForExtension(
   if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
     binder_map->Add<ash::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
-    binder_map->Add<ash::language::mojom::LanguagePacks>(
-        base::BindRepeating(&BindLanguagePacks));
+    binder_map->Add<ash::language::mojom::LanguagePacks>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<ash::language::mojom::LanguagePacks>
+               receiver) { BindLanguagePacks(std::move(receiver)); }));
     binder_map->Add<chromeos::machine_learning::mojom::MachineLearningService>(
         base::BindRepeating(&BindMachineLearningService));
   }
@@ -230,10 +232,17 @@ void PopulateChromeFrameBindersForExtension(
   }
 
   if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
-    binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
-        base::BindRepeating(&BindGoogleTtsStream));
-    binder_map->Add<ash::language::mojom::LanguagePacks>(
-        base::BindRepeating(&BindLanguagePacks));
+    binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream>
+               receiver) {
+          BindGoogleTtsStream(frame_host->GetBrowserContext(),
+                              std::move(receiver));
+        }));
+    binder_map->Add<ash::language::mojom::LanguagePacks>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<ash::language::mojom::LanguagePacks>
+               receiver) { BindLanguagePacks(std::move(receiver)); }));
   }
 
   // Limit the binding to EnhancedNetworkTts Extension.
@@ -277,6 +286,29 @@ void PopulateChromeFrameBindersForExtension(
       base::BindRepeating(&BindMimeHandlerService));
   binder_map->Add<mime_handler::BeforeUnloadControl>(
       base::BindRepeating(&BindBeforeUnloadControl));
+}
+
+void PopulateChromeServiceWorkerBindersForExtension(
+    mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
+        binder_map,
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
+    binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(base::BindRepeating(
+        [](content::BrowserContext* browser_context,
+           const content::ServiceWorkerVersionBaseInfo&,
+           mojo::PendingReceiver<chromeos::tts::mojom::GoogleTtsStream>
+               receiver) {
+          BindGoogleTtsStream(browser_context, std::move(receiver));
+        },
+        browser_context));
+    binder_map->Add<ash::language::mojom::LanguagePacks>(base::BindRepeating(
+        [](const content::ServiceWorkerVersionBaseInfo&,
+           mojo::PendingReceiver<ash::language::mojom::LanguagePacks>
+               receiver) { BindLanguagePacks(std::move(receiver)); }));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace extensions

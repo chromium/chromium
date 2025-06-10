@@ -79,6 +79,10 @@
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
+#endif
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/cdm_document_service_impl.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
@@ -370,6 +374,22 @@ void ChromeContentBrowserClient::
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::BadgeService>(
       base::BindRepeating(&BindBadgeServiceForServiceWorker));
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const GURL& site = service_worker_version_info.scope;
+  if (!site.SchemeIs(extensions::kExtensionScheme)) {
+    return;
+  }
+
+  auto* extension = extensions::ExtensionRegistry::Get(browser_context)
+                        ->enabled_extensions()
+                        .GetByID(site.host());
+  if (!extension) {
+    return;
+  }
+  extensions::PopulateChromeServiceWorkerBindersForExtension(
+      map, browser_context, extension);
 #endif
 }
 
