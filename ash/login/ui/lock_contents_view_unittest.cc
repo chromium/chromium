@@ -39,6 +39,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
@@ -518,7 +519,7 @@ TEST_F(LockContentsViewKeyboardUnitTest,
   // Check if the previous focus is set correctly to the shelf widget.
   EXPECT_EQ(delegate->GetViewAccessibility().GetPreviousWindowFocus(),
             Shelf::ForWindow(delegate->GetWidget()->GetNativeWindow())
-                ->shelf_widget());
+                ->login_shelf_widget());
 }
 
 TEST_F(LockContentsViewKeyboardUnitTest, AutoLayoutSmallUsersListForKeyboard) {
@@ -3356,7 +3357,7 @@ TEST_F(LockContentsViewUnitTest, LoginAccessibleProperties) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME));
   EXPECT_EQ(contents->GetViewAccessibility().GetNextWindowFocus(),
-            shelf->shelf_widget());
+            shelf->login_shelf_widget());
   EXPECT_EQ(contents->GetViewAccessibility().GetPreviousWindowFocus(),
             shelf->GetStatusAreaWidget());
 }
@@ -3374,7 +3375,7 @@ TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
   EXPECT_EQ(contents->GetViewAccessibility().GetNextWindowFocus(),
-            shelf->shelf_widget());
+            shelf->login_shelf_widget());
   EXPECT_EQ(contents->GetViewAccessibility().GetPreviousWindowFocus(),
             shelf->GetStatusAreaWidget());
 }

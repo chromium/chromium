@@ -2449,8 +2449,7 @@ void LockContentsView::ForceSyncLayoutOfAllViews() {
 void LockContentsView::UpdateAccessiblePreviousAndNextFocus() {
   if (GetWidget() && GetWidget()->GetNativeWindow()) {
     Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-    ShelfWidget* shelf_widget = shelf->shelf_widget();
-    GetViewAccessibility().SetNextFocus(shelf_widget);
+    GetViewAccessibility().SetNextFocus(shelf->login_shelf_widget());
     GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
   } else {
     GetViewAccessibility().SetNextFocus(nullptr);
