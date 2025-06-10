@@ -140,7 +140,12 @@ void UserTriggeredManualGenerationFromContextMenu(
 
 bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 #if BUILDFLAG(IS_ANDROID)
-  if (password_manager::UsesSplitStoresAndUPMForLocal(client->GetPrefs()) &&
+  // After LoginDb deprecation all users have split stores.
+  bool uses_split_stores =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid) ||
+      password_manager::UsesSplitStoresAndUPMForLocal(client->GetPrefs());
+  if (uses_split_stores &&
       password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
     // After store split on Android, AccountPasswordStore is a default store for
