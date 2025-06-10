@@ -149,20 +149,13 @@ PasswordAutofillManager::~PasswordAutofillManager() {
 
 void PasswordAutofillManager::ShowSuggestions(
     const autofill::TriggeringField& triggering_field) {
-  OnShowPasswordSuggestions(
-      triggering_field.element_id, triggering_field.trigger_source,
-      triggering_field.text_direction, triggering_field.typed_username,
-      ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
-      ShowIdentityCredentials(true),
-      password_manager_driver_->TransformToRootCoordinates(
-          triggering_field.bounds));
+  // TODO: crbug.com/410743802 - Implement.
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void PasswordAutofillManager::ShowKeyboardReplacingSurface(
     const autofill::PasswordSuggestionRequest& request) {
-  password_client_->ShowKeyboardReplacingSurface(password_manager_driver_,
-                                                 request);
+  // TODO: crbug.com/410743802 - Implement.
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

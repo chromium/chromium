@@ -35,13 +35,23 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 using autofill::mojom::FocusedFieldType;
 
 namespace password_manager {
 
 namespace {
+
+gfx::RectF TransformToRootCoordinates(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::RectF& bounds_in_frame_coordinates) {
+  content::RenderWidgetHostView* rwhv = render_frame_host->GetView();
+  if (!rwhv)
+    return bounds_in_frame_coordinates;
+  return gfx::RectF(rwhv->TransformPointToRootCoordSpaceF(
+                        bounds_in_frame_coordinates.origin()),
+                    bounds_in_frame_coordinates.size());
+}
 
 void LogSiteIsolationMetricsForSubmittedForm(
     content::RenderFrameHost* render_frame_host) {
@@ -168,17 +178,6 @@ int ContentPasswordManagerDriver::GetId() const {
 int ContentPasswordManagerDriver::GetFrameId() const {
   // Use the associated FrameTreeNode ID as the Frame ID.
   return render_frame_host_->GetFrameTreeNodeId().value();
-}
-
-gfx::RectF ContentPasswordManagerDriver::TransformToRootCoordinates(
-    const gfx::RectF& bounds_in_frame_coordinates) {
-  content::RenderWidgetHostView* rwhv = render_frame_host_->GetView();
-  if (!rwhv) {
-    return bounds_in_frame_coordinates;
-  }
-  return gfx::RectF(rwhv->TransformPointToRootCoordSpaceF(
-                        bounds_in_frame_coordinates.origin()),
-                    bounds_in_frame_coordinates.size());
 }
 
 void ContentPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
@@ -593,10 +592,20 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
   last_triggering_field_id_ = request.field.element_id;
 
 #if !BUILDFLAG(IS_ANDROID)
-  GetPasswordAutofillManager()->ShowSuggestions(request.field);
+  ShowPasswordSuggestionsForField(request.field);
 #else
-  GetPasswordAutofillManager()->ShowKeyboardReplacingSurface(request);
+  client_->ShowKeyboardReplacingSurface(this, request);
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContentPasswordManagerDriver::ShowPasswordSuggestionsForField(
+    const autofill::TriggeringField& triggering_field) {
+  GetPasswordAutofillManager()->OnShowPasswordSuggestions(
+      triggering_field.element_id, triggering_field.trigger_source,
+      triggering_field.text_direction, triggering_field.typed_username,
+      ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
+      ShowIdentityCredentials(triggering_field.show_identity_credentials),
+      TransformToRootCoordinates(render_frame_host_, triggering_field.bounds));
 }
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
