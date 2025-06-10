@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/gpu-fyi-try-android-p-pixel-2-32/gn-args.json"
+        "infra/config/generated/builders/try/gpu-fyi-try-android-q-pixel-2-32/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -87,7 +87,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-p-pixel-2-32/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-q-pixel-2-32/targets"
     }
   },
   "$build/siso": {

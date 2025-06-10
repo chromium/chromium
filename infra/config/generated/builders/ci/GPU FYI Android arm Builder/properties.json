@@ -264,7 +264,7 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "gpu-fyi-try-android-p-pixel-2-32",
+          "builder": "gpu-fyi-try-android-q-pixel-2-32",
           "group": "tryserver.chromium.android"
         },
         {

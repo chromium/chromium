@@ -185,9 +185,9 @@ try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-a23-32
 try/gpu-fyi-try-android-m-nexus-5x-64
 try/gpu-fyi-try-android-nvidia-shield-tv
-try/gpu-fyi-try-android-p-pixel-2-32
 try/gpu-fyi-try-android-pixel-6-64
 try/gpu-fyi-try-android-pixel-6-64-exp
+try/gpu-fyi-try-android-q-pixel-2-32
 try/gpu-fyi-try-android-r-pixel-4-32
 try/gpu-fyi-try-android-s23-64
 try/gpu-fyi-try-chromeos-amd64-generic
