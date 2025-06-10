@@ -1339,9 +1339,14 @@ void HTMLSelectElement::TypeAheadFind(const KeyboardEvent& event) {
 
   HTMLOptionElement* option_at_index = OptionAtListIndex(index);
 
-  if (HTMLSelectElement::CustomizableSelectEnabled(this) &&
-      select_type_->IsAppearanceBasePicker() &&
-      select_type_->PopupIsVisible()) {
+  const bool customizable_select_popup =
+      HTMLSelectElement::CustomizableSelectEnabled(this) &&
+      select_type_->IsAppearanceBasePicker() && select_type_->PopupIsVisible();
+  const bool customizable_select_in_page =
+      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      !UsesMenuList() && IsAppearanceBase();
+
+  if (customizable_select_popup || customizable_select_in_page) {
     option_at_index->Focus(FocusParams(FocusTrigger::kScript));
     return;
   }
