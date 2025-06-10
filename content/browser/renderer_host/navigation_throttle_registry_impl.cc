@@ -171,13 +171,6 @@ void NavigationThrottleRegistryImpl::AddThrottle(
   throttles_.push_back(std::move(navigation_throttle));
 }
 
-void NavigationThrottleRegistryImpl::MaybeAddThrottle(
-    std::unique_ptr<NavigationThrottle> navigation_throttle) {
-  if (navigation_throttle) {
-    AddThrottle(std::move(navigation_throttle));
-  }
-}
-
 bool NavigationThrottleRegistryImpl::HasThrottle(const std::string& name) {
   return std::ranges::find_if(throttles_, [name](const auto& throttle) {
     return throttle->GetNameForLogging() == name;

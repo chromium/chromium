@@ -112,8 +112,7 @@ void TargetAutoAttacher::RemoveClient(Client* client) {
 void TargetAutoAttacher::CreateAndAddNavigationThrottles(
     NavigationThrottleRegistry& registry) {
   for (auto& client : clients_) {
-    registry.MaybeAddThrottle(
-        client.CreateThrottleForNavigation(this, registry));
+        client.MaybeCreateAndAddNavigationThrottle(this, registry);
   }
 }
 

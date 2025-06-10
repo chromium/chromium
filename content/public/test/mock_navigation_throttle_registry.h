@@ -29,14 +29,14 @@ namespace content {
 class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
  public:
   enum class RegistrationMode {
-    // AddThrottle() and MaybeAddThrottle() register the passed throttle as a
-    // testing purpose throttle that runs after other production throttles.
+    // AddThrottle() registers the passed throttle as a testing purpose throttle
+    // that runs after other production throttles.
     kAutoRegistrationForTesting,
 
-    // AddThrottle() and MaybeAddThrottle() don't register the passed throttle
-    // actually, but hold it in the mock. Users can query the hold throttles by
-    // throttles(), or call ContainsHeldThrottle() to check if AddThrottle() or
-    // MaybeAddThrottle() was called with a specific throttle. The held
+    // AddThrottle() doesn't register the passed throttle actually, but hold it
+    // in the mock. Users can query the hold throttles by
+    // throttles(), or call ContainsHeldThrottle() to check if AddThrottle() was
+    // called with a specific throttle. The held
     // throttles can be registered manually via RegisterHeldThrottles().
     kHold,
   };
@@ -50,7 +50,6 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
   // Implements NavigationThrottleRegistry:
   NavigationHandle& GetNavigationHandle() override;
   void AddThrottle(std::unique_ptr<NavigationThrottle> throttle) override;
-  void MaybeAddThrottle(std::unique_ptr<NavigationThrottle> throttle) override;
   // Following methods are not supported in this mock, and returns false always.
   bool HasThrottle(const std::string& name) override;
   bool EraseThrottleForTesting(const std::string& name) override;

@@ -85,8 +85,6 @@ class NavigationThrottleRegistryImpl : public NavigationThrottleRegistryBase {
   NavigationHandle& GetNavigationHandle() override;
   void AddThrottle(
       std::unique_ptr<NavigationThrottle> navigation_throttle) override;
-  void MaybeAddThrottle(
-      std::unique_ptr<NavigationThrottle> navigation_throttle) override;
   bool HasThrottle(const std::string& name) override;
   bool EraseThrottleForTesting(const std::string& name) override;
 

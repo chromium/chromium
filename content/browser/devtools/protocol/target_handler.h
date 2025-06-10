@@ -25,7 +25,6 @@ namespace content {
 
 class DevToolsAgentHostImpl;
 class DevToolsSession;
-class NavigationThrottle;
 
 namespace protocol {
 
@@ -160,7 +159,7 @@ class TargetHandler : public DevToolsDomainHandler,
       TargetAutoAttacher* source,
       const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
       const std::string& type) override;
-  std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
+  void MaybeCreateAndAddNavigationThrottle(
       TargetAutoAttacher* auto_attacher,
       NavigationThrottleRegistry& registry) override;
   void TargetInfoChanged(DevToolsAgentHost* host) override;

@@ -37,13 +37,6 @@ void MockNavigationThrottleRegistry::AddThrottle(
   }
 }
 
-void MockNavigationThrottleRegistry::MaybeAddThrottle(
-    std::unique_ptr<NavigationThrottle> throttle) {
-  if (throttle) {
-    AddThrottle(std::move(throttle));
-  }
-}
-
 bool MockNavigationThrottleRegistry::ContainsHeldThrottle(
     const std::string& name) {
   CHECK_EQ(registration_mode_, RegistrationMode::kHold);

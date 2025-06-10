@@ -768,7 +768,7 @@ Response TargetHandler::Disable() {
   return Response::Success();
 }
 
-std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
+void TargetHandler::MaybeCreateAndAddNavigationThrottle(
     TargetAutoAttacher* auto_attacher,
     NavigationThrottleRegistry& registry) {
   DCHECK(auto_attach_ || !auto_attach_related_targets_.empty());
@@ -782,8 +782,9 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
   // Note that fenced frames start as remote frames right away and get a RFDTAH
   // of their own, so they require a RequestThrottle rather than a Response one.
   if (!frame_tree_node->IsMainFrame()) {
-    return std::make_unique<ResponseThrottle>(weak_factory_.GetWeakPtr(),
-                                              auto_attacher, registry);
+    registry.AddThrottle(std::make_unique<ResponseThrottle>(
+        weak_factory_.GetWeakPtr(), auto_attacher, registry));
+    return;
   }
   // If we got here for main frame, it must be either browser or tab target.
   DCHECK(auto_attacher == auto_attacher_);
@@ -807,7 +808,7 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node));
     waiting_session = FindWaitingSession(host);
     if (!waiting_session) {
-      return nullptr;
+      return;
     }
   }
   // window.open() navigations are throttled on the renderer side and the main
@@ -818,10 +819,10 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
   // New window navigations (such as ctrl+click) should be throttled before
   // the main request is sent to apply user agent and other overrides.
   if (frame_tree_node->opener()) {
-    return nullptr;
+    return;
   }
-  return std::make_unique<RequestThrottle>(weak_factory_.GetWeakPtr(), registry,
-                                           host);
+  registry.AddThrottle(std::make_unique<RequestThrottle>(
+      weak_factory_.GetWeakPtr(), registry, host));
 }
 
 TargetHandler::Session* TargetHandler::FindWaitingSession(

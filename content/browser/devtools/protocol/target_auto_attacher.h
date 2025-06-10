@@ -17,7 +17,6 @@ class DevToolsAgentHost;
 class DevToolsAgentHostImpl;
 class DevToolsRendererChannel;
 class NavigationRequest;
-class NavigationThrottle;
 class NavigationThrottleRegistry;
 class RenderFrameDevToolsAgentHost;
 
@@ -37,7 +36,7 @@ class TargetAutoAttacher {
         const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
         const std::string& type) = 0;
     virtual void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) = 0;
-    virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
+    virtual void MaybeCreateAndAddNavigationThrottle(
         TargetAutoAttacher* auto_attacher,
         NavigationThrottleRegistry& registry) = 0;
     virtual void TargetInfoChanged(DevToolsAgentHost* host) = 0;
