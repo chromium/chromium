@@ -1540,7 +1540,17 @@ public class ChromeTabbedActivity extends ChromeActivity
             if (shouldHideOverviewMode
                     && IntentHandler.wasIntentSenderChrome(intent)
                     && isInOverviewMode()) {
-                hideOverview();
+                // Request switching to Home Space mode on XR.
+                if (mXrSceneCoreSessionManager != null) {
+                    boolean isFsm =
+                            mXrSceneCoreSessionManager.getXrSpaceModeObservableSupplier().get();
+                    if (isFsm) {
+                        mXrSceneCoreSessionManager.startSpaceModeChange(
+                                /* fsmModeRequested= */ false,
+                                () -> mXrSceneCoreSessionManager.finishSpaceModeChange());
+                    }
+                }
+                hideOverview(/* animate= */ true);
             }
             // Launch history on an already running instance of Chrome.
             maybeLaunchHistory();
@@ -2378,7 +2388,7 @@ public class ChromeTabbedActivity extends ChromeActivity
 
         if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()) {
             // Hides the overview page to ensure proper layout change signals are sent.
-            hideOverview();
+            hideOverview(/* animate= */ false);
         }
         return resultTab;
     }
@@ -3794,11 +3804,11 @@ public class ChromeTabbedActivity extends ChromeActivity
         }
     }
 
-    private void hideOverview() {
+    private void hideOverview(boolean animate) {
         assert isInOverviewMode();
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
-            mLayoutManager.showLayout(LayoutType.BROWSING, false);
+            mLayoutManager.showLayout(LayoutType.BROWSING, animate);
         }
     }
 

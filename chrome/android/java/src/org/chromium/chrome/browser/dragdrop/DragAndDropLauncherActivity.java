@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.hub.HubAnimationConstants;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -42,14 +41,9 @@ public class DragAndDropLauncherActivity extends Activity {
     static final String LAUNCHED_FROM_TAB_GROUP_USER_ACTION =
             "MobileNewInstanceLaunchedFromDraggedTabGroup";
 
-    private static final long XR_SYSUI_SM_TRANSITION_TIME_MS = 500L;
     // Hiding the overview takes some time and we need to delay starting new ChromeTabbedActivity to
     // align it with the View animation.
-    //
-    // Important: hiding the Tab Switcher on XR will also transition the window to HSM and this
-    // requires the window to have focus, otherwise the transition will not commence.
-    private static final long XR_EXIT_OVERVIEW_DELAY_MS =
-            HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS + XR_SYSUI_SM_TRANSITION_TIME_MS;
+    private static final long XR_EXIT_OVERVIEW_DELAY_MS = 250L;
     private static final long DROP_TIMEOUT_MS = 5 * TimeUtils.MILLISECONDS_PER_MINUTE;
     private static Long sIntentCreationTimestampMs;
     private static Long sDropTimeoutForTesting;
