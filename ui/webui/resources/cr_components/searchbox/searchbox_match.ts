@@ -399,7 +399,11 @@ export class SearchboxMatchElement extends PolymerElement {
   }
 
   private computeSeparatorText_(): string {
-    return this.match && decodeString16(this.match.description) ?
+    return this.match &&
+            decodeString16(
+                this.match.swapContentsAndDescription ?
+                    this.match.contents :
+                    this.match.description) ?
         loadTimeData.getString('searchboxSeparator') :
         '';
   }

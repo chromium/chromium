@@ -85,11 +85,13 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   const matchDescription = mojoString16ToString(
       match.answer ? match.answer.secondLine : match.description);
   const separatorText =
-      matchDescription ? loadTimeData.getString('searchboxSeparator') : '';
-  const contents = matchEl.$['contents'].textContent!.trim();
-  const separator = matchEl.$['separator'].textContent!.trim();
-  const description = matchEl.$['description'].textContent!.trim();
-  const text = (contents + ' ' + separator + ' ' + description).trim();
+      (match.swapContentsAndDescription ? match.contents : match.description) ?
+      loadTimeData.getString('searchboxSeparator') :
+      '';
+  const contents = matchEl.$['contents'].textContent!;
+  const separator = matchEl.$['separator'].textContent!;
+  const description = matchEl.$['description'].textContent!;
+  const text = contents + separator + description;
   assertEquals(
       match.swapContentsAndDescription ?
           matchDescription + separatorText + matchContents :
