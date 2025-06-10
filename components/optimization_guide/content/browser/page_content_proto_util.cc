@@ -13,27 +13,13 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
-
-class SecurityOriginSerializer {
- public:
-  static void Serialize(
-      const url::Origin& origin,
-      optimization_guide::proto::SecurityOrigin* proto_origin) {
-    proto_origin->set_opaque(origin.opaque());
-
-    if (origin.opaque()) {
-      proto_origin->set_value(origin.GetNonceForSerialization()->ToString());
-    } else {
-      proto_origin->set_value(origin.Serialize());
-    }
-  }
-};
 
 namespace {
 

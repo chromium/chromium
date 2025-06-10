@@ -482,6 +482,19 @@ static_library("prediction") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("page_content") {
+  sources = [
+    "page_content_proto_serializer.cc",
+    "page_content_proto_serializer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
+  ]
+}
+
 source_set("filters_test_support") {
   testonly = true
   sources = [
