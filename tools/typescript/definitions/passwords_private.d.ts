@@ -141,6 +141,7 @@ declare global {
         username: string;
         displayName?: string;
         password?: string;
+        backupPassword?: string;
         federationText?: string;
         id: number;
         storedIn: PasswordStoreSet;

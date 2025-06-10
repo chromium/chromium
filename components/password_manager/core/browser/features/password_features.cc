@@ -144,6 +144,10 @@ BASE_FEATURE(kSetLeakCheckRequestCriticality,
              "SetLeakCheckRequestCriticality",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShowRecoveryPassword,
+             "ShowRecoveryPassword",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
 #if BUILDFLAG(IS_WIN)

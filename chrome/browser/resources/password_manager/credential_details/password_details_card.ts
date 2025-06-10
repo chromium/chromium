@@ -90,6 +90,11 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: false,
       },
 
+      isBackup: {
+        type: Boolean,
+        value: false,
+      },
+
       interactionsEnum_: {
         type: Object,
         value: PasswordViewPageInteractions,
@@ -132,6 +137,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   /* This is set by the parent element, to only show help buble on the first
    * card on the page. */
   declare shouldRegisterSharingPromo: boolean;
+  /* Set when the card should display the backup password */
+  declare isBackup: boolean;
   declare private showEditPasswordDialog_: boolean;
   declare private passwordSharingDisabled_: boolean;
   declare private showDeletePasswordDialog_: boolean;
@@ -154,8 +161,13 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private getPasswordValue_(): string|undefined {
-    return this.isFederated_() ? this.password.federationText :
-                                 this.password.password;
+    if (this.isBackup) {
+      return this.password.backupPassword;
+    }
+    if (this.isFederated_()) {
+      return this.password.federationText;
+    }
+    return this.password.password;
   }
 
   private getPasswordType_(): string {
@@ -180,6 +192,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private onDeleteClick_() {
+    // TODO(crbug.com/420801799): Handle delete button for backup entries.
+    if (this.isBackup) {
+      return;
+    }
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_DELETE_BUTTON_CLICKED);
     if (this.password.storedIn ===
@@ -256,7 +272,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private computeShowShareButton_(): boolean {
-    return !this.isFederated_() &&
+    return !this.isFederated_() && !this.isBackup &&
         (this.isSyncingPasswords || this.isAccountStoreUser);
   }
 

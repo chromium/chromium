@@ -1440,6 +1440,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
       CreateSampleForm(PasswordForm::Store::kProfileStore, u"username1");
   PasswordForm password2 =
       CreateSampleForm(PasswordForm::Store::kProfileStore, u"username2");
+  const std::u16string backup_password = u"backup";
+  password2.SetPasswordBackupNote(backup_password);
 
   SetUpPasswordStores({password1, password2});
 
@@ -1459,6 +1461,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry2.username = "username2";
   expected_entry2.stored_in = api::passwords_private::PasswordStoreSet::kDevice;
+  expected_entry2.backup_password = base::UTF16ToUTF8(backup_password);
   EXPECT_THAT(groups[0].entries,
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),

@@ -132,6 +132,10 @@ BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
 // passwords.
 BASE_DECLARE_FEATURE(kSetLeakCheckRequestCriticality);
 
+// Shows recovery password for the improved password change flow in the
+// management UI.
+BASE_DECLARE_FEATURE(kShowRecoveryPassword);
+
 // Displays at least the decryptable and never saved logins in the password
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);

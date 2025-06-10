@@ -48,6 +48,7 @@ export interface PasswordEntryParams {
   username?: string;
   displayName?: string;
   password?: string;
+  backupPassword?: string;
   federationText?: string;
   id?: number;
   inAccountStore?: boolean;
@@ -98,6 +99,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     storedIn: storeType,
     note: note,
     changePasswordUrl: params.changePasswordUrl,
+    backupPassword: params.backupPassword,
     password: params.password || '',
     affiliatedDomains: params.affiliatedDomains || [domain],
     creationTime: params.isPasskey ? 1000000000 : undefined,

@@ -112,6 +112,9 @@ struct CredentialUIEntry {
   // The current password.
   std::u16string password;
 
+  // Recovery password for automatic password change.
+  std::optional<std::u16string> backup_password;
+
   // The origin of identity provider used for federated login.
   url::SchemeHostPort federation_origin;
 
