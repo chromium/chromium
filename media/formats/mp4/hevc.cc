@@ -17,7 +17,6 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -25,6 +24,7 @@
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/parsers/h265_parser.h"
 #else
@@ -286,7 +286,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
           break;
         }
         for (const auto& sei_msg : sei.msgs) {
-          std::visit(base::Overloaded{
+          std::visit(absl::Overload{
                          [](const H265SEIAlphaChannelInfo& info) {},
                          [&](const H265SEIContentLightLevelInfo& info) {
                            hdr_metadata.cta_861_3 = info.ToGfx();

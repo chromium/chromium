@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/parsers/h264_parser.h"
 
 #include <limits>
@@ -13,12 +12,12 @@
 
 #include "base/command_line.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -409,26 +408,26 @@ TEST(H264ParserTest, RecursiveSEIParsing) {
   EXPECT_EQ(clli_mdcv_sei.msgs.size(), 2u);
 
   for (const auto& sei_msg : clli_mdcv_sei.msgs) {
-    std::visit(base::Overloaded{
-                   [](const H264SEIContentLightLevelInfo& info) {
-                     EXPECT_EQ(info.max_content_light_level, 1000u);
-                     EXPECT_EQ(info.max_picture_average_light_level, 200u);
-                   },
-                   [](const H264SEIMasteringDisplayInfo& info) {
-                     EXPECT_EQ(info.display_primaries[0][0], 13249u);
-                     EXPECT_EQ(info.display_primaries[0][1], 34499u);
-                     EXPECT_EQ(info.display_primaries[1][0], 7500u);
-                     EXPECT_EQ(info.display_primaries[1][1], 2999u);
-                     EXPECT_EQ(info.display_primaries[2][0], 34000u);
-                     EXPECT_EQ(info.display_primaries[2][1], 15999u);
-                     EXPECT_EQ(info.white_points[0], 15635u);
-                     EXPECT_EQ(info.white_points[1], 16449u);
-                     EXPECT_EQ(info.max_luminance, 10000000u);
-                     EXPECT_EQ(info.min_luminance, 50u);
-                   },
-                   [](const auto&) {
-                     EXPECT_TRUE(false) << "Unexpected message type";
-                   }},
+    std::visit(absl::Overload{[](const H264SEIContentLightLevelInfo& info) {
+                                EXPECT_EQ(info.max_content_light_level, 1000u);
+                                EXPECT_EQ(info.max_picture_average_light_level,
+                                          200u);
+                              },
+                              [](const H264SEIMasteringDisplayInfo& info) {
+                                EXPECT_EQ(info.display_primaries[0][0], 13249u);
+                                EXPECT_EQ(info.display_primaries[0][1], 34499u);
+                                EXPECT_EQ(info.display_primaries[1][0], 7500u);
+                                EXPECT_EQ(info.display_primaries[1][1], 2999u);
+                                EXPECT_EQ(info.display_primaries[2][0], 34000u);
+                                EXPECT_EQ(info.display_primaries[2][1], 15999u);
+                                EXPECT_EQ(info.white_points[0], 15635u);
+                                EXPECT_EQ(info.white_points[1], 16449u);
+                                EXPECT_EQ(info.max_luminance, 10000000u);
+                                EXPECT_EQ(info.min_luminance, 50u);
+                              },
+                              [](const auto&) {
+                                EXPECT_TRUE(false) << "Unexpected message type";
+                              }},
                sei_msg);
   }
 }

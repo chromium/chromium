@@ -13,12 +13,12 @@
 #include <array>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace media {
 
@@ -521,7 +521,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (parser_.ParseSEI(&sei) != H265Parser::kOk)
           break;
         for (const auto& sei_msg : sei.msgs) {
-          std::visit(base::Overloaded{
+          std::visit(absl::Overload{
                          [](const H265SEIAlphaChannelInfo& info) {},
                          [this](const H265SEIContentLightLevelInfo& info) {
                            // HEVC HDR metadata may appears in the below

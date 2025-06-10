@@ -18,11 +18,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_switches.h"
 #include "media/parsers/h264_level_limits.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace media {
 namespace {
@@ -1717,7 +1717,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
 
         for (const auto& sei_msg : sei.msgs) {
           if (!std::visit(
-                  base::Overloaded{
+                  absl::Overload{
                       [this](const H264SEIRecoveryPoint& recovery_point) {
                         // If we are after reset, we can also resume from a SEI
                         // recovery point (spec D.2.8) if one is present.
