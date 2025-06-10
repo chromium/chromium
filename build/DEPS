@@ -98,10 +98,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'generation': 1748541682715337,
-        'object_name': '6c924a8f88bb4731f3c2334c6ae5b5da47d5ca196ff571a91071f104dbacecad',
-        'sha256sum': '6c924a8f88bb4731f3c2334c6ae5b5da47d5ca196ff571a91071f104dbacecad',
-        'size_bytes': 20181372,
+        'generation': 1749572829637587,
+        'object_name': '5c8ef4067f41a625d81113a6292180acf4ef49a2ffe015c2779123c133b8e250',
+        'sha256sum': '5c8ef4067f41a625d81113a6292180acf4ef49a2ffe015c2779123c133b8e250',
+        'size_bytes': 20178952,
       },
     ],
   },
