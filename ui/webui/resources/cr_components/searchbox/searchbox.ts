@@ -822,8 +822,33 @@ export class SearchboxElement extends SearchboxElementBase {
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
-  private onComposeButtonClick_() {
-    this.dispatchEvent(new CustomEvent('open-compose-box'));
+  private onComposeButtonClick_(e: MouseEvent) {
+    if (this.composeButtonEnabled &&
+        !loadTimeData.getBoolean('searchboxShowComposebox')) {
+      // Construct navigation url.
+      const searchParams = new URLSearchParams();
+      searchParams.append('sourceid', 'chrome');
+      searchParams.append('udm', '50');
+      if (this.$.input.value) {
+        searchParams.append('q', this.$.input.value);
+      }
+      const queryUrl =
+          new URL('/search', loadTimeData.getString('googleBaseUrl'));
+      queryUrl.search = searchParams.toString();
+      const href = queryUrl.href;
+
+      // Handle mouse events.
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) {
+        window.open(href, '_blank');
+      } else if (e.shiftKey) {
+        window.open(href, '_blank', 'noopener');
+      } else {
+        window.open(href, '_self');
+      }
+    } else {
+      this.dispatchEvent(new CustomEvent('open-composebox'));
+    }
   }
 
   private onRemoveThumbnailClick_() {
