@@ -601,9 +601,6 @@ TEST_F(LegacySWPictureLayerImplTest, PendingLayerOnlyHasHighResTiling) {
   gfx::Size layer_bounds(1300, 1900);
   SetupDefaultTrees(layer_bounds);
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  EXPECT_LT(low_res_factor, 1.f);
-
   pending_layer()->ReleaseTileResources();
   pending_layer()->RecreateTileResources();
   EXPECT_EQ(0u, pending_layer()->tilings()->num_tilings());
@@ -729,7 +726,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBoundsOverflowInt) {
 TEST_F(NoLowResPictureLayerImplTest, PinchGestureTilings) {
   gfx::Size layer_bounds(1300, 1900);
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
+  float low_res_factor = 0.25f;
   SetupDefaultTrees(layer_bounds);
   ResetTilingsAndRasterScales();
 
@@ -3125,7 +3122,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueRequiredNoHighRes) {
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
   gfx::Size layer_bounds(1000, 1000);
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
+  float low_res_factor = 0.25f;
 
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(500, 500));
 
@@ -3555,9 +3552,6 @@ TEST_F(NoLowResPictureLayerImplTest, ManageTilingsCreatesTilings) {
   gfx::Size layer_bounds(1300, 1900);
   SetupDefaultTrees(layer_bounds);
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  EXPECT_LT(low_res_factor, 1.f);
-
   ResetTilingsAndRasterScales();
 
   SetupDrawPropertiesAndUpdateTiles(active_layer(),
@@ -3600,9 +3594,6 @@ TEST_F(NoLowResPictureLayerImplTest, ManageTilingsCreatesTilings) {
 TEST_F(NoLowResPictureLayerImplTest, PendingLayerOnlyHasHighResTiling) {
   gfx::Size layer_bounds(1300, 1900);
   SetupDefaultTrees(layer_bounds);
-
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  EXPECT_LT(low_res_factor, 1.f);
 
   ResetTilingsAndRasterScales();
 
@@ -3695,9 +3686,6 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   gfx::Size layer_bounds(1300, 1900);
   std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>> used_tilings;
   SetupDefaultTrees(layer_bounds);
-
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  EXPECT_LT(low_res_factor, 1.f);
 
   // Set the device scale and page scale so that the minimum that we would clamp
   // to is small. This test isn't testing the clamping. See
@@ -4223,7 +4211,7 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
   ASSERT_TRUE(active_layer()->CanHaveTilings());
   active_layer()->SetContentsScaleForTesting(scale);
   active_layer()->tilings()->RemoveAllTilings();
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
+  float low_res_factor = 0.25f;
   active_layer()
       ->AddTiling(gfx::AxisTransform2d(low_res_factor, gfx::Vector2dF()))
       ->set_resolution(LOW_RESOLUTION);
@@ -5277,7 +5265,7 @@ TEST_F(HalfWidthTileTest, TileSizes) {
 TEST_F(NoLowResPictureLayerImplTest, LowResWasHighResCollision) {
   gfx::Size layer_bounds(1300, 1900);
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
+  float low_res_factor = 0.25f;
   SetupDefaultTrees(layer_bounds);
   ResetTilingsAndRasterScales();
 

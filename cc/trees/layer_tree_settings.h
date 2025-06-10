@@ -74,7 +74,6 @@ class CC_EXPORT LayerTreeSettings {
   bool scrollbar_flash_after_any_scroll_update = false;
   base::TimeDelta scroll_animation_duration_for_testing;
   bool layers_always_allowed_lcd_text = false;
-  float low_res_contents_scale_factor = 0.25f;
   float top_controls_show_threshold = 0.5f;
   float top_controls_hide_threshold = 0.5f;
   gfx::Size default_tile_size;

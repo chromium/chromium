@@ -175,10 +175,6 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
 TEST_F(PictureLayerImplPerfTest, TilingSetRasterQueueConstructAndIterate) {
   SetupPendingTree(gfx::Size(10000, 10000));
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-
-  pending_layer_->AddTiling(
-      gfx::AxisTransform2d(low_res_factor, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(0.3f, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(0.7f, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(1.0f, gfx::Vector2dF()));
@@ -193,10 +189,6 @@ TEST_F(PictureLayerImplPerfTest, TilingSetRasterQueueConstructAndIterate) {
 TEST_F(PictureLayerImplPerfTest, TilingSetRasterQueueConstruct) {
   SetupPendingTree(gfx::Size(10000, 10000));
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-
-  pending_layer_->AddTiling(
-      gfx::AxisTransform2d(low_res_factor, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(0.3f, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(0.7f, gfx::Vector2dF()));
   pending_layer_->AddTiling(gfx::AxisTransform2d(1.0f, gfx::Vector2dF()));
@@ -210,10 +202,7 @@ TEST_F(PictureLayerImplPerfTest, TilingSetRasterQueueConstruct) {
 TEST_F(PictureLayerImplPerfTest, TilingSetEvictionQueueConstructAndIterate) {
   SetupPendingTree(gfx::Size(10000, 10000));
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-
   std::vector<Tile*> all_tiles;
-  AddTiling(low_res_factor, pending_layer_, &all_tiles);
   AddTiling(0.3f, pending_layer_, &all_tiles);
   AddTiling(0.7f, pending_layer_, &all_tiles);
   AddTiling(1.0f, pending_layer_, &all_tiles);
@@ -236,10 +225,7 @@ TEST_F(PictureLayerImplPerfTest, TilingSetEvictionQueueConstructAndIterate) {
 TEST_F(PictureLayerImplPerfTest, TilingSetEvictionQueueConstruct) {
   SetupPendingTree(gfx::Size(10000, 10000));
 
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-
   std::vector<Tile*> all_tiles;
-  AddTiling(low_res_factor, pending_layer_, &all_tiles);
   AddTiling(0.3f, pending_layer_, &all_tiles);
   AddTiling(0.7f, pending_layer_, &all_tiles);
   AddTiling(1.0f, pending_layer_, &all_tiles);
