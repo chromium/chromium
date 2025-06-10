@@ -10,29 +10,24 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
+namespace views::test {
 
-class WidgetAXManagerTest : public ViewsTestBase {
+class WidgetAXManagerTest : public test::WidgetTest {
  protected:
   WidgetAXManagerTest() = default;
   ~WidgetAXManagerTest() override = default;
 
   void SetUp() override {
-    ViewsTestBase::SetUp();
-    widget_.reset(new Widget());
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
-                     Widget::InitParams::TYPE_WINDOW);
-    params.bounds = gfx::Rect(0, 0, 500, 500);
-    widget_->Init(std::move(params));
+    WidgetTest::SetUp();
+    widget_.reset(CreateTopLevelPlatformWidget());
   }
 
   void TearDown() override {
     widget_.reset();
-    ViewsTestBase::TearDown();
+    WidgetTest::TearDown();
   }
 
   Widget* widget() { return widget_.get(); }
@@ -54,10 +49,13 @@ TEST_F(WidgetAXManagerTest, EnableSetsEnabled) {
   EXPECT_TRUE(manager()->is_enabled());
 }
 
-TEST_F(WidgetAXManagerTest, DisableSetsDisabled) {
-  manager()->Enable();
-  manager()->Disable();
-  EXPECT_FALSE(manager()->is_enabled());
+TEST_F(WidgetAXManagerTest, IsEnabledAfterAXModeAdded) {
+  // Initially, the manager should not be enabled.
+  ASSERT_FALSE(manager()->is_enabled());
+
+  // Simulate that AXMode with kNativeAPIs was added.
+  ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
+  EXPECT_TRUE(manager()->is_enabled());
 }
 
 class WidgetAXManagerOffTest : public ViewsTestBase {
@@ -88,4 +86,4 @@ TEST_F(WidgetAXManagerOffTest, CrashesWhenFlagOff) {
   widget.reset();
 }
 
-}  // namespace views
+}  // namespace views::test
