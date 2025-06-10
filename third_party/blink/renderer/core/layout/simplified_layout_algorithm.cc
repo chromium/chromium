@@ -122,8 +122,10 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
         physical_fragment.HasCollapsedBorders());
 
     if (const auto* table_column_geometries =
-            physical_fragment.TableColumnGeometries())
-      container_builder_.SetTableColumnGeometries(*table_column_geometries);
+            physical_fragment.TableColumnGeometries()) {
+      container_builder_.SetTableColumnGeometries(
+          TableColumnGeometries(*table_column_geometries));
+    }
 
     if (const auto* table_collapsed_borders =
             physical_fragment.TableCollapsedBorders())

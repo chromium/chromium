@@ -111,8 +111,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   struct PropagatedData : public GarbageCollected<PropagatedData> {
    public:
     PropagatedData(
-        const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
-        const HeapVector<Member<Element>>* snap_areas,
+        const GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
+        const GCedHeapVector<Member<Element>>* snap_areas,
         const Member<const LayoutObject> scroll_initial_target)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
@@ -122,8 +122,9 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       visitor->Trace(snap_areas);
       visitor->Trace(scroll_initial_target);
     }
-    Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
-    Member<const HeapVector<Member<Element>>> snap_areas;
+    Member<const GCedHeapVector<Member<LayoutBoxModelObject>>>
+        sticky_descendants;
+    Member<const GCedHeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_initial_target;
   };
 
@@ -649,12 +650,13 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   void SetChildrenInvalid() const;
   bool ChildrenValid() const { return children_valid_; }
 
-  const HeapVector<Member<LayoutBoxModelObject>>* StickyDescendants() const {
+  const GCedHeapVector<Member<LayoutBoxModelObject>>* StickyDescendants()
+      const {
     return propagated_data_ ? propagated_data_->sticky_descendants.Get()
                             : nullptr;
   }
-  const HeapVector<Member<LayoutBoxModelObject>>* PropagatedStickyDescendants()
-      const {
+  const GCedHeapVector<Member<LayoutBoxModelObject>>*
+  PropagatedStickyDescendants() const {
     return IsScrollContainer() ? nullptr : StickyDescendants();
   }
 
@@ -665,10 +667,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return IsScrollContainer() ? nullptr : ScrollInitialTarget();
   }
 
-  const HeapVector<Member<Element>>* SnapAreas() const {
+  const GCedHeapVector<Member<Element>>* SnapAreas() const {
     return propagated_data_ ? propagated_data_->snap_areas.Get() : nullptr;
   }
-  const HeapVector<Member<Element>>* PropagatedSnapAreas() const {
+  const GCedHeapVector<Member<Element>>* PropagatedSnapAreas() const {
     return IsScrollContainer() ? nullptr : SnapAreas();
   }
 

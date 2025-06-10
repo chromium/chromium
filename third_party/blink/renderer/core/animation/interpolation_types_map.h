@@ -16,7 +16,7 @@ class PropertyHandle;
 class PropertyRegistry;
 class PropertyRegistration;
 
-using InterpolationTypes = HeapVector<Member<const InterpolationType>>;
+using InterpolationTypes = GCedHeapVector<Member<const InterpolationType>>;
 
 class CORE_EXPORT InterpolationTypesMap {
   STACK_ALLOCATED();

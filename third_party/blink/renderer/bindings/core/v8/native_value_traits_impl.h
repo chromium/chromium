@@ -1176,11 +1176,14 @@ NativeValueTraits<IDLSequence<T>>::NativeValue(
       isolate, std::move(script_iterator), exception_state);
 }
 
+// TODO(392817527): Nullable sequences can be implemented as
+// optional<HeapVector> which was previously not allowed as HeapVector was also
+// GarbageCollected.
 template <typename T>
   requires NativeValueTraits<IDLSequence<T>>::has_null_value
 struct NativeValueTraits<IDLNullable<IDLSequence<T>>>
-    : public NativeValueTraitsBase<HeapVector<AddMemberIfNeeded<T>>*> {
-  using ImplType = typename NativeValueTraits<IDLSequence<T>>::ImplType*;
+    : public NativeValueTraitsBase<GCedHeapVector<AddMemberIfNeeded<T>>*> {
+  using ImplType = GCedHeapVector<AddMemberIfNeeded<T>>*;
 
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> value,
@@ -1192,7 +1195,8 @@ struct NativeValueTraits<IDLNullable<IDLSequence<T>>>
         isolate, value, exception_state);
     if (exception_state.HadException())
       return nullptr;
-    auto* on_heap = MakeGarbageCollected<HeapVector<AddMemberIfNeeded<T>>>();
+    auto* on_heap =
+        MakeGarbageCollected<GCedHeapVector<AddMemberIfNeeded<T>>>();
     on_heap->swap(on_stack);
     return on_heap;
   }
@@ -1208,7 +1212,8 @@ struct NativeValueTraits<IDLNullable<IDLSequence<T>>>
         isolate, argument_index, value, exception_state);
     if (exception_state.HadException())
       return nullptr;
-    auto* on_heap = MakeGarbageCollected<HeapVector<AddMemberIfNeeded<T>>>();
+    auto* on_heap =
+        MakeGarbageCollected<GCedHeapVector<AddMemberIfNeeded<T>>>();
     on_heap->swap(on_stack);
     return on_heap;
   }

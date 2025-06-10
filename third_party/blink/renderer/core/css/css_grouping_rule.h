@@ -62,17 +62,19 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
                                   ExceptionState& exception_state);
 
 // See CSSStyleRule/CSSGroupingRule::QuietlyInsertRule.
+template <typename VectorType>
 void ParseAndQuietlyInsertRule(
     const ExecutionContext*,
     const String& rule_string,
     unsigned index,
     CSSRule& parent_rule,
-    HeapVector<Member<StyleRuleBase>>& child_rules,
+    VectorType& child_rules,
     HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
 
 // See CSSStyleRule/CSSGroupingRule::QuietlyDeleteRule.
+template <typename VectorType>
 void QuietlyDeleteRule(unsigned index,
-                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       VectorType& child_rules,
                        HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
 
 class CORE_EXPORT CSSGroupingRule : public CSSRule {

@@ -829,8 +829,7 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
 // As in Blink the math expression tree is binary, we need to collect all the
 // elements of this tree together and return them in the right order.
 // (We don't need a new node, since we're only using it for serialization.)
-GCedUnitsVector CollectSumOrProductInOrder(
-    const CSSMathExpressionOperation* root) {
+UnitsVector CollectSumOrProductInOrder(const CSSMathExpressionOperation* root) {
   CHECK(root->IsAddOrSubtract() || root->IsMultiplyOrDivide());
   CHECK_EQ(root->GetOperands().size(), 2u);
   // Hash map of vectors of numeric literal values with double value with the
@@ -847,7 +846,7 @@ GCedUnitsVector CollectSumOrProductInOrder(
                                      : CSSMathOperator::kMultiply,
                                  numeric_children, complex_children, false);
   // Form the final vector.
-  GCedUnitsVector ret;
+  UnitsVector ret;
   // From spec: If nodes contains a number, remove it from nodes and append it
   // to ret.
   if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kNumber);
@@ -3034,7 +3033,7 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       if (!operation->IsOperation()) {
         return operation->CustomCSSText();
       }
-      GCedUnitsVector terms = CollectSumOrProductInOrder(this);
+      UnitsVector terms = CollectSumOrProductInOrder(this);
 
       // https://drafts.csswg.org/css-values-4/#serialize-a-calculation-tree
       //

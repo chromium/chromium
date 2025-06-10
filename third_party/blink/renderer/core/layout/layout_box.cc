@@ -4631,15 +4631,14 @@ bool LayoutBox::IsReadingFlowContainer() const {
   return false;
 }
 
-const HeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
+const GCedHeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
   NOT_DESTROYED();
   if (const auto* nodes = GetPhysicalFragment(0)->ReadingFlowNodes()) {
     return *nodes;
   }
-  using HolderType = DisallowNewWrapper<HeapVector<Member<Node>>>;
-  DEFINE_STATIC_LOCAL(Persistent<HolderType>, empty_vector,
-                      (MakeGarbageCollected<HolderType>()));
-  return empty_vector->Value();
+  DEFINE_STATIC_LOCAL(Persistent<GCedHeapVector<Member<Node>>>, empty_vector,
+                      (MakeGarbageCollected<GCedHeapVector<Member<Node>>>()));
+  return *empty_vector.Get();
 }
 
 }  // namespace blink

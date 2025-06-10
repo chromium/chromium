@@ -41,9 +41,9 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   }
   if (init->hasLayers()) {
     base_layer_ = nullptr;
-    layers_ = init->layers()
-                  ? MakeGarbageCollected<FrozenArray<XRLayer>>(*init->layers())
-                  : MakeGarbageCollected<FrozenArray<XRLayer>>();
+    layers_ = init->layers() ? MakeGarbageCollected<FrozenArray<XRLayer>>(
+                                   HeapVector<Member<XRLayer>>(*init->layers()))
+                             : MakeGarbageCollected<FrozenArray<XRLayer>>();
   }
   if (init->hasInlineVerticalFieldOfView()) {
     double fov = init->inlineVerticalFieldOfView();

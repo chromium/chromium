@@ -325,6 +325,17 @@ template <typename ElementIDLType, typename ContainerType>
 template <typename BaseClassOfT, typename T>
 [[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
     ScriptState* script_state,
+    const GCedHeapVector<Member<T>>& sequence) {
+  static_assert(std::is_base_of_v<BaseClassOfT, T>);
+  return ToV8HelperSequence<BaseClassOfT>(
+      script_state,
+      *reinterpret_cast<const GCedHeapVector<Member<BaseClassOfT>>*>(
+          &sequence));
+}
+
+template <typename BaseClassOfT, typename T>
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
+    ScriptState* script_state,
     const HeapVector<Member<T>>& sequence) {
   static_assert(std::is_base_of_v<BaseClassOfT, T>);
   return ToV8HelperSequence<BaseClassOfT>(
@@ -378,6 +389,20 @@ template <typename T>
 struct ToV8Traits<IDLSequence<T>> {
   [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
+      const GCedHeapVector<Member<T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, value);
+  }
+
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
+      const GCedHeapVector<Member<const T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, value);
+  }
+
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
@@ -403,9 +428,39 @@ template <typename T>
 struct ToV8Traits<IDLSequence<T>> {
   [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
+      const GCedHeapVector<Member<T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, value);
+  }
+
+  template <wtf_size_t capacity>
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
+      const GCedHeapVector<Member<T>, capacity>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, GCedHeapVector<Member<T>>(value));
+  }
+
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
+      const GCedHeapVector<Member<const T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, value);
+  }
+
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
+  }
+
+  template <wtf_size_t capacity>
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<T>, capacity>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, HeapVector<Member<T>>(value));
   }
 
   [[nodiscard]] static v8::Local<v8::Object> ToV8(

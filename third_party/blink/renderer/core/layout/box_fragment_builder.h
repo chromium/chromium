@@ -653,9 +653,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     table_grid_rect_ = table_grid_rect;
   }
 
-  void SetTableColumnGeometries(
-      const TableColumnGeometries& table_column_geometries) {
-    table_column_geometries_ = table_column_geometries;
+  void SetTableColumnGeometries(TableColumnGeometries table_column_geometries) {
+    table_column_geometries_ = std::move(table_column_geometries);
   }
 
   void SetTableCollapsedBorders(const TableBorders& table_collapsed_borders) {
