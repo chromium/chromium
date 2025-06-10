@@ -1563,7 +1563,9 @@ public class StripLayoutHelper
         StripLayoutTab stripTab = findTabById(id);
         if (stripTab != null) {
             updateTabCollapsed(stripTab, collapsed, false);
-            if (!onStartup && !collapsed) runTabAddedAnimator(animationList, stripTab);
+            if (!onStartup && !collapsed) {
+                runTabAddedAnimator(animationList, stripTab, /* fromTabCreation= */ true);
+            }
         }
 
         // 4. If the new tab will be selected, scroll it to view. If the new tab will not be
@@ -1583,8 +1585,9 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    private void runTabAddedAnimator(@NonNull List<Animator> animationList, StripLayoutTab tab) {
-        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
+    private void runTabAddedAnimator(
+            @NonNull List<Animator> animationList, StripLayoutTab tab, boolean fromTabCreation) {
+        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled() || !fromTabCreation) {
             animationList.add(
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
@@ -3684,7 +3687,9 @@ public class StripLayoutHelper
                                 /* animate= */ true,
                                 /* deferAnimations= */ true,
                                 /* closedTab= */ null);
-                if (animationList != null) runTabAddedAnimator(animationList, tabToAnimate);
+                if (animationList != null) {
+                    runTabAddedAnimator(animationList, tabToAnimate, /* fromTabCreation= */ false);
+                }
             }
         } else {
             computeAndUpdateTabWidth(
