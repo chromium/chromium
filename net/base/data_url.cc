@@ -60,12 +60,14 @@ bool DataURL::Parse(const GURL& url,
   // Avoid copying the URL content which can be expensive for large URLs.
   std::string_view content = url.GetContentPiece();
 
-  std::string_view::const_iterator comma = std::ranges::find(content, ',');
-  if (comma == content.end())
+  std::optional<std::pair<std::string_view, std::string_view>>
+      media_type_and_body = base::SplitStringOnce(content, ',');
+  if (!media_type_and_body) {
     return false;
+  }
 
   std::vector<std::string_view> meta_data =
-      base::SplitStringPiece(base::MakeStringPiece(content.begin(), comma), ";",
+      base::SplitStringPiece(media_type_and_body->first, ";",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // These are moved to |mime_type| and |charset| on success.
@@ -126,7 +128,7 @@ bool DataURL::Parse(const GURL& url,
     // spaces itself, anyways. Should we just trim leading spaces instead?
     // Allowing random intermediary spaces seems unnecessary.
 
-    auto raw_body = base::MakeStringPiece(comma + 1, content.end());
+    std::string_view raw_body = media_type_and_body->second;
 
     // For base64, we may have url-escaped whitespace which is not part
     // of the data, and should be stripped. Otherwise, the escaped whitespace

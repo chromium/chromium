@@ -5,6 +5,7 @@
 
 #include "net/disk_cache/simple/simple_index_file.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -151,8 +151,8 @@ void ProcessEntryFile(BackendFileOperations* file_operations,
 
   if (file_name.size() != kEntryFilesLength)
     return;
-  const auto hash_string = base::MakeStringPiece(
-      file_name.begin(), file_name.begin() + kEntryFilesHashLength);
+  const auto hash_string =
+      std::string_view(file_name).substr(0, kEntryFilesHashLength);
   uint64_t hash_key = 0;
   if (!simple_util::GetEntryHashKeyFromHexString(hash_string, &hash_key)) {
     LOG(WARNING) << "Invalid entry hash key filename while restoring index from"

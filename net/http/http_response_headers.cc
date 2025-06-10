@@ -166,7 +166,7 @@ int ParseStatus(std::string_view status, std::string& append_to) {
   int response_code = -1;
   // For backwards compatibility, overlarge response codes are permitted.
   // base::StringToInt will clamp the value to INT_MAX.
-  base::StringToInt(base::MakeStringPiece(status.begin(), first_non_digit),
+  base::StringToInt(std::string_view(status.begin(), first_non_digit),
                     &response_code);
   CHECK_GE(response_code, 0);
 

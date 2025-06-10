@@ -547,8 +547,8 @@ bool ParseMimeType(std::string_view type_str,
     if (offset == std::string::npos || type_str[offset] == ';')
       continue;
 
-    auto param_name = base::MakeStringPiece(type_str.begin() + param_name_start,
-                                            type_str.begin() + offset);
+    auto param_name =
+        type_str.substr(param_name_start, offset - param_name_start);
 
     // Now parse the value.
     DCHECK_EQ('=', type_str[offset]);

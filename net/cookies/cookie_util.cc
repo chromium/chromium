@@ -827,7 +827,7 @@ void ParseRequestCookieLine(const std::string& header_value,
     // Find cookie name.
     std::string::const_iterator cookie_name_beginning = i;
     while (i != header_value.end() && *i != '=') ++i;
-    auto cookie_name = base::MakeStringPiece(cookie_name_beginning, i);
+    auto cookie_name = std::string_view(cookie_name_beginning, i);
 
     // Find cookie value.
     std::string_view cookie_value;
@@ -840,11 +840,11 @@ void ParseRequestCookieLine(const std::string& header_value,
         while (i != header_value.end() && *i != '"') ++i;
         if (i == header_value.end()) return;
         ++i;  // Skip '"'.
-        cookie_value = base::MakeStringPiece(cookie_value_beginning, i);
+        cookie_value = std::string_view(cookie_value_beginning, i);
         // i points to character after '"', potentially a ';'.
       } else {
         while (i != header_value.end() && *i != ';') ++i;
-        cookie_value = base::MakeStringPiece(cookie_value_beginning, i);
+        cookie_value = std::string_view(cookie_value_beginning, i);
         // i points to ';' or end of string.
       }
     }
