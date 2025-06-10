@@ -43,7 +43,7 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/variations/variations_associated_data.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -299,7 +299,7 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 
   // Get the hash of the account id.
   std::string account_hash =
-      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
+      base::Base64Encode(crypto::hash::Sha256(account_id.ToString()));
 
   // Return whether the wallet opt-in bit is set.
   return GetSyncTransportOptInBitFieldForAccount(prefs, account_hash) &
@@ -314,7 +314,7 @@ void SetUserOptedInWalletSyncTransport(PrefService* prefs,
   // obfuscation. The primary privacy guarantees are handled by clearing this
   // whenever cookies are cleared.
   std::string account_hash =
-      base::Base64Encode(crypto::SHA256HashString(account_id.ToString()));
+      base::Base64Encode(crypto::hash::Sha256(account_id.ToString()));
 
   ScopedDictPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
   int value = GetSyncTransportOptInBitFieldForAccount(prefs, account_hash);

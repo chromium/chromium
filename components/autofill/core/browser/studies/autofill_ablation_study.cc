@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
@@ -24,6 +23,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
+#include "crypto/hash.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -50,13 +50,8 @@ using ::autofill::features::test::kAutofillShowTypePredictions;
 
 namespace {
 
-// Number of bytes that we use to randomly seed the MD5Sum.
+// Number of bytes that we use to randomly seed the hash.
 constexpr size_t kSeedLengthInBytes = 8;
-
-// Converts the 8-byte prefix of an MD5 hash into a uint64_t value.
-inline uint64_t DigestToUInt64(const base::MD5Digest& digest) {
-  return base::U64FromBigEndian(base::span(digest.a).first<8u>());
-}
 
 // Returns the ablation seed from prefs and creates one if that has not happened
 // before.
@@ -107,14 +102,11 @@ int DaysSinceLocalWindowsEpoch(base::Time now) {
 uint64_t GetAblationHash(const std::string& seed,
                          const GURL& url,
                          base::Time now) {
-  // Derive a random number from |seed|, |url|'s security origin and today's
-  // date.
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
 
   // Incorporate |seed| into the MD5Sum. This ensures that on each browser
   // start the behavior is shuffled.
-  base::MD5Update(&ctx, seed);
+  hasher.Update(seed);
 
   // Incorporate |url|'s security origin into the MD5Sum. This ensures that
   // different sites can have different behavior but the behavior on a single
@@ -125,18 +117,18 @@ uint64_t GetAblationHash(const std::string& seed,
   // so that individual users don't experience an excessive amount of ablation
   // cases.
   url::Origin origin = url::Origin::Create(url);
-  base::MD5Update(&ctx, origin.Serialize());
+  hasher.Update(origin.Serialize());
 
   // Incorporate the date into MD5Sum. This ensures that the behavior stays the
   // same during a `kAblationWindowInDays` period but changes afterwards.
   int days_since_epoch = DaysSinceLocalWindowsEpoch(now);
   int day_window = days_since_epoch / kAblationWindowInDays;
-  base::MD5Update(&ctx, base::NumberToString(day_window));
+  hasher.Update(base::NumberToString(day_window));
 
   // Derive 64 bit hash.
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return DigestToUInt64(digest);
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  hasher.Finish(hash);
+  return base::U64FromBigEndian(base::span(hash).first<sizeof(uint64_t)>());
 }
 
 int GetDayInAblationWindow(base::Time now) {
