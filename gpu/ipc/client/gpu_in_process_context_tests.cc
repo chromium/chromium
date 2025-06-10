@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gl_in_process_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
