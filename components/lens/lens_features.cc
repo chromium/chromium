@@ -71,6 +71,10 @@ BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
              "LensOverlayVisualSelectionUpdates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions,
+             "LensOverlayVisualSelectionUpdatesForOmniboxSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayUpdatedClientContext,
              "LensOverlayUpdatedClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -429,6 +433,10 @@ constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
 constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
     &kLensOverlayContextualSearchbox, "auto-focus-searchbox", false};
 
+constexpr base::FeatureParam<bool> kAutoFocusSearchboxForOmniboxSuggestions{
+    &kLensOverlayContextualSearchboxForOmniboxSuggestions,
+    "auto-focus-searchbox", true};
+
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
     &kLensOverlayContextualSearchbox, "update-viewport-each-query", true};
 
@@ -488,6 +496,10 @@ constexpr base::FeatureParam<bool>
     kLensOverlaySimplifiedSelectionShouldCopyAsImage{
         &kLensOverlaySimplifiedSelection, "copy-command-copies-as-image",
         false};
+
+constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesEnableDynamicTheme{
+        &kLensOverlayVisualSelectionUpdates, "enable-dynamic-theme", false};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayVisualSelectionUpdatesEnableBorderGlow{
@@ -872,10 +884,6 @@ bool UseBrowserDarkModeSettingForLensOverlay() {
   return kUseBrowserDarkModeSettingForLensOverlay.Get();
 }
 
-bool IsDynamicThemeDetectionEnabled() {
-  return kDynamicThemeForLensOverlay.Get();
-}
-
 double DynamicThemeMinPopulationPct() {
   return kDynamicThemeMinPopulationPct.Get();
 }
@@ -1056,6 +1064,10 @@ double GetUploadProgressBarShowHeuristic() {
 }
 
 bool ShouldAutoFocusSearchbox() {
+  if (base::FeatureList::IsEnabled(
+          kLensOverlayContextualSearchboxForOmniboxSuggestions)) {
+    return kAutoFocusSearchboxForOmniboxSuggestions.Get();
+  }
   return kAutoFocusSearchbox.Get();
 }
 
@@ -1080,56 +1092,65 @@ bool GetShouldCopyAsImage() {
 }
 
 bool IsLensOverlayVisualSelectionUpdatesEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates);
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) ||
+         base::FeatureList::IsEnabled(
+             kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions);
+}
+
+bool IsDynamicThemeDetectionEnabled() {
+  if (IsLensOverlayVisualSelectionUpdatesEnabled()) {
+    return kLensOverlayVisualSelectionUpdatesEnableDynamicTheme.Get();
+  }
+  return kDynamicThemeForLensOverlay.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableBorderGlow() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableBorderGlow.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableGradientRegionStroke() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableGradientRegionStroke.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableWhiteRegionStroke() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableWhiteRegionStroke.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableRegionSelectedGlow() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableRegionSelectedGlow.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableGradientSuperG() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableGradientSuperG.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableCsbThumbnail() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesCsbThumbnail.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableCsbMotionTweaks() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesEnableCsbMotionTweaks.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesThumbnailSizingTweaks.Get();
 }
 
 bool GetVisualSelectionUpdatesHideCsbEllipsis() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesHideCsbEllipsis.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableCloseButtonTweaks() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+  return IsLensOverlayVisualSelectionUpdatesEnabled() &&
          kLensOverlayVisualSelectionUpdatesCloseButtonTweaks.Get();
 }
 
