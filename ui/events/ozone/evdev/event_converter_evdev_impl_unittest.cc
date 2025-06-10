@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/event.h"
@@ -27,6 +28,11 @@
 #include "ui/events/ozone/features.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/metrics/histogram_tester.h"
+#include "ui/events/ozone/evdev/microphone_mute_key_metrics.h"
+#endif
 
 namespace ui {
 
@@ -306,6 +312,9 @@ class DeferDeviceSetUpEventConverterEvdevImplTest
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::HistogramTester histogram_tester_;
+#endif
 };
 
 TEST_F(EventConverterEvdevImplTest, BlockTelephonyMicMuteKeyByDefault) {
@@ -998,6 +1007,77 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
   // BTN_A shouldn't be supported.
   EXPECT_FALSE(ui::EvdevBitUint64IsSet(key_bits.data(), 305));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingPhoneMuteScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // Telephony device phone mute scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::kPhoneMuteOtherNotKeyboard, 1);
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingSystemMuteScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // System microphone mute scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0100a9},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0100a9},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::kSystemMicrophoneMuteOtherNotKeyboard,
+      1);
+}
+
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       MicrophoneMuteTogglingStartOrStopMicCaptureScanCode) {
+  SetUpDevice(ui::EventDeviceInfo());
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  // Start or stop microphone capture scan code.
+  struct input_event mock_kernel_queue[] = {
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0c00d5},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+
+      {{0, 0}, EV_MSC, MSC_SCAN, 0x0c00d5},
+      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  histogram_tester_.ExpectUniqueSample(
+      ui::kMicrophoneMuteToggleDevicesHistogramName,
+      ui::MicrophoneMuteToggleDevices::
+          kStartOrStopMicrophoneCaptureOtherNotKeyboard,
+      1);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Verify log conversions for EventDeviceInfoImpl, base EventDeviceInfo,
 // and InputDevice member.
