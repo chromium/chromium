@@ -27,10 +27,8 @@ TEST_F(SearchEngineChoiceUiUtilTest, GetResourceIdFromTemplateURL) {
   const int google_resource_id =
       GetResourceIdFromTemplateURL(google_template_url);
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
-  NSLog(@"enabled");
   const int expected_google_resource_id = IDR_SEARCH_ENGINE_GOOGLE_IMAGE;
 #else
-  NSLog(@"disabled");
   const int expected_google_resource_id = IDR_DEFAULT_FAVICON;
 #endif  // BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
   EXPECT_EQ(google_resource_id, expected_google_resource_id);
