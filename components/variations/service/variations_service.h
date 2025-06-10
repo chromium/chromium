@@ -329,11 +329,15 @@ class VariationsService
   // Exposes MaybeRetryOverHTTP for testing.
   bool CallMaybeRetryOverHTTPForTesting();
 
-  // Records a successful fetch:
-  //   (1) Resets failure streaks for Safe Mode.
-  //   (2) Records the time of this fetch as the most recent successful fetch.
-  // Protected so testing subclasses can call it.
-  void RecordSuccessfulFetch();
+  // Records a successful fetch that received a 304 response. Failure streaks
+  // are cleared and the last fetch time is updated. Updates both the seed date
+  // and the last fetch time of the seed.
+  void RecordSuccessfulFetchSeedNotModified(base::Time response_date);
+
+  // Records that a new seed has been stored. Writes the currently active seed
+  // to the |seed_store| as a safe seed, if appropriate. Also records a
+  // successful fetch.
+  void RecordSuccessfulFetchNewSeed();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, Observer);

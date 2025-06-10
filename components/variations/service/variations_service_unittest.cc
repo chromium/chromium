@@ -209,7 +209,6 @@ class TestVariationsService : public VariationsService {
     stored_country_ = country_code;
     delta_compressed_seed_ = is_delta_compressed;
     gzip_compressed_seed_ = is_gzip_compressed;
-    RecordSuccessfulFetch();
     OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,
                       VariationsSeed());
   }
