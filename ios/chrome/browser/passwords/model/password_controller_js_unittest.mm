@@ -164,7 +164,7 @@ class PasswordControllerJsTest : public PlatformTest {
     DCHECK(main_frame);
 
     // Run password forms search to set up unique IDs.
-    return FindPasswordForms() != nil;
+    return FindPasswordFormsInFrame(GetMainWebFrame()) != nil;
   }
 
   web::WebFrame* GetMainWebFrame() {
@@ -175,14 +175,12 @@ class PasswordControllerJsTest : public PlatformTest {
 
   // Finds all password forms in the window and returns for data as a JSON
   // string.
-  NSString* FindPasswordForms() {
-    web::WebFrame* main_frame = GetMainWebFrame();
+  NSString* FindPasswordFormsInFrame(web::WebFrame* frame) {
     // Run password forms search to set up unique IDs.
     __block bool complete = false;
     __block NSString* result = nil;
     password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-        ->FindPasswordFormsInFrame(main_frame,
-                                   base::BindOnce(^(NSString* forms) {
+        ->FindPasswordFormsInFrame(frame, base::BindOnce(^(NSString* forms) {
                                      result = forms;
                                      complete = true;
                                    }));
@@ -423,22 +421,28 @@ TEST_F(
 
 // Check that one password form is identified and serialized correctly.
 TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
+  const std::string kLoginDomain = "http://example.com";
+  const std::string kLoginFormPath = "/loginform";
+  const std::string kLoginFormQuery = "?param=42";
+  const std::string kActionPath = "/generic_submit";
+
+  NSString* html = base::SysUTF8ToNSString(
+      base::StrCat({"<html><body><form action='", kActionPath, "'",
+                    "  method='post' name='login_form'>",
+                    "  Name: <input type='text' name='username'>"
+                    "  Password: <input type='password' name='password'>"
+                    "  <input type='submit' value='Submit'>"
+                    "</form></body></html>"}));
   web::test::LoadHtml(
-      @"<html><body>"
-       "<form action='/generic_submit' method='post' name='login_form'>"
-       "  Name: <input type='text' name='username'>"
-       "  Password: <input type='password' name='password'>"
-       "  <input type='submit' value='Submit'>"
-       "</form>"
-       "</body></html>",
+      html, GURL(base::StrCat({kLoginDomain, kLoginFormPath, kLoginFormQuery})),
       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form =
       base::Value::Dict()
           .Set("name", "login_form")
-          .Set("origin", BaseUrl())
-          .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
+          .Set("origin", base::StrCat({kLoginDomain, kLoginFormPath}))
+          .Set("action", base::StrCat({kLoginDomain, kActionPath}))
           .Set("name_attribute", "login_form")
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
@@ -459,7 +463,69 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
       base::Value::List().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
+  ASSERT_TRUE(results);
+
+  EXPECT_EQ(expected_results, *results);
+}
+
+// Check that one password form is identified and serialized correctly, when it
+// is inside an iframe that inherits the origin from the parent frame.
+TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFormInIframe) {
+  const std::string kLoginDomain = "http://example.com";
+  const std::string kLoginFormPath = "/loginform";
+  const std::string kLoginFormQuery = "?param=42";
+  const std::string kActionPath = "/generic_submit";
+
+  NSString* html = base::SysUTF8ToNSString(
+      base::StrCat({"<html><iframe srcdoc=\"<body><form action='", kActionPath,
+                    "'", "  method='post' name='login_form'>",
+                    "  Name: <input type='text' name='username'>"
+                    "  Password: <input type='password' name='password'>"
+                    "  <input type='submit' value='Submit'>"
+                    "</form></body>\"></iframe></html>"}));
+  web::test::LoadHtml(
+      html, GURL(base::StrCat({kLoginDomain, kLoginFormPath, kLoginFormQuery})),
+      web_state());
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  std::set<web::WebFrame*> all_frames =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state())
+          ->GetAllWebFrames();
+  auto it = std::ranges::find_if(
+      all_frames, [](web::WebFrame* frame) { return !frame->IsMainFrame(); });
+  ASSERT_TRUE(it != all_frames.end());
+  web::WebFrame* iframe = *it;
+
+  auto expected_form =
+      base::Value::Dict()
+          .Set("name", "login_form")
+          // The iframe has no own URL and no access to the path of the parent
+          // frame.
+          .Set("origin", kLoginDomain)
+          .Set("action", base::StrCat({kLoginDomain, kActionPath}))
+          .Set("name_attribute", "login_form")
+          .Set("id_attribute", "")
+          .Set("renderer_id", "1")
+          .Set("host_frame", iframe->GetFrameId());
+  base::Value::Dict expected_username_field =
+      ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
+                  /*identifier=*/"username", /*value=*/"",
+                  /*label=*/"Name:", /*name=*/"username");
+  base::Value::Dict expected_password_field = ParsedField(
+      /*renderer_id=*/"3", /*contole_type=*/"password",
+      /*identifier=*/"password", /*value=*/"",
+      /*label=*/"Password:", /*name=*/"password");
+  auto expected_fields = base::Value::List()
+                             .Append(std::move(expected_username_field))
+                             .Append(std::move(expected_password_field));
+  expected_form.Set("fields", std::move(expected_fields));
+  base::Value::List expected_results =
+      base::Value::List().Append(std::move(expected_form));
+
+  std::unique_ptr<base::Value> results =
+      autofill::ParseJson(FindPasswordFormsInFrame(iframe));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_results, *results);
@@ -540,7 +606,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
   }
 
   std::unique_ptr<base::Value> results =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_results, *results);
@@ -630,7 +696,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
       base::Value::List().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_results, *results);
@@ -672,7 +738,7 @@ TEST_F(PasswordControllerJsTest,
       base::Value::List().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_results, *results);
@@ -714,7 +780,7 @@ TEST_F(PasswordControllerJsTest,
       base::Value::List().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
   ASSERT_TRUE(results);
 
   EXPECT_EQ(expected_results, *results);
@@ -740,7 +806,7 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(expected_result);
 
   std::unique_ptr<base::Value> result_json =
-      autofill::ParseJson(FindPasswordForms());
+      autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
   ASSERT_TRUE(result_json);
 
   EXPECT_EQ(*expected_result_json, *result_json);
@@ -768,7 +834,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
 
   // Call __gCrWeb.passwords.findPasswordForms in order to set an event handler
   // on the button touchend event.
-  FindPasswordForms();
+  FindPasswordFormsInFrame(GetMainWebFrame());
 
   // Simulate touchend event on the button.
   ExecuteJavaScript(
@@ -1356,17 +1422,18 @@ TEST_F(PasswordControllerJsTest, FillUsernameAndPassword_MissingUsernameInput) {
 
 // Check that password form outside the <form> tag is extracted correctly.
 TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
+  constexpr char kLoginUrl[] = "http://example.com/loginform";
   web::test::LoadHtml(@"<html><body>"
                        "  Name: <input type='text' name='username'>"
                        "  Password: <input type='password' name='password'>"
                        "  <input type='submit' value='Submit'>"
                        "</body></html>",
-                      web_state());
+                      GURL(kLoginUrl), web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form = base::Value::Dict()
                            .Set("name", "")
-                           .Set("origin", BaseUrl())
+                           .Set("origin", kLoginUrl)
                            .Set("action", "");
   base::Value::Dict expected_username_field =
       ParsedField(/*renderer_id=*/"1", /*contole_type=*/"text",

@@ -378,6 +378,21 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
       frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 
+// Returns the URL for the frame to be set in the FormData.
+function getFrameUrlOrOrigin(frame: Window): string {
+  if ((frame === frame.top) ||
+      ((frame.location.href !== 'about:blank') &&
+       (frame.location.href !== 'about:srcdoc'))) {
+    // If the full URL is available, use it.
+    return removeQueryAndReferenceFromURL(frame.location.href);
+  } else {
+    // Iframes might have empty own URLs, and they do not have access to the
+    // parent frame URL, only to the origin. Use it as the only available data.
+    return frame.origin;
+  }
+}
+
+
 /**
  * Fills |form| with the form data object corresponding to the
  * |formElement|. If |field| is non-NULL, also fills |field| with the
@@ -418,7 +433,7 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
   }
 
   form.name = gCrWebLegacy.form.getFormIdentifier(formElement);
-  form.origin = removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = getFrameUrlOrOrigin(frame);
   form.action = gCrWebLegacy.fill.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
@@ -663,7 +678,7 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
     return false;
   }
   form.name = '';
-  form.origin = removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = getFrameUrlOrOrigin(frame);
   form.action = '';
 
   // To avoid performance bottlenecks, do not keep child frames if their
