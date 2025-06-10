@@ -64,19 +64,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   gfx::ColorSpace GetColorSpaceForTesting() const;
 
  private:
-  // If the AVIF image has a clean aperture ('clap') property, what kind of
-  // clean aperture it is. Values synced with 'AVIFCleanApertureType' in
-  // src/tools/metrics/histograms/enums.xml.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AVIFCleanApertureType {
-    kInvalid = 0,        // The clean aperture property is invalid.
-    kNonzeroOrigin = 1,  // The origin of the clean aperture is not (0, 0).
-    kZeroOrigin = 2,     // The origin of the clean aperture is (0, 0).
-    kMaxValue = kZeroOrigin,
-  };
-
   struct AvifIOData {
     AvifIOData();
     AvifIOData(scoped_refptr<const SegmentReader> reader,
@@ -160,7 +147,6 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
   base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
-  std::optional<AVIFCleanApertureType> clap_type_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;

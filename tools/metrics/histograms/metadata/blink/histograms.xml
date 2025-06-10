@@ -2949,21 +2949,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ImageDecoders.Avif.CleanAperture"
-    enum="AVIFCleanApertureType" expires_after="2025-06-22">
-  <owner>wtc@google.com</owner>
-  <owner>jzern@google.com</owner>
-  <owner>
-    src/third_party/blink/renderer/platform/image-decoders/avif/OWNERS
-  </owner>
-  <summary>
-    If an AVIF image has a clean aperture ('clap') property, record what kind of
-    clean aperture it is when one frame of the image is decoded fully. The
-    histogram is intended to check whether clean aperture properties with a
-    nonzero origin are common.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds"
     enum="ImageHasMultipleGeneratorClientIds" expires_after="2023-09-10">
   <owner>vmpstr@chromium.org</owner>

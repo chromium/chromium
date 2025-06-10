@@ -26,12 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AVIFCleanApertureType">
-  <int value="0" label="kInvalid"/>
-  <int value="1" label="kNonzeroOrigin"/>
-  <int value="2" label="kZeroOrigin"/>
-</enum>
-
 <enum name="BackgroundResourceFetchSupportStatus">
   <int value="0" label="Supported"/>
   <int value="1" label="Unsupported sync request"/>
