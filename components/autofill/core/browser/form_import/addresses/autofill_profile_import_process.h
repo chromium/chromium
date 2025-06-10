@@ -59,7 +59,12 @@ enum class AutofillProfileImportType {
   // other stored profiles can be silently updated. These silent updates happen
   // even if the user declines the migration.
   kProfileMigrationAndSilentUpdate,
-  kMaxValue = kProfileMigrationAndSilentUpdate
+  // A superset of a Home and Work address was submitted and no other non-Home
+  // and Work profile qualified for an update. Since Home and Work is read only,
+  // no update prompt can be shown. Instead, this is treated as a special kind
+  // of new profile prompt. It is separate from kNewProfile for metrics.
+  kHomeAndWorkSuperset,
+  kMaxValue = kHomeAndWorkSuperset
 };
 
 // Specifies the status of the imported phone number.
@@ -232,6 +237,7 @@ class ProfileImportProcess {
   // Determines the import type of |observed_profile_| with respect to
   // |existing_profiles|. Only the first profile in |existing_profiles| becomes
   // a merge candidate in case there is a confirmable merge.
+  // TODO(crbug.com/354706653): Handle the kHomeAndWorkSuperset import type.
   void DetermineProfileImportType();
 
   // For new profile imports, sets the source of the `import_candidate_`

@@ -267,6 +267,9 @@ void ProfileImportProcess::DetermineProfileImportType() {
 }
 
 void ProfileImportProcess::DetermineSourceOfImportCandidate() {
+  // Even though kHomeAndWorkSuperset is a kind of new profile, it doesn't need
+  // to be handled here, since H/W is only available for users eligible to
+  // account address storage.
   if (import_type_ != AutofillProfileImportType::kNewProfile) {
     return;
   }
@@ -461,6 +464,7 @@ void ProfileImportProcess::CollectMetrics(
 
   // For an import process that involves prompting the user, record the
   // decision.
+  // TODO(crbug.com/421353034): Add H/W import metrics.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(
         user_decision_, existing_profiles,
