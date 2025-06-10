@@ -252,6 +252,10 @@ config("xctest_config") {
     "Foundation.framework",
     "XCTest.framework",
   ]
+
+  if (xcode_version_int >= 2600) {
+    framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
+  }
 }
 
 # TODO(crbug.com/40911785): any target that uses this config will miscompile.
