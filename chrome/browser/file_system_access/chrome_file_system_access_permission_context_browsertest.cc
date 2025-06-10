@@ -72,8 +72,40 @@ class TestFileSystemAccessPermissionContext
     run_loop.Run();
   }
 
+  void ConfirmSensitiveEntryAccess(
+      const url::Origin& origin,
+      const content::PathInfo& path_info,
+      HandleType handle_type,
+      UserAction user_action,
+      content::GlobalRenderFrameHostId frame_id,
+      base::OnceCallback<void(SensitiveEntryResult)> callback) override {
+    confirm_sensitive_entry_access_ = true;
+    if (auto_abort_on_confirm_sensitive_entry_access_) {
+      std::move(callback).Run(SensitiveEntryResult::kAbort);
+      return;
+    }
+    ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
+        origin, path_info, handle_type, user_action, frame_id,
+        std::move(callback));
+  }
+
+  bool confirm_sensitive_entry_access() const {
+    return confirm_sensitive_entry_access_;
+  }
+
+  void set_auto_abort_on_confirm_sensitive_entry_access() {
+    auto_abort_on_confirm_sensitive_entry_access_ = true;
+  }
+
+  void reset() {
+    performed_after_write_checks_ = false;
+    confirm_sensitive_entry_access_ = false;
+  }
+
  private:
   bool performed_after_write_checks_ = false;
+  bool confirm_sensitive_entry_access_ = false;
+  bool auto_abort_on_confirm_sensitive_entry_access_ = false;
   base::OnceClosure quit_callback_;
 };
 
@@ -255,6 +287,77 @@ IN_PROC_BROWSER_TEST_F(
   // PerformAfterWriteChecks() should be called in the activated page.
   EXPECT_TRUE(permission_context.performed_after_write_checks());
 
+  ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+// Tests that ConfirmSensitiveEntryAccess() is called by
+// 'FileSystemFileHandle.move()'.
+IN_PROC_BROWSER_TEST_F(
+    ChromeFileSystemAccessPermissionContextPrerenderingBrowserTest,
+    MoveFileAndConfirmSensitiveEntryAccess) {
+  const base::FilePath test_file = CreateTestFile("test.txt");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+
+  TestFileSystemAccessPermissionContext permission_context(
+      browser()->profile());
+  content::SetFileSystemAccessPermissionContext(browser()->profile(),
+                                                &permission_context);
+  FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  // Initial navigation.
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  // Expects no user interaction: showSaveFilePicker() automatically gets
+  // `test_file` from the fake file picker factory
+  // `FakeSelectFileDialogFactory` without the need for user interaction.
+  ASSERT_TRUE(ExecJs(GetWebContents(),
+                     R"(
+    var handle;
+    (async () =>{
+      handle = await self.showSaveFilePicker();
+    })()
+  )"));
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(GetWebContents(), "handle.name"));
+  // Checks that PerformAfterWriteChecks() must not be called.
+  EXPECT_FALSE(permission_context.performed_after_write_checks());
+  // Checks that ConfirmSensitiveEntryAccess() is called within file picker,
+  // i.e. FileSystemAccessManagerImpl::DidChooseEntries.
+  EXPECT_TRUE(permission_context.confirm_sensitive_entry_access());
+
+  // Resets permission_context to receive new behavior.
+  permission_context.reset();
+
+  // Calling move() with '.swf' will trigger a SafeBrowsing check after calling
+  // `ConfirmSensitiveEntryAccess()`, which prompts the user to confirm saving
+  // such file.
+
+  // This line automatically aborts on calling ConfirmSensitiveEntryAccess() to
+  // bypass the SafeBrowsing dialog, as there is no way to accept the prompt
+  // in browser tests.
+  // Commenting this out will bring up the dialog and fail the test without a
+  // manual click.
+  permission_context.set_auto_abort_on_confirm_sensitive_entry_access();
+
+  EXPECT_THAT(
+      EvalJs(GetWebContents(),
+             R"(
+      handle.move("test.swf");
+  )"),
+      testing::Field(
+          &content::EvalJsResult::error,
+          testing::Eq(
+              "a JavaScript error: \"TypeError: Failed to execute 'move' on "
+              "'FileSystemFileHandle'\"\n")));
+  // Checks that ConfirmSensitiveEntryAccess() is called again to verify the
+  // move target file name.
+  EXPECT_TRUE(permission_context.confirm_sensitive_entry_access());
+
+  // Uninstall fake file picker factory.
   ui::SelectFileDialog::SetFactory(nullptr);
 }
 

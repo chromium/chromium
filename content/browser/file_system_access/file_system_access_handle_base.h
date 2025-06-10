@@ -152,6 +152,14 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
           locks);
+  void DidVerifySensitiveEntryAccessForMove(
+      storage::FileSystemURL destination_url,
+      bool has_write_access_to_destination,
+      bool has_transient_user_activation,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>> locks,
+      FileSystemAccessPermissionContext::SensitiveEntryResult
+          sensitive_entry_result);
   // Only called if the move operation is not allowed to overwrite the target.
   void ConfirmMoveWillNotOverwriteDestination(
       const storage::FileSystemURL& destination_url,
