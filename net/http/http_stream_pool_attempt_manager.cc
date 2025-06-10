@@ -269,15 +269,10 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
 
 void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   CHECK(availability_state_ == AvailabilityState::kAvailable);
+  CHECK_LT(group_->ActiveStreamSocketCount(), job->num_streams());
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
-
-  // If `job` is resumed, there could be enough streams at this point.
-  if (group_->ActiveStreamSocketCount() >= job->num_streams()) {
-    NotifyJobOfPreconnectComplete(job, OK);
-    return;
-  }
 
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT, [&] {
@@ -645,11 +640,6 @@ const NetLogWithSource& HttpStreamPool::AttemptManager::net_log() {
 
 bool HttpStreamPool::AttemptManager::UsingTls() const {
   return GURL::SchemeIsCryptographic(stream_key().destination().scheme());
-}
-
-bool HttpStreamPool::AttemptManager::RequiresHTTP11() {
-  return pool()->RequiresHTTP11(stream_key().destination(),
-                                stream_key().network_anonymization_key());
 }
 
 LoadState HttpStreamPool::AttemptManager::GetLoadState() const {

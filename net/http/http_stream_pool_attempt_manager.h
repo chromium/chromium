@@ -319,8 +319,6 @@ class HttpStreamPool::AttemptManager
 
   bool UsingTls() const;
 
-  bool RequiresHTTP11();
-
   void StartInternal(Job* job);
 
   void ResolveServiceEndpoint(RequestPriority initial_priority);
