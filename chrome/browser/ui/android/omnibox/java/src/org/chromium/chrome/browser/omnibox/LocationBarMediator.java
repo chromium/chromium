@@ -44,7 +44,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -749,9 +748,12 @@ class LocationBarMediator
                 || !mTabModelSelectorSupplier.hasValue()) return;
 
         Tab tab = mTabModelSelectorSupplier.get().getCurrentTab();
-        if (tab == null || tab.isIncognito()) return;
+        if (tab == null || tab.isIncognito() || !mTemplateUrlServiceSupplier.hasValue()) return;
 
-        tab.loadUrl(new LoadUrlParams(ComposeplateUtils.getComposeplateURL()));
+        GURL url = mTemplateUrlServiceSupplier.get().getComposeplateUrl();
+        if (url == null) return;
+
+        tab.loadUrl(new LoadUrlParams(url));
     }
 
     /** package */

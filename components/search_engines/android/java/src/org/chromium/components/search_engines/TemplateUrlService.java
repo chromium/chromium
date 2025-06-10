@@ -306,12 +306,21 @@ public class TemplateUrlService {
     }
 
     /**
-     * Finds the default search engine for the default provider and returns the url query
-     * {@link String} for {@code query} with voice input source param set.
+     * Returns the URL for the composeplate button, null if the default search engine isn't Google.
+     */
+    public @Nullable GURL getComposeplateUrl() {
+        return TemplateUrlServiceJni.get()
+                .getComposeplateUrl(mNativeTemplateUrlServiceAndroid, this);
+    }
+
+    /**
+     * Finds the default search engine for the default provider and returns the url query {@link
+     * String} for {@code query} with voice input source param set.
+     *
      * @param query The {@link String} that represents the text query the search url should
-     *              represent.
-     * @return      A {@link String} that contains the url of the default search engine with
-     *              {@code query} inserted as the search parameter and voice input source param set.
+     *     represent.
+     * @return A {@link String} that contains the url of the default search engine with {@code
+     *     query} inserted as the search parameter and voice input source param set.
      */
     public GURL getUrlForVoiceSearchQuery(String query) {
         return TemplateUrlServiceJni.get()
@@ -475,6 +484,8 @@ public class TemplateUrlService {
 
         GURL getUrlForVoiceSearchQuery(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller, String query);
+
+        GURL getComposeplateUrl(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
 
         GURL getUrlForContextualSearchQuery(
                 long nativeTemplateUrlServiceAndroid,

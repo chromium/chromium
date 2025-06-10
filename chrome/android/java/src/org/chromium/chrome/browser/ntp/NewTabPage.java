@@ -647,7 +647,8 @@ public class NewTabPage
                 mTab.getProfile(),
                 windowAndroid,
                 mIsTablet,
-                mTabStripHeightSupplier);
+                mTabStripHeightSupplier,
+                () -> mTemplateUrlService.getComposeplateUrl());
 
         initializeHomeModules();
 

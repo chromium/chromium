@@ -31,10 +31,10 @@ import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.EmptyTextWatcher;
+import org.chromium.url.GURL;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
@@ -148,6 +149,7 @@ public class NewTabPageLayout extends LinearLayout
     private TextView mFakeSearchBoxEditText;
     private Callback<Logo> mOnLogoAvailableCallback;
     private boolean mIsComposeplateEnabled;
+    private Supplier<GURL> mComposeplateUrlSupplier;
     private OnClickListener mVoiceSearchButtonClickListener;
     private OnClickListener mLensButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
@@ -223,7 +225,8 @@ public class NewTabPageLayout extends LinearLayout
             Profile profile,
             WindowAndroid windowAndroid,
             boolean isTablet,
-            ObservableSupplier<Integer> tabStripHeightSupplier) {
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            Supplier<GURL> composeplateUrlSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -234,6 +237,9 @@ public class NewTabPageLayout extends LinearLayout
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mIsComposeplateEnabled = ChromeFeatureList.sAndroidComposeplate.isEnabled() && !mIsTablet;
+        if (mIsComposeplateEnabled) {
+            mComposeplateUrlSupplier = composeplateUrlSupplier;
+        }
 
         if (mIsTablet) {
             mDisplayStyleObserver = this::onDisplayStyleChanged;
@@ -369,11 +375,16 @@ public class NewTabPageLayout extends LinearLayout
         if (!mIsComposeplateEnabled) return;
 
         View.OnClickListener composeplateButtonClickListener =
-                v ->
-                        mManager.getNativePageHost()
-                                .loadUrl(
-                                        new LoadUrlParams(ComposeplateUtils.getComposeplateURL()),
-                                        /* incognito= */ false);
+                v -> {
+                    if (!mComposeplateUrlSupplier.hasValue()
+                            || mComposeplateUrlSupplier.get() == null) {
+                        return;
+                    }
+                    mManager.getNativePageHost()
+                            .loadUrl(
+                                    new LoadUrlParams(mComposeplateUrlSupplier.get()),
+                                    /* incognito= */ false);
+                };
         mSearchBoxCoordinator.setComposeplateButtonClickListener(
                 createEnhancedClickListener(composeplateButtonClickListener));
 

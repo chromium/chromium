@@ -1631,15 +1631,15 @@ public class LocationBarMediatorTest {
     public void testComposeplateButtonClicked() {
         mMediator.onFinishNativeInitialization();
 
+        GURL url = new GURL("https://foo.com");
+        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(url);
         when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTab.isIncognito()).thenReturn(false);
         mMediator.composeplateButtonClicked(null);
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
-        assertEquals(
-                ChromeFeatureList.sAndroidComposeplateButtonUrl.getValue(),
-                mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(url.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

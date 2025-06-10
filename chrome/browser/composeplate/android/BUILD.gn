@@ -9,7 +9,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateCoordinator.java",
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateProperties.java",
-    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java",
     "java/src/org/chromium/chrome/browser/composeplate/ComposeplateViewBinder.java",
   ]
 
@@ -42,7 +41,6 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateMetricsUtilsUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateViewBinderUnitTest.java",
   ]
 

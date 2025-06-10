@@ -42,6 +42,8 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+const char kAdditionalParam[] = "udm=50";
+
 TemplateURLData CreatePlayAPITemplateURLData(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
@@ -317,6 +319,24 @@ TemplateUrlServiceAndroid::GetUrlForVoiceSearchQuery(
   }
 
   return url::GURLAndroid::EmptyGURL(env);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+TemplateUrlServiceAndroid::GetComposeplateUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!IsDefaultSearchEngineGoogle()) {
+    return nullptr;
+  }
+
+  const TemplateURLRef& url_ref =
+      template_url_service_->GetDefaultSearchProvider()->url_ref();
+  TemplateURLRef::SearchTermsArgs search_term_args =
+      TemplateURLRef::SearchTermsArgs(std::u16string());
+  search_term_args.additional_query_params = kAdditionalParam;
+  GURL gurl = GURL(url_ref.ReplaceSearchTerms(
+      search_term_args, template_url_service_->search_terms_data()));
+  return url::GURLAndroid::FromNativeGURL(env, gurl);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
