@@ -145,4 +145,9 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
     public String toString() {
         return getId();
     }
+
+    /** Returns the ConditionalState where this Element was declared. */
+    @Nullable ConditionalState getOwner() {
+        return mOwner;
+    }
 }

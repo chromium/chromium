@@ -13,10 +13,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageButton;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -31,12 +28,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 /**
@@ -89,30 +86,26 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
         recheckActiveConditions();
-        return enterFacilitySync(
-                new TabSwitcherActionMenuFacility(),
-                tabSwitcherButtonElement.getLongPressTrigger());
+        return tabSwitcherButtonElement
+                .longPressTo()
+                .enterFacility(new TabSwitcherActionMenuFacility());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(new PageAppMenuFacility<>(), menuButtonElement.getClickTrigger());
+        return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
     public RegularNewTabPageStation openNewTabFast() {
-        return travelToSync(
-                RegularNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build(),
-                () ->
-                        MenuUtils.invokeCustomMenuActionSync(
-                                InstrumentationRegistry.getInstrumentation(),
-                                getActivity(),
-                                R.id.new_tab_menu_id));
+        return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_tab_menu_id, this)
+                .arriveAt(
+                        RegularNewTabPageStation.newBuilder()
+                                .withIsOpeningTabs(1)
+                                .withIsSelectingTabs(1)
+                                .build());
     }
 
     /**
@@ -120,50 +113,46 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
      * from the app menu.
      */
     public IncognitoNewTabPageStation openNewIncognitoTabFast() {
-        return travelToSync(
-                IncognitoNewTabPageStation.newBuilder()
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .build(),
-                () ->
-                        MenuUtils.invokeCustomMenuActionSync(
-                                InstrumentationRegistry.getInstrumentation(),
-                                getActivity(),
-                                R.id.new_incognito_tab_menu_id));
+        return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_incognito_tab_menu_id, this)
+                .arriveAt(
+                        IncognitoNewTabPageStation.newBuilder()
+                                .withIsOpeningTabs(1)
+                                .withIsSelectingTabs(1)
+                                .build());
     }
 
     /** Shortcut to select a different tab programmatically. */
     public <T extends PageStation> T selectTabFast(
             Tab tabToSelect, Supplier<Builder<T>> pageStationFactory) {
-        return travelToSync(
-                pageStationFactory
-                        .get()
-                        .withIncognito(tabToSelect.isIncognitoBranded())
-                        .withIsOpeningTabs(0)
-                        .withIsSelectingTabs(1)
-                        .build(),
-                Transition.runTriggerOnUiThreadOption(),
-                () ->
-                        TabModelUtils.selectTabById(
-                                getTabModelSelector(),
-                                tabToSelect.getId(),
-                                TabSelectionType.FROM_USER));
+        return runOnUiThreadTo(
+                        () ->
+                                TabModelUtils.selectTabById(
+                                        getTabModelSelector(),
+                                        tabToSelect.getId(),
+                                        TabSelectionType.FROM_USER))
+                .arriveAt(
+                        pageStationFactory
+                                .get()
+                                .withIncognito(tabToSelect.isIncognitoBranded())
+                                .withIsOpeningTabs(0)
+                                .withIsSelectingTabs(1)
+                                .build());
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
     public RegularTabSwitcherStation openRegularTabSwitcher() {
         assert !mIsIncognito;
-        return travelToSync(
-                RegularTabSwitcherStation.from(getTabModelSelector()),
-                tabSwitcherButtonElement.getClickTrigger());
+        return tabSwitcherButtonElement
+                .clickTo()
+                .arriveAt(RegularTabSwitcherStation.from(getTabModelSelector()));
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
     public IncognitoTabSwitcherStation openIncognitoTabSwitcher() {
         assert mIsIncognito;
-        return travelToSync(
-                IncognitoTabSwitcherStation.from(getTabModelSelector()),
-                tabSwitcherButtonElement.getClickTrigger());
+        return tabSwitcherButtonElement
+                .clickTo()
+                .arriveAt(IncognitoTabSwitcherStation.from(getTabModelSelector()));
     }
 
     /** Loads a |url| leading to a web page in the same tab and waits to transition. */
@@ -177,17 +166,17 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Loads a |url| in another tab as if a link was clicked and waits to transition. */
     public <T extends PageStation> T openFakeLink(String url, Builder<T> builder) {
-        return travelToSync(
-                builder.withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
-                        .withIncognito(mIsIncognito)
-                        .withExpectedUrlSubstring(url)
-                        .build(),
-                Transition.runTriggerOnUiThreadOption(),
-                () ->
-                        getActivity()
-                                .getTabCreator(mIsIncognito)
-                                .launchUrl(url, TabLaunchType.FROM_LINK));
+        return runOnUiThreadTo(
+                        () ->
+                                getActivity()
+                                        .getTabCreator(mIsIncognito)
+                                        .launchUrl(url, TabLaunchType.FROM_LINK))
+                .arriveAt(
+                        builder.withIsOpeningTabs(1)
+                                .withIsSelectingTabs(1)
+                                .withIncognito(mIsIncognito)
+                                .withExpectedUrlSubstring(url)
+                                .build());
     }
 
     /**

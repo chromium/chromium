@@ -6,8 +6,6 @@ package org.chromium.base.test.transit;
 
 import android.app.Activity;
 
-import androidx.test.espresso.Espresso;
-
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.build.annotations.NullMarked;
@@ -72,7 +70,7 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         return facilities;
     }
 
-    private void registerFacility(Facility<?> facility) {
+    void registerFacility(Facility<?> facility) {
         facility.setHostStation(this);
         mFacilities.add(facility);
     }
@@ -359,15 +357,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         assertInPhase(Phase.NEW);
         registerFacility(facility);
         return facility;
-    }
-
-    /**
-     * Press back expecting to get to the given destination.
-     *
-     * <p>Left vague because back behavior is too case-by-case to determine in the Transit Layer.
-     */
-    public <T extends Station<?>> T pressBack(T destination) {
-        return travelToSync(destination, Espresso::pressBack);
     }
 
     /** Get the activity element associate with this station, if there's any. */

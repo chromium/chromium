@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.appmenu;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.base.test.transit.Triggers.pressBackTo;
 
 import androidx.test.filters.LargeTest;
 
@@ -96,12 +97,13 @@ public class TabbedAppMenuPTTest {
         assertFinalDestination(settings);
 
         // Exit settings for the initial state rule to be able to reset state.
-        settings.pressBack(
-                WebPageStation.newBuilder()
-                        .withIncognito(false)
-                        .withIsOpeningTabs(0)
-                        .withTabAlreadySelected(tab)
-                        .build());
+        pressBackTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withIncognito(false)
+                                .withIsOpeningTabs(0)
+                                .withTabAlreadySelected(tab)
+                                .build());
     }
 
     /**

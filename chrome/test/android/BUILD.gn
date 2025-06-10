@@ -203,6 +203,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/ChromeActivityTabModelBoundStation.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityEntryPoints.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTransitTestRules.java",
+    "javatests/src/org/chromium/chrome/test/transit/ChromeTriggers.java",
     "javatests/src/org/chromium/chrome/test/transit/CtaAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/FreshCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/Journeys.java",

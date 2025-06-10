@@ -71,7 +71,7 @@ public abstract class Transition {
         //        aren't declared in the Station's constructor or in its declareExtraElements().
         //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
         //        E.g. when not possible to determine whether the trigger needs to be run.
-        return !mOptions.mPossiblyAlreadyFulfilled && mTrigger != null;
+        return !mOptions.getPossiblyAlreadyFulfilled() && mTrigger != null;
     }
 
     protected void onBeforeTransition() {
@@ -95,12 +95,13 @@ public abstract class Transition {
     }
 
     protected void performTransitionWithRetries() {
-        if (mOptions.mTries == 1) {
+        int tries = mOptions.getTries();
+        if (tries == 1) {
             triggerTransition();
             Log.i(TAG, "%s: waiting for conditions", toDebugString());
             waitUntilConditionsFulfilled();
         } else {
-            for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
+            for (int tryNumber = 1; tryNumber <= tries; tryNumber++) {
                 try {
                     triggerTransition();
                     Log.i(
@@ -108,12 +109,12 @@ public abstract class Transition {
                             "%s: try #%d/%d, waiting for conditions",
                             toDebugString(),
                             tryNumber,
-                            mOptions.mTries);
+                            tries);
                     waitUntilConditionsFulfilled();
                     break;
                 } catch (TravelException e) {
                     Log.w(TAG, "%s: try #%d failed", toDebugString(), tryNumber, e);
-                    if (tryNumber >= mOptions.mTries) {
+                    if (tryNumber >= tries) {
                         throw e;
                     }
                 }
@@ -125,7 +126,7 @@ public abstract class Transition {
         if (mTrigger != null) {
             Log.i(TAG, "%s: will run trigger", toDebugString());
             try {
-                if (mOptions.mRunTriggerOnUiThread) {
+                if (mOptions.getRunTriggerOnUiThread()) {
                     ThreadUtils.runOnUiThread(mTrigger::triggerTransition);
                 } else {
                     mTrigger.triggerTransition();
@@ -232,16 +233,79 @@ public abstract class Transition {
     public static class TransitionOptions {
 
         static final TransitionOptions DEFAULT = new TransitionOptions();
-        @Nullable List<Condition> mTransitionConditions;
-        private long mTimeoutMs;
-        int mTries = 1;
-        boolean mPossiblyAlreadyFulfilled;
-        boolean mRunTriggerOnUiThread;
+        private @Nullable List<Condition> mTransitionConditions;
+        private @Nullable Long mTimeoutMs;
+        private @Nullable Integer mTries;
+        private @Nullable Boolean mPossiblyAlreadyFulfilled;
+        private @Nullable Boolean mRunTriggerOnUiThread;
 
         private TransitionOptions() {}
 
         long getTimeoutMs() {
-            return mTimeoutMs != 0 ? mTimeoutMs : ConditionWaiter.MAX_TIME_TO_POLL;
+            return mTimeoutMs != null ? mTimeoutMs : ConditionWaiter.MAX_TIME_TO_POLL;
+        }
+
+        int getTries() {
+            return mTries != null ? mTries : 1;
+        }
+
+        boolean getPossiblyAlreadyFulfilled() {
+            return mPossiblyAlreadyFulfilled != null && mPossiblyAlreadyFulfilled;
+        }
+
+        boolean getRunTriggerOnUiThread() {
+            return mRunTriggerOnUiThread != null && mRunTriggerOnUiThread;
+        }
+
+        /**
+         * Merge two TransitionOptions.
+         *
+         * <p>Parameters from both |primary| and |secondary| are included, with |primary| taking
+         * precedence if both have the same parameter. The exceptions is Conditions: all Conditions
+         * from |primary| and from |secondary| are included.
+         *
+         * <p>Returns a new TransitionOptions instance.
+         */
+        static TransitionOptions merge(TransitionOptions primary, TransitionOptions secondary) {
+            TransitionOptions.Builder builder = secondary.new Builder();
+
+            // Merge Transition Conditions
+            if (secondary.mTransitionConditions != null) {
+                for (Condition condition : secondary.mTransitionConditions) {
+                    builder.withCondition(condition);
+                }
+            }
+            if (primary.mTransitionConditions != null) {
+                for (Condition condition : primary.mTransitionConditions) {
+                    builder.withCondition(condition);
+                }
+            }
+
+            if (primary.mTimeoutMs != null) {
+                builder.withTimeout(primary.mTimeoutMs);
+            } else if (secondary.mTimeoutMs != null) {
+                builder.withTimeout(secondary.mTimeoutMs);
+            }
+
+            if (primary.mTries != null) {
+                builder.withTimeout(primary.mTries);
+            } else if (secondary.mTries != null) {
+                builder.withTimeout(secondary.mTries);
+            }
+
+            if (primary.mPossiblyAlreadyFulfilled != null) {
+                builder.withPossiblyAlreadyFulfilled(primary.mPossiblyAlreadyFulfilled);
+            } else if (secondary.mPossiblyAlreadyFulfilled != null) {
+                builder.withPossiblyAlreadyFulfilled(secondary.mPossiblyAlreadyFulfilled);
+            }
+
+            if (primary.mRunTriggerOnUiThread != null) {
+                builder.withPossiblyAlreadyFulfilled(primary.mRunTriggerOnUiThread);
+            } else if (secondary.mRunTriggerOnUiThread != null) {
+                builder.withPossiblyAlreadyFulfilled(secondary.mRunTriggerOnUiThread);
+            }
+
+            return builder.build();
         }
 
         /** Builder for TransitionOptions. Call {@link Transition#newOptions()} to instantiate. */
@@ -279,15 +343,40 @@ public abstract class Transition {
                 return this;
             }
 
+            /**
+             * Default behavior, do not retry the transition trigger if the transition does not
+             * finish within the timeout.
+             */
+            public Builder withNoRetry() {
+                mTries = 1;
+                return this;
+            }
+
             /** The Transition's Conditions might already be all fulfilled before the Trigger. */
             public Builder withPossiblyAlreadyFulfilled() {
-                mPossiblyAlreadyFulfilled = true;
+                return withPossiblyAlreadyFulfilled(true);
+            }
+
+            /**
+             * Set whether to fail if the Transition's Conditions are already fulfilled before the
+             * Trigger. Default behavior is to fail.
+             */
+            public Builder withPossiblyAlreadyFulfilled(boolean newValue) {
+                mPossiblyAlreadyFulfilled = newValue;
                 return this;
             }
 
             /** Run the {@link Trigger} on the UI Thread. */
             public Builder withRunTriggerOnUiThread() {
-                mRunTriggerOnUiThread = true;
+                return withRunTriggerOnUiThread(true);
+            }
+
+            /**
+             * Set whether to run the {@link Trigger} on the UI Thread. Default behavior is to run
+             * it on the instrumentation thread.
+             */
+            public Builder withRunTriggerOnUiThread(boolean newValue) {
+                mRunTriggerOnUiThread = newValue;
                 return this;
             }
         }

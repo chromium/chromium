@@ -129,6 +129,31 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return mViewSpec.ancestor(viewClass, viewMatcher);
     }
 
+    /** Start a Transition by clicking this View. */
+    public TripBuilder clickTo() {
+        return new TripBuilder().withContext(this).withTrigger(getClickTrigger());
+    }
+
+    /** Start a Transition by long pressing this View. */
+    public TripBuilder longPressTo() {
+        return new TripBuilder().withContext(this).withTrigger(getLongPressTrigger());
+    }
+
+    /** Start a Transition by clicking this View even if partially occluded. */
+    public TripBuilder clickEvenIfPartiallyOccludedTo() {
+        return new TripBuilder().withContext(this).withTrigger(getForgivingClickTrigger());
+    }
+
+    /** Start a Transition by typing |text| into this View. */
+    public TripBuilder typeTextTo(String text) {
+        return new TripBuilder().withContext(this).withTrigger(getTypeTextTrigger(text));
+    }
+
+    /** Start a Transition by performing an Espresso ViewAction on this View. */
+    public TripBuilder performViewActionTo(ViewAction action) {
+        return new TripBuilder().withContext(this).withTrigger(getPerformTrigger(action));
+    }
+
     /** Trigger an Espresso action on this View. */
     public Transition.Trigger getPerformTrigger(ViewAction action) {
         return () -> Espresso.onView(mViewSpec.getViewMatcher()).perform(action);

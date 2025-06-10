@@ -58,7 +58,7 @@ public class CloseWatcherTest {
                         .initFrom(loadedPage)
                         .withExpectedTitle(EXPECTED_TITLE_SUCCESS)
                         .build();
-        loadedPage.pressBack(finalStationExpected);
+        loadedPage.pressBackTo().arriveAt(finalStationExpected);
 
         // No explicit assertion needed; pressBack ensures the transition completed successfully.
     }
@@ -74,7 +74,7 @@ public class CloseWatcherTest {
                         .withExpectedTitle(EXPECTED_TITLE_SUCCESS)
                         .initFrom(loadedPage)
                         .build();
-        loadedPage.pressBack(finalStationExpected);
+        loadedPage.pressBackTo().arriveAt(finalStationExpected);
 
         // No explicit assertion needed.
     }

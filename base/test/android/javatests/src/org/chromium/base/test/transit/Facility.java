@@ -67,6 +67,11 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
         mHostStation = (HostStationT) station;
     }
 
+    /** Get the host {@link Station} this facility is scoped to. */
+    public HostStationT getHostStation() {
+        return mHostStation;
+    }
+
     @Override
     public String getName() {
         return String.format(

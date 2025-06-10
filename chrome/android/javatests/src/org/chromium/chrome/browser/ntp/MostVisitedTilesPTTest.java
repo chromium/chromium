@@ -105,12 +105,15 @@ public class MostVisitedTilesPTTest {
 
         // Reset back to the NTP for batching
         page =
-                mostVisitedPage.pressBack(
-                        RegularNewTabPageStation.newBuilder()
-                                .withIncognito(false)
-                                .withIsOpeningTabs(0)
-                                .withTabAlreadySelected(mostVisitedPage.loadedTabElement.get())
-                                .build());
+                mostVisitedPage
+                        .pressBackTo()
+                        .arriveAt(
+                                RegularNewTabPageStation.newBuilder()
+                                        .withIncognito(false)
+                                        .withIsOpeningTabs(0)
+                                        .withTabAlreadySelected(
+                                                mostVisitedPage.loadedTabElement.get())
+                                        .build());
         assertFinalDestination(page);
     }
 }
