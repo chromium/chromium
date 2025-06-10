@@ -25,7 +25,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -43,6 +42,7 @@
 #include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace mojo::core {
 
@@ -489,7 +489,7 @@ ChannelBinder::Receiver::OnBinderTransaction(
 
   ASSIGN_OR_RETURN(const auto payload, ReadMessagePayload(in));
   const auto bytes = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const PayloadBuffer& payload) {
             return base::span<const uint8_t>(payload.data.get(), payload.size);
           },

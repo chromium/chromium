@@ -29,7 +29,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -58,6 +57,7 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo_proxy::test {
@@ -289,15 +289,15 @@ class LegacyAppLauncher {
     proxy_command_line.AppendSwitchASCII(
         switches::kHostIpczTransportFd,
         base::NumberToString(kHostIpczTransportFdValue));
-    std::visit(base::Overloaded{[&](size_t num_attachments) {
-                                  proxy_command_line.AppendSwitchASCII(
-                                      switches::kNumAttachments,
-                                      base::NumberToString(num_attachments));
-                                },
-                                [&](const std::string& name) {
-                                  proxy_command_line.AppendSwitchASCII(
-                                      switches::kAttachmentName, name);
-                                }},
+    std::visit(absl::Overload{[&](size_t num_attachments) {
+                                proxy_command_line.AppendSwitchASCII(
+                                    switches::kNumAttachments,
+                                    base::NumberToString(num_attachments));
+                              },
+                              [&](const std::string& name) {
+                                proxy_command_line.AppendSwitchASCII(
+                                    switches::kAttachmentName, name);
+                              }},
                attachment_info_);
     if (!mojo::core::GetIpczNodeOptions().is_broker) {
       // When connecting though the proxy from a non-broker subprocess, we need
