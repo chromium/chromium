@@ -372,9 +372,8 @@ void SVGAnimationElement::CalculateKeyTimesForCalcModePaced() {
   DCHECK_EQ(GetCalcMode(), kCalcModePaced);
   DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
 
-  unsigned values_count = values_.size();
-  DCHECK_GE(values_count, 1u);
-  if (values_count == 1) {
+  const unsigned values_count = values_.size();
+  if (values_count <= 1) {
     // Don't swap lists.
     use_paced_key_times_ = false;
     return;
