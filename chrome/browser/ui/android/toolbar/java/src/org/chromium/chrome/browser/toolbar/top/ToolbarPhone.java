@@ -363,7 +363,7 @@ public class ToolbarPhone extends ToolbarLayout
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
-            HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -378,7 +378,7 @@ public class ToolbarPhone extends ToolbarLayout
                 homeButtonDisplay);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
-        mHomeButtonDisplay = homeButtonDisplay;
+        mHomeButtonDisplay = assumeNonNull(homeButtonDisplay);
 
         getToolbarDataProvider().addToolbarDataProviderObserver(this);
 

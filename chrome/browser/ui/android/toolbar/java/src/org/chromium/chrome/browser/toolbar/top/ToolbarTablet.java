@@ -398,7 +398,7 @@ public class ToolbarTablet extends ToolbarLayout {
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
-            HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,

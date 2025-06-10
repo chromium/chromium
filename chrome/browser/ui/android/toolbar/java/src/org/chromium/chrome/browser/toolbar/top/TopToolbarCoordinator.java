@@ -151,7 +151,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *     TabStripTransitionDelegate}.
      * @param onLongClickListener OnLongClickListener for the toolbar.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
-     *     home button(s).
+     *     home button(s). Should be null on custom tabs.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -184,7 +184,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator,
-            HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mControlContainer = controlContainer;

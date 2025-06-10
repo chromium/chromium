@@ -133,6 +133,8 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param historyDelegate Delegate used to display navigation history.
      * @param userEducationHelper Helper for user education flows.
      * @param trackerSupplier Provides a {@link Tracker} when available.
+     * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
+     *     home button(s). Should be null on custom tabs.
      */
     @CallSuper
     @Initializer
@@ -147,7 +149,7 @@ public abstract class ToolbarLayout extends FrameLayout
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
-            HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;

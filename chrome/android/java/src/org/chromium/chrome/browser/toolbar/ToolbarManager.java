@@ -827,7 +827,8 @@ public class ToolbarManager
                         tabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
         mProfileSupplier = profileSupplier;
         mIsNewTabPageCustomizationToolbarButtonEnabled =
-                ChromeFeatureList.sNewTabPageCustomization.isEnabled()
+                !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
+                        && ChromeFeatureList.sNewTabPageCustomization.isEnabled()
                         && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
@@ -1004,8 +1005,7 @@ public class ToolbarManager
                             tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
                 };
 
-        if (!mIsNewTabPageCustomizationToolbarButtonEnabled
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (!mIsNewTabPageCustomizationToolbarButtonEnabled) {
             View homeButton = controlContainer.findViewById(R.id.home_button);
             if (homeButton != null) {
                 mHomeButtonCoordinator =
@@ -1019,16 +1019,17 @@ public class ToolbarManager
         } else {
             View homePageButtonsContainer =
                     controlContainer.findViewById(R.id.home_page_buttons_layout);
-
-            mHomePageButtonsCoordinator =
-                    new HomePageButtonsCoordinator(
-                            mActivity,
-                            mProfileSupplier,
-                            homePageButtonsContainer,
-                            this::onHomeButtonMenuClick,
-                            HomepagePolicyManager::isHomepageLocationManaged,
-                            mBottomSheetController,
-                            this::onHomePageButtonClick);
+            if (homePageButtonsContainer != null) {
+                mHomePageButtonsCoordinator =
+                        new HomePageButtonsCoordinator(
+                                mActivity,
+                                mProfileSupplier,
+                                homePageButtonsContainer,
+                                this::onHomeButtonMenuClick,
+                                HomepagePolicyManager::isHomepageLocationManaged,
+                                mBottomSheetController,
+                                this::onHomePageButtonClick);
+            }
         }
 
         ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);
