@@ -98,7 +98,7 @@ IntentType RewriteIntent(const std::string& selected_text,
   return intent;
 }
 
-bool IsPreferredLanguage(const std::string& detected_language) {
+bool IsPreferredLanguage(std::string_view detected_language) {
   auto preferred_languages_list =
       base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -143,8 +143,8 @@ bool ShouldSkipDefinition(const std::string& text) {
 
 // Check that both the source and target languages are supported by the
 // translation v2 API.
-bool AreTranslationLanguagesSupported(const std::string& source_language,
-                                      const std::string& target_language) {
+bool AreTranslationLanguagesSupported(std::string_view source_language,
+                                      std::string_view target_language) {
   return TranslationV2Utils::IsSupported(source_language) &&
          TranslationV2Utils::IsSupported(target_language);
 }

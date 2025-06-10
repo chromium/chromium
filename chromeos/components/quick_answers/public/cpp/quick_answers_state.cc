@@ -238,7 +238,7 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
          use_text_annotator_for_testing_;
 }
 
-bool QuickAnswersState::IsSupportedLanguage(const std::string& language) const {
+bool QuickAnswersState::IsSupportedLanguage(std::string_view language) const {
   return kSupportedLanguages.contains(language);
 }
 

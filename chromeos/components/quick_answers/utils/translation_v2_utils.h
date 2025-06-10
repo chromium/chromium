@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_TRANSLATION_V2_UTILS_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_TRANSLATION_V2_UTILS_H_
 
-#include <string>
+#include <string_view>
 
 namespace quick_answers {
 
 class TranslationV2Utils {
  public:
-  static bool IsSupported(const std::string& language);
+  static bool IsSupported(std::string_view);
 };
 
 }  // namespace quick_answers

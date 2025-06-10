@@ -177,8 +177,8 @@ struct IntentInfo {
   IntentInfo(const IntentInfo& other);
   IntentInfo(const std::string& intent_text,
              IntentType intent_type,
-             const std::string& device_language = std::string(),
-             const std::string& source_language = std::string());
+             std::string_view device_language = std::string_view(),
+             std::string_view source_language = std::string_view());
   ~IntentInfo();
 
   // The text extracted from the selected_text associated with the intent.

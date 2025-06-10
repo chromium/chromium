@@ -23,7 +23,7 @@ std::optional<std::string> GetLanguageWithConfidence(
   // highest to the lowest (according to the mojom method documentation).
   if (!languages.empty() &&
       languages.front()->confidence > confidence_threshold) {
-    return l10n_util::GetLanguage(languages.front()->locale);
+    return std::string(l10n_util::GetLanguage(languages.front()->locale));
   }
   return std::nullopt;
 }
