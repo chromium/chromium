@@ -130,16 +130,6 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           tools:text="Verify"
           style="@style/FilledButton"/>
-
-      <!-- "Cancel" button -->
-      <org.chromium.ui.widget.ButtonCompat
-          android:id="@+id/cancel_button"
-          android:layout_below="@id/continue_button"
-          android:layout_height="wrap_content"
-          android:layout_width="match_parent"
-          android:text="@string/cancel"
-          style="@style/TextButton"/>
-
     </RelativeLayout>
   </ScrollView>
 </RelativeLayout>

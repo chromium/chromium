@@ -259,8 +259,7 @@ public class SecurePaymentConfirmationController
                                                 R.string
                                                         .secure_payment_confirmation_inform_only_title)
                                         : context.getString(
-                                                R.string
-                                                        .secure_payment_confirmation_verify_purchase))
+                                                R.string.secure_payment_confirmation_title))
                         .with(
                                 SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER,
                                 itemListAdapter)
@@ -270,17 +269,15 @@ public class SecurePaymentConfirmationController
                                 SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL,
                                 mInformOnly
                                         ? context.getString(R.string.payments_confirm_button)
-                                        : context.getString(R.string.payments_continue_button))
+                                        : context.getString(
+                                                R.string
+                                                        .secure_payment_confirmation_verify_button_label))
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, SecurePaymentConfirmationViewBinder::bind);
         mView.mContinueButton.setOnClickListener(
                 (View button) -> {
                     onContinue();
-                });
-        mView.mCancelButton.setOnClickListener(
-                (View button) -> {
-                    onCancel();
                 });
 
         mContent =

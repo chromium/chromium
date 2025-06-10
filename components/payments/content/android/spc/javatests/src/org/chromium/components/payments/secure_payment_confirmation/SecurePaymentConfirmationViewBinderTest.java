@@ -237,15 +237,6 @@ public class SecurePaymentConfirmationViewBinderTest {
         assertEquals(continueText, String.valueOf(mView.mContinueButton.getText()));
     }
 
-    @Test
-    @SmallTest
-    public void testCancelButton() {
-        assertEquals(R.id.cancel_button, mView.mCancelButton.getId());
-        assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.cancel),
-                String.valueOf(mView.mCancelButton.getText()));
-    }
-
     private void bind(PropertyModel.Builder modelBuilder) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

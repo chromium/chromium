@@ -215,7 +215,7 @@ public class SecurePaymentConfirmationControllerTest {
         assertEquals(
                 context.getString(
                         org.chromium.components.payments.R.string
-                                .secure_payment_confirmation_verify_purchase),
+                                .secure_payment_confirmation_title),
                 model.get(SecurePaymentConfirmationProperties.TITLE));
         ModelList itemList =
                 model.get(SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER).getModelList();
@@ -257,7 +257,8 @@ public class SecurePaymentConfirmationControllerTest {
                 model.get(SecurePaymentConfirmationProperties.FOOTNOTE));
         assertEquals(
                 context.getString(
-                        org.chromium.components.payments.R.string.payments_continue_button),
+                        org.chromium.components.payments.R.string
+                                .secure_payment_confirmation_verify_button_label),
                 model.get(SecurePaymentConfirmationProperties.CONTINUE_BUTTON_LABEL));
     }
 
@@ -374,7 +375,7 @@ public class SecurePaymentConfirmationControllerTest {
     public void testOnCancel() {
         createController(/* showOptOut= */ false, /* informOnly= */ false);
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
-        mController.getViewForTesting().mCancelButton.performClick();
+        mController.onCancel();
 
         verify(mResponseCallback).onResult(eq(SpcResponseStatus.CANCEL));
         // Verify hide() was called.
@@ -385,7 +386,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testOnCancel_whenInputThresholdNotReached() {
         createController(/* showOptOut= */ false, /* informOnly= */ false);
-        mController.getViewForTesting().mCancelButton.performClick();
+        mController.onCancel();
 
         verifyNoInteractions(mResponseCallback);
         verifyNoInteractions(mBottomSheetObserver);
