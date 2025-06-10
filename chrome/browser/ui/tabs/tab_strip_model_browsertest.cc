@@ -399,6 +399,35 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandAddToSplit) {
   EXPECT_FALSE(tab_strip_model->GetTabAtIndex(4)->IsSplit());
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
+                       CommandAddToSplitWhenDeletesGroupShowsDeletionDialog) {
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  AddTabs(4);
+  EXPECT_EQ(tab_strip_model->count(), 5);
+
+  // Add tab at index 4 to a group.
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({4});
+
+  tab_strip_model->ActivateTabAt(3);
+  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      4, TabStripModel::CommandAddToSplit));
+
+  tab_strip_model->ExecuteContextMenuCommand(4,
+                                             TabStripModel::CommandAddToSplit);
+
+  // Make sure the dialog is shown, and fake clicking the button.
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+  EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
+
+  // Pull the dialog state and call the OnDialogOk method.
+  deletion_dialog_controller->SimulateOkButtonForTesting();
+
+  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group_id));
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(3)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(4)->GetSplit().has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandSwapWithActiveSplit) {
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   AddTabs(3);
