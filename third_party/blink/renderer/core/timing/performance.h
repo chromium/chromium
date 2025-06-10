@@ -328,10 +328,6 @@ class CORE_EXPORT Performance : public EventTarget {
     return cross_origin_isolated_capability_;
   }
 
-  // TODO(https://crbug.com/1457049): remove this once visited links are
-  // partitioned.
-  bool softNavPaintMetricsSupported() const;
-
   base::SingleThreadTaskRunner& GetTaskRunner() { return *task_runner_; }
 
  private:

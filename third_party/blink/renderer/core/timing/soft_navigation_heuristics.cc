@@ -445,12 +445,6 @@ void SoftNavigationHeuristics::ResetPaintTimingsIfNeeded() {
   LocalFrameView* local_frame_view = frame->View();
   CHECK(local_frame_view);
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    if (Document* document = window_->document();
-        document &&
-        RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-            window_.Get())) {
-      PaintTiming::From(*document).ResetFirstPaintAndFCP();
-    }
     local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
   }
 
@@ -469,10 +463,6 @@ void SoftNavigationHeuristics::CommitPreviousPaintTimings(LocalFrame* frame) {
 
   local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(
       window_.Get());
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-          window_.Get())) {
-    PaintTiming::From(*window_->document()).SoftNavigationDetected();
-  }
 }
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
