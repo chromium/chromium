@@ -25254,6 +25254,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "V8PreconfigureOldGenSize": "32"
+                    },
                     "enable_features": [
                         "V8PreconfigureOldGen"
                     ]
