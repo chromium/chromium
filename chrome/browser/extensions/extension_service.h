@@ -234,6 +234,21 @@ class ExtensionService : public ExtensionServiceInterface,
   }
 #endif
 
+  // Load Extension Flags.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LoadExtensionFlag)
+  enum class LoadExtensionFlag {
+    // --load-extension flag.
+    kLoadExtension = 0,
+    // --disable-extensions-except flag.
+    kDisableExtensionsExcept = 1,
+
+    kMaxValue = kDisableExtensionsExcept,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:LoadExtensionFlag)
+
  private:
   // Loads extensions specified via a command line flag/switch.
   void LoadExtensionsFromCommandLineFlag(const char* switch_name);
