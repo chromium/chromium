@@ -27,14 +27,14 @@ MessageBoxResult ShowWarningMessageBoxSync(gfx::NativeWindow parent,
   return MESSAGE_BOX_RESULT_NO;
 }
 
-MessageBoxResult ShowQuestionMessageBox(gfx::NativeWindow parent,
-                                        const std::u16string& title,
-                                        const std::u16string& message) {
+MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,
+                                            const std::u16string& title,
+                                            const std::u16string& message) {
   NOTIMPLEMENTED();
   return MESSAGE_BOX_RESULT_NO;
 }
 
-void ShowWarningMessageBoxWithCheckbox(
+void ShowWarningMessageBoxWithCheckboxAsync(
     gfx::NativeWindow parent,
     const std::u16string& title,
     const std::u16string& message,

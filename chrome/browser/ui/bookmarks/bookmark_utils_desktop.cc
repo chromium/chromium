@@ -349,7 +349,7 @@ void OpenAllIfAllowed(
   // since if |browser| is closed, the message box will be destroyed
   // before the user can answer "Yes".
 
-  chrome::ShowQuestionMessageBox(
+  chrome::ShowQuestionMessageBoxAsync(
       browser->window()->GetNativeWindow(),
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,

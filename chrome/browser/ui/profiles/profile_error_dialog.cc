@@ -61,7 +61,7 @@ void ShowProfileErrorDialog(ProfileErrorType type,
   }
 
   g_is_showing_profile_error_dialog = true;
-  chrome::ShowWarningMessageBoxWithCheckbox(
+  chrome::ShowWarningMessageBoxWithCheckboxAsync(
       gfx::NativeWindow(),
       l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
       l10n_util::GetStringUTF16(message_id),

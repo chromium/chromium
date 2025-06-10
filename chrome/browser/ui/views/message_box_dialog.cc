@@ -363,7 +363,7 @@ MessageBoxResult ShowWarningMessageBoxSync(gfx::NativeWindow parent,
                                 /*checkbox_text=*/std::u16string());
 }
 
-void ShowWarningMessageBoxWithCheckbox(
+void ShowWarningMessageBoxWithCheckboxAsync(
     gfx::NativeWindow parent,
     const std::u16string& title,
     const std::u16string& message,
@@ -389,7 +389,7 @@ MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,
       std::u16string(), std::u16string(), std::u16string());
 }
 
-void ShowQuestionMessageBox(
+void ShowQuestionMessageBoxAsync(
     gfx::NativeWindow parent,
     const std::u16string& title,
     const std::u16string& message,
@@ -400,11 +400,12 @@ void ShowQuestionMessageBox(
                          std::move(callback));
 }
 
-MessageBoxResult ShowMessageBoxWithButtonText(gfx::NativeWindow parent,
-                                              const std::u16string& title,
-                                              const std::u16string& message,
-                                              const std::u16string& yes_text,
-                                              const std::u16string& no_text) {
+MessageBoxResult ShowMessageBoxWithButtonTextSync(
+    gfx::NativeWindow parent,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& yes_text,
+    const std::u16string& no_text) {
   return MessageBoxDialog::Show(parent, title, message,
                                 chrome::MESSAGE_BOX_TYPE_QUESTION, yes_text,
                                 no_text, std::u16string());

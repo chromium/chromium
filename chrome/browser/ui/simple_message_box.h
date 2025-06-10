@@ -57,7 +57,7 @@ MessageBoxResult ShowWarningMessageBoxSync(gfx::NativeWindow parent,
 // As above, but shows the dialog box asynchronously with a checkbox.
 // |callback| will be invoked after the dialog is dismissed. It is invoked with
 // true if the checkbox is checked and false otherwise.
-void ShowWarningMessageBoxWithCheckbox(
+void ShowWarningMessageBoxWithCheckboxAsync(
     gfx::NativeWindow parent,
     const std::u16string& title,
     const std::u16string& message,
@@ -70,7 +70,7 @@ MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,
                                             const std::u16string& title,
                                             const std::u16string& message);
 
-void ShowQuestionMessageBox(
+void ShowQuestionMessageBoxAsync(
     gfx::NativeWindow parent,
     const std::u16string& title,
     const std::u16string& message,
@@ -83,11 +83,12 @@ void ShowQuestionMessageBox(
 // NOTE: In general, you should avoid this since it's usually poor UI.
 // We have a variety of other surfaces such as app menu notifications and
 // infobars; consult the UI leads for a recommendation.
-MessageBoxResult ShowMessageBoxWithButtonText(gfx::NativeWindow parent,
-                                              const std::u16string& title,
-                                              const std::u16string& message,
-                                              const std::u16string& yes_text,
-                                              const std::u16string& no_text);
+MessageBoxResult ShowMessageBoxWithButtonTextSync(
+    gfx::NativeWindow parent,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& yes_text,
+    const std::u16string& no_text);
 
 }  // namespace chrome
 
