@@ -84,10 +84,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
-  void AlwaysEnableRasterTimersForTesting() {
-    always_enable_raster_timers_for_testing_ = true;
-  }
-
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterMode() const;
 
@@ -104,7 +100,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
-  bool always_enable_raster_timers_for_testing_ = false;
 };
 
 }  // namespace blink

@@ -32,10 +32,6 @@ CanvasResourceHost::ReplaceResourceProvider(
       std::move(resource_provider_);
   resource_provider_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
-  if (resource_provider_) {
-    resource_provider_->AlwaysEnableRasterTimersForTesting(
-        always_enable_raster_timers_for_testing_);
-  }
   if (old_resource_provider) {
     old_resource_provider->SetCanvasResourceHost(nullptr);
   }
