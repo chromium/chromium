@@ -236,6 +236,7 @@ found in the LICENSE file.
                             android:maxLines="1"
                             android:layout_height="@dimen/readaloud_menu_buttons_width"
                             android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
                             android:textAppearance="@style/TextAppearance.TextAccentMediumThick"
                             tools:ignore="ContentDescription" />
                         <!-- Note: contentDescription for playback speed button above is set in ExpandedPlayerSheetContent.java. -->
