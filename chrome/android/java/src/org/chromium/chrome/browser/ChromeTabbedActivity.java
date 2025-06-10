@@ -744,12 +744,6 @@ public class ChromeTabbedActivity extends ChromeActivity
                         public void onFinishingTabClosure(
                                 Tab tab, boolean shouldRemoveWindowWithZeroTabs) {
                             closeIfNoTabsAndHomepageEnabled(false, shouldRemoveWindowWithZeroTabs);
-
-                            // On XR Devices when the last tab is closed then the Chrome instance is
-                            // also closed.
-                            if (XrUtils.isXrDevice()) {
-                                mMultiInstanceManager.closeChromeWindowIfEmpty(mWindowId);
-                            }
                         }
 
                         @Override
