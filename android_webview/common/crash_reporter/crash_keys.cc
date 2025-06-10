@@ -210,6 +210,13 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "OriginCalc-origin_blcok",
     "OriginCalc-origin_to_commit_block",
 
+    // crbug.com/423037052
+    "SIFactory-DebugLabel",
+    "SIFactory-Format",
+    "SIFactory-GMBType",
+    "SIFactory-SharedBwThreads",
+    "SIFactory-Usage",
+
     nullptr};
 // clang-format on
 
