@@ -15,7 +15,7 @@ namespace permissions {
 
 SensorPermissionContext::SensorPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::SENSORS,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

@@ -13,15 +13,15 @@
 namespace permissions {
 namespace {
 
-class FakePermissionContext : public PermissionContextBase {
+class FakePermissionContext : public ContentSettingPermissionContextBase {
  public:
   FakePermissionContext(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
       network::mojom::PermissionsPolicyFeature permissions_policy_feature)
-      : PermissionContextBase(browser_context,
-                              content_settings_type,
-                              permissions_policy_feature) {}
+      : ContentSettingPermissionContextBase(browser_context,
+                                            content_settings_type,
+                                            permissions_policy_feature) {}
 };
 
 class FakePermissionContextAlwaysAllow : public FakePermissionContext {
@@ -34,7 +34,7 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
                               content_settings_type,
                               permissions_policy_feature) {}
 
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

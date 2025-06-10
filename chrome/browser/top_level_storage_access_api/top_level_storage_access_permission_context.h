@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
@@ -54,7 +54,7 @@ enum class TopLevelStorageAccessRequestOutcome {
 };
 
 class TopLevelStorageAccessPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit TopLevelStorageAccessPermissionContext(
       content::BrowserContext* browser_context);
@@ -72,7 +72,7 @@ class TopLevelStorageAccessPermissionContext
       permissions::BrowserPermissionCallback callback);
 
  private:
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

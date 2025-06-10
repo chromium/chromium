@@ -16,7 +16,7 @@
 
 IdleDetectionPermissionContext::IdleDetectionPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::IDLE_DETECTION,
           network::mojom::PermissionsPolicyFeature::kIdleDetection) {}
@@ -80,6 +80,6 @@ void IdleDetectionPermissionContext::DecidePermission(
     return;
   }
 
-  PermissionContextBase::DecidePermission(std::move(request_data),
-                                          std::move(callback));
+  ContentSettingPermissionContextBase::DecidePermission(std::move(request_data),
+                                                        std::move(callback));
 }

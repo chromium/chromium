@@ -29,8 +29,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/bluetooth_delegate_impl.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -264,13 +264,15 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
 
   // Turn on the global kill switch.
   std::map<std::string, std::string> params;
-  params["Bluetooth"] =
-      permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+  params["Bluetooth"] = permissions::ContentSettingPermissionContextBase::
+      kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup");
 
   std::string rejection =

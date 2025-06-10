@@ -16,7 +16,7 @@ namespace permissions {
 
 WindowManagementPermissionContext::WindowManagementPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_MANAGEMENT,
           network::mojom::PermissionsPolicyFeature::kWindowManagement) {}
@@ -52,7 +52,7 @@ void WindowManagementPermissionContext::UserMadePermissionDecision(
     }
   }
 
-  PermissionContextBase::UserMadePermissionDecision(
+  ContentSettingPermissionContextBase::UserMadePermissionDecision(
       id, requesting_origin, embedding_origin, content_setting);
 }
 

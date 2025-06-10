@@ -41,7 +41,7 @@ CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate,
     const webrtc::MediaStreamDeviceEnumerator* device_enumerator)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           network::mojom::PermissionsPolicyFeature::kNotFound),
@@ -64,8 +64,8 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (HasAvailableCameraPtzDevices()) {
-    PermissionContextBase::RequestPermission(std::move(request_data),
-                                             std::move(callback));
+    ContentSettingPermissionContextBase::RequestPermission(
+        std::move(request_data), std::move(callback));
     return;
   }
 
@@ -101,7 +101,7 @@ ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
                                              embedding_origin, &result)) {
     return result;
   }
-  return PermissionContextBase::GetPermissionStatusInternal(
+  return ContentSettingPermissionContextBase::GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 }
 
@@ -109,7 +109,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  PermissionContextBase::OnContentSettingChanged(
+  ContentSettingPermissionContextBase::OnContentSettingChanged(
       primary_pattern, secondary_pattern, content_type_set);
 
   if (!content_type_set.Contains(ContentSettingsType::MEDIASTREAM_CAMERA) &&

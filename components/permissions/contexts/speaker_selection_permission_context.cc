@@ -11,7 +11,7 @@
 
 SpeakerSelectionPermissionContext::SpeakerSelectionPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::SPEAKER_SELECTION,
           network::mojom::PermissionsPolicyFeature::kSpeakerSelection) {}

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_PERMISSION_CONTEXT_H_
 
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 class GURL;
 
@@ -15,7 +15,7 @@ class GURL;
 // DownloadRequestLimiter, or the Automatic Downloads content setting
 // This is why it isn't persisted.
 class BackgroundFetchPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit BackgroundFetchPermissionContext(
       content::BrowserContext* browser_context);
@@ -28,7 +28,7 @@ class BackgroundFetchPermissionContext
   ~BackgroundFetchPermissionContext() override = default;
 
  private:
-  // PermissionContextBase implementation.
+  // ContentSettingPermissionContextBase implementation.
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

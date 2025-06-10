@@ -13,7 +13,7 @@ namespace permissions {
 WakeLockPermissionContext::WakeLockPermissionContext(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           content_settings_type,
           content_settings_type == ContentSettingsType::WAKE_LOCK_SCREEN

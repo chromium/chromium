@@ -6,11 +6,12 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_MANAGEMENT_PERMISSION_CONTEXT_H_
 
 #include "build/build_config.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 namespace permissions {
 
-class WindowManagementPermissionContext : public PermissionContextBase {
+class WindowManagementPermissionContext
+    : public ContentSettingPermissionContextBase {
  public:
   explicit WindowManagementPermissionContext(
       content::BrowserContext* browser_context);
@@ -22,7 +23,7 @@ class WindowManagementPermissionContext : public PermissionContextBase {
       const WindowManagementPermissionContext&) = delete;
 
  protected:
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
 #if BUILDFLAG(IS_ANDROID)
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,

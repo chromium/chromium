@@ -14,7 +14,7 @@ namespace permissions {
 
 MidiPermissionContext::MidiPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::MIDI,
           network::mojom::PermissionsPolicyFeature::kMidiFeature) {}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_PERMISSION_CONTEXT_BASE_H_
-#define COMPONENTS_PERMISSIONS_PERMISSION_CONTEXT_BASE_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTENT_SETTING_PERMISSION_CONTEXT_BASE_H_
+#define COMPONENTS_PERMISSIONS_CONTENT_SETTING_PERMISSION_CONTEXT_BASE_H_
 
 #include <memory>
 #include <unordered_map>
@@ -69,8 +69,8 @@ using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 //     about the permission is made by the user.
 // The bare minimum you need to create a new permission request is
 //   - Define your new permission in the ContentSettingsType enum.
-//   - Create a class that inherits from PermissionContextBase and passes the
-//     new permission.
+//   - Create a class that inherits from ContentSettingPermissionContextBase and
+//     passes the new permission.
 //   - Edit the PermissionRequest methods to add the new text.
 //   - Make sure to update
 //     third_party/blink/public/devtools_protocol/browser_protocol.pdl
@@ -83,22 +83,22 @@ using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 // See midi_permission_context.h/cc or push_permission_context.cc/h for some
 // examples.
 
-class PermissionContextBase : public content_settings::Observer {
+class ContentSettingPermissionContextBase : public content_settings::Observer {
  public:
-  PermissionContextBase(
+  ContentSettingPermissionContextBase(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
       network::mojom::PermissionsPolicyFeature permissions_policy_feature);
-  ~PermissionContextBase() override;
+  ~ContentSettingPermissionContextBase() override;
 
   // A field trial used to enable the global permissions kill switch.
   // This is public so permissions that don't yet inherit from
-  // PermissionContextBase can use it.
+  // ContentSettingPermissionContextBase can use it.
   static const char kPermissionsKillSwitchFieldStudy[];
 
   // The field trial param to enable the global permissions kill switch.
   // This is public so permissions that don't yet inherit from
-  // PermissionContextBase can use it.
+  // ContentSettingPermissionContextBase can use it.
   static const char kPermissionsKillSwitchBlockedValue[];
 
   // |callback| is called upon resolution of the request, but not if a prompt
@@ -290,9 +290,9 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
-  base::WeakPtrFactory<PermissionContextBase> weak_factory_{this};
+  base::WeakPtrFactory<ContentSettingPermissionContextBase> weak_factory_{this};
 };
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_PERMISSION_CONTEXT_BASE_H_
+#endif  // COMPONENTS_PERMISSIONS_CONTENT_SETTING_PERMISSION_CONTEXT_BASE_H_

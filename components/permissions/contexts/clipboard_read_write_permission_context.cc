@@ -10,6 +10,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -20,7 +21,7 @@ namespace permissions {
 ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<ClipboardPermissionContextDelegate> delegate)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_READ_WRITE,
           network::mojom::PermissionsPolicyFeature::kClipboardRead),
@@ -45,8 +46,8 @@ void ClipboardReadWritePermissionContext::DecidePermission(
   }
 #endif
 
-  PermissionContextBase::DecidePermission(std::move(request_data),
-                                          std::move(callback_base));
+  ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback_base));
 }
 
 ContentSetting ClipboardReadWritePermissionContext::GetPermissionStatusInternal(
@@ -63,7 +64,7 @@ ContentSetting ClipboardReadWritePermissionContext::GetPermissionStatusInternal(
   }
 #endif
 
-  return PermissionContextBase::GetPermissionStatusInternal(
+  return ContentSettingPermissionContextBase::GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 }
 

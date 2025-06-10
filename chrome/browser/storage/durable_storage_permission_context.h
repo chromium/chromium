@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 
 class DurableStoragePermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit DurableStoragePermissionContext(
       content::BrowserContext* browser_context);
@@ -24,7 +24,7 @@ class DurableStoragePermissionContext
 
   ~DurableStoragePermissionContext() override = default;
 
-  // PermissionContextBase implementation.
+  // ContentSettingPermissionContextBase implementation.
   // Grant if requesting_origin is bookmarked.
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,

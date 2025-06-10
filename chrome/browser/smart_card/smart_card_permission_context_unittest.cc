@@ -21,7 +21,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/test/browser_task_environment.h"

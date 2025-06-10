@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 namespace webrtc {
 class MediaStreamDeviceEnumerator;
@@ -22,7 +22,7 @@ namespace permissions {
 // zoom). Those permissions are automatically reset when the "regular" camera
 // permission is blocked or reset.
 class CameraPanTiltZoomPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   // Delegate which allows embedders to modify the logic of this permission
   // context.
@@ -53,7 +53,7 @@ class CameraPanTiltZoomPermissionContext
       const CameraPanTiltZoomPermissionContext&) = delete;
 
  private:
-  // PermissionContextBase
+  // ContentSettingPermissionContextBase
   void RequestPermission(
       std::unique_ptr<PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

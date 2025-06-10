@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "extensions/buildflags/buildflags.h"
 
 class GURL;
@@ -85,7 +85,7 @@ class GURL;
 // Extensions that do not declare the "notifications" permission in their
 // manifest will be treated as regular websites.
 class NotificationPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   // Helper method for updating the permission state of |origin| to |setting|.
   static void UpdatePermission(content::BrowserContext* browser_context,
@@ -96,7 +96,7 @@ class NotificationPermissionContext
       content::BrowserContext* browser_context);
   ~NotificationPermissionContext() override;
 
-  // PermissionContextBase implementation.
+  // ContentSettingPermissionContextBase implementation.
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -114,7 +114,7 @@ class NotificationPermissionContext
   ContentSetting GetPermissionStatusForExtension(const GURL& origin) const;
 #endif
 
-  // PermissionContextBase implementation.
+  // ContentSettingPermissionContextBase implementation.
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

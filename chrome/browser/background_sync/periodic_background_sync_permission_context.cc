@@ -42,7 +42,7 @@ BASE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine,
 PeriodicBackgroundSyncPermissionContext::
     PeriodicBackgroundSyncPermissionContext(
         content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::PERIODIC_BACKGROUND_SYNC,
           network::mojom::PermissionsPolicyFeature::kNotFound) {
@@ -147,7 +147,7 @@ void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(
   DCHECK(!persist);
   DCHECK(is_final_decision);
 
-  permissions::PermissionContextBase::NotifyPermissionSet(
+  permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), persist, content_setting, is_one_time,
       is_final_decision);
 }
@@ -161,7 +161,7 @@ void PeriodicBackgroundSyncPermissionContext::OnContentSettingChanged(
           ContentSettingsType::PERIODIC_BACKGROUND_SYNC)) {
     return;
   }
-  permissions::PermissionContextBase::OnContentSettingChanged(
+  permissions::ContentSettingPermissionContextBase::OnContentSettingChanged(
       primary_pattern, secondary_pattern,
       ContentSettingsTypeSet(ContentSettingsType::PERIODIC_BACKGROUND_SYNC));
 }

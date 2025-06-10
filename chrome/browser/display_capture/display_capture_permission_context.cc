@@ -9,7 +9,7 @@
 
 DisplayCapturePermissionContext::DisplayCapturePermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::DISPLAY_CAPTURE,
           network::mojom::PermissionsPolicyFeature::kDisplayCapture) {}

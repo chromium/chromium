@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_NETWORK_ACCESS_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_NETWORK_ACCESS_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 class LocalNetworkAccessPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit LocalNetworkAccessPermissionContext(
       content::BrowserContext* browser_context);

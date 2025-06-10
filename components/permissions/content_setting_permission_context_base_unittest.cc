@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 #include <map>
 #include <memory>
@@ -50,17 +50,17 @@ namespace permissions {
 using PermissionStatus = blink::mojom::PermissionStatus;
 
 const char* const kPermissionsKillSwitchFieldStudy =
-    PermissionContextBase::kPermissionsKillSwitchFieldStudy;
+    ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy;
 const char* const kPermissionsKillSwitchBlockedValue =
-    PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+    ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
 constexpr int kDefaultDismissalsBeforeBlock = 3;
 
-class TestPermissionContext : public PermissionContextBase {
+class TestPermissionContext : public ContentSettingPermissionContextBase {
  public:
   TestPermissionContext(content::BrowserContext* browser_context,
                         const ContentSettingsType content_settings_type)
-      : PermissionContextBase(
+      : ContentSettingPermissionContextBase(
             browser_context,
             content_settings_type,
             network::mojom::PermissionsPolicyFeature::kNotFound),
@@ -98,15 +98,15 @@ class TestPermissionContext : public PermissionContextBase {
                          BrowserPermissionCallback callback) override {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
-    PermissionContextBase::RequestPermission(std::move(request_data),
-                                             std::move(callback));
+    ContentSettingPermissionContextBase::RequestPermission(
+        std::move(request_data), std::move(callback));
     run_loop.Run();
   }
 
   void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,
                         BrowserPermissionCallback callback) override {
-    PermissionContextBase::DecidePermission(std::move(request_data),
-                                            std::move(callback));
+    ContentSettingPermissionContextBase::DecidePermission(
+        std::move(request_data), std::move(callback));
     if (respond_permission_) {
       std::move(respond_permission_).Run();
     } else {
@@ -215,10 +215,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
            response == CONTENT_SETTING_ASK);
     using AutoResponseType = PermissionRequestManager::AutoResponseType;
     AutoResponseType decision = AutoResponseType::DISMISS;
-    if (response == CONTENT_SETTING_ALLOW)
+    if (response == CONTENT_SETTING_ALLOW) {
       decision = AutoResponseType::ACCEPT_ALL;
-    else if (response == CONTENT_SETTING_BLOCK)
+    } else if (response == CONTENT_SETTING_BLOCK) {
       decision = AutoResponseType::DENY_ALL;
+    }
     prompt_factory_->set_response_type(decision);
   }
 

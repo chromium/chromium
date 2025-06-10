@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 namespace content {
 class WebContents;
@@ -14,7 +14,7 @@ class WebContents;
 namespace payments {
 
 class PaymentHandlerPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit PaymentHandlerPermissionContext(
       content::BrowserContext* browser_context);
@@ -27,7 +27,7 @@ class PaymentHandlerPermissionContext
   ~PaymentHandlerPermissionContext() override;
 
  private:
-  // PermissionContextBase
+  // ContentSettingPermissionContextBase
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

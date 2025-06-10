@@ -11,7 +11,7 @@ namespace permissions {
 
 AutomaticFullscreenPermissionContext::AutomaticFullscreenPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::AUTOMATIC_FULLSCREEN,
           network::mojom::PermissionsPolicyFeature::kFullscreen) {}

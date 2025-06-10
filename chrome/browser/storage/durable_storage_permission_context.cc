@@ -37,7 +37,7 @@ using PermissionStatus = blink::mojom::PermissionStatus;
 
 DurableStoragePermissionContext::DurableStoragePermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::DURABLE_STORAGE,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

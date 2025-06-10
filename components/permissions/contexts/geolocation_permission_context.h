@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,7 +23,8 @@ class WebContents;
 
 namespace permissions {
 
-class GeolocationPermissionContext : public PermissionContextBase {
+class GeolocationPermissionContext
+    : public ContentSettingPermissionContextBase {
  public:
   // Delegate which allows embedders to modify the logic of the geolocation
   // permission context.
@@ -67,7 +68,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
   base::WeakPtr<GeolocationPermissionContext> GetWeakPtr();
 
   // Make this public for use by the delegate implementation.
-  using PermissionContextBase::NotifyPermissionSet;
+  using ContentSettingPermissionContextBase::NotifyPermissionSet;
 
  protected:
   std::unique_ptr<Delegate> delegate_;

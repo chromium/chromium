@@ -9,7 +9,7 @@
 
 LocalFontsPermissionContext::LocalFontsPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_FONTS,
           network::mojom::PermissionsPolicyFeature::kLocalFonts) {}

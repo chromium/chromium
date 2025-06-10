@@ -7,11 +7,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 // Common class which handles the mic and camera permissions.
 class MediaStreamDevicePermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   MediaStreamDevicePermissionContext(content::BrowserContext* browser_context,
                                      ContentSettingsType content_settings_type);
@@ -24,7 +24,7 @@ class MediaStreamDevicePermissionContext
   ~MediaStreamDevicePermissionContext() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   void NotifyPermissionSet(
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
@@ -47,7 +47,7 @@ class MediaStreamDevicePermissionContext
 
  private:
 #if BUILDFLAG(IS_ANDROID)
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_origin,
                         bool allowed) override;

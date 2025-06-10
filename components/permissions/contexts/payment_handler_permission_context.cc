@@ -15,7 +15,7 @@ namespace payments {
 
 PaymentHandlerPermissionContext::PaymentHandlerPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::PAYMENT_HANDLER,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

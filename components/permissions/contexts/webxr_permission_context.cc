@@ -28,9 +28,10 @@ namespace permissions {
 WebXrPermissionContext::WebXrPermissionContext(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type)
-    : PermissionContextBase(browser_context,
-                            content_settings_type,
-                            network::mojom::PermissionsPolicyFeature::kWebXr),
+    : ContentSettingPermissionContextBase(
+          browser_context,
+          content_settings_type,
+          network::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
          content_settings_type_ == ContentSettingsType::AR ||
@@ -78,7 +79,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
   const bool additional_permissions_needed =
       permission_granted && (is_ar || is_openxr || is_hands);
   if (!additional_permissions_needed) {
-    PermissionContextBase::NotifyPermissionSet(
+    ContentSettingPermissionContextBase::NotifyPermissionSet(
         request_data, std::move(callback), persist, content_setting,
         is_one_time, is_final_decision);
     return;
@@ -87,8 +88,8 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // Whether or not the user will ultimately accept the OS permissions, we want
   // to save the content_setting here if we should.
   if (persist) {
-    PermissionContextBase::UpdateContentSetting(request_data, content_setting,
-                                                is_one_time);
+    ContentSettingPermissionContextBase::UpdateContentSetting(
+        request_data, content_setting, is_one_time);
   }
 
   content::WebContents* web_contents =
@@ -156,10 +157,10 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
   ContentSetting setting = permission_granted
                                ? ContentSetting::CONTENT_SETTING_ALLOW
                                : ContentSetting::CONTENT_SETTING_BLOCK;
-  PermissionContextBase::NotifyPermissionSet(request_data, std::move(callback),
-                                             false /*persist*/, setting,
-                                             /*is_one_time=*/false,
-                                             /*is_final_decision=*/true);
+  ContentSettingPermissionContextBase::NotifyPermissionSet(
+      request_data, std::move(callback), false /*persist*/, setting,
+      /*is_one_time=*/false,
+      /*is_final_decision=*/true);
 }
 
 void WebXrPermissionContext::UpdateTabContext(

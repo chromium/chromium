@@ -20,19 +20,19 @@ struct PermissionRequestDescription;
 
 namespace permissions {
 
-class PermissionContextBase;
+class ContentSettingPermissionContextBase;
 
 // Holds information about `permissions::PermissionRequest`
 struct PermissionRequestData {
   PermissionRequestData(
-      PermissionContextBase* context,
+      ContentSettingPermissionContextBase* context,
       const PermissionRequestID& id,
       const content::PermissionRequestDescription& request_description,
       const GURL& canonical_requesting_origin,
       const GURL& embedding_origin = GURL(),
       int request_description_permission_index = 0);
 
-  PermissionRequestData(PermissionContextBase* context,
+  PermissionRequestData(ContentSettingPermissionContextBase* context,
                         const PermissionRequestID& id,
                         bool user_gesture,
                         const GURL& requesting_origin,

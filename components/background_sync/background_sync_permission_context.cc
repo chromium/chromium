@@ -10,7 +10,7 @@
 
 BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::BACKGROUND_SYNC,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

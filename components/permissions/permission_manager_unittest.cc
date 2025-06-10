@@ -12,8 +12,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -476,12 +476,13 @@ TEST_F(PermissionManagerTest, KillSwitchOnIsNotOverridable) {
   std::map<std::string, std::string> params;
   params[PermissionUtil::GetPermissionString(
       ContentSettingsType::GEOLOCATION)] =
-      PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+      ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
-      PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup",
-      params);
+      ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(
-      PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup");
+      ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      "TestGroup");
 
   EXPECT_FALSE(
       IsPermissionOverridable(PermissionType::GEOLOCATION, kLocalHost));
@@ -539,8 +540,9 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
   // By default the parent should be able to request access, but not the child.
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, parent));
-  // Permission policy is no longer verified in PermissionContextBase, hence in
-  // this code a cross-origin iframe is allowed to use permission.
+  // Permission policy is no longer verified in
+  // ContentSettingPermissionContextBase, hence in this code a cross-origin
+  // iframe is allowed to use permission.
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, child));
 
@@ -716,7 +718,7 @@ TEST_F(PermissionManagerTest, MAYBE_UpdatePermissionStatusWithDeviceStatus) {
 
 TEST_F(PermissionManagerTest,
        GetPermissionContextForNotAddedPermissionContext) {
-  PermissionContextBase* context =
+  ContentSettingPermissionContextBase* context =
       GetPermissionManager()->GetPermissionContextForTesting(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
 

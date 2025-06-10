@@ -4,7 +4,7 @@
 
 #include "components/permissions/permission_request_data.h"
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -12,7 +12,7 @@
 namespace permissions {
 
 PermissionRequestData::PermissionRequestData(
-    PermissionContextBase* context,
+    ContentSettingPermissionContextBase* context,
     const PermissionRequestID& id,
     const content::PermissionRequestDescription& request_description,
     const GURL& canonical_requesting_origin,
@@ -35,11 +35,12 @@ PermissionRequestData::PermissionRequestData(
       request_description.permissions[request_description_permission_index]);
 }
 
-PermissionRequestData::PermissionRequestData(PermissionContextBase* context,
-                                             const PermissionRequestID& id,
-                                             bool user_gesture,
-                                             const GURL& requesting_origin,
-                                             const GURL& embedding_origin)
+PermissionRequestData::PermissionRequestData(
+    ContentSettingPermissionContextBase* context,
+    const PermissionRequestID& id,
+    bool user_gesture,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin)
     : request_type(ContentSettingsTypeToRequestTypeIfExists(
           context->content_settings_type())),
       id(id),

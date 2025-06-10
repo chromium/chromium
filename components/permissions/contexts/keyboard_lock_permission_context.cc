@@ -12,7 +12,7 @@ namespace permissions {
 
 KeyboardLockPermissionContext::KeyboardLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::KEYBOARD_LOCK,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}

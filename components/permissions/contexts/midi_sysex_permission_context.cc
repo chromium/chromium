@@ -15,7 +15,7 @@ namespace permissions {
 
 MidiSysexPermissionContext::MidiSysexPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::MIDI_SYSEX,
           network::mojom::PermissionsPolicyFeature::kMidiFeature) {}

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 // Manages user permissions for background sync. The context is scoped to the
 // requesting origin, which should always be equal to the top-level origin as
@@ -14,7 +14,7 @@
 // per-site basis from the content settings page. The user is not prompted for
 // permission.
 class BackgroundSyncPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit BackgroundSyncPermissionContext(
       content::BrowserContext* browser_context);
@@ -27,7 +27,7 @@ class BackgroundSyncPermissionContext
   ~BackgroundSyncPermissionContext() override = default;
 
  private:
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_Data,
       permissions::BrowserPermissionCallback callback) override;

@@ -8,6 +8,7 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -19,7 +20,7 @@ ClipboardSanitizedWritePermissionContext::
     ClipboardSanitizedWritePermissionContext(
         content::BrowserContext* browser_context,
         std::unique_ptr<ClipboardPermissionContextDelegate> delegate)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_SANITIZED_WRITE,
           network::mojom::PermissionsPolicyFeature::kClipboardWrite),
@@ -44,8 +45,8 @@ void ClipboardSanitizedWritePermissionContext::DecidePermission(
   }
 #endif
 
-  PermissionContextBase::DecidePermission(std::move(request_data),
-                                          std::move(callback_base));
+  ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback_base));
 }
 
 ContentSetting

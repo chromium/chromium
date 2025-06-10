@@ -34,8 +34,8 @@
 #include "components/metrics/dwa/dwa_builders.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
@@ -267,7 +267,7 @@ void StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
 
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
           network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
@@ -290,7 +290,7 @@ void StorageAccessGrantPermissionContext::RequestPermission(
   // This callback (synchronously) handles the browser side of that.
   content::GlobalRenderFrameHostId frame_host_id =
       request_data->id.global_render_frame_host_id();
-  PermissionContextBase::RequestPermission(
+  ContentSettingPermissionContextBase::RequestPermission(
       std::move(request_data),
       base::BindOnce(
           [](content::GlobalRenderFrameHostId frame_host_id,
@@ -413,11 +413,11 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // Accordingly, check the default implementation, and if a denial has been
     // persisted, respect that decision.
     ContentSetting existing_setting =
-        PermissionContextBase::GetPermissionStatusInternal(
+        ContentSettingPermissionContextBase::GetPermissionStatusInternal(
             rfh, request_data->requesting_origin,
             request_data->embedding_origin);
-    // ALLOW grants are handled by PermissionContextBase so they never reach
-    // this point.
+    // ALLOW grants are handled by ContentSettingPermissionContextBase so they
+    // never reach this point.
     CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
     if (existing_setting == CONTENT_SETTING_BLOCK) {
       NotifyPermissionSetInternal(*request_data, std::move(callback),
@@ -515,8 +515,8 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       kStorageAccessAPITopLevelUserInteractionBound == base::TimeDelta()) {
     // If we don't have access to this kind of historical info or the time bound
     // is empty, we waive the requirement, and show the prompt.
-    PermissionContextBase::DecidePermission(std::move(request_data),
-                                            std::move(callback));
+    ContentSettingPermissionContextBase::DecidePermission(
+        std::move(request_data), std::move(callback));
     return;
   }
 
@@ -557,12 +557,12 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
     return;
   }
 
-  // PermissionContextBase::DecidePermission requires that the RenderFrameHost
-  // is still alive.
+  // ContentSettingPermissionContextBase::DecidePermission requires that the
+  // RenderFrameHost is still alive.
   CHECK(rfh);
   // Show prompt.
-  PermissionContextBase::DecidePermission(std::move(request_data),
-                                          std::move(callback));
+  ContentSettingPermissionContextBase::DecidePermission(std::move(request_data),
+                                                        std::move(callback));
 }
 
 ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
@@ -578,8 +578,9 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
     return CONTENT_SETTING_ALLOW;
   }
 
-  ContentSetting setting = PermissionContextBase::GetPermissionStatusInternal(
-      render_frame_host, requesting_origin, embedding_origin);
+  ContentSetting setting =
+      ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+          render_frame_host, requesting_origin, embedding_origin);
 
   // The spec calls for avoiding exposure of rejections to prevent any attempt
   // at retaliating against users who would reject a prompt.
@@ -716,7 +717,7 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
 GURL StorageAccessGrantPermissionContext::GetEffectiveEmbedderOrigin(
     content::RenderFrameHost* rfh) const {
   if (!rfh->ShouldPartitionAsPopin()) {
-    return PermissionContextBase::GetEffectiveEmbedderOrigin(rfh);
+    return ContentSettingPermissionContextBase::GetEffectiveEmbedderOrigin(rfh);
   }
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);

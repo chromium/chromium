@@ -66,7 +66,7 @@ void NotificationPermissionContext::UpdatePermission(
 
 NotificationPermissionContext::NotificationPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::NOTIFICATIONS,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
@@ -86,9 +86,9 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
     return extension_status;
 #endif
 
-  ContentSetting setting =
-      permissions::PermissionContextBase::GetPermissionStatusInternal(
-          render_frame_host, requesting_origin, embedding_origin);
+  ContentSetting setting = permissions::ContentSettingPermissionContextBase::
+      GetPermissionStatusInternal(render_frame_host, requesting_origin,
+                                  embedding_origin);
 
   content_settings::PageSpecificContentSettings::NotificationsAccessed(
       render_frame_host, /*blocked=*/setting != CONTENT_SETTING_ALLOW);
@@ -218,8 +218,8 @@ void NotificationPermissionContext::DecidePermission(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  permissions::PermissionContextBase::DecidePermission(std::move(request_data),
-                                                       std::move(callback));
+  permissions::ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback));
 }
 
 void NotificationPermissionContext::UpdateTabContext(

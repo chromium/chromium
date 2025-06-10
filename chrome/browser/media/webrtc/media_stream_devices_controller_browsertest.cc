@@ -28,8 +28,8 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -909,16 +909,18 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RequestAndKillSwitchMicCam) {
   std::map<std::string, std::string> params;
   params[permissions::PermissionUtil::GetPermissionString(
-      ContentSettingsType::MEDIASTREAM_MIC)] =
-      permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+      ContentSettingsType::MEDIASTREAM_MIC)] = permissions::
+      ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
   params[permissions::PermissionUtil::GetPermissionString(
-      ContentSettingsType::MEDIASTREAM_CAMERA)] =
-      permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+      ContentSettingsType::MEDIASTREAM_CAMERA)] = permissions::
+      ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup", params);
   base::FieldTrialList::CreateFieldTrial(
-      permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
+      permissions::ContentSettingPermissionContextBase::
+          kPermissionsKillSwitchFieldStudy,
       "TestGroup");
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
   SetDevicePolicy(DEVICE_TYPE_AUDIO, ACCESS_ALLOWED);

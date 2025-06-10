@@ -30,7 +30,7 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
@@ -66,10 +66,10 @@ using PredictionGrantLikelihood =
 using ::permissions::PermissionRequestRelevance;
 using ::testing::Optional;
 
-const char* kPermissionsKillSwitchFieldStudy =
-    permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy;
-const char* kPermissionsKillSwitchBlockedValue =
-    permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
+const char* kPermissionsKillSwitchFieldStudy = permissions::
+    ContentSettingPermissionContextBase::kPermissionsKillSwitchFieldStudy;
+const char* kPermissionsKillSwitchBlockedValue = permissions::
+    ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
 
 class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {

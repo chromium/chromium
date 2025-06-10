@@ -12,7 +12,7 @@ namespace permissions {
 
 PointerLockPermissionContext::PointerLockPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::POINTER_LOCK,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
@@ -31,7 +31,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     // the request must obtain a user permission again.
     persist = false;
   }
-  permissions::PermissionContextBase::NotifyPermissionSet(
+  permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), persist, content_setting, is_one_time,
       is_final_decision);
 }

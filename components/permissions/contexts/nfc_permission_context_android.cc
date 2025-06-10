@@ -56,7 +56,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   // is user-interactable (i.e. is the current tab, and Chrome is active and not
   // in tab-switching mode).
   if (!delegate_->IsInteractable(web_contents)) {
-    PermissionContextBase::NotifyPermissionSet(
+    ContentSettingPermissionContextBase::NotifyPermissionSet(
         request_data, std::move(callback), false /* persist */,
         CONTENT_SETTING_BLOCK, /*is_one_time=*/false, is_final_decision);
     return;

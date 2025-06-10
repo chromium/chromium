@@ -6,15 +6,16 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_READ_WRITE_PERMISSION_CONTEXT_H_
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/clipboard_permission_context_delegate.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 
 namespace permissions {
 
 // Manages Clipboard API user permissions, including unsanitized read and write,
 // as well as sanitized read.
-class ClipboardReadWritePermissionContext : public PermissionContextBase {
+class ClipboardReadWritePermissionContext
+    : public ContentSettingPermissionContextBase {
  public:
   explicit ClipboardReadWritePermissionContext(
       content::BrowserContext* browser_context,

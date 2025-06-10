@@ -14,7 +14,7 @@
 
 BackgroundFetchPermissionContext::BackgroundFetchPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::BACKGROUND_FETCH,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
@@ -88,7 +88,7 @@ void BackgroundFetchPermissionContext::NotifyPermissionSet(
   DCHECK(!persist);
   DCHECK(is_final_decision);
 
-  permissions::PermissionContextBase::NotifyPermissionSet(
+  permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), persist, content_setting, is_one_time,
       is_final_decision);
 }

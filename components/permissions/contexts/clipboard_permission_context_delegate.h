@@ -6,7 +6,7 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_PERMISSION_CONTEXT_DELEGATE_H_
 
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 
 namespace permissions {

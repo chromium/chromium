@@ -19,7 +19,7 @@ namespace permissions {
 GeolocationPermissionContext::GeolocationPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::GEOLOCATION,
           network::mojom::PermissionsPolicyFeature::kGeolocation),
@@ -34,8 +34,8 @@ void GeolocationPermissionContext::DecidePermission(
 
   if (!delegate_->DecidePermission(*request_data, &callback, this)) {
     DCHECK(callback);
-    PermissionContextBase::DecidePermission(std::move(request_data),
-                                            std::move(callback));
+    ContentSettingPermissionContextBase::DecidePermission(
+        std::move(request_data), std::move(callback));
   }
 }
 

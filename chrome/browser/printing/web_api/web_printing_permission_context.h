@@ -5,16 +5,17 @@
 #ifndef CHROME_BROWSER_PRINTING_WEB_API_WEB_PRINTING_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_PRINTING_WEB_API_WEB_PRINTING_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
-class WebPrintingPermissionContext : public permissions::PermissionContextBase {
+class WebPrintingPermissionContext
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit WebPrintingPermissionContext(
       content::BrowserContext* browser_context);
   ~WebPrintingPermissionContext() override;
 
  private:
-  // PermissionContextBase:
+  // ContentSettingPermissionContextBase:
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;

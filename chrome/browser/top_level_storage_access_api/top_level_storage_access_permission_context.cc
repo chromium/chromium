@@ -45,7 +45,7 @@ void RecordOutcomeSample(TopLevelStorageAccessRequestOutcome outcome) {
 
 TopLevelStorageAccessPermissionContext::TopLevelStorageAccessPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           network::mojom::PermissionsPolicyFeature::kStorageAccessAPI) {}
@@ -166,8 +166,9 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     }
   }
 
-  ContentSetting setting = PermissionContextBase::GetPermissionStatusInternal(
-      render_frame_host, requesting_origin, embedding_origin);
+  ContentSetting setting =
+      ContentSettingPermissionContextBase::GetPermissionStatusInternal(
+          render_frame_host, requesting_origin, embedding_origin);
 
   // Although the current implementation does not persist rejected permissions,
   // the spec calls for avoiding exposure of rejections to prevent any attempt

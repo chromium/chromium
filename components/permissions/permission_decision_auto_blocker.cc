@@ -422,10 +422,11 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
           : -1;
 
   // TODO(dominickn): ideally we would have a method
-  // PermissionContextBase::ShouldEmbargoAfterRepeatedDismissals() to specify
-  // if a permission is opted in. This is difficult right now because:
+  // ContentSettingPermissionContextBase::ShouldEmbargoAfterRepeatedDismissals()
+  // to specify if a permission is opted in. This is difficult right now
+  // because:
   // 1. PermissionQueueController needs to call this method at a point where it
-  //    does not have a PermissionContextBase available
+  //    does not have a ContentSettingPermissionContextBase available
   // 2. Not calling RecordDismissAndEmbargo means no repeated dismissal metrics
   //    are recorded
   if (current_dismissal_count >=

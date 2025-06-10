@@ -14,8 +14,8 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -110,12 +110,12 @@ class PermissionManager::PendingRequest {
 };
 
 // Object to track the callback passed to
-// PermissionContextBase::RequestPermission. The callback passed in will never
-// be run when a permission prompt has been ignored, but it's important that we
-// know when a prompt is ignored to clean up |pending_requests_| correctly.
-// If the callback is destroyed without being run, the destructor here will
-// cancel the request to clean up. |permission_manager| must outlive this
-// object.
+// ContentSettingPermissionContextBase::RequestPermission. The callback passed
+// in will never be run when a permission prompt has been ignored, but it's
+// important that we know when a prompt is ignored to clean up
+// |pending_requests_| correctly. If the callback is destroyed without being
+// run, the destructor here will cancel the request to clean up.
+// |permission_manager| must outlive this object.
 class PermissionManager::PermissionResponseCallback {
  public:
   PermissionResponseCallback(
@@ -177,7 +177,7 @@ void PermissionManager::Shutdown() {
     SetSubscriptions(nullptr);
     for (const auto& type_to_count : subscription_type_counts_) {
       if (type_to_count.second > 0) {
-        PermissionContextBase* context =
+        ContentSettingPermissionContextBase* context =
             GetPermissionContext(type_to_count.first);
         if (context != nullptr) {
           context->RemoveObserver(this);
@@ -203,12 +203,12 @@ void PermissionManager::OnEmbargoStarted(const GURL& origin,
                       ContentSettingsTypeSet(content_setting));
 }
 
-PermissionContextBase* PermissionManager::GetPermissionContextForTesting(
-    ContentSettingsType type) {
+ContentSettingPermissionContextBase*
+PermissionManager::GetPermissionContextForTesting(ContentSettingsType type) {
   return GetPermissionContext(type);
 }
 
-PermissionContextBase* PermissionManager::GetPermissionContext(
+ContentSettingPermissionContextBase* PermissionManager::GetPermissionContext(
     ContentSettingsType type) {
   const auto& it = permission_contexts_.find(type);
   return it == permission_contexts_.end() ? nullptr : it->second.get();
@@ -263,7 +263,8 @@ void PermissionManager::RequestPermissionsInternal(
 
     auto response_callback = std::make_unique<PermissionResponseCallback>(
         weak_factory_.GetWeakPtr(), request_local_id, i);
-    PermissionContextBase* context = GetPermissionContext(permission);
+    ContentSettingPermissionContextBase* context =
+        GetPermissionContext(permission);
     if (!context || PermissionUtil::IsPermissionBlockedInPartition(
                         permission, request_description.requesting_origin,
                         render_frame_host->GetProcess())) {
@@ -288,7 +289,7 @@ void PermissionManager::ResetPermission(PermissionType permission,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsType(permission);
-  PermissionContextBase* context = GetPermissionContext(type);
+  ContentSettingPermissionContextBase* context = GetPermissionContext(type);
   if (!context)
     return;
   context->ResetPermission(PermissionUtil::GetCanonicalOrigin(
@@ -399,7 +400,7 @@ bool PermissionManager::IsPermissionOverridable(
     const std::optional<url::Origin>& origin) {
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingsTypeSafe(permission);
-  PermissionContextBase* context = GetPermissionContext(type);
+  ContentSettingPermissionContextBase* context = GetPermissionContext(type);
 
   if (!context || context->IsPermissionKillSwitchOn())
     return false;
@@ -426,7 +427,8 @@ void PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
           subscription->permission);
   auto& type_count = subscription_type_counts_[content_type];
   if (type_count == 0) {
-    PermissionContextBase* context = GetPermissionContext(content_type);
+    ContentSettingPermissionContextBase* context =
+        GetPermissionContext(content_type);
     if (context == nullptr) {
       return;
     }
@@ -492,7 +494,7 @@ void PermissionManager::UnsubscribeFromPermissionStatusChange(
   // type_count is zero only in the tests that we are directly calling
   // subscribing functions but is not subscribing to any real permission
   // context.
-  PermissionContextBase* context = GetPermissionContext(type);
+  ContentSettingPermissionContextBase* context = GetPermissionContext(type);
   if (type_count->second == 0) {
     if (context == nullptr) {
       return;
@@ -613,14 +615,15 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
     bool should_include_device_status) {
   DCHECK(!render_process_host || !render_frame_host);
 
-  // TODO(crbug.com/40218610): Move this to PermissionContextBase.
+  // TODO(crbug.com/40218610): Move this to ContentSettingPermissionContextBase.
   content::RenderProcessHost* rph =
       render_frame_host ? render_frame_host->GetProcess() : render_process_host;
 
   auto content_settings_type =
       PermissionUtil::PermissionTypeToContentSettingsType(
           blink::PermissionDescriptorToPermissionType(permission_descriptor));
-  PermissionContextBase* context = GetPermissionContext(content_settings_type);
+  ContentSettingPermissionContextBase* context =
+      GetPermissionContext(content_settings_type);
 
   if (!context || (rph && PermissionUtil::IsPermissionBlockedInPartition(
                               content_settings_type, requesting_origin, rph))) {

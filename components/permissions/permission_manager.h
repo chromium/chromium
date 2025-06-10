@@ -15,7 +15,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
@@ -43,7 +43,7 @@ class GeolocationPermissionContextDelegateTests;
 class SubscriptionInterceptingPermissionManager;
 
 namespace permissions {
-class PermissionContextBase;
+class ContentSettingPermissionContextBase;
 class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,
@@ -53,7 +53,7 @@ class PermissionManager : public KeyedService,
  public:
   using PermissionContextMap =
       std::unordered_map<ContentSettingsType,
-                         std::unique_ptr<PermissionContextBase>,
+                         std::unique_ptr<ContentSettingPermissionContextBase>,
                          ContentSettingsTypeHash>;
   PermissionManager(content::BrowserContext* browser_context,
                     PermissionContextMap permission_contexts);
@@ -70,7 +70,7 @@ class PermissionManager : public KeyedService,
   void OnEmbargoStarted(const GURL& origin,
                         ContentSettingsType content_setting) override;
 
-  PermissionContextBase* GetPermissionContextForTesting(
+  ContentSettingPermissionContextBase* GetPermissionContextForTesting(
       ContentSettingsType type);
 
   PermissionContextMap& PermissionContextsForTesting() {
@@ -95,7 +95,8 @@ class PermissionManager : public KeyedService,
 
   using SubscriptionTypeCounts = base::flat_map<ContentSettingsType, size_t>;
 
-  PermissionContextBase* GetPermissionContext(ContentSettingsType type);
+  ContentSettingPermissionContextBase* GetPermissionContext(
+      ContentSettingsType type);
 
   // content::PermissionControllerDelegate implementation.
   void RequestPermissions(

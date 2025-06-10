@@ -9,7 +9,7 @@
 
 LocalNetworkAccessPermissionContext::LocalNetworkAccessPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_NETWORK_ACCESS,
           network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess) {}

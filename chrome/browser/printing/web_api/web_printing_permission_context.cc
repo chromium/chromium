@@ -9,7 +9,7 @@
 
 WebPrintingPermissionContext::WebPrintingPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_PRINTING,
           network::mojom::PermissionsPolicyFeature::kWebPrinting) {}

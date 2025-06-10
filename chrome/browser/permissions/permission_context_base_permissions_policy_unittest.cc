@@ -37,7 +37,8 @@
 // PermissionsPolicy class itself is tested thoroughly in
 // permissions_policy_unittest.cc and in
 // render_frame_host_permissions_policy_unittest.cc. Instead they are meant to
-// ensure that integration with content::PermissionContextBase works correctly.
+// ensure that integration with content::ContentSettingPermissionContextBase
+// works correctly.
 class PermissionContextBasePermissionsPolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -108,8 +109,9 @@ class PermissionContextBasePermissionsPolicyTest
     *rfh = navigation->GetFinalRenderFrameHost();
   }
 
-  ContentSetting GetPermissionForFrame(permissions::PermissionContextBase* pcb,
-                                       content::RenderFrameHost* rfh) {
+  ContentSetting GetPermissionForFrame(
+      permissions::ContentSettingPermissionContextBase* pcb,
+      content::RenderFrameHost* rfh) {
     return permissions::PermissionUtil::PermissionStatusToContentSetting(
         pcb->GetPermissionStatus(
                content::PermissionDescriptorUtil::
@@ -123,7 +125,7 @@ class PermissionContextBasePermissionsPolicyTest
   }
 
   ContentSetting RequestPermissionForFrame(
-      permissions::PermissionContextBase* pcb,
+      permissions::ContentSettingPermissionContextBase* pcb,
       content::RenderFrameHost* rfh) {
     permissions::PermissionRequestID id(
         rfh, permission_request_id_generator_.GenerateNextId());

@@ -14,7 +14,7 @@ namespace permissions {
 NfcPermissionContext::NfcPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::NFC,
           network::mojom::PermissionsPolicyFeature::kNotFound),
@@ -38,8 +38,8 @@ void NfcPermissionContext::DecidePermission(
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
-  permissions::PermissionContextBase::DecidePermission(std::move(request_data),
-                                                       std::move(callback));
+  permissions::ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback));
 }
 
 void NfcPermissionContext::UpdateTabContext(const PermissionRequestID& id,

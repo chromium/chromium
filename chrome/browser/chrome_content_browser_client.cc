@@ -259,7 +259,7 @@
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -3382,9 +3382,10 @@ ChromeContentBrowserClient::AllowWebBluetooth(
   // base::CommandLine::ForCurrentProcess()->
   // HasSwitch(switches::kEnableWebBluetooth) is true.
   if (base::GetFieldTrialParamValue(
-          permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
-          "Bluetooth") ==
-      permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue) {
+          permissions::ContentSettingPermissionContextBase::
+              kPermissionsKillSwitchFieldStudy,
+          "Bluetooth") == permissions::ContentSettingPermissionContextBase::
+                              kPermissionsKillSwitchBlockedValue) {
     // The kill switch is enabled for this permission. Block requests.
     return AllowWebBluetoothResult::BLOCK_GLOBALLY_DISABLED;
   }

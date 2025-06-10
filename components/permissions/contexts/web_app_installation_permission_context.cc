@@ -13,7 +13,7 @@ namespace permissions {
 
 WebAppInstallationPermissionContext::WebAppInstallationPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_APP_INSTALLATION,
           network::mojom::PermissionsPolicyFeature::kWebAppInstallation) {}
