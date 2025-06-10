@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -147,6 +149,11 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     }
 
     if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+      std::u16string qwac_title =
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_STATUS_TITLE);
+      // TODO(crbug.com/392934324): import & use correct icon.
+      const ui::ImageModel qwac_icon =
+          PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon);
       // If QWAC info line has been added previously, remove the old one before
       // recreating it. Re-adding it bumps it to the bottom of the
       // container, but its unlikely that the user will notice, since other
@@ -162,12 +169,9 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             ChromeLayoutProvider::Get()
                 ->GetInsetsMetric(views::INSETS_DIALOG)
                 .left()));
-        one_qwac_view_->SetSummary(
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_STATUS_TITLE),
-            views::style::STYLE_BODY_3_MEDIUM);
-        // TODO(crbug.com/392934324): import & use correct icon.
-        one_qwac_view_->SetIcon(
-            PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon));
+        one_qwac_view_->SetSummary(qwac_title,
+                                   views::style::STYLE_BODY_3_MEDIUM);
+        one_qwac_view_->SetIcon(qwac_icon);
         if (certificate_ &&
             !certificate_->subject().organization_names.empty() &&
             !certificate_->subject().country_name.empty()) {
@@ -176,6 +180,37 @@ void PageInfoSecurityContentView::SetIdentityInfo(
               base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
               base::UTF8ToUTF16(certificate_->subject().country_name)));
         }
+      }
+      // If QWAC info line has been added previously, remove the old one before
+      // recreating it. Re-adding it bumps it to the bottom of the container,
+      // but its unlikely that the user will notice, since other things are
+      // changing too.
+      if (two_qwac_button_) {
+        RemoveChildViewT(two_qwac_button_.get());
+      }
+      if (identity_info.two_qwac) {
+        two_qwac_ = identity_info.two_qwac;
+        std::u16string qwac_subtitle;
+        if (!two_qwac_->subject().organization_names.empty() &&
+            !two_qwac_->subject().country_name.empty()) {
+          qwac_subtitle = l10n_util::GetStringFUTF16(
+              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+              base::UTF8ToUTF16(two_qwac_->subject().organization_names[0]),
+              base::UTF8ToUTF16(two_qwac_->subject().country_name));
+        }
+        two_qwac_button_ = AddChildView(std::make_unique<RichHoverButton>(
+            base::BindRepeating(
+                [](PageInfoSecurityContentView* view) {
+                  view->presenter_->OpenCertificateDialog(
+                      view->two_qwac_.get());
+                },
+                this),
+            qwac_icon, qwac_title, qwac_subtitle,
+            PageInfoViewFactory::GetLaunchIcon()));
+        two_qwac_button_->SetTitleTextStyleAndColor(
+            views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
+        two_qwac_button_->SetSubtitleTextStyleAndColor(
+            views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
       }
     }
 

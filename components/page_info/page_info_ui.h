@@ -157,6 +157,8 @@ class PageInfoUI {
 
     // The server certificate if a secure connection.
     scoped_refptr<net::X509Certificate> certificate;
+    // The 2-QWAC certificate if the site has a valid 2-QWAC.
+    scoped_refptr<net::X509Certificate> two_qwac;
     // Status of the site's connection.
     PageInfo::SiteConnectionStatus connection_status;
     // Textual description of the site's connection status that is displayed to

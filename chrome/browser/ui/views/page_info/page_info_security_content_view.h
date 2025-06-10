@@ -48,8 +48,15 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
   // The view that shows the QWAC status of the site, if it is a 1-QWAC.
   raw_ptr<SecurityInformationView> one_qwac_view_ = nullptr;
 
+  // The button that displays identity information of a 2-QWAC and opens the
+  // certificate viewer for the 2-QWAC cert.
+  raw_ptr<RichHoverButton> two_qwac_button_ = nullptr;
+
   // The certificate provided by the site, if one exists.
   scoped_refptr<net::X509Certificate> certificate_;
+
+  // The 2-QWAC certificate for the site, if it has a valid 2-QWAC.
+  scoped_refptr<net::X509Certificate> two_qwac_;
 
   // TODO(crbug.com/40754666): Add plumbing to check this in tests or rewrite
   // tests not use it.
