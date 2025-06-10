@@ -96,6 +96,10 @@
 // Sets the background color for the favicon container view.
 - (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;
 
+// Replaces the favicon with a custom symbol associated with the given
+// `symbolName`. `symbolName` needs to be a valid name for an existing resource.
+- (void)replaceFaviconWithSymbol:(NSString*)symbolName;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_URL_ITEM_H_

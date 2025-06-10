@@ -9,6 +9,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -19,11 +20,17 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+
 // Default delimiter to use between the hostname and the supplemental URL text
 // if text is specified but not the delimiter.
 const char kDefaultSupplementalURLTextDelimiter[] = "•";
+
 // The max number of lines for the cell title label.
 const int kMaxNumberOfLinesForCellTitleLabel = 2;
+
+// Point size for the symbol that's replacing the cell favicon.
+constexpr CGFloat kFaviconReplacementSymbolPointSize = 18;
+
 }  // namespace
 
 #pragma mark - TableViewURLItem
@@ -150,6 +157,9 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   // Constraint defining the distance between the metadata label and the
   // metadata image views.
   NSLayoutConstraint* _metadataViewsSpacingConstraint;
+  // UIImageView for the symbol replacing the favicon. Stays nil if no
+  // replacement symbol is ever set.
+  UIImageView* _faviconReplacementSymbolImageView;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
@@ -344,6 +354,8 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   self.metadataImage.image = nil;
   self.URLLabel.hidden = YES;
   self.thirdRowLabel.hidden = YES;
+  [_faviconReplacementSymbolImageView removeFromSuperview];
+  _faviconReplacementSymbolImageView = nil;
 }
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
@@ -416,6 +428,35 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   [self.activityIndicatorView stopAnimating];
   [self.activityIndicatorView removeFromSuperview];
   self.activityIndicatorView = nil;
+}
+
+- (void)replaceFaviconWithSymbol:(NSString*)symbolName {
+  if (!symbolName) {
+    return;
+  }
+
+  // Make sure the activity indicator isn't running.
+  [self stopAnimatingActivityIndicator];
+
+  UIImage* symbol =
+      SymbolWithPalette(DefaultSymbolWithPointSize(
+                            symbolName, kFaviconReplacementSymbolPointSize),
+                        @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+  symbol.accessibilityIdentifier = symbolName;
+  UIImageView* symbolImageView = [[UIImageView alloc] initWithImage:symbol];
+  symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  symbolImageView.backgroundColor = self.backgroundColor;
+
+  [self setFaviconContainerBackgroundColor:self.backgroundColor];
+  [self.faviconContainerView addSubview:symbolImageView];
+  [NSLayoutConstraint activateConstraints:@[
+    [symbolImageView.centerXAnchor
+        constraintEqualToAnchor:self.faviconContainerView.centerXAnchor],
+    [symbolImageView.centerYAnchor
+        constraintEqualToAnchor:self.faviconContainerView.centerYAnchor],
+  ]];
+
+  _faviconReplacementSymbolImageView = symbolImageView;
 }
 
 @end

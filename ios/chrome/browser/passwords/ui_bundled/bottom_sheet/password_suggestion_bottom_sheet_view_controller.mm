@@ -339,7 +339,7 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
   if (suggestion.metadata.is_recovery_password) {
-    // TODO(crbug.com/417943553): Replace favicon with kHistorySymbol.
+    [URLCell replaceFaviconWithSymbol:kHistorySymbol];
   } else {
     auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
       DCHECK(attributes);
