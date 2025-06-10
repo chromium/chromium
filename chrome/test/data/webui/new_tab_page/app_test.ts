@@ -990,6 +990,35 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
+  suite('Composebox', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        searchboxShowComposeButton: true,
+      });
+    });
+    test('toggle composebox visibility', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.querySelector('ntp-composebox');
+      assertTrue(!!composebox);
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
+
+      // Act.
+      $$<HTMLElement>(app, '#composeboxScrim')!.click();
+      await microtasksFinished();
+
+      // Assert.
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
+    });
+  });
+
   suite('WallpaperSearch', () => {
     setup(async () => {
       // Set a theme with no background image and a baseline color to avoid

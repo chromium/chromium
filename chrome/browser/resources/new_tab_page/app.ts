@@ -225,7 +225,10 @@ export class AppElement extends AppElementBase {
        */
       promoAndModulesLoaded_: {type: Boolean},
 
-      showComposeBox_: {type: Boolean},
+      showComposebox_: {
+        type: Boolean,
+        reflect: true,
+      },
 
       showLensUploadDialog_: {type: Boolean},
 
@@ -265,7 +268,7 @@ export class AppElement extends AppElementBase {
   accessor realboxHadSecondarySide: boolean = false;
   protected accessor realboxShown_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
-  protected accessor showComposeBox_: boolean = false;
+  protected accessor showComposebox_: boolean = false;
   protected accessor logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');
   protected accessor oneGoogleBarEnabled_: boolean =
@@ -588,7 +591,8 @@ export class AppElement extends AppElementBase {
 
   private computeRealboxShown_(): boolean {
     // Do not show the realbox if the upload dialog is showing.
-    return !!this.theme_ && !this.showLensUploadDialog_;
+    return !!this.theme_ && !this.showLensUploadDialog_ &&
+        !this.showComposebox_;
   }
 
   private computePromoAndModulesLoaded_(): boolean {
@@ -612,6 +616,10 @@ export class AppElement extends AppElementBase {
     if (this.showWallpaperSearchButton_) {
       this.customizeButtonsHandler_.incrementWallpaperSearchButtonShownCount();
     }
+  }
+
+  protected toggleComposebox_() {
+    this.showComposebox_ = !this.showComposebox_;
   }
 
   protected onOpenVoiceSearch_() {

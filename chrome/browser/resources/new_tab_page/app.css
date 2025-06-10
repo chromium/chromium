@@ -109,9 +109,17 @@ cr-most-visited {
   z-index: 1;
 }
 
+:host([show-composebox_]) #content {
+  z-index: unset;
+}
+
 #logo {
   margin-bottom: 38px;
   z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
+}
+
+:host([show-composebox_]) #logo {
+  z-index: 2;
 }
 
 #searchboxContainer {
@@ -261,6 +269,13 @@ ntp-lens-upload-dialog {
   right: 0;
   top: 0;
   z-index: 101;
+}
+
+#composeboxScrim {
+  background: var(--color-new-tab-page-background);
+  inset: 0;
+  position: absolute;
+  z-index: 1;
 }
 
 #webstoreToast {

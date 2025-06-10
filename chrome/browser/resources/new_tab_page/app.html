@@ -20,13 +20,14 @@
   <div id="searchboxContainer">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
+        @open-composebox="${this.toggleComposebox_}"
         @open-lens-search="${this.onOpenLensSearch_}"
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
     </cr-searchbox>
-    ${this.showComposeBox_ ? html`
+    ${this.showComposebox_ ? html`
       <ntp-composebox></ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
@@ -105,6 +106,9 @@
 ${this.showVoiceSearchOverlay_ ? html`
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose_}">
   </ntp-voice-search-overlay>
+` : ''}
+${this.showComposebox_ ? html`
+  <div id="composeboxScrim" @click="${this.toggleComposebox_}"></div>
 ` : ''}
 <svg>
   <defs>
