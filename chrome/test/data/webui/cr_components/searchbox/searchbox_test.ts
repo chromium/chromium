@@ -310,6 +310,42 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({searchboxCr23Theming: false});
   });
 
+  test('Compose button is not enabled by default.', async () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    // Assert.
+    const composeButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#composeButton');
+    assertFalse(!!composeButton);
+  });
+
+  test('clicking composebox entrypoint button emits an event.', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({searchboxShowComposeButton: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    const whenOpenComposeBox = eventToPromise('open-compose-box', realbox);
+
+    // Act.
+    const composeButton =
+        realbox.shadowRoot!.querySelector<HTMLElement>('#composeButton');
+    assertTrue(!!composeButton);
+    composeButton.click();
+
+    // Assert.
+    await whenOpenComposeBox;
+
+    // Restore.
+    loadTimeData.overrideValues({searchboxShowComposeButton: false});
+  });
+
   //============================================================================
   // Test Querying Autocomplete
   //============================================================================
