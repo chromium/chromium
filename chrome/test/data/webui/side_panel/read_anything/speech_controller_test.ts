@@ -519,7 +519,9 @@ suite('SpeechController', () => {
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechBeingRepositioned());
-    assertEquals(1, speech.getCallCount('cancel'));
+    // We should not cancel again as the interrupt error can only happen with a
+    // call to cancel.
+    assertEquals(0, speech.getCallCount('cancel'));
     assertEquals(0, metrics.getCallCount('recordSpeechError'));
     assertEquals(
         chrome.readingMode.engineInterruptStopSource,

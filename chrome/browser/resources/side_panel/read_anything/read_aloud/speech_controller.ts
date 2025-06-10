@@ -622,10 +622,13 @@ export class SpeechController {
     // Therefore, when a user toggles the play/pause button, we call
     // synth.pause() and synth.resume() for speech to resume from where it left
     // off.
+    // If we're stopping because of an interrupt, then speech was already
+    // canceled, so we shouldn't cancel again, in case we are queuing up speech
+    // in another tab.
     if (this.isPausedFromButton()) {
       this.logSpeechPlaySession_();
       this.speech_.pause();
-    } else {
+    } else if (pauseSource !== PauseActionSource.ENGINE_INTERRUPT) {
       // Canceling clears all the Utterances that are queued up via synth.play()
       this.speech_.cancel();
     }
