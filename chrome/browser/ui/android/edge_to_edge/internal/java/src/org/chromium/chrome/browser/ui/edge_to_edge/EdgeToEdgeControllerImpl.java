@@ -107,6 +107,21 @@ public class EdgeToEdgeControllerImpl
         int NUM_ENTRIES = 6;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV,
+        SupportedConfigurationStrangeInsetsState.NUM_ENTRIES
+    })
+    @interface SupportedConfigurationStrangeInsetsState {
+        int TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 0;
+        int NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV = 1;
+        int ERROR_TAPPABLE_ELEMENT_GESTURE_NAV = 2;
+        int NUM_ENTRIES = 2;
+    }
+
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
 
@@ -514,6 +529,42 @@ public class EdgeToEdgeControllerImpl
         }
     }
 
+    private void verifyInsetsInSupportedConfiguration(WindowInsetsCompat windowInsets) {
+        // Check for the presence of a tappable element (in case the navigation bar inset is
+        // missing for some reason) for logging purposes.
+        Insets tappableElementInsets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        // The navigation bar will never be at the top.
+        boolean tappableElement =
+                tappableElementInsets.bottom > 0
+                        || tappableElementInsets.left > 0
+                        || tappableElementInsets.right > 0;
+
+        // Check whether the device appears to be in gesture navigation mode.
+        boolean isGestureNavigation = EdgeToEdgeUtils.isInGestureNavigationMode(windowInsets);
+        @SupportedConfigurationStrangeInsetsState int state;
+        if (tappableElement) {
+            if (isGestureNavigation) {
+                state = SupportedConfigurationStrangeInsetsState.ERROR_TAPPABLE_ELEMENT_GESTURE_NAV;
+            } else {
+                state = SupportedConfigurationStrangeInsetsState.TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
+            }
+        } else {
+            if (isGestureNavigation) {
+                // !tappableElement && isGestureNavigation is intended
+                return;
+            } else {
+                state =
+                        SupportedConfigurationStrangeInsetsState
+                                .NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV;
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.EdgeToEdge.Debugging.SupportedConfigurationStrangeInsets",
+                state,
+                SupportedConfigurationStrangeInsetsState.NUM_ENTRIES);
+    }
+
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
         boolean changedWindowState = false;
@@ -538,6 +589,9 @@ public class EdgeToEdgeControllerImpl
             mIsSupportedConfiguration =
                     EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
             changedWindowState = true;
+        }
+        if (mIsSupportedConfiguration) {
+            verifyInsetsInSupportedConfiguration(windowInsets);
         }
 
         // Exit early if there is a tappable navbar (3-button) as the controller should not function

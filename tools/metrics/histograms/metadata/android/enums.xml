@@ -1643,6 +1643,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Exempted"/>
 </enum>
 
+<enum name="SupportedConfigurationStrangeInsetsState">
+  <summary>
+    The state of insets that don't seem to align with a configuration that
+    supports edge-to-edge.
+  </summary>
+  <int value="0" label="TAPPABLE_ELEMENT_NOT_GESTURE_NAV"/>
+  <int value="1" label="NO_TAPPABLE_ELEMENT_NOT_GESTURE_NAV"/>
+  <int value="2" label="ERROR_TAPPABLE_ELEMENT_GESTURE_NAV"/>
+</enum>
+
 <enum name="SupportedConfigurationSwitch">
   <int value="0" label="FromSupportedToUnsupported"/>
   <int value="1" label="FromUnsupportedToSupported"/>
