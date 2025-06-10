@@ -165,6 +165,14 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   const Tiling* GetTilingForTesting(float scale_key) const;
   void DiscardResource(viz::ResourceId resource);
 
+  // For testing
+  std::optional<SkColor4f> solid_color_for_testing() const {
+    return solid_color_;
+  }
+  bool is_backdrop_filter_mask_for_testing() const {
+    return is_backdrop_filter_mask_;
+  }
+
  private:
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;

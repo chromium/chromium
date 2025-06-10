@@ -129,6 +129,10 @@ const ViewTransitionElementResourceId
 const bool kDefaultViewTransitionContentLayerIsLiveContentLayer = false;
 const gfx::RectF kDefaultViewTransitionContentLayerMaxExtentsRect;
 
+// Default TileDisplayLayer property values
+const std::optional<SkColor4f> kDefaultTileDisplaySolidColor = std::nullopt;
+const bool kDefaultTileDisplayIsBackdropFilterMask = false;
+
 class LayerContextImplTest : public testing::Test {
  public:
   LayerContextImplTest()
@@ -395,6 +399,13 @@ class LayerContextImplTest : public testing::Test {
             kDefaultViewTransitionContentLayerMaxExtentsRect;
         return mojom::LayerExtra::NewViewTransitionContentLayerExtra(
             std::move(extra));
+      }
+      case cc::mojom::LayerType::kTileDisplay: {
+        auto extra = mojom::TileDisplayLayerExtra::New();
+        extra->solid_color = kDefaultTileDisplaySolidColor;
+        extra->is_backdrop_filter_mask =
+            kDefaultTileDisplayIsBackdropFilterMask;
+        return mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(extra));
       }
 
       default:
@@ -2800,6 +2811,69 @@ TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
   EXPECT_EQ(layer_impl->should_check_backface_visibility(), kDefaultValue);
+}
+
+// Test fixture for TileDisplayLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest
+    : public LayerContextImplLayerLifecycleTest {};
+
+TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
+       UpdateTileDisplayLayerProperties) {
+  constexpr int kLayerId = 2;
+  const SkColor4f kSolidColor = SkColors::kMagenta;
+
+  // Initial update: Create TileDisplayLayer with default properties.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::LayerImpl* layer_impl_base = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl_base);
+  ASSERT_EQ(layer_impl_base->GetLayerType(),
+            cc::mojom::LayerType::kTileDisplay);
+  auto* tile_display_layer_impl =
+      static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
+
+  EXPECT_FALSE(tile_display_layer_impl->solid_color_for_testing().has_value());
+  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
+
+  // Second update: Set solid_color and is_backdrop_filter_mask.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra2 = mojom::TileDisplayLayerExtra::New();
+  tile_extra2->solid_color = kSolidColor;
+  tile_extra2->is_backdrop_filter_mask = true;
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_TRUE(tile_display_layer_impl->solid_color_for_testing().has_value());
+  EXPECT_EQ(tile_display_layer_impl->solid_color_for_testing().value(),
+            kSolidColor);
+  EXPECT_TRUE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
+
+  // Third update: Clear solid_color and set is_backdrop_filter_mask to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra3 = mojom::TileDisplayLayerExtra::New();
+  tile_extra3->solid_color = std::nullopt;
+  tile_extra3->is_backdrop_filter_mask = false;
+  layer_props3->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra3));
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+
+  EXPECT_FALSE(tile_display_layer_impl->solid_color_for_testing().has_value());
+  EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
 }
 
 class LayerContextImplUpdateDisplayTreeTextureLayerTest

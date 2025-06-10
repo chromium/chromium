@@ -94,6 +94,17 @@ struct TextureLayerExtra {
   TransferableResource? transferable_resource;
 };
 
+// Extra fields in a cc::TileDisplayLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct TileDisplayLayerExtra {
+  // Optional field that will be set if this Layer is a PictureLayer that is
+  // actually a solid color.
+  skia.mojom.SkColor4f? solid_color;
+
+  // Will be set to true for PictureLayers that are backdrop filter masks.
+  bool is_backdrop_filter_mask;
+};
+
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added
 // to a tree or modified in some interesting way since a prior tree update.
 struct ScrollbarLayerBaseExtra {
@@ -188,6 +199,8 @@ union LayerExtra {
   SurfaceLayerExtra surface_layer_extra;
   // Extra properties that are specific to TextureLayerImpl.
   TextureLayerExtra texture_layer_extra;
+  // Extra properties that are specific to TileDisplayLayerImpl.
+  TileDisplayLayerExtra tile_display_layer_extra;
   // Extra properties that are specific to ViewTransitionContentLayerImpl.
   ViewTransitionContentLayerExtra view_transition_content_layer_extra;
 };
@@ -230,13 +243,6 @@ struct Layer {
   // See comments for equivalent fields on cc::Layer.
   skia.mojom.SkColor4f background_color;
   skia.mojom.SkColor4f safe_opaque_background_color;
-
-  // Optional field that will be set if this Layer is a PictureLayer that is
-  // actually a solid color.
-  skia.mojom.SkColor4f? solid_color;
-
-  // Will be set to true for PictureLayers that are backdrop filter masks.
-  bool is_backdrop_filter_mask;
 
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by

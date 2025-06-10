@@ -827,12 +827,16 @@ void SerializeLayer(LayerImpl& layer,
     case mojom::LayerType::kPicture: {
       // kPicture layers become kTileDisplay layers in Viz.
       wire.type = mojom::LayerType::kTileDisplay;
-      PictureLayerImpl& picture_layer = static_cast<PictureLayerImpl&>(layer);
-      wire.is_backdrop_filter_mask = picture_layer.is_backdrop_filter_mask();
-
+      auto& picture_layer = static_cast<PictureLayerImpl&>(layer);
+      auto tile_display_extra = viz::mojom::TileDisplayLayerExtra::New();
       if (picture_layer.GetRasterSource()->IsSolidColor()) {
-        wire.solid_color = picture_layer.GetRasterSource()->GetSolidColor();
+        tile_display_extra->solid_color =
+            picture_layer.GetRasterSource()->GetSolidColor();
       }
+      tile_display_extra->is_backdrop_filter_mask =
+          picture_layer.is_backdrop_filter_mask();
+      wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
+          std::move(tile_display_extra));
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,
                                        context_provider, update.tilings);
       break;

@@ -599,6 +599,12 @@ void UpdateViewTransitionContentLayerExtra(
   layer.SetMaxExtentsRect(extra->max_extents_rect);
 }
 
+void UpdateTileDisplayLayerExtra(const mojom::TileDisplayLayerExtraPtr& extra,
+                                 cc::TileDisplayLayerImpl& layer) {
+  layer.SetSolidColor(extra->solid_color);
+  layer.SetIsBackdropFilterMask(extra->is_backdrop_filter_mask);
+}
+
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
                                               cc::LayerImpl& layer) {
   if (wire.contents_opaque && !wire.contents_opaque_for_text) {
@@ -633,12 +639,6 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     layer.SetFilterQuality(wire.rare_properties->filter_quality);
     layer.SetDynamicRangeLimit(wire.rare_properties->dynamic_range_limit);
     layer.SetCaptureBounds(wire.rare_properties->capture_bounds);
-  }
-
-  if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
-    auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
-    tile_display_layer.SetSolidColor(wire.solid_color);
-    tile_display_layer.SetIsBackdropFilterMask(wire.is_backdrop_filter_mask);
   }
 
   const cc::PropertyTrees& property_trees =
@@ -709,6 +709,12 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
       UpdateTextureLayerExtra(wire.layer_extra->get_texture_layer_extra(),
                               static_cast<cc::TextureLayerImpl&>(layer));
+      break;
+    case cc::mojom::LayerType::kTileDisplay:
+      RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
+      UpdateTileDisplayLayerExtra(
+          wire.layer_extra->get_tile_display_layer_extra(),
+          static_cast<cc::TileDisplayLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kViewTransitionContent:
       RETURN_IF_FALSE(wire.layer_extra, "Invalid layer_extra");
