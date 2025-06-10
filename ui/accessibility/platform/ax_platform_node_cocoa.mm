@@ -18,6 +18,7 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -534,15 +535,47 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)instanceActive {
-  return _node != nullptr;
+  if (!_node) {
+    return NO;
+  }
+
+  // Checking this here because every property getter checks instanceActive
+  // first. We shouldn't have an active instance that is ignored.
+#if AX_FAIL_FAST_BUILD()
+  static bool check_ignored = true;
+  if (check_ignored && _node->GetData().IsIgnored()) {
+    DUMP_WILL_BE_NOTREACHED()
+        << "Mac APIs must not expose an invisible or ignored node: "
+        << _node->GetData().ToString(/*verbose*/ true);
+    check_ignored = false;
+  }
+#endif
+
+  return YES;
 }
 
 - (BOOL)isIncludedInPlatformTree {
-  // TODO(accessibility): Do we really need to have invisible objects in
-  // the platform tree?
-  return [self instanceActive] &&
-         ![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
-         !_node->IsInvisibleOrIgnored();
+  if (!_node) {
+    return NO;
+  }
+  if (_node->IsInvisibleOrIgnored()) {
+    return NO;
+  }
+  ax::mojom::Role internal_role = _node->GetRole();
+  if ([AXPlatformNodeCocoa nativeRoleFromAXRole:internal_role] ==
+      NSAccessibilityUnknownRole) {
+    return NO;
+  }
+
+  // Explicitly empty alt="" on an img is another cause of
+  // NSAccessibilityUnknownRole.
+  if (ui::IsImage(internal_role) &&
+      _node->GetData().GetNameFrom() ==
+          ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+    return NO;
+  }
+
+  return YES;
 }
 
 - (id)titleUIElement {
@@ -1351,9 +1384,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // https://developer.apple.com/documentation/appkit/deprecated_symbols/nsaccessibility
 //
 
+// See notes on isAccessibilityElement (this is the legacy API version of that).
+// LINT.IfChange
 - (BOOL)accessibilityIsIgnored {
   return ![self isAccessibilityElement];
 }
+// LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_cocoa.mm:isAccessibilityElement)
 
 - (id)accessibilityHitTest:(NSPoint)point {
   if (!NSPointInRect(point, self.boundsInScreen)) {
@@ -2617,14 +2653,24 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // NSAccessibilityElement sufficient?
 
 // NSAccessibility: Configuring Accessibility.
-- (BOOL)isAccessibilityElement {
-  if (![self instanceActive])
-    return NO;
 
-  return (![[[self class] nativeRoleFromAXRole:_node->GetRole()]
-              isEqualToString:NSAccessibilityUnknownRole] &&
-          !_node->GetDelegate()->IsIgnored());
+// This has the same function as accessibilityIsIgnored from the legacy API.
+// TODO(crbug.com/419580129): Consider using this to greatly simplify our
+// removal of hidden and other nodes we ignore only in the Mac a11y tree.
+// LINT.IfChange
+- (BOOL)isAccessibilityElement {
+  if (!_node) {
+    return NO;
+  }
+  // TODO(accessibility): Remove this once we stop hitting the ignored check
+  // in instanceActive(). We're still hitting that because ignored
+  // nodes aren't always cleaned up, although we yet don't know why.
+  if (_node->GetData().IsIgnored()) {
+    return NO;
+  }
+  return YES;
 }
+// LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityIsIgnored)
 
 - (BOOL)isAccessibilityEnabled {
   if (!_node)
