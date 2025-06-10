@@ -222,7 +222,11 @@ class OverlayControlsBecomingVisibleObserver : public views::ViewObserver {
   OverlayControlsBecomingVisibleObserver(views::View* controls_container,
                                          base::OnceClosure cb)
       : visibility_changed_callback_(std::move(cb)) {
-    observation_.Observe(controls_container);
+    if (controls_container->GetVisible()) {
+      std::move(visibility_changed_callback_).Run();
+    } else {
+      observation_.Observe(controls_container);
+    }
   }
   OverlayControlsBecomingVisibleObserver(
       const OverlayControlsBecomingVisibleObserver&) = delete;
@@ -402,8 +406,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   // window has been moved.
   base::RunLoop run_loop;
   OverlayControlsBecomingVisibleObserver observer(
-      GetOverlayWindow()->GetControlsContainerView(),
-      base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+      GetOverlayWindow()->GetControlsContainerView(), run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
