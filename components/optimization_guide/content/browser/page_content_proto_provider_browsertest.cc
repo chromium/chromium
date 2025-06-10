@@ -365,6 +365,30 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       ClickabilityReason) {
+  LoadPage(https_server()->GetURL("/clickability_reason.html"),
+           ActionableAIPageContentOptions());
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  const auto& button_node = ActionableContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button_node.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      button_node.content_attributes()
+          .interaction_info()
+          .debug_clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL,
+          optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER,
+          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_EVENTS,
+          optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS,
+          optimization_guide::proto::CLICKABILITY_REASON_EDITABLE,
+          optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        LabelNotActionable) {
   LoadPage(https_server()->GetURL("/label_not_actionable.html"),
            ActionableAIPageContentOptions());

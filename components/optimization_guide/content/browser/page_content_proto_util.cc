@@ -37,6 +37,27 @@ class SecurityOriginSerializer {
 
 namespace {
 
+optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
+    blink::mojom::AIPageContentClickabilityReason reason) {
+  switch (reason) {
+    case blink::mojom::AIPageContentClickabilityReason::kClickableControl:
+      return optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL;
+    case blink::mojom::AIPageContentClickabilityReason::kClickEvents:
+      return optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER;
+    case blink::mojom::AIPageContentClickabilityReason::kMouseEvents:
+      return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_EVENTS;
+    case blink::mojom::AIPageContentClickabilityReason::kKeyEvents:
+      return optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS;
+    case blink::mojom::AIPageContentClickabilityReason::kEditable:
+      return optimization_guide::proto::CLICKABILITY_REASON_EDITABLE;
+    case blink::mojom::AIPageContentClickabilityReason::kCursorPointer:
+      return optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER;
+    case blink::mojom::AIPageContentClickabilityReason::kAriaRole:
+      return optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE;
+  }
+  NOTREACHED();
+}
+
 optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     blink::mojom::AIPageContentAttributeType type) {
   switch (type) {
@@ -179,6 +200,12 @@ void ConvertNodeInteractionInfo(
   if (mojom_node_interaction_info.document_scoped_z_order) {
     proto_interaction_info->set_document_scoped_z_order(
         *mojom_node_interaction_info.document_scoped_z_order);
+  }
+
+  for (const auto& reason :
+       mojom_node_interaction_info.debug_clickability_reasons) {
+    proto_interaction_info->add_debug_clickability_reasons(
+        ConvertClickabilityReason(reason));
   }
 }
 
