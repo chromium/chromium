@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"

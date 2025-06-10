@@ -31,6 +31,10 @@ namespace extensions::image_writer {
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
 }
 
+namespace net {
+crypto::obsolete::Md5 MakeMd5HasherForHttpVaryData();
+}
+
 namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
@@ -80,6 +84,9 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 ash::printing::MakeMd5HasherForUsbPrinterUtil();
   friend Md5 ash::printing::MakeMd5HasherForZeroconf();
   friend std::string ash::printing::ServerPrinterId(const std::string& url);
+
+  // TODO(https://crbug.com/419853200): get rid of this.
+  friend Md5 net::MakeMd5HasherForHttpVaryData();
 
   // TODO(https://crbug.com/416304903): get rid of this.
   friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();

@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "base/hash/md5.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/net_export.h"
 
 namespace base {
@@ -71,10 +71,10 @@ class NET_EXPORT_PRIVATE HttpVaryData {
   // Append to the MD5 context for the given request header.
   static void AddField(const HttpRequestInfo& request_info,
                        std::string_view request_header,
-                       base::MD5Context* context);
+                       crypto::obsolete::Md5& context);
 
   // A digested version of the request headers corresponding to the Vary header.
-  base::MD5Digest request_digest_;
+  std::array<uint8_t, crypto::obsolete::Md5::kSize> request_digest_;
 
   // True when request_digest_ contains meaningful data.
   bool is_valid_ = false;
