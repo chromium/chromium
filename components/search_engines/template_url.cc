@@ -34,7 +34,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -743,9 +742,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     length--;
   }
 
-  const auto parameter =
-      base::MakeStringPiece(original_url.begin() + start + 1,
-                            original_url.begin() + start + 1 + length);
+  const std::string_view parameter =
+      std::string_view(original_url).substr(start + 1, length);
   // Remove the parameter from the string.  For parameters who replacement is
   // constant and already known, just replace them directly.  For other cases,
   // like parameters whose values may change over time, use |replacements|.
