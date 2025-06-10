@@ -1550,6 +1550,19 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
   }
 }
 
+bool HTMLCanvasElement::IsComposited() const {
+  if (IsHibernating()) {
+    return false;
+  }
+
+  if (!ResourceProvider()) [[unlikely]] {
+    return false;
+  }
+
+  return ResourceProvider()->SupportsDirectCompositing() &&
+         !LowLatencyEnabled();
+}
+
 void HTMLCanvasElement::AddListener(CanvasDrawListener* listener) {
   // The presence of a listener forces OffscrenCanvas animations to be active
   listeners_.insert(listener);

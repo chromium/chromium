@@ -58,7 +58,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
   virtual void InitializeLayerWithCSSProperties(cc::Layer* layer) {}
 
-  bool IsComposited() const;
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 

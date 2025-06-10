@@ -53,19 +53,6 @@ bool CanvasResourceHost::ShouldTryToUseGpuRaster() const {
   return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
-bool CanvasResourceHost::IsComposited() const {
-  if (IsHibernating()) {
-    return false;
-  }
-
-  if (!resource_provider_) [[unlikely]] {
-    return false;
-  }
-
-  return resource_provider_->SupportsDirectCompositing() &&
-         !LowLatencyEnabled();
-}
-
 RasterMode CanvasResourceHost::GetRasterMode() const {
   if (IsHibernating()) {
     return RasterMode::kCPU;
