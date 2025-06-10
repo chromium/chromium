@@ -413529,7 +413529,7 @@
      []
     ],
     "dom.idl": [
-     "253e7bf913eba90db9dc6c2e7e7412dda6f2d493",
+     "d2129285383a34e28ea3b04989273b7e76f6d0dd",
      []
     ],
     "edit-context.idl": [
@@ -413649,7 +413649,7 @@
      []
     ],
     "html.idl": [
-     "3a7dce9693ef3ecaaf1ea274029663b8068c4222",
+     "a7a03c97ad07a65cb672ba280864882d1de0fb99",
      []
     ],
     "idle-detection.idl": [
@@ -413888,6 +413888,10 @@
      "516fb59d8d41489b405264289a4a0fd814f79fa8",
      []
     ],
+    "pointer-animations.idl": [
+     "e1b03197514cf0fffd78c3de17ec84ef94eace21",
+     []
+    ],
     "pointerevents.idl": [
      "0356e845058a5c97d27f96c5bc41e8ea74bd9cbc",
      []
@@ -414009,7 +414013,7 @@
      []
     ],
     "secure-payment-confirmation.idl": [
-     "0a2207684ec71074ffea786bf459b6073799e8d3",
+     "c0cbc41e99cf5b053a742495cda7474e66299779",
      []
     ],
     "selection-api.idl": [
