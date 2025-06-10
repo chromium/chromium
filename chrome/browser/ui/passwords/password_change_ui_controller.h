@@ -7,29 +7,41 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class DialogModel;
+}
+
 // Responsible for creating and displaying appropriate views based on the
 // current state of the password change flow.
 class PasswordChangeUIController {
  public:
-  explicit PasswordChangeUIController(
-      PasswordChangeDelegate* password_change_delegate,
-      base::WeakPtr<content::WebContents> web_contents);
-  ~PasswordChangeUIController();
+  PasswordChangeUIController(PasswordChangeDelegate* password_change_delegate,
+                             base::WeakPtr<content::WebContents> web_contents);
+  virtual ~PasswordChangeUIController();
 
   // Updates the `state_` and the UI.
-  void UpdateState(PasswordChangeDelegate::State state);
+  virtual void UpdateState(PasswordChangeDelegate::State state);
 
  private:
   // Handles clicking accept button on the currently displayed dialog.
   void OnDialogAccepted();
 
+  void ShowToast(PasswordChangeToast::ToastOptions options);
+  void ShowDialog(std::unique_ptr<ui::DialogModel> dialog_model);
+
+  void CloseDialogWidget(views::Widget::ClosedReason reason);
+
   // Controls password change process. Owns this class.
   const raw_ptr<PasswordChangeDelegate> password_change_delegate_;
+
+  raw_ptr<PasswordChangeToast> toast_view_;
+  std::unique_ptr<views::Widget> toast_widget_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 

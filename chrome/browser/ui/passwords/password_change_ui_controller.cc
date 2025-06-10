@@ -5,15 +5,21 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 
 #include "base/functional/callback.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 namespace {
@@ -127,6 +133,38 @@ std::unique_ptr<ui::DialogModel> CreateDialog(
   }
 }
 
+std::optional<PasswordChangeToast::ToastOptions> GetConfiguration(
+    PasswordChangeDelegate::State state) {
+  switch (state) {
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+      return PasswordChangeToast::ToastOptions(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK),
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL));
+    case PasswordChangeDelegate::State::kChangingPassword:
+      return PasswordChangeToast::ToastOptions(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD),
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL));
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+      return PasswordChangeToast::ToastOptions(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE),
+          vector_icons::kPasswordManagerIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
+          true);
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+    case PasswordChangeDelegate::State::kOfferingPasswordChange:
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kOtpDetected:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 PasswordChangeUIController::PasswordChangeUIController(
@@ -135,7 +173,9 @@ PasswordChangeUIController::PasswordChangeUIController(
     : password_change_delegate_(password_change_delegate),
       web_contents_(web_contents) {}
 
-PasswordChangeUIController::~PasswordChangeUIController() = default;
+PasswordChangeUIController::~PasswordChangeUIController() {
+  CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+}
 
 void PasswordChangeUIController::UpdateState(
     PasswordChangeDelegate::State state) {
@@ -144,6 +184,19 @@ void PasswordChangeUIController::UpdateState(
   }
 
   state_ = state;
+
+  if (auto configuration = GetConfiguration(state_)) {
+    if (toast_view_) {
+      toast_view_->UpdateLayout(std::move(configuration).value());
+    } else {
+      ShowToast(std::move(configuration).value());
+    }
+    return;
+  }
+
+  // If there is no toast configuration for a given state, just close the
+  // toast.
+  CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
 
   // TODO(crbug.com/417389698): Handle other states.
   if (ShouldDisplayDialog(state_)) {
@@ -191,4 +244,30 @@ void PasswordChangeUIController::OnDialogAccepted() {
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
       NOTREACHED();
   }
+}
+
+void PasswordChangeUIController::ShowToast(
+    PasswordChangeToast::ToastOptions options) {
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
+  CHECK(tab_interface);
+  auto toast_view = std::make_unique<PasswordChangeToast>(std::move(options));
+  toast_view_ = toast_view.get();
+  auto params = std::make_unique<tabs::TabDialogManager::Params>();
+  params->close_on_navigate = false;
+  params->close_on_detach = false;
+  params->disable_input = false;
+
+  toast_widget_ =
+      tab_interface->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateAndShowDialog(toast_view.release(), std::move(params));
+  toast_widget_->MakeCloseSynchronous(base::BindOnce(
+      &PasswordChangeUIController::CloseDialogWidget, base::Unretained(this)));
+}
+
+void PasswordChangeUIController::CloseDialogWidget(
+    views::Widget::ClosedReason reason) {
+  toast_view_ = nullptr;
+  toast_widget_.reset();
 }

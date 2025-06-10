@@ -10,6 +10,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -35,6 +36,17 @@ class MockPageNavigator : public content::PageNavigator {
               (const content::OpenURLParams&,
                base::OnceCallback<void(content::NavigationHandle&)>),
               (override));
+};
+
+class MockPasswordChangeUIController : public PasswordChangeUIController {
+ public:
+  MockPasswordChangeUIController(
+      PasswordChangeDelegate* password_change_delegate,
+      base::WeakPtr<content::WebContents> web_contents)
+      : PasswordChangeUIController(password_change_delegate, web_contents) {}
+  ~MockPasswordChangeUIController() override = default;
+
+  MOCK_METHOD(void, UpdateState, (PasswordChangeDelegate::State), (override));
 };
 
 }  // namespace
@@ -75,6 +87,9 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
                     })));
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
         GURL(kChangePasswordURL), kTestEmail, kPassword, web_contents());
+    delegate_->SetCustomUIController(
+        std::make_unique<MockPasswordChangeUIController>(
+            delegate_.get(), web_contents()->GetWeakPtr()));
     delegate_->OfferPasswordChangeUi();
   }
 
@@ -88,11 +103,9 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
   void ResetDelegate() { delegate_.reset(); }
 
- protected:
+ private:
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
-
- private:
   MockPageNavigator navigator_;
   std::unique_ptr<PasswordChangeDelegateImpl> delegate_;
 };

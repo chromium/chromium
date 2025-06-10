@@ -57,6 +57,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 #if defined(UNIT_TEST)
   ChangePasswordFormFinder* form_finder() { return form_finder_.get(); }
   content::WebContents* executor() { return executor_.get(); }
+  void SetCustomUIController(
+      std::unique_ptr<PasswordChangeUIController> controller) {
+    ui_controller_ = std::move(controller);
+  }
 #endif
 
  private:
