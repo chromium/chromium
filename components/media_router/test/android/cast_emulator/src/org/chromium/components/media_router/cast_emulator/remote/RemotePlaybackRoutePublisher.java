@@ -49,7 +49,7 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
     private int mVolume = 5;
 
     private final MediaRouteProvider mProvider;
-    private final List<String> mControlCategories = new ArrayList<String>();
+    private final List<String> mControlCategories = new ArrayList<>();
 
     public RemotePlaybackRoutePublisher(MediaRouteProvider provider) {
         mProvider = provider;
@@ -100,7 +100,7 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         f2.addAction(MediaControlIntent.ACTION_END_SESSION);
         f2.addAction(CastMediaControlIntent.ACTION_SYNC_STATUS);
 
-        ArrayList<IntentFilter> controlFilters = new ArrayList<IntentFilter>();
+        ArrayList<IntentFilter> controlFilters = new ArrayList<>();
         controlFilters.add(f1);
         controlFilters.add(f2);
 

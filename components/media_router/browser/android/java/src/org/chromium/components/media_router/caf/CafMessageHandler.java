@@ -106,16 +106,17 @@ public class CafMessageHandler {
 
     /**
      * Initializes a new {@link CafMessageHandler} instance.
-     * @param session  The {@link CastSession} for communicating with the Cast SDK.
+     *
+     * @param session The {@link CastSession} for communicating with the Cast SDK.
      * @param provider The {@link CafMediaRouteProvider} for communicating with the page.
      */
     public CafMessageHandler(
             CafMediaRouteProvider provider, CastSessionController sessionController) {
         mRouteProvider = provider;
-        mRequests = new SparseArray<RequestRecord>();
-        mStopRequests = new ArrayMap<String, Queue<Integer>>();
+        mRequests = new SparseArray<>();
+        mStopRequests = new ArrayMap<>();
         mSessionController = sessionController;
-        mVolumeRequests = new ArrayDeque<RequestRecord>();
+        mVolumeRequests = new ArrayDeque<>();
         mHandler = new Handler();
     }
 
@@ -386,7 +387,7 @@ public class CafMessageHandler {
     void handleStopMessage(String clientId, int sequenceNumber) {
         Queue<Integer> sequenceNumbersForClient = mStopRequests.get(clientId);
         if (sequenceNumbersForClient == null) {
-            sequenceNumbersForClient = new ArrayDeque<Integer>();
+            sequenceNumbersForClient = new ArrayDeque<>();
             mStopRequests.put(clientId, sequenceNumbersForClient);
         }
         sequenceNumbersForClient.add(sequenceNumber);

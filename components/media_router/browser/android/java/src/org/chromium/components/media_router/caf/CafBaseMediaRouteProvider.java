@@ -45,9 +45,8 @@ public abstract class CafBaseMediaRouteProvider
     protected static final List<MediaSink> NO_SINKS = Collections.emptyList();
     private final MediaRouter mAndroidMediaRouter;
     protected final MediaRouteManager mManager;
-    protected final Map<String, DiscoveryCallback> mDiscoveryCallbacks =
-            new HashMap<String, DiscoveryCallback>();
-    protected final Map<String, MediaRoute> mRoutes = new HashMap<String, MediaRoute>();
+    protected final Map<String, DiscoveryCallback> mDiscoveryCallbacks = new HashMap<>();
+    protected final Map<String, MediaRoute> mRoutes = new HashMap<>();
     protected Handler mHandler = new Handler();
 
     private @Nullable CreateRouteRequestInfo mPendingCreateRouteRequestInfo;
@@ -354,7 +353,7 @@ public abstract class CafBaseMediaRouteProvider
     }
 
     private List<MediaSink> getKnownSinksFromAndroidMediaRouter(MediaRouteSelector routeSelector) {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         for (RouteInfo route : mAndroidMediaRouter.getRoutes()) {
             if (route.matchesSelector(routeSelector)) {
                 knownSinks.add(MediaSink.fromRoute(route));

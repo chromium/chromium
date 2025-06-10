@@ -30,7 +30,7 @@ public class MediaRouterTestHelper {
         setUpRoutes();
         ShadowMediaRouter.setImplementation(mShadowMediaRouter);
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 selectRoute(getDefaultRoute());
@@ -84,7 +84,7 @@ public class MediaRouterTestHelper {
 
     private void setUpRouteStubs(MediaRouter.RouteInfo routeInfo) {
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 selectRoute(routeInfo);

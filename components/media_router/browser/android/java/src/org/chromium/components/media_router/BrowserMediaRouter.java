@@ -69,13 +69,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
     // The pointer to the native object. Can be null during tests, or when the
     // native object has been destroyed.
     private long mNativeMediaRouterAndroidBridge;
-    private final List<MediaRouteProvider> mRouteProviders = new ArrayList<MediaRouteProvider>();
-    private final Map<String, MediaRouteProvider> mRouteIdsToProviders =
-            new HashMap<String, MediaRouteProvider>();
+    private final List<MediaRouteProvider> mRouteProviders = new ArrayList<>();
+    private final Map<String, MediaRouteProvider> mRouteIdsToProviders = new HashMap<>();
     private final Map<String, Map<MediaRouteProvider, List<MediaSink>>> mSinksPerSourcePerProvider =
-            new HashMap<String, Map<MediaRouteProvider, List<MediaSink>>>();
-    private final Map<String, List<MediaSink>> mSinksPerSource =
-            new HashMap<String, List<MediaSink>>();
+            new HashMap<>();
+    private final Map<String, List<MediaSink>> mSinksPerSource = new HashMap<>();
 
     public static void setRouteProviderFactoryForTest(MediaRouteProvider.Factory factory) {
         var oldValue = sRouteProviderFactory;
@@ -118,8 +116,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
     public void onSinksReceived(
             String sourceId, MediaRouteProvider provider, List<MediaSink> sinks) {
         if (!mSinksPerSourcePerProvider.containsKey(sourceId)) {
-            mSinksPerSourcePerProvider.put(
-                    sourceId, new HashMap<MediaRouteProvider, List<MediaSink>>());
+            mSinksPerSourcePerProvider.put(sourceId, new HashMap<>());
         }
 
         // Replace the sinks found by this provider with the new list.
@@ -127,7 +124,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
                 mSinksPerSourcePerProvider.get(sourceId);
         sinksPerProvider.put(provider, sinks);
 
-        List<MediaSink> allSinksPerSource = new ArrayList<MediaSink>();
+        List<MediaSink> allSinksPerSource = new ArrayList<>();
         for (List<MediaSink> s : sinksPerProvider.values()) allSinksPerSource.addAll(s);
 
         mSinksPerSource.put(sourceId, allSinksPerSource);

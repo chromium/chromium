@@ -23,8 +23,8 @@ import java.util.Set;
 public class DiscoveryCallback extends MediaRouter.Callback {
     private final DiscoveryDelegate mDiscoveryDelegate;
     private final MediaRouteSelector mRouteSelector;
-    private final Set<String> mSourceUrns = new HashSet<String>();
-    private List<MediaSink> mSinks = new ArrayList<MediaSink>();
+    private final Set<String> mSourceUrns = new HashSet<>();
+    private List<MediaSink> mSinks = new ArrayList<>();
 
     public DiscoveryCallback(
             String sourceUrn, DiscoveryDelegate delegate, MediaRouteSelector selector) {
@@ -47,7 +47,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
 
     public void addSourceUrn(String sourceUrn) {
         if (mSourceUrns.add(sourceUrn)) {
-            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<MediaSink>(mSinks));
+            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<>(mSinks));
         }
     }
 
@@ -101,7 +101,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
 
     private void updateBrowserMediaRouter() {
         for (String sourceUrn : mSourceUrns) {
-            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<MediaSink>(mSinks));
+            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<>(mSinks));
         }
     }
 }

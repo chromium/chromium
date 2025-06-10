@@ -38,8 +38,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     @VisibleForTesting @Nullable ClientRecord mLastRemovedRouteRecord;
     // The records for clients, which must match mRoutes. This is used for the saving last record
     // for autojoin.
-    private final Map<String, ClientRecord> mClientIdToRecords =
-            new HashMap<String, ClientRecord>();
+    private final Map<String, ClientRecord> mClientIdToRecords = new HashMap<>();
     @VisibleForTesting CafMessageHandler mMessageHandler;
     // The session controller which is always attached to the current CastSession.
     private final CastSessionController mSessionController;

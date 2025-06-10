@@ -152,7 +152,7 @@ public class CastSessionControllerTest {
         List<String> observedNamespaces = new ArrayList<>();
         doReturn(namespaces).when(mApplicationMetadata).getSupportedNamespaces();
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 observedNamespaces.add((String) invocation.getArguments()[0]);
@@ -163,7 +163,7 @@ public class CastSessionControllerTest {
                 .setMessageReceivedCallbacks(
                         any(String.class), any(Cast.MessageReceivedCallback.class));
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 observedNamespaces.remove((String) invocation.getArguments()[0]);

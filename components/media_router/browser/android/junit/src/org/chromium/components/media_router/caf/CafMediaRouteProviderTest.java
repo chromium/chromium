@@ -267,7 +267,7 @@ public class CafMediaRouteProviderTest {
         doReturn(mCastSession).when(mSessionManager).getCurrentCastSession();
         doReturn(null).when(mSessionController).getSession();
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 doReturn(invocation.getArguments()[0])

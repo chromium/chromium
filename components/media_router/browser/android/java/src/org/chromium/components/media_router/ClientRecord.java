@@ -34,7 +34,7 @@ public class ClientRecord {
     public boolean isConnected;
 
     /** The pending messages for the client. */
-    public List<String> pendingMessages = new ArrayList<String>();
+    public List<String> pendingMessages = new ArrayList<>();
 
     public ClientRecord(
             String routeId,
