@@ -263,7 +263,7 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
                         &count) != KERN_SUCCESS) {
     return false;
   }
-  DCHECK_EQ(HOST_VM_INFO64_COUNT, count);
+  DCHECK_GE(count, HOST_VM_INFO64_REV1_COUNT);
 
 #if !(BUILDFLAG(IS_IOS) && defined(ARCH_CPU_X86_FAMILY))
   // PAGE_SIZE (aka vm_page_size) isn't constexpr, so this check needs to be
