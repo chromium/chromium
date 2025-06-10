@@ -415,7 +415,7 @@ class CORE_EXPORT LocalFrameView final
   // disallows layout invalidation within the containing scope. If layout
   // invalidation takes place while the scoper is active a DCHECK will be
   // triggered.
-  class InvalidationDisallowedScope {
+  class CORE_EXPORT InvalidationDisallowedScope {
     STACK_ALLOCATED();
 
    public:

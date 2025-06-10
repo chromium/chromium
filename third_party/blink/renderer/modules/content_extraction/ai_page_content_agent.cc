@@ -682,6 +682,10 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
+
+  // If we're doing this extraction as a part of the document lifecycle, we
+  // can't invalidate style/layout.
+  if (!document.InvalidationDisallowed()) {
     forced_activatable_locks.emplace_back(
         document.GetDisplayLockDocumentState()
             .GetScopedForceActivatableLocks());
@@ -697,6 +701,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
                   ->GetDisplayLockDocumentState()
                   .GetScopedForceActivatableLocks());
         });
+  }
 
   // Running lifecycle beyond layout is expensive and the information is only
   // needed to compute geometry. Limit the update to layout if we don't need

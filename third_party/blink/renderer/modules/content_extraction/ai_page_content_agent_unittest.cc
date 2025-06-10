@@ -1493,6 +1493,40 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFound) {
   CheckTextNode(visible_text_node, "visible text");
 }
 
+TEST_F(AIPageContentAgentTest, HiddenUntilFoundNoInvalidationAllowed) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <style>
+          body {
+            margin: 0; font-size: 100px;
+          }
+        </style>
+        <header hidden=until-found>hidden text</header><div>visible text</div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  LocalFrameView::InvalidationDisallowedScope disallow(
+      *helper_.LocalMainFrame()->GetFrame()->View());
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& hidden_container = *root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRoles(
+      hidden_container,
+      {mojom::blink::AIPageContentAnnotatedRole::kHeader,
+       mojom::blink::AIPageContentAnnotatedRole::kContentHidden});
+  EXPECT_TRUE(hidden_container.children_nodes.empty());
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "visible text");
+}
+
 TEST_F(AIPageContentAgentTest, HiddenUntilFoundGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
