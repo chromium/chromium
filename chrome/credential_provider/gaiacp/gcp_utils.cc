@@ -131,6 +131,7 @@ constexpr char kMinimumSupportedChromeVersionStr[] = "77.0.3865.65";
 
 constexpr char kSentinelFilename[] = "gcpw_startup.sentinel";
 constexpr int64_t kMaxConsecutiveCrashCount = 5;
+constexpr int kHoursToDisableGCPW = 10;
 
 // L$ prefix means this secret can only be accessed locally.
 constexpr wchar_t kLsaKeyDMTokenPrefix[] = L"L$GCPW-DM-Token-";
@@ -199,8 +200,8 @@ void DeleteVersionDirectory(const base::FilePath& version_path) {
     }
 
     // Mark the file for deletion.
-    HRESULT hr = base::DeleteFile(path);
-    if (FAILED(hr)) {
+    bool deleted = base::DeleteFile(path);
+    if (!deleted) {
       LOGFN(ERROR) << "Could not delete " << path;
       all_deletes_succeeded = false;
     }
@@ -863,6 +864,18 @@ HRESULT LookupLocalizedNameForWellKnownSid(WELL_KNOWN_SID_TYPE sid_type,
   return LookupLocalizedNameBySid(well_known_sid, localized_name);
 }
 
+bool IsSentinelOlderThanSetTime(const base::File::Info info) {
+  base::Time sentinel_time = info.last_modified;
+  base::Time current_time = base::Time::Now();
+
+  LOGFN(VERBOSE) << "Sentinel time: " << sentinel_time
+                 << " Current time: " << current_time;
+
+  return (current_time.ToDeltaSinceWindowsEpoch().InHours() -
+          sentinel_time.ToDeltaSinceWindowsEpoch().InHours()) >
+         kHoursToDisableGCPW;
+}
+
 bool WriteToStartupSentinel() {
   LOGFN(VERBOSE);
   // Always try to write to the startup sentinel file. If writing or opening
@@ -906,7 +919,13 @@ bool WriteToStartupSentinel() {
     if (startup_sentinel.GetLength() >= kMaxConsecutiveCrashCount) {
       LOGFN(ERROR) << "Sentinel file length indicates "
                    << startup_sentinel.GetLength() << " possible crashes";
-      return false;
+
+      base::File::Info info;
+      startup_sentinel.GetInfo(&info);
+
+      // Is sentinel older than kHoursToDisableGCPW hours? Then, enable GCPW
+      // again.
+      return IsSentinelOlderThanSetTime(info);
     }
 
     LOGFN(VERBOSE) << "Writing to sentinel. Current length="
@@ -919,15 +938,16 @@ bool WriteToStartupSentinel() {
 }
 
 void DeleteStartupSentinel() {
+  LOGFN(VERBOSE);
   DeleteStartupSentinelForVersion(TEXT(CHROME_VERSION_STRING));
 }
 
 void DeleteStartupSentinelForVersion(const std::wstring& version) {
   LOGFN(VERBOSE) << "Deleting sentinel for version " << version;
   base::FilePath startup_sentinel_path = GetStartupSentinelLocation(version);
-  if (base::PathExists(startup_sentinel_path) &&
-      !base::DeleteFile(startup_sentinel_path)) {
-    LOGFN(ERROR) << "Failed to delete sentinel file: " << startup_sentinel_path;
+  if (!base::DeleteFile(startup_sentinel_path)) {
+    LOGFN(ERROR) << "Could not delete sentinel file, maybe it doesn't exist: "
+                 << startup_sentinel_path;
   }
 }
 
