@@ -37,7 +37,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 
 VALID_ARCHS = ("amd64", "i386", "armhf", "arm64", "mipsel", "mips64el",
-               "ppc64el")
+               "ppc64el", "riscv64")
 
 ARCH_TRANSLATIONS = {
     "x64": "amd64",
@@ -48,10 +48,19 @@ ARCH_TRANSLATIONS = {
     "ppc64le": "ppc64el",
 }
 
+DEFAULT_TARGET_PLATFORMS = {
+    "amd64": "bullseye",
+    "i386": "bullseye",
+    "armhf": "bullseye",
+    "arm64": "bullseye",
+    "mipsel": "bullseye",
+    "mips64el": "bullseye",
+    "ppc64el": "bullseye",
+    "riscv64": "trixie",
+}
+
 DEFAULT_SYSROOTS_PATH = os.path.join(os.path.relpath(SCRIPT_DIR, SRC_DIR),
                                      "sysroots.json")
-DEFAULT_TARGET_PLATFORM = "bullseye"
-
 
 class Error(Exception):
     pass
@@ -91,14 +100,13 @@ def main(args):
         sysroots_json_path = DEFAULT_SYSROOTS_PATH
 
     if options.arch:
-        InstallSysroot(
-            sysroots_json_path,
-            DEFAULT_TARGET_PLATFORM,
-            ARCH_TRANSLATIONS.get(options.arch, options.arch),
-        )
+        arch = ARCH_TRANSLATIONS.get(options.arch, options.arch)
+        InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch],
+                       arch)
     elif options.all:
         for arch in VALID_ARCHS:
-            InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORM, arch)
+            InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch],
+                           arch)
     else:
         print("You much specify one of the options.")
         return 1
