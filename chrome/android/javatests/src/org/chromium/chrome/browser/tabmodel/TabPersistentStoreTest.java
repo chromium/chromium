@@ -113,10 +113,7 @@ import java.util.stream.Collectors;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH
-})
+@EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.

@@ -594,9 +594,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_ENTRY_POINTS_ANDROID = "TabGroupEntryPointsAndroid";
     public static final String TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID =
             "TabGroupParityBottomSheetAndroid";
-    public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
-    public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
-            "TabGroupSyncAutoOpenKillSwitch";
     public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";

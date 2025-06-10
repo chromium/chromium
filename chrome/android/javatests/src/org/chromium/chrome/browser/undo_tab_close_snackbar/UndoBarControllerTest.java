@@ -23,7 +23,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -171,45 +170,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
-    public void testCloseTabGroup_Undo_SyncDisabled() throws Exception {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
-                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
-                            mTabModel.getTabAt(0),
-                            /* notify= */ false);
-                });
-
-        assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    closeTabs(
-                            TabClosureParams.closeTabs(
-                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
-                                    .build());
-                });
-
-        Snackbar currentSnackbar = getCurrentSnackbar();
-        assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group closed");
-        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
-
-        clickSnackbar();
-
-        assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -255,7 +215,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseTabGroup_EmptyTitle_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -301,7 +260,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -339,7 +297,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testDeleteTabGroup_WithOtherTab_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -379,7 +336,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseTabGroup_WithOtherTabs_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -421,7 +377,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testPartialDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -464,7 +419,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testDeleteTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
@@ -500,7 +454,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());

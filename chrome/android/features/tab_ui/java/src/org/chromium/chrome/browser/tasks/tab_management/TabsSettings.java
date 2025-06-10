@@ -19,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -81,9 +80,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
         boolean isTabGroupSyncAutoOpenConfigurable =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile())
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH);
+                TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile());
         if (!isTabGroupSyncAutoOpenConfigurable) {
             autoOpenSyncedTabGroupsSwitch.setVisible(false);
             return;

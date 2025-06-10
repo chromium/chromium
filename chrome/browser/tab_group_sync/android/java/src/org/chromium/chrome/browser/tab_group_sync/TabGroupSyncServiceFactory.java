@@ -10,7 +10,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -30,10 +29,6 @@ public final class TabGroupSyncServiceFactory {
         assert !profile.isOffTheRecord();
         if (sTabGroupSyncServiceForTesting != null) {
             return sTabGroupSyncServiceForTesting;
-        }
-
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
-            return null;
         }
 
         // Throw an exception if the native pointer is not initialized. This is useful to get a more
