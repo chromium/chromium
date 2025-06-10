@@ -275,7 +275,7 @@ base::FilePath DownloadTaskImpl::GenerateFileName() const {
   return net::GenerateFileName(original_url_, content_disposition_,
                                /*referrer_charset=*/std::string(),
                                /*suggested_name=*/GetSuggestedName(),
-                               /*mime_type=*/std::string(),
+                               /*mime_type=*/mime_type_,
                                /*default_name=*/"document");
 }
 

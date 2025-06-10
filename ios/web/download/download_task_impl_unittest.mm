@@ -29,6 +29,10 @@ NSString* const kOrigninatingHost = @"host.test";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
 const base::FilePath::CharType kTestFileName[] = FILE_PATH_LITERAL("file.test");
+const base::FilePath::CharType kNoExtensionFileName[] =
+    FILE_PATH_LITERAL("file");
+const base::FilePath::CharType kWithExtensionFileName[] =
+    FILE_PATH_LITERAL("file.pdf");
 NSString* const kHttpMethod = @"POST";
 
 }  //  namespace
@@ -121,6 +125,20 @@ TEST_F(DownloadTaskImplTest, RedirectURL) {
   task_->Redirect(GURL(kUrlRedirected));
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
   EXPECT_EQ(kUrlRedirected, task_->GetRedirectedUrl());
+}
+
+// Tests DownloadTaskImpl GenerateFileName with no extension and no content
+// disposition.
+TEST_F(DownloadTaskImplTest, GenerateFileNameTest) {
+  task_ = std::make_unique<FakeDownloadTaskImpl>(
+      &web_state_, GURL(std::string(kUrl) + kNoExtensionFileName),
+      kOrigninatingHost, kHttpMethod, "",
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString],
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
+  EXPECT_EQ(kMimeType, task_->GetMimeType());
+  EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
+  EXPECT_EQ(base::FilePath(kWithExtensionFileName), task_->GenerateFileName());
 }
 
 }  // namespace web
