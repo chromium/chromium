@@ -485,40 +485,6 @@ class BrowserView : public BrowserWindow,
   // Returns true if the browser is currently showing tabs in a split view.
   bool IsInSplitView() const;
 
-  // Display the current active split view as a series of multiple side-by-side
-  // web contents.
-  void ShowSplitView(bool focus_active_view);
-
-  // Display only the current active tab's web contents, hiding any previous
-  // side-by-side display.
-  void HideSplitView();
-
-  // Update the index of the active split based on the active tab's web
-  // contents.
-  void UpdateActiveTabInSplitView();
-
-  // Updates the contents in the active split view.
-  void UpdateContentsInSplitView(
-      const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
-      const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
-
-  // True if an activation from `old_contents` to `new_contents` happens between
-  // tabs that are already in a split-view configuration.
-  bool IsTabChangeInSplitView(content::WebContents* old_contents,
-                              content::WebContents* new_contents);
-
-  // Reverses the order of the contents in the active split.
-  void ReverseWebContents();
-
-  // Resize the ratio of the contents in the active split.
-  void ResizeWebContents(double start_ratio);
-
-  // Activate the tab containing the given WebContents (if any).
-  void ActivateWebContents(content::WebContents* web_contents);
-
-  // Updates stored focus for web contents that is being activated.
-  void MaybeUpdateStoredFocusForWebContents(content::WebContents*);
-
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -971,12 +937,47 @@ class BrowserView : public BrowserWindow,
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
   friend class BrowserViewLayoutDelegateImpl;
+  friend class MultiContentsViewDelegateImpl;
   friend class TopControlsSlideControllerTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
 
   class AccessibilityModeObserver;
+
+  // Display the current active split view as a series of multiple side-by-side
+  // web contents.
+  void ShowSplitView(bool focus_active_view);
+
+  // Display only the current active tab's web contents, hiding any previous
+  // side-by-side display.
+  void HideSplitView();
+
+  // Update the index of the active split based on the active tab's web
+  // contents.
+  void UpdateActiveTabInSplitView();
+
+  // Updates the contents in the active split view.
+  void UpdateContentsInSplitView(
+      const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
+
+  // True if an activation from `old_contents` to `new_contents` happens between
+  // tabs that are already in a split-view configuration.
+  bool IsTabChangeInSplitView(content::WebContents* old_contents,
+                              content::WebContents* new_contents);
+
+  // Updates stored focus for web contents that is being activated.
+  void MaybeUpdateStoredFocusForWebContents(content::WebContents*);
+
+  // Reverses the order of the contents in the active split.
+  void ReverseWebContents();
+
+  // Resize the ratio of the contents in the active split.
+  void ResizeWebContents(double start_ratio);
+
+  // Activate the tab containing the given WebContents (if any).
+  void ActivateWebContents(content::WebContents* web_contents);
 
   // BrowserUserEducationInterface private methods:
   user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()

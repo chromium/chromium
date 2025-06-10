@@ -45,10 +45,14 @@ class MultiContentsView : public views::View,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
 
-  using WebContentsFocusedCallback =
-      base::RepeatingCallback<void(content::WebContents*)>;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
 
-  using WebContentsResizeCallback = base::RepeatingCallback<void(double)>;
+    virtual void WebContentsFocused(content::WebContents* contents) = 0;
+    virtual void ResizeWebContents(double ratio) = 0;
+    virtual void ReverseWebContents() = 0;
+  };
 
   struct ViewWidths {
     double start_width = 0;
@@ -58,10 +62,8 @@ class MultiContentsView : public views::View,
 
   static constexpr int kSplitViewContentInset = 8;
 
-  MultiContentsView(
-      BrowserView* browser_view,
-      WebContentsFocusedCallback inactive_contents_focused_callback,
-      WebContentsResizeCallback contents_resize_callback);
+  MultiContentsView(BrowserView* browser_view,
+                    std::unique_ptr<Delegate> delegate);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
@@ -158,6 +160,7 @@ class MultiContentsView : public views::View,
   void UpdateContentsBorderAndOverlay();
 
   raw_ptr<BrowserView> browser_view_;
+  std::unique_ptr<Delegate> delegate_;
 
   // Holds ContentsContainerViews, when not in a split view the second
   // ContentsContainerView is not visible.
@@ -184,11 +187,6 @@ class MultiContentsView : public views::View,
   // The index in contents_views_ of the active contents view.
   int active_index_ = 0;
 
-  // Callback to be executed when the user focuses the inactive contents view.
-  WebContentsFocusedCallback inactive_contents_focused_callback_;
-
-  // Callback to be executed when the user resizes the contents.
-  WebContentsResizeCallback contents_resize_callback_;
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.

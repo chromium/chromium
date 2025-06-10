@@ -26,13 +26,10 @@
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
 
-MultiContentsView::MultiContentsView(
-    BrowserView* browser_view,
-    WebContentsFocusedCallback inactive_contents_focused_callback,
-    WebContentsResizeCallback contents_resize_callback)
+MultiContentsView::MultiContentsView(BrowserView* browser_view,
+                                     std::unique_ptr<Delegate> delegate)
     : browser_view_(browser_view),
-      inactive_contents_focused_callback_(inactive_contents_focused_callback),
-      contents_resize_callback_(contents_resize_callback),
+      delegate_(std::move(delegate)),
       start_contents_view_inset_(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
       end_contents_view_inset_(
@@ -146,7 +143,7 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
 
 void MultiContentsView::OnSwap() {
   CHECK(IsInSplitView());
-  browser_view_->ReverseWebContents();
+  delegate_->ReverseWebContents();
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
@@ -163,7 +160,7 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
                         contents_container_views_[0]->GetInsets().width() +
                         static_cast<double>(resize_amount)) /
                        total_width;
-  contents_resize_callback_.Run(start_ratio);
+  delegate_->ResizeWebContents(start_ratio);
 
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
@@ -190,7 +187,7 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
     // inactive web contents gets focus. See crbug.com/419335827
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents() &&
         GetWidget()->IsVisible()) {
-      inactive_contents_focused_callback_.Run(web_view->web_contents());
+      delegate_->WebContentsFocused(web_view->web_contents());
     }
   }
 }
