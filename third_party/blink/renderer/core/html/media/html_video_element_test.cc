@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
+#include "third_party/blink/renderer/core/html/track/audio_track_list.h"
+#include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::_;
+using testing::Eq;
 using testing::Return;
 
 namespace blink {
@@ -42,6 +45,8 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
               RecordVideoOcclusionState,
               (std::string_view occlusion_state));
   MOCK_METHOD(gfx::Size, NaturalSize, (), (const));
+  MOCK_METHOD(void, EnabledAudioTracksChanged, (std::optional<TrackId>));
+  MOCK_METHOD(void, SelectedVideoTrackChanged, (std::optional<TrackId>));
 };
 }  // namespace
 
@@ -101,6 +106,76 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
   HTMLVideoElementMockMediaPlayer* media_player_;
 };
 INSTANTIATE_PAINT_TEST_SUITE_P(HTMLVideoElementTest);
+
+TEST_P(HTMLVideoElementTest, TrackChangeEventPropagationTest) {
+  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
+  SetFakeCcLayer(layer.get());
+
+  video()->SetBooleanAttribute(html_names::kControlsAttr, true);
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  video()->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
+      "a0", media::MediaTrack::AudioKind::kMain, "zero", "EN", true, 0, true));
+  video()->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
+      "a1", media::MediaTrack::AudioKind::kMain, "one", "EN", false, 1, true));
+  ASSERT_EQ(video()->audioTracks().length(), 2);
+  ASSERT_EQ(video()->audioTracks().AnonymousIndexedGetter(0)->id(), "a0");
+  ASSERT_TRUE(video()->audioTracks().AnonymousIndexedGetter(0)->enabled());
+  ASSERT_EQ(video()->audioTracks().AnonymousIndexedGetter(1)->id(), "a1");
+  ASSERT_FALSE(video()->audioTracks().AnonymousIndexedGetter(1)->enabled());
+
+  video()->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
+      "v0", media::MediaTrack::VideoKind::kMain, "zero", "EN", true, 0));
+  video()->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
+      "v1", media::MediaTrack::VideoKind::kMain, "one", "EN", false, 1));
+  ASSERT_EQ(video()->videoTracks().length(), 2);
+  ASSERT_EQ(video()->videoTracks().AnonymousIndexedGetter(0)->id(), "v0");
+  ASSERT_TRUE(video()->videoTracks().AnonymousIndexedGetter(0)->selected());
+  ASSERT_EQ(video()->videoTracks().AnonymousIndexedGetter(1)->id(), "v1");
+  ASSERT_FALSE(video()->videoTracks().AnonymousIndexedGetter(1)->selected());
+
+  // Enabling the enabled audio track does nothing.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  video()->audioTracks().AnonymousIndexedGetter(0)->setEnabled(true);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Enabling the disabled audio track triggers a track change for it.
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              EnabledAudioTracksChanged(
+                  testing::Optional(EmptyWebMediaPlayer::TrackId("a1"))));
+  video()->audioTracks().AnonymousIndexedGetter(1)->setEnabled(true);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Disabling the enabled audio track triggers a track disable for the media
+  // player.
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              EnabledAudioTracksChanged(Eq(std::nullopt)));
+  video()->audioTracks().AnonymousIndexedGetter(1)->setEnabled(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Now do the same things for video tracks.
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  video()->videoTracks().AnonymousIndexedGetter(0)->setSelected(true);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              SelectedVideoTrackChanged(
+                  testing::Optional(EmptyWebMediaPlayer::TrackId("v1"))));
+  video()->videoTracks().AnonymousIndexedGetter(1)->setSelected(true);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              SelectedVideoTrackChanged(Eq(std::nullopt)));
+  video()->videoTracks().AnonymousIndexedGetter(1)->setSelected(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
 
 TEST_P(HTMLVideoElementTest, PictureInPictureInterstitialAndTextContainer) {
   scoped_refptr<cc::Layer> layer = cc::Layer::Create();

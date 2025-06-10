@@ -3347,6 +3347,7 @@ void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
       return;
     }
   }
+  web_media_player_->EnabledAudioTracksChanged(std::nullopt);
 }
 
 VideoTrackList& HTMLMediaElement::videoTracks() {
