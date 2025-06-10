@@ -10,11 +10,14 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 // Handles requests for prefs::kCookieControlsMode retrival/update.
 class CookieControlsServiceObserver : public CookieControlsService::Observer {
  public:
   explicit CookieControlsServiceObserver(Profile* profile) {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kAlwaysBlock3pcsIncognito);
     service_ = CookieControlsServiceFactory::GetForProfile(profile);
     service_->AddObserver(this);
     checked_ = false;
@@ -37,6 +40,7 @@ class CookieControlsServiceObserver : public CookieControlsService::Observer {
 
  private:
   raw_ptr<CookieControlsService, DanglingUntriaged> service_;
+  base::test::ScopedFeatureList feature_list_;
   bool checked_;
 };
 

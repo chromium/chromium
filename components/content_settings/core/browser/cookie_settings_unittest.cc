@@ -684,10 +684,12 @@ TEST_F(CookieSettingsTest, CookiesControlsDisabled) {
       kBlockedSite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
       /*cookie_partition_key=*/std::nullopt));
-  EXPECT_TRUE(cookie_settings_incognito_->IsFullCookieAccessAllowed(
-      kBlockedSite, kFirstPartySiteForCookies,
-      /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
-      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_NE(
+      cookie_settings_incognito_->IsFullCookieAccessAllowed(
+          kBlockedSite, kFirstPartySiteForCookies,
+          /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
+          /*cookie_partition_key=*/std::nullopt),
+      base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
 }
 
 TEST_F(CookieSettingsTest, CookiesControlsEnabledForIncognito) {
