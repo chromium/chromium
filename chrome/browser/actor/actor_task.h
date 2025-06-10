@@ -13,14 +13,14 @@
 
 namespace actor {
 
-class ActorCoordinator;
 class ActorKeyedService;
+class ExecutionEngine;
 
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
   ActorTask();
-  explicit ActorTask(std::unique_ptr<ActorCoordinator> actor_coordinator);
+  explicit ActorTask(std::unique_ptr<ExecutionEngine> execution_engine);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
   ~ActorTask();
@@ -56,14 +56,14 @@ class ActorTask {
 
   bool IsPaused() const;
 
-  ActorCoordinator* GetActorCoordinator() const;
+  ExecutionEngine* GetExecutionEngine() const;
 
  private:
   State state_ = State::kCreated;
 
   // There are multiple possible execution engines. For now we only support
-  // ActorCoordinator.
-  std::unique_ptr<ActorCoordinator> actor_coordinator_;
+  // ExecutionEngine.
+  std::unique_ptr<ExecutionEngine> execution_engine_;
 
   TaskId id_;
 };

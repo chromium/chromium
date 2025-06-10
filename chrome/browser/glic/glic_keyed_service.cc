@@ -442,16 +442,16 @@ void GlicKeyedService::OnResponseStopped() {
   }
 }
 
-bool GlicKeyedService::IsActorCoordinatorActingOnTab(
+bool GlicKeyedService::IsExecutionEngineActingOnTab(
     const content::WebContents* tab) const {
   return actor_controller_ &&
-         actor_controller_->IsActorCoordinatorActingOnTab(tab);
+         actor_controller_->IsExecutionEngineActingOnTab(tab);
 }
 
-actor::ActorCoordinator& GlicKeyedService::GetActorCoordinatorForTesting(
+actor::ExecutionEngine& GlicKeyedService::GetExecutionEngineForTesting(
     tabs::TabInterface* tab) {
   CHECK(actor_controller_);
-  return actor_controller_->GetActorCoordinatorForTesting(tab);  // IN-TEST
+  return actor_controller_->GetExecutionEngineForTesting(tab);  // IN-TEST
 }
 
 void GlicKeyedService::CaptureScreenshot(

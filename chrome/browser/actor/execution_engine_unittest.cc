@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/execution_engine.h"
 
 #include <optional>
 
@@ -89,10 +89,10 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 };
 
-class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
+class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
-  ActorCoordinatorTest() = default;
-  ~ActorCoordinatorTest() override = default;
+  ExecutionEngineTest() = default;
+  ~ExecutionEngineTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -123,11 +123,11 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
     fake_chrome_render_frame.OverrideBinder(main_rfh());
 
     base::test::TestFuture<mojom::ActionResultPtr> success;
-    auto actor_coordinator =
-        std::make_unique<ActorCoordinator>(profile(), GetTab());
-    ActorTask task(std::move(actor_coordinator));
+    auto execution_engine =
+        std::make_unique<ExecutionEngine>(profile(), GetTab());
+    ActorTask task(std::move(execution_engine));
     BrowserAction action = std::move(make_action).Run();
-    task.GetActorCoordinator()->Act(action, success.GetCallback());
+    task.GetExecutionEngine()->Act(action, success.GetCallback());
     return IsOk(*success.Get());
   }
 
@@ -167,7 +167,7 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
+TEST_F(ExecutionEngineTest, ActSucceedsOnSupportedUrl) {
   EXPECT_TRUE(
       Act(GURL("http://localhost/"), base::BindLambdaForTesting([this]() {
             return MakeClick(*main_rfh(), kFakeContentNodeId);
@@ -176,27 +176,27 @@ TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
                                  mojom::ActionResultCode::kOk, 1);
 }
 
-TEST_F(ActorCoordinatorTest, ActFailsOnUnsupportedUrl) {
+TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
   EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
                    base::BindLambdaForTesting([this]() {
                      return MakeClick(*main_rfh(), kFakeContentNodeId);
                    })));
 }
 
-TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
+TEST_F(ExecutionEngineTest, ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto actor_coordinator =
-      std::make_unique<ActorCoordinator>(profile(), GetTab());
-  ActorTask task(std::move(actor_coordinator));
+  auto execution_engine =
+      std::make_unique<ExecutionEngine>(profile(), GetTab());
+  ActorTask task(std::move(execution_engine));
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  task.GetActorCoordinator()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                                  result.GetCallback());
+  task.GetExecutionEngine()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                                 result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -206,7 +206,7 @@ TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
                                  mojom::ActionResultCode::kTabWentAway, 1);
 }
 
-TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
+TEST_F(ExecutionEngineTest, CrossOriginNavigationBeforeAction) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -214,11 +214,11 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<mojom::ActionResultPtr> result;
-  auto actor_coordinator =
-      std::make_unique<ActorCoordinator>(profile(), GetTab());
-  ActorTask task(std::move(actor_coordinator));
-  task.GetActorCoordinator()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
-                                  result.GetCallback());
+  auto execution_engine =
+      std::make_unique<ExecutionEngine>(profile(), GetTab());
+  ActorTask task(std::move(execution_engine));
+  task.GetExecutionEngine()->Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                                 result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

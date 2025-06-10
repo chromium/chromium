@@ -19,7 +19,7 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #endif

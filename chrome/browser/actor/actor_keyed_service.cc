@@ -8,9 +8,9 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -89,7 +89,7 @@ void ActorKeyedService::ExecuteAction(
     return;
   }
 #if BUILDFLAG(ENABLE_GLIC)
-  task->GetActorCoordinator()->Act(
+  task->GetExecutionEngine()->Act(
       std::move(action), base::BindOnce(&ActorKeyedService::OnActionFinished,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         std::move(callback), action.task_id()));
@@ -133,17 +133,16 @@ void ActorKeyedService::FinishStartTask(
     base::OnceCallback<void(optimization_guide::proto::BrowserStartTaskResult)>
         callback) {
   tabs::TabInterface* tab = handle.Get();
-  std::unique_ptr<actor::ActorCoordinator> actor_coordinator;
+  std::unique_ptr<actor::ExecutionEngine> execution_engine;
   if (tab) {
-    actor_coordinator =
-        std::make_unique<actor::ActorCoordinator>(profile_.get(), tab);
+    execution_engine =
+        std::make_unique<actor::ExecutionEngine>(profile_.get(), tab);
   } else {
-    actor_coordinator =
-        std::make_unique<actor::ActorCoordinator>(profile_.get());
+    execution_engine = std::make_unique<actor::ExecutionEngine>(profile_.get());
   }
 
   auto actor_task =
-      std::make_unique<actor::ActorTask>(std::move(actor_coordinator));
+      std::make_unique<actor::ActorTask>(std::move(execution_engine));
   actor::TaskId task_id = AddTask(std::move(actor_task));
 
   optimization_guide::proto::BrowserStartTaskResult result;
@@ -204,7 +203,7 @@ void ActorKeyedService::OnActionFinished(
     actor::mojom::ActionResultPtr action_result) {
   auto* task = GetTask(actor::TaskId(task_id));
   CHECK(task);
-  tabs::TabInterface* tab = task->GetActorCoordinator()->GetTabOfCurrentTask();
+  tabs::TabInterface* tab = task->GetExecutionEngine()->GetTabOfCurrentTask();
   if (!tab) {
     VLOG(1) << "Execute Action failed: Tab not found.";
     optimization_guide::proto::BrowserActionResult result;

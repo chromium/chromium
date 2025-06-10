@@ -61,7 +61,7 @@ class ActorKeyedService : public KeyedService {
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
 
-  // Starts a new task using the ActorCoordinator execution engine and fires
+  // Starts a new task using the ExecutionEngine execution engine and fires
   // `callback` when the task is ready. Implicitly calls AddTask.
   void StartTask(
       optimization_guide::proto::BrowserStartTask task,

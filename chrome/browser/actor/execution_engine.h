@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_ACTOR_COORDINATOR_H_
-#define CHROME_BROWSER_ACTOR_ACTOR_COORDINATOR_H_
+#ifndef CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_H_
+#define CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_H_
 
 #include <memory>
 #include <optional>
@@ -47,23 +47,22 @@ namespace actor {
 class ActorTask;
 
 // Coordinates the execution of a multi-step task.
-// This class is misnamed. It's a specific type of execution engine.
-class ActorCoordinator {
+class ExecutionEngine {
  public:
   using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
 
-  explicit ActorCoordinator(Profile* profile);
+  explicit ExecutionEngine(Profile* profile);
 
-  // Old instances of ActorCoordinator assume that all actions are scoped to a
+  // Old instances of ExecutionEngine assume that all actions are scoped to a
   // single tab. This constructor supports this use case, but this is
   // deprecated. Do not add new consumers
-  ActorCoordinator(Profile* profile, tabs::TabInterface* tab);
-  ActorCoordinator(const ActorCoordinator&) = delete;
-  ActorCoordinator& operator=(const ActorCoordinator&) = delete;
-  ~ActorCoordinator();
+  ExecutionEngine(Profile* profile, tabs::TabInterface* tab);
+  ExecutionEngine(const ExecutionEngine&) = delete;
+  ExecutionEngine& operator=(const ExecutionEngine&) = delete;
+  ~ExecutionEngine();
 
   // This cannot be in the constructor as we first construct the
-  // ActorCoordinator, then the ActorTask.
+  // ExecutionEngine, then the ActorTask.
   void SetOwner(ActorTask* task);
 
   static void RegisterWithProfile(Profile* profile);
@@ -93,7 +92,7 @@ class ActorCoordinator {
   GetLastObservedPageContent();
 
   // Invalidated anytime `actions_` is reset.
-  base::WeakPtr<ActorCoordinator> GetWeakPtr();
+  base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
  private:
   class NewTabWebContentsObserver;
@@ -138,7 +137,7 @@ class ActorCoordinator {
 
   struct Actions {
     Actions(const optimization_guide::proto::BrowserAction& actions,
-            ActorCoordinator::ActionResultCallback callback);
+            ExecutionEngine::ActionResultCallback callback);
     ~Actions();
     Actions(const Actions&) = delete;
     Actions& operator=(const Actions&) = delete;
@@ -170,9 +169,9 @@ class ActorCoordinator {
   // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is
   // destroyed. However, this class invalidates WeakPtrs anytime a new set of
   // actions is passed in. This effectively cancels any ongoing async actions.
-  base::WeakPtrFactory<ActorCoordinator> actions_weak_ptr_factory_{this};
+  base::WeakPtrFactory<ExecutionEngine> actions_weak_ptr_factory_{this};
 };
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_ACTOR_COORDINATOR_H_
+#endif  // CHROME_BROWSER_ACTOR_EXECUTION_ENGINE_H_

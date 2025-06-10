@@ -12,8 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -345,20 +345,20 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           const auto* glic_service =
               GlicKeyedService::Get(tab_contents->GetBrowserContext());
           return glic_service &&
-                 glic_service->IsActorCoordinatorActingOnTab(tab_contents);
+                 glic_service->IsExecutionEngineActingOnTab(tab_contents);
         },
         expected)));
   }
 
-  // Check ActorCoordinator caches the last apc observation.
-  auto CheckActorCoordinatorHasAnnotatedPageContentCache() {
+  // Check ExecutionEngine caches the last apc observation.
+  auto CheckExecutionEngineHasAnnotatedPageContentCache() {
     return Steps(Do([&]() {
       GlicKeyedService* glic_service =
           GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
       ASSERT_TRUE(glic_service);
 
       const AnnotatedPageContent& cached_apc =
-          *glic_service->GetActorCoordinatorForTesting(nullptr)
+          *glic_service->GetExecutionEngineForTesting(/*tab=*/nullptr)
                .GetLastObservedPageContent();
       EXPECT_THAT(*annotated_page_content_, EqualsProto(cached_apc));
     }));
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   GetPageContextFromFocusedTab(),
-                  CheckActorCoordinatorHasAnnotatedPageContentCache());
+                  CheckExecutionEngineHasAnnotatedPageContentCache());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,

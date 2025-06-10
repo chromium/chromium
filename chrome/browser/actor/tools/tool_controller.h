@@ -29,7 +29,7 @@ class AggregatedJournal;
 class Tool;
 
 // Entry point into actor tool usage. ToolController is a profile-scoped,
-// ActorCoordinator-owned object. This class routes a tool use request to the
+// ExecutionEngine-owned object. This class routes a tool use request to the
 // appropriate browser tool or to a corresponding executor in the renderer for
 // page-level tools.
 class ToolController {

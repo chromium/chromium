@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/execution_engine.h"
 
 #include <cstddef>
 #include <utility>
@@ -49,7 +49,7 @@ namespace actor {
 
 namespace {
 
-void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
+void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
                             mojom::ActionResultPtr result) {
   UMA_HISTOGRAM_ENUMERATION("Actor.ActorCoordinator.Action.ResultCode",
                             result->code);
@@ -59,13 +59,13 @@ void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
 
 }  // namespace
 
-ActorCoordinator::Actions::Actions(const BrowserAction& actions,
-                                   ActionResultCallback callback)
+ExecutionEngine::Actions::Actions(const BrowserAction& actions,
+                                  ActionResultCallback callback)
     : proto(actions), callback(std::move(callback)) {}
 
-ActorCoordinator::Actions::~Actions() = default;
+ExecutionEngine::Actions::~Actions() = default;
 
-ActorCoordinator::ActorCoordinator(Profile* profile)
+ExecutionEngine::ExecutionEngine(Profile* profile)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()) {
   CHECK(profile_);
@@ -73,7 +73,7 @@ ActorCoordinator::ActorCoordinator(Profile* profile)
   InitActionBlocklist(profile_.get());
 }
 
-ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
+ExecutionEngine::ExecutionEngine(Profile* profile, tabs::TabInterface* tab)
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       tab_scoped_actions_deprecated_(true),
@@ -84,42 +84,42 @@ ActorCoordinator::ActorCoordinator(Profile* profile, tabs::TabInterface* tab)
 
   CHECK(tab_);
   tab_will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
-      &ActorCoordinator::OnTabWillDetach, base::Unretained(this)));
+      &ExecutionEngine::OnTabWillDetach, base::Unretained(this)));
 }
 
-ActorCoordinator::~ActorCoordinator() {
+ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ActorCoordinator::SetOwner(ActorTask* task) {
+void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
 }
 
 // static
-void ActorCoordinator::RegisterWithProfile(Profile* profile) {
+void ExecutionEngine::RegisterWithProfile(Profile* profile) {
   InitActionBlocklist(profile);
 }
 
-void ActorCoordinator::CancelOngoingActions(mojom::ActionResultCode reason) {
+void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   if (actions_) {
     CompleteActions(MakeResult(reason));
   }
 }
 
-tabs::TabInterface* ActorCoordinator::GetTabOfCurrentTask() const {
+tabs::TabInterface* ExecutionEngine::GetTabOfCurrentTask() const {
   return tab_;
 }
 
-bool ActorCoordinator::HasTask() const {
+bool ExecutionEngine::HasTask() const {
   return !!actions_;
 }
 
-bool ActorCoordinator::HasTaskForTab(const content::WebContents* tab) const {
+bool ExecutionEngine::HasTaskForTab(const content::WebContents* tab) const {
   return HasTask() && tab_ && tab_->GetContents() == tab;
 }
 
-void ActorCoordinator::Act(const BrowserAction& action,
-                           ActionResultCallback callback) {
+void ExecutionEngine::Act(const BrowserAction& action,
+                          ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TaskId task_id(action.task_id());
@@ -158,7 +158,7 @@ void ActorCoordinator::Act(const BrowserAction& action,
   KickOffNextAction(/*previous_action_result=*/MakeOkResult());
 }
 
-void ActorCoordinator::KickOffNextAction(
+void ExecutionEngine::KickOffNextAction(
     mojom::ActionResultPtr previous_action_result) {
   BrowserAction& proto = actions_->proto;
 
@@ -171,7 +171,7 @@ void ActorCoordinator::KickOffNextAction(
   SafetyChecksForNextAction();
 }
 
-void ActorCoordinator::SafetyChecksForNextAction() {
+void ExecutionEngine::SafetyChecksForNextAction() {
   // TODO: populate this properly with either tab_ or the action's tab.
   tabs::TabInterface* tab = tab_;
   // TODO: not all actions require a tab.
@@ -192,11 +192,11 @@ void ActorCoordinator::SafetyChecksForNextAction() {
   MayActOnTab(
       *tab, *journal_, task_->id(),
       base::BindOnce(
-          &ActorCoordinator::DidFinishAsyncSafetyChecks, GetWeakPtr(),
+          &ExecutionEngine::DidFinishAsyncSafetyChecks, GetWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }
 
-void ActorCoordinator::DidFinishAsyncSafetyChecks(
+void ExecutionEngine::DidFinishAsyncSafetyChecks(
     const url::Origin& evaluated_origin,
     bool may_act) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -233,7 +233,7 @@ void ActorCoordinator::DidFinishAsyncSafetyChecks(
   ExecuteNextAction();
 }
 
-void ActorCoordinator::ExecuteNextAction() {
+void ExecutionEngine::ExecuteNextAction() {
   CHECK(actions_);
 
   // Grab the next action, and increment action_index.
@@ -243,7 +243,7 @@ void ActorCoordinator::ExecuteNextAction() {
   ExecuteFrameScopedAction(action);
 }
 
-void ActorCoordinator::ExecuteFrameScopedAction(
+void ExecutionEngine::ExecuteFrameScopedAction(
     const ActionInformation& action) {
   // TODO(https://crbug.com/411462297): tabs should not be required for all
   // actions.
@@ -267,10 +267,10 @@ void ActorCoordinator::ExecuteFrameScopedAction(
   }
   tool_controller_.Invoke(
       action, *journal_, task_->id(), *target_frame,
-      base::BindOnce(&ActorCoordinator::FinishOneAction, GetWeakPtr()));
+      base::BindOnce(&ExecutionEngine::FinishOneAction, GetWeakPtr()));
 }
 
-void ActorCoordinator::FinishOneAction(mojom::ActionResultPtr result) {
+void ExecutionEngine::FinishOneAction(mojom::ActionResultPtr result) {
   CHECK(actions_);
 
   // The current action errored out. Stop the chain.
@@ -282,7 +282,7 @@ void ActorCoordinator::FinishOneAction(mojom::ActionResultPtr result) {
   KickOffNextAction(std::move(result));
 }
 
-void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
+void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result) {
   if (!actions_) {
     return;
   }
@@ -301,9 +301,8 @@ void ActorCoordinator::CompleteActions(mojom::ActionResultPtr result) {
   // `last_observed_page_content_`.
 }
 
-void ActorCoordinator::OnTabWillDetach(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
+void ExecutionEngine::OnTabWillDetach(tabs::TabInterface* tab,
+                                      tabs::TabInterface::DetachReason reason) {
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
     CHECK_EQ(tab, tab_);
     tab_ = nullptr;
@@ -318,21 +317,21 @@ void ActorCoordinator::OnTabWillDetach(
   }
 }
 
-void ActorCoordinator::DidObserveContext(
+void ExecutionEngine::DidObserveContext(
     const mojo_base::ProtoWrapper& apc_proto) {
   last_observed_page_content_ = std::make_unique<AnnotatedPageContent>(
       apc_proto.As<AnnotatedPageContent>().value());
 }
 
-const AnnotatedPageContent* ActorCoordinator::GetLastObservedPageContent() {
+const AnnotatedPageContent* ExecutionEngine::GetLastObservedPageContent() {
   return last_observed_page_content_.get();
 }
 
-base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {
+base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
-const GURL& ActorCoordinator::LastCommittedURLOfCurrentTask() {
+const GURL& ExecutionEngine::LastCommittedURLOfCurrentTask() {
   if (!tab_) {
     return GURL::EmptyGURL();
   }

@@ -12,11 +12,11 @@ source_set("actor") {
     ":browser_tests",
   ]
   public = [
-    "actor_coordinator.h",
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
     "actor_task.h",
     "aggregated_journal.h",
+    "execution_engine.h",
     "tools/observation_delay_controller.h",
     "tools/tool_controller.h",
   ]
@@ -37,7 +37,6 @@ source_set("actor") {
 
 source_set("impl") {
   sources = [
-    "actor_coordinator.cc",
     "actor_features.cc",
     "actor_features.h",
     "actor_keyed_service.cc",
@@ -46,6 +45,7 @@ source_set("impl") {
     "aggregated_journal.cc",
     "browser_action_util.cc",
     "browser_action_util.h",
+    "execution_engine.cc",
     "site_policy.cc",
     "site_policy.h",
     "tools/history_tool.cc",
@@ -128,7 +128,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (enable_glic) {
-    sources += [ "actor_coordinator_unittest.cc" ]
+    sources += [ "execution_engine_unittest.cc" ]
   }
 }
 
@@ -156,7 +156,7 @@ source_set("browser_tests") {
 
   if (enable_glic) {
     sources += [
-      "actor_coordinator_browsertest.cc",
+      "execution_engine_browsertest.cc",
       "tools/tools_browsertest.cc",
     ]
     deps += [ "//chrome/browser/glic:glic" ]

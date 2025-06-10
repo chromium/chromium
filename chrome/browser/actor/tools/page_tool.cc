@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"

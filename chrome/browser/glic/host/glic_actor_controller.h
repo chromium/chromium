@@ -20,7 +20,7 @@ class BrowserStartTaskResult;
 }
 
 namespace actor {
-class ActorCoordinator;
+class ExecutionEngine;
 class ActorTask;
 }  // namespace actor
 
@@ -66,10 +66,9 @@ class GlicActorController {
   void OnResponseStarted();
   void OnResponseStopped();
 
-  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
+  bool IsExecutionEngineActingOnTab(const content::WebContents* tab) const;
 
-  actor::ActorCoordinator& GetActorCoordinatorForTesting(
-      tabs::TabInterface* tab);
+  actor::ExecutionEngine& GetExecutionEngineForTesting(tabs::TabInterface* tab);
 
  private:
   void OnTaskStartedForAct(
@@ -91,7 +90,7 @@ class GlicActorController {
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       actor::mojom::ActionResultPtr result) const;
 
-  actor::ActorCoordinator* GetActorCoordinator() const;
+  actor::ExecutionEngine* GetExecutionEngine() const;
 
   base::WeakPtr<const GlicActorController> GetWeakPtr() const;
   base::WeakPtr<GlicActorController> GetWeakPtr();

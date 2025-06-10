@@ -34,8 +34,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
@@ -461,13 +461,13 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
                                               : &AlwaysReturnFalse;
 }
 
-bool IsActorCoordinatorActingOnTab(Profile* profile,
-                                   const content::WebContents* tab) {
+bool IsActorExecutionEngineActingOnTab(Profile* profile,
+                                       const content::WebContents* tab) {
   // TODO(crbug.com/411462297): Delete this code.
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     if (const auto* glic_service = glic::GlicKeyedService::Get(profile);
-        glic_service && glic_service->IsActorCoordinatorActingOnTab(tab)) {
+        glic_service && glic_service->IsExecutionEngineActingOnTab(tab)) {
       return true;
     }
   }
@@ -475,7 +475,7 @@ bool IsActorCoordinatorActingOnTab(Profile* profile,
   auto* actor_service = actor::ActorKeyedService::Get(profile);
   if (actor_service) {
     for (auto& [task_id, task] : actor_service->GetTasks()) {
-      if (task->GetActorCoordinator()->HasTaskForTab(tab)) {
+      if (task->GetExecutionEngine()->HasTaskForTab(tab)) {
         return true;
       }
     }
@@ -2378,9 +2378,9 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  if (IsActorCoordinatorActingOnTab(
+  if (IsActorExecutionEngineActingOnTab(
           profile(), content::WebContents::FromRenderFrameHost(opener))) {
-    // If an ActorCoordinator is acting on the opener, prevent it from creating
+    // If an ExecutionEngine is acting on the opener, prevent it from creating
     // a new WebContents. We'll instead force the navigation to happen in the
     // same tab.
     return true;
@@ -2402,8 +2402,8 @@ WebContents* Browser::CreateCustomWebContents(
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
-      IsActorCoordinatorActingOnTab(profile(), opener_contents)) {
-    // If an ActorCoordinator is acting on the opener, we force the navigation
+      IsActorExecutionEngineActingOnTab(profile(), opener_contents)) {
+    // If an ExecutionEngine is acting on the opener, we force the navigation
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);
     params.initiator_frame_token = opener->GetFrameToken();

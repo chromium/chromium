@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
   run_loop->Run();
 }
 
-// See ActorCoordinatorBrowserTest.ForceSameTabNavigation
+// See ExecutionEngineBrowserTest.ForceSameTabNavigation
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
                        ForceSameTabNavigation) {
   TestFuture<optimization_guide::proto::BrowserStartTaskResult>

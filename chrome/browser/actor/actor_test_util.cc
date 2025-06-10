@@ -8,7 +8,7 @@
 
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
-#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"

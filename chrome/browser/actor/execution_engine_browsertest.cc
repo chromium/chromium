@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/execution_engine.h"
 
 #include <optional>
 #include <string_view>
@@ -35,9 +35,9 @@ namespace actor {
 
 namespace {
 
-class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
+class ExecutionEngineBrowserTest : public InProcessBrowserTest {
  public:
-  ActorCoordinatorBrowserTest() {
+  ExecutionEngineBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlic, {}},
                               {features::kTabstripComboButton, {}},
@@ -45,11 +45,11 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
                                GetDefaultActorParamsForTesting()}},
         /*disabled_features=*/{features::kGlicWarming});
   }
-  ActorCoordinatorBrowserTest(const ActorCoordinatorBrowserTest&) = delete;
-  ActorCoordinatorBrowserTest& operator=(const ActorCoordinatorBrowserTest&) =
+  ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;
+  ExecutionEngineBrowserTest& operator=(const ExecutionEngineBrowserTest&) =
       delete;
 
-  ~ActorCoordinatorBrowserTest() override = default;
+  ~ExecutionEngineBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -66,10 +66,10 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  ActorCoordinator& actor_coordinator() {
+  ExecutionEngine& execution_engine() {
     Profile* profile = chrome_test_utils::GetProfile(this);
     auto* glic_service = glic::GlicKeyedService::Get(profile);
-    return glic_service->GetActorCoordinatorForTesting(
+    return glic_service->GetExecutionEngineForTesting(
         browser()->GetActiveTabInterface());
   }
 
@@ -79,7 +79,7 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(dom_node_id);
     BrowserAction action = MakeClick(*main_frame(), dom_node_id.value());
     TestFuture<mojom::ActionResultPtr> result;
-    actor_coordinator().Act(action, result.GetCallback());
+    execution_engine().Act(action, result.GetCallback());
     ExpectOkResult(result);
   }
 
@@ -90,7 +90,7 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
 // The coordinator does not yet handle multi-tab cases. For now,
 // while acting on a tab, we override attempts by the page to create new
 // tabs, and instead navigate the existing tab.
-IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest, ForceSameTabNavigation) {
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, ForceSameTabNavigation) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/target_blank_links.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest, ForceSameTabNavigation) {
   frame_nav_observer.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
                        ForceSameTabNavigationByScript) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/target_blank_links.html");
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest,
   frame_nav_observer.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest, TwoClicks) {
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicks) {
   const GURL url = embedded_test_server()->GetURL("/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(ActorCoordinatorBrowserTest, TwoClicks) {
 
   // Execute the action
   TestFuture<mojom::ActionResultPtr> result;
-  actor_coordinator().Act(action, result.GetCallback());
+  execution_engine().Act(action, result.GetCallback());
   ExpectOkResult(result);
 
   // Check background color changed to green
