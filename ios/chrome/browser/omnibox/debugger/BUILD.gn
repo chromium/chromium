@@ -11,9 +11,12 @@ source_set("debugger") {
     "omnibox_debugger_consumer.h",
     "omnibox_debugger_mediator.h",
     "omnibox_debugger_mediator.mm",
+    "omnibox_debugger_mutator.h",
     "omnibox_event.h",
     "omnibox_remote_suggestion_event.h",
     "omnibox_remote_suggestion_event.mm",
+    "remote_suggestions_service_delegate_bridge.h",
+    "remote_suggestions_service_delegate_bridge.mm",
     "remote_suggestions_service_observer_bridge.h",
     "remote_suggestions_service_observer_bridge.mm",
   ]

@@ -9,9 +9,14 @@
 
 #import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_consumer.h"
 
+@protocol OmniboxDebuggerMutator;
+
 /// View controller used to display omnibox and popup related debug info.
 @interface PopupDebugInfoViewController
     : UIViewController <OmniboxDebuggerConsumer>
+
+/// Mutator of the omnibox debugger.
+@property(nonatomic, weak) id<OmniboxDebuggerMutator> mutator;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

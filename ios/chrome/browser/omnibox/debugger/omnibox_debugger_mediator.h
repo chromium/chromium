@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_mutator.h"
 #import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
@@ -20,6 +21,7 @@ class RemoteSuggestionsService;
 // The omnibox debugger mediator.
 @interface OmniboxDebuggerMediator
     : NSObject <OmniboxAutocompleteControllerDebuggerDelegate,
+                OmniboxDebuggerMutator,
                 RemoteSuggestionsServiceObserver,
                 AutocompleteControllerObserver>
 

@@ -10,11 +10,16 @@
 #import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_consumer.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_delegate_bridge.h"
 #import "ios/chrome/browser/omnibox/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "services/network/public/cpp/resource_request.h"
+
+@interface OmniboxDebuggerMediator () <RemoteSuggestionsServiceDelegate>
+
+@end
 
 @implementation OmniboxDebuggerMediator {
   // Autocomolete controller.
@@ -27,6 +32,11 @@
   // Remote suggestions service observer bridge.
   std::unique_ptr<RemoteSuggestionsServiceObserverBridge>
       _remoteSuggestionsServiceObserverBridge;
+  // Remote suggestions service observer bridge.
+  std::unique_ptr<RemoteSuggestionsServiceDelegateBridge>
+      _remoteSuggestionsServiceDelegateBridge;
+  // Hardcoded suggest response.
+  std::string _hardcodedSuggestResponse;
 }
 
 - (instancetype)initWithAutocompleteController:
@@ -48,6 +58,11 @@
     _remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
     _remoteSuggestionsServiceObserverBridge.reset();
+  }
+
+  if (_remoteSuggestionsServiceDelegateBridge) {
+    _remoteSuggestionsService->SetDelegate(nullptr);
+    _remoteSuggestionsServiceDelegateBridge.reset();
   }
 
   if (_autocompleteObserverBridge) {
@@ -76,6 +91,49 @@
   }
 
   _consumer = consumer;
+}
+
+#pragma mark - OmniboxDebuggerMutator
+
+- (void)hardcodeSuggestResponse:(NSString*)response {
+  _hardcodedSuggestResponse = response.cr_UTF8String;
+
+  if (!_remoteSuggestionsServiceDelegateBridge && _remoteSuggestionsService) {
+    _remoteSuggestionsServiceDelegateBridge =
+        std::make_unique<RemoteSuggestionsServiceDelegateBridge>(
+            self, _remoteSuggestionsService);
+    _remoteSuggestionsService->SetDelegate(
+        _remoteSuggestionsServiceDelegateBridge->AsWeakPtr());
+  }
+}
+
+#pragma mark - RemoteSuggestionsServiceDelegate
+
+- (void)onRequestCompleted:(const network::SimpleURLLoader*)source
+              responseCode:(int)responseCode
+              responseBody:(std::unique_ptr<std::string>)responseBody
+                completion:
+                    (RemoteSuggestionsService::CompletionCallback)completion {
+  if (responseCode == 200 && !_hardcodedSuggestResponse.empty()) {
+    *responseBody = _hardcodedSuggestResponse;
+  }
+
+  std::move(completion).Run(source, responseCode, std::move(responseBody));
+}
+
+- (void)onIndexedRequestCompleted:(int)requestIndex
+                        urlLoader:(const network::SimpleURLLoader*)source
+                     responseCode:(int)responseCode
+                     responseBody:(std::unique_ptr<std::string>)responseBody
+                       completion:
+                           (RemoteSuggestionsService::IndexedCompletionCallback)
+                               completion {
+  if (responseCode == 200 && !_hardcodedSuggestResponse.empty()) {
+    *responseBody = _hardcodedSuggestResponse;
+  }
+
+  std::move(completion)
+      .Run(requestIndex, source, responseCode, std::move(responseBody));
 }
 
 #pragma mark - RemoteSuggestionsServiceObserver

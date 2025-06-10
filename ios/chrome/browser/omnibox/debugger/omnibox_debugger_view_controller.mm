@@ -11,6 +11,7 @@
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_autocomplete_event_view_controller.h"
+#import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_mutator.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_event.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/browser/omnibox/debugger/omnibox_remote_suggestion_event_view_controller.h"
@@ -116,7 +117,8 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 
 @interface PopupDebugInfoViewController () <UITextFieldDelegate,
                                             UITableViewDelegate,
-                                            UITableViewDataSource>
+                                            UITableViewDataSource,
+                                            UITextViewDelegate>
 
 @property(nonatomic, strong) UITextView* activeVariationIDTextView;
 @property(nonatomic, strong) UITextField* variationIDTextField;
@@ -135,6 +137,11 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 @implementation PopupDebugInfoViewController {
   // In reverse chronological order: index 0 is most recent.
   NSMutableArray<id<OmniboxEvent>>* _events;
+
+  /// Label for hardcoded suggest response.
+  UILabel* _hardcodedTextLabel;
+  /// Text view for hardcoded suggest response.
+  UITextView* _hardcodedTextView;
 }
 
 - (instancetype)init {
@@ -165,6 +172,18 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  _hardcodedTextLabel = [[UILabel alloc] init];
+  _hardcodedTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _hardcodedTextLabel.numberOfLines = 0;
+  _hardcodedTextLabel.textColor = UIColor.blackColor;
+  _hardcodedTextLabel.text = @"Hardcoded suggest response:";
+
+  _hardcodedTextView = [[UITextView alloc] init];
+  _hardcodedTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  _hardcodedTextView.delegate = self;
+  _hardcodedTextView.backgroundColor = UIColor.lightGrayColor;
+  [_hardcodedTextView.heightAnchor constraintEqualToConstant:50].active = YES;
+
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.backgroundColor = UIColor.systemBackgroundColor;
@@ -188,12 +207,14 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
   [stackView addArrangedSubview:self.variationInstructionLabel];
   [stackView addArrangedSubview:self.enableVariationIDTextView];
   [stackView addArrangedSubview:self.disableVariationIDsTextView];
+  [stackView addArrangedSubview:_hardcodedTextLabel];
+  [stackView addArrangedSubview:_hardcodedTextView];
   [stackView addArrangedSubview:_tableView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_tableView.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
     [_tableView.topAnchor
-        constraintEqualToAnchor:self.disableVariationIDsTextView.bottomAnchor
+        constraintEqualToAnchor:_hardcodedTextView.bottomAnchor
                        constant:16],
     [_tableView.bottomAnchor constraintEqualToAnchor:stackView.bottomAnchor
                                             constant:-16]
@@ -235,6 +256,12 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 
 - (void)textFieldDidChange:(id)sender {
   [self updateForceVariationTextViews];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidChange:(UITextView*)textView {
+  [self.mutator hardcodeSuggestResponse:textView.text];
 }
 
 #pragma mark - OmniboxDebuggerConsumer

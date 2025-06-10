@@ -237,6 +237,7 @@
   PopupDebugInfoViewController* viewController =
       [[PopupDebugInfoViewController alloc] init];
   _omniboxDebuggerMediator.consumer = viewController;
+  viewController.mutator = _omniboxDebuggerMediator;
 
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
