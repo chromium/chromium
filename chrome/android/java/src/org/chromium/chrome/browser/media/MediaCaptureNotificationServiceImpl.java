@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil;
 import org.chromium.components.webrtc.MediaCaptureNotificationUtil.MediaType;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.media.capture.ScreenCapture;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -301,7 +302,9 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                         notificationId,
                         notification.getNotification(),
                         foregroundServiceType);
+
         mStartedForegroundService = true;
+        ScreenCapture.onForegroundServiceRunning(MediaCaptureNotificationUtil.isCapture(mediaType));
     }
 
     /**
@@ -334,6 +337,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
             ForegroundServiceUtils.getInstance()
                     .stopForeground(getService(), Service.STOP_FOREGROUND_REMOVE);
             mStartedForegroundService = false;
+            ScreenCapture.onForegroundServiceRunning(false);
         }
         super.onDestroy();
     }

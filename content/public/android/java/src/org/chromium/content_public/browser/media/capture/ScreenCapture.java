@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.media.capture;
 import android.content.Context;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -34,6 +35,11 @@ public class ScreenCapture {
     // requires the ActivityResult to begin the session.
     private static final AtomicReference<ActivityResult> sNextResult = new AtomicReference(null);
 
+    // Starting a MediaProjection session requires a foreground service to be running. This class
+    // does not handle how that is achieved, but `sLatch` provides a way for this class to wait
+    // until that foreground service is running.
+    private static final ConditionVariable sLatch = new ConditionVariable(false);
+
     // Since we run processing in a background thread, we need to prevent the native side from
     // being destructed sometimes. See comments on `DesktopCapturerAndroid` for more information.
     private final Object mNativeDestructionLock = new Object();
@@ -45,6 +51,14 @@ public class ScreenCapture {
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
+    }
+
+    public static void onForegroundServiceRunning(boolean running) {
+        if (running) {
+            sLatch.open();
+        } else {
+            sLatch.close();
+        }
     }
 
     /**
@@ -69,6 +83,10 @@ public class ScreenCapture {
         var nextResult = sNextResult.getAndSet(null);
         assert nextResult != null;
         assert nextResult.getData() != null;
+
+        // We need to wait for the foreground service to start before trying to use the
+        // MediaProjection API. It's okay to block here since we are on the desktop capturer thread.
+        sLatch.block();
 
         // TODO(crbug.com/352187279): Use the specific activity context for the captured target
         // here.
