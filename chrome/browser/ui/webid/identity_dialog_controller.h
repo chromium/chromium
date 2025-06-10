@@ -184,6 +184,8 @@ class IdentityDialogController
   // been navigated to. e.g. Aggregated FedCM clickthrough rate.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_{nullptr};
+
+  base::WeakPtrFactory<IdentityDialogController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
