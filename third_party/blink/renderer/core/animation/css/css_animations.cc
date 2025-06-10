@@ -2475,9 +2475,10 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
                 state.animating_element.GetDocument(),
                 WebFeature::kCSSTransitionCancelledByRemovingStyle);
           }
-          // TODO(crbug.com/934700): Add a return to this branch to correctly
-          // continue transitions under default settings (all 0s) in the absence
-          // of a change in base computed style.
+          if (RuntimeEnabledFeatures::
+                  CSSTransitionNoneRunningTransitionsFixEnabled()) {
+            return;
+          }
         } else {
           return;
         }
