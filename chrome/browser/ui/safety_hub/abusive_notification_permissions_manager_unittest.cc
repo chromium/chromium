@@ -13,6 +13,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,6 +126,8 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
     EXPECT_FALSE(mock_database_manager_->HasCalledCancelCheck());
   }
 
+  TestingProfile* profile() { return &profile_; }
+
  private:
   scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
   content::BrowserTaskEnvironment task_environment_{
@@ -138,8 +141,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
   base::HistogramTester histogram_tester;
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
@@ -170,8 +173,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
   base::HistogramTester histogram_tester;
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
@@ -206,8 +209,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
                                 /*is_ignored=*/true);
   base::HistogramTester histogram_tester;
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   EXPECT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
@@ -248,8 +251,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
                                 /*is_ignored=*/true);
   base::HistogramTester histogram_tester;
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -280,8 +283,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   manager.SetNullSBCheckDelayForTesting();
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
   RunUntilSafeBrowsingChecksComplete(&manager);
@@ -296,8 +299,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -344,8 +347,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -373,8 +376,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        RestoreDeletedRevokedPermissionsList) {
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
 
   content_settings::ContentSettingConstraints constraints;
@@ -397,8 +400,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -447,8 +450,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -493,8 +496,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   // Set up 2 urls with `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings,
   // then regrant one of them.
-  auto manager =
-      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
   RunUntilSafeBrowsingChecksComplete(&manager);
   ContentSettingsForOneType content_settings =
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
@@ -531,4 +534,60 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
           hcsm(), GURL(url2))
           .is_none());
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       CheckBlocklistRevocationsHappenOncePerDay) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+  base::HistogramTester histogram_tester;
+
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), hcsm(), profile()->GetTestingPrefService());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  EXPECT_EQ(content_settings.size(), 2u);
+  // Assert blocklist check count is recorded in UMA metrics.
+  histogram_tester.ExpectUniqueSample(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
+      /* expected_count */ 1);
+
+  // Add another abusive origin. Running the checks again should not block the
+  // abusive origin, because a check was just recently run.
+  AddAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ALLOW);
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  content_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  EXPECT_EQ(content_settings.size(), 2u);
+  histogram_tester.ExpectTotalCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* expected_count */ 2);
+  histogram_tester.ExpectBucketCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
+      /* expected_count */ 1);
+
+  // Fast forwarding a day should revoke the new abusive origin.
+  FastForwardBy(base::Days(1));
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  content_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  EXPECT_EQ(content_settings.size(), 3u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url3));
+  EXPECT_EQ(GetNotificationSettingValue(url3),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url3));
+  histogram_tester.ExpectTotalCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* expected_count */ 3);
+  histogram_tester.ExpectBucketCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 1,
+      /* expected_count */ 1);
 }

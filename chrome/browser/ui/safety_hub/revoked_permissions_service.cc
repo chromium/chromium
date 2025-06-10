@@ -416,7 +416,7 @@ RevokedPermissionsService::RevokedPermissionsService(
 #else
             nullptr,
 #endif
-            hcsm());
+            hcsm(), pref_change_registrar_->prefs());
 
     pref_change_registrar_->Add(
         prefs::kSafeBrowsingEnabled,

@@ -9,9 +9,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -32,9 +34,11 @@ void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
 
 AbusiveNotificationPermissionsManager::AbusiveNotificationPermissionsManager(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    scoped_refptr<HostContentSettingsMap> hcsm)
+    scoped_refptr<HostContentSettingsMap> hcsm,
+    PrefService* pref_service)
     : database_manager_(database_manager),
       hcsm_(hcsm),
+      pref_service_(pref_service),
       safe_browsing_check_delay_(kCheckUrlTimeoutMs) {}
 
 AbusiveNotificationPermissionsManager::
@@ -163,6 +167,7 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
                          std::unique_ptr<SafeBrowsingCheckClient>>>
             safe_browsing_request_clients,
         raw_ptr<HostContentSettingsMap> hcsm,
+        PrefService* pref_service,
         GURL url,
         int safe_browsing_check_delay,
         const base::Clock* clock)
@@ -170,6 +175,7 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
       database_manager_(database_manager),
       safe_browsing_request_clients_(safe_browsing_request_clients),
       hcsm_(hcsm),
+      pref_service_(pref_service),
       url_(url),
       safe_browsing_check_delay_(safe_browsing_check_delay),
       clock_(clock) {}
@@ -236,6 +242,17 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
         "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2",
         ContentSettingsType::NOTIFICATIONS);
   }
+  // Update user pref that stores the time of the last successful blocklist
+  // check.
+  if (pref_service_) {
+    base::TimeDelta delta_since_unix_epoch =
+        base::Time::Now() - base::Time::UnixEpoch();
+    pref_service_->SetInt64(
+        safety_hub_prefs::
+            kLastTimeInMsAbusiveNotificationBlocklistCheckCompleted,
+        delta_since_unix_epoch.InMilliseconds());
+  }
+
   safe_browsing_request_clients_->erase(this);
   // The previous line results in deleting this object.
   // No further access to the object's attributes is permitted here.
@@ -258,7 +275,7 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
       safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
       database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
-      url, safe_browsing_check_delay_, GetClock());
+      pref_service_, url, safe_browsing_check_delay_, GetClock());
   auto new_sb_check_ptr = new_sb_check.get();
   safe_browsing_request_clients_[new_sb_check_ptr] = std::move(new_sb_check);
   new_sb_check_ptr->CheckSocialEngineeringBlocklist();
@@ -270,6 +287,21 @@ bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
   // Skip wildcard patterns that don't belong to a single origin.
   if (!setting.primary_pattern.MatchesSingleOrigin()) {
     return false;
+  }
+  // Skip checks when they've already been performed within the last 24 hours.
+  if (pref_service_) {
+    base::TimeDelta delta_since_unix_epoch =
+        base::Time::Now() - base::Time::UnixEpoch();
+    base::TimeDelta last_check_time =
+        base::Milliseconds(pref_service_->GetInt64(
+            safety_hub_prefs::
+                kLastTimeInMsAbusiveNotificationBlocklistCheckCompleted));
+    // If a previous check has occurred and was within the last day, skip
+    // checks.
+    if (last_check_time > base::Milliseconds(0) &&
+        delta_since_unix_epoch - last_check_time < base::Days(1)) {
+      return false;
+    }
   }
   if (setting.setting_value == CONTENT_SETTING_ALLOW) {
     // Secondary pattern should be wildcard for notification permissions. If

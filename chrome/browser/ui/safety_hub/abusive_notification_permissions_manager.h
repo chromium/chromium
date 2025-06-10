@@ -32,7 +32,8 @@ class AbusiveNotificationPermissionsManager {
   explicit AbusiveNotificationPermissionsManager(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      scoped_refptr<HostContentSettingsMap> hcsm);
+      scoped_refptr<HostContentSettingsMap> hcsm,
+      PrefService* pref_service);
 
   AbusiveNotificationPermissionsManager(
       const AbusiveNotificationPermissionsManager&) = delete;
@@ -130,6 +131,7 @@ class AbusiveNotificationPermissionsManager {
                          std::unique_ptr<SafeBrowsingCheckClient>>>
             safe_browsing_request_clients,
         raw_ptr<HostContentSettingsMap> hcsm,
+        PrefService* pref_service,
         GURL url,
         int safe_browsing_check_delay,
         const base::Clock* clock);
@@ -162,6 +164,10 @@ class AbusiveNotificationPermissionsManager {
 
     // A pointer to the `hcsm_` of the `AbusiveNotificationPermissionsManager`.
     raw_ptr<HostContentSettingsMap> hcsm_;
+
+    // A pointer to the `pref_service_` of the
+    // `AbusiveNotificationPermissionsManager`.
+    raw_ptr<PrefService> pref_service_;
 
     // The URL that is being checked against the Safe Browsing blocklist.
     GURL url_;
@@ -203,6 +209,9 @@ class AbusiveNotificationPermissionsManager {
 
   // Object that allows us to manage site permissions.
   scoped_refptr<HostContentSettingsMap> hcsm_;
+
+  // Used for updating prefs after performing blocklist checks.
+  raw_ptr<PrefService> pref_service_;
 
   // Safe Browsing blocklist check clients. Each object is responsible for a
   // single Safe Browsing check, given a URL. Stored this way so that the object
