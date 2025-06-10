@@ -8,6 +8,9 @@ include_rules = [
   # User Agent string support code.
   "+components/embedder_support/user_agent_utils.h",
 
+  # The GuestContents supports the WebView element.
+  "+components/guest_contents",
+
   # The GuestView supports the WebView element.
   "+components/guest_view",
 

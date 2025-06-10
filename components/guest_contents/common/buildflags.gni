@@ -7,5 +7,5 @@ import("//build/config/chrome_build.gni")
 
 declare_args() {
   # `enable_guest_contents` controls whether the guest_contents is compiled.
-  enable_guest_contents = !is_android && !is_ios && !is_castos
+  enable_guest_contents = !is_android && !is_ios
 }

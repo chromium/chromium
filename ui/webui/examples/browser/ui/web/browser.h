@@ -5,6 +5,7 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_H_
 
+#include "components/guest_contents/common/guest_contents.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
@@ -25,6 +26,11 @@ class Browser : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<webui_examples::mojom::PageHandlerFactory>
           receiver);
+
+  // TODO(crbug.com/415626990): migrate to guest contents.
+  void BindInterface(
+      mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost>
+          receiver) {}
 
  private:
   // webui_examples::mojom::PageHandlerFactory:

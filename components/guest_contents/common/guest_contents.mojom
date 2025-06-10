@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module guest_contents.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// The renderer uses this interface to attach an inner WebContents to an outer
+// WebContents. Available on a WebUIController.
+interface GuestContentsHost {
+  // Attach an inner WebContents, identified by `guest_contents_id`, to the
+  // RenderFrameHost identified by `frame_to_swap`. The guest contents id is
+  // generated at the browser side on the creation of a GuestContentsHandle.
+  Attach(blink.mojom.LocalFrameToken frame_to_swap, int32 guest_contents_id)
+      => (bool success);
+};
