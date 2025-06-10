@@ -49,7 +49,8 @@ bool IsNewTabPage(content::WebContents* const web_contents) {
   const GURL& url = entry->GetURL();
   return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
          NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
-         search::NavEntryIsInstantNTP(web_contents, entry);
+         search::NavEntryIsInstantNTP(web_contents, entry) ||
+         search::IsSplitViewNewTabPage(url);
 }
 
 }  // namespace

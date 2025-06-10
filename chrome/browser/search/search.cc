@@ -304,6 +304,10 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile) {
   return new_tab_url.is_valid() && MatchesOriginAndPath(url, new_tab_url);
 }
 
+bool IsSplitViewNewTabPage(const GURL& url) {
+  return url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
+}
+
 GURL GetNewTabPageURL(Profile* profile) {
   return NewTabURLDetails::ForProfile(profile).url;
 }

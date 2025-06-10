@@ -41,6 +41,9 @@ bool NavEntryIsInstantNTP(content::WebContents* contents,
 // in an Instant process.
 bool IsInstantNTPURL(const GURL& url, Profile* profile);
 
+// Returns true if |url| corresponds to a Split View New Tab page.
+bool IsSplitViewNewTabPage(const GURL& url);
+
 // Returns the New Tab page URL for the given |profile|.
 GURL GetNewTabPageURL(Profile* profile);
 
