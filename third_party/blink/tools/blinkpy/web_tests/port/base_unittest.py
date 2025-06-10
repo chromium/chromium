@@ -1565,8 +1565,6 @@ class PortTest(LoggingTestCase):
     def test_http_server_supports_ipv6(self):
         port = self.make_port()
         self.assertTrue(port.http_server_supports_ipv6())
-        port.host.platform.os_name = 'win'
-        self.assertFalse(port.http_server_supports_ipv6())
 
     def test_http_server_requires_http_protocol_options_unsafe(self):
         port = self.make_port(
