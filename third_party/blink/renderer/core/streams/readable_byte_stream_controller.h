@@ -105,6 +105,7 @@ class CORE_EXPORT ReadableByteStreamController
                                 size_t byte_offset,
                                 size_t byte_length,
                                 size_t bytes_filled,
+                                uint64_t minimum_fill,
                                 size_t element_size,
                                 ViewConstructorType view_constructor,
                                 ReaderType reader_type);
@@ -114,6 +115,7 @@ class CORE_EXPORT ReadableByteStreamController
     size_t byte_offset;
     const size_t byte_length;
     size_t bytes_filled;
+    const uint64_t minimum_fill;
     const size_t element_size;
     const ViewConstructorType view_constructor;
     ReaderType reader_type;
@@ -231,6 +233,7 @@ class CORE_EXPORT ReadableByteStreamController
   static void PullInto(ScriptState*,
                        ReadableByteStreamController*,
                        NotShared<DOMArrayBufferView> view,
+                       uint64_t min,
                        ReadIntoRequest*,
                        ExceptionState&);
 

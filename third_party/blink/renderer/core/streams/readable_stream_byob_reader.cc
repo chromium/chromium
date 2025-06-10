@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/streams/read_into_request.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -86,6 +88,7 @@ ReadableStreamBYOBReader::~ReadableStreamBYOBReader() = default;
 ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     ScriptState* script_state,
     NotShared<DOMArrayBufferView> view,
+    const ReadableStreamBYOBReaderReadOptions* options,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#byob-reader-read
   // 1. If view.[[ByteLength]] is 0, return a promise rejected with a TypeError
@@ -115,7 +118,40 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     return EmptyPromise();
   }
 
-  // 4. If this.[[stream]] is undefined, return a promise rejected with a
+  uint64_t min = 1;
+
+  if (RuntimeEnabledFeatures::ReadableStreamBYOBReaderReadMinOptionEnabled()) {
+    // 4. If options["min"] is 0, return a promise rejected with a TypeError
+    // exception.
+    if (options->min() == 0) {
+      exception_state.ThrowTypeError("min cannot be 0");
+      return EmptyPromise();
+    }
+
+    if (view->GetType() != DOMArrayBufferView::kTypeDataView) {
+      // 5. If view has a [[TypedArrayName]] internal slot,
+      //   1. If options["min"] > view.[[ArrayLength]], return a promise
+      //      rejected with a RangeError exception.
+      size_t array_length = view->byteLength() / view->TypeSize();
+      if (options->min() > array_length) {
+        exception_state.ThrowRangeError(
+            "min cannot be larger than view's length");
+        return EmptyPromise();
+      }
+    } else {
+      // 6. Otherwise (i.e., it is a DataView),
+      //   1. If options["min"] > view.[[ByteLength]], return a promise
+      //      rejected with a RangeError exception.
+      if (options->min() > view->byteLength()) {
+        exception_state.ThrowRangeError(
+            "min cannot be larger than view's byteLength");
+        return EmptyPromise();
+      }
+    }
+    min = options->min();
+  }
+
+  // 7. If this.[[stream]] is undefined, return a promise rejected with a
   // TypeError exception.
   if (!owner_readable_stream_) {
     exception_state.ThrowTypeError(
@@ -124,7 +160,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
     return EmptyPromise();
   }
 
-  // 5. Let promise be a new promise.
+  // 8. Let promise be a new promise.
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<ReadableStreamReadResult>>(
           script_state, exception_state.GetContext());
@@ -133,7 +169,7 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
   // are released.
   resolver->SuppressDetachCheck();
 
-  // 6. Let readIntoRequest be a new read-into request with the following items:
+  // 9. Let readIntoRequest be a new read-into request with the following items:
   //    chunk steps, given chunk
   //      1. Resolve promise with «[ "value" → chunk, "done" → false ]».
   //    close steps, given chunk
@@ -143,15 +179,18 @@ ScriptPromise<ReadableStreamReadResult> ReadableStreamBYOBReader::read(
   auto* read_into_request =
       MakeGarbageCollected<BYOBReaderReadIntoRequest>(resolver);
 
-  // 7. Perform ! ReadableStreamBYOBReaderRead(this, view, readIntoRequest).
-  Read(script_state, this, view, read_into_request, exception_state);
-  // 8. Return promise.
+  // 10. Perform ! ReadableStreamBYOBReaderRead(this, view, min,
+  //     readIntoRequest).
+  Read(script_state, this, view, min, read_into_request, exception_state);
+
+  // 11. Return promise.
   return resolver->Promise();
 }
 
 void ReadableStreamBYOBReader::Read(ScriptState* script_state,
                                     ReadableStreamBYOBReader* reader,
                                     NotShared<DOMArrayBufferView> view,
+                                    const uint64_t min,
                                     ReadIntoRequest* read_into_request,
                                     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-byob-reader-read
@@ -171,11 +210,11 @@ void ReadableStreamBYOBReader::Read(ScriptState* script_state,
         script_state, stream->GetStoredError(script_state->GetIsolate()));
   } else {
     // 5. Otherwise, perform !
-    // ReadableByteStreamControllerPullInto(stream.[[controller]], view,
+    // ReadableByteStreamControllerPullInto(stream.[[controller]], view, min,
     // readIntoRequest).
     ReadableStreamController* controller = stream->readable_stream_controller_;
     ReadableByteStreamController::PullInto(
-        script_state, To<ReadableByteStreamController>(controller), view,
+        script_state, To<ReadableByteStreamController>(controller), view, min,
         read_into_request, exception_state);
   }
 }

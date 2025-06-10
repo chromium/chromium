@@ -585,12 +585,12 @@ void ByteStreamTeeEngine::PullWithBYOBReader(ScriptState* script_state,
   //   d. Let readIntoRequest be a read-into request with the following items:
   auto* read_into_request = MakeGarbageCollected<ByteTeeReadIntoRequest>(
       this, byob_branch, other_branch, for_branch_2);
-  //   e. Perform ! ReadableStreamBYOBReaderRead(reader, view,
+  //   e. Perform ! ReadableStreamBYOBReaderRead(reader, view, 1,
   //   readIntoRequest).
   ReadableStreamGenericReader* reader = reader_;
-  ReadableStreamBYOBReader::Read(script_state,
-                                 To<ReadableStreamBYOBReader>(reader), view,
-                                 read_into_request, exception_state);
+  ReadableStreamBYOBReader::Read(
+      script_state, To<ReadableStreamBYOBReader>(reader), view,
+      /*min_read_length=*/1, read_into_request, exception_state);
   DCHECK(!exception_state.HadException());
 }
 

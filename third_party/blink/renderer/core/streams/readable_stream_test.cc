@@ -6,8 +6,10 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
@@ -33,6 +36,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
@@ -109,6 +113,52 @@ readAll(stream);
     NOTREACHED();
   }
   test::TaskEnvironment task_environment_;
+
+  static void ExpectBYOBReadByteLengthAndContents(
+      ScriptState* script_state,
+      v8::Isolate* isolate,
+      ReadableStreamBYOBReader* reader,
+      NotShared<DOMArrayBufferView> original_view,
+      ReadableStreamBYOBReaderReadOptions* options,
+      const std::vector<uint8_t>& expected_bytes) {
+    ScriptPromiseTester tester(
+        script_state, reader->read(script_state, original_view, options,
+                                   ASSERT_NO_EXCEPTION));
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+
+    v8::Local<v8::Object> result;
+    ASSERT_TRUE(tester.Value()
+                    .V8Value()
+                    ->ToObject(script_state->GetContext())
+                    .ToLocal(&result));
+
+    // Extract the "value" property (a Uint8Array).
+    v8::Local<v8::Value> value_prop;
+    ASSERT_TRUE(
+        result->Get(script_state->GetContext(), V8String(isolate, "value"))
+            .ToLocal(&value_prop));
+
+    v8::Local<v8::Object> value_obj;
+    ASSERT_TRUE(
+        value_prop->ToObject(script_state->GetContext()).ToLocal(&value_obj));
+
+    // Get the DOMUint8Array from the JS object.
+    auto* array_view = ToScriptWrappable<DOMUint8Array>(isolate, value_obj);
+    ASSERT_TRUE(array_view);
+
+    // Validate length.
+    const size_t expected_length = expected_bytes.size();
+    EXPECT_EQ(array_view->byteLength(), expected_length);
+
+    base::span<const uint8_t> actual_bytes = array_view->AsSpan();
+    ASSERT_EQ(actual_bytes.size(), expected_length);
+
+    // Validate contents
+    for (size_t i = 0; i < expected_length; ++i) {
+      EXPECT_EQ(actual_bytes, base::span(expected_bytes));
+    }
+  }
 };
 
 // This breaks expectations for general ReadableStreamTransferringOptimizer
@@ -259,9 +309,110 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
 
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
-  reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+
+  auto* read_options = ReadableStreamBYOBReaderReadOptions::Create();
+  reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->IsDisturbed());
+}
+
+// Tests that `ReadableStreamBYOBReader.read()` correctly fulfills a read
+// request when a minimum number of bytes (`min`) is specified.
+TEST_F(ReadableStreamTest, BYOBReaderWithMinOption) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  ScriptValue byte_stream = EvalWithPrintingError(&scope,
+                                                  R"(
+        new ReadableStream({
+            type: 'bytes',
+            pull(controller) {
+                controller.enqueue(new Uint8Array([1,2,3,4,5,6,7]));
+            }
+        })
+           )");
+  ReadableStream* stream =
+      V8ReadableStream::ToWrappable(isolate, byte_stream.V8Value());
+  ASSERT_TRUE(stream);
+
+  auto* options = ReadableStreamGetReaderOptions::Create();
+  options->setMode("byob");
+
+  ReadableStreamBYOBReader* reader = nullptr;
+  if (const auto* result =
+          stream->getReader(script_state, options, ASSERT_NO_EXCEPTION)) {
+    reader = result->GetAsReadableStreamBYOBReader();
+  }
+  ASSERT_TRUE(reader);
+
+  NotShared<DOMArrayBufferView> view_1 =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+
+  // Set a min value smaller than or equal to `view.byteLength`.
+  constexpr uint64_t min = 4;
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  read_options->setMin(min);
+  ExpectBYOBReadByteLengthAndContents(script_state, isolate, reader, view_1,
+                                      read_options, {1, 2, 3, 4});
+
+  // Request another read of 4 bytes from the stream. Since only 3 bytes remain
+  // and `min` is set to 4, the read should fulfill with at least the minimum
+  // number of bytes.
+  NotShared<DOMArrayBufferView> view_2 =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+  ExpectBYOBReadByteLengthAndContents(script_state, isolate, reader, view_2,
+                                      read_options, {5, 6, 7, 1});
+}
+
+// Verifies that `ReadableStreamBYOBReader.read()` ignores the `min` option when
+// the feature is disabled.
+TEST_F(ReadableStreamTest, BYOBReadMinOptionIgnoredWhenFeatureDisabled) {
+  ScopedReadableStreamBYOBReaderReadMinOptionForTest byob_min_option(false);
+
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  // Stream with 5 bytes.
+  ScriptValue stream_val = EvalWithPrintingError(&scope,
+                                                 R"(
+        new ReadableStream({
+            type: 'bytes',
+            pull(controller) {
+                controller.enqueue(new Uint8Array([1,2,3,4,5]));
+            }
+        })
+           )");
+  ReadableStream* stream =
+      V8ReadableStream::ToWrappable(isolate, stream_val.V8Value());
+  ASSERT_TRUE(stream);
+
+  auto* options = ReadableStreamGetReaderOptions::Create();
+  options->setMode("byob");
+
+  ReadableStreamBYOBReader* reader = nullptr;
+  if (const auto* result =
+          stream->getReader(script_state, options, ASSERT_NO_EXCEPTION)) {
+    reader = result->GetAsReadableStreamBYOBReader();
+  }
+  ASSERT_TRUE(reader);
+
+  // First read with `view` of 3, `min` should be ignored.
+  NotShared<DOMArrayBufferView> view_1 =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(3));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  read_options->setMin(3);
+  ExpectBYOBReadByteLengthAndContents(script_state, isolate, reader, view_1,
+                                      read_options, {1, 2, 3});
+
+  // Second read to get the last remaining 2 bytes.
+  NotShared<DOMArrayBufferView> view_2 =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(3));
+  ExpectBYOBReadByteLengthAndContents(script_state, isolate, reader, view_2,
+                                      read_options, {4, 5});
 }
 
 TEST_F(ReadableStreamTest, Cancel) {
@@ -767,8 +918,10 @@ TEST_F(ReadableByteStreamTest, ThrowFromPull) {
       Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  auto* options = ReadableStreamBYOBReaderReadOptions::Create();
   ScriptPromiseTester read_tester(
-      script_state, reader->read(script_state, view, ASSERT_NO_EXCEPTION));
+      script_state,
+      reader->read(script_state, view, options, ASSERT_NO_EXCEPTION));
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
@@ -813,8 +966,10 @@ TEST_F(ReadableByteStreamTest, CloseStream) {
       Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  auto* options = ReadableStreamBYOBReaderReadOptions::Create();
   ScriptPromiseTester read_tester(
-      script_state, reader->read(script_state, view, ASSERT_NO_EXCEPTION));
+      script_state,
+      reader->read(script_state, view, options, ASSERT_NO_EXCEPTION));
   // Close a byte stream with pending pull intos should fulfill read requests
   // with bytes filled is 0 and done is true.
   Stream()->CloseStream(scope.GetScriptState(), ASSERT_NO_EXCEPTION);

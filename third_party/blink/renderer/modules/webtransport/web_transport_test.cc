@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
@@ -1010,7 +1011,11 @@ TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
 
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
-  auto result = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+
+  auto result =
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, result);
 
   const std::array<uint8_t, 1> chunk = {'A'};
@@ -1021,6 +1026,45 @@ TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReaderMinOption) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* readable = web_transport->datagrams()->readable();
+  auto* reader =
+      readable->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  // Create a buffer of 4 bytes.
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(4));
+
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  read_options->setMin(2);
+
+  // Request to read at least 2 bytes.
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+
+  // Send only 1 byte first. This should not fulfill the read.
+  client_remote_->OnDatagramReceived({'A'});
+  test::RunPendingTasks();
+  // Promise should still be pending.
+  EXPECT_FALSE(tester.IsFulfilled());
+  EXPECT_FALSE(tester.IsRejected());
+  // Send another byte.
+  client_remote_->OnDatagramReceived({'B'});
+  test::RunPendingTasks();
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()),
+              ElementsAre('A', 'B'));
 }
 
 bool IsRangeError(ScriptState* script_state,
@@ -1059,7 +1103,12 @@ TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
 
   NotShared<DOMArrayBufferView> view =
       NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
-  auto result = reader->read(script_state, view, ASSERT_NO_EXCEPTION);
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  read_options->setMin(1);
+
+  auto result =
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, result);
 
   const std::array<uint8_t, 3> chunk = {'A', 'B', 'C'};

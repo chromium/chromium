@@ -585,6 +585,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/streams/readable_byte_stream_controller.idl",
   "//third_party/blink/renderer/core/streams/readable_stream.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_byob_reader.idl",
+  "//third_party/blink/renderer/core/streams/readable_stream_byob_reader_read_options.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_byob_request.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_default_controller.idl",
   "//third_party/blink/renderer/core/streams/readable_stream_default_reader.idl",
