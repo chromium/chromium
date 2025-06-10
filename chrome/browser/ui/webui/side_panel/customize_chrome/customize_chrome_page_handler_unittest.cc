@@ -206,6 +206,7 @@ class MockNtpBackgroundService : public NtpBackgroundService {
       : NtpBackgroundService(application_locale_storage, url_loader_factory) {}
   MOCK_CONST_METHOD0(collection_info, std::vector<CollectionInfo>&());
   MOCK_CONST_METHOD0(collection_images, std::vector<CollectionImage>&());
+  MOCK_METHOD(void, FetchCollectionInfo, (const std::string& filtering_label));
   MOCK_METHOD(void, FetchCollectionInfo, ());
   MOCK_METHOD(void, FetchCollectionImageInfo, (const std::string&));
   MOCK_METHOD(void,
@@ -587,7 +588,7 @@ TEST_F(CustomizeChromePageHandlerTest, GetBackgroundCollections) {
       CustomizeChromePageHandler::GetBackgroundCollectionsCallback>
       callback;
   EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&collections));
-  EXPECT_CALL(mock_ntp_background_service(), FetchCollectionInfo).Times(1);
+  EXPECT_CALL(mock_ntp_background_service(), FetchCollectionInfo()).Times(1);
   handler().GetBackgroundCollections(callback.Get());
   ntp_background_service_observer().OnCollectionInfoAvailable();
 

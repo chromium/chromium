@@ -87,7 +87,8 @@ void NtpBackgroundService::Shutdown() {
   DCHECK(observers_.empty());
 }
 
-void NtpBackgroundService::FetchCollectionInfo() {
+void NtpBackgroundService::FetchCollectionInfo(
+    const std::string& filtering_label) {
   // If a request is currently in progress, drop the new request.
   if (collections_loader_ != nullptr) {
     return;
@@ -136,18 +137,18 @@ void NtpBackgroundService::FetchCollectionInfo() {
   ntp::background::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
   request.set_language(application_locale_storage_->Get());
-  request.add_filtering_label(GetFilteringLabel());
+  request.add_filtering_label(filtering_label);
   // Add some extra filtering information in case we need to target a specific
   // milestone post release.
   request.add_filtering_label(base::StrCat(
-      {GetFilteringLabel(), ".M", version_info::GetMajorVersionNumber()}));
+      {filtering_label, ".M", version_info::GetMajorVersionNumber()}));
   // Add filtering for Panorama feature.
-  request.add_filtering_label(base::StrCat({GetFilteringLabel(), ".panorama"}));
-  request.add_filtering_label(base::StrCat({GetFilteringLabel(), ".gm3"}));
+  request.add_filtering_label(base::StrCat({filtering_label, ".panorama"}));
+  request.add_filtering_label(base::StrCat({filtering_label, ".gm3"}));
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     request.add_filtering_label(
-        base::StrCat({GetFilteringLabel(), ".error_detection"}));
+        base::StrCat({filtering_label, ".error_detection"}));
   }
 
   std::string serialized_proto;
@@ -166,6 +167,11 @@ void NtpBackgroundService::FetchCollectionInfo() {
       base::BindOnce(&NtpBackgroundService::OnCollectionInfoFetchComplete,
                      base::Unretained(this)),
       1024 * 1024);
+}
+
+void NtpBackgroundService::FetchCollectionInfo() {
+  // Calls `FetchCollectionInfo` method using the default filter.
+  FetchCollectionInfo(GetFilteringLabel());
 }
 
 void NtpBackgroundService::OnCollectionInfoFetchComplete(

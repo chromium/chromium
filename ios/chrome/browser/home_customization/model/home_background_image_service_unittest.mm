@@ -128,6 +128,61 @@ TEST_F(HomeBackgroundImageServiceTest, SuccessFetchCollectionsImagesResponse) {
 }
 
 TEST_F(HomeBackgroundImageServiceTest,
+       SuccessFetchDefaultCollectionsImagesResponse) {
+  // Add a collection
+  ntp::background::Collection collection;
+  collection.set_collection_id("shapes");
+  collection.set_collection_name("Shapes Title");
+  collection.add_preview()->set_image_url(kTestImageUrl);
+  ntp::background::GetCollectionsResponse response;
+  *response.add_collections() = collection;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+  SetUpResponseWithData(service_.get()->GetCollectionsLoadURLForTesting(),
+                        response_string);
+
+  // Add an image to the collection
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url(kTestImageUrl);
+  image.add_attribution()->set_text("attribution text");
+  image.set_action_url(kTestActionUrl);
+  ntp::background::GetImagesInCollectionResponse image_response;
+  *image_response.add_images() = image;
+  std::string image_response_string;
+  image_response.SerializeToString(&image_response_string);
+  SetUpResponseWithData(service_.get()->GetImagesURLForTesting(),
+                        image_response_string);
+
+  HomeBackgroundImageService::CollectionImageMap collections_images;
+  base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(_))
+      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+
+  base::RunLoop run_loop;
+  model_.get()->FetchDefaultCollectionImages(
+      mock_callback.Get().Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_EQ(collections_images.size(), 1u);
+  std::string collection_name = std::get<0>(collections_images[0]);
+  std::vector<CollectionImage> images = std::get<1>(collections_images[0]);
+  std::string expected_image_url =
+      std::string(kTestImageUrl) + GetImageOptions();
+  std::string expected_thumbnail_image_url =
+      std::string(kTestImageUrl) + GetThumbnailImageOptions();
+  EXPECT_EQ(collection_name, "Shapes Title");
+  EXPECT_EQ(images.size(), 1u);
+  EXPECT_EQ(images[0].collection_id, "shapes");
+  EXPECT_EQ(images[0].asset_id, 12345u);
+  EXPECT_EQ(images[0].image_url, GURL(expected_image_url));
+  EXPECT_EQ(images[0].thumbnail_image_url, GURL(expected_thumbnail_image_url));
+  EXPECT_EQ(images[0].attribution[0], "attribution text");
+  EXPECT_EQ(images[0].attribution_action_url, GURL(kTestActionUrl));
+}
+
+TEST_F(HomeBackgroundImageServiceTest,
        SuccessMultipleFetchCollectionsImagesResponse) {
   // Add a collection
   ntp::background::Collection collection;
@@ -191,6 +246,90 @@ TEST_F(HomeBackgroundImageServiceTest,
   EXPECT_EQ(second_collection_name, "Nature Title");
   EXPECT_EQ(second_image.size(), 1u);
   EXPECT_EQ(second_image[0].collection_id, "nature");
+}
+
+TEST_F(HomeBackgroundImageServiceTest,
+       SuccessFetchDefaultCollectionsThenFetchImagesResponse) {
+  // Add a collection
+  ntp::background::Collection collection;
+  collection.set_collection_id("shapes");
+  collection.set_collection_name("Shapes Title");
+  collection.add_preview()->set_image_url(kTestImageUrl);
+
+  ntp::background::GetCollectionsResponse response;
+  *response.add_collections() = collection;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service_.get()->GetCollectionsLoadURLForTesting(),
+                        response_string);
+
+  // Add an image to the collection
+  ntp::background::Image image;
+  image.set_asset_id(12345);
+  image.set_image_url(kTestImageUrl);
+  image.add_attribution()->set_text("attribution text");
+  image.set_action_url(kTestActionUrl);
+  ntp::background::GetImagesInCollectionResponse image_response;
+  *image_response.add_images() = image;
+  std::string image_response_string;
+  image_response.SerializeToString(&image_response_string);
+
+  SetUpResponseWithData(service_.get()->GetImagesURLForTesting(),
+                        image_response_string);
+
+  HomeBackgroundImageService::CollectionImageMap collections_images;
+  base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(_))
+      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+
+  base::RunLoop run_loop;
+  model_.get()->FetchDefaultCollectionImages(
+      mock_callback.Get().Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_EQ(collections_images.size(), 1u);
+  std::string collection_name = std::get<0>(collections_images[0]);
+  std::vector<CollectionImage> images = std::get<1>(collections_images[0]);
+  std::string expected_image_url =
+      std::string(kTestImageUrl) + GetImageOptions();
+  std::string expected_thumbnail_image_url =
+      std::string(kTestImageUrl) + GetThumbnailImageOptions();
+  EXPECT_EQ(collection_name, "Shapes Title");
+  EXPECT_EQ(images.size(), 1u);
+  EXPECT_EQ(images[0].collection_id, "shapes");
+
+  ntp::background::Collection second_collection;
+  second_collection.set_collection_id("nature");
+  second_collection.set_collection_name("Nature Title");
+  second_collection.add_preview()->set_image_url(kTestImageUrl2);
+
+  ntp::background::GetCollectionsResponse second_response;
+  *second_response.add_collections() = second_collection;
+  std::string second_response_string;
+  second_response.SerializeToString(&second_response_string);
+
+  SetUpResponseWithData(service_.get()->GetCollectionsLoadURLForTesting(),
+                        second_response_string);
+
+  EXPECT_CALL(mock_callback, Run(_))
+      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+
+  base::RunLoop run_loop_2;
+  model_.get()->FetchCollectionsImages(
+      mock_callback.Get().Then(run_loop_2.QuitClosure()));
+  run_loop_2.Run();
+
+  EXPECT_EQ(collections_images.size(), 1u);
+  collection_name = std::get<0>(collections_images[0]);
+  images = std::get<1>(collections_images[0]);
+  expected_image_url = std::string(kTestImageUrl2) + GetImageOptions();
+  expected_thumbnail_image_url =
+      std::string(kTestImageUrl2) + GetThumbnailImageOptions();
+  EXPECT_EQ(collection_name, "Nature Title");
+  EXPECT_EQ(images.size(), 1u);
+  EXPECT_EQ(images[0].collection_id, "nature");
 }
 
 TEST_F(HomeBackgroundImageServiceTest, BadCollectionResponse) {

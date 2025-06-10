@@ -61,7 +61,13 @@ class NtpBackgroundService : public KeyedService {
   // Requests an asynchronous fetch from the network. After the update
   // completes, OnCollectionInfoAvailable will be called on the observers.
   // Requests that are made while an asynchronous fetch is in progress will be
-  // dropped until the currently active loader completes.
+  // dropped until the currently active loader completes. `filtering_label` is
+  // provided to guide the fetch.
+  virtual void FetchCollectionInfo(const std::string& filtering_label);
+
+  // Requests an asynchronous fetch from network by calling
+  // `FetchCollectionInfo(const std::string& filtering_label)` with
+  // filtering_label set to the default label.
   virtual void FetchCollectionInfo();
 
   // Callback type for fetching collection images, invoked with a vector of

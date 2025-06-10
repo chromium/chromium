@@ -135,6 +135,35 @@ TEST_F(NtpBackgroundServiceTest, CollectionRequest) {
             collection_request.filtering_label(3));
 }
 
+TEST_F(NtpBackgroundServiceTest, CollectionRequestWithFilteringLabel) {
+  application_locale_storage_->Set("foo");
+
+  service()->FetchCollectionInfo("test");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return test_url_loader_factory()->pending_requests()->size() == 1u;
+  }));
+
+  std::string request_body(test_url_loader_factory()
+                               ->pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
+  ntp::background::GetCollectionsRequest collection_request;
+  EXPECT_TRUE(collection_request.ParseFromString(request_body));
+  EXPECT_EQ("foo", collection_request.language());
+  EXPECT_EQ(4, collection_request.filtering_label_size());
+  EXPECT_EQ("test", collection_request.filtering_label(0));
+  EXPECT_EQ(
+      base::StrCat({"test", ".M"}) + version_info::GetMajorVersionNumber(),
+      collection_request.filtering_label(1));
+  EXPECT_EQ(base::StrCat({"test", ".panorama"}),
+            collection_request.filtering_label(2));
+  EXPECT_EQ(base::StrCat({"test", ".gm3"}),
+            collection_request.filtering_label(3));
+}
+
 TEST_F(NtpBackgroundServiceTest,
        CollectionRequestWithImageErrorDetectionEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;

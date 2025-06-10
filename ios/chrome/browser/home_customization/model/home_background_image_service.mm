@@ -9,6 +9,11 @@
 #import "components/themes/ntp_background_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
+namespace {
+// The filtering label to use for the default collection images.
+const std::string kDefaultFilteringLabel = "default_chrome_ios_ntp";
+}  // namespace
+
 HomeBackgroundImageService::HomeBackgroundImageService(
     NtpBackgroundService* ntp_background_service)
     : ntp_background_service_(ntp_background_service) {
@@ -20,8 +25,19 @@ HomeBackgroundImageService::~HomeBackgroundImageService() {
   ntp_background_service_ = nullptr;
 }
 
+void HomeBackgroundImageService::FetchDefaultCollectionImages(
+    CollectionsImagesCallback callback) {
+  FetchCollectionsImagesInternal(std::move(callback), kDefaultFilteringLabel);
+}
+
 void HomeBackgroundImageService::FetchCollectionsImages(
     CollectionsImagesCallback callback) {
+  FetchCollectionsImagesInternal(std::move(callback));
+}
+
+void HomeBackgroundImageService::FetchCollectionsImagesInternal(
+    CollectionsImagesCallback callback,
+    const std::string& filtering_label) {
   // If a request is already in progress, drop the new request.
   if (collections_images_callback_) {
     return;
@@ -29,20 +45,19 @@ void HomeBackgroundImageService::FetchCollectionsImages(
 
   collections_images_callback_ = std::move(callback);
 
-  // If the images are already loaded, return them, and make network request for
-  // the next fetch.
-  if (collections_images_.size() > 0 && collections_images_callback_) {
-    std::move(collections_images_callback_).Run(collections_images_);
-  }
-
-  // If a request is currently in progress, to update the cache, drop the new
-  // request.
+  // If a request is currently in progress, drop the new request.
   if (all_images_received_barrier_) {
     return;
   }
 
   // Clear the collections images to start fresh.
   collections_images_.clear();
+
+  // If a filtering label is provided, use it to fetch the collection info.
+  if (!filtering_label.empty()) {
+    ntp_background_service_->FetchCollectionInfo(filtering_label);
+    return;
+  }
   ntp_background_service_->FetchCollectionInfo();
 }
 

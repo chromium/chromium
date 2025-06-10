@@ -40,12 +40,15 @@ class HomeBackgroundImageService : public KeyedService,
   // vector of tuples of collection name and collection images.
   using CollectionsImagesCallback =
       base::OnceCallback<void(const CollectionImageMap&)>;
-  // Requests an asynchronous fetch of all collections and their images. This
-  // calls the `NtpBackgroundService` to fetch the collections images and then
-  // returns the data via the `CollectionsImagesCallback`. Requests that are
-  // made while an asynchronous fetch is in progress will be dropped until the
-  // currently active loader completes.
+  // Requests an asynchronous fetch of all ios ntp background collections and
+  // their images. This method calls `FetchCollectionsImagesInternal` under the
+  // hood.
   void FetchCollectionsImages(CollectionsImagesCallback callback);
+
+  // Requests an asynchronous fetch of the default ios ntp background
+  // collection and its images. This method calls
+  // `FetchCollectionsImagesInternal` under the hood.
+  void FetchDefaultCollectionImages(CollectionsImagesCallback callback);
 
  private:
   // Callback for when collection images info is received.
@@ -56,6 +59,15 @@ class HomeBackgroundImageService : public KeyedService,
 
   // Callback for when all collections and their images have been received.
   void OnAllCollectionImagesReceived();
+
+  // Requests an asynchronous fetch of all collections and their images. This
+  // calls the `NtpBackgroundService` to fetch the collections images and then
+  // returns the data via the `CollectionsImagesCallback`. Requests that are
+  // made while an asynchronous fetch is in progress will be dropped until the
+  // currently active loader completes. Optionally, a `filtering_label` can be
+  // provided to guide the fetch.
+  void FetchCollectionsImagesInternal(CollectionsImagesCallback callback,
+                                      const std::string& filtering_label = "");
 
   CollectionsImagesCallback collections_images_callback_;
   CollectionImageMap collections_images_;
