@@ -85,7 +85,7 @@ public final class EventConstants {
 
     /** The keyboard accessory was used to create a new plus address. */
     public static final String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION =
-            "keyboard_accessory_plus_address_create_suggestion";
+            "plus_address_create_suggestion_feature_used";
 
     /** User has finished drop-to-merge to create a group. */
     public static final String TAB_DRAG_AND_DROP_TO_GROUP = "tab_drag_and_drop_to_group";
