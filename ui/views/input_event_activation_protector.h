@@ -44,10 +44,14 @@ class VIEWS_EXPORT InputEventActivationProtector
   // visibility change).
   void MaybeUpdateViewProtectedTimeStamp(bool force = false);
 
-  // Returns true if the event is a mouse, touch, or pointer event that took
-  // place within the double-click time interval after
-  // |view_protected_time_stamp_|.
-  virtual bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+  // Returns true if the event is a mouse, touch, pointer, or key (optionally)
+  // event that took place within the double-click time interval after
+  // `view_protected_time_stamp_`.
+  //
+  // If `allow_key_events` is true, "key events" will NOT be considered
+  // for possibly unintended interaction checks.
+  virtual bool IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                               bool allow_key_events);
 
   // Implements WindowsStationarityMonitor::Observer:
   void OnWindowStationaryStateChanged() override;

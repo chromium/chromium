@@ -612,6 +612,20 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
   EXPECT_TRUE(widget()->IsClosed());
 }
 
+// Ensures that key events are not ignored for short time, after view has been
+// shown.
+TEST_F(DialogClientViewTest, DoesNotIgnoreKeyEvents_ReturnKeyAfterShown) {
+  widget()->Show();
+  SetDialogButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                   static_cast<int>(ui::mojom::DialogButton::kOk));
+
+  // Should not ignore key events right after the dialog is shown.
+  ui::KeyEvent press_enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                           ui::EF_NONE, ui::EventTimeForNow());
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(press_enter);
+  EXPECT_TRUE(widget()->IsClosed());
+}
+
 // Ensures that taps are ignored for a short time after the view has been shown.
 TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TapAfterShown) {
   widget()->Show();
@@ -983,4 +997,146 @@ TEST_F(DialogClientViewTest, WideButtonsStayHorizontalIfVerticalNotAllowed) {
   EXPECT_THAT(client_view(), HasHorizontalButtons());
 }
 
+struct IsPossiblyUnintendedInteractionTestCase {
+  enum class EventType {
+    kKey,
+    kMouse,
+  };
+  std::string test_name;
+  EventType event_type;
+  bool is_delayed_interaction;
+  bool allow_key_events;
+  bool is_possibly_unintended_interaction;
+};
+
+class InteractionTest : public DialogClientViewTest,
+                        public testing::WithParamInterface<
+                            IsPossiblyUnintendedInteractionTestCase> {
+ public:
+  InteractionTest() = default;
+
+  InteractionTest(const InteractionTest&) = delete;
+  InteractionTest& operator=(const InteractionTest&) = delete;
+
+  std::unique_ptr<ui::KeyEvent> KeyEventNow() {
+    return std::make_unique<ui::KeyEvent>(ui::EventType::kKeyPressed,
+                                          ui::VKEY_RETURN, ui::EF_NONE,
+                                          ui::EventTimeForNow());
+  }
+
+  std::unique_ptr<ui::KeyEvent> KeyEventDelayed() {
+    return std::make_unique<ui::KeyEvent>(
+        ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+        ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()));
+  }
+
+  std::unique_ptr<ui::MouseEvent> MouseEventNow() {
+    return std::make_unique<ui::MouseEvent>(
+        ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
+        ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  }
+
+  std::unique_ptr<ui::MouseEvent> MouseEventDelayed() {
+    return std::make_unique<ui::MouseEvent>(
+        ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
+        ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+        ui::EF_NONE, ui::EF_NONE);
+  }
+};
+
+TEST_P(InteractionTest, IsPossiblyUnintendedInteraction) {
+  const IsPossiblyUnintendedInteractionTestCase& test_case = GetParam();
+
+  widget()->Show();
+
+  std::unique_ptr<ui::Event> event;
+  switch (test_case.event_type) {
+    case IsPossiblyUnintendedInteractionTestCase::EventType::kKey:
+      event =
+          test_case.is_delayed_interaction ? KeyEventDelayed() : KeyEventNow();
+      break;
+    case IsPossiblyUnintendedInteractionTestCase::EventType::kMouse:
+      event = test_case.is_delayed_interaction ? MouseEventDelayed()
+                                               : MouseEventNow();
+      break;
+  }
+  ASSERT_NE(event, nullptr);
+
+  EXPECT_EQ(client_view()->IsPossiblyUnintendedInteraction(
+                *event, test_case.allow_key_events),
+            test_case.is_possibly_unintended_interaction);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllInteractions,
+    InteractionTest,
+    testing::ValuesIn<IsPossiblyUnintendedInteractionTestCase>({
+        {
+            .test_name = "NotPermissionRelevantKeyEventNow",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kKey,
+            .is_delayed_interaction = false,
+            .allow_key_events = true,
+            .is_possibly_unintended_interaction = false,
+        },
+        {
+            .test_name = "PermissionRelevantKeyEventNow",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kKey,
+            .is_delayed_interaction = false,
+            .allow_key_events = false,
+            .is_possibly_unintended_interaction = true,
+        },
+        {
+            .test_name = "NotPermissionRelevantKeyEventDelayed",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kKey,
+            .is_delayed_interaction = true,
+            .allow_key_events = true,
+            .is_possibly_unintended_interaction = false,
+        },
+        {
+            .test_name = "PermissionRelevantKeyEventDelayed",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kKey,
+            .is_delayed_interaction = true,
+            .allow_key_events = false,
+            .is_possibly_unintended_interaction = false,
+        },
+        {
+            .test_name = "NotPermissionRelevantMouseEventNow",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kMouse,
+            .is_delayed_interaction = false,
+            .allow_key_events = true,
+            .is_possibly_unintended_interaction = true,
+        },
+        {
+            .test_name = "PermissionRelevantMouseEventNow",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kMouse,
+            .is_delayed_interaction = false,
+            .allow_key_events = false,
+            .is_possibly_unintended_interaction = true,
+        },
+        {
+            .test_name = "NotPermissionRelevantMouseEventDelayed",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kMouse,
+            .is_delayed_interaction = true,
+            .allow_key_events = true,
+            .is_possibly_unintended_interaction = false,
+        },
+        {
+            .test_name = "PermissionRelevantMouseEventDelayed",
+            .event_type =
+                IsPossiblyUnintendedInteractionTestCase::EventType::kMouse,
+            .is_delayed_interaction = true,
+            .allow_key_events = false,
+            .is_possibly_unintended_interaction = false,
+        },
+    }),
+    [](const testing::TestParamInfo<InteractionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 }  // namespace views

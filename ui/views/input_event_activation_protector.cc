@@ -36,7 +36,8 @@ void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(
 }
 
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
-    const ui::Event& event) {
+    const ui::Event& event,
+    bool allow_key_events) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableInputEventActivationProtectionForTesting))
       [[unlikely]] {
@@ -56,7 +57,9 @@ bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
 
   if (!event.IsMouseEvent() && !event.IsTouchEvent() &&
       !event.IsGestureEvent()) {
-    return false;
+    if (allow_key_events || !event.IsKeyEvent()) {
+      return false;
+    }
   }
 
   const base::TimeDelta kShortInterval =

@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -66,6 +67,13 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {

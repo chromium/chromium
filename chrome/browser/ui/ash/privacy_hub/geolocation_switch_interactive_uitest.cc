@@ -17,6 +17,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -50,6 +51,13 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {

@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/views/views_switches.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -53,6 +54,13 @@ class ExclusiveAccessPermissionPromptInteractiveTest
     content::SetupCrossSiteRedirector(&https_server_);
     https_server_.StartAcceptingConnections();
     InteractiveBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {

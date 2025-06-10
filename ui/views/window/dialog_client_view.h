@@ -119,7 +119,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
     input_protector_ = std::move(input_protector);
   }
 
-  bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                       bool allow_key_events);
 
   // LayoutDelegate:
   ProposedLayout CalculateProposedLayout(

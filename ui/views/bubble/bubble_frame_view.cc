@@ -115,7 +115,8 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
 
   auto minimize = CreateMinimizeButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
-        if (view->input_protector_.IsPossiblyUnintendedInteraction(event)) {
+        if (view->input_protector_.IsPossiblyUnintendedInteraction(
+                event, /*allow_key_events=*/true)) {
           return;
         }
         view->GetWidget()->Minimize();
@@ -127,7 +128,8 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
 
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
-        if (view->input_protector_.IsPossiblyUnintendedInteraction(event)) {
+        if (view->input_protector_.IsPossiblyUnintendedInteraction(
+                event, /*allow_key_events=*/true)) {
           return;
         }
         view->GetWidget()->CloseWithReason(

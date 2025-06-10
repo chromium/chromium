@@ -933,7 +933,8 @@ void PaymentSheetViewController::AddContactInfoButtonPressed() {
 void PaymentSheetViewController::PossiblyIgnorePrimaryButtonPress(
     PaymentRequestSheetController::ButtonCallback callback,
     const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/true)) {
     return;
   }
   callback.Run(event);

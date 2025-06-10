@@ -39,6 +39,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/views_switches.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/origin.h"
 
@@ -92,6 +93,13 @@ class EmbeddedPermissionPromptInteractiveTest
     // Force the window to be large enough.
     BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
         {10, 10, 800, 800});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {

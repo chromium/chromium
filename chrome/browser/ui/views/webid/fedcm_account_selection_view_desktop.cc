@@ -547,7 +547,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
   DCHECK(state_ != State::AUTO_REAUTHN);
 
-  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
     return;
   }
@@ -609,7 +610,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
                                               const GURL& url,
                                               const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
     return;
   }
@@ -641,7 +643,8 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   // Because the close button is a safe button to click and may be visible
   // even when the widget is (partially) occluded, we do not check
   // `is_occluded_by_pip_` here.
-  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false)) {
     return;
   }
 
@@ -675,7 +678,8 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
                                              const GURL& idp_login_url,
                                              const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
     return;
   }
@@ -698,7 +702,8 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
 }
 
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
     return;
   }
@@ -707,7 +712,8 @@ void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
 }
 
 void FedCmAccountSelectionView::OnMoreDetails(const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false) ||
       is_occluded_by_pip_) {
     return;
   }

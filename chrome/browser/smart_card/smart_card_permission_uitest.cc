@@ -23,6 +23,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestTab);
@@ -157,6 +158,13 @@ class SmartCardPermissionUiTest
     InteractiveBrowserTestT::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   std::optional<bool> permission_decision_;

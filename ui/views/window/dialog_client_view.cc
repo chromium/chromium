@@ -307,8 +307,10 @@ void DialogClientView::ResetViewShownTimeStampForTesting() {
   input_protector_->ResetForTesting();  // IN-TEST
 }
 
-bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event) {
-  return input_protector_->IsPossiblyUnintendedInteraction(event);
+bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                                       bool allow_key_events) {
+  return input_protector_->IsPossiblyUnintendedInteraction(event,
+                                                           allow_key_events);
 }
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
@@ -401,7 +403,8 @@ void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
 void DialogClientView::ButtonPressed(ui::mojom::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(
+                       event, /*allow_key_events=*/true)) {
     return;
   }
 

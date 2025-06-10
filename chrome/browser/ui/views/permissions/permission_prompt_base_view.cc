@@ -167,7 +167,8 @@ void PermissionPromptBaseView::OnOcclusionStateChanged(bool occluded) {
 void PermissionPromptBaseView::FilterUnintenedEventsAndRunCallbacks(
     int button_id,
     const ui::Event& event) {
-  if (GetDialogClientView()->IsPossiblyUnintendedInteraction(event)) {
+  if (GetDialogClientView()->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false)) {
     return;
   }
 
