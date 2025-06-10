@@ -18,6 +18,9 @@ public class PriceTrackingBottomSheetContentProperties {
     public static final WritableObjectPropertyKey<String> PRICE_TRACKING_TITLE =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> PRICE_TRACKING_SUBTITLE =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<String> PRICE_TRACKING_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
@@ -36,6 +39,7 @@ public class PriceTrackingBottomSheetContentProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 PRICE_TRACKING_TITLE,
+                PRICE_TRACKING_SUBTITLE,
                 PRICE_TRACKING_BUTTON_TEXT,
                 PRICE_TRACKING_BUTTON_ICON,
                 PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
