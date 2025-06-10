@@ -130,7 +130,8 @@ class CONTENT_EXPORT PrefetchContainer {
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       std::optional<PreloadingHoldbackStatus> holdback_status_override =
-          std::nullopt);
+          std::nullopt,
+      std::optional<base::TimeDelta> ttl = std::nullopt);
 
   // Ctor used for browser-initiated prefetch that doesn't depend on web
   // contents. We can pass the referring origin of prefetches via

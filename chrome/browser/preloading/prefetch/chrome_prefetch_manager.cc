@@ -60,7 +60,8 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
           content::PreloadPipelineInfo::Create(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrefetch),
-          preloading_attempt->GetWeakPtr(), holdback_status_override);
+          preloading_attempt->GetWeakPtr(), holdback_status_override,
+          /*ttl=*/std::nullopt);
   // TODO(crbug.com/40288091): Clean up staled handles. Please see
   // crrev.com/c/5534282/comment/cea1fdce_ada24c2b/ for more discussions,
   if (prefetch_handle) {

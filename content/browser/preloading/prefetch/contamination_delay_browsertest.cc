@@ -258,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
       /*no_vary_search_hint=*/std::nullopt,
       PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-      /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt);
+      /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt,
+      /*ttl=*/std::nullopt);
   test_prefetch_watcher->WaitUntilPrefetchResponseCompleted(std::nullopt,
                                                             prefetch_url);
 

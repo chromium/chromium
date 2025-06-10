@@ -369,7 +369,8 @@ PrefetchContainer::PrefetchContainer(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
-    std::optional<PreloadingHoldbackStatus> holdback_status_override)
+    std::optional<PreloadingHoldbackStatus> holdback_status_override,
+    std::optional<base::TimeDelta> ttl)
     : PrefetchContainer(
           GlobalRenderFrameHostId(),
           referring_origin,
@@ -392,7 +393,8 @@ PrefetchContainer::PrefetchContainer(
           /*Must be empty: additional_headers=*/{},
           /*request_status_listener=*/nullptr,
           referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
-          PrefetchContainerDefaultTtlInPrefetchService(),
+          ttl.has_value() ? ttl.value()
+                          : PrefetchContainerDefaultTtlInPrefetchService(),
           /*should_append_variations_header=*/true) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());

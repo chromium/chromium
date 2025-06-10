@@ -87,7 +87,8 @@ bool SearchPreloadPipeline::StartPrefetch(
       blink::mojom::Referrer(),
       /*referring_origin=*/std::nullopt, no_vary_search_hint, pipeline_info_,
       attempt->GetWeakPtr(),
-      /*holdback_status_override=*/std::nullopt);
+      /*holdback_status_override=*/std::nullopt,
+      /*ttl=*/std::nullopt);
   CHECK(prefetch_handle_);
   prefetch_handle_->SetOnPrefetchHeadReceived(base::BindRepeating(
       &SearchPreloadService::OnPrefetchHeadReceived, search_preload_service));

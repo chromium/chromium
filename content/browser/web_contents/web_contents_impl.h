@@ -1012,8 +1012,8 @@ class CONTENT_EXPORT WebContentsImpl
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
-      std::optional<PreloadingHoldbackStatus> holdback_status_override)
-      override;
+      std::optional<PreloadingHoldbackStatus> holdback_status_override,
+      std::optional<base::TimeDelta> ttl) override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
