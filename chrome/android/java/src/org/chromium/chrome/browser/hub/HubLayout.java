@@ -21,8 +21,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Function;
@@ -38,6 +36,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -91,15 +90,14 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
      */
     @VisibleForTesting
     static class HubLayoutAnimationListenerImpl implements HubLayoutAnimationListener {
-        private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatingSupplier;
+        private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier;
 
         /**
          * Constructs a listener that updates the given supplier.
          *
          * @param isAnimatingSupplier The supplier to update with the animation state.
          */
-        public HubLayoutAnimationListenerImpl(
-                @NonNull ObservableSupplierImpl<Boolean> isAnimatingSupplier) {
+        public HubLayoutAnimationListenerImpl(ObservableSupplierImpl<Boolean> isAnimatingSupplier) {
             mIsAnimatingSupplier = isAnimatingSupplier;
         }
 
@@ -116,27 +114,27 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         }
     }
 
-    private final @NonNull Callback<Pane> mOnPaneFocused = this::updateEmptyLayerColor;
-    private final @NonNull Function<HubLayoutAnimatorProvider, HubLayoutAnimationRunner>
+    private final Callback<Pane> mOnPaneFocused = this::updateEmptyLayerColor;
+    private final Function<HubLayoutAnimatorProvider, HubLayoutAnimationRunner>
             mHubLayoutAnimationRunnerFactory;
-    private final @NonNull LayoutStateProvider mLayoutStateProvider;
-    private final @NonNull ViewGroup mRootView;
-    private final @NonNull HubManager mHubManager;
-    private final @NonNull HubController mHubController;
-    private final @NonNull PaneManager mPaneManager;
-    private final @NonNull HubLayoutScrimController mScrimController;
-    private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
-    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
+    private final LayoutStateProvider mLayoutStateProvider;
+    private final ViewGroup mRootView;
+    private final HubManager mHubManager;
+    private final HubController mHubController;
+    private final PaneManager mPaneManager;
+    private final HubLayoutScrimController mScrimController;
+    private final DoubleConsumer mOnToolbarAlphaChange;
+    private final HubShowPaneHelper mHubShowPaneHelper;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
      * #doneShowing()}.
      */
-    private final @NonNull ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
+    private final ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
             new ObservableSupplierImpl<>();
 
-    private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
+    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>(false);
 
     private @Nullable SceneLayer mCurrentSceneLayer;
@@ -165,11 +163,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      */
     public HubLayout(
-            @NonNull Context context,
-            @NonNull LayoutUpdateHost updateHost,
-            @NonNull LayoutRenderHost renderHost,
-            @NonNull LayoutStateProvider layoutStateProvider,
-            @NonNull HubLayoutDependencyHolder dependencyHolder,
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            LayoutStateProvider layoutStateProvider,
+            HubLayoutDependencyHolder dependencyHolder,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         this(
@@ -185,16 +183,15 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @VisibleForTesting
     HubLayout(
-            @NonNull Context context,
-            @NonNull LayoutUpdateHost updateHost,
-            @NonNull LayoutRenderHost renderHost,
-            @NonNull LayoutStateProvider layoutStateProvider,
-            @NonNull HubLayoutDependencyHolder dependencyHolder,
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            LayoutStateProvider layoutStateProvider,
+            HubLayoutDependencyHolder dependencyHolder,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull
-                    Function<HubLayoutAnimatorProvider, HubLayoutAnimationRunner>
-                            hubLayoutAnimationRunnerFactory) {
+            Function<HubLayoutAnimatorProvider, HubLayoutAnimationRunner>
+                    hubLayoutAnimationRunnerFactory) {
         super(context, updateHost, renderHost);
         mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
         mHubLayoutAnimationRunnerFactory = hubLayoutAnimationRunnerFactory;
@@ -732,7 +729,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     // Visible for testing or spying
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    HubLayoutAnimatorProvider createShowAnimatorProvider(@NonNull HubContainerView containerView) {
+    HubLayoutAnimatorProvider createShowAnimatorProvider(HubContainerView containerView) {
         @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isFullSpaceModeOnAndroidXR =
                 XrSceneCoreUtils.isSceneCoreSessionInFsm(mXrSessionManager);
@@ -753,7 +750,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    HubLayoutAnimatorProvider createHideAnimatorProvider(@NonNull HubContainerView containerView) {
+    HubLayoutAnimatorProvider createHideAnimatorProvider(HubContainerView containerView) {
         @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isFullSpaceModeOnAndroidXR =
                 XrSceneCoreUtils.isSceneCoreSessionInFsm(mXrSessionManager);
@@ -883,8 +880,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mEmptySceneLayer.setBackgroundColor(mHubController.getBackgroundColor(pane));
     }
 
-    private void captureTabThumbnail(
-            @Nullable Tab currentTab, @NonNull Promise<Bitmap> bitmapPromise) {
+    private void captureTabThumbnail(@Nullable Tab currentTab, Promise<Bitmap> bitmapPromise) {
         if (currentTab == null) {
             bitmapPromise.fulfill(null);
             return;

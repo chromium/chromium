@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.app.Activity;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.app.Activity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -16,6 +15,8 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,12 +32,13 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
  *
  * <p>Part of chrome/android/ to use {@link HubManagerFactory} and to use as glue code.
  */
+@NullMarked
 public class HubProvider {
-    private final @NonNull LazyOneshotSupplier<HubManager> mHubManagerSupplier;
-    private final @NonNull PaneListBuilder mPaneListBuilder;
-    private final @NonNull Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final @NonNull Callback<Pane> mOnPaneFocused;
-    private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
+    private final LazyOneshotSupplier<HubManager> mHubManagerSupplier;
+    private final PaneListBuilder mPaneListBuilder;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Callback<Pane> mOnPaneFocused;
+    private final HubShowPaneHelper mHubShowPaneHelper;
 
     private @Nullable CallbackController mCallbackController = new CallbackController();
     private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
@@ -55,16 +57,16 @@ public class HubProvider {
      * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubProvider(
-            @NonNull Activity activity,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull PaneOrderController orderController,
-            @NonNull BackPressManager backPressManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull SearchActivityClient searchActivityClient) {
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            PaneOrderController orderController,
+            BackPressManager backPressManager,
+            MenuOrKeyboardActionController menuOrKeyboardActionController,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            SearchActivityClient searchActivityClient) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mHubShowPaneHelper = new HubShowPaneHelper();
@@ -72,7 +74,7 @@ public class HubProvider {
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
                             assert tabModelSelectorSupplier.hasValue();
-                            ObservableSupplier<Tab> tabSupplier =
+                            ObservableSupplier<@Nullable Tab> tabSupplier =
                                     tabModelSelectorSupplier.get().getCurrentTabSupplier();
                             assert menuButtonCoordinatorSupplier.hasValue();
 
@@ -107,6 +109,7 @@ public class HubProvider {
                                 tabCount == null ? true : tabCount.intValue() == 0);
                     }
                 };
+        assumeNonNull(mCallbackController);
         mHubManagerSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onHubManagerAvailable));
     }
@@ -124,14 +127,14 @@ public class HubProvider {
         }
 
         if (mHubManagerSupplier.hasValue()) {
-            HubManager hubManager = mHubManagerSupplier.get();
+            HubManager hubManager = assumeNonNull(mHubManagerSupplier.get());
             hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
             hubManager.destroy();
         }
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */
-    public @NonNull LazyOneshotSupplier<HubManager> getHubManagerSupplier() {
+    public LazyOneshotSupplier<HubManager> getHubManagerSupplier() {
         return mHubManagerSupplier;
     }
 
@@ -140,7 +143,7 @@ public class HubProvider {
      * throws an {@link IllegalStateException} once {@code #get()} is invoked on the result of
      * {@link #getHubManagerSupplier()}.
      */
-    public @NonNull PaneListBuilder getPaneListBuilder() {
+    public PaneListBuilder getPaneListBuilder() {
         return mPaneListBuilder;
     }
 
@@ -148,11 +151,11 @@ public class HubProvider {
      * Returns the {@link HubShowPaneHelper} used to select a pane to before opening the {@link
      * HubLayout}.
      */
-    public @NonNull HubShowPaneHelper getHubShowPaneHelper() {
+    public HubShowPaneHelper getHubShowPaneHelper() {
         return mHubShowPaneHelper;
     }
 
-    private void onHubManagerAvailable(@NonNull HubManager hubManager) {
+    private void onHubManagerAvailable(HubManager hubManager) {
         var focusedPaneSupplier = hubManager.getPaneManager().getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnPaneFocused);
         mHubTabSwitcherMetricsRecorder =
