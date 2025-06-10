@@ -1792,7 +1792,12 @@ public class RootUiCoordinator
                         sheetInitializedCallback,
                         mActivity.getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
-                        () -> mActivity.findViewById(R.id.sheet_container),
+                        () -> {
+                            if (mActivity != null) {
+                                return mActivity.findViewById(R.id.sheet_container);
+                            }
+                            return null;
+                        },
                         () -> {
                             return mEdgeToEdgeControllerSupplier.get() == null
                                     ? 0
