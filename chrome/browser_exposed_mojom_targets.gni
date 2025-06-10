@@ -15,6 +15,7 @@ browser_exposed_mojom_targets = [
   "//cc/mojom:layer_trees",
   "//cc/mojom:mojom",
   "//chrome/browser/glic:mojo_bindings",
+  "//chrome/browser/glic/fre:mojo_bindings",
   "//chrome/browser/lens/core/mojom:mojo_bindings",
   "//chrome/browser/media:mojo_bindings",
   "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",

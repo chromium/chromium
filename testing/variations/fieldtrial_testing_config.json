@@ -10394,7 +10394,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10410,7 +10411,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10441,7 +10443,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10476,7 +10479,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10507,7 +10511,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10523,7 +10528,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
@@ -10544,7 +10550,8 @@
         {
             "platforms": [
                 "mac",
-                "windows"
+                "windows",
+                "linux"
             ],
             "experiments": [
                 {
