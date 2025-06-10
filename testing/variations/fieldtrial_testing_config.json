@@ -19726,6 +19726,21 @@
             ]
         }
     ],
+    "RefreshTokenV3Feature": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RefreshTokenV3Feature"
+                    ]
+                }
+            ]
+        }
+    ],
     "RegisterOsUpdateHandlerWin": [
         {
             "platforms": [
