@@ -79,6 +79,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
@@ -87,6 +88,7 @@ import java.util.Set;
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
     static final String COMPONENT_NAME = "GridTabSwitcher";
+    static final int XR_FADING_EDGE_LENGTH_PX = 24;
 
     private final MessageUpdateObserver mMessageUpdateObserver =
             new MessageUpdateObserver() {
@@ -358,10 +360,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
-            mTabListOnScrollListener
-                    .getYOffsetNonZeroSupplier()
-                    .addObserver(setHairlineVisibilityCallback);
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
+
+            if (XrUtils.isXrDevice()) {
+                recyclerView.setVerticalFadingEdgeEnabled(true);
+                recyclerView.setFadingEdgeLength(XR_FADING_EDGE_LENGTH_PX);
+            } else {
+                mTabListOnScrollListener
+                        .getYOffsetNonZeroSupplier()
+                        .addObserver(setHairlineVisibilityCallback);
+            }
+
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setBackgroundColor(Color.TRANSPARENT);
             recyclerView.addOnScrollListener(mTabListOnScrollListener);
