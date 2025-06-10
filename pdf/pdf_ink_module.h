@@ -332,13 +332,17 @@ class PdfInkModule {
     SkRect clip_rect;
   };
 
-  // Returns whether the event was handled or not.
+  // Event handlers. Returns whether the event was handled or not.
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);
   bool OnTouchStart(const blink::WebTouchEvent& event);
   bool OnTouchEnd(const blink::WebTouchEvent& event);
   bool OnTouchMove(const blink::WebTouchEvent& event);
+
+  // Helper for event handlers above that deals with potentially missing events.
+  // Can only be called when is_drawing_stroke() returns true.
+  void MaybeFinishStrokeForMissingMouseUpEvent();
 
   // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartStroke(const gfx::PointF& position,

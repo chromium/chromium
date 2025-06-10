@@ -439,17 +439,9 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
 
   gfx::PointF position = normalized_event.PositionInWidget();
   if (is_drawing_stroke()) {
-    DrawingStrokeState& state = drawing_stroke_state();
-    if (state.start_time.has_value()) {
-      CHECK(state.input_last_event.has_value());
-      const DrawingStrokeState::EventDetails& input_last_event =
-          state.input_last_event.value();
-      bool mouse_up_result = OnMouseUp(GenerateLeftMouseUpEvent(
-          input_last_event.position, input_last_event.timestamp));
-      CHECK(mouse_up_result);
-    }
+    MaybeFinishStrokeForMissingMouseUpEvent();
 
-    if (IsHighlightingTextAtPosition(state, position)) {
+    if (IsHighlightingTextAtPosition(drawing_stroke_state(), position)) {
       return StartTextHighlight(position, event.ClickCount(), event.TimeStamp(),
                                 ink::StrokeInput::ToolType::kMouse);
     }
@@ -560,6 +552,8 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
 
   gfx::PointF position = event.touches[0].PositionInWidget();
   if (is_drawing_stroke()) {
+    MaybeFinishStrokeForMissingMouseUpEvent();
+
     if (IsHighlightingTextAtPosition(drawing_stroke_state(), position)) {
       // Multi-click text selection for touch is not supported.
       return StartTextHighlight(position, /*click_count=*/1, event.TimeStamp(),
@@ -615,6 +609,20 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   return is_drawing_stroke()
              ? ContinueStroke(position, event.TimeStamp(), tool_type)
              : ContinueEraseStroke(position, tool_type);
+}
+
+void PdfInkModule::MaybeFinishStrokeForMissingMouseUpEvent() {
+  DrawingStrokeState& state = drawing_stroke_state();
+  if (!state.start_time.has_value()) {
+    return;
+  }
+
+  CHECK(state.input_last_event.has_value());
+  const DrawingStrokeState::EventDetails& input_last_event =
+      state.input_last_event.value();
+  bool mouse_up_result = OnMouseUp(GenerateLeftMouseUpEvent(
+      input_last_event.position, input_last_event.timestamp));
+  CHECK(mouse_up_result);
 }
 
 bool PdfInkModule::StartStroke(const gfx::PointF& position,

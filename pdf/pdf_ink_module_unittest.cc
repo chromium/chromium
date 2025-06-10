@@ -2048,6 +2048,25 @@ TEST_P(PdfInkModuleStrokeTest, StrokeMissedEndEventThenMouseMoveDuringErasing) {
   RunStrokeMissedEndEventThenMouseMoveTest();
 }
 
+TEST_P(PdfInkModuleStrokeTest, StrokeWithNoEndEventThenTouchStart) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder().CreateLeftClickAtPosition(kMouseDownPoint).Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kMouseMovePoint);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event has yet to happen, the next touch start event
+  // should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(
+      CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
+                       base::span_from_ref(kMouseDownPoint))));
+}
+
 TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   EnableDrawAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
