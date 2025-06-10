@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
@@ -130,7 +130,7 @@ Button::PressedCallback::operator bool() const {
 
 void Button::PressedCallback::Run(const ui::Event& event) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](base::OnceClosure& closure) { std::move(closure).Run(); },
           [](const base::RepeatingClosure& closure) { closure.Run(); },
           [&](const Callback& callback) { callback.Run(event); },

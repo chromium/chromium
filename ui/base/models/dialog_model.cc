@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -112,7 +112,7 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
   CHECK(params.is_visible_);
   CHECK(!model_button.has_value());
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](decltype(base::DoNothing())& callback) {
             // Intentional noop
           },
@@ -241,7 +241,7 @@ bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
 
 bool DialogModel::RunButtonCallback(ButtonCallbackVariant& callback_variant) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](decltype(base::DoNothing())& callback) { return true; },
           [](base::RepeatingCallback<bool()>& callback) {
             return callback.Run();

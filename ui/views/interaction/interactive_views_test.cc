@@ -10,11 +10,11 @@
 #include <variant>
 
 #include "base/functional/callback_forward.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
@@ -234,7 +234,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
 InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(AbsoluteViewSpecifier spec) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](View* view) {
             CHECK(view) << "NameView(View*): view must be set.";
             return base::BindOnce(
@@ -266,7 +266,7 @@ InteractiveViewsTestApi::GetFindViewCallback(AbsoluteViewSpecifier spec) {
 InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(ChildViewSpecifier spec) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](size_t index) {
             return base::BindOnce(
                 [](size_t index, View* parent) -> View* {
@@ -329,7 +329,7 @@ void InteractiveViewsTestApi::SetContextWidget(Widget* widget) {
 InteractiveViewsTestApi::RelativePositionCallback
 InteractiveViewsTestApi::GetPositionCallback(AbsolutePositionSpecifier spec) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const gfx::Point& point) {
             return base::BindOnce(
                 [](gfx::Point p, ui::TrackedElement*) { return p; }, point);
@@ -350,18 +350,18 @@ InteractiveViewsTestApi::GetPositionCallback(AbsolutePositionSpecifier spec) {
 InteractiveViewsTestApi::RelativePositionCallback
 InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
   return std::visit(
-      base::Overloaded{[](RelativePositionCallback& callback) {
-                         return std::move(callback);
-                       },
-                       [](CenterPoint) {
-                         return base::BindOnce([](ui::TrackedElement* el) {
-                           CHECK(el->IsA<views::TrackedElementViews>());
-                           return el->AsA<views::TrackedElementViews>()
-                               ->view()
-                               ->GetBoundsInScreen()
-                               .CenterPoint();
-                         });
-                       }},
+      absl::Overload{[](RelativePositionCallback& callback) {
+                       return std::move(callback);
+                     },
+                     [](CenterPoint) {
+                       return base::BindOnce([](ui::TrackedElement* el) {
+                         CHECK(el->IsA<views::TrackedElementViews>());
+                         return el->AsA<views::TrackedElementViews>()
+                             ->view()
+                             ->GetBoundsInScreen()
+                             .CenterPoint();
+                       });
+                     }},
       spec);
 }
 

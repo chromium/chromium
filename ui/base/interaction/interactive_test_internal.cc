@@ -16,10 +16,10 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -361,7 +361,7 @@ std::string InteractiveTestPrivate::DebugDumpBounds(
 void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
                     ElementSpecifier element) {
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&builder](ElementIdentifier id) { builder.SetElementID(id); },
           [&builder](std::string_view name) { builder.SetElementName(name); }},
       element);
@@ -369,10 +369,10 @@ void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
 
 std::string DescribeElement(ElementSpecifier element) {
   return std::visit(
-      base::Overloaded{[](ElementIdentifier id) { return id.GetName(); },
-                       [](std::string_view name) {
-                         return base::StringPrintf("\"%s\"", name.data());
-                       }},
+      absl::Overload{[](ElementIdentifier id) { return id.GetName(); },
+                     [](std::string_view name) {
+                       return base::StringPrintf("\"%s\"", name.data());
+                     }},
       element);
 }
 
