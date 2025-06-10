@@ -113,7 +113,6 @@ class MockProductSpecificationsServerProxy
   MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url,
-               const std::string& http_method,
                const std::string& post_data),
               (override));
 };

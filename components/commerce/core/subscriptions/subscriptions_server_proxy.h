@@ -67,7 +67,7 @@ class SubscriptionsServerProxy {
   // This method could be overridden in tests.
   virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
   CreateEndpointFetcher(const GURL& url,
-                        const std::string& http_method,
+                        const endpoint_fetcher::HttpMethod http_method,
                         const std::string& post_data,
                         const net::NetworkTrafficAnnotationTag& annotation_tag);
 

@@ -80,7 +80,7 @@ class AccountChecker {
   virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
   CreateEndpointFetcher(const std::string& oauth_consumer_name,
                         const GURL& url,
-                        const std::string& http_method,
+                        const endpoint_fetcher::HttpMethod http_method,
                         const std::string& content_type,
                         const std::vector<std::string>& scopes,
                         const base::TimeDelta& timeout,

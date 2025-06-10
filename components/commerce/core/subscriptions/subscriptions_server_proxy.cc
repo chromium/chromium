@@ -145,7 +145,8 @@ void SubscriptionsServerProxy::Create(
           }
         })");
 
-  auto fetcher = CreateEndpointFetcher(GURL(service_url), kPostHttpMethod,
+  auto fetcher = CreateEndpointFetcher(GURL(service_url),
+                                       endpoint_fetcher::HttpMethod::kPost,
                                        post_data, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
@@ -216,7 +217,8 @@ void SubscriptionsServerProxy::Delete(
           }
         })");
 
-  auto fetcher = CreateEndpointFetcher(GURL(service_url), kPostHttpMethod,
+  auto fetcher = CreateEndpointFetcher(GURL(service_url),
+                                       endpoint_fetcher::HttpMethod::kPost,
                                        post_data, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
@@ -271,7 +273,8 @@ void SubscriptionsServerProxy::Get(SubscriptionType type,
           }
         })");
 
-  auto fetcher = CreateEndpointFetcher(GURL(service_url), kGetHttpMethod,
+  auto fetcher = CreateEndpointFetcher(GURL(service_url),
+                                       endpoint_fetcher::HttpMethod::kGet,
                                        kEmptyPostData, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
@@ -282,7 +285,7 @@ void SubscriptionsServerProxy::Get(SubscriptionType type,
 std::unique_ptr<EndpointFetcher>
 SubscriptionsServerProxy::CreateEndpointFetcher(
     const GURL& url,
-    const std::string& http_method,
+    const endpoint_fetcher::HttpMethod http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   // If ReplaceSyncPromosWithSignInPromos is enabled - ConsentLevel::kSync is no
@@ -291,11 +294,19 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
-  return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, http_method, kContentType,
-      std::vector<std::string>{kOAuthScope},
-      base::Milliseconds(kTimeoutMs.Get()), post_data, annotation_tag,
-      identity_manager_, consent_level);
+  const EndpointFetcher::RequestParams request_params =
+      EndpointFetcher::RequestParams::Builder(http_method, annotation_tag)
+          .SetUrl(url)
+          .SetContentType(kContentType)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+          .SetConsentLevel(consent_level)
+          .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
+          .SetOauthConsumerName(kOAuthName)
+          .SetPostData(post_data)
+          .Build();
+  return std::make_unique<EndpointFetcher>(url_loader_factory_,
+                                           identity_manager_, request_params);
 }
 
 void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(

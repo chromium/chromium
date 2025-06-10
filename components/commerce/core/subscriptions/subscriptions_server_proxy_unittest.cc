@@ -124,7 +124,7 @@ class SpySubscriptionsServerProxy : public SubscriptionsServerProxy {
   MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url,
-               const std::string& http_method,
+               const endpoint_fetcher::HttpMethod http_method,
                const std::string& post_data,
                const net::NetworkTrafficAnnotationTag& annotation_tag),
               (override));
@@ -163,7 +163,8 @@ class SubscriptionsServerProxyTest : public testing::Test {
 TEST_F(SubscriptionsServerProxyTest, TestCreate) {
   fetcher_->SetFetchResponse(kResponseSucceeded);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForCreate, _))
       .Times(1);
 
@@ -204,7 +205,8 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_EmptyList) {
 TEST_F(SubscriptionsServerProxyTest, TestCreate_ServerFailed) {
   fetcher_->SetFetchResponse(kResponseFailed);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForCreate, _))
       .Times(1);
 
@@ -225,7 +227,8 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_ServerFailed) {
 TEST_F(SubscriptionsServerProxyTest, TestCreate_WrongHttpCode) {
   fetcher_->SetFetchResponse(kResponseSucceeded, net::HTTP_NOT_FOUND);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForCreate, _))
       .Times(1);
 
@@ -246,7 +249,8 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_WrongHttpCode) {
 TEST_F(SubscriptionsServerProxyTest, TestCreate_EmptyResponse) {
   fetcher_->SetFetchResponse("");
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForCreate, _))
       .Times(1);
 
@@ -267,7 +271,8 @@ TEST_F(SubscriptionsServerProxyTest, TestCreate_EmptyResponse) {
 TEST_F(SubscriptionsServerProxyTest, TestDelete) {
   fetcher_->SetFetchResponse(kResponseSucceeded);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForDelete, _))
       .Times(1);
 
@@ -308,7 +313,8 @@ TEST_F(SubscriptionsServerProxyTest, TestDelete_EmptyList) {
 TEST_F(SubscriptionsServerProxyTest, TestDelete_ServerFailed) {
   fetcher_->SetFetchResponse(kResponseFailed);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForManage), kPostHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForManage),
+                                    endpoint_fetcher::HttpMethod::kPost,
                                     kExpectedPostDataForDelete, _))
       .Times(1);
 
@@ -329,7 +335,8 @@ TEST_F(SubscriptionsServerProxyTest, TestDelete_ServerFailed) {
 TEST_F(SubscriptionsServerProxyTest, TestGet) {
   fetcher_->SetFetchResponse(kValidGetResponse);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForGet), kGetHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForGet),
+                                    endpoint_fetcher::HttpMethod::kGet,
                                     kEmptyPostData, _))
       .Times(1);
 
@@ -376,7 +383,8 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_WrongType) {
 TEST_F(SubscriptionsServerProxyTest, TestGet_WrongHttpCode) {
   fetcher_->SetFetchResponse(kValidGetResponse, net::HTTP_NOT_FOUND);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForGet), kGetHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForGet),
+                                    endpoint_fetcher::HttpMethod::kGet,
                                     kEmptyPostData, _))
       .Times(1);
 
@@ -399,7 +407,8 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_FetchError) {
       kValidGetResponse, net::HTTP_OK,
       std::make_optional<FetchErrorType>(FetchErrorType::kNetError));
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForGet), kGetHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForGet),
+                                    endpoint_fetcher::HttpMethod::kGet,
                                     kEmptyPostData, _))
       .Times(1);
 
@@ -420,7 +429,8 @@ TEST_F(SubscriptionsServerProxyTest, TestGet_FetchError) {
 TEST_F(SubscriptionsServerProxyTest, TestGet_NoSubscriptions) {
   fetcher_->SetFetchResponse("");
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kServiceUrlForGet), kGetHttpMethod,
+              CreateEndpointFetcher(GURL(kServiceUrlForGet),
+                                    endpoint_fetcher::HttpMethod::kGet,
                                     kEmptyPostData, _))
       .Times(1);
 

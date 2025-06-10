@@ -139,11 +139,21 @@ void ClusterServerProxy::GetComparableProducts(
 std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
     const GURL& url,
     const std::string& post_data) {
-  return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, kPostHttpMethod, kContentType,
-      std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
-      post_data, kGetComparableProductsTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSync);
+  const EndpointFetcher::RequestParams request_params =
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kPost,
+          kGetComparableProductsTrafficAnnotation)
+          .SetUrl(url)
+          .SetContentType(kContentType)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+          .SetConsentLevel(signin::ConsentLevel::kSync)
+          .SetTimeout(base::Milliseconds(kTimeoutMs))
+          .SetOauthConsumerName(kOAuthName)
+          .SetPostData(post_data)
+          .Build();
+  return std::make_unique<EndpointFetcher>(url_loader_factory_,
+                                           identity_manager_, request_params);
 }
 
 void ClusterServerProxy::HandleCompareResponse(

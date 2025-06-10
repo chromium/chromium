@@ -243,9 +243,8 @@ void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     specs_url = kEndpointUrl;
   }
 
-  auto fetcher =
-      CreateEndpointFetcher(GURL(specs_url), kPostHttpMethod,
-                            GetJsonStringForProductClusterIds(cluster_ids));
+  auto fetcher = CreateEndpointFetcher(
+      GURL(specs_url), GetJsonStringForProductClusterIds(cluster_ids));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
@@ -298,13 +297,21 @@ void ProductSpecificationsServerProxy::HandleSpecificationsResponse(
 std::unique_ptr<EndpointFetcher>
 ProductSpecificationsServerProxy::CreateEndpointFetcher(
     const GURL& url,
-    const std::string& http_method,
     const std::string& post_data) {
-  return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, http_method, kContentType,
-      std::vector<std::string>{kOAuthScope}, base::Milliseconds(kTimeoutMs),
-      post_data, kShoppingListTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSync);
+  const EndpointFetcher::RequestParams request_params =
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kPost, kShoppingListTrafficAnnotation)
+          .SetUrl(url)
+          .SetContentType(kContentType)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOauthScopes(std::vector<std::string>{kOAuthScope})
+          .SetConsentLevel(signin::ConsentLevel::kSync)
+          .SetTimeout(base::Milliseconds(kTimeoutMs))
+          .SetOauthConsumerName(kOAuthName)
+          .SetPostData(post_data)
+          .Build();
+  return std::make_unique<EndpointFetcher>(url_loader_factory_,
+                                           identity_manager_, request_params);
 }
 
 std::optional<ProductSpecifications>
