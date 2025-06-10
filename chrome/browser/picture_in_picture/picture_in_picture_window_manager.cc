@@ -28,6 +28,7 @@
 // TODO(crbug.com/421608904): include auto_picture_in_picture_tab_helper for
 // Android.
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -733,6 +734,61 @@ void PictureInPictureWindowManager::OnScopedDisallowPictureInPictureDestroyed(
   number_of_existing_scoped_disallow_picture_in_pictures_--;
 }
 
+void PictureInPictureWindowManager::OnPictureInPictureWindowShown(
+    PictureInPictureWindow* window) {
+  picture_in_picture_window_ = window;
+  if (IsPictureInPictureForceTucked()) {
+    picture_in_picture_window_->SetForcedTucking(true);
+    RecordPictureInPictureTucked(PictureInPictureTuckedType::kNewWindowTucked);
+  }
+}
+
+void PictureInPictureWindowManager::OnPictureInPictureWindowHidden(
+    PictureInPictureWindow* window) {
+  if (picture_in_picture_window_ == window) {
+    picture_in_picture_window_ = nullptr;
+  }
+}
+
+bool PictureInPictureWindowManager::ShouldFileDialogTuckPictureInPicture(
+    content::WebContents* owner_web_contents) {
+  if (!base::FeatureList::IsEnabled(media::kFileDialogsTuckPictureInPicture)) {
+    return false;
+  }
+
+  // File dialogs opened inside document picture-in-picture windows should not
+  // tuck picture-in-picture.
+  if (pip_window_controller_ &&
+      pip_window_controller_->GetChildWebContents() == owner_web_contents) {
+    return false;
+  }
+
+  return true;
+}
+
+void PictureInPictureWindowManager::OnScopedTuckPictureInPictureCreated(
+    base::PassKey<ScopedTuckPictureInPicture>) {
+  number_of_existing_scoped_tuck_picture_in_pictures_++;
+  if (picture_in_picture_window_) {
+    picture_in_picture_window_->SetForcedTucking(true);
+    RecordPictureInPictureTucked(
+        PictureInPictureTuckedType::kExistingWindowTucked);
+  }
+}
+
+void PictureInPictureWindowManager::OnScopedTuckPictureInPictureDestroyed(
+    base::PassKey<ScopedTuckPictureInPicture>) {
+  CHECK_NE(number_of_existing_scoped_tuck_picture_in_pictures_, 0u);
+  number_of_existing_scoped_tuck_picture_in_pictures_--;
+  if (picture_in_picture_window_ && !IsPictureInPictureForceTucked()) {
+    picture_in_picture_window_->SetForcedTucking(false);
+  }
+}
+
+bool PictureInPictureWindowManager::IsPictureInPictureForceTucked() const {
+  return number_of_existing_scoped_tuck_picture_in_pictures_ > 0;
+}
+
 void PictureInPictureWindowManager::
     RecordDocumentPictureInPictureRequestedSizeMetrics(
         const blink::mojom::PictureInPictureWindowOptions& pip_options,
@@ -780,6 +836,11 @@ void PictureInPictureWindowManager::
 void PictureInPictureWindowManager::RecordPictureInPictureDisallowed(
     PictureInPictureDisallowedType type) {
   base::UmaHistogramEnumeration("Media.PictureInPicture.Disallowed", type);
+}
+
+void PictureInPictureWindowManager::RecordPictureInPictureTucked(
+    PictureInPictureTuckedType type) {
+  base::UmaHistogramEnumeration("Media.PictureInPicture.Tucked", type);
 }
 
 void PictureInPictureWindowManager::MaybeRecordPictureInPictureChanged(

@@ -60,6 +60,7 @@
 #else
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
+#include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using blink::mojom::FileChooserFileInfo;
@@ -614,6 +615,10 @@ void FileSelectHelper::RunFileChooser(
           ->ShouldFileDialogBlockPictureInPicture(web_contents_)) {
     scoped_disallow_picture_in_picture_ =
         std::make_unique<ScopedDisallowPictureInPicture>();
+  } else if (PictureInPictureWindowManager::GetInstance()
+                 ->ShouldFileDialogTuckPictureInPicture(web_contents_)) {
+    scoped_tuck_picture_in_picture_ =
+        std::make_unique<ScopedTuckPictureInPicture>();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -791,6 +796,7 @@ void FileSelectHelper::RunFileChooserEnd() {
 
 #if !BUILDFLAG(IS_ANDROID)
   scoped_disallow_picture_in_picture_.reset();
+  scoped_tuck_picture_in_picture_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   Release();

@@ -36,9 +36,11 @@ source_set("picture_in_picture") {
       "picture_in_picture_occlusion_observer.h",
       "picture_in_picture_occlusion_tracker.h",
       "picture_in_picture_occlusion_tracker_observer.h",
+      "picture_in_picture_window.h",
       "picture_in_picture_window_manager_uma_helper.h",
       "scoped_disallow_picture_in_picture.h",
       "scoped_picture_in_picture_occlusion_observation.h",
+      "scoped_tuck_picture_in_picture.h",
     ]
     public_deps += [
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
@@ -102,6 +104,7 @@ source_set("impl") {
       "picture_in_picture_window_manager_uma_helper.cc",
       "scoped_disallow_picture_in_picture.cc",
       "scoped_picture_in_picture_occlusion_observation.cc",
+      "scoped_tuck_picture_in_picture.cc",
     ]
     deps += [
       "//chrome/app:generated_resources",

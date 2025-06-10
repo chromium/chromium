@@ -20,8 +20,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
 #include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
+#include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "media/base/media_switches.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -64,6 +66,25 @@ class MockPictureInPictureWindowController
   MOCK_METHOD(content::WebContents*, GetChildWebContents, (), (override));
   MOCK_METHOD(std::optional<url::Origin>, GetOrigin, (), (override));
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+class MockPictureInPictureWindow : public PictureInPictureWindow {
+ public:
+  MockPictureInPictureWindow() = default;
+  MockPictureInPictureWindow(const MockPictureInPictureWindow&) = delete;
+  MockPictureInPictureWindow& operator=(const MockPictureInPictureWindow&) =
+      delete;
+  ~MockPictureInPictureWindow() override = default;
+
+  bool is_tucking() const { return is_tucking_; }
+
+  // PictureInPictureWindow:
+  void SetForcedTucking(bool tuck) override { is_tucking_ = tuck; }
+
+ private:
+  bool is_tucking_ = false;
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class PictureInPictureWindowManagerTest
     : public ChromeRenderViewHostTestHarness {
@@ -473,6 +494,103 @@ TEST_F(PictureInPictureWindowManagerTest,
         PictureInPictureWindowManager::GetInstance()
             ->ShouldFileDialogBlockPictureInPicture(child_web_contents()));
   }
+}
+
+TEST_F(PictureInPictureWindowManagerTest, CanForceTuckPictureInPicture) {
+  {
+    // Force-tucking before opening a picture-in-picture window should tuck it.
+    auto tuck = std::make_unique<ScopedTuckPictureInPicture>();
+    MockPictureInPictureWindow pip_window;
+
+    PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
+        &pip_window);
+    EXPECT_TRUE(pip_window.is_tucking());
+
+    tuck.reset();
+    EXPECT_FALSE(pip_window.is_tucking());
+
+    PictureInPictureWindowManager::GetInstance()
+        ->OnPictureInPictureWindowHidden(&pip_window);
+  }
+
+  {
+    // Force-tucking after opening a picture-in-picture window should tuck it.
+    MockPictureInPictureWindow pip_window;
+    PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
+        &pip_window);
+
+    EXPECT_FALSE(pip_window.is_tucking());
+    auto tuck = std::make_unique<ScopedTuckPictureInPicture>();
+    EXPECT_TRUE(pip_window.is_tucking());
+
+    tuck.reset();
+    EXPECT_FALSE(pip_window.is_tucking());
+
+    PictureInPictureWindowManager::GetInstance()
+        ->OnPictureInPictureWindowHidden(&pip_window);
+  }
+
+  {
+    MockPictureInPictureWindow pip_window;
+    {
+      ScopedTuckPictureInPicture tuck1;
+
+      {
+        // Multiple ScopedTuckPictureInPicture should still tuck
+        // picture-in-picture windows.
+        ScopedTuckPictureInPicture tuck2;
+
+        PictureInPictureWindowManager::GetInstance()
+            ->OnPictureInPictureWindowShown(&pip_window);
+        EXPECT_TRUE(pip_window.is_tucking());
+      }
+
+      // When one of them is destroyed but the other remains, it should still
+      // remain tucked.
+      EXPECT_TRUE(pip_window.is_tucking());
+    }
+
+    // Once both have been destroyed, picture-in-picture windows should be
+    // untucked.
+    EXPECT_FALSE(pip_window.is_tucking());
+
+    PictureInPictureWindowManager::GetInstance()
+        ->OnPictureInPictureWindowHidden(&pip_window);
+  }
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       ShouldFileDialogTuckPictureInPicture) {
+  PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+      web_contents(), child_web_contents());
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(media::kFileDialogsTuckPictureInPicture);
+
+    // With the feature enabled, file dialogs that aren't on a document
+    // picture-in-picture window should tuck picture-in-picture windows.
+    EXPECT_TRUE(PictureInPictureWindowManager::GetInstance()
+                    ->ShouldFileDialogTuckPictureInPicture(web_contents()));
+    EXPECT_FALSE(
+        PictureInPictureWindowManager::GetInstance()
+            ->ShouldFileDialogTuckPictureInPicture(child_web_contents()));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(media::kFileDialogsTuckPictureInPicture);
+
+    // With the feature disabled, no file dialogs should tuck
+    // picture-in-picture windows.
+    EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                     ->ShouldFileDialogTuckPictureInPicture(web_contents()));
+    EXPECT_FALSE(
+        PictureInPictureWindowManager::GetInstance()
+            ->ShouldFileDialogTuckPictureInPicture(child_web_contents()));
+  }
+
+  PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
 TEST_F(PictureInPictureWindowManagerTest,

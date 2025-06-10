@@ -15,6 +15,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
@@ -793,6 +794,45 @@ TEST_F(VideoOverlayWindowViewsTest, LiveStatusNotDrawnWhen2024UIIsDisabled) {
   overlay_window().SetMediaPosition(media_position);
   views::Label* live_status = overlay_window().live_status_for_testing();
   ASSERT_EQ(nullptr, live_status);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, CanBeTuckedToTheSideOfTheScreen) {
+  // Place the window on the left side of the screen.
+  SetDisplayWorkArea({0, 0, 2000, 2000});
+  overlay_window().SetBounds({{400, 400}, {500, 500}});
+
+  // If we tell it to force tucking, it should tuck to the left side of the
+  // screen.
+  overlay_window().SetForcedTucking(true);
+  EXPECT_LT(overlay_window().GetWindowBoundsInScreen().x(), 0);
+
+  // If we tell it to stop tucking, it should be put back in its original
+  // position.
+  overlay_window().SetForcedTucking(false);
+  EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, UntucksWhenReshownIfNecessary) {
+  // Place the window on the left side of the screen.
+  SetDisplayWorkArea({0, 0, 2000, 2000});
+  overlay_window().SetBounds({{400, 400}, {500, 500}});
+  overlay_window().ShowInactive();
+
+  // Start tucking via a ScopedTuckPictureInPicture.
+  auto scoped_tuck = std::make_unique<ScopedTuckPictureInPicture>();
+  EXPECT_LT(overlay_window().GetWindowBoundsInScreen().x(), 0);
+
+  // Hide ourselves. This will mean if tucking ends then the
+  // PictureInPictureWindowManager won't actually notify us.
+  overlay_window().Hide();
+
+  // End tucking.
+  scoped_tuck.reset();
+
+  // Show ourselves. We should check with the PictureInPictureWindowManager and
+  // realize we should no longer tuck.
+  overlay_window().ShowInactive();
+  EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
 }
 
 TEST_F(VideoOverlayWindowViewsTest,

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -610,6 +611,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() {
   base::UmaHistogramEnumeration("Media.DocumentPictureInPicture.CloseReason",
                                 close_reason_);
+  PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowHidden(
+      this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -874,6 +877,9 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
     tracker->OnPictureInPictureWidgetOpened(GetWidget());
   }
 
+  PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowShown(
+      this);
+
   BrowserNonClientFrameView::AddedToWidget();
 }
 
@@ -886,6 +892,10 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
   if (auto_pip_setting_overlay_) {
     auto_pip_setting_overlay_ = nullptr;
   }
+
+  PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowHidden(
+      this);
+  tucker_.reset();
 
   BrowserNonClientFrameView::RemovedFromWidget();
 }
@@ -920,8 +930,15 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
 
   if (!base::FeatureList::IsEnabled(
           media::kDocumentPictureInPictureAnimateResize) ||
-      !gfx::Animation::ShouldRenderRichAnimation()) {
+      !gfx::Animation::ShouldRenderRichAnimation() || is_tucking_forced_) {
     BrowserNonClientFrameView::SetFrameBounds(adjusted_bounds);
+
+    // If we're forced to tuck, then re-tuck after the size adjustment. Note
+    // that we also always skip the bounds change animation when tucking is
+    // forced.
+    if (is_tucking_forced_) {
+      tucker_->Tuck();
+    }
     return;
   }
   bounds_change_animation_ =
@@ -1087,10 +1104,53 @@ void PictureInPictureBrowserFrameView::OnWidgetDestroying(
   child_dialog_observer_helper_.reset();
 }
 
+void PictureInPictureBrowserFrameView::OnWidgetVisibilityChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (visible) {
+    EnforceTucking();
+  }
+}
+
 void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(new_bounds);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PictureInPictureWindow implementations:
+
+void PictureInPictureBrowserFrameView::SetForcedTucking(bool tuck) {
+  if (!tucker_) {
+    CHECK(GetWidget());
+    tucker_ = std::make_unique<PictureInPictureTucker>(*GetWidget());
+  }
+  is_tucking_forced_ = tuck;
+
+  // Attempting to tuck our Widget before it's been shown causes issues since
+  // it may be still adjusting its bounds. Once visible, tucking will be
+  // enforced.
+  if (GetWidget()->IsVisible()) {
+    EnforceTucking();
+  }
+}
+
+void PictureInPictureBrowserFrameView::EnforceTucking() {
+  // The `tucker_` will have been created if there's any tucking to be enforced.
+  if (!tucker_) {
+    return;
+  }
+
+  if (is_tucking_forced_) {
+    // Stop any existing bounds change animations.
+    if (bounds_change_animation_) {
+      bounds_change_animation_->End();
+    }
+    tucker_->Tuck();
+  } else {
+    tucker_->Untuck();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

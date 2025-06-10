@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -33,6 +34,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserFrameBoundsChangeAnimation;
+class PictureInPictureTucker;
 
 namespace views {
 class Label;
@@ -50,6 +52,7 @@ class PictureInPictureBrowserFrameView
       public IconLabelBubbleView::Delegate,
       public ContentSettingImageView::Delegate,
       public views::WidgetObserver,
+      public PictureInPictureWindow,
       public gfx::AnimationDelegate {
   METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 
@@ -118,8 +121,12 @@ class PictureInPictureBrowserFrameView
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetVisibilityChanged(views::Widget* eidget, bool visible) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+
+  // PictureInPictureWindow:
+  void SetForcedTucking(bool tuck) override;
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
@@ -227,6 +234,8 @@ class PictureInPictureBrowserFrameView
  private:
   // Show `auto_pip_setting_overlay_` if we have it, and have a widget.
   void ShowOverlayIfNeeded();
+
+  void EnforceTucking();
 
   CloseReason close_reason_ = CloseReason::kOther;
 
@@ -379,6 +388,10 @@ class PictureInPictureBrowserFrameView
   // Animates programmatic changes to bounds (e.g. via `resizeTo()` or
   // `resizeBy()` calls).
   std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
+
+  // Used to tuck/untuck this widget into the side of the screen.
+  std::unique_ptr<PictureInPictureTucker> tucker_;
+  bool is_tucking_forced_ = false;
 
   base::WeakPtrFactory<PictureInPictureBrowserFrameView> weak_factory_{this};
 };

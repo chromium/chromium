@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
@@ -39,6 +40,7 @@ class HangUpButton;
 class OverlayWindowBackToTabButton;
 class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
+class PictureInPictureTucker;
 class PlaybackImageButton;
 class ResizeHandleButton;
 class SimpleOverlayWindowImageButton;
@@ -52,6 +54,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
                                 public views::Widget,
                                 public display::DisplayObserver,
                                 public views::ViewObserver,
+                                public PictureInPictureWindow,
                                 public AutoPipSettingOverlayView::Delegate {
  public:
   using GetOverlayViewCb =
@@ -119,6 +122,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+
+  // PictureInPictureWindow:
+  void SetForcedTucking(bool tuck) override;
 
   // AutoPipSettingOverlayView::Delegate:
   void OnAutoPipSettingOverlayViewHidden() override;
@@ -458,6 +464,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Whether or not the current frame sink for the surface displayed in the
   // |video_view_| is registered as the child of the overlay window frame sink.
   bool has_registered_frame_sink_hierarchy_ = false;
+
+  // Used to tuck/untuck this widget into the side of the screen.
+  std::unique_ptr<PictureInPictureTucker> tucker_;
+  bool is_tucking_forced_ = false;
 
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.

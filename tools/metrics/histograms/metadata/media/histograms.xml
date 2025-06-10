@@ -5154,6 +5154,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PictureInPicture.Tucked"
+    enum="PictureInPictureTuckedType" expires_after="2026-04-22">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <summary>
+    Recorded when a picture-in-picture window is tucked due to a
+    ScopedTuckPictureInPicture object. Records whether the tucked
+    picture-in-picture window was just opened or already existed when the
+    ScopedTuckPictureInPicture was created.
+  </summary>
+</histogram>
+
 <histogram name="Media.PictureInPicture.Window.TotalTime" units="ms"
     expires_after="2025-11-02">
   <owner>bkeen@google.com</owner>
