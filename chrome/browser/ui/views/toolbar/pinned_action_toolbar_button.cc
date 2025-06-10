@@ -41,6 +41,15 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace {
+// Width of the status indicator shown across the button.
+constexpr int kStatusIndicatorWidth = 14;
+// Height of the status indicator shown across the button.
+constexpr int kStatusIndicatorHeight = 2;
+// Spacing between the button's icon and the status indicator.
+constexpr int kStatusIndicatorSpacing = 1;
+}  // namespace
+
 DEFINE_UI_CLASS_PROPERTY_TYPE(PinnedToolbarActionFlexPriority)
 DEFINE_UI_CLASS_PROPERTY_KEY(
     std::underlying_type_t<PinnedToolbarActionFlexPriority>,
@@ -91,6 +100,8 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
 
   status_indicator_ =
       PinnedToolbarButtonStatusIndicator::Install(image_container_view());
+  status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
+                                kColorToolbarButtonIconInactive);
 
   // TODO(shibalik): Revisit since all pinned actions should not be toggle
   // buttons.
@@ -183,14 +194,12 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
 
 void PinnedActionToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
-  gfx::Rect status_rect(14, 2);
-  status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
-                                kColorToolbarButtonIconInactive);
-
-  gfx::Rect image_container_bounds = image_container_view()->GetLocalBounds();
-  int new_x = image_container_bounds.x() +
-              (image_container_bounds.width() - status_rect.width()) / 2;
-  int new_y = image_container_bounds.bottom() + 1;
+  gfx::Rect status_rect(kStatusIndicatorWidth, kStatusIndicatorHeight);
+  const gfx::Rect image_container_bounds =
+      image_container_view()->GetLocalBounds();
+  const int new_x = image_container_bounds.x() +
+                    (image_container_bounds.width() - status_rect.width()) / 2;
+  const int new_y = image_container_bounds.bottom() + kStatusIndicatorSpacing;
   // Set the new origin for status_rect
   status_rect.set_origin(gfx::Point(new_x, new_y));
   status_indicator_->SetBoundsRect(status_rect);

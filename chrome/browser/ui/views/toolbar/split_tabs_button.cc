@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/scoped_observation.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -80,10 +79,6 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
       PinnedToolbarButtonStatusIndicator::Install(image_container);
   status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
                                 kColorToolbarButtonIconInactive);
-  // Need to observe the image container view so that the status indicator can
-  // update its bounds when the image container bounds change.
-  image_container_observation_.Observe(image_container);
-
   UpdateButtonVisibility();
   split_tab_menu_ =
       std::make_unique<SplitTabMenuModel>(browser->tab_strip_model());
@@ -111,19 +106,17 @@ void SplitTabsToolbarButton::OnSplitTabChanged(const SplitTabChange& change) {
   }
 }
 
-void SplitTabsToolbarButton::OnViewBoundsChanged(View* observed_view) {
-  ToolbarButton::OnViewBoundsChanged(observed_view);
-  if (observed_view == image_container_view()) {
-    gfx::Rect status_rect(kStatusIndicatorWidth, kStatusIndicatorHeight);
-    const gfx::Rect image_container_bounds =
-        image_container_view()->GetLocalBounds();
-    const int new_x =
-        image_container_bounds.x() +
-        (image_container_bounds.width() - kStatusIndicatorWidth) / 2;
-    const int new_y = image_container_bounds.bottom() + kStatusIndicatorSpacing;
-    status_rect.set_origin(gfx::Point(new_x, new_y));
-    status_indicator_->SetBoundsRect(status_rect);
-  }
+void SplitTabsToolbarButton::Layout(PassKey) {
+  LayoutSuperclass<ToolbarButton>(this);
+  gfx::Rect status_rect(kStatusIndicatorWidth, kStatusIndicatorHeight);
+  const gfx::Rect image_container_bounds =
+      image_container_view()->GetLocalBounds();
+  const int new_x =
+      image_container_bounds.x() +
+      (image_container_bounds.width() - kStatusIndicatorWidth) / 2;
+  const int new_y = image_container_bounds.bottom() + kStatusIndicatorSpacing;
+  status_rect.set_origin(gfx::Point(new_x, new_y));
+  status_indicator_->SetBoundsRect(status_rect);
 }
 
 void SplitTabsToolbarButton::UpdateIcon() {

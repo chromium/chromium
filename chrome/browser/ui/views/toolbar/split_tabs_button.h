@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/prefs/pref_member.h"
@@ -24,8 +23,6 @@ class SimpleMenuModel;
 
 namespace views {
 class MenuRunner;
-class View;
-class ViewObserver;
 }  // namespace views
 
 // Pinnable toolbar button that allow users to create a split tab if the current
@@ -49,10 +46,8 @@ class SplitTabsToolbarButton : public ToolbarButton,
       const TabStripSelectionChange& selection) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
-  // views::ViewObserver override:
-  void OnViewBoundsChanged(View* observed_view) override;
-
   // ToolbarButton override:
+  void Layout(PassKey) override;
   void UpdateIcon() override;
 
   const std::optional<ToolbarButton::VectorIcons>& GetIconsForTesting();
@@ -66,8 +61,6 @@ class SplitTabsToolbarButton : public ToolbarButton,
   void UpdateAccessibilityRole(bool has_menu);
 
   BooleanPrefMember pin_state_;
-  base::ScopedObservation<views::View, views::ViewObserver>
-      image_container_observation_{this};
   raw_ptr<Browser> browser_;
   raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_;
   std::unique_ptr<ui::SimpleMenuModel> split_tab_menu_;
