@@ -1871,6 +1871,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Permissions.{Version}.{PermissionType}.PermissionRequestRelevance"
+    enum="PermissionRequestRelevance" expires_after="2026-03-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the generated relevance signal after a successful execution of the
+    available model.
+  </summary>
+  <token key="Version">
+    <variant name="AIv1"/>
+    <variant name="AIv3"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="Geolocation"/>
+    <variant name="Notifications"/>
+  </token>
+</histogram>
+
 <histogram name="SiteEngagementService.EngagementScore" units="units"
     expires_after="2025-11-16">
   <owner>calamity@chromium.org</owner>

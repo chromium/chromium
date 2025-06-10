@@ -2010,9 +2010,19 @@ void PermissionUmaUtil::RecordPermissionIndicatorElapsedTimeSinceLastUsage(
 
 // static
 void PermissionUmaUtil::RecordPermissionRequestRelevance(
-    PermissionRequestRelevance permission_request_relevance) {
-  base::UmaHistogramEnumeration("Permissions.AIv1.PermissionRequestRelevance",
-                                permission_request_relevance);
+    permissions::RequestType permission_request_type,
+    PermissionRequestRelevance permission_request_relevance,
+    std::string model_version) {
+  std::string permission_request_type_string =
+      permission_request_type == permissions::RequestType::kNotifications
+          ? "Notifications"
+          : "Geolocation";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Permissions.", model_version, ".",
+                    permission_request_type_string,
+                    ".PermissionRequestRelevance"}),
+      permission_request_relevance);
 }
 
 // static

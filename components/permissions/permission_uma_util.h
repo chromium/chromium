@@ -891,7 +891,9 @@ class PermissionUmaUtil {
       base::TimeDelta time_delta);
 
   static void RecordPermissionRequestRelevance(
-      PermissionRequestRelevance permission_request_relevance);
+    permissions::RequestType permission_request_type,
+      PermissionRequestRelevance permission_request_relevance,
+      std::string model_version);
 
   // Records if the browser was always active while the prompt was
   // displaying.
