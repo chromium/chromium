@@ -1179,6 +1179,12 @@ const char kMvcUpdateViewWhenModelChangedName[] =
 const char kMvcUpdateViewWhenModelChangedDescription[] =
     "Performance optimization to the MVC framework where a View is only "
     "updated when the corresponding Model changes.";
+
+const char kReloadTabUiResourcesIfChangedName[] =
+    "Reload Tab UIResources if changed";
+const char kReloadTabUiResourcesIfChangedDescription[] =
+    "Performance optimization to the Tab Strip to reload UIResources when "
+    "producing a frame only if they have been re-rendered.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kCodeBasedRBDName[] = "Code-based RBD";

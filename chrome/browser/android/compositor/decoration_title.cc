@@ -7,9 +7,10 @@
 #include <android/bitmap.h>
 
 // #include "base/i18n/rtl.h"
+#include "base/feature_list.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
-#include "components/viz/common/features.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
@@ -49,9 +50,14 @@ void DecorationTitle::Update(int title_resource_id,
   is_incognito_ = is_incognito;
   is_rtl_ = is_rtl;
   fade_width_ = fade_width;
+  needs_refresh_ = true;
 }
 
 void DecorationTitle::SetUIResourceIds() {
+  if (!needs_refresh_ && base::FeatureList::IsEnabled(
+                             chrome::android::kReloadTabUiResourcesIfChanged)) {
+    return;
+  }
   ui::Resource* title_resource = resource_manager_->GetResource(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC_BITMAP, title_resource_id_);
   if (title_resource) {
@@ -60,6 +66,7 @@ void DecorationTitle::SetUIResourceIds() {
     title_size_ = title_resource->size();
   }
   size_ = calculateSize(0);
+  needs_refresh_ = false;
 }
 
 gfx::Size DecorationTitle::calculateSize(int favicon_width) {
