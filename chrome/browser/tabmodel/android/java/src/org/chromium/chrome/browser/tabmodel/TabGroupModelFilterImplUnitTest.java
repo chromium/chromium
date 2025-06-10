@@ -61,6 +61,7 @@ import org.chromium.base.TokenJni;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -2445,6 +2446,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Hiding_Undone() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -2472,6 +2474,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Hiding_Committed() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -2507,6 +2510,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseMultipleTabs_Hiding_GroupInParts() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -2549,6 +2553,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Deleted_Committed() {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
@@ -2578,6 +2583,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseAllTabs_Hiding_Undone() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -2633,6 +2639,7 @@ public class TabGroupModelFilterImplUnitTest {
      * correct.
      */
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseAllTabs_Hiding_PartialCommit() {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -2676,6 +2683,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseAllTabs_Deleted() {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));

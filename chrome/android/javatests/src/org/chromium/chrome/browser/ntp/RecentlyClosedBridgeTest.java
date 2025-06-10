@@ -27,8 +27,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -995,6 +997,7 @@ public class RecentlyClosedBridgeTest {
     /** Tests a hiding tab group is not saved when undoable. */
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testNoRecentlyClosedEntry_ForHidingTabGroup_Undoable() {
         if (mTabGroupModelFilter == null) return;
 
@@ -1021,6 +1024,7 @@ public class RecentlyClosedBridgeTest {
     /** Tests a hiding tab group is not saved when not undoable. */
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testNoRecentlyClosedEntry_ForHidingTabGroup_NotUndoable() {
         if (mTabGroupModelFilter == null) return;
 

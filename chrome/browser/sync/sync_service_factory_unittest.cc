@@ -132,7 +132,15 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::SEARCH_ENGINES);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
     datatypes.Put(syncer::SAVED_TAB_GROUP);
+#elif BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid)) {
+      datatypes.Put(syncer::SAVED_TAB_GROUP);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     datatypes.Put(syncer::DICTIONARY);

@@ -11113,6 +11113,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabGroupsColorUpdateGM3Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupsColorUpdateGM3)},
 
+    {"tab-group-sync-android", flag_descriptions::kTabGroupSyncAndroidName,
+     flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncAndroid)},
+
     {"tab-group-sync-disable-network-layer",
      flag_descriptions::kTabGroupSyncDisableNetworkLayerName,
      flag_descriptions::kTabGroupSyncDisableNetworkLayerDescription, kOsAndroid,

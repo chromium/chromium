@@ -74,6 +74,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -572,6 +573,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_ungroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -682,6 +686,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "Flaky - crbug.com/353463207")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupAccept() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -714,6 +721,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_noDeleteIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -751,6 +761,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "crbug.com/353463207")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -783,6 +796,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDoNotShowAgain() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -861,6 +877,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     public void testTabGroupDialogSingleTab() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 1);
@@ -874,6 +893,9 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    })
     @DisabledTest(message = "crbug.com/360393681")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupNoShowSyncDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
