@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import android.util.SparseArray;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
@@ -56,6 +58,8 @@ public class ButtonVisibilityRule {
         // have ButtonType.OTHER.
         private final @ButtonType int mCustomType;
 
+        private final @Nullable Callback<Boolean> mUpdateCallback;
+
         // Visibility of the button. It can be hidden either because there is no space (handled by
         // this class) or because of outside factors.
         private boolean mVisible;
@@ -64,7 +68,12 @@ public class ButtonVisibilityRule {
         // Only the buttons suppressed get turned on later again.
         private boolean mSuppressed;
 
-        Button(View view, boolean visible, @ButtonType int customType) {
+        Button(
+                View view,
+                boolean visible,
+                @ButtonType int customType,
+                @Nullable Callback<Boolean> callback) {
+            mUpdateCallback = callback;
             mView = view;
             mVisible = visible;
             mCustomType = customType;
@@ -136,7 +145,24 @@ public class ButtonVisibilityRule {
             int index, View view, boolean visible, @ButtonType int customType) {
         if (!mActivated) return;
 
-        mButtons.put(index, new Button(view, visible, customType));
+        mButtons.put(index, new Button(view, visible, customType, null));
+        if (mToolbarWidth > 0 && visible) refresh();
+    }
+
+    /**
+     * Add a button with a callback to be invoked when the visibility changes.
+     *
+     * @param index Index of the button.
+     * @param view {@link View} of the button to which the visibility is applied.
+     * @param visible {@code true} if the button is to be visible.
+     * @param callback {@link Callback} to be invoked when the visibility changes when the rule set
+     *     is applied.
+     */
+    public void addButtonWithCallback(
+            int index, View view, boolean visible, Callback<Boolean> callback) {
+        if (!mActivated) return;
+
+        mButtons.put(index, new Button(view, visible, ButtonType.OTHER, callback));
         if (mToolbarWidth > 0 && visible) refresh();
     }
 
@@ -175,6 +201,7 @@ public class ButtonVisibilityRule {
             button.mVisible = false;
             button.mView.setVisibility(View.GONE);
             button.mSuppressed = true;
+            if (button.mUpdateCallback != null) button.mUpdateCallback.onResult(false);
             urlBarWidth = getUrlBarWidth();
         }
         adjustMinimizeButtonPriority();
@@ -194,6 +221,7 @@ public class ButtonVisibilityRule {
                 minimize.mVisible = true;
                 minimize.mSuppressed = false;
                 minimize.mView.setVisibility(View.VISIBLE);
+                if (minimize.mUpdateCallback != null) minimize.mUpdateCallback.onResult(true);
             }
         }
     }
@@ -213,6 +241,7 @@ public class ButtonVisibilityRule {
             button.mVisible = false;
             button.mSuppressed = true;
             button.mView.setVisibility(View.GONE);
+            if (button.mUpdateCallback != null) button.mUpdateCallback.onResult(false);
             return true;
         }
         return false;
@@ -241,6 +270,7 @@ public class ButtonVisibilityRule {
             } else {
                 button.mView.setVisibility(View.VISIBLE);
                 button.mSuppressed = false;
+                if (button.mUpdateCallback != null) button.mUpdateCallback.onResult(true);
             }
         }
         adjustMinimizeButtonPriority();

@@ -109,6 +109,16 @@ public class OptionalButtonCoordinator {
     }
 
     /**
+     * Set the capability of optional button changing its own visibility. If set to {@code false},
+     * optional button leaves the visibility control to some other entity. {@code true} by default.
+     *
+     * @param canChange Whether optional button can change its own visibility.
+     */
+    public void setCanChangeVisibility(boolean canChange) {
+        mMediator.setCanChangeVisibility(canChange);
+    }
+
+    /**
      * Sets the collapsed state width of the button, overriding the default value.
      *
      * @param width The new collapsed state width.

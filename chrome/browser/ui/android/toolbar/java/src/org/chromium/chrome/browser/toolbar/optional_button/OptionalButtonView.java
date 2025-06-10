@@ -101,6 +101,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @AdaptiveToolbarButtonVariant int mCurrentButtonVariant =
             AdaptiveToolbarButtonVariant.NONE;
     private boolean mCanCurrentButtonShow;
+
+    // Indicates whether this optional button can change its own the visibility or leave the control
+    // to some other entity. {@code true} by default.
+    private boolean mCanChangeOwnVisibility = true;
     private @ButtonType int mCurrentButtonType;
     private @ButtonType int mNextButtonType;
 
@@ -440,6 +444,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setEnabled(enabled);
     }
 
+    void setCanChangeVisibility(boolean canChange) {
+        mCanChangeOwnVisibility = canChange;
+    }
+
     /**
      * Gets a handler used to schedule the action chip collapse animation after the action chip
      * finishes expanding. Tests can set their own handler with {@code setHandlerForTesting}.
@@ -512,7 +520,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mAnimationImage.setVisibility(GONE);
 
         if (mState == State.HIDDEN) {
-            this.setVisibility(GONE);
+            if (mCanChangeOwnVisibility) this.setVisibility(GONE);
         } else {
             mButton.setVisibility(VISIBLE);
             mButton.setImageDrawable(mIconDrawable);
@@ -752,7 +760,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         if (getVisibility() == GONE) {
-            setVisibility(VISIBLE);
+            if (mCanChangeOwnVisibility) this.setVisibility(VISIBLE);
             setWidth(0);
         }
 
@@ -884,7 +892,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         // Prepare views for the transition, these changes aren't animated.
-        this.setVisibility(VISIBLE);
+        if (mCanChangeOwnVisibility) this.setVisibility(VISIBLE);
         setWidth(0);
 
         mButton.setVisibility(GONE);

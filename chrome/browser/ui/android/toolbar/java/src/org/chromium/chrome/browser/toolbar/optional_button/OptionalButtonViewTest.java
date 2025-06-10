@@ -918,6 +918,17 @@ public class OptionalButtonViewTest {
     }
 
     @Test
+    public void testUpdateButton_canChangeOwnVisibility() {
+        ButtonDataImpl buttonData = getDataForReaderModeActionChip();
+        mOptionalButtonView.setVisibility(View.GONE);
+        mOptionalButtonView.setCanChangeVisibility(false);
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // OptionalButtonView stays invisible after going through the animation.
+        assertEquals(View.GONE, mOptionalButtonView.getVisibility());
+    }
+
+    @Test
     public void testUpdateButton_shouldWaitUntilTransitionRootIsLaidOut() {
         ButtonDataImpl buttonData = getDataForReaderModeActionChip();
 

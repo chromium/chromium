@@ -738,8 +738,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (hasMultipleDevButtons()) return false;
 
         // 2) Optional button view may be made hidden due to width constraint.
-        View optionalButtonWrapper = findViewById(R.id.optional_toolbar_button_wrapper);
-        return optionalButtonWrapper.getVisibility() == View.VISIBLE;
+        View optionalButtonContainer = findViewById(R.id.optional_toolbar_button_container);
+        return optionalButtonContainer.getVisibility() == View.VISIBLE;
     }
 
     private boolean hasMultipleDevButtons() {
@@ -1411,7 +1411,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
-            var lp = (FrameLayout.LayoutParams) optionalButton.getLayoutParams();
+            var lp = (LinearLayout.LayoutParams) optionalButton.getLayoutParams();
             lp.width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             optionalButton.setLayoutParams(lp);
 
@@ -1471,9 +1471,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         }
                         CustomTabToolbar.this.requestLayout();
                     });
-            View optionalButtonWrapper = findViewById(R.id.optional_toolbar_button_wrapper);
-            optionalButtonWrapper.setVisibility(View.VISIBLE);
-            mButtonVisibilityRule.addButton(ButtonId.MTB, optionalButtonWrapper, true);
+            View optionalButtonContainer = findViewById(R.id.optional_toolbar_button_container);
+            optionalButtonContainer.setVisibility(View.VISIBLE);
+            mButtonVisibilityRule.addButtonWithCallback(
+                    ButtonId.MTB,
+                    optionalButtonContainer,
+                    true,
+                    mOptionalButtonCoordinator::setCanChangeVisibility);
             return true;
         }
 

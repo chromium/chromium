@@ -142,19 +142,12 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
         android:orientation="horizontal">
-        <FrameLayout
-          android:id="@+id/optional_toolbar_button_wrapper"
-          android:layout_width="@dimen/toolbar_button_width"
-          android:layout_height="wrap_content"
-          android:visibility="gone"
-          tools:ignore="UselessParent">
-          <ViewStub
-              android:id="@+id/optional_button_stub"
-              android:inflatedId="@+id/optional_toolbar_button_container"
-              android:layout_gravity="top"
-              android:visibility="gone"
-              style="@style/ToolbarHoverableButton" />
-        </FrameLayout>
+        <ViewStub
+            android:id="@+id/optional_button_stub"
+            android:inflatedId="@+id/optional_toolbar_button_container"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            style="@style/ToolbarHoverableButton" />
     </LinearLayout>
 
     <!-- LINT.IfChange(MenuButton) -->

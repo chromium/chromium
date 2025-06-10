@@ -48,6 +48,10 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.IS_INCOGNITO_BRANDED, isIncognitoBranded);
     }
 
+    void setCanChangeVisibility(boolean canChange) {
+        mModel.set(OptionalButtonProperties.CAN_CHANGE_VISIBILITY, canChange);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mModel.set(
                 OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
