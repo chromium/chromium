@@ -1216,6 +1216,13 @@ BASE_FEATURE(kVerifyDidCommitParams,
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables V8 to use more memory on high-end Android devices.
+BASE_FEATURE(kV8HighEndAndroid,
+             "V8HighEndAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables per PWA System Media Controls. Only supported on Windows and macOS.
 BASE_FEATURE(kWebAppSystemMediaControls,
              "WebAppSystemMediaControls",
