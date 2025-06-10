@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/mapped_file.h"
 
 #include <stdlib.h>
@@ -24,33 +19,31 @@ void* MappedFile::Init(const base::FilePath& name, size_t size) {
   if (!size)
     size = GetLength();
 
-  buffer_ = malloc(size);
-  snapshot_ = malloc(size);
-  if (buffer_ && snapshot_ && Read(buffer_, size, 0)) {
-    memcpy(snapshot_, buffer_, size);
+  buffer_ = base::HeapArray<uint8_t>::Uninit(size);
+  if (Read(buffer_, 0)) {
+    snapshot_ = base::HeapArray<uint8_t>::CopiedFrom(buffer_.as_span());
+    view_size_ = size;
   } else {
-    free(buffer_);
-    free(snapshot_);
-    buffer_ = nullptr;
-    snapshot_ = nullptr;
+    buffer_ = base::HeapArray<uint8_t>();
+    view_size_ = 0;
   }
 
   init_ = true;
-  view_size_ = size;
-  return buffer_;
+  return buffer_.data();
 }
 
 void MappedFile::Flush() {
-  DCHECK(buffer_);
-  DCHECK(snapshot_);
-  const char* buffer_ptr = static_cast<const char*>(buffer_);
-  char* snapshot_ptr = static_cast<char*>(snapshot_);
   const size_t block_size = 4096;
   for (size_t offset = 0; offset < view_size_; offset += block_size) {
     size_t size = std::min(view_size_ - offset, block_size);
-    if (memcmp(snapshot_ptr + offset, buffer_ptr + offset, size)) {
-      memcpy(snapshot_ptr + offset, buffer_ptr + offset, size);
-      Write(snapshot_ptr + offset, size, offset);
+    base::span<const uint8_t> buffer_portion =
+        buffer_.as_span().subspan(offset, size);
+    base::span<uint8_t> snapshot_portion =
+        snapshot_.as_span().subspan(offset, size);
+
+    if (snapshot_portion != buffer_portion) {
+      snapshot_portion.copy_from_nonoverlapping(buffer_portion);
+      Write(snapshot_portion, offset);
     }
   }
 }
@@ -59,11 +52,7 @@ MappedFile::~MappedFile() {
   if (!init_)
     return;
 
-  if (buffer_ && snapshot_) {
-    Flush();
-  }
-  free(buffer_);
-  free(snapshot_);
+  Flush();
 }
 
 }  // namespace disk_cache

@@ -11,6 +11,8 @@ namespace disk_cache {
 
 // Note: Most of this class is implemented in platform-specific files.
 
+MappedFile::MappedFile() : File(true) {}
+
 bool MappedFile::Load(const FileBlock* block) {
   size_t offset = block->offset() + view_size_;
   return Read(block->buffer(), block->size(), offset);

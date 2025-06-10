@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
@@ -16,6 +18,10 @@
 #include "net/disk_cache/blockfile/file.h"
 #include "net/disk_cache/blockfile/file_block.h"
 #include "net/net_buildflags.h"
+
+#if BUILDFLAG(POSIX_BYPASS_MMAP)
+#include "base/containers/heap_array.h"
+#endif
 
 namespace base {
 class FilePath;
@@ -29,7 +35,7 @@ namespace disk_cache {
 // time).
 class NET_EXPORT_PRIVATE MappedFile : public File {
  public:
-  MappedFile() : File(true) {}
+  MappedFile();
 
   MappedFile(const MappedFile&) = delete;
   MappedFile& operator=(const MappedFile&) = delete;
@@ -39,9 +45,20 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
   // will be mapped in memory.
   void* Init(const base::FilePath& name, size_t size);
 
-  void* buffer() const {
-    return buffer_;
+#if BUILDFLAG(POSIX_BYPASS_MMAP)
+  void* buffer() { return reinterpret_cast<void*>(buffer_.data()); }
+
+  base::span<uint8_t> as_span() { return buffer_.as_span(); }
+#else
+  void* buffer() { return buffer_; }
+
+  base::span<uint8_t> as_span() {
+    // SAFETY: Class invariant is that a view of `buffer_` of size `view_size_`
+    // is mapped.
+    return UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<uint8_t*>(buffer_), view_size_));
   }
+#endif
 
   // Loads or stores a given block from the backing file (synchronously).
   bool Load(const FileBlock* block);
@@ -61,14 +78,20 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 #if BUILDFLAG(IS_WIN)
   HANDLE section_;
 #endif
-  // This field is not a raw_ptr<> because it is using mmap, MapViewOfFile or
-  // base::AllocPages directly.
-  // TODO(bartekn): This one has a malloc() path, consider rewriting after all.
-  RAW_PTR_EXCLUSION void* buffer_;  // Address of the memory mapped buffer.
-  size_t view_size_;  // Size of the memory pointed by buffer_.
+
+  size_t view_size_ = 0;  // Size of the memory pointed by `buffer_`.
+
 #if BUILDFLAG(POSIX_BYPASS_MMAP)
-  raw_ptr<void>
-      snapshot_;  // Copy of the buffer taken when it was last flushed.
+  // Copy of the buffer taken when it was last flushed.
+  base::HeapArray<uint8_t> snapshot_;
+
+  // Current buffer contents.
+  base::HeapArray<uint8_t> buffer_;
+#else
+  // Address of the memory mapped buffer.
+  // This field is not a raw_ptr<> because it is using mmap or MapViewOfFile
+  // directly.
+  RAW_PTR_EXCLUSION void* buffer_ = nullptr;
 #endif
 };
 

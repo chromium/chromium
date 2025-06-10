@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -18,6 +19,10 @@ void* MappedFile::Init(const base::FilePath& name, size_t size) {
   DCHECK(!init_);
   if (init_ || !File::Init(name))
     return nullptr;
+
+  if (!size) {
+    size = GetLength();
+  }
 
   buffer_ = nullptr;
   init_ = true;
@@ -32,9 +37,10 @@ void* MappedFile::Init(const base::FilePath& name, size_t size) {
 
   // Make sure we detect hardware failures reading the headers.
   size_t temp_len = size ? size : 4096;
-  auto temp = std::make_unique<char[]>(temp_len);
-  if (!Read(temp.get(), temp_len, 0))
+  auto temp = base::HeapArray<uint8_t>::Uninit(temp_len);
+  if (!Read(temp.as_span(), 0)) {
     return nullptr;
+  }
 
   return buffer_;
 }

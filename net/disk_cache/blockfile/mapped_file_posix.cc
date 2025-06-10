@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "net/disk_cache/disk_cache.h"
@@ -25,15 +26,18 @@ void* MappedFile::Init(const base::FilePath& name, size_t size) {
   buffer_ = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
                  platform_file(), 0);
   init_ = true;
-  view_size_ = size;
   DPLOG_IF(ERROR, buffer_ == MAP_FAILED) << "Failed to mmap " << name.value();
-  if (buffer_ == MAP_FAILED)
+  if (buffer_ == MAP_FAILED) {
     buffer_ = nullptr;
+  } else {
+    view_size_ = size;
+  }
 
   // Make sure we detect hardware failures reading the headers.
-  auto temp = std::make_unique<char[]>(temp_len);
-  if (!Read(temp.get(), temp_len, 0))
+  auto temp = base::HeapArray<uint8_t>::Uninit(temp_len);
+  if (!Read(temp.as_span(), 0)) {
     return nullptr;
+  }
 
   return buffer_;
 }

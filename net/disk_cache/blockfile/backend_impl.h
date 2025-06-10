@@ -17,12 +17,14 @@
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/block_files.h"
+#include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/eviction.h"
 #include "net/disk_cache/blockfile/in_flight_backend_io.h"
 #include "net/disk_cache/blockfile/rankings.h"
 #include "net/disk_cache/blockfile/stats.h"
 #include "net/disk_cache/blockfile/stress_support.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/net_buildflags.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -35,7 +37,6 @@ class NetLog;
 namespace disk_cache {
 
 class BackendCleanupTracker;
-struct Index;
 
 enum BackendFlags {
   kNone = 0,
@@ -400,6 +401,15 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // Pointer to the index data.
   // May point to a mapped file's unmapped memory at destruction time.
   raw_ptr<Index, DisableDanglingPtrDetection> data_;
+
+  // Points inside the same object as `data_`; note that this is usually
+  // a memory mapped file, so raw_span is only used in configurations where it's
+  // not.
+#if BUILDFLAG(POSIX_BYPASS_MMAP)
+  base::raw_span<CacheAddr> index_table_;
+#else
+  RAW_PTR_EXCLUSION base::span<CacheAddr> index_table_;
+#endif
 
   BlockFiles block_files_;  // Set of files used to store all data.
   Rankings rankings_;  // Rankings to be able to trim the cache.

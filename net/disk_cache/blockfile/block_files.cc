@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/block_files.h"
 
 #include <array>
@@ -124,7 +119,7 @@ void BlockHeader::DeleteMapBlock(int index, int size) {
     NOTREACHED();
   }
   int byte_index = index / 8;
-  uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);
+  auto byte_map = base::as_writable_byte_span(header_->allocation_map);
   uint8_t map_block = byte_map[byte_index];
 
   if (index % 8 >= 4)
@@ -160,7 +155,7 @@ bool BlockHeader::UsedMapBlock(int index, int size) {
     return false;
 
   int byte_index = index / 8;
-  uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);
+  auto byte_map = base::as_byte_span(header_->allocation_map);
 
   STRESS_DCHECK((((1 << size) - 1) << (index % 8)) < 0x100);
   uint8_t to_clear = ((1 << size) - 1) << (index % 8);
@@ -426,7 +421,6 @@ bool BlockFiles::CreateBlockFile(int index, FileType file_type, bool force) {
     return false;
 
   BlockFileHeader header;
-  memset(&header, 0, sizeof(header));
   header.magic = kBlockMagic;
   header.version = kBlockVersion2;
   header.entry_size = Addr::BlockSizeForFileType(file_type);

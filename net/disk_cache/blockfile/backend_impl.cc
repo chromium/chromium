@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
@@ -538,7 +533,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
   uint32_t hash = base::PersistentHash(key);
 
   scoped_refptr<EntryImpl> parent;
-  Addr entry_address(data_->table[hash & mask_]);
+  Addr entry_address(index_table_[hash & mask_]);
   if (entry_address.is_initialized()) {
     // We have an entry already. It could be the one we are looking for, or just
     // a hash conflict.
@@ -550,7 +545,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
 
     parent = MatchEntry(key, hash, true, Addr(), &error);
     DCHECK(!error);
-    if (!parent && data_->table[hash & mask_]) {
+    if (!parent && index_table_[hash & mask_]) {
       // We should have corrected the problem.
       DLOG(WARNING) << "Unable to correct hash collision";
       return nullptr;
@@ -612,7 +607,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
   if (parent.get()) {
     parent->SetNextAddress(entry_address);
   } else {
-    data_->table[hash & mask_] = entry_address.value();
+    index_table_[hash & mask_] = entry_address.value();
   }
 
   // Link this entry through the lists.
@@ -792,10 +787,11 @@ void BackendImpl::RecoveredEntry(CacheRankingsBlock* rankings) {
   cache_entry = nullptr;
 
   // Anything on the table means that this entry is there.
-  if (data_->table[hash & mask_])
+  if (index_table_[hash & mask_]) {
     return;
+  }
 
-  data_->table[hash & mask_] = address.value();
+  index_table_[hash & mask_] = address.value();
   FlushIndex();
 }
 
@@ -822,7 +818,7 @@ void BackendImpl::InternalDoomEntry(EntryImpl* entry) {
     parent_entry->SetNextAddress(Addr(child));
     parent_entry = nullptr;
   } else if (!error) {
-    data_->table[hash & mask_] = child;
+    index_table_[hash & mask_] = child;
   }
 
   FlushIndex();
@@ -847,7 +843,7 @@ CacheAddr BackendImpl::GetNextAddr(Addr address) {
 void BackendImpl::NotLinked(EntryImpl* entry) {
   Addr entry_addr = entry->entry()->address();
   uint32_t i = entry->GetHash() & mask_;
-  Addr address(data_->table[i]);
+  Addr address(index_table_[i]);
   if (!address.is_initialized())
     return;
 
@@ -1329,16 +1325,15 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   // header), to force allocation now and fail cleanly if there is no space.
   //
   // See https://crbug.com/1097518
-  const int kPageSize = 4096;
+  static constexpr size_t kPageSize = 4096;
   static_assert(sizeof(disk_cache::IndexHeader) < kPageSize,
                 "Code below assumes it wouldn't overwrite header by starting "
                 "at kPageSize");
-  auto page = std::make_unique<char[]>(kPageSize);
-  memset(page.get(), 0, kPageSize);
+  auto page = base::HeapArray<uint8_t>::WithSize(kPageSize);
 
   for (size_t offset = kPageSize; offset < size; offset += kPageSize) {
     size_t end = std::min(offset + kPageSize, size);
-    if (!file->Write(page.get(), end - offset, offset)) {
+    if (!file->Write(page.as_span().first(end - offset), offset)) {
       return false;
     }
   }
@@ -1382,6 +1377,14 @@ bool BackendImpl::InitBackingStore(bool* file_created) {
     LOG(ERROR) << "Corrupt Index file";
     return false;
   }
+
+  auto hash_table_memory = index_->as_span().subspan(offsetof(Index, table));
+  // SAFETY: offsetof above ensures that hash_table_memory beginning is aligned
+  // properly to store CacheAddr[]; the overall bounds come from MappedFile
+  // returning what it actually mapped.
+  index_table_ = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<CacheAddr*>(hash_table_memory.data()),
+                 hash_table_memory.size() / sizeof(CacheAddr)));
 
   return true;
 }
@@ -1593,7 +1596,7 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
                                                  bool* match_error) {
   TRACE_EVENT0("disk_cache", "BackendImpl::MatchEntry");
 
-  Addr address(data_->table[hash & mask_]);
+  Addr address(index_table_[hash & mask_]);
   scoped_refptr<EntryImpl> cache_entry, parent_entry;
   bool found = false;
   std::set<CacheAddr> visited;
@@ -1629,7 +1632,7 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
         parent_entry->SetNextAddress(child);
         parent_entry = nullptr;
       } else {
-        data_->table[hash & mask_] = child.value();
+        index_table_[hash & mask_] = child.value();
       }
 
       if (!error) {
@@ -1640,7 +1643,7 @@ scoped_refptr<EntryImpl> BackendImpl::MatchEntry(const std::string& key,
       }
 
       // Restart the search.
-      address.set_value(data_->table[hash & mask_]);
+      address.set_value(index_table_[hash & mask_]);
       visited.clear();
       continue;
     }
@@ -1949,7 +1952,7 @@ int BackendImpl::CheckAllEntries() {
   int num_entries = 0;
   DCHECK(mask_ < std::numeric_limits<uint32_t>::max());
   for (unsigned int i = 0; i <= mask_; i++) {
-    Addr address(data_->table[i]);
+    Addr address(index_table_[i]);
     if (!address.is_initialized())
       continue;
     for (;;) {

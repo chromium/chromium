@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/block_files.h"
 
+#include <algorithm>
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
@@ -289,9 +286,9 @@ TEST_F(DiskCacheTest, BlockFiles_InvalidFile) {
 
   // Let's create an invalid file.
   base::FilePath filename(files.Name(5));
-  char header[kBlockHeaderSize];
-  memset(header, 'a', kBlockHeaderSize);
-  EXPECT_TRUE(base::WriteFile(filename, {header, kBlockHeaderSize}));
+  std::array<uint8_t, kBlockHeaderSize> header;
+  std::ranges::fill(header, 'a');
+  EXPECT_TRUE(base::WriteFile(filename, header));
 
   EXPECT_TRUE(nullptr == files.GetFile(addr));
 
@@ -329,8 +326,8 @@ TEST_F(DiskCacheTest, AllocationMap) {
   // 10 bits per each four entries, so 250 bits total.
   BlockFileHeader* header =
       reinterpret_cast<BlockFileHeader*>(files.GetFile(address[0])->buffer());
-  uint8_t* buffer = reinterpret_cast<uint8_t*>(&header->allocation_map);
-  for (int i =0; i < 29; i++) {
+  auto buffer = base::as_byte_span(header->allocation_map);
+  for (int i = 0; i < 29; i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(0xff, buffer[i]);
   }
@@ -341,7 +338,7 @@ TEST_F(DiskCacheTest, AllocationMap) {
   }
 
   // The allocation map should be empty.
-  for (int i =0; i < 50; i++) {
+  for (int i = 0; i < 50; i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(0, buffer[i]);
   }
