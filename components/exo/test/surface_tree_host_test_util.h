@@ -12,11 +12,6 @@
 
 namespace exo::test {
 
-enum class FrameSubmissionType { kNoReactive = 0, kReactive = 1 };
-
-void SetFrameSubmissionFeatureFlags(base::test::ScopedFeatureList* feature_list,
-                                    FrameSubmissionType frame_submission);
-
 // Waits for the last compositor frame submitted by `surface_tree_host` to be
 // acked.
 void WaitForLastFrameAck(SurfaceTreeHost* surface_tree_host);

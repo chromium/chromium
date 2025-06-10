@@ -553,9 +553,8 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
+  params.auto_needs_begin_frame = true;
 
-  params.auto_needs_begin_frame =
-      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission);
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           nullptr /* context_provider */, nullptr /* worker_context_provider */,

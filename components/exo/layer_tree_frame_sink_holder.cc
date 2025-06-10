@@ -25,10 +25,6 @@ constexpr int32_t kPauseBeginFrameThreshold = 5;
 
 }  // namespace
 
-BASE_FEATURE(kExoReactiveFrameSubmission,
-             "ExoReactiveFrameSubmission",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ////////////////////////////////////////////////////////////////////////////////
 // LayerTreeFrameSinkHolder, public:
 
@@ -36,13 +32,8 @@ LayerTreeFrameSinkHolder::LayerTreeFrameSinkHolder(
     SurfaceTreeHost* surface_tree_host,
     std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink)
     : surface_tree_host_(surface_tree_host),
-      frame_sink_(std::move(frame_sink)),
-      reactive_frame_submission_(
-          base::FeatureList::IsEnabled(kExoReactiveFrameSubmission)) {
-  if (reactive_frame_submission_) {
-    frame_timing_history_.emplace();
-  }
-
+      frame_sink_(std::move(frame_sink)) {
+  frame_timing_history_.emplace();
   frame_sink_->BindToClient(this);
 }
 
@@ -109,11 +100,6 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
 
 void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
                                                      bool submit_now) {
-  if (!reactive_frame_submission_) {
-    SubmitCompositorFrameToRemote(&frame);
-    return;
-  }
-
   DiscardCachedFrame(&frame);
   ObserveBeginFrameSource(true);
 
@@ -147,10 +133,6 @@ const gfx::Size& LayerTreeFrameSinkHolder::LastSizeInPixels() const {
 
 void LayerTreeFrameSinkHolder::SetBeginFrameSource(
     viz::BeginFrameSource* source) {
-  if (!reactive_frame_submission_) {
-    return;
-  }
-
   ObserveBeginFrameSource(false);
 
   begin_frame_source_ = source;
@@ -207,10 +189,6 @@ void LayerTreeFrameSinkHolder::DidReceiveCompositorFrameAck() {
 
   if (surface_tree_host_)
     surface_tree_host_->DidReceiveCompositorFrameAck();
-
-  if (!reactive_frame_submission_) {
-    return;
-  }
 
   if (pending_submit_frames_ == 0) {
     while (!pending_discarded_frame_notifications_.empty()) {
@@ -295,8 +273,6 @@ void LayerTreeFrameSinkHolder::OnDestroyed() {
 
 bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
     const viz::BeginFrameArgs& args) {
-  DCHECK(reactive_frame_submission_);
-
   base::TimeDelta timing_estimate = base::Milliseconds(0);
   if (frame_timing_history_) {
     timing_estimate = frame_timing_history_->GetFrameTransferDurationEstimate();
@@ -358,8 +334,6 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
   if (!cached_frame_) {
     return;
   }
-
-  DCHECK(reactive_frame_submission_);
 
   for (const auto& resource : cached_frame_->resource_list) {
     // Skip if the resource is still in use by the remote side.
@@ -425,7 +399,7 @@ void LayerTreeFrameSinkHolder::StopProcessingPendingFrames() {
 }
 
 void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
-  DCHECK(!is_lost_ && reactive_frame_submission_);
+  CHECK(!is_lost_);
 
   if (pending_begin_frames_.empty()) {
     return;
@@ -521,8 +495,6 @@ void LayerTreeFrameSinkHolder::ProcessFirstPendingBeginFrame(
 }
 
 bool LayerTreeFrameSinkHolder::ShouldSubmitFrameNow() const {
-  DCHECK(reactive_frame_submission_);
-
   return (!pending_begin_frames_.empty() || UnsolicitedFrameAllowed()) &&
          pending_submit_frames_ == 0;
 }
@@ -548,8 +520,6 @@ void LayerTreeFrameSinkHolder::ObserveBeginFrameSource(bool start) {
 }
 
 bool LayerTreeFrameSinkHolder::UnsolicitedFrameAllowed() const {
-  DCHECK(reactive_frame_submission_);
-
   // `frame_sink_->needs_begin_frames()` being false means the remote side is
   // currently not configured to send us BeginFrames. In this case, an
   // unsolicited frame should be allowed.

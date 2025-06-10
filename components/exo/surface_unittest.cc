@@ -100,13 +100,9 @@ std::string TransformToString(Transform transform) {
 }
 
 class SurfaceTest : public test::ExoTestBase,
-                    public ::testing::WithParamInterface<
-                        std::tuple<test::FrameSubmissionType, float>> {
+                    public ::testing::WithParamInterface<float> {
  public:
-  SurfaceTest() {
-    test::SetFrameSubmissionFeatureFlags(&feature_list_,
-                                         GetFrameSubmissionType());
-  }
+  SurfaceTest() = default;
 
   SurfaceTest(const SurfaceTest&) = delete;
   SurfaceTest& operator=(const SurfaceTest&) = delete;
@@ -126,10 +122,7 @@ class SurfaceTest : public test::ExoTestBase,
     display::Display::ResetForceDeviceScaleFactorForTesting();
   }
 
-  test::FrameSubmissionType GetFrameSubmissionType() const {
-    return std::get<0>(GetParam());
-  }
-  float device_scale_factor() const { return std::get<1>(GetParam()); }
+  float device_scale_factor() const { return GetParam(); }
 
   gfx::Rect ToPixel(const gfx::Rect rect) {
     return gfx::ToEnclosingRect(
@@ -181,14 +174,8 @@ class SurfaceTest : public test::ExoTestBase,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Instantiate the values of frame submission types and device scale factor in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SurfaceTest,
-    testing::Combine(testing::Values(test::FrameSubmissionType::kNoReactive,
-                                     test::FrameSubmissionType::kReactive),
-                     testing::Values(1.0f, 1.25f, 2.0f)));
+// Instantiate the values of device scale factor in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(All, SurfaceTest, testing::Values(1.0f, 1.25f, 2.0f));
 
 TEST_P(SurfaceTest, AttachOffset) {
   gfx::Size buffer_size(256, 256);
@@ -1814,30 +1801,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   }
 }
 
-// Tests that only apply if ExoReactiveFrameSubmission is enabled.
-class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
- public:
-  ReactiveFrameSubmissionSurfaceTest() {
-    DCHECK_EQ(GetFrameSubmissionType(), test::FrameSubmissionType::kReactive);
-  }
-
-  ReactiveFrameSubmissionSurfaceTest(
-      const ReactiveFrameSubmissionSurfaceTest&) = delete;
-  ReactiveFrameSubmissionSurfaceTest& operator=(
-      const ReactiveFrameSubmissionSurfaceTest&) = delete;
-
-  ~ReactiveFrameSubmissionSurfaceTest() override = default;
-};
-
-// Instantiate the values of frame submission types and device scale factor in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReactiveFrameSubmissionSurfaceTest,
-    testing::Combine(testing::Values(test::FrameSubmissionType::kReactive),
-                     testing::Values(1.0f, 1.25f, 2.0f)));
-
-TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
+TEST_P(SurfaceTest, FullDamageAfterDiscardingFrame) {
   gfx::Size buffer_size(256, 256);
   auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   std::unique_ptr<Surface> surface(new Surface);
