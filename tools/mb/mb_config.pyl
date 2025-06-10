@@ -80,7 +80,8 @@
       'Android arm64 Builder Perf': 'official_minimal_symbols_android_arm64',
       'android-builder-perf': 'official_remoteexec_minimal_symbols_android',
       'android-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_pgo',
-      'android-desktop-x64-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop',
+      'android-desktop-arm-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop_arm64',
+      'android-desktop-x64-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop_x64',
       'android_arm64-builder-perf': 'official_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
@@ -117,7 +118,8 @@
       'Android arm64 Builder Perf': 'official_minimal_symbols_android_arm64',
       'android-builder-perf': 'official_remoteexec_minimal_symbols_android',
       'android-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_pgo',
-      'android-desktop-x64-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop',
+      'android-desktop-arm-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop_arm64',
+      'android-desktop-x64-builder-perf': 'official_remoteexec_min_symbol_webview_android_desktop_x64',
       'android_arm64-builder-perf': 'official_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
@@ -539,7 +541,11 @@
       'official', 'remoteexec', 'x64', 'no_widevine_cdm_host_verification',
     ],
 
-    'official_remoteexec_min_symbol_webview_android_desktop': [
+    'official_remoteexec_min_symbol_webview_android_desktop_arm64': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo', 'webview', 'arm64', 'android_desktop', 'dcheck_off'
+    ],
+
+    'official_remoteexec_min_symbol_webview_android_desktop_x64': [
       'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo', 'webview', 'x64', 'android_desktop', 'dcheck_off'
     ],
 
