@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
@@ -116,6 +117,9 @@ const std::optional<SkColor4f> kDefaultPaintedScrollbarThumbColor =
 const gfx::Size kDefaultPaintedScrollbarTrackAndButtonsImageBounds =
     gfx::Size();
 const gfx::Rect kDefaultPaintedScrollbarTrackAndButtonsAperture = gfx::Rect();
+
+// Default MirrorLayer property values
+const int kDefaultMirrorLayerMirroredLayerId = 0;
 
 class LayerContextImplTest : public testing::Test {
  public:
@@ -339,6 +343,11 @@ class LayerContextImplTest : public testing::Test {
             kDefaultNinePatchThumbScrollbarTrackAndButtonsUIResourceId;
         return mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
             std::move(extra));
+      }
+      case cc::mojom::LayerType::kMirror: {
+        auto extra = mojom::MirrorLayerExtra::New();
+        extra->mirrored_layer_id = kDefaultMirrorLayerMirroredLayerId;
+        return mojom::LayerExtra::NewMirrorLayerExtra(std::move(extra));
       }
       case cc::mojom::LayerType::kPaintedScrollbar: {
         auto extra = mojom::PaintedScrollbarLayerExtra::New();
@@ -4029,6 +4038,65 @@ TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(layer_impl->vertical_adjust(), kUpdatedVerticalAdjust);
   EXPECT_TRUE(layer_impl->has_find_in_page_tickmarks());
+}
+
+// Test fixture for MirrorLayerImpl specific property updates.
+class LayerContextImplUpdateDisplayTreeMirrorLayerTest
+    : public LayerContextImplLayerLifecycleTest {
+ protected:
+  cc::MirrorLayerImpl* GetMirrorLayerFromActiveTree(int layer_id) {
+    cc::LayerImpl* layer = GetLayerFromActiveTree(layer_id);
+    if (!layer || layer->GetLayerType() != cc::mojom::LayerType::kMirror) {
+      return nullptr;
+    }
+    return static_cast<cc::MirrorLayerImpl*>(layer);
+  }
+};
+
+TEST_F(LayerContextImplUpdateDisplayTreeMirrorLayerTest,
+       UpdateMirroredLayerId) {
+  constexpr int kMirrorLayerId = 2;
+  constexpr int kMirroredLayerId1 = 1;  // Mirroring the root layer by default.
+  constexpr int kMirroredLayerId2 = 3;
+
+  // Initial update: Create MirrorLayer with default mirrored_layer_id.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kMirror,
+                          kMirrorLayerId);
+  // Create the layer that will be mirrored.
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kMirroredLayerId2);
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::MirrorLayerImpl* layer_impl =
+      GetMirrorLayerFromActiveTree(kMirrorLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->mirrored_layer_id(),
+            kDefaultMirrorLayerMirroredLayerId);
+
+  // Second update: Update mirrored_layer_id to kMirroredLayerId1.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kMirrorLayerId, cc::mojom::LayerType::kMirror);
+  auto& mirror_extra2 = layer_props2->layer_extra->get_mirror_layer_extra();
+  mirror_extra2->mirrored_layer_id = kMirroredLayerId1;
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->mirrored_layer_id(), kMirroredLayerId1);
+
+  // Third update: Update mirrored_layer_id to kMirroredLayerId2.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 =
+      CreateManualLayer(kMirrorLayerId, cc::mojom::LayerType::kMirror);
+  auto& mirror_extra3 = layer_props3->layer_extra->get_mirror_layer_extra();
+  mirror_extra3->mirrored_layer_id = kMirroredLayerId2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->mirrored_layer_id(), kMirroredLayerId2);
 }
 
 }  // namespace viz
