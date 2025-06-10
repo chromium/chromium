@@ -90,7 +90,7 @@ const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
     .signature = prefs::kVariationsSeedSignature,
     .milestone = prefs::kVariationsSeedMilestone,
     .seed_date = prefs::kVariationsSeedDate,
-    .fetch_time = prefs::kVariationsLastFetchTime,
+    .client_fetch_time = prefs::kVariationsLastFetchTime,
 };
 
 const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
@@ -98,7 +98,7 @@ const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
     .signature = prefs::kVariationsSafeSeedSignature,
     .milestone = prefs::kVariationsSafeSeedMilestone,
     .seed_date = prefs::kVariationsSafeSeedDate,
-    .fetch_time = prefs::kVariationsSafeSeedFetchTime,
+    .client_fetch_time = prefs::kVariationsSafeSeedFetchTime,
 };
 
 SeedReaderWriter::SeedReaderWriter(
@@ -153,7 +153,7 @@ void SeedReaderWriter::ClearSeedInfo() {
     local_state_->ClearPref(fields_prefs_->signature);
     local_state_->ClearPref(fields_prefs_->milestone);
     local_state_->ClearPref(fields_prefs_->seed_date);
-    local_state_->ClearPref(fields_prefs_->fetch_time);
+    local_state_->ClearPref(fields_prefs_->client_fetch_time);
     // Although only clients in the treatment group write seeds to dedicated
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
@@ -173,7 +173,7 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
         .signature = seed_info_.signature,
         .milestone = seed_info_.milestone,
         .seed_date = seed_info_.seed_date,
-        .fetch_time = seed_info_.fetch_time,
+        .client_fetch_time = seed_info_.client_fetch_time,
     };
   } else {
     return StoredSeed{
@@ -183,7 +183,7 @@ StoredSeed SeedReaderWriter::GetSeedData() const {
         .signature = local_state_->GetString(fields_prefs_->signature),
         .milestone = local_state_->GetInteger(fields_prefs_->milestone),
         .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
-        .fetch_time = local_state_->GetTime(fields_prefs_->fetch_time),
+        .client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time),
     };
   }
 }
@@ -213,9 +213,9 @@ void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
   // TODO(crbug.com/380465790): Update fetch time in seed files instead of local
   // state if the client is in the treatment group.
   if (ShouldUseSeedFile()) {
-    seed_info_.fetch_time = fetch_time;
+    seed_info_.client_fetch_time = fetch_time;
   }
-  local_state_->SetTime(fields_prefs_->fetch_time, fetch_time);
+  local_state_->SetTime(fields_prefs_->client_fetch_time, fetch_time);
 }
 
 bool SeedReaderWriter::HasPendingWrite() const {
@@ -248,7 +248,7 @@ void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
   seed_info_.signature = seed_info.signature;
   seed_info_.milestone = seed_info.milestone;
   seed_info_.seed_date = seed_info.seed_date;
-  seed_info_.fetch_time = seed_info.fetch_time;
+  seed_info_.client_fetch_time = seed_info.client_fetch_time;
   // `seed_writer_` will eventually call
   // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
   // a callback that will be run asynchronously. This callback will be used to
@@ -264,7 +264,7 @@ void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
   local_state_->SetString(fields_prefs_->signature, seed_info_.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info_.milestone);
   local_state_->SetTime(fields_prefs_->seed_date, seed_info_.seed_date);
-  local_state_->SetTime(fields_prefs_->fetch_time, seed_info_.fetch_time);
+  local_state_->SetTime(fields_prefs_->client_fetch_time, seed_info_.client_fetch_time);
 }
 
 void SeedReaderWriter::ScheduleSeedFileClear() {
@@ -278,7 +278,7 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
       .signature = "",
       .milestone = 0,
       .seed_date = base::Time(),
-      .fetch_time = base::Time(),
+      .client_fetch_time = base::Time(),
   };
   // `seed_writer_` will eventually call
   // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
@@ -295,7 +295,7 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
   local_state_->ClearPref(fields_prefs_->signature);
   local_state_->ClearPref(fields_prefs_->milestone);
   local_state_->ClearPref(fields_prefs_->seed_date);
-  local_state_->ClearPref(fields_prefs_->fetch_time);
+  local_state_->ClearPref(fields_prefs_->client_fetch_time);
 }
 
 void SeedReaderWriter::DeleteSeedFile() {
@@ -321,7 +321,7 @@ void SeedReaderWriter::ReadSeedFile() {
     seed_info_.signature = local_state_->GetString(fields_prefs_->signature);
     seed_info_.milestone = local_state_->GetInteger(fields_prefs_->milestone);
     seed_info_.seed_date = local_state_->GetTime(fields_prefs_->seed_date);
-    seed_info_.fetch_time = local_state_->GetTime(fields_prefs_->fetch_time);
+    seed_info_.client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time);
   } else {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first run. For Windows,
@@ -338,7 +338,7 @@ void SeedReaderWriter::ReadSeedFile() {
           .signature = local_state_->GetString(fields_prefs_->signature),
           .milestone = local_state_->GetInteger(fields_prefs_->milestone),
           .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
-          .fetch_time = local_state_->GetTime(fields_prefs_->fetch_time),
+          .client_fetch_time = local_state_->GetTime(fields_prefs_->client_fetch_time),
       });
 
       // Record whether empty data is written to the seed file. This can happen
@@ -373,7 +373,7 @@ void SeedReaderWriter::ScheduleLocalStateWrite(ValidatedSeedInfo seed_info) {
   local_state_->SetString(fields_prefs_->signature, seed_info.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info.milestone);
   local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
-  local_state_->SetTime(fields_prefs_->fetch_time, seed_info.fetch_time);
+  local_state_->SetTime(fields_prefs_->client_fetch_time, seed_info.client_fetch_time);
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {

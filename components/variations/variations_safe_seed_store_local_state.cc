@@ -37,7 +37,7 @@ VariationsSafeSeedStoreLocalState::~VariationsSafeSeedStoreLocalState() =
     default;
 
 base::Time VariationsSafeSeedStoreLocalState::GetFetchTime() const {
-  return seed_reader_writer_->GetSeedData().fetch_time;
+  return seed_reader_writer_->GetSeedData().client_fetch_time;
 }
 
 void VariationsSafeSeedStoreLocalState::SetFetchTime(

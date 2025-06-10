@@ -78,7 +78,7 @@
           .signature = variations::kTestSeedData.base64_signature,
           .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 }
 
@@ -95,7 +95,7 @@
           .signature = variations::kCrashingSeedData.base64_signature,
           .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 }
 

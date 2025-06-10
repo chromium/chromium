@@ -55,7 +55,7 @@ struct StoredSeed {
   base::Time seed_date;
   // The time at which the seed was fetched. This is always a client-side
   // timestamp.
-  base::Time fetch_time;
+  base::Time client_fetch_time;
 };
 
 // Groups the data from a seed and other seed-related info that is validated
@@ -67,7 +67,7 @@ struct ValidatedSeedInfo {
   std::string_view signature;
   int milestone = 0;
   base::Time seed_date;
-  base::Time fetch_time;
+  base::Time client_fetch_time;
 };
 
 struct SeedFieldsPrefs {
@@ -75,7 +75,7 @@ struct SeedFieldsPrefs {
   const char* signature;
   const char* milestone;
   const char* seed_date;
-  const char* fetch_time;
+  const char* client_fetch_time;
 };
 
 COMPONENT_EXPORT(VARIATIONS)
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void SetSeedDate(base::Time server_date_fetched);
 
   // Updates the time of the last fetch of the seed.
-  void SetFetchTime(base::Time fetch_time);
+  void SetFetchTime(base::Time client_fetch_time);
 
   // Returns true if a write is scheduled but has not yet completed.
   bool HasPendingWrite() const;
@@ -150,7 +150,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     std::string signature;
     int milestone = 0;
     base::Time seed_date;
-    base::Time fetch_time;
+    base::Time client_fetch_time;
   };
 
   // Returns the serialized data to be written to disk. This is done

@@ -253,7 +253,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .signature = "tea",
           .milestone = 1,
           .seed_date = now - delta * 1,
-          .fetch_time = now,
+          .client_fetch_time = now,
       });
 
   //  Update the safe seed in memory. This is done for the Local-State-based
@@ -266,7 +266,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .signature = "mustard",
           .milestone = 90,
           .seed_date = now - delta * 2,
-          .fetch_time = now - delta * 3,
+          .client_fetch_time = now - delta * 3,
       });
   prefs->SetString(prefs::kVariationsSafeSeedLocale, "en-MX");
   prefs->SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "mx");
@@ -286,7 +286,7 @@ void CheckRegularSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
   EXPECT_THAT(stored_seed.signature, Not(IsEmpty()));
   EXPECT_NE(stored_seed.milestone, 0);
   EXPECT_NE(stored_seed.seed_date, base::Time());
-  EXPECT_NE(stored_seed.fetch_time, base::Time());
+  EXPECT_NE(stored_seed.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   }
@@ -304,7 +304,7 @@ void CheckRegularSeedAndSeedPrefsAreCleared(
   EXPECT_THAT(stored_seed.signature, IsEmpty());
   EXPECT_EQ(stored_seed.milestone, 0);
   EXPECT_EQ(stored_seed.seed_date, base::Time());
-  EXPECT_EQ(stored_seed.fetch_time, base::Time());
+  EXPECT_EQ(stored_seed.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   }
@@ -321,7 +321,7 @@ void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
   EXPECT_THAT(stored_seed.signature, Not(IsEmpty()));
   EXPECT_NE(stored_seed.milestone, 0);
   EXPECT_NE(stored_seed.seed_date, base::Time());
-  EXPECT_NE(stored_seed.fetch_time, base::Time());
+  EXPECT_NE(stored_seed.client_fetch_time, base::Time());
   if (ShouldUseLocalStateSeed()) {
     EXPECT_FALSE(
         PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
@@ -441,7 +441,7 @@ class LoadSeedDataAllGroupsTest : public LoadSeedDataGroupTest {
             .signature = test_signature,
             .milestone = 1,
             .seed_date = base::Time::Now(),
-            .fetch_time = base::Time::Now(),
+            .client_fetch_time = base::Time::Now(),
         });
   }
 
@@ -470,7 +470,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ValidSeed) {
           .signature = base64_seed_signature,
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   const std::string expected_seed =
       GetParam() == kSeedFilesGroup ? compressed_seed : base64_seed;
@@ -514,7 +514,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSignature) {
           .signature = "a deeply compromised signature.",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -544,7 +544,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   base::HistogramTester histogram_tester;
   VariationsSeed loaded_seed;
@@ -576,7 +576,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_RejectEmptySignature) {
           .signature = "",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -613,7 +613,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_AcceptEmptySignature) {
           .signature = "",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -673,7 +673,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
           .signature = base64_seed_signature,
           .milestone = 2,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -682,7 +682,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
           .signature = base64_seed_signature,
           .milestone = 1,
           .seed_date = base::Time::Now() - base::Days(1),
-          .fetch_time = base::Time::Now() - base::Days(1),
+          .client_fetch_time = base::Time::Now() - base::Days(1),
       });
 
   base::HistogramTester histogram_tester;
@@ -719,7 +719,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -746,7 +746,7 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -785,7 +785,7 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -1021,7 +1021,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressed) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   ASSERT_TRUE(StoreSeedData(seed_store, kSeedDeltaTestData.GetDeltaData(),
@@ -1041,7 +1041,7 @@ TEST_P(StoreSeedDataAllGroupsTest, DeltaCompressedGzipped) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   ASSERT_TRUE(StoreSeedData(seed_store, Gzip(kSeedDeltaTestData.GetDeltaData()),
@@ -1078,7 +1078,7 @@ TEST_P(StoreSeedDataAllGroupsTest, BadDelta) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   store_success_ = true;
@@ -1101,7 +1101,7 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
 
@@ -1141,7 +1141,7 @@ TEST_P(StoreSeedDataAllGroupsTest,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
 
@@ -1189,7 +1189,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_ValidSeed) {
           .signature = "a test signature, ignored.",
           .milestone = 1,
           .seed_date = reference_date,
-          .fetch_time = reference_date - base::Days(3),
+          .client_fetch_time = reference_date - base::Days(3),
       });
   prefs_.SetString(prefs::kVariationsSafeSeedLocale, locale);
   prefs_.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry,
@@ -1252,7 +1252,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_InvalidSignature) {
           .signature = "a deeply compromised signature.",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -1313,7 +1313,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptGzip) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -1355,7 +1355,7 @@ TEST_P(LoadSafeSeedDataAllGroupsTest,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -1404,7 +1404,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   base::HistogramTester histogram_tester;
@@ -1704,7 +1704,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
-          .fetch_time = fetch_time - base::Hours(1),
+          .client_fetch_time = fetch_time - base::Hours(1),
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -1713,7 +1713,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
-          .fetch_time = fetch_time,
+          .client_fetch_time = fetch_time,
       });
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(seed_store.StoreSafeSeed(
@@ -1850,7 +1850,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
-          .fetch_time = fetch_time - base::Hours(1),
+          .client_fetch_time = fetch_time - base::Hours(1),
       });
   seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -1859,7 +1859,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = client_state->reference_date,
-          .fetch_time = fetch_time,
+          .client_fetch_time = fetch_time,
       });
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(seed_store.StoreSafeSeed(
@@ -1926,7 +1926,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
           .signature = "ignored signature",
           .milestone = 92,
           .seed_date = client_state->reference_date,
-          .fetch_time = last_fetch_time,
+          .client_fetch_time = last_fetch_time,
       });
   const std::string expected_seed =
       GetParam().field_trial_group == kSeedFilesGroup ? compressed_seed
@@ -2078,7 +2078,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = WrapTime(2),
+          .client_fetch_time = WrapTime(2),
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -2087,7 +2087,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
           .signature = "ignored signature",
           .milestone = 2,
           .seed_date = base::Time::Now(),
-          .fetch_time = WrapTime(1),
+          .client_fetch_time = WrapTime(1),
       });
   seed_store.RecordLastFetchTime(WrapTime(11));
 
@@ -2112,7 +2112,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = WrapTime(1),
-          .fetch_time = WrapTime(1),
+          .client_fetch_time = WrapTime(1),
       });
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
@@ -2121,7 +2121,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
           .signature = "ignored signature",
           .milestone = 1,
           .seed_date = WrapTime(1),
-          .fetch_time = WrapTime(0),
+          .client_fetch_time = WrapTime(0),
       });
   seed_store.RecordLastFetchTime(WrapTime(11));
 
@@ -2149,7 +2149,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
           .signature = "a completely ignored signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
 
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
@@ -2168,7 +2168,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
           .signature = "an unused signature",
           .milestone = 1,
           .seed_date = base::Time::Now(),
-          .fetch_time = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
       });
   EXPECT_EQ(std::string(), seed_store.GetLatestSerialNumber());
   EXPECT_TRUE(PrefHasDefaultValue(prefs_, prefs::kVariationsCompressedSeed));

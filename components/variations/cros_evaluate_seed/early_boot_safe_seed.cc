@@ -15,7 +15,7 @@ EarlyBootSafeSeed::EarlyBootSafeSeed(
 EarlyBootSafeSeed::~EarlyBootSafeSeed() = default;
 
 base::Time EarlyBootSafeSeed::GetFetchTime() const {
-  return GetCompressedSeed().fetch_time;
+  return GetCompressedSeed().client_fetch_time;
 }
 
 void EarlyBootSafeSeed::SetFetchTime(const base::Time& fetch_time) {}
@@ -36,7 +36,7 @@ StoredSeed EarlyBootSafeSeed::GetCompressedSeed() const {
       .milestone = safe_seed_details_.milestone(),
       .seed_date = base::Time::FromDeltaSinceWindowsEpoch(
           base::Milliseconds(safe_seed_details_.date())),
-      .fetch_time = base::Time::FromDeltaSinceWindowsEpoch(
+      .client_fetch_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::Milliseconds(safe_seed_details_.fetch_time())),
   };
 }

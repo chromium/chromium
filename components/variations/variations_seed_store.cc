@@ -319,7 +319,7 @@ bool VariationsSeedStore::StoreSafeSeed(
 }
 
 base::Time VariationsSeedStore::GetLatestSeedFetchTime() const {
-  return seed_reader_writer_->GetSeedData().fetch_time;
+  return seed_reader_writer_->GetSeedData().client_fetch_time;
 }
 
 base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
@@ -737,7 +737,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .signature = seed.base64_seed_signature,
         .milestone = milestone,
         .seed_date = date_fetched,
-        .fetch_time = base::Time::Now(),
+        .client_fetch_time = base::Time::Now(),
     });
   } else {
     seed_reader_writer_->StoreValidatedSeedInfo(ValidatedSeedInfo{
@@ -746,7 +746,7 @@ void VariationsSeedStore::StoreValidatedSeed(const ValidatedSeed& seed,
         .signature = seed.base64_seed_signature,
         .milestone = milestone,
         .seed_date = date_fetched,
-        .fetch_time = base::Time::Now(),
+        .client_fetch_time = base::Time::Now(),
     });
   }
   latest_serial_number_ = seed.parsed.serial_number();
@@ -788,7 +788,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
         .signature = latest_seed.signature,
         .milestone = latest_seed.milestone,
         .seed_date = latest_seed.seed_date,
-        .fetch_time = latest_seed.fetch_time,
+        .client_fetch_time = latest_seed.client_fetch_time,
     });
   }
 
@@ -798,7 +798,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
       .signature = seed.base64_seed_signature,
       .milestone = seed_milestone,
       .seed_date = client_state.reference_date,
-      .fetch_time = seed_fetch_time,
+      .client_fetch_time = seed_fetch_time,
   });
 
   safe_seed_store_->SetLocale(client_state.locale);
@@ -816,12 +816,12 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
         .signature = latest_seed.signature,
         .milestone = latest_seed.milestone,
         .seed_date = latest_seed.seed_date,
-        .fetch_time = latest_seed.fetch_time,
+        .client_fetch_time = latest_seed.client_fetch_time,
     });
 
     // Moreover, in this case, the last fetch time for the safe seed should
     // match the latest seed's.
-    safe_seed_store_->SetFetchTime(latest_seed.fetch_time);
+    safe_seed_store_->SetFetchTime(latest_seed.client_fetch_time);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
