@@ -1,4 +1,5 @@
 dullweber@chromium.org
+zalmashni@google.com
 
 per-file *IncognitoLockSettings*=file://chrome/browser/incognito/OWNERS
 per-file *DoNotTrackSettings*=file://components/privacy_sandbox/OWNERS
