@@ -38,9 +38,11 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
   std::optional<StarboardVideoSampleInfo> video_sample_info;
 
   chromecast::media::StarboardPlayerCreationParam creation_param = {};
-  creation_param.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
   creation_param.output_mode =
       StarboardPlayerOutputMode::kStarboardPlayerOutputModePunchOut;
+
+  // This will be set below if audio or video is encrypted.
+  creation_param.drm_system = nullptr;
 
   if (audio_stream) {
     audio_stream->EnableBitstreamConverter();
@@ -55,6 +57,11 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     LOG(INFO) << "Initial audio config: "
               << audio_config.AsHumanReadableString();
     creation_param.audio_sample_info = *audio_sample_info;
+
+    if (audio_config.is_encrypted()) {
+      creation_param.drm_system =
+          StarboardDrmWrapper::GetInstance().GetDrmSystem();
+    }
   }
 
   if (video_stream) {
@@ -78,6 +85,11 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
       // arbitrary string value to inform the starboard impl that they should
       // prioritize minimizing latency (render the frames as soon as possible).
       creation_param.video_sample_info.max_video_capabilities = "streaming=1";
+    }
+
+    if (video_config.is_encrypted()) {
+      creation_param.drm_system =
+          StarboardDrmWrapper::GetInstance().GetDrmSystem();
     }
   }
 

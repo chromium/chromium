@@ -49,23 +49,31 @@ using ::testing::WithArg;
 
 // Returns a valid audio config with values arbitrarily set. The values will
 // match the values of GetStarboardAudioConfig.
-::media::AudioDecoderConfig GetChromiumAudioConfig() {
+//
+// By default, content is unencrypted. An encryption scheme may be specified.
+::media::AudioDecoderConfig GetChromiumAudioConfig(
+    ::media::EncryptionScheme encryption_scheme =
+        ::media::EncryptionScheme::kUnencrypted) {
   return ::media::AudioDecoderConfig(
       ::media::AudioCodec::kAC3, ::media::SampleFormat::kSampleFormatS32,
       ::media::ChannelLayout::CHANNEL_LAYOUT_5_1, 44100, /*extra_data=*/{},
-      ::media::EncryptionScheme::kUnencrypted);
+      encryption_scheme);
 }
 
 // Returns a valid video config with values arbitrarily set. The values will
 // match the values of GetStarboardVideoConfig.
-::media::VideoDecoderConfig GetChromiumVideoConfig() {
+//
+// By default, content is unencrypted. An encryption scheme may be specified.
+::media::VideoDecoderConfig GetChromiumVideoConfig(
+    ::media::EncryptionScheme encryption_scheme =
+        ::media::EncryptionScheme::kUnencrypted) {
   ::media::VideoDecoderConfig video_config(
       ::media::VideoCodec::kHEVC, ::media::VideoCodecProfile::HEVCPROFILE_MAIN,
       ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
       ::media::VideoColorSpace(1, 1, 1, gfx::ColorSpace::RangeID::LIMITED),
       ::media::VideoTransformation(), gfx::Size(1920, 1080),
       gfx::Rect(0, 0, 1919, 1079), gfx::Size(1280, 720), /*extra_data=*/{},
-      ::media::EncryptionScheme::kUnencrypted);
+      encryption_scheme);
   video_config.set_level(5);
   return video_config;
 }
@@ -126,23 +134,13 @@ class StarboardPlayerManagerTest : public ::testing::Test {
  protected:
   StarboardPlayerManagerTest()
       : audio_stream_(DemuxerStream::Type::AUDIO),
-        video_stream_(DemuxerStream::Type::VIDEO) {
-    ON_CALL(starboard_for_drm_, CreateDrmSystem)
-        .WillByDefault(Return(&drm_system_));
-    StarboardDrmWrapper::SetSingletonForTesting(&starboard_for_drm_);
-  }
+        video_stream_(DemuxerStream::Type::VIDEO) {}
 
   ~StarboardPlayerManagerTest() override = default;
 
   // This should be destructed last.
   base::test::TaskEnvironment task_environment_;
   NiceMock<MockStarboardApiWrapper> starboard_;
-
-  // It is undefined behavior to set expectations on a mock after its mock
-  // functions have been called. Thus, to be safe we use a separate mock
-  // starboard for the StarboardDrmWrapper. All expectations are set before it
-  // is passed to the StarboardDrmWrapper (in this fixture's ctor).
-  NiceMock<MockStarboardApiWrapper> starboard_for_drm_;
   MockDemuxerStream audio_stream_;
   MockDemuxerStream video_stream_;
   MockRendererClient renderer_client_;
@@ -150,8 +148,6 @@ class StarboardPlayerManagerTest : public ::testing::Test {
   // Since SbPlayer is used as an opaque void* by cast, we can use any type
   // here. All that matters is the address.
   int sb_player_ = 1;
-  // Same for SbDrmSystem.
-  int drm_system_ = 2;
 };
 
 TEST_F(StarboardPlayerManagerTest,
@@ -164,7 +160,7 @@ TEST_F(StarboardPlayerManagerTest,
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -190,7 +186,7 @@ TEST_F(StarboardPlayerManagerTest, PlaybackStartCausesSeekInStarboard) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -222,7 +218,7 @@ TEST_F(StarboardPlayerManagerTest, FlushCausesSeekToCurrentTimeInStarboard) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -274,7 +270,7 @@ TEST_F(StarboardPlayerManagerTest, ForwardsPlaybackRateChangesToStarboard) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -309,7 +305,7 @@ TEST_F(StarboardPlayerManagerTest, ForwardsStreamVolumeChangesToStarboard) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -341,7 +337,7 @@ TEST_F(StarboardPlayerManagerTest, GetsCurrentMediaTimeFromStarboard) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -377,7 +373,7 @@ TEST_F(StarboardPlayerManagerTest, GetSbPlayerReturnsTheSbPlayer) {
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
@@ -410,7 +406,7 @@ TEST_F(StarboardPlayerManagerTest,
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = sb_video_config,
               .output_mode = StarboardPlayerOutputMode::
@@ -451,7 +447,7 @@ TEST_F(StarboardPlayerManagerTest,
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = sb_audio_config,
               .video_sample_info = sb_video_config,
               .output_mode = StarboardPlayerOutputMode::
@@ -556,7 +552,7 @@ TEST_F(StarboardPlayerManagerTest,
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = {},
               .video_sample_info = sb_video_config,
               .output_mode = StarboardPlayerOutputMode::
@@ -630,7 +626,7 @@ TEST_F(StarboardPlayerManagerTest,
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system_,
+              .drm_system = nullptr,
               .audio_sample_info = sb_audio_config,
               .video_sample_info = {},
               .output_mode = StarboardPlayerOutputMode::
@@ -724,6 +720,102 @@ TEST_F(StarboardPlayerManagerTest, CreatePlayerReturnsNullIfTaskRunnerIsNull) {
                                              /*media_task_runner=*/nullptr,
                                              /*enable_buffering=*/true),
               IsNull());
+}
+
+TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudioAndVideo) {
+  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
+  // All that matters is its address (treated as void*).
+  int drm_system = 3;
+  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = &drm_system,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(Return(&sb_player_));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  // Both audio and video streams are encrypted.
+  audio_stream_.set_audio_decoder_config(
+      GetChromiumAudioConfig(::media::EncryptionScheme::kCenc));
+  video_stream_.set_video_decoder_config(
+      GetChromiumVideoConfig(::media::EncryptionScheme::kCenc));
+
+  std::unique_ptr<StarboardPlayerManager> player_manager =
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true);
+  EXPECT_THAT(player_manager, NotNull());
+}
+
+TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudio) {
+  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
+  // All that matters is its address (treated as void*).
+  int drm_system = 3;
+  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = &drm_system,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(Return(&sb_player_));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  // Only the audio stream is encrypted.
+  audio_stream_.set_audio_decoder_config(
+      GetChromiumAudioConfig(::media::EncryptionScheme::kCenc));
+  video_stream_.set_video_decoder_config(
+      GetChromiumVideoConfig(::media::EncryptionScheme::kUnencrypted));
+
+  std::unique_ptr<StarboardPlayerManager> player_manager =
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true);
+  EXPECT_THAT(player_manager, NotNull());
+}
+
+TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedVideo) {
+  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
+  // All that matters is its address (treated as void*).
+  int drm_system = 3;
+  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = &drm_system,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(Return(&sb_player_));
+  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
+
+  // Only the video stream is encrypted.
+  audio_stream_.set_audio_decoder_config(
+      GetChromiumAudioConfig(::media::EncryptionScheme::kUnencrypted));
+  video_stream_.set_video_decoder_config(
+      GetChromiumVideoConfig(::media::EncryptionScheme::kCenc));
+
+  std::unique_ptr<StarboardPlayerManager> player_manager =
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true);
+  EXPECT_THAT(player_manager, NotNull());
 }
 
 }  // namespace
