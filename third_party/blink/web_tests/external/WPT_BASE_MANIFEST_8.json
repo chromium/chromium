@@ -480,6 +480,13 @@
          null,
          {}
         ]
+       ],
+       "huge-width-after-float.html": [
+        "8e4d04399ff1ed4ca934c9a6c79711fcfb881f69",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "floats-saturated-position-crash.html": [
@@ -135258,6 +135265,19 @@
         {}
        ]
       ],
+      "grid-gap-decorations-047.html": [
+       "5064d08eab314df96cfe49861cb10db1463c517f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-38.html": [
        "8b87bcd4860ac50a1c2f3de98cec9599bebb77a3",
        [
@@ -200039,6 +200059,32 @@
       ],
       "block-height-010.html": [
        "9640693a8ef6f24050327e74735cb69c98cead14",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "cache-miss-001.html": [
+       "e28eb753f34c1e08adb1c27b13055ef69c12e4f2",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "cache-miss-002.html": [
+       "d352a7f2e0ef4638b2b2649ad05dd1bed8678835",
        [
         null,
         [
@@ -377219,10 +377265,6 @@
       "da97328c1438f4220e4b64d80266eb335329b356",
       []
      ],
-     "padding-percent-orthogonal-dynamic-expected.txt": [
-      "f6fbb556b8200fdaaf0eb39bac8525dc1c683c2e",
-      []
-     ],
      "reference": {
       "available-size-001-ref.html": [
        "d59cde45f6e3be71762ca4acf2711f8d3b0bc50e",
@@ -382690,8 +382732,16 @@
      "6870ed5291f043c35a85669c2d69dace00f9ceaa",
      []
     ],
+    "redirect.py": [
+     "82ca58826e53ddf06e13c788c670e2775fed1c35",
+     []
+    ],
+    "reflect_headers.py": [
+     "a4ddcb5a568af75e84dfd0d0610ed62495990602",
+     []
+    ],
     "refresh_session.py": [
-     "ab491e30104202d61857d976eb49d927a8a96a7c",
+     "ff804f63c0ab3dbda74dbf426c8b7692b397aec1",
      []
     ],
     "request_early_challenge.py": [
@@ -382699,7 +382749,7 @@
      []
     ],
     "session_manager.py": [
-     "1095c94d7688f86a088d13d38e7160fc70ff3e29",
+     "87fdcafb9f4062eccc6d267411a5e9ffb2c29238",
      []
     ],
     "set_cookie.py": [
@@ -409513,7 +409563,7 @@
        ],
        "resources": {
         "invoker-utils.js": [
-         "bc43e738c34e58f450874d8ccc99e110e07e7800",
+         "b12190c7b040552fc974f07a38bf117ebda70fc9",
          []
         ]
        }
@@ -427834,14 +427884,14 @@
       []
      ],
      "soft-navigation-test-helper.js": [
-      "a572f55e66dbce825d399f61c4a2dfa34df9b4ca",
+      "5a9739edc04a0ee60ccc32a30c964a3f3ca01192",
       []
      ]
     },
     "smoke": {
      "tentative": {
       "dom-expected.txt": [
-       "3c9a32684a1e2eb37006d73d6db42c961b6ef0d8",
+       "1c5f6f07b5efd52b150cb8b96a23c0af0d43df7d",
        []
       ],
       "resources": {
@@ -469654,7 +469704,7 @@
       ]
      ],
      "rewriter-rewrite-streaming.tentative.https.window.js": [
-      "81b73fbdabd0d8f631cc6db62fc9a72c28287793",
+      "d275ba514db2d2e1f25a84c4e7bc1c7dce048b3f",
       [
        "ai/rewriter/rewriter-rewrite-streaming.tentative.https.window.html",
        {
@@ -469909,7 +469959,7 @@
       ]
      ],
      "summarizer-summarize-streaming.tentative.https.window.js": [
-      "8d85dc7b836eb8416182acceb57c16940399e63f",
+      "09a8fb0d97eb4629d6cdc81d1fe34d02e9ebbbb7",
       [
        "ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html",
        {
@@ -470290,7 +470340,7 @@
       ]
      ],
      "writer-write-streaming.tentative.https.window.js": [
-      "52992ad21394102fece8feec286eca4b50e19fa2",
+      "67286a7ede95578dc6ef12eae43d3a08a58ff9d6",
       [
        "ai/writer/writer-write-streaming.tentative.https.window.html",
        {
@@ -515520,6 +515570,15 @@
        }
       ]
      ],
+     "scroll-marker-scroll-container.html": [
+      "3892fc977d958fe8100ccfb90a10835eb0b8d3f4",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "scroll-marker-selection-in-padded-scroller.html": [
       "94e84d278f2b53b475e6d072cb6f520916bdb283",
       [
@@ -536749,6 +536808,13 @@
        {}
       ]
      ],
+     "scrollIntoView-scrolling-container.html": [
+      "9f7c88aaeb39610d5adffd046f72bb3a10491fb4",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollIntoView-shadow.html": [
       "3b19e1ef5ac1e496e26f92e90b89cf9fed68efe5",
       [
@@ -541220,6 +541286,13 @@
     ],
     "credentials-matching.https.html": [
      "28af9153db41aa04b9cba84903b3b75c7986be33",
+     [
+      null,
+      {}
+     ]
+    ],
+    "debug-header.https.html": [
+     "631151bcbcfb7c6004e022b5b2a28f0c902998fc",
      [
       null,
       {}
@@ -659497,6 +659570,23 @@
          }
         ]
        ],
+       "interesttarget-input-modalities.tentative.html": [
+        "cdb739b5580fc819927cfff03d47ada81fc53a06",
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html?method=focus",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/interest-target/interesttarget-input-modalities.tentative.html?method=hover",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
        "interesttarget-invoker-descendants.tentative.html": [
         "d976c0eb011d4240d162418df077c412db5fb9b1",
         [
@@ -715329,10 +715419,10 @@
     },
     "dom": {
      "tentative": {
-      "distant-leaf.window.js": [
-       "c599985a2a29de4fe9472dddfce9ce6c1d95116e",
+      "distant-leaf-image.window.js": [
+       "96255d82f2d60ae1517f0eec4704ee361d6c965d",
        [
-        "soft-navigation-heuristics/dom/tentative/distant-leaf.window.html",
+        "soft-navigation-heuristics/dom/tentative/distant-leaf-image.window.html",
         {
          "script_metadata": [
           [
@@ -715351,10 +715441,10 @@
         }
        ]
       ],
-      "insert-image-div-before.window.js": [
-       "19e8a397c348be1f91b654ab48a93e4f2badfd93",
+      "distant-leaf-text.window.js": [
+       "341b5aaed74bbd9d4c4520317eb72d87257644d7",
        [
-        "soft-navigation-heuristics/dom/tentative/insert-image-div-before.window.html",
+        "soft-navigation-heuristics/dom/tentative/distant-leaf-text.window.html",
         {
          "script_metadata": [
           [
@@ -715618,7 +715708,7 @@
     "smoke": {
      "tentative": {
       "almost-soft-navigation.html": [
-       "aa5732f9fb7e735d72c732a8299f5832db410ce0",
+       "f36e01ac800a0a7a702e0dc8e488ca0a89312a78",
        [
         null,
         {
@@ -715636,7 +715726,7 @@
        ]
       ],
       "dom.html": [
-       "2e3c3809df68ba4093247e2d4e3fe114f8c9f729",
+       "6d2bd68a0e835fe9eb748632d12c7e5c73ebbeb3",
        [
         null,
         {

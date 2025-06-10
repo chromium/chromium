@@ -2998,6 +2998,7 @@ crbug.com/395482243 external/wpt/webdriver/tests/interop/shared_id_window.py [ T
 crbug.com/395482235 external/wpt/css/css-fonts/italic-oblique-fallback.html [ Failure ]
 crbug.com/395207102 [ Mac12 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/395207102 [ Mac13 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
+crbug.com/395207102 [ Mac15 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/395207102 [ Mac14 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
 crbug.com/394919522 external/wpt/css/css-fonts/font-synthesis-style-oblique-only.html [ Failure ]
 crbug.com/394919522 [ Win10.20h2 ] external/wpt/css/css-fonts/parsing/font-synthesis-computed.html [ Failure Timeout ]
