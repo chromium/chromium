@@ -9,6 +9,8 @@
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -17,6 +19,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -183,6 +187,53 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// SearchEngineChoiceCheck
+class PrivacySandboxNoticeEntryPointHandlersTest_SearchEngineChoiceDialog
+    : public PrivacySandboxNoticeEntryPointHandlersTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+  }
+
+  void SetUpOnMainThread() override {
+    PrivacySandboxNoticeEntryPointHandlersTest::SetUpOnMainThread();
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
+  }
+
+ private:
+  base::AutoReset<bool> scoped_chrome_build_override_ =
+      SearchEngineChoiceDialogServiceFactory::
+          ScopedChromeBuildOverrideForTesting(
+              /*force_chrome_build=*/true);
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxNoticeEntryPointHandlersTest_SearchEngineChoiceDialog,
+    NoPromptSearchEngineChoiceDialog) {
+  // Check when sync setup is in progress, that no prompt is shown.
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
+
+  // Navigate to a page where the DMA notice should show.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  // Make a search engine choice to close the dialog.
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser()->profile());
+  search_engine_choice_dialog_service->NotifyChoiceMade(
+      /*prepopulate_id=*/1, /*save_guest_mode_selection=*/false,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+
+  // Make sure the Privacy Sandbox prompt doesn't get displayed on the next
+  // navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager());
+}
 
 // URLS check
 class PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls

@@ -7,6 +7,8 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -119,6 +121,15 @@ void NavigationHandler::HandleNewNavigation(
     if (sync_service->IsSetupInProgress()) {
       return;
     }
+  }
+
+  // If the SearchEngineChoiceDialog has shown, we do not want to show our
+  // notice.
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+  if (search_engine_choice_dialog_service &&
+      search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
+    return;
   }
 
   // TODO(crbug.com/408016824):  Add error-event histograms.
