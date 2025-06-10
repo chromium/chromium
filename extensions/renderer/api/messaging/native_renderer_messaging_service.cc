@@ -662,7 +662,8 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     port->SetSender(v8_context, sender);
     v8::LocalVector<v8::Value> args(isolate, {port.ToV8()});
     bindings_system_->api_system()->event_handler()->FireEventInContext(
-        event_name, v8_context, &args, nullptr, JSRunner::ResultCallback());
+        event_name, v8_context, &args, /*filter=*/nullptr,
+        /*callback=*/v8::Local<v8::Function>());
   }
   // Note: Arbitrary JS may have run; the context may now be deleted.
 

@@ -269,14 +269,14 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   }
 
   FireEventInContext(event_name, context, &v8_args, std::move(filter),
-                     JSRunner::ResultCallback());
+                     /*callback=*/v8::Local<v8::Function>());
 }
 
 void APIEventHandler::FireEventInContext(const std::string& event_name,
                                          v8::Local<v8::Context> context,
                                          v8::LocalVector<v8::Value>* arguments,
                                          mojom::EventFilteringInfoPtr filter,
-                                         JSRunner::ResultCallback callback) {
+                                         v8::Local<v8::Function> callback) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
   if (!data) {
@@ -305,9 +305,10 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
       api_response_validator_->ValidateEvent(context, event_name, *arguments);
     }
 
-    emitter->Fire(context, arguments, std::move(filter), std::move(callback));
+    emitter->Fire(context, arguments, std::move(filter), callback);
   } else {
-    DCHECK(!callback) << "Can't use an event callback with argument massagers.";
+    DCHECK(callback.IsEmpty())
+        << "Can't use an event callback with argument massagers.";
 
     v8::Isolate* isolate = context->GetIsolate();
     v8::HandleScope handle_scope(isolate);

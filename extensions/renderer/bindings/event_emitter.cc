@@ -22,6 +22,7 @@ namespace {
 constexpr const char kEmitterKey[] = "emitter";
 constexpr const char kArgumentsKey[] = "arguments";
 constexpr const char kFilterKey[] = "filter";
+constexpr const char kCallbackFunctionKey[] = "callback";
 constexpr const char kEventEmitterTypeName[] = "Event";
 
 }  // namespace
@@ -58,8 +59,8 @@ const char* EventEmitter::GetTypeName() {
 void EventEmitter::Fire(v8::Local<v8::Context> context,
                         v8::LocalVector<v8::Value>* args,
                         mojom::EventFilteringInfoPtr filter,
-                        JSRunner::ResultCallback callback) {
-  DispatchAsync(context, args, std::move(filter), std::move(callback));
+                        v8::Local<v8::Function> callback) {
+  DispatchAsync(context, args, std::move(filter), callback);
 }
 
 v8::Local<v8::Value> EventEmitter::FireSync(
@@ -271,7 +272,7 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
 void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
                                  v8::LocalVector<v8::Value>* args,
                                  mojom::EventFilteringInfoPtr filter,
-                                 JSRunner::ResultCallback callback) {
+                                 v8::Local<v8::Function> callback) {
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context);
@@ -283,11 +284,19 @@ void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
     CHECK(args_array->CreateDataProperty(context, i, args->at(i)).ToChecked());
   }
 
+  v8::Local<v8::Value> callback_value;
+  if (callback.IsEmpty()) {
+    callback_value = v8::Undefined(isolate);
+  } else {
+    callback_value = callback;
+  }
+
   v8::Local<v8::Object> data =
       gin::DataObjectBuilder(isolate)
           .Set(kEmitterKey, GetWrapper(isolate).ToLocalChecked())
           .Set(kArgumentsKey, args_array.As<v8::Value>())
           .Set(kFilterKey, gin::ConvertToV8(isolate, filter_id))
+          .Set(kCallbackFunctionKey, callback_value)
           .Build();
   v8::Local<v8::Function> function;
   // TODO(devlin): Function construction can fail in some weird cases (looking
@@ -297,8 +306,11 @@ void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
   CHECK(v8::Function::New(context, &DispatchAsyncHelper, data)
             .ToLocal(&function));
 
-  JSRunner::Get(context)->RunJSFunction(function, context, {},
-                                        std::move(callback));
+  JSRunner::Get(context)->RunJSFunction(
+      function, context, {},
+      // We handle the callback via `callback_value` instead so we can pass
+      // it v8 objects.
+      JSRunner::ResultCallback());
 }
 
 // static
@@ -339,8 +351,37 @@ void EventEmitter::DispatchAsyncHelper(
 
   // We know that dispatching synchronously should be safe because this function
   // was triggered by JS execution.
-  info.GetReturnValue().Set(
-      emitter->DispatchSync(context, &arguments, std::move(filter)));
+  v8::Local<v8::Value> dispatch_sync_result =
+      emitter->DispatchSync(context, &arguments, std::move(filter));
+
+  // Script context could be destroyed as a result of the above dispatch.
+  if (!binding::IsContextValid(context)) {
+    return;
+  }
+
+  v8::Local<v8::Value> callback_value;
+  bool callback_set =
+      data->Get(context, gin::StringToSymbol(isolate, kCallbackFunctionKey))
+          .ToLocal(&callback_value);
+
+  // No callback provided.
+  if (!callback_set || callback_value->IsUndefined()) {
+    return;
+  }
+
+  v8::Local<v8::Function> callback_function;
+  if (callback_value->IsFunction()) {
+    callback_function = callback_value.As<v8::Function>();
+  }
+
+  if (callback_function.IsEmpty()) {
+    return;
+  }
+
+  v8::LocalVector<v8::Value> callback_argument(isolate);
+  callback_argument.push_back(dispatch_sync_result);
+  JSRunner::Get(context)->RunJSFunctionSync(callback_function, context,
+                                            callback_argument);
 }
 
 }  // namespace extensions

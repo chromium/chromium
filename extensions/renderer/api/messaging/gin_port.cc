@@ -249,8 +249,8 @@ void GinPort::DispatchEvent(v8::Local<v8::Context> context,
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(isolate, on_message, &emitter);
   CHECK(emitter);
-
-  emitter->Fire(context, args, nullptr, JSRunner::ResultCallback());
+  emitter->Fire(context, args, /*filter=*/nullptr,
+                /*callback=*/v8::Local<v8::Function>());
 }
 
 void GinPort::OnContextInvalidated() {

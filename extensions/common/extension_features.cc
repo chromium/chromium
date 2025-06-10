@@ -222,4 +222,8 @@ BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
              "ExtensionBrowserNamespaceAlternative",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRuntimeOnMessagePromiseReturnSupport,
+             "RuntimeOnMessagePromiseReturnSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

@@ -78,7 +78,7 @@ class APIEventHandler {
                           v8::Local<v8::Context> context,
                           v8::LocalVector<v8::Value>* arguments,
                           mojom::EventFilteringInfoPtr filter,
-                          JSRunner::ResultCallback callback);
+                          v8::Local<v8::Function> callback);
 
   // Registers a `function` to serve as an "argument massager" for the given
   // `event_name`, mutating the original arguments.

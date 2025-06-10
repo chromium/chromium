@@ -21,6 +21,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -47,6 +48,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -618,6 +620,41 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
+ public:
+  OnMessagePromiseReturnMessagingApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRuntimeOnMessagePromiseReturnSupport);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Runs multiple test scenarios for runtime.OnMessage() listeners returning
+// various synchronous and asynchronous (promise or 'return true' callback)
+// values.
+IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
+                       OnMessageReturnBehavior) {
+  ASSERT_TRUE(LoadExtension(
+      shared_test_data_dir().AppendASCII("messaging/on_message_promise")));
+
+  // Open example.com where content script is injected and runtime.sendMessage()
+  // is called.
+  ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+
+  // Confirm content script response callback function is called with the
+  // expected value.
+  {
+    SCOPED_TRACE(
+        "waiting for content script message sender response callback to "
+        "receive response from background message listener");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
 }
 
 class ServiceWorkerMessagingApiTest : public MessagingApiTest {

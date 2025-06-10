@@ -17,10 +17,6 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8-forward.h"
 
-namespace base {
-class Value;
-}
-
 namespace gin {
 class Arguments;
 }
@@ -167,9 +163,7 @@ class OneTimeMessageHandler {
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
-  void OnEventFired(const PortId& port_id,
-                    v8::Local<v8::Context> context,
-                    std::optional<base::Value> result);
+  void OnEventFired(const PortId& port_id, gin::Arguments* arguments);
 
   // The associated bindings system. Outlives this object.
   const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
