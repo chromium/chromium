@@ -240,12 +240,12 @@ bool StructTraits<blink::mojom::IDBValueDataView,
         // TODO(crbug.com/40529364): remove the UUID parameter from WebBlobInfo.
         if (info->file) {
           value_blob_info.emplace_back(
-              WTF::CreateCanonicalUUIDString(), info->file->name,
+              blink::CreateCanonicalUUIDString(), info->file->name,
               info->mime_type,
               blink::NullableTimeToOptionalTime(info->file->last_modified),
               info->size, std::move(info->blob));
         } else {
-          value_blob_info.emplace_back(WTF::CreateCanonicalUUIDString(),
+          value_blob_info.emplace_back(blink::CreateCanonicalUUIDString(),
                                        info->mime_type, info->size,
                                        std::move(info->blob));
         }

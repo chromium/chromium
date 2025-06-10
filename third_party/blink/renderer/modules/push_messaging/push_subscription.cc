@@ -27,7 +27,7 @@ namespace {
 // This method and its dependencies must remain constant time, thus not branch
 // based on the value of |buffer| while encoding, assuming a known length.
 String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
-  String value = WTF::Base64URLEncode(buffer->ByteSpan());
+  String value = Base64URLEncode(buffer->ByteSpan());
   DCHECK_GT(value.length(), 0u);
 
   unsigned padding_to_remove = 0;

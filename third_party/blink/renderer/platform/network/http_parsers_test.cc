@@ -927,7 +927,7 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
   EXPECT_EQ(
       "amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6Kj"
       "jZuGkdrOUwxhBQ==",
-      WTF::Base64Encode(parsed->signatures[0]->signature));
+      Base64Encode(parsed->signatures[0]->signature));
 }
 
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {

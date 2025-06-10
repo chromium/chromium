@@ -37,7 +37,7 @@ InternalsProtectedAudience::setProtectedAudienceKAnonymity(
 
   for (const auto& in_hash_b64 : hashes_base64) {
     Vector<uint8_t> hash;
-    if (!WTF::Base64Decode(in_hash_b64, hash, Base64DecodePolicy::kForgiving)) {
+    if (!Base64Decode(in_hash_b64, hash, Base64DecodePolicy::kForgiving)) {
       resolver->Reject("hash not base64 encoded");
       return promise;
     }

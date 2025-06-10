@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(UUIDTest, BaseUUID) {
   EXPECT_TRUE(IsValidUUID("00000000-0000-0000-0000-000000000000"));
@@ -73,4 +73,4 @@ TEST(UUIDTest, NoHyphen) {
   EXPECT_FALSE(IsValidUUID("00000000 0000 0000 0000 000000000000"));
 }
 
-}  // namespace WTF
+}  // namespace blink

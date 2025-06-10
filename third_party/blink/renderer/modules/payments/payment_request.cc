@@ -1381,7 +1381,7 @@ PaymentRequest::PaymentRequest(
   PaymentDetailsPtr validated_details =
       payments::mojom::blink::PaymentDetails::New();
   validated_details->id = id_ =
-      details->hasId() ? details->id() : WTF::CreateCanonicalUUIDString();
+      details->hasId() ? details->id() : CreateCanonicalUUIDString();
 
   VLOG(2) << "Renderer: New PaymentRequest (" << id_.Utf8() << ")";
 

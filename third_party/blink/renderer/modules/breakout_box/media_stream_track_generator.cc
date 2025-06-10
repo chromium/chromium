@@ -113,7 +113,7 @@ MediaStreamComponent* MediaStreamTrackGenerator::MakeMediaStreamComponent(
       NOTREACHED();
   }
 
-  const String track_id = WTF::CreateCanonicalUUIDString();
+  const String track_id = CreateCanonicalUUIDString();
   return MakeGarbageCollected<MediaStreamComponentImpl>(
       MakeGarbageCollected<MediaStreamSource>(track_id, type, track_id,
                                               /*remote=*/false,

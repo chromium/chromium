@@ -148,8 +148,8 @@ TEST(StorageControllerTest, CacheLimit) {
 }
 
 TEST(StorageControllerTest, CacheLimitSessionStorage) {
-  const String kNamespace1 = WTF::CreateCanonicalUUIDString();
-  const String kNamespace2 = WTF::CreateCanonicalUUIDString();
+  const String kNamespace1 = CreateCanonicalUUIDString();
+  const String kNamespace2 = CreateCanonicalUUIDString();
   const String kKey("key");
   const String kValue("value");
   const std::string kRootString = "http://dom_storage/page";

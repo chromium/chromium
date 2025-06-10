@@ -339,8 +339,9 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothuuid-getdescriptor
 
   const String name_str = GetUUIDFromV8Value(name);
-  if (WTF::IsValidUUID(name_str))
+  if (IsValidUUID(name_str)) {
     return name_str;
+  }
 
   // If name is in the corresponding attribute map return
   // BluetoothUUID.canonicalUUID(alias).
@@ -400,7 +401,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
 
 String GetBluetoothUUIDFromV8Value(const V8UnionStringOrUnsignedLong* value) {
   const String value_str = GetUUIDFromV8Value(value);
-  return WTF::IsValidUUID(value_str) ? value_str : "";
+  return IsValidUUID(value_str) ? value_str : "";
 }
 
 // static

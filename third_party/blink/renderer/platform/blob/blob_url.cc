@@ -56,8 +56,8 @@ String BlobURL::GetOrigin(const KURL& url) {
 
 KURL BlobURL::CreateBlobURL(const String& origin_string) {
   DCHECK(!origin_string.empty());
-  String url_string = WTF::StrCat(
-      {"blob:", origin_string, "/", WTF::CreateCanonicalUUIDString()});
+  String url_string =
+      WTF::StrCat({"blob:", origin_string, "/", CreateCanonicalUUIDString()});
   return KURL(url_string);
 }
 

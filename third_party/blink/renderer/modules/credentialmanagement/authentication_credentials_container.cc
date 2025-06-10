@@ -1027,7 +1027,7 @@ const char* validateGetPublicKeyCredentialPRFExtension(
     for (const auto& pair : prf.evalByCredential()) {
       Vector<uint8_t> cred_id;
       if (!pair.first.Is8Bit() ||
-          !WTF::Base64UnpaddedURLDecode(pair.first, cred_id)) {
+          !Base64UnpaddedURLDecode(pair.first, cred_id)) {
         return "'prf' extension contains invalid base64url data in "
                "'evalByCredential'";
       }

@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/modp_b64/modp_b64.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -137,4 +137,4 @@ String NormalizeToBase64(const String& encoding) {
   return String(encoding).Replace('-', '+').Replace('_', '/');
 }
 
-}  // namespace WTF
+}  // namespace blink

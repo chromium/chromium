@@ -66,7 +66,7 @@ bool AddVideoTrackToMediaStream(
           WebPlatformMediaStreamSource::SourceStoppedCallback(),
           std::move(video_source));
   auto* media_stream_video_source_ptr = media_stream_video_source.get();
-  const String track_id(WTF::CreateCanonicalUUIDString());
+  const String track_id(CreateCanonicalUUIDString());
   auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
       track_id, MediaStreamSource::kTypeVideo, track_id, is_remote,
       std::move(media_stream_video_source));
@@ -107,7 +107,7 @@ void CreateHTMLAudioElementCapturer(
   DCHECK(descriptor);
   DCHECK(web_media_player);
 
-  const String track_id = WTF::CreateCanonicalUUIDString();
+  const String track_id = CreateCanonicalUUIDString();
 
   MediaStreamAudioSource* const media_stream_audio_source =
       HtmlAudioElementCapturerSource::CreateFromWebMediaPlayerImpl(
@@ -219,7 +219,7 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
   }
 
   auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
-      WTF::CreateCanonicalUUIDString(), MediaStreamComponentVector(),
+      CreateCanonicalUUIDString(), MediaStreamComponentVector(),
       MediaStreamComponentVector());
 
   if (media_element_->HasVideo()) {
@@ -323,7 +323,7 @@ MediaStream* HTMLMediaElementCapture::captureStream(
   }
 
   auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
-      WTF::CreateCanonicalUUIDString(), MediaStreamComponentVector(),
+      CreateCanonicalUUIDString(), MediaStreamComponentVector(),
       MediaStreamComponentVector());
 
   // Create() duplicates the MediaStreamTracks inside |descriptor|.

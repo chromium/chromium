@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // Compliant with https://infra.spec.whatwg.org/#forgiving-base64-encode.
 WTF_EXPORT void Base64Encode(base::span<const uint8_t>, Vector<char>&);
@@ -61,10 +61,6 @@ WTF_EXPORT String NormalizeToBase64(const String&);
 
 WTF_EXPORT String Base64URLEncode(base::span<const uint8_t>);
 
-}  // namespace WTF
-
-using WTF::Base64Decode;
-using WTF::Base64DecodePolicy;
-using WTF::Base64Encode;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_BASE64_H_

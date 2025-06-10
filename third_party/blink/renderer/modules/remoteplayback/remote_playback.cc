@@ -77,8 +77,7 @@ KURL GetAvailabilityUrl(const KURL& source,
   // filter for Media Remoting based Remote Playback on Desktop. The codec
   // fields are optional.
   std::string source_string = source.GetString().Utf8();
-  String encoded_source =
-      WTF::Base64URLEncode(base::as_byte_span(source_string));
+  String encoded_source = Base64URLEncode(base::as_byte_span(source_string));
 
   std::string video_codec_str =
       video_codec.has_value()

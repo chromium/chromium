@@ -106,7 +106,7 @@ String Binary::toBase64() const {
 // static
 Binary Binary::fromBase64(const String& base64, bool* success) {
   Vector<uint8_t> out;
-  *success = WTF::Base64Decode(base64, out);
+  *success = Base64Decode(base64, out);
   return Binary(base::AdoptRef(new BinaryBasedOnUint8Vector(std::move(out))));
 }
 

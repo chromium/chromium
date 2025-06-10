@@ -1225,8 +1225,8 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
     return true;
   }
   WTF::Vector<uint8_t> decoded_key;
-  if (!WTF::Base64Decode(input.additionalBidKey(), decoded_key,
-                         WTF::Base64DecodePolicy::kForgiving)) {
+  if (!Base64Decode(input.additionalBidKey(), decoded_key,
+                    Base64DecodePolicy::kForgiving)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         input, "additionalBidKey", input.additionalBidKey(),
         "cannot be base64 decoded."));

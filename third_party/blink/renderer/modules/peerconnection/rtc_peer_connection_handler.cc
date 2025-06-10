@@ -763,7 +763,7 @@ class RtcDataChannelLogOutputSinkProxy
           "data", WTF::String(base::span<const unsigned char>(message.data())));
     } else {
       json->SetString("data_type", "binary");
-      json->SetString("data", WTF::Base64Encode(message.data()));
+      json->SetString("data", Base64Encode(message.data()));
     }
 
     StringBuilder string_builder;

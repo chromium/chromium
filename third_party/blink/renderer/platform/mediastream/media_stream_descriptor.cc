@@ -153,7 +153,7 @@ void MediaStreamDescriptor::RemoveObserver(WebMediaStreamObserver* observer) {
 MediaStreamDescriptor::MediaStreamDescriptor(
     const MediaStreamComponentVector& audio_components,
     const MediaStreamComponentVector& video_components)
-    : MediaStreamDescriptor(WTF::CreateCanonicalUUIDString(),
+    : MediaStreamDescriptor(CreateCanonicalUUIDString(),
                             audio_components,
                             video_components) {}
 

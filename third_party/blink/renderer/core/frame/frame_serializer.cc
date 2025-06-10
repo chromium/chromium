@@ -152,7 +152,7 @@ using mojom::blink::FormControlType;
 
 KURL MakePseudoUrl(StringView type) {
   return KURL(WTF::StrCat(
-      {"cid:", type, "-", WTF::CreateCanonicalUUIDString(), "@mhtml.blink"}));
+      {"cid:", type, "-", CreateCanonicalUUIDString(), "@mhtml.blink"}));
 }
 
 KURL MakePseudoCSSUrl() {

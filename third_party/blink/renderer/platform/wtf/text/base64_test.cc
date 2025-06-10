@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(Base64Test, Encode) {
   struct {
@@ -161,4 +161,4 @@ TEST(Base64Test, ForgivingBase64Decode) {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

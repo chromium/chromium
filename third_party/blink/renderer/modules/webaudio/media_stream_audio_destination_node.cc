@@ -58,8 +58,7 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
     context.GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
   WebAudioMediaStreamSource* audio_source_ptr = audio_source.get();
 
-  String source_id =
-      WTF::StrCat({"WebAudio-", WTF::CreateCanonicalUUIDString()});
+  String source_id = WTF::StrCat({"WebAudio-", CreateCanonicalUUIDString()});
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = source_id;

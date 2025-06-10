@@ -63,7 +63,7 @@ TEST_F(PerformanceMarkTest, Construction) {
 
   ASSERT_EQ(SerializedScriptValue::NullValue()->Deserialize(isolate),
             pm->detail(script_state).V8Value());
-  ASSERT_TRUE(WTF::IsValidUUID(pm->navigationId()));
+  ASSERT_TRUE(IsValidUUID(pm->navigationId()));
 }
 
 TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
