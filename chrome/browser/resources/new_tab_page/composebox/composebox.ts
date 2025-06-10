@@ -16,6 +16,7 @@ export interface ComposeboxElement {
     attachmentUploader: HTMLInputElement,
     carousel: ComposeboxFileCarouselElement,
     imageUploader: HTMLInputElement,
+    input: HTMLInputElement,
   };
 }
 

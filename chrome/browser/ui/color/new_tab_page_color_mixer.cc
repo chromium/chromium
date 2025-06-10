@@ -313,6 +313,10 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::SelectBasedOnDarkInput(kColorNewTabPageAddShortcutBackground,
                                  SK_ColorWHITE, gfx::kGoogleGrey900);
 
+  mixer[kColorNewTabPageComposeboxBackground] = {
+      dark_mode ? SkColorSetRGB(0x1D, 0x1E, 0x26)
+                : SkColorSetRGB(0xF0, 0xF2, 0xF5)};
+
   mixer[kColorNewTabPageMostVisitedTileBackgroundUnthemed] = {
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =

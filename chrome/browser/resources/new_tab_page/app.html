@@ -28,7 +28,8 @@
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      <ntp-composebox></ntp-composebox>
+      <ntp-composebox>
+      </ntp-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"

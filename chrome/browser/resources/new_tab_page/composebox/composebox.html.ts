@@ -9,23 +9,30 @@ import type {ComposeboxElement} from './composebox.js';
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="main">
+  <div id="composebox">
+    <div id="inputContainer">
+      <textarea id="input" type="search" autocomplete="off"
+          spellcheck="false" placeholder="Ask Anything"></textarea>
+      <div id="imageUpload"></div>
+    </div>
+  </div>
   <ntp-composebox-file-carousel id="carousel" .files=${this.files}>
   </ntp-composebox-file-carousel>
   <!-- TODO(crbug.com/422561574): Style inputs. -->
-  <label for="imageUploader">Image Upload</label>
+  <label for="imageUploader" hidden>Image Upload</label>
   <input type="file"
       accept="${this.imageFileTypes_}"
       id="imageUploader"
-      @change="${this.onFileChange_}">
+      @change="${this.onFileChange_}"
+      hidden>
   </input>
-  <label for="attachmentUploader">Attachment Upload</label>
+  <label for="attachmentUploader" hidden>Attachment Upload</label>
   <input type="file"
       accept="${this.attachmentFileTypes_}"
       id="attachmentUploader"
-      @change="${this.onFileChange_}">
+      @change="${this.onFileChange_}"
+      hidden>
   </input>
-</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

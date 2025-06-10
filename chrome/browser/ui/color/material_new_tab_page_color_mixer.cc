@@ -38,6 +38,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageButtonBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabPageButtonForeground] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorNewTabPageComposeboxBackground] = {
+      dark_mode ? SkColorSetRGB(0x1D, 0x1E, 0x26)
+                : SkColorSetRGB(0xF0, 0xF2, 0xF5)};
 
   mixer[kColorNewTabPageControlBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
