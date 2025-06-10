@@ -28,6 +28,8 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
@@ -105,6 +107,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   // TODO(crbug.com/324939068): remove the code when the feature launched.
   bool container_is_blob_url_shared_worker() const override;
+  // This must only be set once during construction in order to be safe to be
+  // called cross-thread.
   void set_container_is_blob_url_shared_worker(bool is_blob_url) {
     container_is_blob_url_shared_worker_ = is_blob_url;
   }
@@ -161,10 +165,11 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   // state.
   void OnNetworkProviderDestroyed();
 
-  // May be nullptr if OnNetworkProviderDestroyed() has already been called.
-  // Currently this can be called only for clients that are Documents,
-  // see comments of |container_host_|.
-  blink::mojom::ServiceWorkerContainerHost* container_host() const;
+  // May be false if OnNetworkProviderDestroyed() has already been called.
+  // This should only be used by tests. It should only be called from the
+  // window thread or main thread as the value may not be accurate otherwise.
+  // See comments of |container_host_|.
+  bool has_container_host_for_testing() const;
 
   // Called when blink::IdlenessDetector emits its network idle signal. Tells
   // the browser process that this page is quiet soon after page load, as a
@@ -200,6 +205,25 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       override;
 
   void Destroy() const override;
+
+  void Register(
+      const GURL& script_url,
+      blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings,
+      blink::mojom::ServiceWorkerContainerHost::RegisterCallback callback);
+
+  void GetRegistration(
+      const GURL& document_url,
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationCallback
+          callback);
+
+  void GetRegistrations(
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationsCallback
+          callback);
+
+  void GetRegistrationForReady(
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationForReadyCallback
+          callback);
 
  private:
   friend class base::DeleteHelper<ServiceWorkerProviderContext>;
@@ -353,6 +377,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       controller_connector_;
 
   bool sent_execution_ready_ = false;
+
+  base::WeakPtrFactory<ServiceWorkerProviderContext> weak_ptr_factory_{this};
 };
 
 struct ServiceWorkerProviderContextDeleter {

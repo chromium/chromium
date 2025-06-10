@@ -809,7 +809,7 @@ TEST_F(ServiceWorkerProviderContextTest, OnNetworkProviderDestroyed) {
   provider_context->OnNetworkProviderDestroyed();
 
   // Calling these in the weird state shouldn't crash.
-  EXPECT_FALSE(provider_context->container_host());
+  EXPECT_FALSE(provider_context->has_container_host_for_testing());
   EXPECT_FALSE(provider_context->CloneRemoteContainerHost());
   provider_context->DispatchNetworkQuiet();
   provider_context->NotifyExecutionReady();
