@@ -51,11 +51,19 @@ BASE_FEATURE(kMacCatapProbeTapOnCreation,
              "MacCatapProbeTapOnCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If this feature is enabled, we will only capture the default output device.
-// If the feature is disabled, all system audio is captured regardless of which
-// output device the audio is played on.
-BASE_FEATURE(kMacCatapCaptureDefaultDevice,
-             "MacCatapCaptureDefaultDevice",
+// When `kMacCatapCaptureAllDevices` is disabled:
+//
+// CatapAudioInputStream captures audio from the default output device. However,
+// if the device ID is explicitly set to `kLoopbackAllDevicesId`, it will
+// capture all system audio regardless of the specific output device used for
+// playback.
+//
+// When `kMacCatapCaptureAllDevices` is enabled:
+//
+// CatapAudioInputStream captures all system audio, irrespective of the specific
+// output device it's played on or the device ID set.
+BASE_FEATURE(kMacCatapCaptureAllDevices,
+             "MacCatapCaptureAllDevices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 API_AVAILABLE(macos(14.2))
@@ -218,7 +226,13 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(kMacCatapCaptureDefaultDevice)) {
+  if (device_id_ == AudioDeviceDescription::kLoopbackAllDevicesId ||
+      base::FeatureList::IsEnabled(kMacCatapCaptureAllDevices)) {
+    // Mix all processes to a stereo stream except the given processes.
+    tap_description_ =
+        [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:
+                                      process_audio_device_ids_to_exclude];
+  } else {
     // Mix all process audio streams destined for the selected device stream
     // except the given processes.
     tap_description_ = [[CATapDescription alloc]
@@ -226,11 +240,6 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
                   andDeviceUID:[NSString stringWithUTF8String:
                                              default_output_device_id_.c_str()]
                     withStream:0];
-  } else {
-    // Mix all processes to a stereo stream except the given processes.
-    tap_description_ =
-        [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:
-                                      process_audio_device_ids_to_exclude];
   }
 
   if (params_.channels() == 1) {

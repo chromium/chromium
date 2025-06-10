@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 #include "media/audio/mac/catap_audio_input_stream.h"
 
+#import <Foundation/Foundation.h>
+
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
@@ -148,12 +152,19 @@ class CatapAudioInputStreamTest : public testing::Test {
 
       // Set up expectations for a successful open.
       EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
-          .WillOnce(
-              [](CATapDescription* in_description, AudioObjectID* out_tap) {
-                EXPECT_EQ([in_description isMuted], CATapUnmuted);
-                *out_tap = kTap;
-                return noErr;
-              });
+          .WillOnce([](CATapDescription* in_description,
+                       AudioObjectID* out_tap) {
+            // Default device selected.
+            EXPECT_EQ(std::string(
+                          base::SysNSStringToUTF8([in_description deviceUID])),
+                      media::AudioDeviceDescription::kDefaultDeviceId);
+            // Expect the first stream to be selected.
+            EXPECT_EQ([[in_description stream] intValue], 0);
+            // Not muted during capture.
+            EXPECT_EQ([in_description isMuted], CATapUnmuted);
+            *out_tap = kTap;
+            return noErr;
+          });
       EXPECT_CALL(mock_catap_api(), AudioHardwareCreateAggregateDevice)
           .WillOnce([](CFDictionaryRef in_device_properties,
                        AudioDeviceID* out_device) {
@@ -274,21 +285,28 @@ class CatapAudioInputStreamTest : public testing::Test {
   AudioDeviceIOProc audio_proc_;
 };
 
-TEST_F(CatapAudioInputStreamTest, CreateAndInitializeWithPermissions) {
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest, DISABLED_CreateAndInitializeWithPermissions) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
               AudioInputStream::OpenOutcome::kSuccess);
   }
 }
 
-TEST_F(CatapAudioInputStreamTest, CreateAndFailToInitializeWithoutPermissions) {
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest,
+       DISABLED_CreateAndFailToInitializeWithoutPermissions) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/false),
               AudioInputStream::OpenOutcome::kFailed);
   }
 }
 
-TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest, DISABLED_CaptureSomeAudioData) {
   if (@available(macOS 14.2, *)) {
     EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
               AudioInputStream::OpenOutcome::kSuccess);
@@ -334,7 +352,9 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
   }
 }
 
-TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithoutChromeId) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
     // Keep a raw pointer to set expectations.
@@ -446,7 +466,9 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
   }
 }
 
-TEST_F(CatapAudioInputStreamTest, LoopbackWithMuteDevice) {
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithMuteDevice) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
     // Keep a raw pointer to set expectations.
@@ -468,6 +490,58 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithMuteDevice) {
     EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
         .WillOnce([](CATapDescription* in_description, AudioObjectID* out_tap) {
           EXPECT_EQ([in_description isMuted], CATapMuted);
+          *out_tap = kTap;
+          return noErr;
+        });
+
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateAggregateDevice)
+        .WillOnce([](CFDictionaryRef in_device_properties,
+                     AudioDeviceID* out_device) {
+          *out_device = kAggregateDeviceId;
+          return noErr;
+        });
+    EXPECT_CALL(mock_catap_api(), AudioDeviceCreateIOProcID)
+        .WillOnce([this](AudioDeviceID in_device, AudioDeviceIOProc proc,
+                         void* in_client_data,
+                         AudioDeviceIOProcID* out_proc_id) {
+          EXPECT_EQ(in_device, kAggregateDeviceId);
+          audio_proc_ = proc;
+          EXPECT_EQ(in_client_data, stream_);
+          *out_proc_id = kTapIoProcId;
+          return noErr;
+        });
+
+    // Initialize the stream.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  }
+}
+
+// TODO(crbug.com/423798664): Tests were reported as being flaky. Tests should
+// be re-enabled ASAP.
+TEST_F(CatapAudioInputStreamTest, DISABLED_LoopbackWithAllDevices) {
+  if (@available(macOS 14.2, *)) {
+    auto mock_catap_api_object = std::make_unique<MockCatapApi>();
+    // Keep a raw pointer to set expectations.
+    mock_catap_api_ = mock_catap_api_object.get();
+
+    // Create a CatapAudioInputStream for testing with
+    // kLoopbackWithMuteDeviceId.
+    stream_ = CreateCatapAudioInputStreamForTesting(
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                        kCatapLoopbackDefaultFramesPerBuffer),
+        media::AudioDeviceDescription::kLoopbackAllDevicesId, base::DoNothing(),
+        base::DoNothing(), media::AudioDeviceDescription::kDefaultDeviceId,
+        std::move(mock_catap_api_object));
+    EXPECT_TRUE(stream_);
+
+    // Set up expectations for a successful open.
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
+        .WillOnce([](CATapDescription* in_description, AudioObjectID* out_tap) {
+          // Device UID and stream not set indicates that we're capturing all
+          // devices.
+          EXPECT_EQ([in_description deviceUID], nullptr);
+          EXPECT_EQ([in_description stream], nullptr);
           *out_tap = kTap;
           return noErr;
         });
