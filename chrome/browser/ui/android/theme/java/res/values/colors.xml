@@ -21,4 +21,6 @@ found in the LICENSE file.
     <color name="pane_switcher_selected_tab_incognito_v2">@color/baseline_secondary_30</color>
     <color name="pane_switcher_selected_tab_icon_color_incognito">@color/baseline_neutral_90</color>
 
+    <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_80</color>
+
 </resources>

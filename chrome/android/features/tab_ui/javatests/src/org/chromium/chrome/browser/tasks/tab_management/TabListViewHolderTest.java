@@ -693,7 +693,8 @@ public class TabListViewHolderTest {
         boolean isSelected = false;
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList unselectedColorStateList =
-                TabUiThemeProvider.getActionButtonTintList(sActivity, isIncognito, isSelected);
+                TabUiThemeProvider.getActionButtonTintList(
+                        sActivity, isIncognito, isSelected, /* colorId */ null);
 
         Assert.assertEquals(
                 unselectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
@@ -701,7 +702,8 @@ public class TabListViewHolderTest {
         isSelected = true;
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList selectedColorStateList =
-                TabUiThemeProvider.getActionButtonTintList(sActivity, isIncognito, isSelected);
+                TabUiThemeProvider.getActionButtonTintList(
+                        sActivity, isIncognito, isSelected, /* colorId */ null);
         Assert.assertEquals(
                 selectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
     }

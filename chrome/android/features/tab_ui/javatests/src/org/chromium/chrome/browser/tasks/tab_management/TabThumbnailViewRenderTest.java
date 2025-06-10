@@ -231,6 +231,6 @@ public class TabThumbnailViewRenderTest {
 
         mTabCard.setTabActionButtonTint(
                 TabUiThemeProvider.getActionButtonTintList(
-                        mTabCard.getContext(), isIncognito, isSelected));
+                        mTabCard.getContext(), isIncognito, isSelected, /* colorId */ null));
     }
 }

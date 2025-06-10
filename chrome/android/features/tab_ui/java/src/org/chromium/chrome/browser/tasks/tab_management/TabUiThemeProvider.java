@@ -70,22 +70,18 @@ public class TabUiThemeProvider {
      * @return The {@link ColorStateList} for tab grid card action button.
      */
     public static ColorStateList getActionButtonTintList(
-            Context context, boolean isIncognito, boolean isSelected) {
-        if (isIncognito) {
-            @ColorRes
-            int colorRes =
-                    isSelected
-                            ? R.color.incognito_tab_action_button_selected_color
-                            : R.color.incognito_tab_action_button_color;
-            return AppCompatResources.getColorStateList(context, colorRes);
-        } else {
-            @ColorInt
-            int colorInt =
-                    isSelected
-                            ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                            : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
-            return ColorStateList.valueOf(colorInt);
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
+        if (isSelected) {
+            return isIncognito
+                    ? AppCompatResources.getColorStateList(
+                            context, R.color.incognito_tab_action_button_selected_color)
+                    : ColorStateList.valueOf(
+                            MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
         }
+        return SurfaceColorUpdateUtils.getCardViewActionButtonColor(context, isIncognito, colorId);
     }
 
     /**
@@ -99,7 +95,7 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getToggleActionButtonBackgroundTintList(
             Context context, boolean isIncognito, boolean isSelected) {
-        return getActionButtonTintList(context, isIncognito, isSelected);
+        return getActionButtonTintList(context, isIncognito, isSelected, /* colorId */ null);
     }
 
     /**
