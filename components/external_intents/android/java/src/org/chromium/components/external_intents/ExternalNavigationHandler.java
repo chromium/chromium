@@ -1183,16 +1183,17 @@ public class ExternalNavigationHandler {
      * specialized external app handling it.
      */
     private OverrideUrlLoadingResult fallBackToHandlingInApp(ExternalNavigationParams params) {
-        if (debug()) Log.i(TAG, "No specialized handler for URL");
         // The default behavior for Desktop windowing should be to open a browser tab. In case
-        // the navigation starts in a PWA, we should reparent the tab to the browser.
+        // a new frame navigation starts in a PWA, we should reparent the tab to the browser.
         if (ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA.isEnabled()
                 && params.isInDesktopWindowingMode()
                 && params.isInitialNavigationInFrame()
-                && params.isTabInPWA()) {
+                && params.isTabInPWA()
+                && !params.isFromIntent()) {
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }
+        if (debug()) Log.i(TAG, "No specialized handler for URL");
         return OverrideUrlLoadingResult.forNoOverride();
     }
 
