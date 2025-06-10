@@ -60,17 +60,15 @@ namespace {
 
 void WaitForHistogram(const std::string& histogram_name) {
   // Continue if histogram was already recorded.
-  if (base::StatisticsRecorder::FindHistogram(histogram_name))
+  if (base::StatisticsRecorder::FindHistogram(histogram_name)) {
     return;
+  }
 
   // Else, wait until the histogram is recorded.
   base::RunLoop run_loop;
   auto histogram_observer =
       std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-          histogram_name,
-          base::BindLambdaForTesting(
-              [&](std::string_view histogram_name, uint64_t name_hash,
-                  base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
+          histogram_name, run_loop.QuitClosure());
   run_loop.Run();
 }
 

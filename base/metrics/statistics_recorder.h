@@ -98,6 +98,8 @@ class BASE_EXPORT StatisticsRecorder {
                                            OnSampleCallback callback);
     explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
                                            OnSampleWithEventCallback callback);
+    explicit ScopedHistogramSampleObserver(std::string_view histogram_name,
+                                           base::RepeatingClosure callback);
     ~ScopedHistogramSampleObserver();
 
    private:

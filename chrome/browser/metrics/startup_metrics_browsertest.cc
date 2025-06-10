@@ -78,17 +78,15 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, MAYBE_ReportsValues) {
     SCOPED_TRACE(histogram);
 
     // Continue if histograms was already recorded.
-    if (base::StatisticsRecorder::FindHistogram(histogram))
+    if (base::StatisticsRecorder::FindHistogram(histogram)) {
       continue;
+    }
 
     // Else, wait until the histogram is recorded.
     base::RunLoop run_loop;
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-        histogram,
-        base::BindLambdaForTesting(
-            [&](std::string_view histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
+        histogram, run_loop.QuitClosure());
     run_loop.Run();
   }
 }

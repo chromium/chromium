@@ -252,9 +252,7 @@ TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
 
   base::RunLoop run_loop;
   base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
-      "SafeBrowsing.PhishySite.PasteEventCount",
-      base::IgnoreArgs<std::string_view, uint64_t,
-                       base::HistogramBase::Sample32>(run_loop.QuitClosure()));
+      "SafeBrowsing.PhishySite.PasteEventCount", run_loop.QuitClosure());
   run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(

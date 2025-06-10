@@ -72,6 +72,18 @@ StatisticsRecorder::ScopedHistogramSampleObserver::
 }
 
 StatisticsRecorder::ScopedHistogramSampleObserver::
+    ScopedHistogramSampleObserver(std::string_view name,
+                                  base::RepeatingClosure callback)
+    : histogram_name_(name),
+      callback_(
+          base::IgnoreArgs<std::optional<uint64_t>,
+                           std::string_view,
+                           uint64_t,
+                           HistogramBase::Sample32>(std::move(callback))) {
+  StatisticsRecorder::AddHistogramSampleObserver(histogram_name_, this);
+}
+
+StatisticsRecorder::ScopedHistogramSampleObserver::
     ~ScopedHistogramSampleObserver() {
   StatisticsRecorder::RemoveHistogramSampleObserver(histogram_name_, this);
 }
