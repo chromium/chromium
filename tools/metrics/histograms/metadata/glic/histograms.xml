@@ -200,6 +200,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Host.WebClientUnresponsiveState"
+    enum="WebClientUnresponsiveState" expires_after="2026-05-30">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Tracks the detection of the web client being unresponsive and the respective
+    state transitions into and out of the unresponsive state. Reported upon
+    detection of unresponsiveness and unresposive state transitions.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Host.WebClientUnresponsiveState.Duration" units="ms"
+    expires_after="2026-05-30">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records for how long the web client was kept in an unresponsive state.
+    Recorded when the state is swtiching from unresponsive to any other
+    supported state.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
@@ -443,16 +465,6 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <owner>iwells@google.com</owner>
   <summary>Record the panel webui state any time it changes.</summary>
-</histogram>
-
-<histogram name="Glic.PanelWebUiState.FinishState" enum="WebUiState"
-    expires_after="2025-01-15">
-  <owner>dewittj@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>
-    Obsolete metric, replaced by FinishState2. Record the state when the panel
-    display is finished.
-  </summary>
 </histogram>
 
 <histogram name="Glic.PanelWebUiState.FinishState2" enum="WebUiState"

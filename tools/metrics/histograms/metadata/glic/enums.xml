@@ -278,6 +278,28 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Non-PDF main doc; PDF not found"/>
 </enum>
 
+<!-- LINT.IfChange(WebClientUnresponsiveState) -->
+
+<enum name="WebClientUnresponsiveState">
+  <int value="0" label="Entered; webview event">
+    Entered unresponsive state, detected by a webview unresponsive event&quot;
+  </int>
+  <int value="1" label="Entered; heartbeat">
+    Entered unresponsive state, detected by Glic's custom heartbeat check&quot;
+  </int>
+  <int value="2" label="Already unresponsive; webview event">
+    Already on unresponsive state, detected again by a webview unresponsive
+    event&quot;
+  </int>
+  <int value="3" label="Already unresponsive; heartbeat">
+    Already on unresponsive state, detected again by Glic's custom heartbeat
+    check&quot;
+  </int>
+  <int value="4" label="Exited">Exited unresponsive state&quot;</int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:WebClientUnresponsiveState) -->
+
 <!-- LINT.IfChange(WebUiState) -->
 
 <enum name="WebUiState">
