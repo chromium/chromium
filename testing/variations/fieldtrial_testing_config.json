@@ -10389,6 +10389,25 @@
             ]
         }
     ],
+    "GlicClientResponsivenessCheckExtension": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "glic-client-unresponsive-ui-max-time-ms": "15000"
+                    },
+                    "enable_features": [
+                        "GlicClientResponsivenessCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClosedCaptioning": [
         {
             "platforms": [
