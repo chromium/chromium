@@ -123,7 +123,7 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
   void ProcessRgbaFrame(PlaneInfo plane);
 
   raw_ptr<Callback> callback_ = nullptr;
-  base::android::ScopedJavaLocalRef<jobject> screen_capture_;
+  base::android::ScopedJavaGlobalRef<jobject> screen_capture_;
 
   std::unique_ptr<webrtc::DesktopFrame> next_frame_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
