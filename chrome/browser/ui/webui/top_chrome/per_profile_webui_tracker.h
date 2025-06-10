@@ -42,9 +42,17 @@ class PerProfileWebUITracker {
 
   // Returns true if a WebUI with the specified URL exists within the profile.
   // This includes all WebContents, regardless of their visibility, hidden
-  // state, crash state, or any errors.
+  // state, crash state, preload state, or any errors.
   virtual bool ProfileHasWebUI(Profile* profile,
-                               std::string webui_url) const = 0;
+                               const std::string& webui_url) const = 0;
+
+  // Returns true if a WebUI with the specified URL exists within the profile
+  // and is in the background, i.e. it is preloaded and pending to be shown.
+  // Note that a preloaded WebUI is not equivalent to a background WebUI. A
+  // foreground WebUI may be preloaded before it is shown, in which case
+  // WebUIContentsPreloadState::preloaded is true.
+  virtual bool ProfileHasBackgroundWebUI(Profile* profile,
+                                         const std::string& webui_url) const = 0;
 
   // Adds an observer that will be notified of tracked WebContents destroy.
   virtual void AddObserver(Observer* observer) = 0;

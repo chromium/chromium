@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -39,7 +40,11 @@ class MockPerProfileWebUITracker : public PerProfileWebUITracker {
   MOCK_METHOD(void, AddWebContents, (content::WebContents*), (override));
   MOCK_METHOD(bool,
               ProfileHasWebUI,
-              (Profile*, std::string webui_url),
+              (Profile*, const std::string& webui_url),
+              (const, override));
+  MOCK_METHOD(bool,
+              ProfileHasBackgroundWebUI,
+              (Profile*, const std::string& webui_url),
               (const, override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
@@ -131,6 +136,10 @@ class ProfilePreloadCandidateSelectorTest
     return candidate_selector_->GetURLToPreload(PreloadContext::From(profile));
   }
 
+  ProfilePreloadCandidateSelector* candidate_selector() {
+    return candidate_selector_.get();
+  }
+
   MockPerProfileWebUITracker& mock_webui_tracker() {
     return mock_webui_tracker_;
   }
@@ -156,7 +165,7 @@ class ProfilePreloadCandidateSelectorTest
 // Tests that the candidate selector does not select WebUIs that are present.
 TEST_F(ProfilePreloadCandidateSelectorTest, IgnorePresentWebUI) {
   // Set engagement scores to maximum, so that the selector won't reject a URL
-  // due to its low engagemen score.
+  // due to its low engagement score.
   SetEngagementScore(profile(), GURL(kWebUIUrl1),
                      SiteEngagementService::GetMaxPoints());
   SetEngagementScore(profile(), GURL(kWebUIUrl2),
@@ -175,6 +184,57 @@ TEST_F(ProfilePreloadCandidateSelectorTest, IgnorePresentWebUI) {
   ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl2))
       .WillByDefault(Return(true));
   EXPECT_FALSE(GetURLToPreload(profile()).has_value());
+}
+
+// Tests that the candidate selector selects nothing if the most engaged WebUI
+// is in the background.
+TEST_F(ProfilePreloadCandidateSelectorTest,
+       NoPreloadIfMostEngagedUrlIsBackground) {
+  candidate_selector()
+      ->set_no_preload_if_most_engaged_url_is_background_for_testing(true);
+
+  // Set URL1 engagement score > URL2 engagement score, so that URL1 is
+  // preferred.
+  const double high_engagement_score =
+      SiteEngagementScore::GetHighEngagementBoundary();
+  SetEngagementScore(profile(), GURL(kWebUIUrl1), high_engagement_score + 1);
+  SetEngagementScore(profile(), GURL(kWebUIUrl2), high_engagement_score);
+
+  // By default no WebUI is present, selects URL1.
+  EXPECT_EQ(GURL(kWebUIUrl1), *GetURLToPreload(profile()));
+
+  // If URL1 is in the background, selects nothing.
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_webui_tracker(), ProfileHasBackgroundWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(GetURLToPreload(profile()).has_value());
+
+  // If URL1 becomes foreground, selects URL2.
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(true));
+  ON_CALL(mock_webui_tracker(), ProfileHasBackgroundWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(false));
+  EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
+
+  // If URL1 has both foreground and background WebUIs, selects nothing.
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(true));
+  ON_CALL(mock_webui_tracker(), ProfileHasBackgroundWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(GetURLToPreload(profile()).has_value())
+      << *GetURLToPreload(profile());
+
+  // If URL1 is not present and URL2 is in the background, selects URL1.
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_webui_tracker(), ProfileHasBackgroundWebUI(_, kWebUIUrl1))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl2))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_webui_tracker(), ProfileHasBackgroundWebUI(_, kWebUIUrl2))
+      .WillByDefault(Return(true));
+  EXPECT_EQ(GURL(kWebUIUrl1), *GetURLToPreload(profile()));
 }
 
 // Tests that the candidate selector does not select WebUIs with low

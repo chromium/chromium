@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -127,6 +128,48 @@ TEST_F(PerProfileWebUITrackerTest, Navigation) {
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("about:blank"));
   EXPECT_FALSE(tracker()->ProfileHasWebUI(profile(), kWebUIUrl1));
+}
+
+// Test for ProfileHasBackgroundWebUI(), which should return true if a URL has
+// WebUI instances that are not yet shown.
+TEST_F(PerProfileWebUITrackerTest, BackgroundWebUI) {
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents.get());
+  web_contents_tester->NavigateAndCommit(GURL(kWebUIUrl1));
+
+  tracker()->AddWebContents(web_contents.get());
+
+  auto make_webui_foreground = [](content::WebContents* web_contents) {
+    WebUIContentsPreloadState::CreateForWebContents(web_contents);
+    WebUIContentsPreloadState::FromWebContents(web_contents)
+        ->request_time = base::TimeTicks::Now();
+  };
+
+  auto make_webui_background = [](content::WebContents* web_contents) {
+    WebUIContentsPreloadState::CreateForWebContents(web_contents);
+    auto* state = WebUIContentsPreloadState::FromWebContents(web_contents);
+    state->request_time.reset();
+    state->preloaded = true;
+  };
+
+  make_webui_background(web_contents.get());
+  EXPECT_TRUE(tracker()->ProfileHasBackgroundWebUI(profile(), kWebUIUrl1));
+
+  // Show a new foreground WebUI of the same URL. HasBackgroundWebUI() should
+  // still return true.
+  std::unique_ptr<content::WebContents> web_contents2 =
+      CreateTestWebContents();
+  content::WebContentsTester* web_contents_tester2 =
+      content::WebContentsTester::For(web_contents2.get());
+  web_contents_tester2->NavigateAndCommit(GURL(kWebUIUrl1));
+  make_webui_foreground(web_contents2.get());
+  EXPECT_TRUE(tracker()->ProfileHasBackgroundWebUI(profile(), kWebUIUrl1));
+
+  // Make the original `web_contents` foreground. HasBackgroundWebUI() should
+  // return false.
+  make_webui_foreground(web_contents.get());
+  EXPECT_FALSE(tracker()->ProfileHasBackgroundWebUI(profile(), kWebUIUrl1));
 }
 
 class MockTrackerObserver : public PerProfileWebUITracker::Observer {
