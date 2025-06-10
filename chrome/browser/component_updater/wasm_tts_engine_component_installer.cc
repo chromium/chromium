@@ -35,9 +35,7 @@ const base::FilePath::CharType kManifestV3FileName[] =
 const base::FilePath::CharType kOffscreenHtmlFileName[] =
     FILE_PATH_LITERAL("offscreen.html");
 const base::FilePath::CharType kOffscreenCompiledFileName[] =
-    FILE_PATH_LITERAL("offscreen_compiled.html");
-const base::FilePath::CharType kBindingsTypeDeclarationFileName[] =
-    FILE_PATH_LITERAL("bindings_main.d.ts");
+    FILE_PATH_LITERAL("offscreen_compiled.js");
 const base::FilePath::CharType kBackgroundCompiledFileName[] =
     FILE_PATH_LITERAL("background_compiled.js");
 #endif
@@ -146,9 +144,9 @@ bool WasmTtsEngineComponentInstallerPolicy::VerifyInstallation(
            base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&
            base::PathExists(install_dir.Append(kOffscreenHtmlFileName)) &&
            base::PathExists(install_dir.Append(kOffscreenCompiledFileName)) &&
-           base::PathExists(
-               install_dir.Append(kBindingsTypeDeclarationFileName)) &&
-           base::PathExists(install_dir.Append(kBackgroundCompiledFileName));
+           base::PathExists(install_dir.Append(kBackgroundCompiledFileName)) &&
+           base::PathExists(install_dir.Append(kWorkletProcessorJsFileName)) &&
+           base::PathExists(install_dir.Append(kVoicesJsonFileName));
   }
 #endif
   return base::PathExists(install_dir.Append(kManifestFileName)) &&
