@@ -6,7 +6,6 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
-#include "components/guest_view/common/guest_view.mojom.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -15,7 +14,6 @@
 #include "ui/webui/examples/browser/browser_main_parts.h"
 #include "ui/webui/examples/browser/ui/web/browser.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
-#include "ui/webui/examples/browser/ui/web/webshell_guest_view.h"
 
 namespace webui_examples {
 
@@ -48,14 +46,6 @@ void ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       webui_examples::mojom::PageHandlerFactory, Browser>(map);
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, Browser>(map);
-}
-
-void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
-    content::RenderFrameHost& render_frame_host,
-    blink::AssociatedInterfaceRegistry& associated_registry) {
-  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&WebshellGuestView::Create,
-                          render_frame_host.GetGlobalId()));
 }
 
 std::string ContentBrowserClient::GetUserAgent() {

@@ -8,10 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "components/guest_view/common/guest_view.mojom.h"
-#include "components/guest_view/common/guest_view_constants.h"
-#include "components/guest_view/renderer/guest_view_container.h"
-#include "components/guest_view/renderer/guest_view_request.h"
+#include "components/guest_contents/renderer/swap_render_frame.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread.h"
@@ -58,35 +55,6 @@ void AllowCustomElementNameRegistration(
   callback->Call(context, context->Global(), 0, nullptr).ToLocalChecked();
 }
 
-void GetNextId(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  static int32_t current_id = 0;
-  args.GetReturnValue().Set(++current_id);
-}
-
-void RegisterWebView(const blink::LocalFrameToken& frame_token,
-                     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 1);
-  CHECK(args[0]->IsInt32());
-  int view_instance_id = args[0].As<v8::Int32>()->Value();
-  CHECK_NE(view_instance_id, guest_view::kInstanceIDNone);
-
-  // This view_holder is leaked. It likely should be bound to the returned
-  // object but views are not tracked.
-  auto* view_holder = new mojo::Remote<guest_view::mojom::ViewHandle>();
-  auto receiver = view_holder->BindNewPipeAndPassReceiver();
-
-  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token);
-  CHECK(web_frame);
-  auto* frame = content::RenderFrame::FromWebFrame(web_frame);
-  CHECK(frame);
-  mojo::AssociatedRemote<guest_view::mojom::GuestViewHost> guest_view;
-  frame->GetRemoteAssociatedInterfaces()->GetInterface(&guest_view);
-
-  guest_view->ViewCreated(view_instance_id, "BrowserWebView",
-                          std::move(receiver));
-  args.GetReturnValue().SetUndefined();
-}
-
 content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
   v8::Local<v8::Context> context;
   if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext().ToLocal(
@@ -103,27 +71,18 @@ content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
 }
 
 void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  // attachIframeGuest(
-  //     containerId, guestInstanceId, attachParams, contentWindow)
-  CHECK_EQ(args.Length(), 4);
+  // attachIframeGuest(guestInstanceId, attachParams, contentWindow)
+  CHECK_EQ(args.Length(), 2);
   CHECK(args[0]->IsInt32());
-  CHECK(args[1]->IsInt32());
-  CHECK(args[2]->IsObject());
-  CHECK(args[3]->IsObject());
+  CHECK(args[1]->IsObject());
   v8::Isolate* isolate = args.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  int container_id = args[0].As<v8::Int32>()->Value();
-  int guest_instance_id = args[1].As<v8::Int32>()->Value();
+  int guest_contents_id = args[0].As<v8::Int32>()->Value();
   // Getting the attach params could destroy the frame while it executes JS,
   // so observe the render frame for destruction. We don't expect for this to
   // occur in the Webshell, so we CHECK against it.
-  content::RenderFrame* render_frame = GetRenderFrame(args[3]);
+  content::RenderFrame* render_frame = GetRenderFrame(args[1]);
   RenderFrameStatus render_frame_status(render_frame);
-  std::unique_ptr<base::Value> attach_params =
-      content::V8ValueConverter::Create()->FromV8Value(args[2], context);
-  CHECK(attach_params);
-  CHECK(attach_params->is_dict());
   CHECK(render_frame_status.IsRenderFrameAvailable());
 
   blink::WebLocalFrame* frame = render_frame->GetWebFrame();
@@ -132,25 +91,7 @@ void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(parent_frame);
   CHECK(parent_frame->IsWebLocalFrame());
 
-  content::RenderFrame* embedder_parent_frame =
-      content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
-
-  auto* guest_view_container =
-      guest_view::GuestViewContainer::FromID(container_id);
-  CHECK(!guest_view_container);
-
-  // Currently, the parent frame will always hold on to the WebView, which means
-  // the Webshell does not have to worry about cleanup upon a GC. The lifetime
-  // below will need to be reassessed if this assumption changes.
-  guest_view_container =
-      new guest_view::GuestViewContainer(embedder_parent_frame, container_id);
-
-  std::unique_ptr<guest_view::GuestViewAttachRequest> request =
-      std::make_unique<guest_view::GuestViewAttachRequest>(
-          guest_view_container, render_frame, guest_instance_id,
-          std::move(*attach_params).TakeDict(), v8::Local<v8::Function>(),
-          args.GetIsolate());
-  guest_view_container->IssueRequest(std::move(request));
+  guest_contents::renderer::SwapRenderFrame(render_frame, guest_contents_id);
 
   args.GetReturnValue().SetUndefined();
 }
@@ -295,12 +236,6 @@ void RenderFrameObserver::ReadyToCommitNavigation(
   binder_context.AddCallbackToWebshellObject(
       "allowWebviewElementRegistration",
       base::BindRepeating(&AllowCustomElementNameRegistration));
-  binder_context.AddCallbackToWebshellObject("getNextId",
-                                             base::BindRepeating(&GetNextId));
-  binder_context.AddCallbackToWebshellObject(
-      "registerWebView",
-      base::BindRepeating(&RegisterWebView,
-                          render_frame()->GetWebFrame()->GetLocalFrameToken()));
   binder_context.AddCallbackToWebshellObject(
       "attachIframeGuest", base::BindRepeating(&AttachIframeGuest));
 }
