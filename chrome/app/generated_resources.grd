@@ -14233,7 +14233,7 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="Title of the sync passphrase dialog">
           Enter your passphrase
         </message>
-        <message name="IDS_SYNC_PASSPHRASE_DIALOG_OK_BUTTON" desc="Label of the main button of the sync passphrase dialog">
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_OK_BUTTON" meaning="An on-screen button that opens the dialog for the user to enter a custom passphrase" desc="Label of the main button of the sync passphrase dialog">
           Enter
         </message>
 

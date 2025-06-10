@@ -2976,7 +2976,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IDENTITY_ERROR_MESSAGE_TITLE_CLIENT_OUT_OF_DATE" desc="Error message/notification title for client out-of-date error.">
         Update Chrome
       </message>
-      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_PASSPHRASE_REQUIRED" desc="Error message button label for passphrase required error.">
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_PASSPHRASE_REQUIRED" meaning="An on-screen button that opens the dialog for the user to enter a custom passphrase" desc="Error message button label for passphrase required error.">
         Enter
       </message>
       <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_VERIFY" desc="Error message button label for all errors requiring re-auth (auth error, degraded recoverability, encryption error)">
