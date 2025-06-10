@@ -3140,7 +3140,7 @@
                     "name": "BackgroundUpdateForRegisteredStorageKeys",
                     "enable_features": [
                         "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFinchControlled"
+                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled"
                     ]
                 }
             ]
