@@ -691,20 +691,16 @@ void AnimationHost::SetAnimationEvents(
 bool AnimationHost::ScrollOffsetAnimationWasInterrupted(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->ScrollOffsetAnimationWasInterrupted();
+  return element_animations &&
+         element_animations->ScrollOffsetAnimationWasInterrupted();
 }
 
 bool AnimationHost::IsAnimatingProperty(ElementId element_id,
                                         ElementListType list_type,
                                         TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->IsCurrentlyAnimatingProperty(property, list_type);
+  return element_animations &&
+         element_animations->IsCurrentlyAnimatingProperty(property, list_type);
 }
 
 bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
@@ -712,10 +708,8 @@ bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
     ElementListType list_type,
     TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->IsPotentiallyAnimatingProperty(property,
+  return element_animations &&
+         element_animations->IsPotentiallyAnimatingProperty(property,
                                                             list_type);
 }
 
@@ -723,20 +717,16 @@ bool AnimationHost::HasAnyAnimationTargetingProperty(
     ElementId element_id,
     TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->HasAnyAnimationTargetingProperty(property,
+  return element_animations &&
+         element_animations->HasAnyAnimationTargetingProperty(property,
                                                               element_id);
 }
 
 bool AnimationHost::AnimationsPreserveAxisAlignment(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return true;
-  }
-  return element_animations->AnimationsPreserveAxisAlignment();
+  return !element_animations ||
+         element_animations->AnimationsPreserveAxisAlignment();
 }
 
 float AnimationHost::MaximumScale(ElementId element_id,
@@ -750,19 +740,13 @@ float AnimationHost::MaximumScale(ElementId element_id,
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->HasAnyKeyframeModel();
+  return element_animations && element_animations->HasAnyKeyframeModel();
 }
 
 bool AnimationHost::HasTickingKeyframeModelForTesting(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations) {
-    return false;
-  }
-  return element_animations->HasTickingKeyframeEffect();
+  return element_animations && element_animations->HasTickingKeyframeEffect();
 }
 
 void AnimationHost::ImplOnlyAutoScrollAnimationCreate(

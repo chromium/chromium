@@ -414,7 +414,7 @@ bool ScrollOffsetAnimationsImpl::ElementHasImplOnlyScrollAnimation(
     ElementId element_id) const {
   if (features::MultiImplOnlyScrollAnimationsSupported()) {
     ScrollOffsetAnimationImpl* impl_animation = GetScrollAnimation(element_id);
-    return impl_animation ? impl_animation->IsAnimating() : false;
+    return impl_animation && impl_animation->IsAnimating();
   } else {
     DCHECK(scroll_offset_animation_);
     return scroll_offset_animation_->GetElementId() == element_id &&
@@ -432,8 +432,7 @@ bool ScrollOffsetAnimationsImpl::HasImplOnlyScrollAnimatingElement() const {
     return false;
   } else {
     DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_ ? scroll_offset_animation_->IsAnimating()
-                                    : false;
+    return scroll_offset_animation_ && scroll_offset_animation_->IsAnimating();
   }
 }
 
@@ -447,9 +446,8 @@ bool ScrollOffsetAnimationsImpl::HasImplOnlyAutoScrollAnimatingElement() const {
     return false;
   } else {
     DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_
-               ? scroll_offset_animation_->IsAutoScrolling()
-               : false;
+    return scroll_offset_animation_ &&
+           scroll_offset_animation_->IsAutoScrolling();
   }
 }
 

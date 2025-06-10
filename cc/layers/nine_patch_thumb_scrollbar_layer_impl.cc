@@ -93,10 +93,9 @@ void NinePatchThumbScrollbarLayerImpl::AppendThumbQuads(
       thumb_ui_resource_id_ &&
       layer_tree_impl()->ResourceIdForUIResource(thumb_ui_resource_id_);
   bool are_contents_opaque =
-      is_resource
-          ? layer_tree_impl()->IsUIResourceOpaque(thumb_ui_resource_id_) ||
-                contents_opaque()
-          : false;
+      is_resource &&
+      (layer_tree_impl()->IsUIResourceOpaque(thumb_ui_resource_id_) ||
+       contents_opaque());
   PopulateSharedQuadState(shared_quad_state, are_contents_opaque);
   AppendDebugBorderQuad(render_pass, gfx::Rect(bounds()), shared_quad_state,
                         append_quads_data);
