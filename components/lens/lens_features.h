@@ -77,7 +77,7 @@ BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdates);
 // flag turns the meta feature on to remove the dependency between the visual
 // selection ramp up and omnibox experiment.
 COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions);
+BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions);
 
 // Enables the Lens overlay updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)
