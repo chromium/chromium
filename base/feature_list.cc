@@ -361,18 +361,18 @@ void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
   }
 }
 
-bool FeatureList::IsFeatureOverridden(const std::string& feature_name) const {
+bool FeatureList::IsFeatureOverridden(std::string_view feature_name) const {
   return GetOverrideEntryByFeatureName(feature_name);
 }
 
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
-    const std::string& feature_name) const {
+    std::string_view feature_name) const {
   const OverrideEntry* entry = GetOverrideEntryByFeatureName(feature_name);
   return entry && !entry->overridden_by_field_trial;
 }
 
 bool FeatureList::IsFeatureOverriddenFromCommandLine(
-    const std::string& feature_name,
+    std::string_view feature_name,
     OverrideState state) const {
   const OverrideEntry* entry = GetOverrideEntryByFeatureName(feature_name);
   return entry && !entry->overridden_by_field_trial &&

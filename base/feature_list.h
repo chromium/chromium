@@ -367,18 +367,18 @@ class BASE_EXPORT FeatureList {
   // Returns true if the state of |feature_name| has been overridden (regardless
   // of whether the overridden value is the same as the default value) for any
   // reason (e.g. command line or field trial).
-  bool IsFeatureOverridden(const std::string& feature_name) const;
+  bool IsFeatureOverridden(std::string_view feature_name) const;
 
   // Returns true if the state of |feature_name| has been overridden via
   // |InitFromCommandLine()|. This includes features explicitly
   // disabled/enabled with --disable-features and --enable-features, as well as
   // any extra feature overrides that depend on command line switches.
   bool IsFeatureOverriddenFromCommandLine(
-      const std::string& feature_name) const;
+      std::string_view feature_name) const;
 
   // Returns true if the state |feature_name| has been overridden by
   // |InitFromCommandLine()| and the state matches |state|.
-  bool IsFeatureOverriddenFromCommandLine(const std::string& feature_name,
+  bool IsFeatureOverriddenFromCommandLine(std::string_view feature_name,
                                           OverrideState state) const;
 
   // Associates a field trial for reporting purposes corresponding to the
