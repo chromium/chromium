@@ -127,7 +127,12 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
     : blink::MediaStreamAudioSource(std::move(task_runner),
                                     true /* is_local_source */,
                                     disable_local_echo),
-      use_remote_apm_(media::IsChromeWideEchoCancellationEnabled()),
+      // Remote APM is only enabled for mic input, other input sources have
+      // conflicting requirements on echo cancellation:
+      // https://crbug.com/1328012
+      use_remote_apm_(media::IsChromeWideEchoCancellationEnabled() &&
+                      device.type ==
+                          mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE),
       consumer_frame_(&frame),
       dependency_factory_(
           PeerConnectionDependencyFactory::From(*frame.DomWindow())),
@@ -136,8 +141,6 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
       started_callback_(std::move(started_callback)),
       allow_invalid_render_frame_id_for_testing_(false) {
   DCHECK(frame.DomWindow());
-  CHECK_EQ(device.type, mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE);
-
   SetDevice(device);
   SendLogMessage(StringPrintf(
       "%s({audio_processing_properties=[%s]}, {APM=%s})[session_id=%s]",
