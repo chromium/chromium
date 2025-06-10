@@ -15,10 +15,12 @@ namespace gfx {
 OverlayLayerId::OverlayLayerId() : impl_(VizInternalId::kOsCompositorRoot) {}
 
 OverlayLayerId::OverlayLayerId(const NamespaceId& layer_namespace_id,
-                               uint32_t layer_id)
+                               uint32_t layer_id,
+                               uint32_t sqs_z_order)
     : impl_(RendererLayer{
           .layer_namespace_id = layer_namespace_id,
           .layer_id = layer_id,
+          .sqs_z_order = sqs_z_order,
       }) {
   // See: `viz::FrameSinkId::is_valid()`.
   CHECK(layer_namespace_id.first != 0 || layer_namespace_id.second != 0);
@@ -47,11 +49,21 @@ OverlayLayerId OverlayLayerId::MakeForTesting(uint32_t layer_id) {
   return OverlayLayerId({1, 1}, layer_id);
 }
 
+OverlayLayerId OverlayLayerId::MakeForChildOfSharedQuadStateLayer(
+    uint32_t non_zero_z_order) const {
+  CHECK_NE(0u, non_zero_z_order);
+  CHECK_EQ(0u, this->z_order_);
+  OverlayLayerId child_id = *this;
+  child_id.z_order_ = non_zero_z_order;
+  return child_id;
+}
+
 std::optional<OverlayLayerId::SharedQuadStateLayerId>
 OverlayLayerId::shared_quad_state_layer_id() const {
   if (const auto* renderer_layer = std::get_if<RendererLayer>(&impl_)) {
     return std::make_optional<OverlayLayerId::SharedQuadStateLayerId>(
-        renderer_layer->layer_namespace_id, renderer_layer->layer_id);
+        renderer_layer->layer_namespace_id, renderer_layer->layer_id,
+        renderer_layer->sqs_z_order);
   }
   return std::nullopt;
 }
@@ -81,10 +93,15 @@ std::string OverlayLayerId::ToString() const {
 
         if constexpr (std::is_same_v<T, RendererLayer>) {
           out << arg.layer_namespace_id.first << ":"
-              << arg.layer_namespace_id.second << ":" << arg.layer_id;
+              << arg.layer_namespace_id.second << ":" << arg.layer_id << "."
+              << arg.sqs_z_order;
         }
       },
       impl_);
+
+  if (z_order_) {
+    out << "(" << z_order_ << ")";
+  }
 
   return out.str();
 }

@@ -34,7 +34,9 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
   // OS compositor tree.
   OverlayLayerId();
   // `layer_namespace_id` must be non-zero.
-  OverlayLayerId(const NamespaceId& layer_namespace_id, uint32_t layer_id);
+  OverlayLayerId(const NamespaceId& layer_namespace_id,
+                 uint32_t layer_id,
+                 uint32_t sqs_z_order = 0);
   ~OverlayLayerId();
 
   // The set of named layers that Viz make create that do not (or cannot) map
@@ -54,12 +56,18 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
   // Create an `OverlayLayerId` with a `layer_namespace_id` of {1,1}.
   static OverlayLayerId MakeForTesting(uint32_t layer_id);
 
+  // We are currently using the `SharedQuadState` layer ID, which is unique if a
+  // layer only contains one quad. In the case a layer contains more than one
+  // quad, use this function to derive unique IDs for the children.
+  OverlayLayerId MakeForChildOfSharedQuadStateLayer(
+      uint32_t non_zero_z_order) const;
+
   auto operator<=>(const OverlayLayerId&) const = default;
 
   std::string ToString() const;
 
   // TODO(crbug.com/324460866): remove when we remove partial delegation.
-  using SharedQuadStateLayerId = std::tuple<NamespaceId, uint32_t>;
+  using SharedQuadStateLayerId = std::tuple<NamespaceId, uint32_t, uint32_t>;
   std::optional<SharedQuadStateLayerId> shared_quad_state_layer_id() const;
 
  private:
@@ -72,6 +80,10 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
     // See `viz::SharedQuadState::layer_id`.
     uint32_t layer_id = 0;
 
+    // An identifier to disambiguate multiple `SharedQuadState` produced by the
+    // same `cc::Layer`.
+    uint32_t sqs_z_order = 0;
+
     auto operator<=>(const RendererLayer&) const = default;
   };
 
@@ -81,6 +93,12 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
                std::array<uint8_t, sizeof(RenderPassId)>,
                RendererLayer>
       impl_;
+
+  // This is a hack while we need to derive a stable layer ID statelessly in
+  // viz. This is non-zero and used for child layers when a cc layer has more
+  // than one quad under it. When this is zero this ID refers to the container
+  // node that represents the cc layer itself.
+  uint32_t z_order_ = 0;
 };
 
 }  // namespace gfx
