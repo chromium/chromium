@@ -100,6 +100,9 @@ public class NewTabAnimationLayout extends Layout {
     private AnimatorSet mTabCreatedForegroundAnimation;
     private AnimatorSet mTabCreatedBackgroundAnimation;
     private ObjectAnimator mFadeAnimator;
+    // Retains a strong reference to the {@link ShrinkExpandAnimator} on the class to prevent it
+    // from being prematurely GC'd when using {@link ObjectAnimator}.
+    private ShrinkExpandAnimator mExpandAnimator;
     private ShrinkExpandImageView mRectView;
     private NewBackgroundTabAnimationHostView mBackgroundHostView;
     private Runnable mAnimationRunnable;
@@ -570,12 +573,12 @@ public class NewTabAnimationLayout extends Layout {
 
         NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
 
-        ShrinkExpandAnimator shrinkExpandAnimator =
+        mExpandAnimator =
                 new ShrinkExpandAnimator(
                         mRectView, initialRect, finalRect, /* searchBoxHeight= */ 0);
         ObjectAnimator rectAnimator =
                 ObjectAnimator.ofObject(
-                        shrinkExpandAnimator,
+                        mExpandAnimator,
                         ShrinkExpandAnimator.RECT,
                         new RectEvaluator(),
                         initialRect,
@@ -613,6 +616,7 @@ public class NewTabAnimationLayout extends Layout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mTabCreatedForegroundAnimation = null;
+                        mExpandAnimator = null;
                         if (mFadeAnimator != null) mFadeAnimator.start();
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
