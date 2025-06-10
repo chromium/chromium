@@ -23,8 +23,7 @@ constexpr auto kDefaultLangs = base::MakeFixedFlatSet<std::string_view>({
 });
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
-  std::string lang = l10n_util::GetLanguage(locale);
-  if (base::Contains(kDefaultLangs, lang)) {
+  if (base::Contains(kDefaultLangs, l10n_util::GetLanguage(locale))) {
     return base::FeatureList::IsEnabled(kPageInfoAboutThisSite);
   }
   return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreLangs);
