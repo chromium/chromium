@@ -2852,16 +2852,6 @@ void HWNDMessageHandler::OnSysCommand(UINT notification_code,
     return;
   }
 
-  // Identify a End Task from Task Manager by a SC_CLOSE which is sent using
-  // SendMessage (ISMEX_SEND) as opposed to SendNotifyMessage (ISMEX_NOTIFY).
-  if (notification_code == SC_CLOSE) {
-    DWORD send_message_ex = ::InSendMessageEx(nullptr);
-    if (send_message_ex == ISMEX_SEND) {
-      delegate_->HandleRequestClose();
-      return;
-    }
-  }
-
   if (delegate_->HandleCommand(static_cast<int>(notification_code))) {
     return;
   }
