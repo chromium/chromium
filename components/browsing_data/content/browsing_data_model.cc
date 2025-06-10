@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/features.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
@@ -41,6 +40,7 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -596,7 +596,7 @@ std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
     const BrowsingDataModel::DataKey& data_key) {
   std::optional<net::SchemefulSite> top_level_site = std::nullopt;
   std::visit(
-      base::Overloaded{
+      absl::Overload{
           [&](const url::Origin&) {},
           [&](const content::InterestGroupManager::InterestGroupDataKey) {},
           [&](const content::AttributionDataModel::DataKey) {},
@@ -660,16 +660,15 @@ BrowsingDataModel::BrowsingDataEntryView::~BrowsingDataEntryView() = default;
 // static
 const std::string BrowsingDataModel::GetHost(const DataOwner& data_owner) {
   return std::visit(
-      base::Overloaded{
-          [&](const std::string& host) { return host; },
-          [&](const url::Origin& origin) { return origin.host(); }},
+      absl::Overload{[&](const std::string& host) { return host; },
+                     [&](const url::Origin& origin) { return origin.host(); }},
       data_owner);
 }
 
 const url::Origin BrowsingDataModel::GetOriginForDataKey(
     const BrowsingDataModel::DataKey& data_key) {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](const url::Origin& origin) { return origin; },
           [](const content::InterestGroupManager::InterestGroupDataKey
                  interest_group_key) { return interest_group_key.owner; },
@@ -710,12 +709,12 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
 
 bool BrowsingDataModel::BrowsingDataEntryView::Matches(
     const url::Origin& origin) const {
-  return std::visit(base::Overloaded{[&](const std::string& entry_host) {
-                                       return entry_host == origin.host();
-                                     },
-                                     [&](const url::Origin& entry_origin) {
-                                       return entry_origin == origin;
-                                     }},
+  return std::visit(absl::Overload{[&](const std::string& entry_host) {
+                                     return entry_host == origin.host();
+                                   },
+                                   [&](const url::Origin& entry_origin) {
+                                     return entry_origin == origin;
+                                   }},
                     *data_owner);
 }
 
