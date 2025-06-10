@@ -60,7 +60,7 @@
 }
 
 :host([dark-mode]) #errorPage {
-  background-color: #101218;
+  background-color: #1F1F1F;
 }
 
 :host([dark-mode]) #errorTopLine {
