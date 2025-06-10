@@ -128,19 +128,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     Pool(const Pool&) = delete;
     Pool& operator=(const Pool&) = delete;
 
-    void Initialize(uintptr_t ptr, size_t length);
+    void Initialize(uintptr_t ptr, size_t length) PA_LOCKS_EXCLUDED(lock_);
     bool IsInitialized();
     void Reset();
 
-    uintptr_t FindChunk(size_t size);
-    void FreeChunk(uintptr_t address, size_t size);
+    uintptr_t FindChunk(size_t size) PA_LOCKS_EXCLUDED(lock_);
+    void FreeChunk(uintptr_t address, size_t size) PA_LOCKS_EXCLUDED(lock_);
 
-    bool TryReserveChunk(uintptr_t address, size_t size);
+    bool TryReserveChunk(uintptr_t address, size_t size)
+        PA_LOCKS_EXCLUDED(lock_);
 
-    void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used);
+    void GetUsedSuperPages(std::bitset<kMaxSuperPagesInPool>& used)
+        PA_LOCKS_EXCLUDED(lock_);
     uintptr_t GetBaseAddress();
 
-    void GetStats(PoolStats* stats);
+    void GetStats(PoolStats* stats) PA_LOCKS_EXCLUDED(lock_);
 
    private:
     // The lock needs to be the first field in this class.

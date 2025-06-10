@@ -428,9 +428,10 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   //
   // Moving it a layer lower couples PartitionRoot and PartitionBucket, but
   // preserves the layering of the includes.
-  void Init(PartitionOptions);
+  void Init(PartitionOptions) PA_LOCKS_EXCLUDED(lock_);
 
-  void EnableThreadCacheIfSupported();
+  void EnableThreadCacheIfSupported()
+      PA_LOCKS_EXCLUDED(thread_cache_construction_lock, lock_);
 
   PA_ALWAYS_INLINE static PartitionRoot* FromSlotSpanMetadata(
       const ReadOnlySlotSpanMetadata* slot_span);
@@ -997,7 +998,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   bool TryReallocInPlaceForNormalBuckets(void* object,
                                          ReadOnlySlotSpanMetadata* slot_span,
-                                         size_t new_size);
+                                         size_t new_size)
+      PA_LOCKS_EXCLUDED(thread_cache_construction_lock);
   bool TryReallocInPlaceForDirectMap(ReadOnlySlotSpanMetadata* slot_span,
                                      size_t requested_size)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
@@ -1005,8 +1007,10 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
   PA_ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
-  ThreadCache* MaybeInitThreadCache();
-  ThreadCache* ForceInitThreadCache();
+  ThreadCache* MaybeInitThreadCache()
+      PA_LOCKS_EXCLUDED(thread_cache_construction_lock);
+  ThreadCache* ForceInitThreadCache()
+      PA_LOCKS_EXCLUDED(thread_cache_construction_lock);
 
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
@@ -2471,7 +2475,8 @@ PartitionRoot::AllocationCapacityFromRequestedSize(size_t size) const {
 #endif
 }
 
-ThreadCache* PartitionRoot::GetOrCreateThreadCache() {
+ThreadCache* PartitionRoot::GetOrCreateThreadCache()
+    PA_LOCKS_EXCLUDED(thread_cache_construction_lock) {
   ThreadCache* thread_cache = nullptr;
   if (settings.with_thread_cache) [[likely]] {
     thread_cache = ThreadCache::Get();
@@ -2489,7 +2494,8 @@ ThreadCache* PartitionRoot::GetThreadCache() {
   return nullptr;
 }
 
-ThreadCache* PartitionRoot::EnsureThreadCache() {
+ThreadCache* PartitionRoot::EnsureThreadCache()
+    PA_LOCKS_EXCLUDED(thread_cache_construction_lock) {
   ThreadCache* thread_cache = nullptr;
   if (settings.with_thread_cache) [[likely]] {
     thread_cache = ThreadCache::Get();
