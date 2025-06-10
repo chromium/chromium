@@ -215,6 +215,18 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 
 #if BUILDFLAG(IS_APPLE)
   ScopedIOSurface io_surface;
+#if BUILDFLAG(IS_IOS)
+  // On iOS, we can't use IOKit to access IOSurfaces in the renderer process, so
+  // we share the memory segment backing the IOSurface as shared memory which is
+  // then mapped in the renderer process.
+  ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
+  base::UnsafeSharedMemoryRegion io_surface_shared_memory_region;
+  // We have to pass the plane strides and offsets since we can't use IOSurface
+  // helper methods to get them.
+  static constexpr size_t kMaxIOSurfacePlanes = 3;
+  std::array<uint32_t, kMaxIOSurfacePlanes> io_surface_plane_strides;
+  std::array<uint32_t, kMaxIOSurfacePlanes> io_surface_plane_offsets;
+#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID)

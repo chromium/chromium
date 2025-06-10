@@ -134,6 +134,13 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   handle.native_pixmap_handle_ = CloneHandleForIPC(native_pixmap_handle_);
 #elif BUILDFLAG(IS_APPLE)
   handle.io_surface = io_surface;
+#if BUILDFLAG(IS_IOS)
+  handle.io_surface_mach_port = io_surface_mach_port;
+  handle.io_surface_shared_memory_region =
+      io_surface_shared_memory_region.Duplicate();
+  handle.io_surface_plane_strides = io_surface_plane_strides;
+  handle.io_surface_plane_offsets = io_surface_plane_offsets;
+#endif
 #elif BUILDFLAG(IS_WIN)
   handle.dxgi_handle_ = dxgi_handle_.Clone();
 #elif BUILDFLAG(IS_ANDROID)

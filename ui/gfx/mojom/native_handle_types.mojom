@@ -87,6 +87,27 @@ struct DXGIHandle {
   mojo_base.mojom.UnsafeSharedMemoryRegion? shared_memory_handle;
 };
 
+[EnableIf=is_apple]
+struct IOSurfaceHandle {
+  // The mach send right for the IOSurface from IOSurfaceCreateMachPort.
+  handle<platform> mach_send_right;
+
+  // On iOS, we can't use IOKit to access IOSurfaces in the renderer process, so
+  // we share the memory segment backing the IOSurface as shared memory which is
+  // then mapped in the renderer process.
+  [EnableIf=is_ios]
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
+
+  // We have to pass the plane strides and offsets since we can't use IOSurface
+  // helper methods to get them.
+  [EnableIf=is_ios]
+  array<uint32> plane_strides;
+
+  // See comment above `plane_strides`.
+  [EnableIf=is_ios]
+  array<uint32> plane_offsets;
+};
+
 union GpuMemoryBufferPlatformHandle {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
 
@@ -94,7 +115,7 @@ union GpuMemoryBufferPlatformHandle {
   NativePixmapHandle native_pixmap_handle;
 
   [EnableIf=is_apple]
-  handle<platform> mach_port;
+  IOSurfaceHandle io_surface_handle;
 
   [EnableIf=is_win]
   DXGIHandle dxgi_handle;

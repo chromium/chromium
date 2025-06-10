@@ -53,19 +53,25 @@ class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
-  GpuMemoryBufferImplIOSurface(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      DestructionCallback callback,
-      base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-      uint32_t lock_flags);
+  GpuMemoryBufferImplIOSurface(gfx::GpuMemoryBufferId id,
+                               const gfx::Size& size,
+                               gfx::BufferFormat format,
+                               DestructionCallback callback,
+                               gfx::GpuMemoryBufferHandle handle,
+                               uint32_t lock_flags);
 
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
-  uint32_t lock_flags_;
-  // Cache the color space, because re-assigning the same value can be
-  // expensive.
+  gfx::GpuMemoryBufferHandle handle_;
+  [[maybe_unused]] const uint32_t lock_flags_;
+
+  // Cache the color space because re-assigning the same value can be expensive.
   gfx::ColorSpace color_space_;
+
+#if BUILDFLAG(IS_IOS)
+  // On iOS, we can't use IOKit to access IOSurfaces in the renderer process, so
+  // we share the memory segment backing the IOSurface as shared memory which is
+  // then mapped in the renderer process.
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
+#endif
 };
 
 }  // namespace gpu

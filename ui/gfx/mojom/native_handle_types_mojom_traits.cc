@@ -174,6 +174,30 @@ bool StructTraits<gfx::mojom::DXGIHandleTokenDataView, gfx::DXGIHandleToken>::
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_APPLE)
+IOSurfaceHandle::IOSurfaceHandle() = default;
+IOSurfaceHandle::IOSurfaceHandle(IOSurfaceHandle&&) = default;
+IOSurfaceHandle& IOSurfaceHandle::operator=(IOSurfaceHandle&&) = default;
+IOSurfaceHandle::~IOSurfaceHandle() = default;
+
+bool StructTraits<gfx::mojom::IOSurfaceHandleDataView, IOSurfaceHandle>::Read(
+    gfx::mojom::IOSurfaceHandleDataView data,
+    IOSurfaceHandle* handle) {
+  handle->mach_send_right = data.TakeMachSendRight().TakeMachSendRight();
+  if (!handle->mach_send_right.is_valid()) {
+    return false;
+  }
+#if BUILDFLAG(IS_IOS)
+  if (!data.ReadSharedMemoryHandle(&handle->shared_memory_region) ||
+      !data.ReadPlaneStrides(&handle->plane_strides) ||
+      !data.ReadPlaneOffsets(&handle->plane_offsets)) {
+    return false;
+  }
+#endif
+  return true;
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
 gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag UnionTraits<
     gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
     gfx::GpuMemoryBufferHandle>::GetTag(const gfx::GpuMemoryBufferHandle&
@@ -185,7 +209,7 @@ gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag UnionTraits<
       return Tag::kSharedMemoryHandle;
 #if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER:
-      return Tag::kMachPort;
+      return Tag::kIoSurfaceHandle;
 #endif  // BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP:
@@ -216,56 +240,73 @@ void UnionTraits<
 }
 
 #if BUILDFLAG(IS_APPLE)
-PlatformHandle UnionTraits<
-    gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
-    gfx::GpuMemoryBufferHandle>::mach_port(gfx::GpuMemoryBufferHandle& handle) {
-  gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
-      IOSurfaceCreateMachPort(handle.io_surface.get()));
-  return PlatformHandle(
-      base::apple::RetainMachSendRight(io_surface_mach_port.get()));
+IOSurfaceHandle UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
+                            gfx::GpuMemoryBufferHandle>::
+    io_surface_handle(gfx::GpuMemoryBufferHandle& gmb_handle) {
+  IOSurfaceHandle io_surface_handle;
+  gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
+#if BUILDFLAG(IS_IOS)
+  io_surface_handle.mach_send_right.reset(
+      gmb_handle.io_surface_mach_port.release());
+  io_surface_handle.shared_memory_region =
+      std::move(gmb_handle.io_surface_shared_memory_region);
+  io_surface_handle.plane_strides = gmb_handle.io_surface_plane_strides;
+  io_surface_handle.plane_offsets = gmb_handle.io_surface_plane_offsets;
+#else
+  io_surface_handle.mach_send_right.reset(
+      IOSurfaceCreateMachPort(gmb_handle.io_surface.get()));
+#endif
+  return io_surface_handle;
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
 bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
                  gfx::GpuMemoryBufferHandle>::
     Read(gfx::mojom::GpuMemoryBufferPlatformHandleDataView data,
-         gfx::GpuMemoryBufferHandle* handle) {
+         gfx::GpuMemoryBufferHandle* gmb_handle) {
   switch (data.tag()) {
     case Tag::kSharedMemoryHandle:
-      handle->type = gfx::SHARED_MEMORY_BUFFER;
-      return data.ReadSharedMemoryHandle(&handle->region_);
+      gmb_handle->type = gfx::SHARED_MEMORY_BUFFER;
+      return data.ReadSharedMemoryHandle(&gmb_handle->region_);
 #if BUILDFLAG(IS_APPLE)
-    case Tag::kMachPort:
-      handle->type = gfx::IO_SURFACE_BUFFER;
-      PlatformHandle mach_port = data.TakeMachPort();
-      if (!mach_port.is_mach_send()) {
+    case Tag::kIoSurfaceHandle:
+      gmb_handle->type = gfx::IO_SURFACE_BUFFER;
+      IOSurfaceHandle io_surface_handle;
+      if (!data.ReadIoSurfaceHandle(&io_surface_handle)) {
         return false;
       }
-      gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
-          mach_port.ReleaseMachSendRight());
-      if (io_surface_mach_port) {
-        handle->io_surface.reset(
-            IOSurfaceLookupFromMachPort(io_surface_mach_port.get()));
+      if (io_surface_handle.mach_send_right.is_valid()) {
+        // This is expected to fail in sandboxed renderer processes on iOS.
+        gmb_handle->io_surface.reset(IOSurfaceLookupFromMachPort(
+            io_surface_handle.mach_send_right.get()));
       } else {
-        handle->io_surface.reset();
+        gmb_handle->io_surface.reset();
       }
+#if BUILDFLAG(IS_IOS)
+      gmb_handle->io_surface_mach_port.reset(
+          io_surface_handle.mach_send_right.release());
+      gmb_handle->io_surface_shared_memory_region =
+          std::move(io_surface_handle.shared_memory_region);
+      gmb_handle->io_surface_plane_strides = io_surface_handle.plane_strides;
+      gmb_handle->io_surface_plane_offsets = io_surface_handle.plane_offsets;
+#endif
       return true;
 #endif  // BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
     case Tag::kNativePixmapHandle:
-      handle->type = gfx::NATIVE_PIXMAP;
-      return data.ReadNativePixmapHandle(&handle->native_pixmap_handle_);
+      gmb_handle->type = gfx::NATIVE_PIXMAP;
+      return data.ReadNativePixmapHandle(&gmb_handle->native_pixmap_handle_);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_WIN)
     case Tag::kDxgiHandle:
-      handle->type = gfx::DXGI_SHARED_HANDLE;
-      return data.ReadDxgiHandle(&handle->dxgi_handle_);
+      gmb_handle->type = gfx::DXGI_SHARED_HANDLE;
+      return data.ReadDxgiHandle(&gmb_handle->dxgi_handle_);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_ANDROID)
     case Tag::kAndroidHardwareBufferHandle:
-      handle->type = gfx::ANDROID_HARDWARE_BUFFER;
+      gmb_handle->type = gfx::ANDROID_HARDWARE_BUFFER;
       return data.ReadAndroidHardwareBufferHandle(
-          &handle->android_hardware_buffer);
+          &gmb_handle->android_hardware_buffer);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   return false;
