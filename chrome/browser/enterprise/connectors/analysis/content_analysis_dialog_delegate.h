@@ -15,6 +15,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+class BoundsAnimator;
 class BoxLayoutView;
 class Link;
 class StyledLabel;
@@ -111,6 +112,9 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   // to use in the first GetContentsView() call, before the dialog is shown.
   void UpdateViews();
 
+  // Resizes the already shown dialog to accommodate changes in its content.
+  void Resize(int height_to_add);
+
   // Helper methods to get the admin message shown in dialog.
   void AddLinksToDialogMessage();
   void UpdateDialogMessage(std::u16string new_message);
@@ -140,6 +144,9 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
 
   // Table layout owned by `contents_view_`.
   raw_ptr<views::TableLayoutView> contents_layout_ = nullptr;
+
+  // Used to animate dialog height changes.
+  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
   // Used to show the appropriate message.
   FinalContentAnalysisResult final_result_;

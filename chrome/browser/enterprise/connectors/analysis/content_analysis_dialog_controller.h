@@ -156,9 +156,6 @@ class ContentAnalysisDialogController
   // Helper function to determine whether dialog should be shown immediately.
   bool ShouldShowDialogNow();
 
-  // Resizes the already shown dialog to accommodate changes in its content.
-  void Resize(int height_to_add);
-
   // Returns a newly created side icon.
   std::unique_ptr<views::View> CreateSideIcon();
 
@@ -183,9 +180,6 @@ class ContentAnalysisDialogController
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_base_;
 
   base::TimeTicks first_shown_timestamp_;
-
-  // Used to animate dialog height changes.
-  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
 
   // `DownloadItem` for dialogs corresponding to a download with a reviewable
   // verdict. nullptr otherwise.

@@ -48,8 +48,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr base::TimeDelta kResizeAnimationDuration = base::Milliseconds(100);
-
 constexpr int kSideImageSize = 24;
 constexpr int kLineHeight = 20;
 
@@ -402,46 +400,6 @@ void ContentAnalysisDialogController::UpdateDialog() {
   if (observer_for_testing && is_failure()) {
     CancelDialog();
   }
-}
-
-void ContentAnalysisDialogController::Resize(int height_to_add) {
-  // Only resize if the dialog is updated to show a result.
-  DCHECK(is_result());
-  views::Widget* widget = GetWidget();
-  DCHECK(widget);
-
-  gfx::Rect dialog_rect = widget->GetContentsView()->GetContentsBounds();
-  int new_height = dialog_rect.height();
-
-  // Remove the button row's height if it's removed in the success case.
-  if (is_success()) {
-    DCHECK(contents_view_->parent());
-    DCHECK_EQ(contents_view_->parent()->children().size(), 2ul);
-    DCHECK_EQ(contents_view_->parent()->children()[0], contents_view_);
-
-    views::View* button_row_view = contents_view_->parent()->children()[1];
-    new_height -= button_row_view->GetContentsBounds().height();
-  }
-
-  // Apply the message lines delta.
-  new_height += height_to_add;
-  dialog_rect.set_height(new_height);
-
-  // Setup the animation.
-  bounds_animator_ =
-      std::make_unique<views::BoundsAnimator>(widget->GetRootView());
-  bounds_animator_->SetAnimationDuration(kResizeAnimationDuration);
-
-  DCHECK(widget->GetRootView());
-  views::View* view_to_resize = widget->GetRootView()->children()[0];
-
-  // Start the animation.
-  bounds_animator_->AnimateViewTo(view_to_resize, dialog_rect);
-
-  // Change the widget's size.
-  gfx::Size new_size = view_to_resize->size();
-  new_size.set_height(new_height);
-  widget->SetSize(new_size);
 }
 
 std::unique_ptr<views::View> ContentAnalysisDialogController::CreateSideIcon() {
