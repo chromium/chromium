@@ -1027,6 +1027,7 @@ TEST_F(AudioAndroidOutputTest,
     return;
   }
 
+  // Test both orderings of the A2DP and SCO devices.
   MockJniDelegate& jni_delegate = UseMockJniDelegate();
   EXPECT_CALL(jni_delegate, GetDevices(/* inputs= */ false))
       .WillOnce(Return(std::vector<JniAudioDevice>{
@@ -1034,18 +1035,26 @@ TEST_F(AudioAndroidOutputTest,
            /* type= */ kAudioDeviceTypeIntBluetoothA2dp},
           {/* id= */ 20, /* name= */ "Out SCO",
            /* type= */ kAudioDeviceTypeIntBluetoothSco},
+      }))
+      .WillOnce(Return(std::vector<JniAudioDevice>{
+          {/* id= */ 20, /* name= */ "Out SCO",
+           /* type= */ kAudioDeviceTypeIntBluetoothSco},
+          {/* id= */ 10, /* name= */ "Out A2DP",
+           /* type= */ kAudioDeviceTypeIntBluetoothA2dp},
       }));
 
-  AudioDeviceDescriptions devices =
-      GetAudioOutputDeviceDescriptionsOnAudioThread();
-  ASSERT_EQ(devices.size(), 2u);
+  for (int i = 0; i < 2; i++) {
+    AudioDeviceDescriptions devices =
+        GetAudioOutputDeviceDescriptionsOnAudioThread();
+    ASSERT_EQ(devices.size(), 2u);
 
-  EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
+    EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
 
-  // Only the A2DP device should be listed in this case.
-  EXPECT_EQ(devices[1].device_name, "Out A2DP");
-  EXPECT_EQ(devices[1].unique_id, "10");
-  EXPECT_NE(devices[1].group_id, "");
+    // Only the A2DP device should be listed in this case.
+    EXPECT_EQ(devices[1].device_name, "Out A2DP");
+    EXPECT_EQ(devices[1].unique_id, "10");
+    EXPECT_NE(devices[1].group_id, "");
+  }
 }
 
 // Ensure that a default input stream can be created and closed.

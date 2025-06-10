@@ -258,7 +258,7 @@ void CombineBluetoothClassicDevices(
     return pair.second.GetType() == AudioDeviceType::kBluetoothA2dp;
   };
   constexpr auto is_sco_predicate = [](const auto& pair) -> bool {
-    return pair.second.GetType() == AudioDeviceType::kBluetoothA2dp;
+    return pair.second.GetType() == AudioDeviceType::kBluetoothSco;
   };
 
   // It is assumed that only up to 1 of each of these device types will be
@@ -281,10 +281,10 @@ void CombineBluetoothClassicDevices(
   }
 
   a2dp_device->second.SetAssociatedScoDeviceId(sco_device->second.GetId());
-  devices.erase(sco_device);
-  device_names->remove_if([sco_device](AudioDeviceName name) {
+  device_names->remove_if([sco_device](AudioDeviceName& name) {
     return AudioDeviceId::Parse(name.unique_id) == sco_device->second.GetId();
   });
+  devices.erase(sco_device);
 }
 
 bool UseAAudioOutput() {
