@@ -25,6 +25,8 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.InstrumentationRegistry;
@@ -57,6 +59,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -1887,5 +1890,36 @@ public class AwContentsTest extends AwParameterizedTest {
                 HistogramWatcher.newSingleRecordWatcher("Input.ToolType.Android", 20);
         Assert.assertFalse(awContents.getViewMethods().onTouchEvent(event));
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void testBottomInsets() throws Exception {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView containerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = containerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadDataSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "<html><body><input id='in' /></body></html>",
+                "text/html",
+                false);
+
+        Assert.assertEquals(
+                0, awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom());
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents, mContentsClient, "document.getElementById('in').focus()");
+        // Element is focused but the keyboard won't show without user interaction. Force show it
+        // using the WindowInsetsController.
+        WindowInsetsController controller = containerView.getRootView().getWindowInsetsController();
+        Assert.assertNotNull(controller);
+        controller.show(WindowInsets.Type.ime());
+        CriteriaHelper.pollUiThread(
+                () -> awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom() > 0,
+                "Viewport bottom inset was not updated after the soft keyboard was displayed.");
     }
 }

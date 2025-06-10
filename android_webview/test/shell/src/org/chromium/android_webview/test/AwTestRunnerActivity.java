@@ -105,9 +105,7 @@ public class AwTestRunnerActivity extends Activity {
                             v.getPaddingRight(),
                             v.getPaddingBottom());
 
-                    // Return CONSUMED to indicate we have handled the insets for this view
-                    // and don't want them to be passed down to descendant views.
-                    return WindowInsetsCompat.CONSUMED;
+                    return windowInsets;
                 });
     }
 }

@@ -1629,7 +1629,8 @@ public class AwContents implements SmartClipProvider {
 
         mWindowAndroid = getWindowAndroid(mContext);
         mViewAndroidDelegate =
-                new AwViewAndroidDelegate(mContainerView, mContentsClient, mScrollOffsetManager);
+                new AwViewAndroidDelegate(
+                        mContainerView, mContentsClient, mScrollOffsetManager, mWebContents);
         mWebContentsInternalsHolder = new WebContentsInternalsHolder(this);
         AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
                 SelectionActionMenuDelegateProvider.getSelectionActionMenuDelegate();
@@ -4179,6 +4180,10 @@ public class AwContents implements SmartClipProvider {
             }
         }
         return false;
+    }
+
+    public AwViewAndroidDelegate getViewAndroidDelegateForTesting() {
+        return mViewAndroidDelegate;
     }
 
     @VisibleForTesting
