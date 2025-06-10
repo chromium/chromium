@@ -29,7 +29,9 @@ class CORE_EXPORT WasmModuleScript final : public ModuleScript,
       const ScriptFetchOptions&,
       const TextPosition& start_position = TextPosition::MinimumPosition());
 
-  const char* NameInHeapSnapshot() const override { return "WasmModuleScript"; }
+  const char* GetHumanReadableName() const override {
+    return "WasmModuleScript";
+  }
 
   WasmModuleScript(Modulator* settings_object,
                    v8::Local<v8::WasmModuleObject> wasm_module,

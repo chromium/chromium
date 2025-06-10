@@ -78,7 +78,7 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
 
   virtual void Trace(Visitor*) const {}
 
-  const char* NameInHeapSnapshot() const override { return "EventListener"; }
+  const char* GetHumanReadableName() const override { return "EventListener"; }
 
   // Helper functions for DowncastTraits.
   virtual bool IsJSBasedEventListener() const { return false; }

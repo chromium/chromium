@@ -31,7 +31,7 @@ class CORE_EXPORT CustomElementReactionStack final
   ~CustomElementReactionStack() override = default;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "CustomElementReactionStack";
   }
 

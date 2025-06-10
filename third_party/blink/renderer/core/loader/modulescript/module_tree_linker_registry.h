@@ -51,7 +51,7 @@ class CORE_EXPORT ModuleTreeLinkerRegistry final
       ModuleTreeClient*);
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "ModuleTreeLinkerRegistry";
   }
 

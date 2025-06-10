@@ -44,7 +44,9 @@ class WebGLRenderbufferAttachment final
   explicit WebGLRenderbufferAttachment(WebGLRenderbuffer*);
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "WebGLAttachment"; }
+  const char* GetHumanReadableName() const override {
+    return "WebGLAttachment";
+  }
 
  private:
   WebGLObject* Object() const override;
@@ -111,7 +113,7 @@ class WebGLTextureAttachment final : public WebGLFramebuffer::WebGLAttachment {
                          GLint layer);
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "WebGLTextureAttachment";
   }
 

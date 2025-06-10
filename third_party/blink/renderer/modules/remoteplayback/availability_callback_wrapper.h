@@ -33,7 +33,7 @@ class AvailabilityCallbackWrapper final
   void Run(RemotePlayback*, bool new_availability);
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "AvailabilityCallbackWrapper";
   }
 

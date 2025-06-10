@@ -90,7 +90,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   virtual mojom::blink::ScriptType GetScriptType() const = 0;
 
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "PendingScript"; }
+  const char* GetHumanReadableName() const override { return "PendingScript"; }
 
   // Returns nullptr when "script's script is null", i.e. an error occurred.
   virtual Script* GetSource() const = 0;

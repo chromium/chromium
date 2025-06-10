@@ -48,7 +48,7 @@ class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
  public:
   ~DocumentParser() override;
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "DocumentParser"; }
+  const char* GetHumanReadableName() const override { return "DocumentParser"; }
 
   virtual ScriptableDocumentParser* AsScriptableDocumentParser() {
     return nullptr;

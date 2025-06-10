@@ -83,7 +83,7 @@ class CORE_EXPORT MutationObserverRegistration final
   void Dispose();
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "MutationObserverRegistration";
   }
 

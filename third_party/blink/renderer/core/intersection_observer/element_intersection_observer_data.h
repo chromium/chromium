@@ -47,7 +47,7 @@ class CORE_EXPORT ElementIntersectionObserverData final
   bool NeedsOcclusionTracking() const;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "ElementIntersectionObserverData";
   }
 

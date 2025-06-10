@@ -86,7 +86,7 @@ class CORE_EXPORT IntersectionObserverController
   bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "IntersectionObserverController";
   }
 

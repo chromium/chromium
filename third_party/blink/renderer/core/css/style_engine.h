@@ -766,7 +766,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const CSSValue* GetCachedFillOrClipPathURIValue(const AtomicString& string);
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
+  const char* GetHumanReadableName() const override { return "StyleEngine"; }
 
   RuleSet* DefaultViewTransitionStyle(const Element&) const;
 

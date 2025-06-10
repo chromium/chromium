@@ -54,7 +54,9 @@ class PLATFORM_EXPORT ActiveScriptWrappableManager final
   void Trace(Visitor* visitor) const;
 
   // NameClient implementation.
-  const char* NameInHeapSnapshot() const final { return "Pending activities"; }
+  const char* GetHumanReadableName() const final {
+    return "Pending activities";
+  }
 
  private:
   // Called during weakness processing. Not allowed to allocate. The next Add()

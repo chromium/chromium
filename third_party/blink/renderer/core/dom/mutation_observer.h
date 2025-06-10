@@ -89,7 +89,7 @@ class CORE_EXPORT MutationObserver final
     virtual void Deliver(const MutationRecordVector& records,
                          MutationObserver&) = 0;
     virtual void Trace(Visitor* visitor) const {}
-    const char* NameInHeapSnapshot() const override {
+    const char* GetHumanReadableName() const override {
       return "MutationObserver::Delegate";
     }
   };

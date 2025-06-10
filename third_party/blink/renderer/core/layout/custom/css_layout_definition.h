@@ -104,7 +104,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
 
   void Trace(Visitor* visitor) const;
 
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "CSSLayoutDefinition";
   }
 

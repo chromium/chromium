@@ -135,13 +135,13 @@ def make_constructors(cg_context):
 def make_nameclient_implementation(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    func_decl = CxxFuncDeclNode(name="NameInHeapSnapshot",
+    func_decl = CxxFuncDeclNode(name="GetHumanReadableName",
                                 arg_decls=[],
                                 return_type="const char*",
                                 const=True,
                                 override=True)
 
-    func_def = CxxFuncDefNode(name="NameInHeapSnapshot",
+    func_def = CxxFuncDefNode(name="GetHumanReadableName",
                               arg_decls=[],
                               return_type="const char*",
                               class_name=cg_context.class_name,

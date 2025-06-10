@@ -20,7 +20,7 @@ class GeolocationWatchers final : public GarbageCollected<GeolocationWatchers>,
   GeolocationWatchers() = default;
   ~GeolocationWatchers() override = default;
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "GeolocationWatchers";
   }
 

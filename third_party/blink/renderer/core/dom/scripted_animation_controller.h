@@ -58,7 +58,7 @@ class CORE_EXPORT ScriptedAnimationController
   ~ScriptedAnimationController() override = default;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "ScriptedAnimationController";
   }
 

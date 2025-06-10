@@ -71,7 +71,9 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
   void Trace(Visitor*) const;
 
-  const char* NameInHeapSnapshot() const override { return "ScheduledAction"; }
+  const char* GetHumanReadableName() const override {
+    return "ScheduledAction";
+  }
 
   CallbackFunctionBase* CallbackFunction();
   ScriptState* GetScriptState();

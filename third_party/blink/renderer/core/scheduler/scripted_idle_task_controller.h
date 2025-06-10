@@ -44,7 +44,7 @@ class CORE_EXPORT IdleTask : public GarbageCollected<IdleTask>,
                              public NameClient {
  public:
   virtual void Trace(Visitor* visitor) const {}
-  const char* NameInHeapSnapshot() const override { return "IdleTask"; }
+  const char* GetHumanReadableName() const override { return "IdleTask"; }
   ~IdleTask() override;
   virtual void invoke(IdleDeadline*) = 0;
   probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
@@ -97,7 +97,7 @@ class CORE_EXPORT ScriptedIdleTaskController
   ~ScriptedIdleTaskController() override;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "ScriptedIdleTaskController";
   }
   void Dispose();

@@ -74,7 +74,9 @@ class LocalFileSystem final : public GarbageCollected<LocalFileSystem>,
 
   static LocalFileSystem* From(ExecutionContext&);
 
-  const char* NameInHeapSnapshot() const override { return "LocalFileSystem"; }
+  const char* GetHumanReadableName() const override {
+    return "LocalFileSystem";
+  }
 
  private:
   void ResolveURLCallback(const KURL& file_system_url,

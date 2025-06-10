@@ -37,7 +37,7 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   ~ModuleMap() override = default;
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "ModuleMap"; }
+  const char* GetHumanReadableName() const override { return "ModuleMap"; }
 
   // https://html.spec.whatwg.org/C/#fetch-a-single-module-script
   void FetchSingleModuleScript(

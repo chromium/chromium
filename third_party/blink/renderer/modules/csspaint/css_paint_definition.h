@@ -82,7 +82,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "CSSPaintDefinition";
   }
 

@@ -54,7 +54,7 @@ class MODULES_EXPORT AudioWorkletProcessorDefinition final
 
   void Trace(Visitor* visitor) const;
 
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "AudioWorkletProcessorDefinition";
   }
 

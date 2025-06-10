@@ -57,7 +57,7 @@ class CORE_EXPORT SingleModuleClient
  public:
   ~SingleModuleClient() override = default;
   virtual void Trace(Visitor* visitor) const {}
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "SingleModuleClient";
   }
 
@@ -72,7 +72,9 @@ class CORE_EXPORT ModuleTreeClient : public GarbageCollected<ModuleTreeClient>,
  public:
   ~ModuleTreeClient() override = default;
   virtual void Trace(Visitor* visitor) const {}
-  const char* NameInHeapSnapshot() const override { return "ModuleTreeClient"; }
+  const char* GetHumanReadableName() const override {
+    return "ModuleTreeClient";
+  }
 
   virtual void NotifyModuleTreeLoadFinished(ModuleScript*) = 0;
 };
@@ -118,7 +120,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   static void ClearModulator(ScriptState*);
 
   void Trace(Visitor* visitor) const override;
-  const char* NameInHeapSnapshot() const override { return "Modulator"; }
+  const char* GetHumanReadableName() const override { return "Modulator"; }
 
   virtual ModuleRecordResolver* GetModuleRecordResolver() = 0;
   virtual base::SingleThreadTaskRunner* TaskRunner() = 0;

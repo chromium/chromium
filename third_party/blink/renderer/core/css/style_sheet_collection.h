@@ -73,7 +73,7 @@ class CORE_EXPORT StyleSheetCollection
   void MarkSheetListDirty() { sheet_list_dirty_ = true; }
 
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "StyleSheetCollection";
   }
 

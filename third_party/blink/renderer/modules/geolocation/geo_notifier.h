@@ -28,7 +28,7 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
               const PositionOptions*);
   ~GeoNotifier() override = default;
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "GeoNotifier"; }
+  const char* GetHumanReadableName() const override { return "GeoNotifier"; }
 
   const PositionOptions* Options() const { return options_.Get(); }
 

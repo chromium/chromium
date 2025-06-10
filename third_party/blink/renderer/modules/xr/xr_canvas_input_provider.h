@@ -39,7 +39,7 @@ class XRCanvasInputProvider : public GarbageCollected<XRCanvasInputProvider>,
   XRInputSource* GetInputSource();
 
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "XRCanvasInputProvider";
   }
 

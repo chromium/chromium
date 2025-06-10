@@ -25,7 +25,9 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   ~Entry() override {}
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "ModuleMap::Entry"; }
+  const char* GetHumanReadableName() const override {
+    return "ModuleMap::Entry";
+  }
 
   // Notify fetched |m_moduleScript| to the client asynchronously.
   void AddClient(SingleModuleClient*, ModuleImportPhase);

@@ -92,7 +92,7 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   }
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "ScriptRunner"; }
+  const char* GetHumanReadableName() const override { return "ScriptRunner"; }
 
   // PendingScriptClient
   void PendingScriptFinished(PendingScript*) override;

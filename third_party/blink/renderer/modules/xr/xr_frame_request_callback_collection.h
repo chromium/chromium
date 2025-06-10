@@ -43,7 +43,7 @@ class XRFrameRequestCallbackCollection final
   }
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "XRFrameRequestCallbackCollection";
   }
 

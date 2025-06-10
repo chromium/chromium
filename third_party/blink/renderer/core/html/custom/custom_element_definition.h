@@ -42,7 +42,7 @@ class CORE_EXPORT CustomElementDefinition
   ~CustomElementDefinition() override;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "CustomElementDefinition";
   }
 
