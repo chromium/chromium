@@ -5636,9 +5636,14 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
-const char kNtpSearchboxShowComposeButtonName[] = "NTP Compose Box";
-const char kNtpSearchboxShowComposeButtonDescription[] =
-    "Shows the Compose button on the New Tab Page Searchbox.";
+const char kNtpSearchboxComposeboxName[] = "NTP Composebox";
+const char kNtpSearchboxComposeboxDescription[] =
+    "Shows the Composebox on the New Tab Page Searchbox upon clicking the "
+    "entrypoint.";
+
+const char kNtpSearchboxComposeEntrypointName[] = "NTP Compose Entrypoint";
+const char kNtpSearchboxComposeEntrypointDescription[] =
+    "Shows the Compose entrypoint on the New Tab Page Searchbox.";
 
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =

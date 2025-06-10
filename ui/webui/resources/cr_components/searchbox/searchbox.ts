@@ -143,7 +143,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
       composeButtonEnabled: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('searchboxShowComposeButton'),
+        value: () => loadTimeData.getBoolean('searchboxShowComposeEntrypoint'),
         reflectToAttribute: true,
       },
 

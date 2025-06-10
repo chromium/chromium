@@ -325,7 +325,7 @@ suite('NewTabPageRealboxTest', () => {
 
   test('clicking composebox entrypoint button emits an event.', async () => {
     // Arrange.
-    loadTimeData.overrideValues({searchboxShowComposeButton: true});
+    loadTimeData.overrideValues({searchboxShowComposeEntrypoint: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
     document.body.appendChild(realbox);
@@ -341,9 +341,6 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     await whenOpenComposeBox;
-
-    // Restore.
-    loadTimeData.overrideValues({searchboxShowComposeButton: false});
   });
 
   //============================================================================

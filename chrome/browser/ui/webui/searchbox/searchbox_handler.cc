@@ -485,9 +485,12 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
   source->AddBoolean("searchboxCr23SteadyStateShadow",
                      ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
-  source->AddBoolean("searchboxShowComposeButton",
+  source->AddBoolean("searchboxShowComposeEntrypoint",
                      base::FeatureList::IsEnabled(
-                         ntp_features::kNtpSearchboxShowComposeButton));
+                         ntp_features::kNtpSearchboxComposeEntrypoint));
+  source->AddBoolean(
+      "searchboxShowComposebox",
+      base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox));
 }
 
 // static
