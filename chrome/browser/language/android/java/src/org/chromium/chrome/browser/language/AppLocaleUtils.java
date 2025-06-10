@@ -269,12 +269,12 @@ public class AppLocaleUtils {
     }
 
     /**
-     * Comparator that removes any country or script information from either language tag
-     * since they are not needed for locale availability checks.
-     * Example: "es-MX" and "es-ES" will evaluate as equal.
+     * Comparator that removes any country or script information from either language tag since they
+     * are not needed for locale availability checks. Example: "es-MX" and "es-ES" will evaluate as
+     * equal.
      */
     private static final Comparator<String> BASE_LANGUAGE_COMPARATOR =
-            new Comparator<String>() {
+            new Comparator<>() {
                 @Override
                 public int compare(String a, String b) {
                     String langA = LocaleUtils.toBaseLanguage(a);

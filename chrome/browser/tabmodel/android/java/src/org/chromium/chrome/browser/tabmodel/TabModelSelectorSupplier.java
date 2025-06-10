@@ -21,7 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class TabModelSelectorSupplier extends UnownedUserDataSupplier<TabModelSelector> {
     private static final UnownedUserDataKey<TabModelSelectorSupplier> KEY =
-            new UnownedUserDataKey<TabModelSelectorSupplier>(TabModelSelectorSupplier.class);
+            new UnownedUserDataKey<>(TabModelSelectorSupplier.class);
     private static @Nullable ObservableSupplierImpl<TabModelSelector> sInstanceForTesting;
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */

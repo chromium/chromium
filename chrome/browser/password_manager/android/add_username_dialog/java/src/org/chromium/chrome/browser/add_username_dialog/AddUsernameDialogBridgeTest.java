@@ -10,8 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
@@ -70,7 +68,7 @@ public class AddUsernameDialogBridgeTest {
     @Test
     public void testDialogIsDismissedFromNative() {
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(createActivity()));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(createActivity()));
 
         mBridge.showAddUsernameDialog("username");
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();

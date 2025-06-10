@@ -52,7 +52,7 @@ public class DigitalCredentialsCreationDelegate {
         final IdentityCredentialClient client =
                 IdentityCredentialManager.Companion.getClient(window);
 
-        final Promise<DigitalCredential> result = new Promise<DigitalCredential>();
+        final Promise<DigitalCredential> result = new Promise<>();
 
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {

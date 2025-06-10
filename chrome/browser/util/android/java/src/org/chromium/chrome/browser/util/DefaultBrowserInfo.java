@@ -144,7 +144,7 @@ public final class DefaultBrowserInfo {
                 new ObserverList<>();
 
         public static void setDefaultInfoForTests(DefaultInfo info) {
-            sTestInfo = new AtomicReference<DefaultInfo>(info);
+            sTestInfo = new AtomicReference<>(info);
         }
 
         public static void clearDefaultInfoForTests() {

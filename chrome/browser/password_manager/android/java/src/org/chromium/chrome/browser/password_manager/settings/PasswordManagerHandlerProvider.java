@@ -46,8 +46,7 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
 
     // This class is itself a PasswordListObserver, listening directly to a PasswordManagerHandler
     // implementation. But it also keeps a list of other observers, to which it forwards the events.
-    private final ObserverList<PasswordListObserver> mObservers =
-            new ObserverList<PasswordListObserver>();
+    private final ObserverList<PasswordListObserver> mObservers = new ObserverList<>();
 
     private PasswordManagerHandlerProvider(Profile profile) {
         mProfile = profile;

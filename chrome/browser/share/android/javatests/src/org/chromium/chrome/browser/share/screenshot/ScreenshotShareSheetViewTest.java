@@ -53,7 +53,7 @@ public class ScreenshotShareSheetViewTest {
     private final AtomicBoolean mSaveClicked = new AtomicBoolean();
 
     private final Callback<Integer> mMockNoArgListener =
-            new Callback<Integer>() {
+            new Callback<>() {
                 @Override
                 public void onResult(
                         @ScreenshotShareSheetViewProperties.NoArgOperation Integer operation) {

@@ -297,7 +297,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testWillCloseMultipleTabs_GroupHiding() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
         mTabModelObserverCaptor.getValue().willCloseMultipleTabs(/* allowUndo= */ true, tabs);
 

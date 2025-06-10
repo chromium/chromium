@@ -34,7 +34,7 @@ public class SessionHelper {
      * @param session The current session.
      */
     public static void setCurrentSession(@Nullable CustomTabsSession session) {
-        sCurrentSession = new WeakReference<CustomTabsSession>(session);
+        sCurrentSession = new WeakReference<>(session);
     }
 
     /** Returns the current {@link AuthTabSession} object. */
@@ -48,6 +48,6 @@ public class SessionHelper {
      * @param session The current session.
      */
     public static void setCurrentAuthSession(@Nullable AuthTabSession session) {
-        sCurrentAuthTabSession = new WeakReference<AuthTabSession>(session);
+        sCurrentAuthTabSession = new WeakReference<>(session);
     }
 }

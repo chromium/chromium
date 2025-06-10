@@ -126,8 +126,8 @@ class QuickDeleteTabsFilter {
         }
         // Use a list here since the number of elements is likely to be small and outperform a set
         // most of the time.
-        List<Token> placeholderTabGroupIds = new ArrayList<Token>();
-        List<Tab> placeholderExcludedTabList = new ArrayList<Tab>();
+        List<Token> placeholderTabGroupIds = new ArrayList<>();
+        List<Tab> placeholderExcludedTabList = new ArrayList<>();
         for (LocalTabGroupId localId : destroyedGroups.collaborationGroupsDestroyed) {
             placeholderTabGroupIds.add(localId.tabGroupId);
         }

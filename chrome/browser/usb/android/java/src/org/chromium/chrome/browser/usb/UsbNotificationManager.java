@@ -51,7 +51,7 @@ public class UsbNotificationManager {
     private final UsbNotificationManagerDelegate mDelegate;
     private final BaseNotificationManagerProxy mNotificationManager;
     private final SharedPreferencesManager mSharedPreferences;
-    private final List<Integer> mNotificationIds = new ArrayList<Integer>();
+    private final List<Integer> mNotificationIds = new ArrayList<>();
 
     public UsbNotificationManager(
             BaseNotificationManagerProxy notificationManager,

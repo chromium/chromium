@@ -53,7 +53,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         WeakReference<Activity> weakReference =
-                new WeakReference<Activity>(mActivityTestRule.getActivity());
+                new WeakReference<>(mActivityTestRule.getActivity());
 
         mAutoTranslateSnackbarController =
                 new AutoTranslateSnackbarController(

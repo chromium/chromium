@@ -604,7 +604,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     private void setMockTrustSignalsData(MerchantInfo merchantInfo) {
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 Callback callback = (Callback) invocation.getArguments()[2];
@@ -618,7 +618,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     private void setMockTrustSignalsEventData(String hostname, MerchantTrustSignalsEvent event) {
         doAnswer(
-                        new Answer<Void>() {
+                        new Answer<>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
                                 Callback callback = (Callback) invocation.getArguments()[1];

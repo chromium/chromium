@@ -98,8 +98,7 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(
-                new PageAppMenuFacility<PageStation>(), menuButtonElement.getClickTrigger());
+        return enterFacilitySync(new PageAppMenuFacility<>(), menuButtonElement.getClickTrigger());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */

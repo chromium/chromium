@@ -114,7 +114,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 .getViewLifecycleOwnerLiveData()
                 .observe(
                         mSettingsFragment,
-                        new Observer<LifecycleOwner>() {
+                        new Observer<>() {
                             @Override
                             public void onChanged(LifecycleOwner lifecycleOwner) {
                                 // Only interested in the event when the View becomes non-null,

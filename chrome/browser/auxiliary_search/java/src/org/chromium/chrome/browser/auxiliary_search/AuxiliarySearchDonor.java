@@ -575,7 +575,7 @@ public class AuxiliarySearchDonor {
                     ListenableFuture<Void> result = session.removeAsync("", spec);
                     Futures.addCallback(
                             result,
-                            new FutureCallback<Void>() {
+                            new FutureCallback<>() {
                                 @Override
                                 public void onSuccess(@Nullable Void result) {
                                     Callback.runNullSafe(onDeleteCompleteCallback, true);

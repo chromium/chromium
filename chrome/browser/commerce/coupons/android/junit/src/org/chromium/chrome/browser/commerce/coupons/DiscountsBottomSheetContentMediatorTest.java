@@ -91,7 +91,7 @@ public class DiscountsBottomSheetContentMediatorTest {
 
     @Test
     public void testRequestShowContent_emptyInfoList() {
-        setShoppingServiceGetDiscountInfoForUrl(new ArrayList<DiscountInfo>());
+        setShoppingServiceGetDiscountInfoForUrl(new ArrayList<>());
         mMediator.requestShowContent(mMockCallback);
         verify(mMockCallback).onResult(false);
     }

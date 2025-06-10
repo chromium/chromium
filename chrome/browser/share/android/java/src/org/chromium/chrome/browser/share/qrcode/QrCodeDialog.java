@@ -112,7 +112,7 @@ public class QrCodeDialog extends DialogFragment {
         assert tabLayout.getTabCount() == mTabs.size();
 
         // Setup page adapter and tab layout.
-        ArrayList<View> pages = new ArrayList<View>();
+        ArrayList<View> pages = new ArrayList<>();
 
         for (int index = 0; index < mTabs.size(); index++) {
             QrCodeDialogTab tab = mTabs.get(index);

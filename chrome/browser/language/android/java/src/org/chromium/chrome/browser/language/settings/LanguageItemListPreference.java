@@ -76,7 +76,7 @@ public class LanguageItemListPreference extends ChromeBasePreference
     private @Nullable String makeSummary() {
         if (mLanguageItemListDelegate == null) return null;
         int index = 0;
-        ArrayList<String> languageNames = new ArrayList<String>();
+        ArrayList<String> languageNames = new ArrayList<>();
         for (LanguageItem item : mLanguageItemListDelegate.getLanguageItems()) {
             if (++index > COLLECTION_SUMMARY_ITEM_LIMIT) break;
             languageNames.add(item.getDisplayName());

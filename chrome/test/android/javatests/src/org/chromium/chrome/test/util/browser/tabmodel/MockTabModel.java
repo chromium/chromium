@@ -74,7 +74,7 @@ public class MockTabModel extends EmptyTabModel {
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>();
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
-    private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
+    private final ArrayList<Tab> mTabs = new ArrayList<>();
     private final ComprehensiveTabList mComprehensiveModel = new ComprehensiveTabList();
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;

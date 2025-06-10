@@ -92,7 +92,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager
                         .getOptTypesThatOverflowedPushNotifications());
 
@@ -138,7 +138,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(0, cached.length);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
 
         verify(mOptimizationGuideBridge, times(1))
@@ -153,7 +153,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager
                         .getOptTypesThatOverflowedPushNotifications());
 
@@ -164,7 +164,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(0, cached.length);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
@@ -216,7 +216,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         .length);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
@@ -232,7 +232,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         for (int i = 1; i <= overflowSize; i++) {
             Assert.assertEquals(
                     String.format("Iteration %d", i),
-                    new ArrayList<OptimizationType>(),
+                    new ArrayList<>(),
                     OptimizationGuidePushNotificationManager
                             .getOptTypesThatOverflowedPushNotifications());
             OptimizationGuidePushNotificationManager.onPushNotification(
@@ -252,7 +252,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertNull(cached);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
 
         OptimizationGuidePushNotificationManager.clearCacheForOptimizationType(
@@ -264,7 +264,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(0, cached.length);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
@@ -278,7 +278,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         }
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager
                         .getOptTypesThatOverflowedPushNotifications());
 
@@ -324,7 +324,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(0, cached.length);
 
         Assert.assertEquals(
-                new ArrayList<OptimizationType>(),
+                new ArrayList<>(),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
@@ -395,7 +395,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                 .writeStringSet(
                         OptimizationGuidePushNotificationManager.cacheKey(
                                 OptimizationType.PERFORMANCE_HINTS),
-                        new HashSet<String>(
+                        new HashSet<>(
                                 Arrays.asList(
                                         Base64.encodeToString(
                                                 new byte[] {1, 2, 3}, Base64.DEFAULT))));
@@ -433,7 +433,7 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                 .writeStringSet(
                         OptimizationGuidePushNotificationManager.cacheKey(
                                 OptimizationType.PERFORMANCE_HINTS),
-                        new HashSet<String>(Arrays.asList("=")));
+                        new HashSet<>(Arrays.asList("=")));
 
         HintNotificationPayload[] cached =
                 OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(

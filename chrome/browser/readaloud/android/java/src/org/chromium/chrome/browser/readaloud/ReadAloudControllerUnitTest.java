@@ -304,7 +304,7 @@ public class ReadAloudControllerUnitTest {
         when(mRenderFrameHost.getGlobalRenderFrameHostId()).thenReturn(mGlobalRenderFrameHostId);
         mController.setHighlighterForTests(mHighlighter);
         mUserActionTester = new UserActionTester();
-        mExtractorPromise = new Promise<Long>();
+        mExtractorPromise = new Promise<>();
         when(mExtractor.getDateModified(any())).thenReturn(mExtractorPromise);
         mExtractorPromise.fulfill(1234567123456L);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

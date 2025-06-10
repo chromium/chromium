@@ -2352,7 +2352,7 @@ public class TabGroupModelFilterImplUnitTest {
                 tabGroupIds,
                 mTabGroupModelFilter
                         .getLazyAllTabGroupIds(
-                                new ArrayList<Tab>(), /* includePendingClosures= */ true)
+                                new ArrayList<>(), /* includePendingClosures= */ true)
                         .get());
     }
 

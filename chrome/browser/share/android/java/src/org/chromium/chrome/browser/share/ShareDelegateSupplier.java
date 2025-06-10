@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate> {
     private static final UnownedUserDataKey<ShareDelegateSupplier> KEY =
-            new UnownedUserDataKey<ShareDelegateSupplier>(ShareDelegateSupplier.class);
+            new UnownedUserDataKey<>(ShareDelegateSupplier.class);
 
     private static @Nullable ShareDelegateSupplier sInstanceForTesting;
 

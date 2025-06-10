@@ -271,7 +271,7 @@ public class ShareSheetTest {
      * 'a', 'b', 'c', 'd', 'e' }.
      */
     private List<String> defaultTestSystemApps() {
-        List<String> apps = new ArrayList<String>();
+        List<String> apps = new ArrayList<>();
         for (String s : Arrays.asList("a", "b", "c", "d", "e")) {
             apps.add(packageNameFromLabel(s));
         }

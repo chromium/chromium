@@ -51,7 +51,7 @@ public class SerialNotificationManager {
     private final SerialNotificationManagerDelegate mDelegate;
     private final BaseNotificationManagerProxy mNotificationManager;
     private final SharedPreferencesManager mSharedPreferences;
-    private final List<Integer> mNotificationIds = new ArrayList<Integer>();
+    private final List<Integer> mNotificationIds = new ArrayList<>();
 
     public SerialNotificationManager(
             BaseNotificationManagerProxy notificationManager,

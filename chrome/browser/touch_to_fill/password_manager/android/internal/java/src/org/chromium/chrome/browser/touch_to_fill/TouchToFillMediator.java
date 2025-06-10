@@ -444,7 +444,7 @@ class TouchToFillMediator {
             List<Credential> credentials) {
         // TODO(http://crbug.com/1504098) : Add render test for a bottom sheet with shared passwords
         // after the UI is complete.
-        List<Credential> sharedCredentials = new ArrayList<Credential>();
+        List<Credential> sharedCredentials = new ArrayList<>();
         for (Credential credential : credentials) {
             if (credential.isShared() && !credential.isSharingNotificationDisplayed()) {
                 sharedCredentials.add(credential);

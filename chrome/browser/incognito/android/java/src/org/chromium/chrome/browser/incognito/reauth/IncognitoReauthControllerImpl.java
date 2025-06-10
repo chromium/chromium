@@ -127,7 +127,7 @@ public class IncognitoReauthControllerImpl
     // crash when accessing the pref. Therefore this callback is fired when the Profile is ready
     // which sets the |mProfile| and shows the re-auth dialog if required.
     private final Callback<Profile> mProfileSupplierCallback =
-            new Callback<Profile>() {
+            new Callback<>() {
                 @Override
                 public void onResult(Profile profile) {
                     mProfile = profile;

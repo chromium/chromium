@@ -37,7 +37,7 @@ public class PopupOnLoadPageStation extends WebPageStation {
         PopupOnLoadPageStation newPage =
                 currentPageStation.loadPageProgrammatically(
                         url,
-                        new Builder<PopupOnLoadPageStation>(PopupOnLoadPageStation::new)
+                        new Builder<>(PopupOnLoadPageStation::new)
                                 .withFacility(popupBlockedMessage));
 
         return Pair.create(newPage, popupBlockedMessage);

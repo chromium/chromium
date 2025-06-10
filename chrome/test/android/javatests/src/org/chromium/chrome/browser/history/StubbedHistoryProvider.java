@@ -116,7 +116,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
         if (mItems.size() > 0) {
             Collections.sort(
                     mItems,
-                    new Comparator<HistoryItem>() {
+                    new Comparator<>() {
                         @Override
                         public int compare(HistoryItem lhs, HistoryItem rhs) {
                             long timeDelta = lhs.getTimestamp() - rhs.getTimestamp();

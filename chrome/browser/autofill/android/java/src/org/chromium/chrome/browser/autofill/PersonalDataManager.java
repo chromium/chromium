@@ -656,8 +656,7 @@ public class PersonalDataManager implements Destroyable {
     }
 
     private final PrefService mPrefService;
-    private final List<PersonalDataManagerObserver> mDataObservers =
-            new ArrayList<PersonalDataManagerObserver>();
+    private final List<PersonalDataManagerObserver> mDataObservers = new ArrayList<>();
 
     private long mPersonalDataManagerAndroid;
 
@@ -737,7 +736,7 @@ public class PersonalDataManager implements Destroyable {
 
     private ArrayList<AutofillProfile> getProfilesWithLabels(
             String[] profileLabels, String[] profileGUIDs) {
-        ArrayList<AutofillProfile> profiles = new ArrayList<AutofillProfile>(profileGUIDs.length);
+        ArrayList<AutofillProfile> profiles = new ArrayList<>(profileGUIDs.length);
         for (int i = 0; i < profileGUIDs.length; i++) {
             AutofillProfile profile =
                     new AutofillProfile(
@@ -805,7 +804,7 @@ public class PersonalDataManager implements Destroyable {
     }
 
     private ArrayList<CreditCard> getCreditCards(String[] creditCardGUIDs) {
-        ArrayList<CreditCard> cards = new ArrayList<CreditCard>(creditCardGUIDs.length);
+        ArrayList<CreditCard> cards = new ArrayList<>(creditCardGUIDs.length);
         for (int i = 0; i < creditCardGUIDs.length; i++) {
             cards.add(
                     PersonalDataManagerJni.get()

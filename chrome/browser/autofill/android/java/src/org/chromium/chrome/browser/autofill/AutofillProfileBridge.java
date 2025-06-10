@@ -47,7 +47,7 @@ public final class AutofillProfileBridge {
         collator.setStrength(Collator.PRIMARY);
         Collections.sort(
                 countries,
-                new Comparator<DropdownKeyValue>() {
+                new Comparator<>() {
                     @Override
                     public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
                         int result = collator.compare(lhs.getValue(), rhs.getValue());
@@ -73,7 +73,7 @@ public final class AutofillProfileBridge {
         collator.setStrength(Collator.PRIMARY);
         Collections.sort(
                 adminAreas,
-                new Comparator<DropdownKeyValue>() {
+                new Comparator<>() {
                     @Override
                     public int compare(DropdownKeyValue lhs, DropdownKeyValue rhs) {
                         // Sorted according to the admin area values, such as Quebec,

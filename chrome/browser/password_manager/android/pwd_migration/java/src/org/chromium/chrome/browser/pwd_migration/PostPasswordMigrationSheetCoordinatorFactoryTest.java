@@ -43,7 +43,7 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
     @Before
     public void setUp() {
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        WeakReference<Context> weakContext = new WeakReference<Context>(context);
+        WeakReference<Context> weakContext = new WeakReference<>(context);
         when(mWindowAndroid.getContext()).thenReturn(weakContext);
         mPostPasswordMigrationSheetCoordinator =
                 new PostPasswordMigrationSheetCoordinator(
@@ -61,7 +61,7 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
 
     @Test
     public void testmaybeGetOrCreateReturnsNullWhenContextIsNull() {
-        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(null));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
         assertNull(
                 PostPasswordMigrationSheetCoordinatorFactory
                         .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(

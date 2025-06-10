@@ -40,8 +40,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
         TopBottomLinksPageStation station =
                 currentPageStation.loadPageProgrammatically(
                         url,
-                        new Builder<TopBottomLinksPageStation>(TopBottomLinksPageStation::new)
-                                .withFacility(topFacility));
+                        new Builder<>(TopBottomLinksPageStation::new).withFacility(topFacility));
         return Pair.create(station, topFacility);
     }
 

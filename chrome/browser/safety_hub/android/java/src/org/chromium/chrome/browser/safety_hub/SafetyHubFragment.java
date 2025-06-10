@@ -128,7 +128,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         findPreference(PREF_SAFE_BROWSING), this, getProfile());
 
         mModuleMediators =
-                new ArrayList<SafetyHubModuleMediator>(
+                new ArrayList<>(
                         Arrays.asList(
                                 updateCheckModuleMediator,
                                 permissionsRevocationModuleMediator,

@@ -184,7 +184,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
 
             // Create a copy of the set of icon sizes because they can't be removed from the set
             // while iterating through the set
-            ArrayList<Integer> iconSizes = new ArrayList<Integer>(sIconSizesMap.get(mContentId));
+            ArrayList<Integer> iconSizes = new ArrayList<>(sIconSizesMap.get(mContentId));
             for (int iconSize : iconSizes) {
                 removeFromDiskHelper(Pair.create(mContentId, iconSize));
             }
@@ -298,7 +298,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
                 if (sIconSizesMap.containsKey(contentId)) {
                     sIconSizesMap.get(contentId).add(iconSizePx);
                 } else {
-                    HashSet<Integer> iconSizes = new HashSet<Integer>();
+                    HashSet<Integer> iconSizes = new HashSet<>();
                     iconSizes.add(iconSizePx);
                     sIconSizesMap.put(contentId, iconSizes);
                 }
@@ -356,7 +356,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
             if (sIconSizesMap.containsKey(contentId)) {
                 sIconSizesMap.get(contentId).add(iconSizePx);
             } else {
-                HashSet<Integer> iconSizes = new HashSet<Integer>();
+                HashSet<Integer> iconSizes = new HashSet<>();
                 iconSizes.add(iconSizePx);
                 sIconSizesMap.put(contentId, iconSizes);
             }

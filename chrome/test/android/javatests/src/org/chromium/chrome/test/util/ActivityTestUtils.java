@@ -87,7 +87,7 @@ public class ActivityTestUtils {
     public static <T> T waitForActivity(
             Instrumentation instrumentation, Class<T> activityType, Runnable activityTrigger) {
         Callable<Void> callableWrapper =
-                new Callable<Void>() {
+                new Callable<>() {
                     @Override
                     public Void call() {
                         activityTrigger.run();

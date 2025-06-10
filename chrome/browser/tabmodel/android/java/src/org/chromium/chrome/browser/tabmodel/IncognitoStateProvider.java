@@ -28,7 +28,7 @@ public class IncognitoStateProvider {
     private @Nullable TabModelSelector mTabModelSelector;
 
     public IncognitoStateProvider() {
-        mIncognitoStateObservers = new ObserverList<IncognitoStateObserver>();
+        mIncognitoStateObservers = new ObserverList<>();
 
         mCurrentTabModelObserver =
                 (tabModel) -> {

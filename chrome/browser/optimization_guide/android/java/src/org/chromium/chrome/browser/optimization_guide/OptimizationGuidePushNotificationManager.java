@@ -132,7 +132,7 @@ public class OptimizationGuidePushNotificationManager {
 
         Iterator<String> cache_iter = cache.iterator();
 
-        List<HintNotificationPayload> notifications = new ArrayList<HintNotificationPayload>();
+        List<HintNotificationPayload> notifications = new ArrayList<>();
         for (int i = 0; i < cache.size(); i++) {
             try {
                 HintNotificationPayload payload =
@@ -174,7 +174,7 @@ public class OptimizationGuidePushNotificationManager {
      * types with overflowed caches are not included.
      */
     public static List<OptimizationType> getOptTypesWithPushNotifications() {
-        List<OptimizationType> types = new ArrayList<OptimizationType>();
+        List<OptimizationType> types = new ArrayList<>();
         for (OptimizationType type : OptimizationType.values()) {
             Set<String> cache = ChromeSharedPreferences.getInstance().readStringSet(cacheKey(type));
             if (cache != null && cache.size() > 0 && !checkForOverflow(cache)) {
@@ -188,7 +188,7 @@ public class OptimizationGuidePushNotificationManager {
      * Returns a list of all the optimization types that overflowed their push notification caches.
      */
     public static List<OptimizationType> getOptTypesThatOverflowedPushNotifications() {
-        List<OptimizationType> overflows = new ArrayList<OptimizationType>();
+        List<OptimizationType> overflows = new ArrayList<>();
         for (OptimizationType type : OptimizationType.values()) {
             if (checkForOverflow(getStringCacheForOptimizationType(type))) {
                 overflows.add(type);

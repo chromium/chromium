@@ -367,7 +367,7 @@ public class OmniboxTestUtils {
                         T view = (T) dropdown.getDropdownItemViewForTest(i);
                         if (filter.apply(info) && view != null) {
                             result.set(
-                                    new SuggestionInfo<T>(
+                                    new SuggestionInfo<>(
                                             i,
                                             info.type,
                                             mAutocomplete.getSuggestionAt(i),

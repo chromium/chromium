@@ -69,8 +69,8 @@ public class EntryManager {
      * @param inMemory Use memory buffers to store the capture rather than temporary files.
      */
     public EntryManager(ScreenshotBoundsManager boundsManager, Tab tab, boolean inMemory) {
-        mEntries = new ArrayList<LongScreenshotsEntry>();
-        mQueuedEntries = new ArrayList<LongScreenshotsEntry>();
+        mEntries = new ArrayList<>();
+        mQueuedEntries = new ArrayList<>();
         mGeneratorObservers = new ObserverList<>();
         mBoundsManager = boundsManager;
 

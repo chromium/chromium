@@ -79,7 +79,7 @@ public class DigitalCredentialsPresentationDelegate {
             return Promise.rejected();
         }
 
-        final Promise<DigitalCredential> result = new Promise<DigitalCredential>();
+        final Promise<DigitalCredential> result = new Promise<>();
 
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {

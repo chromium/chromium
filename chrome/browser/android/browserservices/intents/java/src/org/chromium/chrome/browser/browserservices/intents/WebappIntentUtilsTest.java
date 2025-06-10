@@ -79,7 +79,7 @@ public class WebappIntentUtilsTest {
     @Test
     public void testCopyStream() {
         {
-            ArrayList fromList = new ArrayList<Uri>();
+            ArrayList fromList = new ArrayList<>();
             fromList.add(Uri.parse("https://www.google.com/"));
             fromList.add(Uri.parse("https://www.blogspot.com/"));
             Intent fromIntent = new Intent();

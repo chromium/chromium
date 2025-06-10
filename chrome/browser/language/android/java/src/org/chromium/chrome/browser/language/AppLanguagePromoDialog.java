@@ -178,8 +178,8 @@ public class AppLanguagePromoDialog {
                 Collection<LanguageItem> topLanguages,
                 Collection<LanguageItem> otherLanguages,
                 LanguageItem currentLanguage) {
-            mTopLanguages = new ArrayList<LanguageItem>(topLanguages);
-            mOtherLanguages = new ArrayList<LanguageItem>(otherLanguages);
+            mTopLanguages = new ArrayList<>(topLanguages);
+            mOtherLanguages = new ArrayList<>(otherLanguages);
             mCurrentLanguage = currentLanguage;
         }
 
@@ -390,7 +390,7 @@ public class AppLanguagePromoDialog {
                 languagesManager.getLanguageItem(AppLocaleUtils.getAppLanguagePref());
         assert currentOverrideLanguage != null;
         LinkedHashSet<LanguageItem> uiLanguages =
-                new LinkedHashSet<LanguageItem>(languagesManager.getAllPossibleUiLanguages());
+                new LinkedHashSet<>(languagesManager.getAllPossibleUiLanguages());
         LinkedHashSet<LanguageItem> topLanguages =
                 getTopLanguages(mProfile, uiLanguages, currentOverrideLanguage);
         uiLanguages.removeAll(topLanguages);

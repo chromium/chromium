@@ -378,7 +378,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public int tabsCount(boolean incognito) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Integer>() {
+                new Callable<>() {
                     @Override
                     public Integer call() {
                         return getActivity().getTabModelSelector().getModel(incognito).getCount();

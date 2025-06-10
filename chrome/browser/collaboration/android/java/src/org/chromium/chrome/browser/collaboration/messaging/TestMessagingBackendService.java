@@ -37,27 +37,27 @@ class TestMessagingBackendService implements MessagingBackendService {
     @NonNull
     public List<PersistentMessage> getMessagesForTab(
             EitherTabId tabId, Optional</* @PersistentNotificationType */ Integer> type) {
-        return new ArrayList<PersistentMessage>();
+        return new ArrayList<>();
     }
 
     @Override
     @NonNull
     public List<PersistentMessage> getMessagesForGroup(
             EitherGroupId groupId, Optional</* @PersistentNotificationType */ Integer> type) {
-        return new ArrayList<PersistentMessage>();
+        return new ArrayList<>();
     }
 
     @Override
     @NonNull
     public List<PersistentMessage> getMessages(
             Optional</* @PersistentNotificationType */ Integer> type) {
-        return new ArrayList<PersistentMessage>();
+        return new ArrayList<>();
     }
 
     @Override
     @NonNull
     public List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params) {
-        return new ArrayList<ActivityLogItem>();
+        return new ArrayList<>();
     }
 
     @Override

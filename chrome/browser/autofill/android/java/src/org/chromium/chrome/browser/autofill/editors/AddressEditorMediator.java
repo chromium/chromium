@@ -222,7 +222,7 @@ class AddressEditorMediator {
 
         mCountryField.set(
                 DROPDOWN_CALLBACK,
-                new Callback<String>() {
+                new Callback<>() {
                     /** Update the list of fields according to the selected country. */
                     @Override
                     public void onResult(String countryCode) {

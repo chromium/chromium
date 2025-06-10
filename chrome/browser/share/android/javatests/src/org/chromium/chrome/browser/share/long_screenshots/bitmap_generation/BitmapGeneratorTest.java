@@ -81,7 +81,7 @@ public class BitmapGeneratorTest {
                 };
 
         Callback<Bitmap> onBitmapGenerated =
-                new Callback<Bitmap>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Bitmap result) {
                         Assert.assertNotNull(result);

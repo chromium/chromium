@@ -173,7 +173,7 @@ public class CookiesFetcher implements Destroyable {
             @Override
             protected List<CanonicalCookie> doInBackground() {
                 // Read cookies from disk on a background thread to avoid strict mode violations.
-                List<CanonicalCookie> cookies = new ArrayList<CanonicalCookie>();
+                List<CanonicalCookie> cookies = new ArrayList<>();
                 DataInputStream in = null;
                 try {
                     Cipher cipher = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);

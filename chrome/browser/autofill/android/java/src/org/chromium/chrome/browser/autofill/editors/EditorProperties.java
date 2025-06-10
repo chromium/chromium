@@ -56,7 +56,7 @@ public class EditorProperties {
     public static final ReadableObjectPropertyKey<String> EDITOR_TITLE =
             new ReadableObjectPropertyKey<>("editor_title");
     public static final ReadableObjectPropertyKey<String> CUSTOM_DONE_BUTTON_TEXT =
-            new ReadableObjectPropertyKey<String>("custom_done_button_text");
+            new ReadableObjectPropertyKey<>("custom_done_button_text");
     public static final ReadableObjectPropertyKey<String> FOOTER_MESSAGE =
             new ReadableObjectPropertyKey<>("footer_message");
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TITLE =

@@ -78,7 +78,7 @@ public class LinkToTextHelper {
         tab.getWebContents()
                 .getMainFrame()
                 .getCanonicalUrlForSharing(
-                        new Callback<GURL>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(GURL result) {
                                 callback.onResult(result.getSpec());
@@ -153,7 +153,7 @@ public class LinkToTextHelper {
         List<RenderFrameHost> renderFrameHosts =
                 tab.getWebContents().getMainFrame().getAllRenderFrameHosts();
         getExistingSelectorsFromFrameAtIndex(
-                new ArrayList<String>(), renderFrameHosts, callback, /* index= */ 0);
+                new ArrayList<>(), renderFrameHosts, callback, /* index= */ 0);
     }
 
     /**

@@ -352,12 +352,12 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     public void testOnSetSchemaResponseAvailable() {
-        List<MigrationFailure> migrationFailures = new ArrayList<MigrationFailure>();
+        List<MigrationFailure> migrationFailures = new ArrayList<>();
         migrationFailures.add(mMigrationFailure);
         SetSchemaResponse setSchemaResponse =
                 new SetSchemaResponse.Builder().addMigrationFailures(migrationFailures).build();
 
-        List<WebPage> pendingDocs = new ArrayList<WebPage>();
+        List<WebPage> pendingDocs = new ArrayList<>();
         WebPage webPage = new WebPage.Builder("namespace", "Id1").setUrl("Url1").build();
         pendingDocs.add(webPage);
         mAuxiliarySearchDonor.setPendingDocumentsForTesting(pendingDocs);

@@ -86,7 +86,7 @@ public class PersonalDataManagerTest {
 
     private static Matcher<Iban> ibanMatcher(
             final @IbanRecordType int recordType, final String nickname) {
-        return new TypeSafeMatcher<Iban>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(Iban iban) {
                 return iban.getRecordType() == recordType && iban.getNickname().equals(nickname);
@@ -655,7 +655,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfile(profile3);
         mHelper.setProfile(profile4);
 
-        List<String> expectedLabels = new LinkedList<String>();
+        List<String> expectedLabels = new LinkedList<>();
         expectedLabels.add("123 Main, jm@example.com");
         expectedLabels.add("123 Main, jm-work@example.com");
         expectedLabels.add("1500 Second Ave, 90068");

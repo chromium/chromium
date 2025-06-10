@@ -66,7 +66,7 @@ public class NotificationPermissionControllerTest {
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
-            new ActivityScenarioRule<TestActivity>(TestActivity.class);
+            new ActivityScenarioRule<>(TestActivity.class);
 
     private NotificationPermissionController createNotificationPermissionController(
             Activity activity) {
@@ -384,7 +384,7 @@ public class NotificationPermissionControllerTest {
                             TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
                             TestAndroidPermissionDelegate permissionDelegate =
                                     new TestAndroidPermissionDelegate(
-                                            new WeakReference<Activity>(activity));
+                                            new WeakReference<>(activity));
                             NotificationPermissionController notificationPermissionController =
                                     createNotificationPermissionController(
                                             rationaleDelegate, permissionDelegate);

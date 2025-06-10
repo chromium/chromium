@@ -69,7 +69,7 @@ public class CookiesFetcherTest {
                         mImportantFileWriterJni.writeFileAtomically(
                                 Mockito.anyString(), Mockito.any(byte[].class)))
                 .thenAnswer(
-                        new Answer<Boolean>() {
+                        new Answer<>() {
                             @Override
                             public Boolean answer(InvocationOnMock invocation) {
                                 try (FileOutputStream stream =

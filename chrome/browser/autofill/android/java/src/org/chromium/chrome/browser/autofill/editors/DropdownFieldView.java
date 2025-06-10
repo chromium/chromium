@@ -130,7 +130,7 @@ class DropdownFieldView implements FieldView {
         mHint = hint;
         if (mHint != null) {
             mAdapter =
-                    new HintedDropDownAdapter<String>(
+                    new HintedDropDownAdapter<>(
                             mContext,
                             R.layout.multiline_spinner_item,
                             R.id.spinner_item,
@@ -144,8 +144,7 @@ class DropdownFieldView implements FieldView {
             mAdapter.setDropDownViewResource(R.layout.payment_request_dropdown_item);
         } else {
             mAdapter =
-                    new DropdownFieldAdapter<String>(
-                            mContext, R.layout.multiline_spinner_item, values);
+                    new DropdownFieldAdapter<>(mContext, R.layout.multiline_spinner_item, values);
             mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         }
         mDropdown.setAdapter(mAdapter);

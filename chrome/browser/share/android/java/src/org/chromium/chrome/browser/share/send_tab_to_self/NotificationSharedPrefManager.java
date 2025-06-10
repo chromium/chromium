@@ -116,9 +116,9 @@ class NotificationSharedPrefManager {
             SharedPreferencesManager prefs, String prefName) {
         Set<String> prefValue = prefs.readStringSet(prefName, null);
         if (prefValue == null) {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
-        return new HashSet<String>(prefValue);
+        return new HashSet<>(prefValue);
     }
 
     /**

@@ -201,7 +201,7 @@ public class PartnerBrowserCustomizations {
         mIsInitialized = false;
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask =
-                new AsyncTask<Void>() {
+                new AsyncTask<>() {
                     private boolean mHomepageUriChanged;
 
                     @Override

@@ -14,7 +14,7 @@ public class FakeLanguageBridgeJni implements LanguageBridge.Natives {
     private ArrayList<String> mULPLanguages;
 
     public FakeLanguageBridgeJni() {
-        mULPLanguages = new ArrayList<String>();
+        mULPLanguages = new ArrayList<>();
     }
 
     public void setULPLanguages(List<String> languageCodes) {

@@ -23,7 +23,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
     private final PasswordListObserver mObserver;
 
     // The faked contents of the password store to be displayed.
-    private ArrayList<SavedPasswordEntry> mSavedPasswords = new ArrayList<SavedPasswordEntry>();
+    private ArrayList<SavedPasswordEntry> mSavedPasswords = new ArrayList<>();
 
     // The faked contents of the saves password exceptions to be displayed.
     private ArrayList<String> mSavedPasswordExeptions = new ArrayList<>();

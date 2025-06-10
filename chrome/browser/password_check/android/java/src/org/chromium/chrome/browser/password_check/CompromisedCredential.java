@@ -23,7 +23,7 @@ import java.util.Objects;
 public class CompromisedCredential implements Parcelable {
     /** This static member is required to automagically deserialize credential parcels . */
     public static final Parcelable.Creator<CompromisedCredential> CREATOR =
-            new Parcelable.Creator<CompromisedCredential>() {
+            new Parcelable.Creator<>() {
                 @Override
                 public CompromisedCredential createFromParcel(Parcel in) {
                     final String signonRealm = in.readString();

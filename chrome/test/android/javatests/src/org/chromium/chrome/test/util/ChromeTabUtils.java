@@ -590,7 +590,7 @@ public class ChromeTabUtils {
     /** Fetch the number of tabs open in the current model. */
     public static int getNumOpenTabs(final ChromeActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Integer>() {
+                new Callable<>() {
                     @Override
                     public Integer call() {
                         return activity.getCurrentTabModel().getCount();

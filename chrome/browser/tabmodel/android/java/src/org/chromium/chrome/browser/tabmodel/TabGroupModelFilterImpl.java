@@ -61,7 +61,7 @@ import java.util.Set;
 @NullMarked
 public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, TabModelObserver {
     private static final List<Tab> sEmptyRelatedTabList =
-            Collections.unmodifiableList(new ArrayList<Tab>());
+            Collections.unmodifiableList(new ArrayList<>());
 
     /**
      * Class to hold metadata while fixRootIds still exists. Delete when rootId is removed.

@@ -213,7 +213,7 @@ public class CredentialEditViewTest {
      * @return The matcher checking the input type.
      */
     private static Matcher<EditText> isVisiblePasswordInput(boolean shouldBeVisible) {
-        return new BaseMatcher<EditText>() {
+        return new BaseMatcher<>() {
             @Override
             public boolean matches(Object o) {
                 EditText editText = (EditText) o;

@@ -95,7 +95,7 @@ public class LongScreenshotsEntryTest {
                 new LongScreenshotsEntry(
                         testGenerator,
                         new Rect(0, 1000, 0, 2000),
-                        new Callback<Integer>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(Integer result) {
                                 assertEquals(2097152, (int) result);
@@ -119,7 +119,7 @@ public class LongScreenshotsEntryTest {
                 new LongScreenshotsEntry(
                         testGenerator,
                         new Rect(0, 1000, 0, 2000),
-                        new Callback<Integer>() {
+                        new Callback<>() {
                             @Override
                             public void onResult(Integer result) {
                                 fail("MemoryUsage should not be called");

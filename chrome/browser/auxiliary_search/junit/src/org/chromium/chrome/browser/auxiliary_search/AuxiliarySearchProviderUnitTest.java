@@ -115,7 +115,7 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     private void compareTabs(List<Tab> expectedTabs, List<Tab> returnedTabs) {
-        HashSet<Integer> returnedTabsNumbers = new HashSet<Integer>();
+        HashSet<Integer> returnedTabsNumbers = new HashSet<>();
         for (Tab returnedTab : returnedTabs) {
             int returnedNumber =
                     Integer.valueOf(returnedTab.getUrl().getSpec().substring(TAB_URL.length()));

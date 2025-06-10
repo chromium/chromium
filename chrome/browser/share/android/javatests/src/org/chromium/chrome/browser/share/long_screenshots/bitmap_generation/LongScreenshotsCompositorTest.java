@@ -149,7 +149,7 @@ public class LongScreenshotsCompositorTest {
     @Test
     public void testSuccessfulCompositing() {
         Callback<Bitmap> onBitmapResult =
-                new Callback<Bitmap>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Bitmap result) {
                         Assert.assertEquals(mTestBitmap, result);
@@ -157,7 +157,7 @@ public class LongScreenshotsCompositorTest {
                 };
 
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.OK, result);
@@ -197,7 +197,7 @@ public class LongScreenshotsCompositorTest {
     public void testRequestBitmapFailure() {
         mCompositorDelegate.setRequestBitmapError();
         Callback<Bitmap> onBitmapResult =
-                new Callback<Bitmap>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Bitmap result) {
                         Assert.fail("Bitmap should not be returned");
@@ -205,7 +205,7 @@ public class LongScreenshotsCompositorTest {
                 };
 
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.OK, result);
@@ -242,7 +242,7 @@ public class LongScreenshotsCompositorTest {
     @Test
     public void testCompositorError() {
         Callback<Integer> compositorCallback =
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {
                         Assert.assertEquals((Integer) CompositorStatus.INVALID_REQUEST, result);
