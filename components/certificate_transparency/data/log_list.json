@@ -1,6 +1,6 @@
 {
-  "version": "54.29",
-  "log_list_timestamp": "2025-06-09T12:56:36Z",
+  "version": "55.1",
+  "log_list_timestamp": "2025-06-10T12:53:48Z",
   "operators": [
     {
       "name": "Google",
@@ -358,22 +358,6 @@
         "ctops@sectigo.com"
       ],
       "logs": [
-        {
-          "description": "Sectigo 'Sabre' CT log",
-          "log_id": "VYHUwhaQNgFK6gubVzxT8MDkOHhwJQgXL6OqHQcT0ww=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8m/SiQ8/xfiHHqtls9m7FyOMBg4JVZY9CgiixXGz0akvKD6DEL8S0ERmFe9U4ZiA0M4kbT5nmuk3I85Sk4bagA==",
-          "url": "https://sabre.ct.comodo.com/",
-          "mmd": 86400,
-          "state": {
-            "readonly": {
-              "timestamp": "2024-05-06T12:53:20Z",
-              "final_tree_head": {
-                "sha256_root_hash": "rBTMeBSKemBB90yJ598PhN+iLHApXbJpHhlCuNcUfgg=",
-                "tree_size": 546099878
-              }
-            }
-          }
-        },
         {
           "description": "Sectigo 'Sabre2025h1'",
           "log_id": "4JKz/AwdyOdoNh/eYbmWTQpSeBmKctZyxLBNpW1vVAQ=",
