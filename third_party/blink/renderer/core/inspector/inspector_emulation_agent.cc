@@ -818,7 +818,6 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     ua_metadata_override_->architecture = ua_metadata.getArchitecture().Ascii();
     ua_metadata_override_->model = ua_metadata.getModel().Ascii();
     ua_metadata_override_->mobile = ua_metadata.getMobile();
-    ua_metadata_override_->form_factors = default_ua_metadata.form_factors;
 
     if (ua_metadata.hasBitness()) {
       ua_metadata_override_->bitness = ua_metadata.getBitness("").Ascii();
@@ -829,6 +828,14 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
       ua_metadata_override_->wow64 = ua_metadata.getWow64(false);
     } else {
       ua_metadata_override_->wow64 = default_ua_metadata.wow64;
+    }
+    if (ua_metadata.hasFormFactors()) {
+      for (const auto& form_factor : *ua_metadata.getFormFactors(nullptr)) {
+        ua_metadata_override_->form_factors.push_back(form_factor.Ascii());
+      }
+    } else {
+      ua_metadata_override_->form_factors =
+          std::move(default_ua_metadata.form_factors);
     }
 
   } else {

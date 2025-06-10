@@ -23,6 +23,7 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
 
   // Now test with an override.
   testRunner.log('');
@@ -42,7 +43,8 @@
       model: 'QWERTY',
       mobile: true,
       bitness: '64',
-      wow64: false
+      wow64: false,
+      formFactors: ['Desktop', 'XR']
     }
   });
   testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
@@ -50,10 +52,7 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64"])'));
-  testRunner.log('has form factors?' + await session.evaluateAsync(async () => {
-    return (await navigator.userAgentData.getHighEntropyValues(["formFactors"])).formFactors.length > 0;
-  }));
+          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64", "formFactors"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-bitness');
@@ -64,6 +63,7 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
 
   // Verifying that the low-entropy UA-CH are returned in getHighEntropyValues() by default
   testRunner.log('');
@@ -105,7 +105,8 @@
       model: 'With erase tape',
       mobile: true,
       bitness: '64',
-      wow64: true
+      wow64: true,
+      formFactors: ['Desktop', 'XR']
     }
   });
   testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
@@ -113,7 +114,7 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64"])'));
+          '["architecture", "bitness", "fullVersionList", "platform", "platformVersion", "model", "uaFullVersion", "wow64", "formFactors"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-bitness');
@@ -124,6 +125,7 @@
   await printHeader('sec-ch-ua-mobile');
   await printHeader('sec-ch-ua-model');
   await printHeader('sec-ch-ua-wow64');
+  await printHeader('sec-ch-ua-form-factors');
 
   function printHeaderFromList(name, headers) {
     let logged = false;

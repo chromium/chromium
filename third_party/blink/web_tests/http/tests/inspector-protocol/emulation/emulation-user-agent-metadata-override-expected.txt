@@ -13,6 +13,7 @@ Missing header:sec-ch-ua-platform-version
 Missing header:sec-ch-ua-mobile
 Missing header:sec-ch-ua-model
 Missing header:sec-ch-ua-wow64
+Missing header:sec-ch-ua-form-factors
 
 Testing with specifying userAgentMetadata
 navigator.userAgent == Ferrum Typewriter
@@ -31,6 +32,10 @@ is mobile?true
             version : 3
         }
     ]
+    formFactors : [
+        [0] : Desktop
+        [1] : XR
+    ]
     fullVersionList : [
         [0] : {
             brand : Ferrum
@@ -48,7 +53,6 @@ is mobile?true
     uaFullVersion : 42.0.3.14159
     wow64 : false
 }
-has form factors?true
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-arch: "Electromechanical"
 sec-ch-ua-bitness: "64"
@@ -59,6 +63,7 @@ sec-ch-ua-platform-version: "1950"
 sec-ch-ua-mobile: ?1
 sec-ch-ua-model: "QWERTY"
 sec-ch-ua-wow64: ?0
+sec-ch-ua-form-factors: "Desktop", "XR"
 
 Testing with specifying getHighEntropyValues
 {
@@ -106,6 +111,10 @@ is mobile?true
             version : 999
         }
     ]
+    formFactors : [
+        [0] : Desktop
+        [1] : XR
+    ]
     fullVersionList : [
         [0] : {
             brand : content_shell
@@ -129,4 +138,5 @@ sec-ch-ua-platform-version: "1970"
 sec-ch-ua-mobile: ?1
 sec-ch-ua-model: "With erase tape"
 sec-ch-ua-wow64: ?1
+sec-ch-ua-form-factors: "Desktop", "XR"
 

@@ -23,7 +23,7 @@ inline constexpr char kTabletFormFactor[] = "Tablet";
 inline constexpr char kXRFormFactor[] = "XR";
 inline constexpr char kEInkFormFactor[] = "EInk";
 inline constexpr char kWatchFormFactor[] = "Watch";
-// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java)
+// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java,/third_party/blink/public/devtools_protocol/browser_protocol.pdl)
 
 struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
   UserAgentBrandVersion() = default;
