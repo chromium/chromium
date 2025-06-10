@@ -39,7 +39,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_element_hit_test_region.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -1996,13 +1996,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();
-
-  // Returns true if the given element can be used in a texElement2D call.
-  // Return false and adds relevant exceptions to `exception_state` if that's
-  // not the case.
-  bool IsDrawElementEligible(Element* element,
-                             GLenum target,
-                             ExceptionState& exception_state);
 
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;

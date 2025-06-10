@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
@@ -63,7 +64,6 @@ class CanvasHibernationHandler;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
-class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
 class CanvasResourceProvider;
 class Element;
@@ -95,20 +95,7 @@ class CORE_EXPORT HTMLCanvasElement final
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
 
  public:
-  class CORE_EXPORT ElementHitTestRegion
-      : public GarbageCollected<ElementHitTestRegion> {
-   public:
-    ElementHitTestRegion(Element* element, const gfx::RectF& rect);
-
-    void Trace(Visitor*) const;
-
-    Element* element() const { return element_.Get(); }
-    gfx::RectF rect() const { return rect_; }
-
-   private:
-    WeakMember<Element> element_;
-    gfx::RectF rect_;
-  };
+  using ElementHitTestRegion = CanvasRenderingContext::ElementHitTestRegion;
 
   using Node::GetExecutionContext;
 

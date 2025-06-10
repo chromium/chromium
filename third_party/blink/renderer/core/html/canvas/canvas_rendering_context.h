@@ -70,6 +70,7 @@ class VideoFrame;
 
 namespace blink {
 
+class CanvasElementHitTestRegion;
 class CanvasResourceProvider;
 class ComputedStyle;
 class Document;
@@ -100,6 +101,21 @@ class CORE_EXPORT CanvasRenderingContext
 
    private:
     CanvasRenderingContext& this_;
+  };
+
+  class CORE_EXPORT ElementHitTestRegion
+      : public GarbageCollected<ElementHitTestRegion> {
+   public:
+    ElementHitTestRegion(Element* element, const gfx::RectF& rect);
+
+    void Trace(Visitor*) const;
+
+    Element* element() const { return element_.Get(); }
+    gfx::RectF rect() const { return rect_; }
+
+   private:
+    WeakMember<Element> element_;
+    gfx::RectF rect_;
   };
 
   CanvasRenderingContext(const CanvasRenderingContext&) = delete;
@@ -348,6 +364,16 @@ class CORE_EXPORT CanvasRenderingContext
                          CanvasRenderingAPI);
 
   virtual void Dispose();
+
+  bool IsDrawElementEligible(Element* element,
+                             const String& func_name,
+                             ExceptionState& exception_state);
+
+  bool ConvertHitTestRegionsToHTMLCanvasRegions(
+      const HeapVector<Member<CanvasElementHitTestRegion>>& hit_test_regions,
+      VectorOf<ElementHitTestRegion>& result,
+      const String& func_name,
+      ExceptionState& exception_state);
 
  private:
   Member<CanvasRenderingContextHost> host_;

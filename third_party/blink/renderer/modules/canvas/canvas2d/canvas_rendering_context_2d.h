@@ -35,7 +35,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_element_hit_test_region.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_element_hit_test_region.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"

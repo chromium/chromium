@@ -24,6 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+dictionary CanvasHitTestRect {
+  double x;
+  double y;
+  double? width;
+  double? height;
+};
+
+dictionary CanvasElementHitTestRegion {
+  Element element;
+  CanvasHitTestRect rect;
+};
+
 // https://html.spec.whatwg.org/C/canvas.html#htmlcanvaselement
 [
     Exposed=Window,

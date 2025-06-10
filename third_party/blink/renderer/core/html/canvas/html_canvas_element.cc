@@ -2403,13 +2403,4 @@ bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
 }
 
-HTMLCanvasElement::ElementHitTestRegion::ElementHitTestRegion(
-    Element* element,
-    const gfx::RectF& rect)
-    : element_(element), rect_(rect) {}
-
-void HTMLCanvasElement::ElementHitTestRegion::Trace(Visitor* visitor) const {
-  visitor->Trace(element_);
-}
-
 }  // namespace blink

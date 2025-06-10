@@ -176,50 +176,6 @@ CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
   return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
-bool BaseRenderingContext2D::IsDrawElementEligible(
-    Element* element,
-    ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
-  if (!canvas_element || !canvas_element->GetDocument().View()) {
-    return false;
-  }
-
-  if (!GetOrCreatePaintCanvas()) {
-    return false;
-  }
-
-  if (element->parentElement() != canvas_element) {
-    exception_state.ThrowTypeError(
-        "Only immediate children of the <canvas> element can be passed to "
-        "drawElement().");
-    return false;
-  }
-
-  if (!canvas_element->layoutSubtree()) {
-    exception_state.ThrowTypeError(
-        "<canvas> elements without layoutsubtree do not support "
-        "drawElement().");
-    return false;
-  }
-
-  if (!element->GetLayoutObject()) {
-    exception_state.ThrowTypeError(
-        "The canvas and element used with drawElement() must have been laid "
-        "out. Detached canvases are not supported, nor canvas or children that "
-        "are `display: none`.");
-    return false;
-  }
-
-  // TODO(crbug.com/413728246): Maybe we can support canvas element.
-  if (IsA<HTMLCanvasElement>(element)) {
-    exception_state.ThrowTypeError(
-        "<canvas> children of a <canvas> cannot be passed to drawElement().");
-    return false;
-  }
-
-  return true;
-}
-
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   // If `need_dispatch_context_restored_` is `true`, the context has been
   // restored already (e.g. by fixing a `kInvalidCanvasSize` context loss), but

@@ -57,7 +57,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_hit_test_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
@@ -6632,53 +6631,6 @@ void WebGLRenderingContextBase::texParameteri(GLenum target,
   TexParameter(target, pname, 0, param, false);
 }
 
-bool WebGLRenderingContextBase::IsDrawElementEligible(
-    Element* element,
-    GLenum target,
-    ExceptionState& exception_state) {
-  if (isContextLost()) {
-    return false;
-  }
-  if (!canvas()) {
-    return false;
-  }
-  if (!ValidateTexture2DBinding("texImage2D", target, true)) {
-    return false;
-  }
-
-  if (element->parentElement() != canvas()) {
-    exception_state.ThrowTypeError(
-        "Only immediate children of the <canvas> element can be passed to "
-        "texElement2D().");
-    return false;
-  }
-
-  if (!canvas()->layoutSubtree()) {
-    exception_state.ThrowTypeError(
-        "<canvas> elements without layoutsubtree do not support "
-        "drawElement().");
-  }
-
-  if (!element->GetLayoutObject()) {
-    exception_state.ThrowTypeError(
-        "The canvas and element used with texElement2D() must have been laid "
-        "out. Detached canvases are not supported, nor canvas or children "
-        "that "
-        "are `display: none`.");
-    return false;
-  }
-
-  // TODO(crbug.com/413728246): Maybe we can support canvas element.
-  if (IsA<HTMLCanvasElement>(element)) {
-    exception_state.ThrowTypeError(
-        "<canvas> children of a <canvas> cannot be passed to "
-        "texElement2D().");
-    return false;
-  }
-
-  return true;
-}
-
 void WebGLRenderingContextBase::texElement2D(GLenum target,
                                              GLint level,
                                              GLint internalformat,
@@ -6687,7 +6639,15 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
                                              Element* element,
                                              ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
-  if (!IsDrawElementEligible(element, target, exception_state)) {
+  if (isContextLost()) {
+    return;
+  }
+
+  if (!ValidateTexture2DBinding("texImage2D", target, true)) {
+    return;
+  }
+
+  if (!IsDrawElementEligible(element, "texElement2D()", exception_state)) {
     return;
   }
 
@@ -6756,36 +6716,9 @@ void WebGLRenderingContextBase::setHitTestRegions(
       DocumentUpdateReason::kCanvasDrawElement);
 
   VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
-  for (const auto& region : hit_test_regions) {
-    if (!IsDrawElementEligible(region->element(), GL_TEXTURE_2D,
-                               exception_state)) {
-      return;
-    }
-
-    // TODO(vmpstr): Find a common spot for this (code duplicated in
-    // `CanvasRenderingContext2D`).
-    double width = [&]() -> double {
-      if (region->rect()->hasWidth()) {
-        return *region->rect()->width();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.width();
-    }();
-
-    double height = [&]() -> double {
-      if (region->rect()->hasHeight()) {
-        return *region->rect()->height();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.height();
-    }();
-
-    result.push_back(
-        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
-            region->element(), gfx::RectF(region->rect()->x(),
-                                          region->rect()->y(), width, height)));
+  if (!ConvertHitTestRegionsToHTMLCanvasRegions(
+          hit_test_regions, result, "setHitTestRegions()", exception_state)) {
+    return;
   }
 
   canvas()->SetHitTestRegions(std::move(result));

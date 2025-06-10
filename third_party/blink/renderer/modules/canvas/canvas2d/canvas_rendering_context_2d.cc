@@ -58,7 +58,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_hit_test_rect.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -714,35 +713,9 @@ void CanvasRenderingContext2D::setHitTestRegions(
       DocumentUpdateReason::kCanvasDrawElement);
 
   VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
-  for (const auto& region : hit_test_regions) {
-    if (!IsDrawElementEligible(region->element(), exception_state)) {
-      return;
-    }
-
-    // TODO(vmpstr): Find a common spot for this (code duplicated in
-    // `WebGLRenderingContextBase`).
-    double width = [&]() -> double {
-      if (region->rect()->hasWidth()) {
-        return *region->rect()->width();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.width();
-    }();
-
-    double height = [&]() -> double {
-      if (region->rect()->hasHeight()) {
-        return *region->rect()->height();
-      }
-      gfx::RectF bounds =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      return bounds.height();
-    }();
-
-    result.push_back(
-        MakeGarbageCollected<HTMLCanvasElement::ElementHitTestRegion>(
-            region->element(), gfx::RectF(region->rect()->x(),
-                                          region->rect()->y(), width, height)));
+  if (!ConvertHitTestRegionsToHTMLCanvasRegions(
+          hit_test_regions, result, "setHitTestRegions()", exception_state)) {
+    return;
   }
 
   HostAsHTMLCanvasElement()->SetHitTestRegions(std::move(result));
@@ -762,7 +735,11 @@ void CanvasRenderingContext2D::DrawElementInternal(
   canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kCanvasDrawElement);
 
-  if (!IsDrawElementEligible(element, exception_state)) {
+  if (!GetOrCreatePaintCanvas()) {
+    return;
+  }
+
+  if (!IsDrawElementEligible(element, "drawElement()", exception_state)) {
     return;
   }
 
