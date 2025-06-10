@@ -195,6 +195,12 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item,
     int user_gesture_limit);
 
+// Returns the referrer chain based on download item for enterprise reporting.
+// This function will identify and attach the referrer chain to the
+// `DownloadItem` if it has not been previously identified.
+ReferrerChain GetOrIdentifyReferrerChainForEnterprise(
+    download::DownloadItem& item);
+
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 // Returns true if dangerous download report should be sent.
 bool ShouldSendDangerousDownloadReport(
