@@ -27,7 +27,7 @@ int GetResourceIdFromTemplateURL(const TemplateURL& template_url) {
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
   // This would be better served by ResourcesUtil::GetThemeResourceId(), but
   // the symbol appears to be unreachable from the ios/chrome/browser.
-  std::string resource_name = template_url.data().GetBuiltinImageResourceId();
+  std::string resource_name = template_url.GetBuiltinImageResourceId();
   auto resource_it = std::ranges::find_if(
       kSearchEnginesScaledResources,
       [&](const auto& resource) { return resource.path == resource_name; });

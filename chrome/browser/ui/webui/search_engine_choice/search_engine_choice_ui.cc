@@ -43,8 +43,8 @@ std::string GetChoiceListJSON(
     choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
     choice_value.Set(
-        "iconPath", base::StrCat({"chrome://theme/",
-                                  choice->data().GetBuiltinImageResourceId()}));
+        "iconPath",
+        base::StrCat({"chrome://theme/", choice->GetBuiltinImageResourceId()}));
     choice_value.Set("url", choice->url());
     choice_value.Set("marketingSnippet",
                      search_engines::GetMarketingSnippetString(choice->data()));
