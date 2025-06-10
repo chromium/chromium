@@ -9,10 +9,16 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "services/data_decoder/ble_scan_parser/parser.h"
 
 namespace data_decoder {
+
+namespace {
 
 // Definitions of the data type flags:
 // https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile/
@@ -32,13 +38,29 @@ constexpr uint8_t kDataTypeManufacturerData = 0xFF;
 constexpr char kUuidPrefix[] = "0000";
 constexpr char kUuidSuffix[] = "-0000-1000-8000-00805F9B34FB";
 
+BASE_FEATURE(kUseRustBleScanParser,
+             "UseRustBleScanParser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 BleScanParserImpl::BleScanParserImpl() = default;
 
 BleScanParserImpl::~BleScanParserImpl() = default;
 
 void BleScanParserImpl::Parse(const std::vector<uint8_t>& advertisement_data,
                               ParseCallback callback) {
-  std::move(callback).Run(ParseBleScan(advertisement_data));
+  mojom::ScanRecordPtr result;
+  if (base::FeatureList::IsEnabled(kUseRustBleScanParser)) {
+    result = ble_scan_parser::Parse(advertisement_data);
+  } else {
+    result = ParseBleScan(advertisement_data);
+  }
+  if (result) {
+    base::UmaHistogramBoolean("Bluetooth.LocalNameIsUtf8",
+                              base::IsStringUTF8(result->advertisement_name));
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 mojom::ScanRecordPtr BleScanParserImpl::ParseBleScan(

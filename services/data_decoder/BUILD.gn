@@ -55,6 +55,7 @@ source_set("lib") {
       "ble_scan_parser_impl.cc",
       "ble_scan_parser_impl.h",
     ]
+    deps += [ "//services/data_decoder/ble_scan_parser:parser" ]
   }
 
   if (use_blink) {
