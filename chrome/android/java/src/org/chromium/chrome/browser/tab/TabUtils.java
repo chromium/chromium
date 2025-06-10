@@ -30,6 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -368,6 +369,17 @@ public class TabUtils {
 
         view.setScaleType(ScaleType.MATRIX);
         view.setImageMatrix(m);
+    }
+
+    /** Returns whether media is being captured for a tab. */
+    public static boolean isCapturingForMedia(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return false;
+        return MediaCaptureDevicesDispatcherAndroid.isCapturingAudio(webContents)
+                || MediaCaptureDevicesDispatcherAndroid.isCapturingVideo(webContents)
+                || MediaCaptureDevicesDispatcherAndroid.isCapturingTab(webContents)
+                || MediaCaptureDevicesDispatcherAndroid.isCapturingWindow(webContents)
+                || MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents);
     }
 
     private static int getThumbnailHeightDiff(Context context) {

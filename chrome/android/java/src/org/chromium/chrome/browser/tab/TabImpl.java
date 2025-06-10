@@ -780,8 +780,8 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
-        assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
+    public void freeze() {
+        assert isHidden() || isClosing() : "Should only freeze a closing or hidden tab.";
         // If the native page is not already torn down make sure we remove it so it isn't visible if
         // this tab is foregrounded again in the current session.
         hideNativePage(/* notify= */ false, /* postHideTask= */ null);
@@ -789,6 +789,18 @@ class TabImpl implements Tab {
         WebContents oldWebContents = mWebContents;
         destroyWebContents(false);
         mWebContents = null;
+        mWebContentsState = oldWebContentsState;
+        mIsLoading = false;
+        // In case extracting the WebContentsState fails make sure we reload to the same URL.
+        if (mWebContentsState == null) {
+            mPendingLoadParams = new LoadUrlParams(mUrl);
+        } else {
+            // getWebContentsState should already have consumed the pending load params if one
+            // existed. Only one of mPendingLoadParams and mWebContentsState should be populated at
+            // a time so since we set mWebContentsState earlier we can clear this out.
+            mPendingLoadParams = null;
+        }
+
         RewindableIterator<TabObserver> observers = getTabObservers();
         if (oldWebContents != null) {
             while (observers.hasNext()) {
@@ -797,10 +809,16 @@ class TabImpl implements Tab {
             observers.rewind();
             oldWebContents.destroy();
         }
+    }
+
+    @Override
+    public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
+        assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
+        freeze();
         Referrer referrer = params.getReferrer();
         mWebContentsState =
                 WebContentsStateBridge.appendPendingNavigation(
-                        oldWebContentsState,
+                        mWebContentsState,
                         title,
                         params.getUrl(),
                         referrer != null ? referrer.getUrl() : null,
@@ -808,7 +826,6 @@ class TabImpl implements Tab {
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin(),
                         isOffTheRecord());
-        mIsLoading = false;
 
         // The only reason this should still be null is if we failed to allocate a byte buffer,
         // which probably means we are close to an OOM.
@@ -826,6 +843,7 @@ class TabImpl implements Tab {
             mPendingLoadParams = params;
             mUrl = new GURL(params.getUrl());
         }
+        RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
         }

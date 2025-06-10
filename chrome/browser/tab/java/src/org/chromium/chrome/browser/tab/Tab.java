@@ -260,6 +260,9 @@ public interface Tab extends TabLifecycle {
      */
     LoadUrlResult loadUrl(LoadUrlParams params);
 
+    /** Freezes the tab. If the tab is already frozen this is a no-op. */
+    void freeze();
+
     /**
      * Freezes the tabs and stores the URL in the tab's WebContentsState. If the tab is already
      * frozen this method still appends the navigation entry, but skips the process of freezing the

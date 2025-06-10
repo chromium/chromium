@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -103,11 +104,7 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
             webContents.updateWebContentsVisibility(Visibility.HIDDEN);
             webContents.suspendAllMediaPlayers();
             webContents.setAudioMuted(true);
-            if (MediaCaptureDevicesDispatcherAndroid.isCapturingAudio(webContents)
-                    || MediaCaptureDevicesDispatcherAndroid.isCapturingVideo(webContents)
-                    || MediaCaptureDevicesDispatcherAndroid.isCapturingTab(webContents)
-                    || MediaCaptureDevicesDispatcherAndroid.isCapturingWindow(webContents)
-                    || MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents)) {
+            if (TabUtils.isCapturingForMedia(mTab)) {
                 MediaCaptureDevicesDispatcherAndroid.notifyStopped(webContents);
             }
         }

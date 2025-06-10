@@ -381,6 +381,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupParityBottomSheetAndroid,
     &kTabletTabStripAnimation,
     &kToolbarPhoneCleanup,
+    &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabStateFlatBuffer,
     &kTabStripContextMenuAndroid,
     &kTabStripDensityChangeAndroid,
@@ -1257,6 +1258,10 @@ BASE_FEATURE(kTabletTabStripAnimation,
 
 BASE_FEATURE(kToolbarPhoneCleanup,
              "ToolbarPhoneCleanup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
+             "TabFreezeOnUndoableClosureKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStateFlatBuffer,

@@ -225,6 +225,7 @@ BASE_DECLARE_FEATURE(kTabGroupEntryPointsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityBottomSheetAndroid);
 BASE_DECLARE_FEATURE(kTabletTabStripAnimation);
 BASE_DECLARE_FEATURE(kToolbarPhoneCleanup);
+BASE_DECLARE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabStripContextMenuAndroid);
 BASE_DECLARE_FEATURE(kTabStripDensityChangeAndroid);

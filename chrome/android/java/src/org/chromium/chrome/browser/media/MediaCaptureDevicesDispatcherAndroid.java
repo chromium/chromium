@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -45,8 +47,9 @@ public class MediaCaptureDevicesDispatcherAndroid {
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyStopped(webContents);
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isCapturingAudio(WebContents webContents);
 
         boolean isCapturingVideo(WebContents webContents);

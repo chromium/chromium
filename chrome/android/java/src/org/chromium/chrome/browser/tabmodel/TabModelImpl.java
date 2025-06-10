@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
@@ -921,6 +922,15 @@ public class TabModelImpl extends TabModelJniBridge {
 
         if (updatePendingTabClosureManager && supportsPendingClosures()) {
             mPendingTabClosureManager.resetState();
+        }
+
+        // Deferred until another tab is selected. Otherwise the compositor may try to re-navigate
+        // the tab.
+        if (ChromeFeatureList.sTabFreezeOnUndoableClosureKillSwitch.isEnabled()
+                && pauseMedia
+                && TabUtils.isCapturingForMedia(tab)) {
+            // If media is being captured freeze the tab to disconnect it.
+            tab.freeze();
         }
     }
 
