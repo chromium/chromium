@@ -22344,24 +22344,6 @@
             ]
         }
     ],
-    "SelfFreeze": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Both_20250401",
-                    "params": {
-                        "max_chunk_size": "100"
-                    },
-                    "enable_features": [
-                        "ShouldFreezeSelf"
-                    ]
-                }
-            ]
-        }
-    ],
     "SendTabToSelfIOSPushNotifications": [
         {
             "platforms": [
