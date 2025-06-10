@@ -457,6 +457,9 @@ TEST_F(FeedStreamTestForAllStreamTypes,
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   {
     WaitForIdleTaskQueue();
     auto metadata = stream_->GetMetadata();
@@ -508,6 +511,9 @@ TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
 }
 
 TEST_F(FeedApiTest, FetchAfterStartup) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
   TestForYouSurface surface(stream_.get());
@@ -780,6 +786,9 @@ TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
 }
 
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   base::TimeDelta default_staleness_threshold =
       GetFeedConfig().GetStalenessThreshold(StreamType(StreamKind::kForYou),
                                             /*is_web_feed_subscriber=*/true);
@@ -870,6 +879,9 @@ TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired_NetworkExpiredAge) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   // Fill the store with stream data that is just barely stale, and verify we
   // fetch new data over the network.
   store_->OverwriteStream(
@@ -945,6 +957,9 @@ TEST_F(FeedApiTest, LoadStaleDataBecauseNetworkRequestFails) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFailsStoredDataIsExpired) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   // Fill the store with stream data that is just barely expired.
   store_->OverwriteStream(
       GetStreamType(),
@@ -1808,6 +1823,9 @@ TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
 }
 
 TEST_F(FeedApiTest, ClearAllWipesAllState) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   // Trigger saving a consistency token, so it can be cleared later.
   network_.consistency_token = "token-11";
   stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
@@ -2823,6 +2841,9 @@ TEST_F(FeedApiTest, HasUnreadContentRemainsFalseIfFeedViewedBeforeRefresh) {
 
 TEST_F(FeedApiTest,
        LoadingForYouStreamTriggersWebFeedRefreshIfNoUnreadContent) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   // WebFeed stream is only fetched when there's a subscription.
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
@@ -2852,7 +2873,7 @@ TEST_F(
   // With WebFeedOnboarding disabled, WebFeed should not fetch without
   // subscriptions.
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedOnboarding);
+  features.InitWithFeatures({}, {kWebFeedOnboarding, kWebFeedKillSwitch});
   // Only for-you feed is fetched on load.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -2869,6 +2890,9 @@ TEST_F(
 TEST_F(
     FeedApiTest,
     LoadForYouStreamDoesNotTriggerWebFeedRefreshContentIfIsAlreadyAvailable) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   // WebFeed stream is only fetched when there's a subscription.
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 

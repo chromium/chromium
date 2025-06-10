@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
@@ -68,6 +69,10 @@ void WriteSubscribedFeeds(
 
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
+  FeedApiSubscriptionsTest() {
+    features_.InitAndDisableFeature(kWebFeedKillSwitch);
+  }
+
   void SetUp() override {
     FeedApiTest::SetUp();
     subscriptions().SetHooksForTesting(&web_feed_subscription_hooks);
@@ -184,6 +189,7 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
 
  protected:
   WebFeedSubscriptionCoordinator::HooksForTesting web_feed_subscription_hooks;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {

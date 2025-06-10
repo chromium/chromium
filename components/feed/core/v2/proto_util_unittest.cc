@@ -228,6 +228,9 @@ TEST(ProtoUtilTest, ReadLaterEnabled) {
 #endif
 
 TEST(ProtoUtilTest, CormorantEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeedKillSwitch);
+
   RequestMetadata request_metadata;
   request_metadata.country = "US";
 
