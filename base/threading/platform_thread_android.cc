@@ -14,6 +14,7 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread_internal_posix.h"
@@ -24,10 +25,15 @@
 
 namespace base {
 
+BASE_FEATURE(kIncreaseDisplayCriticalThreadPriority,
+             "RaiseDisplayCriticalThreadPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace internal {
 
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 // - kDisplay corresponds to Android's PRIORITY_DISPLAY = -4 value.
+// - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
 // - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10
 //   value. Contrary to the matching Java APi in Android <13, this does not
 //   restrict the thread to (subset of) little cores.
@@ -46,11 +52,25 @@ const ThreadPriorityToNiceValuePairForTest
 // - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
 // - kDisplayCritical corresponds to Android's PRIORITY_DISPLAY = -4 value.
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},     {ThreadType::kUtility, 1},
-    {ThreadType::kDefault, 0},         {ThreadType::kDisplayCritical, -4},
-    {ThreadType::kRealtimeAudio, -16},
-};
+
+int ThreadTypeToNiceValue(const ThreadType thread_type) {
+  switch (thread_type) {
+    case ThreadType::kBackground:
+      return 10;
+    case ThreadType::kUtility:
+      return 1;
+    case ThreadType::kDefault:
+      return 0;
+    case ThreadType::kDisplayCritical:
+      if (base::FeatureList::IsEnabled(
+              kIncreaseDisplayCriticalThreadPriority)) {
+        return -12;
+      }
+      return -4;
+    case ThreadType::kRealtimeAudio:
+      return -16;
+  }
+}
 
 bool CanSetThreadTypeToRealtimeAudio() {
   return true;

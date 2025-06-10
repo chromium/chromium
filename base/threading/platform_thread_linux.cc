@@ -99,17 +99,6 @@ const ThreadPriorityToNiceValuePairForTest
         {ThreadPriorityForTest::kBackground, 10},
 };
 
-// These nice values are shared with ChromeOS platform code
-// (platform_thread_cros.cc) and have to be unique as ChromeOS has a unique
-// type -> nice value mapping.
-// The uniqueness of the nice value per-type helps to change and restore the
-// scheduling params of threads when their process toggles between FG and BG.
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},     {ThreadType::kUtility, 2},
-    {ThreadType::kDefault, 0},         {ThreadType::kDisplayCritical, -8},
-    {ThreadType::kRealtimeAudio, -10},
-};
-
 bool CanSetThreadTypeToRealtimeAudio() {
   // Check if root
   if (geteuid() == 0) {
@@ -282,6 +271,21 @@ void SetThreadTypeLinux(ProcessId process_id,
                   nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
               << nice_setting;
+  }
+}
+
+int ThreadTypeToNiceValue(const ThreadType thread_type) {
+  switch (thread_type) {
+    case ThreadType::kBackground:
+      return 10;
+    case ThreadType::kUtility:
+      return 2;
+    case ThreadType::kDefault:
+      return 0;
+    case ThreadType::kDisplayCritical:
+      return -8;
+    case ThreadType::kRealtimeAudio:
+      return -10;
   }
 }
 

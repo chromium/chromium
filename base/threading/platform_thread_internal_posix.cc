@@ -12,18 +12,8 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 
 namespace base::internal {
-
-BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
-  for (const auto& pair : kThreadTypeToNiceValueMap) {
-    if (pair.thread_type == thread_type) {
-      return pair.nice_value;
-    }
-  }
-  NOTREACHED() << "Unknown ThreadType";
-}
 
 ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {
   // Try to find a priority that best describes |nice_value|. If there isn't

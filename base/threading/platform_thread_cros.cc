@@ -231,12 +231,20 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
 // Get the type by reading through kThreadTypeToNiceValueMap
 std::optional<ThreadType> GetThreadTypeForNiceValue(int nice_value) {
-  for (auto i : internal::kThreadTypeToNiceValueMap) {
-    if (nice_value == i.nice_value) {
-      return i.thread_type;
-    }
+  switch (nice_value) {
+    case 10:
+      return ThreadType::kBackground;
+    case 2:
+      return ThreadType::kUtility;
+    case 0:
+      return ThreadType::kDefault;
+    case -8:
+      return ThreadType::kDisplayCritical;
+    case -10:
+      return ThreadType::kRealtimeAudio;
+    default:
+      return std::nullopt;
   }
-  return std::nullopt;
 }
 
 std::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
