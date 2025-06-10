@@ -665,13 +665,7 @@ void WaitForFakeJoinFlowView() {
 // Checks last tab close alert as owner of the group open a new tab and close
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
-// TODO(crbug.com/414607496): This fails on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testLastTabClosedOwnerAlert DISABLED_testLastTabClosedOwnerAlert
-#else
-#define MAYBE_testLastTabClosedOwnerAlert testLastTabClosedOwnerAlert
-#endif
-- (void)MAYBE_testLastTabClosedOwnerAlert {
+- (void)testLastTabClosedOwnerAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -804,13 +798,7 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
-// TODO(crbug.com/414607496): This fails on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testLastTabClosedMemberAlert DISABLED_testLastTabClosedMemberAlert
-#else
-#define MAYBE_testLastTabClosedMemberAlert testLastTabClosedMemberAlert
-#endif
-- (void)MAYBE_testLastTabClosedMemberAlert {
+- (void)testLastTabClosedMemberAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
