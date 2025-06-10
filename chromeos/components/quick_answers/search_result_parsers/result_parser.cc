@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_parsers/definition_result_parser.h"
-#include "chromeos/components/quick_answers/search_result_parsers/kp_entity_result_parser.h"
 #include "chromeos/components/quick_answers/search_result_parsers/unit_conversion_result_parser.h"
 
 namespace quick_answers {
@@ -65,7 +64,6 @@ bool ResultParser::SupportsNewInterface() const {
 std::unique_ptr<ResultParser> ResultParserFactory::Create(
     int one_namespace_type) {
   switch (static_cast<ResultType>(one_namespace_type)) {
-    // TODO(b/345551832): delete KpEntityResultParser
     case ResultType::kDefinitionResult:
       return std::make_unique<DefinitionResultParser>();
     case ResultType::kUnitConversionResult:
