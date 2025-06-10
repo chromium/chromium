@@ -33,7 +33,7 @@ public class WebApkIntentDataProviderBuilder {
     private String mName;
     private String mShortName;
     private WebappIcon mPrimaryIcon;
-    private Map<String, String> mIconUrlToMurmur2HashMap = new HashMap<String, String>();
+    private Map<String, String> mIconUrlToMurmur2HashMap = new HashMap<>();
     private long mToolbarColor;
     private int mShellApkVersion = 1;
 

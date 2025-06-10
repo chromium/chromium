@@ -175,7 +175,7 @@ class PasswordSettingsTestHelper {
      * @return A Matcher to find a particular {@link ViewHolder} that contains certain text.
      */
     static Matcher<ViewHolder> hasTextInViewHolder(String text) {
-        return new BoundedMatcher<ViewHolder, PreferenceViewHolder>(PreferenceViewHolder.class) {
+        return new BoundedMatcher<>(PreferenceViewHolder.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("has text: " + text);

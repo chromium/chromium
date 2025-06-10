@@ -265,9 +265,7 @@ public class MerchantTrustMessageSchedulerTest {
         doReturn(true).when(mockMessagesContext).isValid();
         doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
 
-        scheduler.setScheduledMessage(
-                new Pair<MerchantTrustMessageContext, PropertyModel>(
-                        mockMessagesContext, mockPropteryModel));
+        scheduler.setScheduledMessage(new Pair<>(mockMessagesContext, mockPropteryModel));
         Assert.assertNotNull(scheduler.getScheduledMessageContext());
         scheduler.clear(MessageClearReason.UNKNOWN);
         Assert.assertNull(scheduler.getScheduledMessageContext());

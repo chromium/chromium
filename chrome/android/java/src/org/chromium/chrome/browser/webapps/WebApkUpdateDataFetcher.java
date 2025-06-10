@@ -152,7 +152,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
             byte[][] shortcutIconData) {
         Context appContext = ContextUtils.getApplicationContext();
 
-        HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<String, String>();
+        HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<>();
         for (String iconUrl : iconUrls) {
             String murmur2Hash = null;
             if (iconUrl.equals(primaryIconUrl)) {

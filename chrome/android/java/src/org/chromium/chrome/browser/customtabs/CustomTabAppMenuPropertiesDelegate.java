@@ -67,7 +67,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
-    private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> mItemIdToIndexMap = new HashMap<>();
     private final Supplier<ContextualPageActionController> mContextualPageActionControllerSupplier;
 
     private boolean mHasClientPackage;

@@ -1358,7 +1358,7 @@ public class IntentHandler {
     public static void setPendingReferrer(Intent intent, GURL url) {
         intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(url.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REFERRER_ID, ++sReferrerId);
-        sPendingReferrer = new Pair<Integer, String>(sReferrerId, url.getSpec());
+        sPendingReferrer = new Pair<>(sReferrerId, url.getSpec());
     }
 
     /** Clears any pending referrer data. */

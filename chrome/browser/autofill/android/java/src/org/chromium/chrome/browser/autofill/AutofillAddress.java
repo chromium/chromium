@@ -215,7 +215,7 @@ public class AutofillAddress extends EditableOption {
                 editTitleResId = R.string.payments_add_more_information;
         }
 
-        return new Pair<Integer, Integer>(editMessageResId, editTitleResId);
+        return new Pair<>(editMessageResId, editTitleResId);
     }
 
     /**

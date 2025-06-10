@@ -71,7 +71,7 @@ public class SearchWidgetProviderTest {
 
         @Override
         protected void updateAppWidget(int id, RemoteViews views) {
-            mViews.add(new Pair<Integer, RemoteViews>(id, views));
+            mViews.add(new Pair<>(id, views));
         }
     }
 

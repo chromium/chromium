@@ -757,7 +757,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             if (TextUtils.isEmpty(title) || pendingIntent == null) {
                 continue;
             }
-            mMenuEntries.add(new Pair<String, PendingIntent>(title, pendingIntent));
+            mMenuEntries.add(new Pair<>(title, pendingIntent));
         }
     }
 

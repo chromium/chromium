@@ -864,7 +864,7 @@ public class WebappRegistryTest {
 
         WebappRegistry webApkRegistry = WebappRegistry.getInstance();
         Map<String, BrowserServicesIntentDataProvider> expectedIntentDataProviders =
-                new HashMap<String, BrowserServicesIntentDataProvider>();
+                new HashMap<>();
 
         BrowserServicesIntentDataProvider intentDataProvider1 =
                 new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1)

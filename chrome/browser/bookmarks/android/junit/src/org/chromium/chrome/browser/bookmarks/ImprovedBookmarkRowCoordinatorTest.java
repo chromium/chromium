@@ -272,7 +272,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertEquals(0, model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE));
         assertEquals(
-                new Pair<Drawable, Drawable>(null, null),
+                new Pair<>(null, null),
                 model.get(ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES).get());
     }
 

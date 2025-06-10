@@ -146,7 +146,7 @@ public class HistoricalTabSaverImplTest {
 
         TabRestoreServiceUtils.createTabEntry(mTabModel, frozenTab);
 
-        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);
     }
 
@@ -233,7 +233,7 @@ public class HistoricalTabSaverImplTest {
                         Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
-        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);
     }
 
@@ -345,7 +345,7 @@ public class HistoricalTabSaverImplTest {
         expectedEntries.add(new HistoricalEntry(frozenTab1));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
 
-        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);
     }
 
@@ -395,7 +395,7 @@ public class HistoricalTabSaverImplTest {
     @Test
     @MediumTest
     public void testCreateHistoricalTab_InvalidUrls() {
-        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
         final Tab tab0 = mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
         TabRestoreServiceUtils.createTabEntry(mTabModel, tab0);
         assertEntriesAre(empty);
@@ -454,7 +454,7 @@ public class HistoricalTabSaverImplTest {
                                             .getTabGroupModelFilter(false),
                                     Arrays.asList(newTab));
                 });
-        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        List<List<HistoricalEntry>> empty = new ArrayList<>();
         assertEntriesAre(empty);
 
         runOnUiThreadBlocking(

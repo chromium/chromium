@@ -76,7 +76,7 @@ public class BrowsingDataRemoverIntegrationTest {
     @MediumTest
     public void testUnregisteringWebapps() throws Exception {
         // Register three web apps.
-        final HashMap<String, String> apps = new HashMap<String, String>();
+        final HashMap<String, String> apps = new HashMap<>();
         apps.put("webapp1", "https://www.google.com/index.html");
         apps.put("webapp2", "https://www.chrome.com/foo/bar");
         apps.put("webapp3", "http://example.com/");

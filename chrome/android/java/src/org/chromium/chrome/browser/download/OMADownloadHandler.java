@@ -166,7 +166,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
         private final List<String> mTypes;
 
         OMAInfo() {
-            mDescription = new HashMap<String, String>();
+            mDescription = new HashMap<>();
             mTypes = new ArrayList<>();
         }
 

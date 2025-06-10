@@ -37,7 +37,7 @@ public class XMLParser extends DefaultHandler {
 
         public Node(@Nullable String tagName) {
             tag = tagName;
-            attributes = new HashMap<String, String>();
+            attributes = new HashMap<>();
             children = new ArrayList<>();
         }
     }

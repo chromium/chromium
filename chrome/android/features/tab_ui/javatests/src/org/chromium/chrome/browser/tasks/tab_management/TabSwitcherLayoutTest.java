@@ -1499,7 +1499,7 @@ public class TabSwitcherLayoutTest {
                         matches(
                                 RecyclerViewMatcherUtils.atPosition(
                                         position,
-                                        new BoundedMatcher<View, TabGridView>(TabGridView.class) {
+                                        new BoundedMatcher<>(TabGridView.class) {
 
                                             @Override
                                             protected boolean matchesSafely(

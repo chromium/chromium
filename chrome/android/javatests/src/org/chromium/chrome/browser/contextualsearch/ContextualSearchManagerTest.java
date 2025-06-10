@@ -1025,7 +1025,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
          */
         UserActionMonitor(Set<String> userActionPrefixes) {
             mUserActionPrefixes = userActionPrefixes;
-            mUserActionCounts = new HashMap<String, Integer>();
+            mUserActionCounts = new HashMap<>();
             for (String action : mUserActionPrefixes) {
                 mUserActionCounts.put(action, 0);
             }

@@ -568,10 +568,11 @@ public class ManualFillingTestHelper {
 
     /**
      * Matches any {@link TextView} which applies a {@link PasswordTransformationMethod}.
+     *
      * @return The matcher checking the transformation method.
      */
     public static Matcher<View> isTransformed() {
-        return new BoundedMatcher<View, TextView>(TextView.class) {
+        return new BoundedMatcher<>(TextView.class) {
             @Override
             public boolean matchesSafely(TextView textView) {
                 return textView.getTransformationMethod() instanceof PasswordTransformationMethod;

@@ -90,8 +90,7 @@ public class ServiceWorkerPaymentAppBridge {
                     new Runnable() {
                         @Override
                         public void run() {
-                            callback.onGetServiceWorkerPaymentAppsInfo(
-                                    new HashMap<String, Pair<String, Bitmap>>());
+                            callback.onGetServiceWorkerPaymentAppsInfo(new HashMap<>());
                         }
                     });
             return;
@@ -146,7 +145,7 @@ public class ServiceWorkerPaymentAppBridge {
 
     @CalledByNative
     private static Object createPaymentAppsInfo() {
-        return new HashMap<String, Pair<String, Bitmap>>();
+        return new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")

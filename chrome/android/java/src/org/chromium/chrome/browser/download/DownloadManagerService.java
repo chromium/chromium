@@ -95,8 +95,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private static boolean sIsNetworkListenerDisabled;
     private static boolean sIsNetworkMetered;
 
-    private final HashMap<String, DownloadProgress> mDownloadProgressMap =
-            new HashMap<String, DownloadProgress>(4, 0.75f);
+    private final HashMap<String, DownloadProgress> mDownloadProgressMap = new HashMap<>(4, 0.75f);
 
     private final DownloadNotifier mDownloadNotifier;
     // Delay between UI updates.
@@ -408,7 +407,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         final DownloadItem item = progress.mDownloadItem;
 
         AsyncTask<Pair<Boolean, Boolean>> task =
-                new AsyncTask<Pair<Boolean, Boolean>>() {
+                new AsyncTask<>() {
                     @Override
                     public Pair<Boolean, Boolean> doInBackground() {
                         boolean success =

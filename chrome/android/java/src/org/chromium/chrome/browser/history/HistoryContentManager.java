@@ -747,7 +747,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
         public AppInfo get(String appId) {
             assert appId != null;
-            if (mAppInfoMap == null) mAppInfoMap = new HashMap<String, AppInfo>();
+            if (mAppInfoMap == null) mAppInfoMap = new HashMap<>();
             AppInfo appInfo = mAppInfoMap.get(appId);
             if (appInfo == null) {
                 try {

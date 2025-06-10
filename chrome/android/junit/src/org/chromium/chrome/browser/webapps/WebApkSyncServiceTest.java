@@ -191,7 +191,7 @@ public class WebApkSyncServiceTest {
     @Test
     public void testGetIconsFallback() throws Exception {
         WebappIcon testIcon = new WebappIcon();
-        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<String, String>();
+        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<>();
         iconUrlAndIconMurmur2HashMap.put(ICON_URL, ICON_MURMUR2_HASH);
         iconUrlAndIconMurmur2HashMap.put(ICON_URL2, ICON_MURMUR2_HASH);
         BrowserServicesIntentDataProvider intentDataProvider =

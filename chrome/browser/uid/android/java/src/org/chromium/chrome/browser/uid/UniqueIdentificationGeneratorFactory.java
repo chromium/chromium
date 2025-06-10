@@ -11,16 +11,15 @@ import java.util.Map;
 
 /**
  * Factory for setting and retrieving instances of {@link UniqueIdentificationGenerator}s.
- * <p/>
- * A generator must always be set for a generator type before it is asked for. A generator type
+ *
+ * <p>A generator must always be set for a generator type before it is asked for. A generator type
  * is any string you want to use for your generator. It is typically defined as a public static
  * field in the generator itself.
  */
 @NullMarked
 public final class UniqueIdentificationGeneratorFactory {
     private static final Object LOCK = new Object();
-    private static final Map<String, UniqueIdentificationGenerator> GENERATOR_MAP =
-            new HashMap<String, UniqueIdentificationGenerator>();
+    private static final Map<String, UniqueIdentificationGenerator> GENERATOR_MAP = new HashMap<>();
 
     private UniqueIdentificationGeneratorFactory() {}
 

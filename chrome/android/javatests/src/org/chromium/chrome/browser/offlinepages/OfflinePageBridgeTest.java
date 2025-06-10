@@ -645,7 +645,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mOfflinePageBridge.getPagesByNamespace(
                             namespace,
-                            new Callback<List<OfflinePageItem>>() {
+                            new Callback<>() {
                                 @Override
                                 public void onResult(List<OfflinePageItem> pages) {
                                     result.addAll(pages);

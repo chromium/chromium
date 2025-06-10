@@ -56,7 +56,6 @@ import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -172,8 +171,7 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.when(mParams.getTopLevelOrigin()).thenReturn("https://chromium.org");
         Mockito.when(mParams.getPaymentRequestOrigin()).thenReturn("https://chromium.org");
         Mockito.when(mParams.getCertificateChain()).thenReturn(null);
-        Mockito.when(mParams.getUnmodifiableModifiers())
-                .thenReturn(new HashMap<String, PaymentDetailsModifier>());
+        Mockito.when(mParams.getUnmodifiableModifiers()).thenReturn(new HashMap<>());
         Mockito.when(mParams.getMayCrawl()).thenReturn(false);
         Mockito.when(mDelegate.getParams()).thenReturn(mParams);
         Mockito.when(mDelegate.getDialogController())

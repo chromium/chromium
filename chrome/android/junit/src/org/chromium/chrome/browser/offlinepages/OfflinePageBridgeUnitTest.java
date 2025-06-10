@@ -264,7 +264,7 @@ public class OfflinePageBridgeUnitTest {
 
     private Callback<List<OfflinePageItem>> createMultipleItemCallback(final int itemCount) {
         return spy(
-                new Callback<List<OfflinePageItem>>() {
+                new Callback<>() {
                     @Override
                     public void onResult(List<OfflinePageItem> items) {
                         assertNotNull(items);

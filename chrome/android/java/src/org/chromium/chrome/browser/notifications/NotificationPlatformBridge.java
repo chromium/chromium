@@ -140,8 +140,7 @@ public class NotificationPlatformBridge {
     //  c) in the case the user choses to "Undo", we will only be able to restore the notification
     //     they originally clicked "Unsubscribe" on.
     private static final Map<String, Map<String, Notification>>
-            sOriginsWithProvisionallyRevokedPermissions =
-                    new HashMap<String, Map<String, Notification>>();
+            sOriginsWithProvisionallyRevokedPermissions = new HashMap<>();
 
     // The `realtimeMillis` timestamp corresponding to the last time the pre-native processing for
     // the `PRE_UNSUBSCRIBE` intent was started. Used to measure the time, as perceived by the user,

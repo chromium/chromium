@@ -17,7 +17,7 @@ public class LowEndDeviceFeedbackSource implements FeedbackSource {
     private final HashMap<String, String> mMap;
 
     LowEndDeviceFeedbackSource() {
-        mMap = new HashMap<String, String>(1);
+        mMap = new HashMap<>(1);
         mMap.put(LOW_END_DEVICE_KEY, Boolean.toString(SysUtils.isLowEndDevice()));
     }
 

@@ -128,7 +128,7 @@ public class FeedFeedbackCollectorTest {
     public void testFeedSynchronousData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
-        Map<String, String> feedContext = new HashMap<String, String>();
+        Map<String, String> feedContext = new HashMap<>();
         feedContext.put(CARD_URL, THE_URL);
         feedContext.put(CARD_PUBLISHER, THE_PUBLISHER);
         feedContext.put(CARD_PUBLISHING_DATE, THE_PUBLISHING_DATE);

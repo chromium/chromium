@@ -740,7 +740,7 @@ public class OfflinePageBridge {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         if (!TextUtils.isEmpty(extraHeaderKey) && !TextUtils.isEmpty(extraHeaderValue)) {
             // Set both map-based and collapsed headers to support all use scenarios.
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
             headers.put(extraHeaderKey, extraHeaderValue);
             loadUrlParams.setExtraHeaders(headers);
             loadUrlParams.setVerbatimHeaders(extraHeaderKey + ":" + extraHeaderValue);

@@ -82,7 +82,7 @@ public class ChromeDownloadDelegate implements UserData {
                 // Check to see if we have an SDCard.
                 String status = Environment.getExternalStorageState();
                 File fullDirPath = getDownloadDirectoryFullPath();
-                return new Pair<String, File>(status, fullDirPath);
+                return new Pair<>(status, fullDirPath);
             }
 
             @Override

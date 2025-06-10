@@ -126,7 +126,7 @@ public class ShareSheetUsageRankingHelper {
                 ShareHelper.getCompatibleAppsForSharingFiles(params.getFileContentType()));
 
         List<String> availableActivities = new ArrayList<>();
-        Map<String, ResolveInfo> resolveInfos = new HashMap<String, ResolveInfo>();
+        Map<String, ResolveInfo> resolveInfos = new HashMap<>();
 
         // The system can return ResolveInfos which refer to activities exported
         // by Chrome - especially the Print activity. We don't want to offer

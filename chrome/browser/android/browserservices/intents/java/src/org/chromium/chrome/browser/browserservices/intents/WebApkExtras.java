@@ -115,7 +115,7 @@ public class WebApkExtras {
                 /* manifestId= */ null,
                 /* appKey= */ null,
                 WebApkDistributor.OTHER,
-                new HashMap<String, String>()
+                new HashMap<>()
                 /* iconUrlToMurmur2HashMap= */ ,
                 /* shareTarget= */ null,
                 /* isSplashProvidedByWebApk= */ false,

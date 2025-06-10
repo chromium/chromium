@@ -134,7 +134,7 @@ public class DownloadActivityV2Test {
      * @param text The text that the view holder has in its view hierarchy.
      */
     private static Matcher<ViewHolder> hasTextInViewHolder(String text) {
-        return new BoundedMatcher<ViewHolder, ListItemViewHolder>(ListItemViewHolder.class) {
+        return new BoundedMatcher<>(ListItemViewHolder.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("has text: " + text);

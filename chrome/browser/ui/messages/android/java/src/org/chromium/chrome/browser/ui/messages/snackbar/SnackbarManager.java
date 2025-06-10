@@ -245,7 +245,7 @@ public class SnackbarManager
     public int pushParentViewToOverrideStack(ViewGroup parentView) {
         assert parentView != null;
         int overrideToken = mTokenHolder.acquireToken();
-        mParentViewOverrideStack.push(new Pair<Integer, ViewGroup>(overrideToken, parentView));
+        mParentViewOverrideStack.push(new Pair<>(overrideToken, parentView));
         overrideParent(parentView);
         return overrideToken;
     }

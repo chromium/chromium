@@ -64,14 +64,12 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     // background thread.
     // It is static because cached thumbnails are shared across all instances of the class.
     @VisibleForTesting
-    static final LinkedHashSet<Pair<String, Integer>> sDiskLruCache =
-            new LinkedHashSet<Pair<String, Integer>>();
+    static final LinkedHashSet<Pair<String, Integer>> sDiskLruCache = new LinkedHashSet<>();
 
     // Maps content ID to a set of the requested sizes (maximum required dimension of the smaller
     // side) of the thumbnail with that ID.
     @VisibleForTesting
-    static final HashMap<String, HashSet<Integer>> sIconSizesMap =
-            new HashMap<String, HashSet<Integer>>();
+    static final HashMap<String, HashSet<Integer>> sIconSizesMap = new HashMap<>();
 
     @VisibleForTesting final ThumbnailGenerator mThumbnailGenerator;
 

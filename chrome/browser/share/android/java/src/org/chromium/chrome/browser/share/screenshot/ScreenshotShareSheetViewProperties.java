@@ -22,7 +22,7 @@ class ScreenshotShareSheetViewProperties {
      * Callback to perform the specified operation. Argument to callback must be a NoArgOperation
      */
     public static final WritableObjectPropertyKey<Callback<Integer>> NO_ARG_OPERATION_LISTENER =
-            new WritableObjectPropertyKey<Callback<Integer>>();
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<Bitmap> SCREENSHOT_BITMAP =
             new WritableObjectPropertyKey<>();

@@ -627,12 +627,11 @@ public class WebApkIntentDataProviderFactory {
     /**
      * Extract the icon URLs and icon hashes from the WebAPK's meta data, and returns a map of these
      * {URL, hash} pairs. The icon URLs/icon hashes are stored in a single meta data tag in the
-     * WebAPK's AndroidManifest.xml as following:
-     * "URL1 hash1 URL2 hash2 URL3 hash3..."
+     * WebAPK's AndroidManifest.xml as following: "URL1 hash1 URL2 hash2 URL3 hash3..."
      */
     @VisibleForTesting
     static Map<String, String> getIconUrlAndIconMurmur2HashMap(Bundle metaData) {
-        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<String, String>();
+        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<>();
         String iconUrlsAndIconMurmur2Hashes =
                 metaData.getString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES);
         if (TextUtils.isEmpty(iconUrlsAndIconMurmur2Hashes)) return iconUrlAndIconMurmur2HashMap;

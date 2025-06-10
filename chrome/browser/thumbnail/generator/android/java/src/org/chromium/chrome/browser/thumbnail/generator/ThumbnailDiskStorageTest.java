@@ -104,8 +104,7 @@ public class ThumbnailDiskStorageTest {
         public Pair<String, Integer> getMostRecentEntry() {
             if (getCacheCount() <= 0) return null;
 
-            ArrayList<Pair<String, Integer>> list =
-                    new ArrayList<Pair<String, Integer>>(sDiskLruCache);
+            ArrayList<Pair<String, Integer>> list = new ArrayList<>(sDiskLruCache);
             return list.get(list.size() - 1);
         }
     }

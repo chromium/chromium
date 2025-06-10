@@ -581,7 +581,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeColorSpinner() {
         Spinner colorSpinner = (Spinner) findViewById(R.id.color_spinner);
-        HashMap<String, String> colors = new HashMap<String, String>();
+        HashMap<String, String> colors = new HashMap<>();
         colors.put("Default", "");
         colors.put("White (AGA Light)", "#ffffff");
         colors.put("Orange", "#ef6c00");

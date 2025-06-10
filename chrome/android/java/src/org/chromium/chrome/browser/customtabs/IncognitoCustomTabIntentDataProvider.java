@@ -146,7 +146,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             PendingIntent pendingIntent =
                     IntentUtils.safeGetParcelable(bundle, CustomTabsIntent.KEY_PENDING_INTENT);
             if (TextUtils.isEmpty(title) || pendingIntent == null) continue;
-            mMenuEntries.add(new Pair<String, PendingIntent>(title, pendingIntent));
+            mMenuEntries.add(new Pair<>(title, pendingIntent));
         }
     }
 

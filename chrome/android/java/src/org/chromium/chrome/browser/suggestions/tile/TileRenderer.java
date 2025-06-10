@@ -106,7 +106,7 @@ public class TileRenderer {
     /** Simple multimap from SiteSuggestion to SuggestionsTileView. */
     private static class SuggestionsTileViewCache {
         private final Map<SiteSuggestion, LinkedList<SuggestionsTileView>> mStorage =
-                new HashMap<SiteSuggestion, LinkedList<SuggestionsTileView>>();
+                new HashMap<>();
 
         void put(SiteSuggestion key, @NonNull SuggestionsTileView value) {
             LinkedList<SuggestionsTileView> bucket = mStorage.get(key);

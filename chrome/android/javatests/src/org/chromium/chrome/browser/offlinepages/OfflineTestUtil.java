@@ -55,8 +55,7 @@ public class OfflineTestUtil {
 
     // Gets all available offline pages.
     public static List<OfflinePageItem> getAllPages() throws TimeoutException {
-        final AtomicReference<List<OfflinePageItem>> result =
-                new AtomicReference<List<OfflinePageItem>>();
+        final AtomicReference<List<OfflinePageItem>> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -104,8 +103,7 @@ public class OfflineTestUtil {
     // Returns all OfflineItems provided by the OfflineContentProvider.
     public static List<OfflineItem> getOfflineItems() throws TimeoutException {
         CallbackHelper finished = new CallbackHelper();
-        final AtomicReference<ArrayList<OfflineItem>> result =
-                new AtomicReference<ArrayList<OfflineItem>>();
+        final AtomicReference<ArrayList<OfflineItem>> result = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OfflineContentAggregatorFactory.get()

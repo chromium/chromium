@@ -222,7 +222,7 @@ public class TestContentProvider extends ContentProvider {
                                 ? mResourceRequestCount.get(resource)
                                 : 0);
             } else if (RESET_RESOURCE_REQUEST_COUNTS.equals(action)) {
-                mResourceRequestCount = new HashMap<String, Integer>();
+                mResourceRequestCount = new HashMap<>();
             } else if (SET_DATA_PATH.equals(action)) {
                 mDataFilePath = resource;
             }

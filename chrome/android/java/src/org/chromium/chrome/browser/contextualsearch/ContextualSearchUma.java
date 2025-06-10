@@ -138,15 +138,11 @@ public class ContextualSearchUma {
     static {
         final boolean unseen = false;
         final boolean seen = true;
-        Map<Pair<Boolean, Boolean>, Integer> codes = new HashMap<Pair<Boolean, Boolean>, Integer>();
-        codes.put(new Pair<Boolean, Boolean>(seen, TAP), ResultsByGesture.SEEN_FROM_TAP);
-        codes.put(new Pair<Boolean, Boolean>(unseen, TAP), ResultsByGesture.NOT_SEEN_FROM_TAP);
-        codes.put(
-                new Pair<Boolean, Boolean>(seen, LONG_PRESS),
-                ResultsByGesture.SEEN_FROM_LONG_PRESS);
-        codes.put(
-                new Pair<Boolean, Boolean>(unseen, LONG_PRESS),
-                ResultsByGesture.NOT_SEEN_FROM_LONG_PRESS);
+        Map<Pair<Boolean, Boolean>, Integer> codes = new HashMap<>();
+        codes.put(new Pair<>(seen, TAP), ResultsByGesture.SEEN_FROM_TAP);
+        codes.put(new Pair<>(unseen, TAP), ResultsByGesture.NOT_SEEN_FROM_TAP);
+        codes.put(new Pair<>(seen, LONG_PRESS), ResultsByGesture.SEEN_FROM_LONG_PRESS);
+        codes.put(new Pair<>(unseen, LONG_PRESS), ResultsByGesture.NOT_SEEN_FROM_LONG_PRESS);
         SEEN_BY_GESTURE_CODES = Collections.unmodifiableMap(codes);
     }
 
@@ -558,12 +554,13 @@ public class ContextualSearchUma {
     /**
      * Gets the panel-seen code for the given parameters by doing a lookup in the seen-by-gesture
      * map.
+     *
      * @param wasPanelSeen Whether the panel was seen.
      * @param wasTap Whether the gesture that originally caused the panel to show was a Tap.
      * @return The code to write into a panel-seen histogram.
      */
     private static int getPanelSeenByGestureStateCode(boolean wasPanelSeen, boolean wasTap) {
-        return SEEN_BY_GESTURE_CODES.get(new Pair<Boolean, Boolean>(wasPanelSeen, wasTap));
+        return SEEN_BY_GESTURE_CODES.get(new Pair<>(wasPanelSeen, wasTap));
     }
 
     /**

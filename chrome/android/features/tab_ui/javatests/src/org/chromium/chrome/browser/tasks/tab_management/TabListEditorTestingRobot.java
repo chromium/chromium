@@ -66,7 +66,7 @@ public class TabListEditorTestingRobot {
      * @return A view matcher that matches the item is selected.
      */
     public static Matcher<View> itemIsSelected() {
-        return new BoundedMatcher<View, TabGridView>(TabGridView.class) {
+        return new BoundedMatcher<>(TabGridView.class) {
             private TabGridView mSelectableTabGridView;
 
             @Override

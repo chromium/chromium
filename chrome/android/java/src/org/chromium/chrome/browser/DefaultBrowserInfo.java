@@ -47,7 +47,7 @@ public final class DefaultBrowserInfo {
         synchronized (sDirCreationLock) {
             if (sDefaultBrowserFetcher == null) {
                 sDefaultBrowserFetcher =
-                        new BackgroundOnlyAsyncTask<ArrayList<String>>() {
+                        new BackgroundOnlyAsyncTask<>() {
                             @Override
                             protected ArrayList<String> doInBackground() {
                                 Context context = ContextUtils.getApplicationContext();

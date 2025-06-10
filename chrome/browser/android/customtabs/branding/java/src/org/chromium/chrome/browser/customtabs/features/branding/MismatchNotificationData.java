@@ -79,7 +79,7 @@ public class MismatchNotificationData {
             accountData.put(appId, data);
         } else {
             // Create a new inner app -> data map if it doesn't exist.
-            accountData = new HashMap<String, AppUiData>();
+            accountData = new HashMap<>();
             accountData.put(appId, data);
             mDataMap.put(accountId, accountData);
         }

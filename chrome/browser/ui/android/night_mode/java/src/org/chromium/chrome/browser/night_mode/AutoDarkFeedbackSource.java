@@ -29,7 +29,7 @@ public class AutoDarkFeedbackSource implements FeedbackSource {
     private final HashMap<String, String> mMap;
 
     public AutoDarkFeedbackSource(Profile profile, Context context, GURL url) {
-        mMap = new HashMap<String, String>(1);
+        mMap = new HashMap<>(1);
 
         // Ignore user settings in incognito, or not in auto dark feature is not enabled.
         if (profile.isOffTheRecord()) return;

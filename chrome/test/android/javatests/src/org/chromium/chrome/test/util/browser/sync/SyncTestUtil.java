@@ -345,7 +345,7 @@ public final class SyncTestUtil {
         }
 
         List<Pair<String, JSONObject>> localDataForDatatype =
-                new ArrayList<Pair<String, JSONObject>>(datatypeNodes.length());
+                new ArrayList<>(datatypeNodes.length());
         for (int i = 0; i < datatypeNodes.length(); i++) {
             JSONObject entity = datatypeNodes.getJSONObject(i);
             if (entity.has("UNIQUE_SERVER_TAG")

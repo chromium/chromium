@@ -337,7 +337,7 @@ public class DownloadInterstitialMediatorTest {
         private final Map<Integer, Integer> mValues;
 
         UmaTestingHelper() {
-            mValues = new HashMap<Integer, Integer>();
+            mValues = new HashMap<>();
         }
 
         /**
