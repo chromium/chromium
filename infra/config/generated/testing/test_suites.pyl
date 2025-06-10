@@ -2472,6 +2472,9 @@
 
     'chromeos_tfc_tests': {
       'chromeos_chrome_all_tast_tests_tfc': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],

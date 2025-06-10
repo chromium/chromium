@@ -588,6 +588,9 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_tfc_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-20-tests-per-shard",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],

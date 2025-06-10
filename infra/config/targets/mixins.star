@@ -512,6 +512,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "skylab-20-tests-per-shard",
+    skylab = targets.skylab(
+        cros_test_max_in_shard = 20,
+    ),
+)
+
+targets.mixin(
     name = "chromeos-generic-vm",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",

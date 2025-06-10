@@ -285,6 +285,8 @@ def _generate_mixin_values(formatter, mixin):
             for v in skylab.cros_test_names_exclude_from_file:
                 formatter.add_line("'{}',".format(v))
             formatter.close_scope("],")
+        if skylab.cros_test_max_in_shard:
+            formatter.add_line("'cros_test_max_in_shard': {}".format(skylab.cros_test_max_in_shard))
         formatter.close_scope("},")
 
     if "resultdb" in mixin:
