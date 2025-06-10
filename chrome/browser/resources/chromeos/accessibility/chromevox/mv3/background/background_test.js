@@ -1733,6 +1733,30 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+AX_TEST_F('ChromeVoxMV3BackgroundTest', 'MathMLContent', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <math>
+      <mfrac>
+        <mrow>
+          <mi>d</mi>
+          <mi>y</mi>
+        </mrow>
+        <mrow>
+          <mi>d</mi>
+          <mi>x</mi>
+        </mrow>
+      </mfrac>
+      <mo>=</mo>
+    </math>
+  `;
+  const root = await this.runWithLoadedTree(site);
+  mockFeedback.call(doCmd('nextObject'))
+      .expectSpeech('StartFraction d y Over d x EndFraction =')
+      .expectSpeech('Press up, down, left, or right to explore math');
+  await mockFeedback.replay();
+});
+
 AX_TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
