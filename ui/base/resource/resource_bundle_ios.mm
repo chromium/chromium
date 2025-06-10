@@ -61,8 +61,7 @@ void ResourceBundle::LoadCommonResources() {
 }
 
 // static
-base::FilePath ResourceBundle::GetLocaleFilePath(
-    const std::string& app_locale) {
+base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
   NSString* mac_locale = base::SysUTF8ToNSString(app_locale);
 
   // iOS uses "_" instead of "-", so swap to get a iOS-style value.

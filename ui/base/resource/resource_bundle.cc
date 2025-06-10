@@ -31,6 +31,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -92,7 +93,7 @@ const unsigned char kPngScaleChunkType[4] = { 'c', 's', 'C', 'l' };
 const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 
 #if !BUILDFLAG(IS_APPLE)
-const char kPakFileExtension[] = ".pak";
+constexpr std::string_view kPakFileExtension = ".pak";
 #endif
 
 ResourceBundle* g_shared_instance_ = nullptr;
@@ -479,15 +480,14 @@ void ResourceBundle::AddDataPackFromFileRegion(
 
 #if !BUILDFLAG(IS_APPLE)
 // static
-base::FilePath ResourceBundle::GetLocaleFilePath(
-    const std::string& app_locale) {
+base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
   if (app_locale.empty())
     return base::FilePath();
 
   base::FilePath locale_file_path;
   if (base::PathService::Get(ui::DIR_LOCALES, &locale_file_path)) {
-    locale_file_path =
-        locale_file_path.AppendASCII(app_locale + kPakFileExtension);
+    locale_file_path = locale_file_path.AppendASCII(
+        base::StrCat({app_locale, kPakFileExtension}));
   }
 
   // Note: The delegate GetPathForLocalePack() override is currently only used

@@ -118,9 +118,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // the pack file to continue loading or an empty value to cancel loading.
     // |pack_path| will contain the complete default path for the pack file if
     // known or just the pack file name otherwise.
-    virtual base::FilePath GetPathForLocalePack(
-        const base::FilePath& pack_path,
-        const std::string& locale) = 0;
+    virtual base::FilePath GetPathForLocalePack(const base::FilePath& pack_path,
+                                                std::string_view locale) = 0;
 
     // Return an image resource or an empty value to attempt retrieval of the
     // default resource.
@@ -417,7 +416,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // returned path is not guaranteed to reference an existing file.
   // Used on Android to load the local file in the browser process and pass it
   // to the sandboxed renderer process.
-  static base::FilePath GetLocaleFilePath(const std::string& app_locale);
+  static base::FilePath GetLocaleFilePath(std::string_view app_locale);
 
   // Returns the maximum scale factor currently loaded.
   // Returns k100Percent if no resource is loaded.

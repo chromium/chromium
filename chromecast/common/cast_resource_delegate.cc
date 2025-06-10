@@ -44,7 +44,7 @@ base::FilePath CastResourceDelegate::GetPathForResourcePack(
 
 base::FilePath CastResourceDelegate::GetPathForLocalePack(
     const base::FilePath& pack_path,
-    const std::string& locale) {
+    std::string_view locale) {
   base::FilePath product_dir;
   if (!base::PathService::Get(base::DIR_ASSETS, &product_dir)) {
     NOTREACHED();
