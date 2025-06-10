@@ -11,6 +11,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,16 +19,19 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 import org.chromium.ui.animation.ViewCurvedMotionAnimatorFactory;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -77,7 +81,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
     protected void onFinishInflate() {
         super.onFinishInflate();
         mLinkIcon = findViewById(R.id.new_tab_background_animation_link_icon);
-        setLinkIconTint(SemanticColorUtils.getDefaultIconColor(getContext()));
+        @ColorInt int tintColor = SemanticColorUtils.getDefaultIconColor(getContext());
+        mLinkIcon.setImageTintList(ColorStateList.valueOf(tintColor));
         mFakeTabSwitcherButton = findViewById(R.id.new_background_tab_fake_tab_switcher_button);
     }
 
@@ -162,6 +167,17 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
         int brandedColorScheme =
                 ThemeUtils.getBrandedColorScheme(context, backgroundColor, isIncognito);
         mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
+        if (ColorUtils.inNightMode(context)) {
+            mLinkIcon.setImageTintList(ChromeColors.getPrimaryIconTint(context, isIncognito));
+            @ColorInt
+            int color =
+                    isIncognito
+                            ? ContextCompat.getColor(
+                                    context, R.color.gm3_baseline_surface_container_high_dark)
+                            : SemanticColorUtils.getColorSurfaceContainerHigh(context);
+            GradientDrawable roundedRect = (GradientDrawable) mLinkIcon.getBackground();
+            roundedRect.setColor(color);
+        }
 
         Rect tabSwitcherRect = new Rect();
         boolean tabSwitcherButtonIsVisible =
@@ -240,15 +256,6 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
             animatorSet.setDuration(CROSS_FADE_DURATION_MS);
         }
         return animatorSet;
-    }
-
-    /**
-     * Sets the tint for {@link #mLinkIcon}.
-     *
-     * @param color The {@link ColorInt} for the tint.
-     */
-    private void setLinkIconTint(@ColorInt int color) {
-        mLinkIcon.setImageTintList(ColorStateList.valueOf(color));
     }
 
     @Override
