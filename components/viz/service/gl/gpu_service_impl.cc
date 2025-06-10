@@ -359,6 +359,9 @@ GpuServiceImpl::~GpuServiceImpl() {
     }
   }
 
+  // WebNN must be destroyed before the scheduler is destroyed.
+  webnn_context_provider_.reset();
+
   // Scheduler must be destroyed before sync point manager is destroyed.
   owned_scheduler_.reset();
   owned_sync_point_manager_.reset();
