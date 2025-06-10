@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
@@ -31,8 +32,11 @@ class ScalableIphFactoryImplTest : public ChromeAshTestBase {
 };
 
 TEST_F(ScalableIphFactoryImplTest, WaitForRefreshTokensLoad) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      feature_engagement::kIPHScalableIphUnlockedBasedOneFeature);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {feature_engagement::kIPHScalableIphUnlockedBasedOneFeature,
+       ash::features::kScalableIph},
+      {});
 
   ScalableIphFactoryImpl::BuildInstance();
   ScalableIphFactoryImpl* scalable_iph_factory_impl =
