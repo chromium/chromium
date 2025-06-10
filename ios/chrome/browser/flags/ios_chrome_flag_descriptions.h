@@ -493,9 +493,6 @@ extern const char kLensLoadAIMInLensResultPageDescription[];
 extern const char kLensOverlayForceShowOnboardingScreenName[];
 extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 
-extern const char kLensOverlayAlternativeOnboardingName[];
-extern const char kLensOverlayAlternativeOnboardingDescription[];
-
 extern const char kLensOverlayDisableIPHPanGestureName[];
 extern const char kLensOverlayDisableIPHPanGestureDescription[];
 

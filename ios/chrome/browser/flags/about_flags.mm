@@ -143,32 +143,6 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
-const char kLensOverlayOnboardingParamSpeedbumpMenu[] =
-    "kLensOverlayOnboardingParamSpeedbumpMenu";
-const char kLensOverlayOnboardingParamUpdatedStrings[] =
-    "kLensOverlayOnboardingParamUpdatedStrings";
-const char kLensOverlayOnboardingParamUpdatedStringsAndVisuals[] =
-    "kLensOverlayOnboardingParamUpdatedStringsAndVisuals";
-
-const FeatureEntry::FeatureParam kLensOverlayOnboardinSpeedbumpMenu[] = {
-    {kLensOverlayOnboardingParam, kLensOverlayOnboardingParamSpeedbumpMenu}};
-const FeatureEntry::FeatureParam kLensOverlayOnboardingUpdatedStrings[] = {
-    {kLensOverlayOnboardingParam, kLensOverlayOnboardingParamUpdatedStrings}};
-const FeatureEntry::FeatureParam
-    kLensOverlayOnboardingUpdatedStringsAndVisuals[] = {
-        {kLensOverlayOnboardingParam,
-         kLensOverlayOnboardingParamUpdatedStringsAndVisuals}};
-
-const FeatureEntry::FeatureVariation kLensOverlayOnboardingVariations[] = {
-    {"A: Speedbump menu", kLensOverlayOnboardinSpeedbumpMenu,
-     std::size(kLensOverlayOnboardinSpeedbumpMenu), nullptr},
-    {"B: Updated Strings", kLensOverlayOnboardingUpdatedStrings,
-     std::size(kLensOverlayOnboardingUpdatedStrings), nullptr},
-    {"C: Updated Strings and Graphics",
-     kLensOverlayOnboardingUpdatedStringsAndVisuals,
-     std::size(kLensOverlayOnboardingUpdatedStringsAndVisuals), nullptr},
-};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -2241,13 +2215,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayForceShowOnboardingScreenDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensOverlayForceShowOnboardingScreen)},
-    {"lens-overlay-alternative-onboarding",
-     flag_descriptions::kLensOverlayAlternativeOnboardingName,
-     flag_descriptions::kLensOverlayAlternativeOnboardingDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kLensOverlayAlternativeOnboarding,
-                                    kLensOverlayOnboardingVariations,
-                                    "kLensOverlayOnboarding")},
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},

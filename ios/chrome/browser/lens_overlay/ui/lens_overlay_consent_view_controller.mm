@@ -22,9 +22,6 @@ NSString* const kLensUserEducationLightMode = @"lens_usered_lightmode";
 
 NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 
-NSString* const kLensOverlayOnboardingImageName =
-    @"lens_overlay_onboarding_illustration";
-
 // The height of the animation, as a percentage of the whole view minus the
 // fixed height items. By subtracting out the height of the items with a
 // fixed height, and sizing the animationa based on what is left we can
@@ -34,8 +31,6 @@ NSString* const kLensOverlayOnboardingImageName =
 const CGFloat kPauseButtonRightPadding = 12;
 // Pause button bottom padding.
 const CGFloat kPauseButtonBottomPadding = 14;
-// The size of the onboarding illustration.
-const CGFloat kLensOverlayOnboardingIllustrationSize = 80;
 // The size of the onboarding symbols.
 const CGFloat kLensOverlayOnboaridingSymbolSize = 22;
 // The value that makes the Lottie animation loop indefinitely.
@@ -45,66 +40,6 @@ const CGFloat kLottieInfiniteLoopFlag = -1;
 const CGFloat kDialogFixedItemsHeight = 160;
 // The width of the dialog in regular display size.
 const CGFloat kDialogWidthInRegularDisplaySize = 540;
-
-// Whether to use the updated onboarding string.
-bool UseUpdatedStrings() {
-  auto treatment = GetLensOverlayOnboardingTreatment();
-  return treatment ==
-             LensOverlayOnboardingTreatment::kUpdatedOnboardingStrings ||
-         treatment == LensOverlayOnboardingTreatment::
-                          kUpdatedOnboardingStringsAndVisuals;
-}
-
-// Whether to use the updated onboarding graphics.
-bool UseUpdatedGraphics() {
-  return GetLensOverlayOnboardingTreatment() ==
-         LensOverlayOnboardingTreatment::kUpdatedOnboardingStringsAndVisuals;
-}
-
-NSString* TitleString() {
-  if (UseUpdatedStrings()) {
-    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_ONBOARDING_TITLE);
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_TITLE);
-  }
-}
-
-NSString* DescriptionString() {
-  if (UseUpdatedStrings()) {
-    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_ONBOARDING_DESCRIPTION);
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION);
-  }
-}
-
-NSString* PrimaryActionString() {
-  if (UseUpdatedStrings()) {
-    return l10n_util::GetNSString(
-        IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_SEARCH);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE);
-  }
-}
-
-NSString* SecondaryActionString() {
-  if (UseUpdatedStrings()) {
-    return l10n_util::GetNSString(
-        IDS_IOS_LENS_OVERLAY_ONBOARDING_BUTTON_CANCEL);
-  } else {
-    return l10n_util::GetNSString(
-        IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE);
-  }
-}
-
-NSString* LearnMoreString() {
-  if (UseUpdatedStrings()) {
-    return l10n_util::GetNSString(
-        IDS_IOS_LENS_OVERLAY_ONBOARDING_LEARN_MORE_ACTION);
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE);
-  }
-}
 
 }  // namespace
 
@@ -136,8 +71,10 @@ NSString* LearnMoreString() {
   _contentStack = [self createContentStack];
   [self.specificContentView addSubview:_contentStack];
 
-  self.primaryActionString = PrimaryActionString();
-  self.secondaryActionString = SecondaryActionString();
+  self.primaryActionString = l10n_util::GetNSString(
+      IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE);
+  self.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE);
 
   [super viewDidLoad];
   [NSLayoutConstraint activateConstraints:@[
@@ -200,75 +137,36 @@ NSString* LearnMoreString() {
   return animationView;
 }
 
-- (UIImageView*)createOnboardingImageView {
-  UIImageView* imageView = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:kLensOverlayOnboardingImageName]];
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSizeConstraints(imageView,
-                     CGSizeMake(kLensOverlayOnboardingIllustrationSize,
-                                kLensOverlayOnboardingIllustrationSize));
-
-  return imageView;
-}
-
 - (UIStackView*)createContentStack {
   // Title/description labels.
-  UILabel* titleLabel = [self createLabel:TitleString()
-                                     font:GetFRETitleFont(UIFontTextStyleTitle2)
-                                    color:kTextPrimaryColor];
+  UILabel* titleLabel = [self
+      createLabel:l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_CONSENT_TITLE)
+             font:GetFRETitleFont(UIFontTextStyleTitle2)
+            color:kTextPrimaryColor];
 
-  NSString* description = DescriptionString();
-  NSString* learnMore = LearnMoreString();
-
-  UIView* bodyText;
-  if (UseUpdatedStrings()) {
-    NSString* descriptionWithAction =
-        [NSString stringWithFormat:@"%@ %@", description, learnMore];
-    NSMutableAttributedString* attributedText =
-        [[NSMutableAttributedString alloc]
-            initWithString:descriptionWithAction
-                attributes:[self descriptionTextAttributes]];
-    // The URL in the text attribute is empty as the delegate is responsible for
-    // opening external links.
-    NSRange urlRange = NSMakeRange(description.length + 1, learnMore.length);
-    [attributedText addAttribute:NSLinkAttributeName
-                           value:[[NSURL alloc] init]
-                           range:urlRange];
-    bodyText = [self createTextViewWithAttributedString:attributedText];
-  } else {
-    bodyText =
-        [self createLabel:DescriptionString()
-                     font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-                    color:kLensOverlayConsentDialogDescriptionColor];
-  }
+  UIView* bodyText =
+      [self createLabel:l10n_util::GetNSString(
+                            IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION)
+                   font:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+                  color:kLensOverlayConsentDialogDescriptionColor];
 
   // Clear `titleText` and `subtitleText` so that PromoStyleViewController does
   // not use them to create alternate title and subtitle labels.
   self.titleText = nil;
   self.subtitleText = nil;
 
-  UIStackView* stack;
-  if (UseUpdatedGraphics()) {
-    UIImageView* imageView = [self createOnboardingImageView];
-    stack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ imageView, titleLabel, bodyText ]];
-  } else {
-    UIView* animationView = [self createAnimationView];
-    stack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ animationView, titleLabel, bodyText ]];
-  }
+  UIView* animationView = [self createAnimationView];
+  UIStackView* stack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ animationView, titleLabel, bodyText ]];
 
-  if (!UseUpdatedStrings()) {
-    __weak __typeof(self) weakSelf = self;
-    UIButton* learnMoreLink =
-        [self plainButtonWithTitle:learnMore
-                     actionHandler:^(UIAction* action) {
-                       [weakSelf.delegate didPressLearnMore];
-                     }];
-
-    [stack addArrangedSubview:learnMoreLink];
-  }
-
+  __weak __typeof(self) weakSelf = self;
+  UIButton* learnMoreLink =
+      [self plainButtonWithTitle:l10n_util::GetNSString(
+                                     IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE)
+                   actionHandler:^(UIAction* action) {
+                     [weakSelf.delegate didPressLearnMore];
+                   }];
+  [stack addArrangedSubview:learnMoreLink];
   stack.axis = UILayoutConstraintAxisVertical;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   stack.alignment = UIStackViewAlignmentCenter;
@@ -309,19 +207,6 @@ NSString* LearnMoreString() {
 }
 
 #pragma mark - private
-
-- (NSDictionary*)descriptionTextAttributes {
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.alignment = NSTextAlignmentCenter;
-  NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
-    NSParagraphStyleAttributeName : paragraphStyle
-  };
-  return textAttributes;
-}
 
 - (UITextView*)createTextViewWithAttributedString:
     (NSAttributedString*)attributedText {

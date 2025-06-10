@@ -327,15 +327,6 @@ BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
 // Feature to enable force showing the lens overlay onboarding screen.
 BASE_DECLARE_FEATURE(kLensOverlayForceShowOnboardingScreen);
 
-// Types of lens overlay onboarding.
-extern const char kLensOverlayOnboardingParam[];
-extern const char kLensOverlayOnboardingParamSpeedbumpMenu[];
-extern const char kLensOverlayOnboardingParamUpdatedStrings[];
-extern const char kLensOverlayOnboardingParamUpdatedStringsAndVisuals[];
-
-// Feature flag to change the onboariding experience of Lens Overlay.
-BASE_DECLARE_FEATURE(kLensOverlayAlternativeOnboarding);
-
 // Feature flag to add lens overlay navigation to history.
 BASE_DECLARE_FEATURE(kLensOverlayNavigationHistory);
 

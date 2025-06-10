@@ -263,17 +263,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
 
-    BOOL showSpeedbumpMenu = GetLensOverlayOnboardingTreatment() ==
-                             LensOverlayOnboardingTreatment::kSpeedbumpMenu;
-    if (showSpeedbumpMenu) {
-      _lensOverlayPlaceholderView.menu = [self createSpeedbumpMenu];
-      _lensOverlayPlaceholderView.showsMenuAsPrimaryAction = YES;
-    } else {
-      [_lensOverlayPlaceholderView
-                 addTarget:self
-                    action:@selector(handleLensEntrypointPressed)
-          forControlEvents:UIControlEventTouchUpInside];
-    }
+    [_lensOverlayPlaceholderView
+               addTarget:self
+                  action:@selector(handleLensEntrypointPressed)
+        forControlEvents:UIControlEventTouchUpInside];
   }
 
   [_locationBarSteadyView.locationButton
@@ -737,37 +730,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
          self.lensImageEnabled;
 }
 
-// Creates a new menu to use as the "speedbump" menu for the lens overlay
-// entrypoint. Only used in LensOverlayOnboardingTreatment::kSpeedbumpMenu.
-- (UIMenu*)createSpeedbumpMenu {
-  DCHECK(GetLensOverlayOnboardingTreatment() ==
-         LensOverlayOnboardingTreatment::kSpeedbumpMenu);
-
-  NSString* lensOverlayTitle =
-      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN);
-  __weak __typeof__(self) weakSelf = self;
-  UIAction* lensOverlayAction =
-      [UIAction actionWithTitle:lensOverlayTitle
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* /* action */) {
-                          [weakSelf handleLensSpeedbumpMenuOpenLensOverlay];
-                        }];
-
-  NSString* cameraTitle =
-      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA);
-  UIAction* viewfinderAction =
-      [UIAction actionWithTitle:cameraTitle
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* /* action */) {
-                          [weakSelf handleLensSpeedbumpMenuOpenLensViewFinder];
-                        }];
-  NSString* menuTitle = l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME);
-  return [UIMenu menuWithTitle:menuTitle
-                      children:@[ lensOverlayAction, viewfinderAction ]];
-}
-
 // Updates placeholder in the steady view.
 - (void)updatePlaceholder {
   NSString* placeholderString = self.searchOrTypeURLPlaceholderText;
@@ -1020,24 +982,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     RecordAction(
         UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
   }
-}
-
-- (void)handleLensSpeedbumpMenuOpenLensViewFinder {
-  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
-
-  base::UmaHistogramEnumeration(
-      "Lens.Overlay.SpeedbumpMenu",
-      lens::LensOverlaySpeedbumpMenuSelection::kSearchWithCamera);
-  [self openLensViewFinder];
-}
-
-- (void)handleLensSpeedbumpMenuOpenLensOverlay {
-  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
-
-  base::UmaHistogramEnumeration(
-      "Lens.Overlay.SpeedbumpMenu",
-      lens::LensOverlaySpeedbumpMenuSelection::kSearchYourScreen);
-  [self openLensOverlay];
 }
 
 - (void)handleLensEntrypointPressed {

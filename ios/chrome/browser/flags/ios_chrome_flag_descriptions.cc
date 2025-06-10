@@ -848,12 +848,6 @@ const char kLensLoadAIMInLensResultPageName[] =
 const char kLensLoadAIMInLensResultPageDescription[] =
     "Opens in Lens result page rather than a new tab.";
 
-extern const char kLensOverlayAlternativeOnboardingName[] =
-    "Lens Overlay Onboarding";
-extern const char kLensOverlayAlternativeOnboardingDescription[] =
-    "Selects which lens overlay onboarding/entrypoint treatment is active. "
-    "No-op if lens overlay is off.";
-
 extern const char kLensOverlayDisableIPHPanGestureName[] =
     "Disable Lens Overlay IPH Pan Dismissal";
 extern const char kLensOverlayDisableIPHPanGestureDescription[] =
