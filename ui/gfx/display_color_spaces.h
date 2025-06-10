@@ -14,7 +14,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
-#include "ui/gfx/hdr_static_metadata.h"
 
 namespace mojo {
 template <class T, class U>
