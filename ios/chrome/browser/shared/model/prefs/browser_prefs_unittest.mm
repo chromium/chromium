@@ -45,8 +45,6 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   base::Time now = base::Time::Now();
 
   // Simulate registering a value different from default in profile prefService.
-  pref_service_.SetBoolean(prefs::kBottomOmnibox, true);
-  pref_service_.SetBoolean(prefs::kBottomOmniboxByDefault, true);
   pref_service_.SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
   pref_service_.SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
@@ -54,12 +52,6 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   pref_service_.SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount, 1);
   pref_service_.SetBoolean(prefs::kIncognitoInterstitialEnabled, true);
   pref_service_.SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount, 1);
-
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kBottomOmnibox), true);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), false);
-
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kBottomOmniboxByDefault), true);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), false);
 
   EXPECT_EQ(pref_service_.GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
@@ -97,12 +89,6 @@ TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
   MigrateObsoleteProfilePrefs(&pref_service_);
 
   // Verify that the prefs were migrated successfully.
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kBottomOmnibox), false);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), true);
-
-  EXPECT_EQ(pref_service_.GetBoolean(prefs::kBottomOmniboxByDefault), false);
-  EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), true);
-
   EXPECT_EQ(pref_service_.GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
             false);
@@ -147,9 +133,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
 
   // Set initial values in local_state
 
-  // New Tab Page Display Count
-  local_state()->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount, 10);
-
   // Safety Check Manager and Settings
   local_state()->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
                            "Example");
@@ -181,14 +164,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 6);
 
   // Verify initial state before migration
-
-  // Check New Tab Page Display Count
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
-      0);
-  EXPECT_EQ(
-      local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
-      10);
 
   // Check Safety Check Manager and Settings
   EXPECT_EQ(
@@ -268,14 +243,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   MigrateObsoleteProfilePrefs(&pref_service_);
 
   // Verify state after migration
-
-  // Check New Tab Page Display Count
-  EXPECT_EQ(
-      pref_service_.GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
-      10);
-  EXPECT_EQ(
-      local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
-      0);
 
   // Check Safety Check Manager and Settings
   EXPECT_EQ(

@@ -137,12 +137,6 @@
 
 namespace {
 
-// Deprecated 06/2024.
-constexpr char kObsoletePasswordsPerAccountPrefMigrationDone[] =
-    "sync.passwords_per_account_pref_migration_done";
-constexpr char kObsoleteBookmarksAndReadingListAccountStorageOptIn[] =
-    "sync.bookmarks_and_reading_list_account_storage_opt_in";
-
 // Deprecated 08/2024.
 const char kTrialPrefName[] = "trending_queries.trial_version";
 
@@ -625,8 +619,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
                                std::string());
-  registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
-                                0);
 
   // Deprecated 07/2024.
   registry->RegisterDictionaryPref(
@@ -993,17 +985,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
 
-  registry->RegisterBooleanPref(kObsoletePasswordsPerAccountPrefMigrationDone,
-                                false);
-
   registry->RegisterStringPref(prefs::kBrowserStateStorageIdentifier,
                                std::string());
 
   registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
                                 false);
-
-  registry->RegisterBooleanPref(
-      kObsoleteBookmarksAndReadingListAccountStorageOptIn, false);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(
@@ -1013,10 +999,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
       PrefRegistry::LOSSY_PREF);
-
-  // Prefs migrated to localState prefs.
-  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
-  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 
   // Preferences related to Lens Overlay.
   registry->RegisterBooleanPref(prefs::kLensOverlayConditionsAccepted, false);
@@ -1162,24 +1144,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
-  // Added 06/2024.
-  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosSyncSegmentsNewTabPageDisplayCount, prefs);
-
-  // Added 06/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(prefs::kBottomOmnibox,
-                                                      prefs);
-
-  // Added 06/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-      prefs::kBottomOmniboxByDefault, prefs);
-
-  // Added 06/2024.
-  prefs->ClearPref(kObsoletePasswordsPerAccountPrefMigrationDone);
-
-  // Added 06/2024.
-  prefs->ClearPref(kObsoleteBookmarksAndReadingListAccountStorageOptIn);
-
   // Added 07/2024.
   // Note that this key is an obsolete LocalState pref, it's here because it was
   // moved from LocalState pref to Profile pref and before clearing it the
@@ -1324,10 +1288,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 06/2024.
-  [defaults removeObjectForKey:@"TimestampAppLastOpenedViaFirstPartyIntent"];
-  [defaults removeObjectForKey:@"TimestampLastValidURLPasted"];
 
   // Added 07/2024.
   [defaults
